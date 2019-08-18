@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AtomicDouble
    | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -120,10 +120,76 @@ of the field even if it is not declared as volatile field.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double__System_Double_System_Func_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.AccumulateAndGet(System.Double%40%2CSystem.Double%2CSystem.Func%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.AccumulateAndGet(System.Double%40%2CSystem.Double%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L135">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L159">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicDouble_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicDouble.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double___" data-uid="DotNext.Threading.AtomicDouble.AccumulateAndGet(System.Double@,System.Double,DotNext.ValueFunc{System.Double,System.Double,System.Double}@)">AccumulateAndGet(ref Double, Double, ValueFunc&lt;Double, Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double AccumulateAndGet(this ref double value, double x, in ValueFunc&lt;double, double, double&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double__System_Double_System_Func_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.AccumulateAndGet(System.Double%40%2CSystem.Double%2CSystem.Func%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L144">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicDouble.AccumulateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double__System_Double_System_Func_System_Double_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicDouble.AccumulateAndGet(System.Double@,System.Double,System.Func{System.Double,System.Double,System.Double})">AccumulateAndGet(ref Double, Double, Func&lt;Double, Double, Double&gt;)</h4>
@@ -186,10 +252,82 @@ to the current and given values, returning the updated value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double___System_Int64_System_Double_System_Func_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.AccumulateAndGet(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double%2CSystem.Func%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double___System_Int64_System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.AccumulateAndGet(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L289">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L365">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicDouble_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicDouble.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double___System_Int64_System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double___" data-uid="DotNext.Threading.AtomicDouble.AccumulateAndGet(System.Double[],System.Int64,System.Double,DotNext.ValueFunc{System.Double,System.Double,System.Double}@)">AccumulateAndGet(Double[], Int64, Double, ValueFunc&lt;Double, Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
+to the array element and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double AccumulateAndGet(this double[] array, long index, double x, in ValueFunc&lt;double, double, double&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double___System_Int64_System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double___System_Int64_System_Double_System_Func_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.AccumulateAndGet(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double%2CSystem.Func%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L350">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicDouble.AccumulateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_AccumulateAndGet_System_Double___System_Int64_System_Double_System_Func_System_Double_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicDouble.AccumulateAndGet(System.Double[],System.Int64,System.Double,System.Func{System.Double,System.Double,System.Double})">AccumulateAndGet(Double[], Int64, Double, Func&lt;Double, Double, Double&gt;)</h4>
@@ -258,10 +396,10 @@ to the array element and given values, returning the updated value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_Add_System_Double__System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.Add(System.Double%40%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_Add_System_Double__System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.Add(System.Double%40%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L87">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L74">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_Add_" data-uid="DotNext.Threading.AtomicDouble.Add*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_Add_System_Double__System_Double_" data-uid="DotNext.Threading.AtomicDouble.Add(System.Double@,System.Double)">Add(ref Double, Double)</h4>
@@ -315,10 +453,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_Add_System_Double___System_Int64_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.Add(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_Add_System_Double___System_Int64_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.Add(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L248">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L309">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_Add_" data-uid="DotNext.Threading.AtomicDouble.Add*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_Add_System_Double___System_Int64_System_Double_" data-uid="DotNext.Threading.AtomicDouble.Add(System.Double[],System.Int64,System.Double)">Add(Double[], Int64, Double)</h4>
@@ -378,10 +516,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_CompareAndSet_System_Double__System_Double_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.CompareAndSet(System.Double%40%2CSystem.Double%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_CompareAndSet_System_Double__System_Double_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.CompareAndSet(System.Double%40%2CSystem.Double%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L97">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L84">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_CompareAndSet_" data-uid="DotNext.Threading.AtomicDouble.CompareAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_CompareAndSet_System_Double__System_Double_System_Double_" data-uid="DotNext.Threading.AtomicDouble.CompareAndSet(System.Double@,System.Double,System.Double)">CompareAndSet(ref Double, Double, Double)</h4>
@@ -440,10 +578,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_CompareAndSet_System_Double___System_Int64_System_Double_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.CompareAndSet(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_CompareAndSet_System_Double___System_Int64_System_Double_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.CompareAndSet(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L236">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L297">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_CompareAndSet_" data-uid="DotNext.Threading.AtomicDouble.CompareAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_CompareAndSet_System_Double___System_Int64_System_Double_System_Double_" data-uid="DotNext.Threading.AtomicDouble.CompareAndSet(System.Double[],System.Int64,System.Double,System.Double)">CompareAndSet(Double[], Int64, Double, Double)</h4>
@@ -508,19 +646,19 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_CompareExchange_System_Int64___System_Int64_System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.CompareExchange(System.Int64%5B%5D%2CSystem.Int64%2CSystem.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_CompareExchange_System_Double___System_Int64_System_Double_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.CompareExchange(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L224">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L285">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_CompareExchange_" data-uid="DotNext.Threading.AtomicDouble.CompareExchange*"></a>
-  <h4 id="DotNext_Threading_AtomicDouble_CompareExchange_System_Int64___System_Int64_System_Int64_System_Int64_" data-uid="DotNext.Threading.AtomicDouble.CompareExchange(System.Int64[],System.Int64,System.Int64,System.Int64)">CompareExchange(Int64[], Int64, Int64, Int64)</h4>
+  <h4 id="DotNext_Threading_AtomicDouble_CompareExchange_System_Double___System_Int64_System_Double_System_Double_" data-uid="DotNext.Threading.AtomicDouble.CompareExchange(System.Double[],System.Int64,System.Double,System.Double)">CompareExchange(Double[], Int64, Double, Double)</h4>
   <div class="markdown level1 summary"><p>Atomically sets array element to the given updated value if the array element == the expected value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long CompareExchange(this long[] array, long index, long update, long comparand)</code></pre>
+    <pre><code class="lang-csharp hljs">public static double CompareExchange(this double[] array, long index, double update, double comparand)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -533,7 +671,7 @@ as an atomic operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>[]</td>
         <td><span class="parametername">array</span></td>
         <td><p>The array to be modified.</p>
 </td>
@@ -545,13 +683,13 @@ as an atomic operation.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
         <td><span class="parametername">update</span></td>
         <td><p>The new value.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
         <td><span class="parametername">comparand</span></td>
         <td><p>The expected value.</p>
 </td>
@@ -568,7 +706,7 @@ as an atomic operation.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
         <td><p>The original value of the array element.</p>
 </td>
       </tr>
@@ -576,10 +714,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_DecrementAndGet_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.DecrementAndGet(System.Double%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_DecrementAndGet_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.DecrementAndGet(System.Double%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L77">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L64">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_DecrementAndGet_" data-uid="DotNext.Threading.AtomicDouble.DecrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_DecrementAndGet_System_Double__" data-uid="DotNext.Threading.AtomicDouble.DecrementAndGet(System.Double@)">DecrementAndGet(ref Double)</h4>
@@ -626,10 +764,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_DecrementAndGet_System_Double___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.DecrementAndGet(System.Double%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_DecrementAndGet_System_Double___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.DecrementAndGet(System.Double%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L212">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L273">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_DecrementAndGet_" data-uid="DotNext.Threading.AtomicDouble.DecrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_DecrementAndGet_System_Double___System_Int64_" data-uid="DotNext.Threading.AtomicDouble.DecrementAndGet(System.Double[],System.Int64)">DecrementAndGet(Double[], Int64)</h4>
@@ -682,10 +820,76 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double__System_Double_System_Func_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndAccumulate(System.Double%40%2CSystem.Double%2CSystem.Func%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndAccumulate(System.Double%40%2CSystem.Double%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L150">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L189">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicDouble_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicDouble.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double___" data-uid="DotNext.Threading.AtomicDouble.GetAndAccumulate(System.Double@,System.Double,DotNext.ValueFunc{System.Double,System.Double,System.Double}@)">GetAndAccumulate(ref Double, Double, ValueFunc&lt;Double, Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double GetAndAccumulate(this ref double value, double x, in ValueFunc&lt;double, double, double&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double__System_Double_System_Func_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndAccumulate(System.Double%40%2CSystem.Double%2CSystem.Func%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L174">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicDouble.GetAndAccumulate*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double__System_Double_System_Func_System_Double_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicDouble.GetAndAccumulate(System.Double@,System.Double,System.Func{System.Double,System.Double,System.Double})">GetAndAccumulate(ref Double, Double, Func&lt;Double, Double, Double&gt;)</h4>
@@ -748,10 +952,82 @@ to the current and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double___System_Int64_System_Double_System_Func_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndAccumulate(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double%2CSystem.Func%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double___System_Int64_System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndAccumulate(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L304">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L395">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicDouble_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicDouble.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double___System_Int64_System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double___" data-uid="DotNext.Threading.AtomicDouble.GetAndAccumulate(System.Double[],System.Int64,System.Double,DotNext.ValueFunc{System.Double,System.Double,System.Double}@)">GetAndAccumulate(Double[], Int64, Double, ValueFunc&lt;Double, Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
+to the array element and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double GetAndAccumulate(this double[] array, long index, double x, in ValueFunc&lt;double, double, double&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The original value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double___System_Int64_System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double___System_Int64_System_Double_System_Func_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndAccumulate(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double%2CSystem.Func%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L380">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicDouble.GetAndAccumulate*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_GetAndAccumulate_System_Double___System_Int64_System_Double_System_Func_System_Double_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicDouble.GetAndAccumulate(System.Double[],System.Int64,System.Double,System.Func{System.Double,System.Double,System.Double})">GetAndAccumulate(Double[], Int64, Double, Func&lt;Double, Double, Double&gt;)</h4>
@@ -820,10 +1096,10 @@ to the array element and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndSet_System_Double__System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndSet(System.Double%40%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndSet_System_Double__System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndSet(System.Double%40%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L107">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_GetAndSet_" data-uid="DotNext.Threading.AtomicDouble.GetAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_GetAndSet_System_Double__System_Double_" data-uid="DotNext.Threading.AtomicDouble.GetAndSet(System.Double@,System.Double)">GetAndSet(ref Double, Double)</h4>
@@ -876,10 +1152,10 @@ to the array element and given values, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndSet_System_Double___System_Int64_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndSet(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndSet_System_Double___System_Int64_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndSet(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L259">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L320">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_GetAndSet_" data-uid="DotNext.Threading.AtomicDouble.GetAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_GetAndSet_System_Double___System_Int64_System_Double_" data-uid="DotNext.Threading.AtomicDouble.GetAndSet(System.Double[],System.Int64,System.Double)">GetAndSet(Double[], Int64, Double)</h4>
@@ -938,10 +1214,67 @@ to the array element and given values, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndUpdate_System_Double__System_Func_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndUpdate(System.Double%40%2CSystem.Func%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndUpdate_System_Double__DotNext_ValueFunc_System_Double_System_Double___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndUpdate(System.Double%40%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L172">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L233">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicDouble_GetAndUpdate_" data-uid="DotNext.Threading.AtomicDouble.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicDouble_GetAndUpdate_System_Double__DotNext_ValueFunc_System_Double_System_Double___" data-uid="DotNext.Threading.AtomicDouble.GetAndUpdate(System.Double@,DotNext.ValueFunc{System.Double,System.Double}@)">GetAndUpdate(ref Double, ValueFunc&lt;Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double GetAndUpdate(this ref double value, in ValueFunc&lt;double, double&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndUpdate_System_Double__System_Func_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndUpdate(System.Double%40%2CSystem.Func%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L222">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_GetAndUpdate_" data-uid="DotNext.Threading.AtomicDouble.GetAndUpdate*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_GetAndUpdate_System_Double__System_Func_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicDouble.GetAndUpdate(System.Double@,System.Func{System.Double,System.Double})">GetAndUpdate(ref Double, Func&lt;Double, Double&gt;)</h4>
@@ -995,10 +1328,73 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndUpdate_System_Double___System_Int64_System_Func_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndUpdate(System.Double%5B%5D%2CSystem.Int64%2CSystem.Func%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndUpdate_System_Double___System_Int64_DotNext_ValueFunc_System_Double_System_Double___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndUpdate(System.Double%5B%5D%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L326">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L439">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicDouble_GetAndUpdate_" data-uid="DotNext.Threading.AtomicDouble.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicDouble_GetAndUpdate_System_Double___System_Int64_DotNext_ValueFunc_System_Double_System_Double___" data-uid="DotNext.Threading.AtomicDouble.GetAndUpdate(System.Double[],System.Int64,DotNext.ValueFunc{System.Double,System.Double}@)">GetAndUpdate(Double[], Int64, ValueFunc&lt;Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double GetAndUpdate(this double[] array, long index, in ValueFunc&lt;double, double&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The original value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_GetAndUpdate_System_Double___System_Int64_System_Func_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.GetAndUpdate(System.Double%5B%5D%2CSystem.Int64%2CSystem.Func%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L428">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_GetAndUpdate_" data-uid="DotNext.Threading.AtomicDouble.GetAndUpdate*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_GetAndUpdate_System_Double___System_Int64_System_Func_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicDouble.GetAndUpdate(System.Double[],System.Int64,System.Func{System.Double,System.Double})">GetAndUpdate(Double[], Int64, Func&lt;Double, Double&gt;)</h4>
@@ -1058,10 +1454,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_IncrementAndGet_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.IncrementAndGet(System.Double%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_IncrementAndGet_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.IncrementAndGet(System.Double%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L69">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L56">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_IncrementAndGet_" data-uid="DotNext.Threading.AtomicDouble.IncrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_IncrementAndGet_System_Double__" data-uid="DotNext.Threading.AtomicDouble.IncrementAndGet(System.Double@)">IncrementAndGet(ref Double)</h4>
@@ -1108,10 +1504,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_IncrementAndGet_System_Double___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.IncrementAndGet(System.Double%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_IncrementAndGet_System_Double___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.IncrementAndGet(System.Double%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L202">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L263">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_IncrementAndGet_" data-uid="DotNext.Threading.AtomicDouble.IncrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_IncrementAndGet_System_Double___System_Int64_" data-uid="DotNext.Threading.AtomicDouble.IncrementAndGet(System.Double[],System.Int64)">IncrementAndGet(Double[], Int64)</h4>
@@ -1164,10 +1560,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_SetAndGet_System_Double__System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.SetAndGet(System.Double%40%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_SetAndGet_System_Double__System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.SetAndGet(System.Double%40%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L117">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L104">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_SetAndGet_" data-uid="DotNext.Threading.AtomicDouble.SetAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_SetAndGet_System_Double__System_Double_" data-uid="DotNext.Threading.AtomicDouble.SetAndGet(System.Double@,System.Double)">SetAndGet(ref Double, Double)</h4>
@@ -1220,10 +1616,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_SetAndGet_System_Double___System_Int64_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.SetAndGet(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_SetAndGet_System_Double___System_Int64_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.SetAndGet(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L270">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L331">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_SetAndGet_" data-uid="DotNext.Threading.AtomicDouble.SetAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_SetAndGet_System_Double___System_Int64_System_Double_" data-uid="DotNext.Threading.AtomicDouble.SetAndGet(System.Double[],System.Int64,System.Double)">SetAndGet(Double[], Int64, Double)</h4>
@@ -1282,10 +1678,67 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_UpdateAndGet_System_Double__System_Func_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.UpdateAndGet(System.Double%40%2CSystem.Func%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_UpdateAndGet_System_Double__DotNext_ValueFunc_System_Double_System_Double___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.UpdateAndGet(System.Double%40%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L161">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L211">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicDouble_UpdateAndGet_" data-uid="DotNext.Threading.AtomicDouble.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicDouble_UpdateAndGet_System_Double__DotNext_ValueFunc_System_Double_System_Double___" data-uid="DotNext.Threading.AtomicDouble.UpdateAndGet(System.Double@,DotNext.ValueFunc{System.Double,System.Double}@)">UpdateAndGet(ref Double, ValueFunc&lt;Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double UpdateAndGet(this ref double value, in ValueFunc&lt;double, double&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_UpdateAndGet_System_Double__System_Func_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.UpdateAndGet(System.Double%40%2CSystem.Func%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L200">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_UpdateAndGet_" data-uid="DotNext.Threading.AtomicDouble.UpdateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_UpdateAndGet_System_Double__System_Func_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicDouble.UpdateAndGet(System.Double@,System.Func{System.Double,System.Double})">UpdateAndGet(ref Double, Func&lt;Double, Double&gt;)</h4>
@@ -1339,10 +1792,73 @@ of applying the given function, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_UpdateAndGet_System_Double___System_Int64_System_Func_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.UpdateAndGet(System.Double%5B%5D%2CSystem.Int64%2CSystem.Func%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_UpdateAndGet_System_Double___System_Int64_DotNext_ValueFunc_System_Double_System_Double___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.UpdateAndGet(System.Double%5B%5D%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L315">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L417">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicDouble_UpdateAndGet_" data-uid="DotNext.Threading.AtomicDouble.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicDouble_UpdateAndGet_System_Double___System_Int64_DotNext_ValueFunc_System_Double_System_Double___" data-uid="DotNext.Threading.AtomicDouble.UpdateAndGet(System.Double[],System.Int64,DotNext.ValueFunc{System.Double,System.Double}@)">UpdateAndGet(Double[], Int64, ValueFunc&lt;Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double UpdateAndGet(this double[] array, long index, in ValueFunc&lt;double, double&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_UpdateAndGet_System_Double___System_Int64_System_Func_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.UpdateAndGet(System.Double%5B%5D%2CSystem.Int64%2CSystem.Func%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L406">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_UpdateAndGet_" data-uid="DotNext.Threading.AtomicDouble.UpdateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_UpdateAndGet_System_Double___System_Int64_System_Func_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicDouble.UpdateAndGet(System.Double[],System.Int64,System.Func{System.Double,System.Double})">UpdateAndGet(Double[], Int64, Func&lt;Double, Double&gt;)</h4>
@@ -1402,10 +1918,10 @@ of applying the given function, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_VolatileRead_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.VolatileRead(System.Double%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_VolatileRead_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.VolatileRead(System.Double%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L46">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L34">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_VolatileRead_" data-uid="DotNext.Threading.AtomicDouble.VolatileRead*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_VolatileRead_System_Double__" data-uid="DotNext.Threading.AtomicDouble.VolatileRead(System.Double@)">VolatileRead(ref Double)</h4>
@@ -1457,10 +1973,10 @@ cache.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_VolatileRead_System_Double___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.VolatileRead(System.Double%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_VolatileRead_System_Double___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.VolatileRead(System.Double%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L182">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L243">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_VolatileRead_" data-uid="DotNext.Threading.AtomicDouble.VolatileRead*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_VolatileRead_System_Double___System_Int64_" data-uid="DotNext.Threading.AtomicDouble.VolatileRead(System.Double[],System.Int64)">VolatileRead(Double[], Int64)</h4>
@@ -1513,10 +2029,10 @@ cache.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_VolatileWrite_System_Double__System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.VolatileWrite(System.Double%40%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_VolatileWrite_System_Double__System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.VolatileWrite(System.Double%40%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L60">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L48">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_VolatileWrite_" data-uid="DotNext.Threading.AtomicDouble.VolatileWrite*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_VolatileWrite_System_Double__System_Double_" data-uid="DotNext.Threading.AtomicDouble.VolatileWrite(System.Double@,System.Double)">VolatileWrite(ref Double, Double)</h4>
@@ -1557,10 +2073,10 @@ all processors in the computer.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_VolatileWrite_System_Double___System_Int64_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.VolatileWrite(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble_VolatileWrite_System_Double___System_Int64_System_Double_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble.VolatileWrite(System.Double%5B%5D%2CSystem.Int64%2CSystem.Double)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L192">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L253">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicDouble_VolatileWrite_" data-uid="DotNext.Threading.AtomicDouble.VolatileWrite*"></a>
   <h4 id="DotNext_Threading_AtomicDouble_VolatileWrite_System_Double___System_Int64_System_Double_" data-uid="DotNext.Threading.AtomicDouble.VolatileWrite(System.Double[],System.Int64,System.Double)">VolatileWrite(Double[], Int64, Double)</h4>
@@ -1613,10 +2129,10 @@ all processors in the computer.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicDouble.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicDouble%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L16" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicDouble.cs/#L16" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

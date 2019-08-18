@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Dictionary
    | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -116,19 +116,19 @@ and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collectio
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_AsReadOnlyView__2_System_Collections_Generic_IDictionary___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.AsReadOnlyView%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_ConvertValues__3_System_Collections_Generic_IReadOnlyDictionary___0___1__DotNext_ValueFunc___1___2___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.ConvertValues%60%603(System.Collections.Generic.IReadOnlyDictionary%7B%60%600%2C%60%601%7D%2CDotNext.ValueFunc%7B%60%601%2C%60%602%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L215">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L270">View Source</a>
   </span>
-  <a id="DotNext_Collections_Generic_Dictionary_AsReadOnlyView_" data-uid="DotNext.Collections.Generic.Dictionary.AsReadOnlyView*"></a>
-  <h4 id="DotNext_Collections_Generic_Dictionary_AsReadOnlyView__2_System_Collections_Generic_IDictionary___0___1__" data-uid="DotNext.Collections.Generic.Dictionary.AsReadOnlyView``2(System.Collections.Generic.IDictionary{``0,``1})">AsReadOnlyView&lt;K, V&gt;(IDictionary&lt;K, V&gt;)</h4>
-  <div class="markdown level1 summary"><p>Obtains read-only view of the dictionary.</p>
+  <a id="DotNext_Collections_Generic_Dictionary_ConvertValues_" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValues*"></a>
+  <h4 id="DotNext_Collections_Generic_Dictionary_ConvertValues__3_System_Collections_Generic_IReadOnlyDictionary___0___1__DotNext_ValueFunc___1___2___" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValues``3(System.Collections.Generic.IReadOnlyDictionary{``0,``1},DotNext.ValueFunc{``1,``2}@)">ConvertValues&lt;K, V, T&gt;(IReadOnlyDictionary&lt;K, V&gt;, ValueFunc&lt;V, T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Applies lazy conversion for each dictionary value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlyDictionaryView&lt;K, V&gt; AsReadOnlyView&lt;K, V&gt;(this IDictionary&lt;K, V&gt; dictionary)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ReadOnlyDictionaryView&lt;K, V, T&gt; ConvertValues&lt;K, V, T&gt;(this IReadOnlyDictionary&lt;K, V&gt; dictionary, in ValueFunc&lt;V, T&gt; mapper)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -141,9 +141,15 @@ and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collectio
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary</a>&lt;K, V&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;K, V&gt;</td>
         <td><span class="parametername">dictionary</span></td>
-        <td><p>A dictionary.</p>
+        <td><p>A dictionary to be mapped.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;V, T&gt;</td>
+        <td><span class="parametername">mapper</span></td>
+        <td><p>Mapping function.</p>
 </td>
       </tr>
     </tbody>
@@ -158,8 +164,8 @@ and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collectio
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Collections.Generic.ReadOnlyDictionaryView-2.html">ReadOnlyDictionaryView</a>&lt;K, V&gt;</td>
-        <td><p>Read-only view of the dictionary.</p>
+        <td><a class="xref" href="DotNext.Collections.Generic.ReadOnlyDictionaryView-3.html">ReadOnlyDictionaryView</a>&lt;K, V, T&gt;</td>
+        <td><p>Read-only view of the dictionary where each value is converted in lazy manner.</p>
 </td>
       </tr>
     </tbody>
@@ -183,26 +189,28 @@ and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collectio
         <td><p>Type of values.</p>
 </td>
       </tr>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Type of mapped values.</p>
+</td>
+      </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Collections_Generic_Dictionary_AsReadOnlyView__2_System_Collections_Generic_IDictionary___0___1___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Any changes in the dictionary will be visible from read-only view.</p>
-</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_Convert__3_System_Collections_Generic_IReadOnlyDictionary___0___1__System_Converter___1___2__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.Convert%60%603(System.Collections.Generic.IReadOnlyDictionary%7B%60%600%2C%60%601%7D%2CSystem.Converter%7B%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_ConvertValues__3_System_Collections_Generic_IReadOnlyDictionary___0___1__System_Converter___1___2__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.ConvertValues%60%603(System.Collections.Generic.IReadOnlyDictionary%7B%60%600%2C%60%601%7D%2CSystem.Converter%7B%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L227">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L282">View Source</a>
   </span>
-  <a id="DotNext_Collections_Generic_Dictionary_Convert_" data-uid="DotNext.Collections.Generic.Dictionary.Convert*"></a>
-  <h4 id="DotNext_Collections_Generic_Dictionary_Convert__3_System_Collections_Generic_IReadOnlyDictionary___0___1__System_Converter___1___2__" data-uid="DotNext.Collections.Generic.Dictionary.Convert``3(System.Collections.Generic.IReadOnlyDictionary{``0,``1},System.Converter{``1,``2})">Convert&lt;K, V, T&gt;(IReadOnlyDictionary&lt;K, V&gt;, Converter&lt;V, T&gt;)</h4>
+  <a id="DotNext_Collections_Generic_Dictionary_ConvertValues_" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValues*"></a>
+  <h4 id="DotNext_Collections_Generic_Dictionary_ConvertValues__3_System_Collections_Generic_IReadOnlyDictionary___0___1__System_Converter___1___2__" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValues``3(System.Collections.Generic.IReadOnlyDictionary{``0,``1},System.Converter{``1,``2})">ConvertValues&lt;K, V, T&gt;(IReadOnlyDictionary&lt;K, V&gt;, Converter&lt;V, T&gt;)</h4>
   <div class="markdown level1 summary"><p>Applies lazy conversion for each dictionary value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlyDictionaryView&lt;K, V, T&gt; Convert&lt;K, V, T&gt;(this IReadOnlyDictionary&lt;K, V&gt; dictionary, Converter&lt;V, T&gt; mapper)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ReadOnlyDictionaryView&lt;K, V, T&gt; ConvertValues&lt;K, V, T&gt;(this IReadOnlyDictionary&lt;K, V&gt; dictionary, Converter&lt;V, T&gt; mapper)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -272,194 +280,10 @@ and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collectio
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_ConvertValue__3_System_Collections_Generic_IDictionary___0___1____0_System_Converter___1___2__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.ConvertValue%60%603(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D%2C%60%600%2CSystem.Converter%7B%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_Deconstruct__2_System_Collections_Generic_KeyValuePair___0___1____0____1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.Deconstruct%60%602(System.Collections.Generic.KeyValuePair%7B%60%600%2C%60%601%7D%2C%60%600%40%2C%60%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L187">View Source</a>
-  </span>
-  <a id="DotNext_Collections_Generic_Dictionary_ConvertValue_" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValue*"></a>
-  <h4 id="DotNext_Collections_Generic_Dictionary_ConvertValue__3_System_Collections_Generic_IDictionary___0___1____0_System_Converter___1___2__" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValue``3(System.Collections.Generic.IDictionary{``0,``1},``0,System.Converter{``1,``2})">ConvertValue&lt;K, V, T&gt;(IDictionary&lt;K, V&gt;, K, Converter&lt;V, T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Gets dictionary value associated with the key
-and convert that value using passed converter.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; ConvertValue&lt;K, V, T&gt;(this IDictionary&lt;K, V&gt; dictionary, K key, Converter&lt;V, T&gt; mapper)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary</a>&lt;K, V&gt;</td>
-        <td><span class="parametername">dictionary</span></td>
-        <td><p>A dictionary to read from.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">K</span></td>
-        <td><span class="parametername">key</span></td>
-        <td><p>A key associated with value.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;V, T&gt;</td>
-        <td><span class="parametername">mapper</span></td>
-        <td><p>Value converter.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
-        <td><p>Converted value associated with the key.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">K</span></td>
-        <td><p>Type of dictionary keys.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">V</span></td>
-        <td><p>Type of dictionary values.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>Type of value conversion result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_ConvertValue__3_System_Collections_Generic_IDictionary___0___1____0_System_Converter___1___2____2__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.ConvertValue%60%603(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D%2C%60%600%2CSystem.Converter%7B%60%601%2C%60%602%7D%2C%60%602%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L202">View Source</a>
-  </span>
-  <a id="DotNext_Collections_Generic_Dictionary_ConvertValue_" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValue*"></a>
-  <h4 id="DotNext_Collections_Generic_Dictionary_ConvertValue__3_System_Collections_Generic_IDictionary___0___1____0_System_Converter___1___2____2__" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValue``3(System.Collections.Generic.IDictionary{``0,``1},``0,System.Converter{``1,``2},``2@)">ConvertValue&lt;K, V, T&gt;(IDictionary&lt;K, V&gt;, K, Converter&lt;V, T&gt;, out T)</h4>
-  <div class="markdown level1 summary"><p>Gets dictionary value associated with the key
-and convert that value using passed converter.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static bool ConvertValue&lt;K, V, T&gt;(this IDictionary&lt;K, V&gt; dictionary, K key, Converter&lt;V, T&gt; mapper, out T value)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary</a>&lt;K, V&gt;</td>
-        <td><span class="parametername">dictionary</span></td>
-        <td><p>A dictionary to read from.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">K</span></td>
-        <td><span class="parametername">key</span></td>
-        <td><p>A key associated with value.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;V, T&gt;</td>
-        <td><span class="parametername">mapper</span></td>
-        <td><p>Value converter.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>Converted value associated with the key.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><span class="xref">true</span>, if key exists in the dictionary; otherwise, <span class="xref">false</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">K</span></td>
-        <td><p>Type of dictionary keys.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">V</span></td>
-        <td><p>Type of dictionary values.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>Type of value conversion result.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_Deconstruct__2_System_Collections_Generic_KeyValuePair___0___1____0____1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.Deconstruct%60%602(System.Collections.Generic.KeyValuePair%7B%60%600%2C%60%601%7D%2C%60%600%40%2C%60%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L95">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L97">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Dictionary_Deconstruct_" data-uid="DotNext.Collections.Generic.Dictionary.Deconstruct*"></a>
   <h4 id="DotNext_Collections_Generic_Dictionary_Deconstruct__2_System_Collections_Generic_KeyValuePair___0___1____0____1__" data-uid="DotNext.Collections.Generic.Dictionary.Deconstruct``2(System.Collections.Generic.KeyValuePair{``0,``1},``0@,``1@)">Deconstruct&lt;K, V&gt;(KeyValuePair&lt;K, V&gt;, out K, out V)</h4>
@@ -523,10 +347,71 @@ and convert that value using passed converter.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_ForEach__2_System_Collections_Generic_IDictionary___0___1__System_Action___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.ForEach%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D%2CSystem.Action%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_ForEach__2_System_Collections_Generic_IDictionary___0___1__DotNext_ValueAction___0___1___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.ForEach%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D%2CDotNext.ValueAction%7B%60%600%2C%60%601%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L156">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L195">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_Dictionary_ForEach_" data-uid="DotNext.Collections.Generic.Dictionary.ForEach*"></a>
+  <h4 id="DotNext_Collections_Generic_Dictionary_ForEach__2_System_Collections_Generic_IDictionary___0___1__DotNext_ValueAction___0___1___" data-uid="DotNext.Collections.Generic.Dictionary.ForEach``2(System.Collections.Generic.IDictionary{``0,``1},DotNext.ValueAction{``0,``1}@)">ForEach&lt;K, V&gt;(IDictionary&lt;K, V&gt;, ValueAction&lt;K, V&gt;)</h4>
+  <div class="markdown level1 summary"><p>Applies specific action to each dictionary</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void ForEach&lt;K, V&gt;(this IDictionary&lt;K, V&gt; dictionary, in ValueAction&lt;K, V&gt; action)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary</a>&lt;K, V&gt;</td>
+        <td><span class="parametername">dictionary</span></td>
+        <td><p>A dictionary to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueAction-2.html">ValueAction</a>&lt;K, V&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be applied for each key/value pair.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">K</span></td>
+        <td><p>The key type of the dictionary.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">V</span></td>
+        <td><p>The value type of the dictionary.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_ForEach__2_System_Collections_Generic_IDictionary___0___1__System_Action___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.ForEach%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D%2CSystem.Action%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L208">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Dictionary_ForEach_" data-uid="DotNext.Collections.Generic.Dictionary.ForEach*"></a>
   <h4 id="DotNext_Collections_Generic_Dictionary_ForEach__2_System_Collections_Generic_IDictionary___0___1__System_Action___0___1__" data-uid="DotNext.Collections.Generic.Dictionary.ForEach``2(System.Collections.Generic.IDictionary{``0,``1},System.Action{``0,``1})">ForEach&lt;K, V&gt;(IDictionary&lt;K, V&gt;, Action&lt;K, V&gt;)</h4>
@@ -550,12 +435,14 @@ and convert that value using passed converter.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary</a>&lt;K, V&gt;</td>
         <td><span class="parametername">dictionary</span></td>
-        <td></td>
+        <td><p>A dictionary to read from.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;K, V&gt;</td>
         <td><span class="parametername">action</span></td>
-        <td></td>
+        <td><p>The action to be applied for each key/value pair.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -570,20 +457,102 @@ and convert that value using passed converter.</p>
     <tbody>
       <tr>
         <td><span class="parametername">K</span></td>
-        <td></td>
+        <td><p>The key type of the dictionary.</p>
+</td>
       </tr>
       <tr>
         <td><span class="parametername">V</span></td>
-        <td></td>
+        <td><p>The value type of the dictionary.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0___1_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.GetOrAdd%60%602(System.Collections.Generic.Dictionary%7B%60%600%2C%60%601%7D%2C%60%600%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.GetOrAdd%60%602(System.Collections.Generic.Dictionary%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L113">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L114">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_Dictionary_GetOrAdd_" data-uid="DotNext.Collections.Generic.Dictionary.GetOrAdd*"></a>
+  <h4 id="DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0_" data-uid="DotNext.Collections.Generic.Dictionary.GetOrAdd``2(System.Collections.Generic.Dictionary{``0,``1},``0)">GetOrAdd&lt;K, V&gt;(Dictionary&lt;K, V&gt;, K)</h4>
+  <div class="markdown level1 summary"><p>Adds a key-value pair to the dictionary if the key does not exist.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static V GetOrAdd&lt;K, V&gt;(this Dictionary&lt;K, V&gt; dictionary, K key)
+
+    where V : new()</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.dictionary-2">Dictionary</a>&lt;K, V&gt;</td>
+        <td><span class="parametername">dictionary</span></td>
+        <td><p>The source dictionary.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">K</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the key-value pair.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">V</span></td>
+        <td><p>The corresponding value in the dictionary if <code data-dev-comment-type="paramref" class="paramref">key</code> already exists,
+or a new instance of <code data-dev-comment-type="typeparamref" class="typeparamref">V</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">K</span></td>
+        <td><p>The key type of the dictionary.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">V</span></td>
+        <td><p>The value type of the dictionary.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0___1_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.GetOrAdd%60%602(System.Collections.Generic.Dictionary%7B%60%600%2C%60%601%7D%2C%60%600%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L134">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Dictionary_GetOrAdd_" data-uid="DotNext.Collections.Generic.Dictionary.GetOrAdd*"></a>
   <h4 id="DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0___1_" data-uid="DotNext.Collections.Generic.Dictionary.GetOrAdd``2(System.Collections.Generic.Dictionary{``0,``1},``0,``1)">GetOrAdd&lt;K, V&gt;(Dictionary&lt;K, V&gt;, K, V)</h4>
@@ -664,10 +633,95 @@ or <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0_System_Func___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.GetOrAdd%60%602(System.Collections.Generic.Dictionary%7B%60%600%2C%60%601%7D%2C%60%600%2CSystem.Func%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0_DotNext_ValueFunc___0___1___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.GetOrAdd%60%602(System.Collections.Generic.Dictionary%7B%60%600%2C%60%601%7D%2C%60%600%2CDotNext.ValueFunc%7B%60%600%2C%60%601%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L137">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L158">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_Dictionary_GetOrAdd_" data-uid="DotNext.Collections.Generic.Dictionary.GetOrAdd*"></a>
+  <h4 id="DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0_DotNext_ValueFunc___0___1___" data-uid="DotNext.Collections.Generic.Dictionary.GetOrAdd``2(System.Collections.Generic.Dictionary{``0,``1},``0,DotNext.ValueFunc{``0,``1}@)">GetOrAdd&lt;K, V&gt;(Dictionary&lt;K, V&gt;, K, ValueFunc&lt;K, V&gt;)</h4>
+  <div class="markdown level1 summary"><p>Generates a value and adds the key-value pair to the dictionary if the key does not
+exist.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static V GetOrAdd&lt;K, V&gt;(this Dictionary&lt;K, V&gt; dictionary, K key, in ValueFunc&lt;K, V&gt; valueFactory)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.dictionary-2">Dictionary</a>&lt;K, V&gt;</td>
+        <td><span class="parametername">dictionary</span></td>
+        <td><p>The source dictionary.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">K</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the key-value pair.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;K, V&gt;</td>
+        <td><span class="parametername">valueFactory</span></td>
+        <td><p>The function used to generate the value from the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">V</span></td>
+        <td><p>The corresponding value in the dictionary if <code data-dev-comment-type="paramref" class="paramref">key</code> already exists,
+or the value generated by <code data-dev-comment-type="paramref" class="paramref">valueFactory</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">K</span></td>
+        <td><p>The key type of the dictionary.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">V</span></td>
+        <td><p>The value type of the dictionary.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0_System_Func___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.GetOrAdd%60%602(System.Collections.Generic.Dictionary%7B%60%600%2C%60%601%7D%2C%60%600%2CSystem.Func%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L185">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Dictionary_GetOrAdd_" data-uid="DotNext.Collections.Generic.Dictionary.GetOrAdd*"></a>
   <h4 id="DotNext_Collections_Generic_Dictionary_GetOrAdd__2_System_Collections_Generic_Dictionary___0___1____0_System_Func___0___1__" data-uid="DotNext.Collections.Generic.Dictionary.GetOrAdd``2(System.Collections.Generic.Dictionary{``0,``1},``0,System.Func{``0,``1})">GetOrAdd&lt;K, V&gt;(Dictionary&lt;K, V&gt;, K, Func&lt;K, V&gt;)</h4>
@@ -749,10 +803,95 @@ or the value generated by <code data-dev-comment-type="paramref" class="paramref
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_GetOrInvoke__2_System_Collections_Generic_IDictionary___0___1____0_System_Func___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.GetOrInvoke%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D%2C%60%600%2CSystem.Func%7B%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_GetOrInvoke__2_System_Collections_Generic_IDictionary___0___1____0_DotNext_ValueFunc___1___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.GetOrInvoke%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D%2C%60%600%2CDotNext.ValueFunc%7B%60%601%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L173">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L222">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_Dictionary_GetOrInvoke_" data-uid="DotNext.Collections.Generic.Dictionary.GetOrInvoke*"></a>
+  <h4 id="DotNext_Collections_Generic_Dictionary_GetOrInvoke__2_System_Collections_Generic_IDictionary___0___1____0_DotNext_ValueFunc___1___" data-uid="DotNext.Collections.Generic.Dictionary.GetOrInvoke``2(System.Collections.Generic.IDictionary{``0,``1},``0,DotNext.ValueFunc{``1}@)">GetOrInvoke&lt;K, V&gt;(IDictionary&lt;K, V&gt;, K, ValueFunc&lt;V&gt;)</h4>
+  <div class="markdown level1 summary"><p>Gets dictionary value by key if it exists or
+invoke <code data-dev-comment-type="paramref" class="paramref">defaultValue</code> and
+return its result as a default value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static V GetOrInvoke&lt;K, V&gt;(this IDictionary&lt;K, V&gt; dictionary, K key, in ValueFunc&lt;V&gt; defaultValue)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary</a>&lt;K, V&gt;</td>
+        <td><span class="parametername">dictionary</span></td>
+        <td><p>A dictionary to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">K</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>A key associated with the value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-1.html">ValueFunc</a>&lt;V&gt;</td>
+        <td><span class="parametername">defaultValue</span></td>
+        <td><p>A delegate to be invoked if key doesn't exist in the dictionary.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">V</span></td>
+        <td><p>The value associated with the key or returned by the delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">K</span></td>
+        <td><p>Type of dictionary keys.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">V</span></td>
+        <td><p>Type of dictionary values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_GetOrInvoke__2_System_Collections_Generic_IDictionary___0___1____0_System_Func___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.GetOrInvoke%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D%2C%60%600%2CSystem.Func%7B%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L236">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Dictionary_GetOrInvoke_" data-uid="DotNext.Collections.Generic.Dictionary.GetOrInvoke*"></a>
   <h4 id="DotNext_Collections_Generic_Dictionary_GetOrInvoke__2_System_Collections_Generic_IDictionary___0___1____0_System_Func___1__" data-uid="DotNext.Collections.Generic.Dictionary.GetOrInvoke``2(System.Collections.Generic.IDictionary{``0,``1},``0,System.Func{``1})">GetOrInvoke&lt;K, V&gt;(IDictionary&lt;K, V&gt;, K, Func&lt;V&gt;)</h4>
@@ -834,10 +973,10 @@ return its result as a default value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_IndexerGetter__2_System_Collections_Generic_IDictionary___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.IndexerGetter%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_IndexerGetter__2_System_Collections_Generic_IDictionary___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.IndexerGetter%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L73">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L75">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Dictionary_IndexerGetter_" data-uid="DotNext.Collections.Generic.Dictionary.IndexerGetter*"></a>
   <h4 id="DotNext_Collections_Generic_Dictionary_IndexerGetter__2_System_Collections_Generic_IDictionary___0___1__" data-uid="DotNext.Collections.Generic.Dictionary.IndexerGetter``2(System.Collections.Generic.IDictionary{``0,``1})">IndexerGetter&lt;K, V&gt;(IDictionary&lt;K, V&gt;)</h4>
@@ -906,10 +1045,10 @@ delegate attached to the dictionary instance.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_IndexerGetter__2_System_Collections_Generic_IReadOnlyDictionary___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.IndexerGetter%60%602(System.Collections.Generic.IReadOnlyDictionary%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_IndexerGetter__2_System_Collections_Generic_IReadOnlyDictionary___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.IndexerGetter%60%602(System.Collections.Generic.IReadOnlyDictionary%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L62">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L64">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Dictionary_IndexerGetter_" data-uid="DotNext.Collections.Generic.Dictionary.IndexerGetter*"></a>
   <h4 id="DotNext_Collections_Generic_Dictionary_IndexerGetter__2_System_Collections_Generic_IReadOnlyDictionary___0___1__" data-uid="DotNext.Collections.Generic.Dictionary.IndexerGetter``2(System.Collections.Generic.IReadOnlyDictionary{``0,``1})">IndexerGetter&lt;K, V&gt;(IReadOnlyDictionary&lt;K, V&gt;)</h4>
@@ -978,10 +1117,10 @@ delegate attached to the dictionary instance.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_IndexerSetter__2_System_Collections_Generic_IDictionary___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.IndexerSetter%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_IndexerSetter__2_System_Collections_Generic_IDictionary___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.IndexerSetter%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L84">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L86">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Dictionary_IndexerSetter_" data-uid="DotNext.Collections.Generic.Dictionary.IndexerSetter*"></a>
   <h4 id="DotNext_Collections_Generic_Dictionary_IndexerSetter__2_System_Collections_Generic_IDictionary___0___1__" data-uid="DotNext.Collections.Generic.Dictionary.IndexerSetter``2(System.Collections.Generic.IDictionary{``0,``1})">IndexerSetter&lt;K, V&gt;(IDictionary&lt;K, V&gt;)</h4>
@@ -1048,6 +1187,160 @@ delegate attached to the dictionary instance.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_TryGetValue__2_System_Collections_Generic_IDictionary___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.TryGetValue%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L247">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_Dictionary_TryGetValue_" data-uid="DotNext.Collections.Generic.Dictionary.TryGetValue*"></a>
+  <h4 id="DotNext_Collections_Generic_Dictionary_TryGetValue__2_System_Collections_Generic_IDictionary___0___1____0_" data-uid="DotNext.Collections.Generic.Dictionary.TryGetValue``2(System.Collections.Generic.IDictionary{``0,``1},``0)">TryGetValue&lt;K, V&gt;(IDictionary&lt;K, V&gt;, K)</h4>
+  <div class="markdown level1 summary"><p>Gets the value associated with the specified key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Optional&lt;V&gt; TryGetValue&lt;K, V&gt;(this IDictionary&lt;K, V&gt; dictionary, K key)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary</a>&lt;K, V&gt;</td>
+        <td><span class="parametername">dictionary</span></td>
+        <td><p>A dictionary to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">K</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key whose value to get.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;V&gt;</td>
+        <td><p>The optional value associated with the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">K</span></td>
+        <td><p>Type of dictionary keys.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">V</span></td>
+        <td><p>Type of dictionary values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_TryGetValue__2_System_Collections_Generic_IReadOnlyDictionary___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.TryGetValue%60%602(System.Collections.Generic.IReadOnlyDictionary%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L258">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_Dictionary_TryGetValue_" data-uid="DotNext.Collections.Generic.Dictionary.TryGetValue*"></a>
+  <h4 id="DotNext_Collections_Generic_Dictionary_TryGetValue__2_System_Collections_Generic_IReadOnlyDictionary___0___1____0_" data-uid="DotNext.Collections.Generic.Dictionary.TryGetValue``2(System.Collections.Generic.IReadOnlyDictionary{``0,``1},``0)">TryGetValue&lt;K, V&gt;(IReadOnlyDictionary&lt;K, V&gt;, K)</h4>
+  <div class="markdown level1 summary"><p>Gets the value associated with the specified key.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Optional&lt;V&gt; TryGetValue&lt;K, V&gt;(IReadOnlyDictionary&lt;K, V&gt; dictionary, K key)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlydictionary-2">IReadOnlyDictionary</a>&lt;K, V&gt;</td>
+        <td><span class="parametername">dictionary</span></td>
+        <td><p>A dictionary to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">K</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key whose value to get.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;V&gt;</td>
+        <td><p>The optional value associated with the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">K</span></td>
+        <td><p>Type of dictionary keys.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">V</span></td>
+        <td><p>Type of dictionary values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 </article>
           </div>
           
@@ -1056,10 +1349,10 @@ delegate attached to the dictionary instance.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L12" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

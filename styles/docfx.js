@@ -551,7 +551,7 @@ $(function () {
       if ($('footer').is(':visible')) {
         $(".sideaffix").css("bottom", "70px");
       }
-      $('#affix a').click(function() {
+      $('#affix a').click(function(e) {
         var scrollspy = $('[data-spy="scroll"]').data()['bs.scrollspy'];
         var target = e.target.hash;
         if (scrollspy && target) {
@@ -1136,8 +1136,15 @@ $(function () {
     }
 
     $(window).on('hashchange', scrollToCurrent);
-    // Exclude tabbed content case
-    $('a:not([data-tab])').click(delegateAnchors);
-    scrollToCurrent();
+
+    $(window).load(function () {
+        // scroll to the anchor if present, offset by the header
+        scrollToCurrent();
+    });
+
+    $(document).ready(function () {
+        // Exclude tabbed content case
+        $('a:not([data-tab])').click(function (e) { delegateAnchors(e); });
+    });
   }
 });

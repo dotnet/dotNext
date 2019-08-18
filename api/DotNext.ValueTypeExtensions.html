@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class ValueTypeExtensions
    | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -115,22 +115,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Bitcast__2___0_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Bitcast%60%602(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Add_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Add(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L68">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L270">View Source</a>
   </span>
-  <a id="DotNext_ValueTypeExtensions_Bitcast_" data-uid="DotNext.ValueTypeExtensions.Bitcast*"></a>
-  <h4 id="DotNext_ValueTypeExtensions_Bitcast__2___0_" data-uid="DotNext.ValueTypeExtensions.Bitcast``2(``0)">Bitcast&lt;From, To&gt;(From)</h4>
-  <div class="markdown level1 summary"><p>Obtain a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> by
-reinterpreting the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">From</code>.</p>
+  <a id="DotNext_ValueTypeExtensions_Add_" data-uid="DotNext.ValueTypeExtensions.Add*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Add_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.Add(System.IntPtr,System.IntPtr)">Add(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Adds twp specified native integers.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static To Bitcast&lt;From, To&gt;(this From input)
-
-    where From : struct where To : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public static IntPtr Add(this IntPtr x, IntPtr y)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -143,9 +140,15 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">From</span></td>
-        <td><span class="parametername">input</span></td>
-        <td><p>A value to convert.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first value to add.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second value to add.</p>
 </td>
       </tr>
     </tbody>
@@ -160,58 +163,28 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">To</span></td>
-        <td><p>Conversion result.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The result of adding <code data-dev-comment-type="paramref" class="paramref">x</code> and <code data-dev-comment-type="paramref" class="paramref">y</code>.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">From</span></td>
-        <td><p>The type of input struct.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">To</span></td>
-        <td><p>The type of output struct.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_ValueTypeExtensions_Bitcast__2___0__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Every bit in the value representation of the returned <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> object
-is equal to the corresponding bit in the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">From</code>.
-The values of padding bits in the returned <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> object are unspecified.
-The method takes into account size of <code data-dev-comment-type="typeparamref" class="typeparamref">From</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> types
-and able to provide conversion between types of different size.</p>
-</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Bitcast__2___0___1__.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Bitcast%60%602(%60%600%2C%60%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Add_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Add(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L47">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L285">View Source</a>
   </span>
-  <a id="DotNext_ValueTypeExtensions_Bitcast_" data-uid="DotNext.ValueTypeExtensions.Bitcast*"></a>
-  <h4 id="DotNext_ValueTypeExtensions_Bitcast__2___0___1__" data-uid="DotNext.ValueTypeExtensions.Bitcast``2(``0,``1@)">Bitcast&lt;From, To&gt;(From, out To)</h4>
-  <div class="markdown level1 summary"><p>Obtain a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">To</code> by
-reinterpreting the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">From</code>.</p>
+  <a id="DotNext_ValueTypeExtensions_Add_" data-uid="DotNext.ValueTypeExtensions.Add*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Add_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.Add(System.UIntPtr,System.UIntPtr)">Add(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Adds twp specified native integers.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Bitcast&lt;From, To&gt;(this From input, out To output)
-
-    where From : struct where To : struct</code></pre>
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr Add(this UIntPtr x, UIntPtr y)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -224,61 +197,50 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">From</span></td>
-        <td><span class="parametername">input</span></td>
-        <td><p>A value to convert.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first value to add.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">To</span></td>
-        <td><span class="parametername">output</span></td>
-        <td><p>Conversion result.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second value to add.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 class="typeParameters">Type Parameters</h5>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
-        <th>Name</th>
+        <th>Type</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">From</span></td>
-        <td><p>The type of input struct.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="parametername">To</span></td>
-        <td><p>The type of output struct.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The result of adding <code data-dev-comment-type="paramref" class="paramref">x</code> and <code data-dev-comment-type="paramref" class="paramref">y</code>.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_ValueTypeExtensions_Bitcast__2___0___1___seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="DotNext.ValueType-1.html#DotNext_ValueType_1_Bitcast__1__0____0__">Bitcast&lt;To&gt;(T, out To)</a></div>
-  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Box__1___0_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Box%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_AddChecked_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.AddChecked(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L120">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L302">View Source</a>
   </span>
-  <a id="DotNext_ValueTypeExtensions_Box_" data-uid="DotNext.ValueTypeExtensions.Box*"></a>
-  <h4 id="DotNext_ValueTypeExtensions_Box__1___0_" data-uid="DotNext.ValueTypeExtensions.Box``1(``0)">Box&lt;T&gt;(T)</h4>
-  <div class="markdown level1 summary"><p>Create boxed representation of the value type.</p>
+  <a id="DotNext_ValueTypeExtensions_AddChecked_" data-uid="DotNext.ValueTypeExtensions.AddChecked*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_AddChecked_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.AddChecked(System.IntPtr,System.IntPtr)">AddChecked(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Adds two specified native integers.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueType&lt;T&gt; Box&lt;T&gt;(this T value)
-
-    where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public static IntPtr AddChecked(this IntPtr x, IntPtr y)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -291,9 +253,267 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">T</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first value to add.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second value to add.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The result of adding <code data-dev-comment-type="paramref" class="paramref">x</code> and <code data-dev-comment-type="paramref" class="paramref">y</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.overflowexception">OverflowException</a></td>
+        <td><p>The result of an operation is outside the bounds of the <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a> data type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_AddChecked_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.AddChecked(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L318">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_AddChecked_" data-uid="DotNext.ValueTypeExtensions.AddChecked*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_AddChecked_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.AddChecked(System.UIntPtr,System.UIntPtr)">AddChecked(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Adds two specified native integers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr AddChecked(this UIntPtr x, UIntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first value to add.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second value to add.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The result of adding <code data-dev-comment-type="paramref" class="paramref">x</code> and <code data-dev-comment-type="paramref" class="paramref">y</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.overflowexception">OverflowException</a></td>
+        <td><p>The result of an operation is outside the bounds of the <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a> data type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_And_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.And(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L540">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_And_" data-uid="DotNext.ValueTypeExtensions.And*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_And_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.And(System.IntPtr,System.IntPtr)">And(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Computes the bitwise AND of two native integer values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr And(this IntPtr x, IntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The bitwise AND.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_And_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.And(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L524">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_And_" data-uid="DotNext.ValueTypeExtensions.And*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_And_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.And(System.UIntPtr,System.UIntPtr)">And(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Computes the bitwise AND of two native integer values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr And(this UIntPtr x, UIntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The bitwise AND.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Decrement_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Decrement(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L620">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Decrement_" data-uid="DotNext.ValueTypeExtensions.Decrement*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Decrement_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.Decrement(System.IntPtr)">Decrement(IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Decrements native integer by 1.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr Decrement(this IntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">value</span></td>
-        <td><p>Value to be placed into heap.</p>
+        <td><p>The value to increment.</p>
 </td>
       </tr>
     </tbody>
@@ -308,45 +528,28 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.ValueType-1.html">ValueType</a>&lt;T&gt;</td>
-        <td><p>Boxed representation of value type.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>Value type.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The decremented value.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Box__1_System_Nullable___0__.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Box%60%601(System.Nullable%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Decrement_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Decrement(System.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L131">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L637">View Source</a>
   </span>
-  <a id="DotNext_ValueTypeExtensions_Box_" data-uid="DotNext.ValueTypeExtensions.Box*"></a>
-  <h4 id="DotNext_ValueTypeExtensions_Box__1_System_Nullable___0__" data-uid="DotNext.ValueTypeExtensions.Box``1(System.Nullable{``0})">Box&lt;T&gt;(Nullable&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Create boxed representation of the nullable value type.</p>
+  <a id="DotNext_ValueTypeExtensions_Decrement_" data-uid="DotNext.ValueTypeExtensions.Decrement*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Decrement_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.Decrement(System.UIntPtr)">Decrement(UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Decrements native integer by 1.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ValueType&lt;T&gt; Box&lt;T&gt;(this T? value)
-
-    where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr Decrement(this UIntPtr value)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -359,9 +562,9 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;T&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
         <td><span class="parametername">value</span></td>
-        <td><p>Value to be placed into heap.</p>
+        <td><p>The value to increment.</p>
 </td>
       </tr>
     </tbody>
@@ -376,34 +579,458 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.ValueType-1.html">ValueType</a>&lt;T&gt;</td>
-        <td><p>Boxed representation of nullable value type; or <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>Value type.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The decremented value.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_IsOneOf__1___0___0___.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.IsOneOf%60%601(%60%600%2C%60%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Divide_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Divide(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L110">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L462">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Divide_" data-uid="DotNext.ValueTypeExtensions.Divide*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Divide_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.Divide(System.IntPtr,System.IntPtr)">Divide(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Divides two specified native integers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr Divide(this IntPtr x, IntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The dividend.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The divisor.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The result of dividing <code data-dev-comment-type="paramref" class="paramref">x</code> by <code data-dev-comment-type="paramref" class="paramref">y</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Divide_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Divide(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L477">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Divide_" data-uid="DotNext.ValueTypeExtensions.Divide*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Divide_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.Divide(System.UIntPtr,System.UIntPtr)">Divide(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Divides two specified native integers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr Divide(this UIntPtr x, UIntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The dividend.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The divisor.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The result of dividing <code data-dev-comment-type="paramref" class="paramref">x</code> by <code data-dev-comment-type="paramref" class="paramref">y</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_GreaterThan_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.GreaterThan(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L140">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_GreaterThan_" data-uid="DotNext.ValueTypeExtensions.GreaterThan*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_GreaterThan_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.GreaterThan(System.IntPtr,System.IntPtr)">GreaterThan(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the native integer is greater than the specified value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool GreaterThan(this IntPtr value, IntPtr comparand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to compare with other value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">comparand</span></td>
+        <td><p>he value that is compared by value to <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if <code data-dev-comment-type="paramref" class="paramref">value</code> is greater than <code data-dev-comment-type="paramref" class="paramref">comparand</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_GreaterThan_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.GreaterThan(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L205">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_GreaterThan_" data-uid="DotNext.ValueTypeExtensions.GreaterThan*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_GreaterThan_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.GreaterThan(System.UIntPtr,System.UIntPtr)">GreaterThan(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the native integer is greater than the specified value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static bool GreaterThan(this UIntPtr value, UIntPtr comparand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to compare with other value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">comparand</span></td>
+        <td><p>he value that is compared by value to <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if <code data-dev-comment-type="paramref" class="paramref">value</code> is greater than <code data-dev-comment-type="paramref" class="paramref">comparand</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_GreaterThanOrEqual_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.GreaterThanOrEqual(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L155">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_GreaterThanOrEqual_" data-uid="DotNext.ValueTypeExtensions.GreaterThanOrEqual*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_GreaterThanOrEqual_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.GreaterThanOrEqual(System.IntPtr,System.IntPtr)">GreaterThanOrEqual(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the native integer is greater than or equal to specified value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool GreaterThanOrEqual(this IntPtr value, IntPtr comparand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to compare with other value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">comparand</span></td>
+        <td><p>he value that is compared by value to <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if <code data-dev-comment-type="paramref" class="paramref">value</code> is greater than or equal to <code data-dev-comment-type="paramref" class="paramref">comparand</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_GreaterThanOrEqual_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.GreaterThanOrEqual(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L221">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_GreaterThanOrEqual_" data-uid="DotNext.ValueTypeExtensions.GreaterThanOrEqual*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_GreaterThanOrEqual_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.GreaterThanOrEqual(System.UIntPtr,System.UIntPtr)">GreaterThanOrEqual(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the native integer is greater than or equal to specified value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static bool GreaterThanOrEqual(this UIntPtr value, UIntPtr comparand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to compare with other value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">comparand</span></td>
+        <td><p>he value that is compared by value to <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if <code data-dev-comment-type="paramref" class="paramref">value</code> is greater than or equal to <code data-dev-comment-type="paramref" class="paramref">comparand</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Increment_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Increment(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L612">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Increment_" data-uid="DotNext.ValueTypeExtensions.Increment*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Increment_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.Increment(System.IntPtr)">Increment(IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Increments native integer by 1.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr Increment(this IntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to increment.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The incremented value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Increment_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Increment(System.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L628">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Increment_" data-uid="DotNext.ValueTypeExtensions.Increment*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Increment_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.Increment(System.UIntPtr)">Increment(UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Increments native integer by 1.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr Increment(this UIntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to increment.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The incremented value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_IsOneOf__1___0___0___.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.IsOneOf%60%601(%60%600%2C%60%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L53">View Source</a>
   </span>
   <a id="DotNext_ValueTypeExtensions_IsOneOf_" data-uid="DotNext.ValueTypeExtensions.IsOneOf*"></a>
   <h4 id="DotNext_ValueTypeExtensions_IsOneOf__1___0___0___" data-uid="DotNext.ValueTypeExtensions.IsOneOf``1(``0,``0[])">IsOneOf&lt;T&gt;(T, T[])</h4>
@@ -479,10 +1106,10 @@ to check equality between two values.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.IsOneOf%60%601(%60%600%2CSystem.Collections.Generic.IEnumerable%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.IsOneOf%60%601(%60%600%2CSystem.Collections.Generic.IEnumerable%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L89">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L32">View Source</a>
   </span>
   <a id="DotNext_ValueTypeExtensions_IsOneOf_" data-uid="DotNext.ValueTypeExtensions.IsOneOf*"></a>
   <h4 id="DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__" data-uid="DotNext.ValueTypeExtensions.IsOneOf``1(``0,System.Collections.Generic.IEnumerable{``0})">IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</h4>
@@ -558,10 +1185,1218 @@ to check equality between two values.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_TryGet__1_System_Nullable___0____0__.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.TryGet%60%601(System.Nullable%7B%60%600%7D%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_LessThan_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.LessThan(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L142">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L125">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_LessThan_" data-uid="DotNext.ValueTypeExtensions.LessThan*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_LessThan_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.LessThan(System.IntPtr,System.IntPtr)">LessThan(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the native integer is less than the specified value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool LessThan(this IntPtr value, IntPtr comparand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to compare with other value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">comparand</span></td>
+        <td><p>he value that is compared by value to <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if <code data-dev-comment-type="paramref" class="paramref">value</code> is less than <code data-dev-comment-type="paramref" class="paramref">comparand</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_LessThan_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.LessThan(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L189">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_LessThan_" data-uid="DotNext.ValueTypeExtensions.LessThan*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_LessThan_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.LessThan(System.UIntPtr,System.UIntPtr)">LessThan(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the native integer is less than the specified value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static bool LessThan(this UIntPtr value, UIntPtr comparand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to compare with other value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">comparand</span></td>
+        <td><p>he value that is compared by value to <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if <code data-dev-comment-type="paramref" class="paramref">value</code> is less than <code data-dev-comment-type="paramref" class="paramref">comparand</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_LessThanOrEqual_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.LessThanOrEqual(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L172">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_LessThanOrEqual_" data-uid="DotNext.ValueTypeExtensions.LessThanOrEqual*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_LessThanOrEqual_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.LessThanOrEqual(System.IntPtr,System.IntPtr)">LessThanOrEqual(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the native integer is less than or equal to specified value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool LessThanOrEqual(this IntPtr value, IntPtr comparand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to compare with other value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">comparand</span></td>
+        <td><p>he value that is compared by value to <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if <code data-dev-comment-type="paramref" class="paramref">value</code> is less than or equal to <code data-dev-comment-type="paramref" class="paramref">comparand</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_LessThanOrEqual_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.LessThanOrEqual(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L239">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_LessThanOrEqual_" data-uid="DotNext.ValueTypeExtensions.LessThanOrEqual*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_LessThanOrEqual_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.LessThanOrEqual(System.UIntPtr,System.UIntPtr)">LessThanOrEqual(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Determines whether the native integer is less than or equal to specified value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static bool LessThanOrEqual(this UIntPtr value, UIntPtr comparand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to compare with other value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">comparand</span></td>
+        <td><p>he value that is compared by value to <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if <code data-dev-comment-type="paramref" class="paramref">value</code> is less than or equal to <code data-dev-comment-type="paramref" class="paramref">comparand</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Multiply_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Multiply(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L398">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Multiply_" data-uid="DotNext.ValueTypeExtensions.Multiply*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Multiply_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.Multiply(System.IntPtr,System.IntPtr)">Multiply(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Multiplies two specified native integers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr Multiply(this IntPtr x, IntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first value to multiply.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second value to mulitply.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The result of multiplying <code data-dev-comment-type="paramref" class="paramref">x</code> by <code data-dev-comment-type="paramref" class="paramref">y</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Multiply_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Multiply(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L413">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Multiply_" data-uid="DotNext.ValueTypeExtensions.Multiply*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Multiply_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.Multiply(System.UIntPtr,System.UIntPtr)">Multiply(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Multiplies two specified native integers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr Multiply(this UIntPtr x, UIntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first value to multiply.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second value to mulitply.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The result of multiplying <code data-dev-comment-type="paramref" class="paramref">x</code> by <code data-dev-comment-type="paramref" class="paramref">y</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_MultiplyChecked_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.MultiplyChecked(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L430">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_MultiplyChecked_" data-uid="DotNext.ValueTypeExtensions.MultiplyChecked*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_MultiplyChecked_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.MultiplyChecked(System.IntPtr,System.IntPtr)">MultiplyChecked(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Multiplies two specified native integers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr MultiplyChecked(this IntPtr x, IntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first value to multiply.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second value to mulitply.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The result of multiplying <code data-dev-comment-type="paramref" class="paramref">x</code> by <code data-dev-comment-type="paramref" class="paramref">y</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.overflowexception">OverflowException</a></td>
+        <td><p>The result of an operation is outside the bounds of the <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a> data type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_MultiplyChecked_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.MultiplyChecked(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L446">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_MultiplyChecked_" data-uid="DotNext.ValueTypeExtensions.MultiplyChecked*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_MultiplyChecked_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.MultiplyChecked(System.UIntPtr,System.UIntPtr)">MultiplyChecked(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Multiplies two specified native integers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr MultiplyChecked(this UIntPtr x, UIntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first value to multiply.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second value to mulitply.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The result of multiplying <code data-dev-comment-type="paramref" class="paramref">x</code> by <code data-dev-comment-type="paramref" class="paramref">y</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.overflowexception">OverflowException</a></td>
+        <td><p>The result of an operation is outside the bounds of the <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a> data type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Negate_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Negate(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L256">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Negate_" data-uid="DotNext.ValueTypeExtensions.Negate*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Negate_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.Negate(System.IntPtr)">Negate(IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Negates native integer value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr Negate(this IntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to negate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The negated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_OnesComplement_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.OnesComplement(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L585">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_OnesComplement_" data-uid="DotNext.ValueTypeExtensions.OnesComplement*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_OnesComplement_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.OnesComplement(System.IntPtr)">OnesComplement(IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Computes the bitwise complement of native integer value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr OnesComplement(this IntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The result of bitwise complement.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_OnesComplement_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.OnesComplement(System.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L598">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_OnesComplement_" data-uid="DotNext.ValueTypeExtensions.OnesComplement*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_OnesComplement_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.OnesComplement(System.UIntPtr)">OnesComplement(UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Computes the bitwise complement of native integer value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr OnesComplement(this UIntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The result of bitwise complement.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Or_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Or(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L555">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Or_" data-uid="DotNext.ValueTypeExtensions.Or*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Or_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.Or(System.IntPtr,System.IntPtr)">Or(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Computes the bitwise OR of two native integer values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr Or(this IntPtr x, IntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The bitwise OR.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Or_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Or(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L570">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Or_" data-uid="DotNext.ValueTypeExtensions.Or*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Or_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.Or(System.UIntPtr,System.UIntPtr)">Or(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Computes the bitwise OR of two native integer values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr Or(this UIntPtr x, UIntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The bitwise OR.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Subtract_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Subtract(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L334">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Subtract_" data-uid="DotNext.ValueTypeExtensions.Subtract*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Subtract_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.Subtract(System.IntPtr,System.IntPtr)">Subtract(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Subtracts two native integers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr Subtract(this IntPtr x, IntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The minuend.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The subtrahend.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The result of subtracting <code data-dev-comment-type="paramref" class="paramref">y</code> from <code data-dev-comment-type="paramref" class="paramref">x</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Subtract_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Subtract(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L349">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Subtract_" data-uid="DotNext.ValueTypeExtensions.Subtract*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Subtract_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.Subtract(System.UIntPtr,System.UIntPtr)">Subtract(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Subtracts two native integers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr Subtract(this UIntPtr x, UIntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The minuend.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The subtrahend.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The result of subtracting <code data-dev-comment-type="paramref" class="paramref">y</code> from <code data-dev-comment-type="paramref" class="paramref">x</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_SubtractChecked_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.SubtractChecked(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L366">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_SubtractChecked_" data-uid="DotNext.ValueTypeExtensions.SubtractChecked*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_SubtractChecked_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.SubtractChecked(System.IntPtr,System.IntPtr)">SubtractChecked(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Subtracts two native integers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr SubtractChecked(this IntPtr x, IntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The minuend.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The subtrahend.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The result of subtracting <code data-dev-comment-type="paramref" class="paramref">y</code> from <code data-dev-comment-type="paramref" class="paramref">x</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.overflowexception">OverflowException</a></td>
+        <td><p>The result of an operation is outside the bounds of the <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a> data type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_SubtractChecked_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.SubtractChecked(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L382">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_SubtractChecked_" data-uid="DotNext.ValueTypeExtensions.SubtractChecked*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_SubtractChecked_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.SubtractChecked(System.UIntPtr,System.UIntPtr)">SubtractChecked(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Subtracts two native integers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr SubtractChecked(this UIntPtr x, UIntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The minuend.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The subtrahend.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The result of subtracting <code data-dev-comment-type="paramref" class="paramref">y</code> from <code data-dev-comment-type="paramref" class="paramref">x</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.overflowexception">OverflowException</a></td>
+        <td><p>The result of an operation is outside the bounds of the <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a> data type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_ToBoolean_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.ToBoolean(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L102">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_ToBoolean_" data-uid="DotNext.ValueTypeExtensions.ToBoolean*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_ToBoolean_System_Int32_" data-uid="DotNext.ValueTypeExtensions.ToBoolean(System.Int32)">ToBoolean(Int32)</h4>
+  <div class="markdown level1 summary"><p>Converts <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a> into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool ToBoolean(this int value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to convert.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if value != 0</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_ToInt32_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.ToInt32(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L89">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_ToInt32_" data-uid="DotNext.ValueTypeExtensions.ToInt32*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_ToInt32_System_Boolean_" data-uid="DotNext.ValueTypeExtensions.ToInt32(System.Boolean)">ToInt32(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Converts <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a> into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int ToInt32(this bool value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to convert.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a> representation of <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_ToIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.ToIntPtr(System.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L110">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_ToIntPtr_" data-uid="DotNext.ValueTypeExtensions.ToIntPtr*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_ToIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.ToIntPtr(System.UIntPtr)">ToIntPtr(UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Converts <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a> into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static IntPtr ToIntPtr(this UIntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to convert.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The converted <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_ToUIntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.ToUIntPtr(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L75">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_ToUIntPtr_" data-uid="DotNext.ValueTypeExtensions.ToUIntPtr*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_ToUIntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.ToUIntPtr(System.IntPtr)">ToUIntPtr(IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Converts <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a> into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr ToUIntPtr(this IntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to convert.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The converted <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_TryGet__1_System_Nullable___0____0__.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.TryGet%60%601(System.Nullable%7B%60%600%7D%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L64">View Source</a>
   </span>
   <a id="DotNext_ValueTypeExtensions_TryGet_" data-uid="DotNext.ValueTypeExtensions.TryGet*"></a>
   <h4 id="DotNext_ValueTypeExtensions_TryGet__1_System_Nullable___0____0__" data-uid="DotNext.ValueTypeExtensions.TryGet``1(System.Nullable{``0},``0@)">TryGet&lt;T&gt;(Nullable&lt;T&gt;, out T)</h4>
@@ -630,6 +2465,119 @@ to check equality between two values.</p>
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Xor_System_IntPtr_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Xor(System.IntPtr%2CSystem.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L493">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Xor_" data-uid="DotNext.ValueTypeExtensions.Xor*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Xor_System_IntPtr_System_IntPtr_" data-uid="DotNext.ValueTypeExtensions.Xor(System.IntPtr,System.IntPtr)">Xor(IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Computes the bitwise XOR of two native integer values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr Xor(this IntPtr x, IntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><p>The bitwise XOR.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions_Xor_System_UIntPtr_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions.Xor(System.UIntPtr%2CSystem.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L508">View Source</a>
+  </span>
+  <a id="DotNext_ValueTypeExtensions_Xor_" data-uid="DotNext.ValueTypeExtensions.Xor*"></a>
+  <h4 id="DotNext_ValueTypeExtensions_Xor_System_UIntPtr_System_UIntPtr_" data-uid="DotNext.ValueTypeExtensions.Xor(System.UIntPtr,System.UIntPtr)">Xor(UIntPtr, UIntPtr)</h4>
+  <div class="markdown level1 summary"><p>Computes the bitwise XOR of two native integer values.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static UIntPtr Xor(this UIntPtr x, UIntPtr y)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>The first operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="parametername">y</span></td>
+        <td><p>The second operand.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><p>The bitwise XOR.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 </article>
           </div>
           
@@ -638,10 +2586,10 @@ to check equality between two values.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueTypeExtensions.md&amp;value=---%0Auid%3A%20DotNext.ValueTypeExtensions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/ValueTypeExtensions.cs/#L12" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

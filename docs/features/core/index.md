@@ -162,18 +162,14 @@ Related classes: [OneDimensionalArray](../../api/DotNext.OneDimensionalArray.yml
 Extension methods for slicing, iteration, conversion, element insertion and fast equality check between elements of two arrays.
 
 ## Equality check
-There are two extension methods for equality check of each element between two arrays:
-* _SequenceEqual_ performs equality check between each element if element type implements interface `IEquatable<T>`
-* _BitwiseEquals_ performs bitwise equality between two regions of memory referenced by the arrays. Element type of these arrays should be of unmanaged value type, e.g. `int`, `long`, `System.Guid`.
+_BitwiseEquals_ extension method performs bitwise equality between two regions of memory referenced by the arrays. Element type of these arrays should be of unmanaged value type, e.g. `int`, `long`, `System.Guid`.
 
 ```csharp
-var array1 = new string[] {"ab", "bc"};
-array1.SequenceEqual(new [] {"ab", "bc"}); //true
 var array2 = new int[] { 1, 2, 3 };
 array2.BitwiseEquals(new [] {1, 2, 4});    //false
 ```
 
-These methods are fast in comparison to naive implementation using `foreach` iteration and comparison by index. Read [Benchmarks](../../benchmarks.md) for more information.
+This method is faster than naive implementation using `foreach` iteration and comparison by index. Read [Benchmarks](../../benchmarks.md) for more information.
 
 ## Functional iteration
 Extension method `ForEach` allows to iterate over array elements and, optionally, modify array element.
@@ -202,7 +198,7 @@ array = array.Slice(1, 2);      //array == new []{"b", "c"}
 ```
 
 # Extensions for `IntPtr` and `UIntPtr`
-Natural-sized integer data types [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) and [UIntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) have no arithmetic, bitwise, and comparison operators as other numeric types in .NET standard library. This is fixed by .NEXT library which provides implementation of these operators in the form of extension methods available for both types from [ValueTypeExtensions](../../api/ValueTypeExtensions.yml) class.
+Natural-sized integer data types [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) and [UIntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) have no arithmetic, bitwise, and comparison operators as other numeric types in .NET standard library. This is fixed by .NEXT library which provides implementation of these operators in the form of extension methods available for both types from [ValueTypeExtensions](../../api/DotNext.ValueTypeExtensions.yml) class.
 
 These methods are implemented as intrinsics using inline IL code so they can be replaced by equivalent assembly instruction by JIT compiler. As a result, they the methods have the same performance as natively supported operators for regular numeric types.
 

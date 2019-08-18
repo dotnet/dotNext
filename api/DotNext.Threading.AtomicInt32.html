@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AtomicInt32
    | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -120,10 +120,76 @@ of the field even if it is not declared as volatile field.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.AccumulateAndGet(System.Int32%40%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.AccumulateAndGet(System.Int32%40%2CSystem.Int32%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L139">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L158">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt32_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicInt32.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___" data-uid="DotNext.Threading.AtomicInt32.AccumulateAndGet(System.Int32@,System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32}@)">AccumulateAndGet(ref Int32, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int AccumulateAndGet(this ref int value, int x, in ValueFunc&lt;int, int, int&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.AccumulateAndGet(System.Int32%40%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L143">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicInt32.AccumulateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicInt32.AccumulateAndGet(System.Int32@,System.Int32,System.Func{System.Int32,System.Int32,System.Int32})">AccumulateAndGet(ref Int32, Int32, Func&lt;Int32, Int32, Int32&gt;)</h4>
@@ -186,10 +252,82 @@ to the current and given values, returning the updated value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32___System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.AccumulateAndGet(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32___System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.AccumulateAndGet(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L293">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L364">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt32_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicInt32.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32___System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___" data-uid="DotNext.Threading.AtomicInt32.AccumulateAndGet(System.Int32[],System.Int64,System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32}@)">AccumulateAndGet(Int32[], Int64, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
+to the array element and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int AccumulateAndGet(this int[] array, long index, int x, in ValueFunc&lt;int, int, int&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32___System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32___System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.AccumulateAndGet(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L349">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicInt32.AccumulateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_AccumulateAndGet_System_Int32___System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicInt32.AccumulateAndGet(System.Int32[],System.Int64,System.Int32,System.Func{System.Int32,System.Int32,System.Int32})">AccumulateAndGet(Int32[], Int64, Int32, Func&lt;Int32, Int32, Int32&gt;)</h4>
@@ -258,10 +396,10 @@ to the array element and given values, returning the updated value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_Add_System_Int32__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.Add(System.Int32%40%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_Add_System_Int32__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.Add(System.Int32%40%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L101">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L83">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_Add_" data-uid="DotNext.Threading.AtomicInt32.Add*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_Add_System_Int32__System_Int32_" data-uid="DotNext.Threading.AtomicInt32.Add(System.Int32@,System.Int32)">Add(ref Int32, Int32)</h4>
@@ -315,10 +453,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_Add_System_Int32___System_Int64_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.Add(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_Add_System_Int32___System_Int64_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.Add(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L252">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L308">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_Add_" data-uid="DotNext.Threading.AtomicInt32.Add*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_Add_System_Int32___System_Int64_System_Int32_" data-uid="DotNext.Threading.AtomicInt32.Add(System.Int32[],System.Int64,System.Int32)">Add(Int32[], Int64, Int32)</h4>
@@ -378,10 +516,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_CompareAndSet_System_Int32__System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.CompareAndSet(System.Int32%40%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_CompareAndSet_System_Int32__System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.CompareAndSet(System.Int32%40%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L90">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L72">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_CompareAndSet_" data-uid="DotNext.Threading.AtomicInt32.CompareAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_CompareAndSet_System_Int32__System_Int32_System_Int32_" data-uid="DotNext.Threading.AtomicInt32.CompareAndSet(System.Int32@,System.Int32,System.Int32)">CompareAndSet(ref Int32, Int32, Int32)</h4>
@@ -440,10 +578,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_CompareAndSet_System_Int32___System_Int64_System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.CompareAndSet(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_CompareAndSet_System_Int32___System_Int64_System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.CompareAndSet(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L240">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L296">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_CompareAndSet_" data-uid="DotNext.Threading.AtomicInt32.CompareAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_CompareAndSet_System_Int32___System_Int64_System_Int32_System_Int32_" data-uid="DotNext.Threading.AtomicInt32.CompareAndSet(System.Int32[],System.Int64,System.Int32,System.Int32)">CompareAndSet(Int32[], Int64, Int32, Int32)</h4>
@@ -508,10 +646,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_CompareExchange_System_Int32___System_Int64_System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.CompareExchange(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_CompareExchange_System_Int32___System_Int64_System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.CompareExchange(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L228">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L284">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_CompareExchange_" data-uid="DotNext.Threading.AtomicInt32.CompareExchange*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_CompareExchange_System_Int32___System_Int64_System_Int32_System_Int32_" data-uid="DotNext.Threading.AtomicInt32.CompareExchange(System.Int32[],System.Int64,System.Int32,System.Int32)">CompareExchange(Int32[], Int64, Int32, Int32)</h4>
@@ -576,10 +714,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_DecrementAndGet_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.DecrementAndGet(System.Int32%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_DecrementAndGet_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.DecrementAndGet(System.Int32%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L79">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L61">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_DecrementAndGet_" data-uid="DotNext.Threading.AtomicInt32.DecrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_DecrementAndGet_System_Int32__" data-uid="DotNext.Threading.AtomicInt32.DecrementAndGet(System.Int32@)">DecrementAndGet(ref Int32)</h4>
@@ -626,10 +764,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_DecrementAndGet_System_Int32___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.DecrementAndGet(System.Int32%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_DecrementAndGet_System_Int32___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.DecrementAndGet(System.Int32%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L216">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L272">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_DecrementAndGet_" data-uid="DotNext.Threading.AtomicInt32.DecrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_DecrementAndGet_System_Int32___System_Int64_" data-uid="DotNext.Threading.AtomicInt32.DecrementAndGet(System.Int32[],System.Int64)">DecrementAndGet(Int32[], Int64)</h4>
@@ -682,10 +820,76 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndAccumulate(System.Int32%40%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndAccumulate(System.Int32%40%2CSystem.Int32%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L154">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L188">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt32_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicInt32.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___" data-uid="DotNext.Threading.AtomicInt32.GetAndAccumulate(System.Int32@,System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32}@)">GetAndAccumulate(ref Int32, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int GetAndAccumulate(this ref int value, int x, in ValueFunc&lt;int, int, int&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndAccumulate(System.Int32%40%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L173">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicInt32.GetAndAccumulate*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicInt32.GetAndAccumulate(System.Int32@,System.Int32,System.Func{System.Int32,System.Int32,System.Int32})">GetAndAccumulate(ref Int32, Int32, Func&lt;Int32, Int32, Int32&gt;)</h4>
@@ -748,10 +952,82 @@ to the current and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32___System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndAccumulate(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32___System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndAccumulate(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L308">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L394">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt32_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicInt32.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32___System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___" data-uid="DotNext.Threading.AtomicInt32.GetAndAccumulate(System.Int32[],System.Int64,System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32}@)">GetAndAccumulate(Int32[], Int64, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
+to the array element and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int GetAndAccumulate(this int[] array, long index, int x, in ValueFunc&lt;int, int, int&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The original value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32___System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32___System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndAccumulate(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L379">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicInt32.GetAndAccumulate*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_GetAndAccumulate_System_Int32___System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicInt32.GetAndAccumulate(System.Int32[],System.Int64,System.Int32,System.Func{System.Int32,System.Int32,System.Int32})">GetAndAccumulate(Int32[], Int64, Int32, Func&lt;Int32, Int32, Int32&gt;)</h4>
@@ -820,10 +1096,10 @@ to the array element and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndSet_System_Int32__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndSet(System.Int32%40%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndSet_System_Int32__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndSet(System.Int32%40%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L111">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L93">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_GetAndSet_" data-uid="DotNext.Threading.AtomicInt32.GetAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_GetAndSet_System_Int32__System_Int32_" data-uid="DotNext.Threading.AtomicInt32.GetAndSet(System.Int32@,System.Int32)">GetAndSet(ref Int32, Int32)</h4>
@@ -876,10 +1152,10 @@ to the array element and given values, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndSet_System_Int32___System_Int64_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndSet(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndSet_System_Int32___System_Int64_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndSet(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L263">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L319">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_GetAndSet_" data-uid="DotNext.Threading.AtomicInt32.GetAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_GetAndSet_System_Int32___System_Int64_System_Int32_" data-uid="DotNext.Threading.AtomicInt32.GetAndSet(System.Int32[],System.Int64,System.Int32)">GetAndSet(Int32[], Int64, Int32)</h4>
@@ -938,10 +1214,67 @@ to the array element and given values, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndUpdate_System_Int32__System_Func_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndUpdate(System.Int32%40%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndUpdate_System_Int32__DotNext_ValueFunc_System_Int32_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndUpdate(System.Int32%40%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L176">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L232">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt32_GetAndUpdate_" data-uid="DotNext.Threading.AtomicInt32.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicInt32_GetAndUpdate_System_Int32__DotNext_ValueFunc_System_Int32_System_Int32___" data-uid="DotNext.Threading.AtomicInt32.GetAndUpdate(System.Int32@,DotNext.ValueFunc{System.Int32,System.Int32}@)">GetAndUpdate(ref Int32, ValueFunc&lt;Int32, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int GetAndUpdate(this ref int value, in ValueFunc&lt;int, int&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndUpdate_System_Int32__System_Func_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndUpdate(System.Int32%40%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L221">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_GetAndUpdate_" data-uid="DotNext.Threading.AtomicInt32.GetAndUpdate*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_GetAndUpdate_System_Int32__System_Func_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicInt32.GetAndUpdate(System.Int32@,System.Func{System.Int32,System.Int32})">GetAndUpdate(ref Int32, Func&lt;Int32, Int32&gt;)</h4>
@@ -995,10 +1328,73 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndUpdate_System_Int32___System_Int64_System_Func_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndUpdate(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndUpdate_System_Int32___System_Int64_DotNext_ValueFunc_System_Int32_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndUpdate(System.Int32%5B%5D%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L330">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L438">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt32_GetAndUpdate_" data-uid="DotNext.Threading.AtomicInt32.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicInt32_GetAndUpdate_System_Int32___System_Int64_DotNext_ValueFunc_System_Int32_System_Int32___" data-uid="DotNext.Threading.AtomicInt32.GetAndUpdate(System.Int32[],System.Int64,DotNext.ValueFunc{System.Int32,System.Int32}@)">GetAndUpdate(Int32[], Int64, ValueFunc&lt;Int32, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int GetAndUpdate(this int[] array, long index, in ValueFunc&lt;int, int&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The original value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_GetAndUpdate_System_Int32___System_Int64_System_Func_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.GetAndUpdate(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L427">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_GetAndUpdate_" data-uid="DotNext.Threading.AtomicInt32.GetAndUpdate*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_GetAndUpdate_System_Int32___System_Int64_System_Func_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicInt32.GetAndUpdate(System.Int32[],System.Int64,System.Func{System.Int32,System.Int32})">GetAndUpdate(Int32[], Int64, Func&lt;Int32, Int32&gt;)</h4>
@@ -1058,10 +1454,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_IncrementAndGet_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.IncrementAndGet(System.Int32%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_IncrementAndGet_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.IncrementAndGet(System.Int32%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L70">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L52">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_IncrementAndGet_" data-uid="DotNext.Threading.AtomicInt32.IncrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_IncrementAndGet_System_Int32__" data-uid="DotNext.Threading.AtomicInt32.IncrementAndGet(System.Int32@)">IncrementAndGet(ref Int32)</h4>
@@ -1108,10 +1504,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_IncrementAndGet_System_Int32___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.IncrementAndGet(System.Int32%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_IncrementAndGet_System_Int32___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.IncrementAndGet(System.Int32%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L206">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L262">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_IncrementAndGet_" data-uid="DotNext.Threading.AtomicInt32.IncrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_IncrementAndGet_System_Int32___System_Int64_" data-uid="DotNext.Threading.AtomicInt32.IncrementAndGet(System.Int32[],System.Int64)">IncrementAndGet(Int32[], Int64)</h4>
@@ -1164,10 +1560,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_SetAndGet_System_Int32__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.SetAndGet(System.Int32%40%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_SetAndGet_System_Int32__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.SetAndGet(System.Int32%40%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L121">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L103">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_SetAndGet_" data-uid="DotNext.Threading.AtomicInt32.SetAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_SetAndGet_System_Int32__System_Int32_" data-uid="DotNext.Threading.AtomicInt32.SetAndGet(System.Int32@,System.Int32)">SetAndGet(ref Int32, Int32)</h4>
@@ -1220,10 +1616,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_SetAndGet_System_Int32___System_Int64_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.SetAndGet(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_SetAndGet_System_Int32___System_Int64_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.SetAndGet(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L274">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L330">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_SetAndGet_" data-uid="DotNext.Threading.AtomicInt32.SetAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_SetAndGet_System_Int32___System_Int64_System_Int32_" data-uid="DotNext.Threading.AtomicInt32.SetAndGet(System.Int32[],System.Int64,System.Int32)">SetAndGet(Int32[], Int64, Int32)</h4>
@@ -1282,10 +1678,67 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_UpdateAndGet_System_Int32__System_Func_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.UpdateAndGet(System.Int32%40%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_UpdateAndGet_System_Int32__DotNext_ValueFunc_System_Int32_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.UpdateAndGet(System.Int32%40%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L165">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L210">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt32_UpdateAndGet_" data-uid="DotNext.Threading.AtomicInt32.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicInt32_UpdateAndGet_System_Int32__DotNext_ValueFunc_System_Int32_System_Int32___" data-uid="DotNext.Threading.AtomicInt32.UpdateAndGet(System.Int32@,DotNext.ValueFunc{System.Int32,System.Int32}@)">UpdateAndGet(ref Int32, ValueFunc&lt;Int32, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int UpdateAndGet(this ref int value, in ValueFunc&lt;int, int&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_UpdateAndGet_System_Int32__System_Func_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.UpdateAndGet(System.Int32%40%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L199">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_UpdateAndGet_" data-uid="DotNext.Threading.AtomicInt32.UpdateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_UpdateAndGet_System_Int32__System_Func_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicInt32.UpdateAndGet(System.Int32@,System.Func{System.Int32,System.Int32})">UpdateAndGet(ref Int32, Func&lt;Int32, Int32&gt;)</h4>
@@ -1339,10 +1792,73 @@ of applying the given function, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_UpdateAndGet_System_Int32___System_Int64_System_Func_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.UpdateAndGet(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_UpdateAndGet_System_Int32___System_Int64_DotNext_ValueFunc_System_Int32_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.UpdateAndGet(System.Int32%5B%5D%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L319">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L416">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicInt32_UpdateAndGet_" data-uid="DotNext.Threading.AtomicInt32.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicInt32_UpdateAndGet_System_Int32___System_Int64_DotNext_ValueFunc_System_Int32_System_Int32___" data-uid="DotNext.Threading.AtomicInt32.UpdateAndGet(System.Int32[],System.Int64,DotNext.ValueFunc{System.Int32,System.Int32}@)">UpdateAndGet(Int32[], Int64, ValueFunc&lt;Int32, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int UpdateAndGet(this int[] array, long index, in ValueFunc&lt;int, int&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_UpdateAndGet_System_Int32___System_Int64_System_Func_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.UpdateAndGet(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L405">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_UpdateAndGet_" data-uid="DotNext.Threading.AtomicInt32.UpdateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_UpdateAndGet_System_Int32___System_Int64_System_Func_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicInt32.UpdateAndGet(System.Int32[],System.Int64,System.Func{System.Int32,System.Int32})">UpdateAndGet(Int32[], Int64, Func&lt;Int32, Int32&gt;)</h4>
@@ -1402,10 +1918,10 @@ of applying the given function, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_VolatileRead_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.VolatileRead(System.Int32%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_VolatileRead_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.VolatileRead(System.Int32%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L46">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L30">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_VolatileRead_" data-uid="DotNext.Threading.AtomicInt32.VolatileRead*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_VolatileRead_System_Int32__" data-uid="DotNext.Threading.AtomicInt32.VolatileRead(System.Int32@)">VolatileRead(ref Int32)</h4>
@@ -1457,10 +1973,10 @@ cache.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_VolatileRead_System_Int32___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.VolatileRead(System.Int32%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_VolatileRead_System_Int32___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.VolatileRead(System.Int32%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L186">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L242">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_VolatileRead_" data-uid="DotNext.Threading.AtomicInt32.VolatileRead*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_VolatileRead_System_Int32___System_Int64_" data-uid="DotNext.Threading.AtomicInt32.VolatileRead(System.Int32[],System.Int64)">VolatileRead(Int32[], Int64)</h4>
@@ -1513,10 +2029,10 @@ cache.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_VolatileWrite_System_Int32__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.VolatileWrite(System.Int32%40%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_VolatileWrite_System_Int32__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.VolatileWrite(System.Int32%40%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L61">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L44">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_VolatileWrite_" data-uid="DotNext.Threading.AtomicInt32.VolatileWrite*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_VolatileWrite_System_Int32__System_Int32_" data-uid="DotNext.Threading.AtomicInt32.VolatileWrite(System.Int32@,System.Int32)">VolatileWrite(ref Int32, Int32)</h4>
@@ -1557,10 +2073,10 @@ all processors in the computer.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_VolatileWrite_System_Int32___System_Int64_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.VolatileWrite(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32_VolatileWrite_System_Int32___System_Int64_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32.VolatileWrite(System.Int32%5B%5D%2CSystem.Int64%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L196">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L252">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicInt32_VolatileWrite_" data-uid="DotNext.Threading.AtomicInt32.VolatileWrite*"></a>
   <h4 id="DotNext_Threading_AtomicInt32_VolatileWrite_System_Int32___System_Int64_System_Int32_" data-uid="DotNext.Threading.AtomicInt32.VolatileWrite(System.Int32[],System.Int64,System.Int32)">VolatileWrite(Int32[], Int64, Int32)</h4>
@@ -1613,10 +2129,10 @@ all processors in the computer.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicInt32.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicInt32%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L16" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/AtomicInt32.cs/#L16" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

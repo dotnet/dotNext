@@ -8,7 +8,7 @@
     <title>Collection Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Collection Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -70,21 +70,21 @@
 <h1 id="collection-enhancements">Collection Enhancements</h1>
 
 <p>Collection Helpers are set of extension methods and classes aimed to improve <em>System.Linq.Enumerable</em> and .NET Collection types:</p>
-<h1 id="read-only-collection-view">Read-only collection view</h1>
-<p>Instance of <code>System.Collections.ObjectModel.ReadOnlyCollection&lt;T&gt;</code> is the read-only <strong>copy</strong> of the source collection. It can be redundant or not acceptable by performance reasons. In this case, the family of read-only views can be used to save memory and performance. Read-only view doesn't create a copy of the original collection and just expose read-only API for the collection.</p>
-<p>.NEXT provides the following set of read-only views:</p>
+<h1 id="read-only-mapped-view">Read-only mapped view</h1>
+<p>Transformation of collection types can be done in lazy mode when item is converting on-demand without touching entire collection. Lazy converted collection is called <em>mapped view</em>.</p>
+<p>There are several mapped views for different collection types:</p>
 <ul>
-<li><a href="../../api/DotNext.Collections.Generic.ReadOnlyListView-1.html">Read-only list view</a> for lists and arrays</li>
-<li><a href="../../api/DotNext.Collections.Generic.ReadOnlyCollectionView-1.html">Read-only collection view</a> for generic collections without indexer support</li>
-<li><a href="../../api/DotNext.Collections.Generic.ReadOnlyDictionaryView-2.html">Read-only dictionary view</a> for generic dictionaries</li>
+<li><a href="../../api/DotNext.Collections.Generic.ReadOnlyListView-2.html">Read-only list view</a> for lists and arrays</li>
+<li><a href="../../api/DotNext.Collections.Generic.ReadOnlyCollectionView-2.html">Read-only collection view</a> for generic collections without indexer support</li>
+<li><a href="../../api/DotNext.Collections.Generic.ReadOnlyDictionaryView-3.html">Read-only dictionary view</a> for generic dictionaries</li>
 </ul>
-<p>The following example demonstrates how to obtain read-only view for different types of collections:</p>
-<pre><code class="lang-csharp">using System.Collections.Generic;
-using DotNext.Collections.Generic;
+<p>The following example demonstrates how to obtain read-only mapped view for the list:</p>
+<pre><code class="lang-csharp">using DotNext.Collections.Generic;
+using System.Collections.Generic;
 
-var list = new List&lt;string&gt;() { &quot;a&quot;, &quot;b&quot;, &quot;c&quot; };
-var readOnlyList = List.AsReadOnlyView(list);
-var readOnlyCollection = Collection.AsReadOnlyView(list);
+var list = new List&lt;string&gt;() { &quot;1&quot;, &quot;2&quot;, &quot;3&quot; };
+var mappedList = list.Convert(int.Parse);
+var first = mappedList[0];	//first == 1
 </code></pre>
 <h1 id="toarray">ToArray</h1>
 <p>Extension method <em>ToArray</em> allows to convert arbitrary collection into array. Collection should implements <code>ICollection&lt;T&gt;</code> or <code>IReadOnlyCollection&lt;T&gt;</code> interface.</p>
@@ -149,7 +149,7 @@ list.ForEach(item =&gt; Console.WriteLine(item));
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/core/collections.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/features/core/collections.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

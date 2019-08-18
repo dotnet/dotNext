@@ -8,7 +8,7 @@
     <title>.NEXT | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content=".NEXT | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -78,9 +78,9 @@
 <p><a href="https://www.nuget.org/packages/dotnext/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.svg?style=flat"></a><br>
 This library is the core of .NEXT which extends .NET Standard API with</p>
 <ul>
-<li>Extension methods for .NET Standard types including generic collections</li>
+<li>Value Delegates as allocation-free and lightweight alternative to regular .NET delegates</li>
 <li>Enum API to work with arbitrary <strong>enum</strong> types</li>
-<li>Thread-safe advanced atomic operations to work with <strong>int</strong>, <strong>long</strong>, <strong>bool</strong>, <strong>double</strong>, <strong>float</strong> and reference types</li>
+<li>Thread-safe advanced atomic operations to work with <strong>int</strong>, <strong>long</strong>, <strong>bool</strong>, <strong>double</strong>, <strong>float</strong>, *<em>IntPtr</em>, arbitrary reference and value types</li>
 <li>Unified representation of various synchronization primitives in the form of the lock</li>
 <li>Generic specialization with constant values</li>
 <li>Generation of random strings</li>
@@ -103,8 +103,8 @@ This library provides a special types to work with unmanaged memory in type-safe
 <li>Unstructured access to unmanaged memory</li>
 <li>Typed unmanaged array and list</li>
 <li>CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.</li>
-<li>Volatile pointer operations</li>
-<li>Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc.</li>
+<li>Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc, volatile access</li>
+<li>Calling unmanaged functions by pointer</li>
 </ul>
 <h1 id="dotnextthreading">DotNext.Threading</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.threading/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.threading.svg?style=flat"></a><br>
@@ -146,7 +146,10 @@ The library allows you to reuse experience of blocking synchronization with help
 Provides basic framework for building <a href="https://en.wikipedia.org/wiki/Computer_cluster">clustered microservices</a> based on network consensus and distributed messaging. Additionally, the libarary provides transport-agnostic implementation of <a href="https://raft.github.io/">Raft Consensus Algoritm</a> that can be adopted for any communication protocol.</p>
 <h1 id="dotnextaspnetcorecluster">DotNext.AspNetCore.Cluster</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?style=flat"></a><br>
-Allows to build clustered microservices which rely on network consensus and distributed messaging with <a href="https://docs.microsoft.com/en-us/aspnet/core/">ASP.NET Core</a> framework. This library contains HTTP-based implementation of Raft Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.</p>
+Allows to build clustered microservices which rely on network consensus and distributed messaging with <a href="https://docs.microsoft.com/en-us/aspnet/core/">ASP.NET Core</a> framework. This library contains HTTP-based implementation of <a href="https://raft.github.io/">Raft</a> Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.</p>
+<h1 id="dotnextaugmentation">DotNext.Augmentation</h1>
+<p><a href="https://www.nuget.org/packages/dotnext.augmentation.fody/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.augmentation.fody.svg?style=flat"></a><br>
+.NEXT Augmentations extends compilation pipeline with tricks and optimizations not available in Roslyin Compiler out-of-the-box. It is actually not a library, but IL code weaver implemented as <a href="https://github.com/Fody/Fody">Fody</a> add-in. Read more about compile-time features <a href="features/aug.html">here</a>.</p>
 </article>
           </div>
           
@@ -155,7 +158,7 @@ Allows to build clustered microservices which rely on network consensus and dist
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

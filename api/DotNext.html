@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace DotNext
    | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -77,8 +77,14 @@
   <div class="markdown level0 remarks"></div>
     <h3 id="classes">Classes
   </h3>
+      <h4><a class="xref" href="DotNext.BitwiseComparer-1.html">BitwiseComparer&lt;T&gt;</a></h4>
+      <section><p>Represents bitwise comparer for the arbitrary value type.</p>
+</section>
       <h4><a class="xref" href="DotNext.Comparable.html">Comparable</a></h4>
       <section><p>Provides generic methods to work with comparable values.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Comparison.html">Comparison</a></h4>
+      <section><p>Provides extensions for delegate <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.comparison-1">Comparison&lt;T&gt;</a>.</p>
 </section>
       <h4><a class="xref" href="DotNext.Converter.html">Converter</a></h4>
       <section><p>Provides extension methods for delegate <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter&lt;TInput,TOutput&gt;</a> and
@@ -145,12 +151,6 @@ predefined predicates.</p>
       <h4><a class="xref" href="DotNext.StringExtensions.html">StringExtensions</a></h4>
       <section><p>Represents various extension methods for type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>.</p>
 </section>
-      <h4><a class="xref" href="DotNext.ValueType-1.html">ValueType&lt;T&gt;</a></h4>
-      <section><p>Provides fast memory operations to work with value type.</p>
-</section>
-      <h4><a class="xref" href="DotNext.ValueType-1.BitwiseComparer.html">ValueType&lt;T&gt;.BitwiseComparer</a></h4>
-      <section><p>Represents bitwise comparer for value type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
-</section>
       <h4><a class="xref" href="DotNext.ValueTypeExtensions.html">ValueTypeExtensions</a></h4>
       <section><p>Various extensions for value types.</p>
 </section>
@@ -184,6 +184,53 @@ with any object.</p>
       <h4><a class="xref" href="DotNext.UserDataStorage.html">UserDataStorage</a></h4>
       <section><p>Provides access to user data associated with the object.</p>
 </section>
+      <h4><a class="xref" href="DotNext.ValueAction.html">ValueAction</a></h4>
+      <section><p>Represents a pointer to parameterless method with <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a> return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueAction-1.html">ValueAction&lt;T&gt;</a></h4>
+      <section><p>Represents a pointer to the method with single parameter and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a> return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueAction-2.html">ValueAction&lt;T1, T2&gt;</a></h4>
+      <section><p>Represents a pointer to the method with two parameters and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a> return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueAction-3.html">ValueAction&lt;T1, T2, T3&gt;</a></h4>
+      <section><p>Represents a pointer to the method with three parameters and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a> return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueAction-4.html">ValueAction&lt;T1, T2, T3, T4&gt;</a></h4>
+      <section><p>Represents a pointer to the method with fourth parameters and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a> return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueAction-5.html">ValueAction&lt;T1, T2, T3, T4, T5&gt;</a></h4>
+      <section><p>Represents a pointer to the method with fifth parameters and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a> return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueFunc-1.html">ValueFunc&lt;R&gt;</a></h4>
+      <section><p>Represents a pointer to parameterless method with return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc&lt;T, R&gt;</a></h4>
+      <section><p>Represents a pointer to the method with single parameter and return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc&lt;T1, T2, R&gt;</a></h4>
+      <section><p>Represents a pointer to the method with two parameters and return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueFunc-4.html">ValueFunc&lt;T1, T2, T3, R&gt;</a></h4>
+      <section><p>Represents a pointer to the method with three parameters and return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueFunc-5.html">ValueFunc&lt;T1, T2, T3, T4, R&gt;</a></h4>
+      <section><p>Represents a pointer to the method with four parameters and return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueFunc-6.html">ValueFunc&lt;T1, T2, T3, T4, T5, R&gt;</a></h4>
+      <section><p>Represents a pointer to the method with five parameters and return type.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ValueRefAction-2.html">ValueRefAction&lt;T, TArgs&gt;</a></h4>
+      <section><p>Represents action that accepts arbitrary value by reference.</p>
+</section>
+    <h3 id="interfaces">Interfaces
+  </h3>
+      <h4><a class="xref" href="DotNext.ICallable.html">ICallable</a></h4>
+      <section><p>Represents common interface for typed method pointers.</p>
+</section>
+      <h4><a class="xref" href="DotNext.ICallable-1.html">ICallable&lt;D&gt;</a></h4>
+      <section><p>Represents common interface for typed method pointers.</p>
+</section>
     <h3 id="enums">Enums
   </h3>
       <h4><a class="xref" href="DotNext.BoundType.html">BoundType</a></h4>
@@ -199,10 +246,6 @@ allocated on the stack.</p>
       <section><p>Represents an instance function with arbitrary number of arguments
 allocated on the stack.</p>
 </section>
-      <h4><a class="xref" href="DotNext.ItemAction-2.html">ItemAction&lt;I, V&gt;</a></h4>
-      <section><p>Represents item indexer delegate which can be used
-to read and modify collection element during iteration.</p>
-</section>
       <h4><a class="xref" href="DotNext.Procedure-1.html">Procedure&lt;A&gt;</a></h4>
       <section><p>Represents a static procedure with arbitrary number of arguments
 allocated on the stack.</p>
@@ -210,6 +253,9 @@ allocated on the stack.</p>
       <h4><a class="xref" href="DotNext.Procedure-2.html">Procedure&lt;T, A&gt;</a></h4>
       <section><p>Represents an instance procedure with arbitrary number of arguments
 allocated on the stack.</p>
+</section>
+      <h4><a class="xref" href="DotNext.RefAction-2.html">RefAction&lt;T, TArgs&gt;</a></h4>
+      <section><p>Represents action that accepts arbitrary value by reference.</p>
 </section>
 </article>
           </div>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class List
    | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -115,19 +115,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_AsReadOnlyView__1_System_Collections_Generic_IList___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.AsReadOnlyView%60%601(System.Collections.Generic.IList%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__DotNext_ValueFunc___0___1___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.Convert%60%602(System.Collections.Generic.IReadOnlyList%7B%60%600%7D%2CDotNext.ValueFunc%7B%60%600%2C%60%601%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L120">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L146">View Source</a>
   </span>
-  <a id="DotNext_Collections_Generic_List_AsReadOnlyView_" data-uid="DotNext.Collections.Generic.List.AsReadOnlyView*"></a>
-  <h4 id="DotNext_Collections_Generic_List_AsReadOnlyView__1_System_Collections_Generic_IList___0__" data-uid="DotNext.Collections.Generic.List.AsReadOnlyView``1(System.Collections.Generic.IList{``0})">AsReadOnlyView&lt;T&gt;(IList&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Returns read-only view of the list.</p>
+  <a id="DotNext_Collections_Generic_List_Convert_" data-uid="DotNext.Collections.Generic.List.Convert*"></a>
+  <h4 id="DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__DotNext_ValueFunc___0___1___" data-uid="DotNext.Collections.Generic.List.Convert``2(System.Collections.Generic.IReadOnlyList{``0},DotNext.ValueFunc{``0,``1}@)">Convert&lt;I, O&gt;(IReadOnlyList&lt;I&gt;, ValueFunc&lt;I, O&gt;)</h4>
+  <div class="markdown level1 summary"><p>Returns lazily converted read-only list.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlyListView&lt;T&gt; AsReadOnlyView&lt;T&gt;(this IList&lt;T&gt; list)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ReadOnlyListView&lt;I, O&gt; Convert&lt;I, O&gt;(this IReadOnlyList&lt;I&gt; list, in ValueFunc&lt;I, O&gt; converter)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -140,9 +140,15 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;T&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;I&gt;</td>
         <td><span class="parametername">list</span></td>
-        <td><p>A list to be wrapped into read-only representation.</p>
+        <td><p>Read-only list to convert.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;I, O&gt;</td>
+        <td><span class="parametername">converter</span></td>
+        <td><p>A list item conversion function.</p>
 </td>
       </tr>
     </tbody>
@@ -157,8 +163,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Collections.Generic.ReadOnlyListView-1.html">ReadOnlyListView</a>&lt;T&gt;</td>
-        <td><p>Read-only view of the list.</p>
+        <td><a class="xref" href="DotNext.Collections.Generic.ReadOnlyListView-2.html">ReadOnlyListView</a>&lt;I, O&gt;</td>
+        <td><p>Lazily converted read-only list.</p>
 </td>
       </tr>
     </tbody>
@@ -173,18 +179,23 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>Type of items in the list.</p>
+        <td><span class="parametername">I</span></td>
+        <td><p>Type of items in the source list.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">O</span></td>
+        <td><p>Type of items in the target list.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__System_Converter___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.Convert%60%602(System.Collections.Generic.IReadOnlyList%7B%60%600%7D%2CSystem.Converter%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__System_Converter___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.Convert%60%602(System.Collections.Generic.IReadOnlyList%7B%60%600%7D%2CSystem.Converter%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L130">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L156">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_List_Convert_" data-uid="DotNext.Collections.Generic.List.Convert*"></a>
   <h4 id="DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__System_Converter___0___1__" data-uid="DotNext.Collections.Generic.List.Convert``2(System.Collections.Generic.IReadOnlyList{``0},System.Converter{``0,``1})">Convert&lt;I, O&gt;(IReadOnlyList&lt;I&gt;, Converter&lt;I, O&gt;)</h4>
@@ -258,10 +269,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IList___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.IndexerGetter%60%601(System.Collections.Generic.IList%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IList___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.IndexerGetter%60%601(System.Collections.Generic.IList%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L69">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_List_IndexerGetter_" data-uid="DotNext.Collections.Generic.List.IndexerGetter*"></a>
   <h4 id="DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IList___0__" data-uid="DotNext.Collections.Generic.List.IndexerGetter``1(System.Collections.Generic.IList{``0})">IndexerGetter&lt;T&gt;(IList&lt;T&gt;)</h4>
@@ -325,10 +336,10 @@ attached to the list instance.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IReadOnlyList___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.IndexerGetter%60%601(System.Collections.Generic.IReadOnlyList%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IReadOnlyList___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.IndexerGetter%60%601(System.Collections.Generic.IReadOnlyList%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L60">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L61">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_List_IndexerGetter_" data-uid="DotNext.Collections.Generic.List.IndexerGetter*"></a>
   <h4 id="DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IReadOnlyList___0__" data-uid="DotNext.Collections.Generic.List.IndexerGetter``1(System.Collections.Generic.IReadOnlyList{``0})">IndexerGetter&lt;T&gt;(IReadOnlyList&lt;T&gt;)</h4>
@@ -392,10 +403,10 @@ attached to the list instance.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_IndexerSetter__1_System_Collections_Generic_IList___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.IndexerSetter%60%601(System.Collections.Generic.IList%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_IndexerSetter__1_System_Collections_Generic_IList___0__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.IndexerSetter%60%601(System.Collections.Generic.IList%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L78">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L79">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_List_IndexerSetter_" data-uid="DotNext.Collections.Generic.List.IndexerSetter*"></a>
   <h4 id="DotNext_Collections_Generic_List_IndexerSetter__1_System_Collections_Generic_IList___0__" data-uid="DotNext.Collections.Generic.List.IndexerSetter``1(System.Collections.Generic.IList{``0})">IndexerSetter&lt;T&gt;(IList&lt;T&gt;)</h4>
@@ -459,10 +470,91 @@ attached to the list instance.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_Singleton__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.Singleton%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_InsertOrdered__1_System_Collections_Generic_IList___0____0_DotNext_ValueFunc___0___0_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.InsertOrdered%60%601(System.Collections.Generic.IList%7B%60%600%7D%2C%60%600%2CDotNext.ValueFunc%7B%60%600%2C%60%600%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L138">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L178">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_List_InsertOrdered_" data-uid="DotNext.Collections.Generic.List.InsertOrdered*"></a>
+  <h4 id="DotNext_Collections_Generic_List_InsertOrdered__1_System_Collections_Generic_IList___0____0_DotNext_ValueFunc___0___0_System_Int32___" data-uid="DotNext.Collections.Generic.List.InsertOrdered``1(System.Collections.Generic.IList{``0},``0,DotNext.ValueFunc{``0,``0,System.Int32}@)">InsertOrdered&lt;T&gt;(IList&lt;T&gt;, T, ValueFunc&lt;T, T, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Inserts the item into sorted list.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int InsertOrdered&lt;T&gt;(this IList&lt;T&gt; list, T item, in ValueFunc&lt;T, T, int&gt; comparer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;T&gt;</td>
+        <td><span class="parametername">list</span></td>
+        <td><p>The list to insert into.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">item</span></td>
+        <td><p>The item to be added into the list.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;T, T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">comparer</span></td>
+        <td><p>The comparer function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The actual index of the inserted item.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the items in the list.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Collections_Generic_List_InsertOrdered__1_System_Collections_Generic_IList___0____0_DotNext_ValueFunc___0___0_System_Int32____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Time complexity of this operation is O(log N), where N is a size of the list.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_Singleton__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.Singleton%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L165">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_List_Singleton_" data-uid="DotNext.Collections.Generic.List.Singleton*"></a>
   <h4 id="DotNext_Collections_Generic_List_Singleton__1___0_" data-uid="DotNext.Collections.Generic.List.Singleton``1(``0)">Singleton&lt;T&gt;(T)</h4>
@@ -525,10 +617,166 @@ attached to the list instance.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__System_Converter___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.ToArray%60%602(System.Collections.Generic.IList%7B%60%600%7D%2CSystem.Converter%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__DotNext_ValueFunc___0___1___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.ToArray%60%602(System.Collections.Generic.IList%7B%60%600%7D%2CDotNext.ValueFunc%7B%60%600%2C%60%601%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L89">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L90">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_List_ToArray_" data-uid="DotNext.Collections.Generic.List.ToArray*"></a>
+  <h4 id="DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__DotNext_ValueFunc___0___1___" data-uid="DotNext.Collections.Generic.List.ToArray``2(System.Collections.Generic.IList{``0},DotNext.ValueFunc{``0,``1}@)">ToArray&lt;I, O&gt;(IList&lt;I&gt;, ValueFunc&lt;I, O&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts list into array and perform mapping for each
+element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static O[] ToArray&lt;I, O&gt;(this IList&lt;I&gt; input, in ValueFunc&lt;I, O&gt; mapper)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;I&gt;</td>
+        <td><span class="parametername">input</span></td>
+        <td><p>A list to convert. Cannot be <span class="xref">null</span>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;I, O&gt;</td>
+        <td><span class="parametername">mapper</span></td>
+        <td><p>Element mapping function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>O[]</td>
+        <td><p>An array of list items.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">I</span></td>
+        <td><p>Type of elements in the list.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">O</span></td>
+        <td><p>Type of elements in the output array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__DotNext_ValueFunc_System_Int32___0___1___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.ToArray%60%602(System.Collections.Generic.IList%7B%60%600%7D%2CDotNext.ValueFunc%7BSystem.Int32%2C%60%600%2C%60%601%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L118">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_List_ToArray_" data-uid="DotNext.Collections.Generic.List.ToArray*"></a>
+  <h4 id="DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__DotNext_ValueFunc_System_Int32___0___1___" data-uid="DotNext.Collections.Generic.List.ToArray``2(System.Collections.Generic.IList{``0},DotNext.ValueFunc{System.Int32,``0,``1}@)">ToArray&lt;I, O&gt;(IList&lt;I&gt;, ValueFunc&lt;Int32, I, O&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts list into array and perform mapping for each
+element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static O[] ToArray&lt;I, O&gt;(this IList&lt;I&gt; input, in ValueFunc&lt;int, I, O&gt; mapper)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ilist-1">IList</a>&lt;I&gt;</td>
+        <td><span class="parametername">input</span></td>
+        <td><p>A list to convert. Cannot be <span class="xref">null</span>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, I, O&gt;</td>
+        <td><span class="parametername">mapper</span></td>
+        <td><p>Index-aware element mapping function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>O[]</td>
+        <td><p>An array of list items.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">I</span></td>
+        <td><p>Type of elements in the list.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">O</span></td>
+        <td><p>Type of elements in the output array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__System_Converter___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.ToArray%60%602(System.Collections.Generic.IList%7B%60%600%7D%2CSystem.Converter%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L107">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_List_ToArray_" data-uid="DotNext.Collections.Generic.List.ToArray*"></a>
   <h4 id="DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__System_Converter___0___1__" data-uid="DotNext.Collections.Generic.List.ToArray``2(System.Collections.Generic.IList{``0},System.Converter{``0,``1})">ToArray&lt;I, O&gt;(IList&lt;I&gt;, Converter&lt;I, O&gt;)</h4>
@@ -603,10 +851,10 @@ element.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__System_Func_System_Int32___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.ToArray%60%602(System.Collections.Generic.IList%7B%60%600%7D%2CSystem.Func%7BSystem.Int32%2C%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__System_Func_System_Int32___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List.ToArray%60%602(System.Collections.Generic.IList%7B%60%600%7D%2CSystem.Func%7BSystem.Int32%2C%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L106">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L135">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_List_ToArray_" data-uid="DotNext.Collections.Generic.List.ToArray*"></a>
   <h4 id="DotNext_Collections_Generic_List_ToArray__2_System_Collections_Generic_IList___0__System_Func_System_Int32___0___1__" data-uid="DotNext.Collections.Generic.List.ToArray``2(System.Collections.Generic.IList{``0},System.Func{System.Int32,``0,``1})">ToArray&lt;I, O&gt;(IList&lt;I&gt;, Func&lt;Int32, I, O&gt;)</h4>
@@ -687,10 +935,10 @@ element.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_List.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.List%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/List.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

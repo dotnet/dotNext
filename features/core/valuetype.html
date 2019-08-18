@@ -8,7 +8,7 @@
     <title>Value Type Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Value Type Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -70,16 +70,16 @@
 <h1 id="value-type-enhancements">Value Type Enhancements</h1>
 
 <p>It's a challenge to implement <em>Equals</em> and <em>GetHashCode</em> methods for custom value type. Moreover, third-party library may provide value type without these methods and without overloaded equality/inequality operators. As a result, there is no way to identify whether the struct value is the default value.</p>
-<p>.NEXT library provides generic methods for equality check and hash code calculation for any value type. These methods are located in class <a href="../../api/DotNext.ValueType-1.html">ValueType</a> and not extension methods to avoid ambiguity with overridden methods.</p>
+<p>.NEXT library provides generic methods for equality check and hash code calculation for any value type. These methods are located in <a href="../../api/DotNext.BitwiseComparer-1.html">BitwiseComparer</a> and <a href="../../api/DotNext.Runtime.Intrinsics.html">Intrinsics</a> classes and not extension methods to avoid ambiguity with overridden methods.</p>
 <pre><code class="lang-csharp">using DotNext;
 using System;
 
 var guid = Guid.NewGuid();
-ValueType&lt;Guid&gt;.BitwiseEquals(guid, new Guid());    //false
-ValueType&lt;Guid&gt;.BitwiseHashCode(guid);
-ValueType&lt;Guid&gt;.IsDefault(guid);    //false
-ValueType&lt;Guid&gt;.IsDefault(new Guid());  //true
-ValueType&lt;Guid&gt;.BitwiseCompare(guid, new Guid());   // greater than 0
+BitwiseComparer&lt;Guid&gt;.Equals(guid, new Guid());    //false
+BitwiseComparer&lt;Guid&gt;.GetHashCode(guid);
+Intrinsics.IsDefault(guid);    //false
+Intrinsics.IsDefault(new Guid());  //true
+BitwiseComparer&lt;Guid&gt;.Compare(guid, new Guid());   // greater than 0
 </code></pre>
 <p>These methods use bitwise representation of struct in memory, not reflection tricks. Therefore, they are optimized for the best performance. Especially, for value types with many fields bitwise equality can demonstrate better performance in comparison with field-by-field comparison typically used for custom <em>Equals</em> implementation. Therefore, bitwise equality and hash code computation can be used in custom implementation of <em>Equals</em> and <em>GetHashCode</em> to save the time and the best performance.</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -91,23 +91,23 @@ public struct MyStruct: IEquatable&lt;MyStruct&gt;
     private int fieldB;
     private int fieldC;
 
-    public bool Equals(MyStruct other) =&gt; ValueType&lt;MyStruct&gt;.BitwiseEquals(this, other);
+    public bool Equals(MyStruct other) =&gt; BitwiseComparer&lt;MyStruct&gt;.Equals(this, other);
 
     public override bool Equals(object other) =&gt; other is MyStruct typed &amp;&amp; Equals(typed);
 
-    public override int GetHashCode() =&gt; ValueType&lt;MyStruct&gt;.BitwiseHashCode(this);
+    public override int GetHashCode() =&gt; BitwiseComparer&lt;MyStruct&gt;.GetHashCode(this);
 }
 </code></pre>
-<p>Additionally, <em>BitwiseHashCode</em> method may accept custom hash code algorithm. Check API documentation for more information.</p>
+<p>Additionally, bitwise hash code computation method may accept custom hash code algorithm. Check API documentation for more information.</p>
 <h1 id="fast-bitwise-cast-between-value-types">Fast bitwise cast between value types</h1>
 <p>The library provides fast way to convert one unmanaged value type into another even if value type doesn't provide custom implicit or explicit type cast operator. This logic is provided by extension method <code>Bitcast</code>. Bitwise cast can be performed between two value types of different size.</p>
-<pre><code class="lang-csharp">using DotNext;
+<pre><code class="lang-csharp">using DotNext.Runtime;
 
-20.Bitcast(out bool value); //value is true
-0.Bitcast(out bool value);  //value is false
+Intrinsics.Bitcast(20, out bool value); //value is true
+Intrinsics.Bitcast(0, out bool value);  //value is false
 </code></pre>
 <p>The following example demonstrates how to extract content of the <em>Guid</em> data type.</p>
-<pre><code class="lang-csharp">using DotNext;
+<pre><code class="lang-csharp">using DotNext.Runtime;
 
 internal struct GuidRawData //Guid size is 16 bytes
 {
@@ -115,9 +115,9 @@ internal struct GuidRawData //Guid size is 16 bytes
     internal ulong Component2;
 }
 
-var data = Guid.NewGuid().Bitcast&lt;Guid, GuidRawData&gt;();
+Intrinsics.Bitcast(Guid.NewGuid, out GuidRawData data);
 data.Component1 = 0;
-var guid = data.Bitcast&lt;GuidRawData, Guid&gt;(); //convert back to Guid
+Intrinsics.Bitcast(data, out Guid guid);    //convert back to Guid
 </code></pre>
 <p><code>Bitcast</code> provides bitwise copy of the original structure so it is very fast.</p>
 </article>
@@ -128,7 +128,7 @@ var guid = data.Bitcast&lt;GuidRawData, Guid&gt;(); //convert back to Guid
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/core/valuetype.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/features/core/valuetype.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

@@ -8,7 +8,7 @@
     <title>Cluster and Distributed Consensus | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Cluster and Distributed Consensus | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -69,7 +69,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="cluster-and-distributed-consensus">Cluster and Distributed Consensus</h1>
 
-<p>Cluster Computing is a form of distributed computing where each node set to perform the same task. The nodes usually located in the same local area network, each pf them hosted on separated virtual machine or container. The input task can be distributed to the target node by load balancer or leader node. If leader node is required then cluster should use Distributed Consensus Algorithm to select exactly one leader or re-elect it if leader failed. Additionally, consensus-enabled cluster can be used to organize fault-tolerant set of microservices where only one service (leader) can be active and perform specific operations while other are in standby mode. If active node is failed then one of the standby nodes becomes active.</p>
+<p>Cluster Computing is a form of distributed computing where each node set to perform the same task. The nodes usually located in the same local area network, each of them hosted on separated virtual machine or container. The input task can be distributed to the target node by load balancer or leader node. If leader node is required then cluster should use Distributed Consensus Algorithm to select exactly one leader or re-elect it if leader failed. Additionally, consensus-enabled cluster can be used to organize fault-tolerant set of microservices where only one service (leader) can be active and perform specific operations while other are in standby mode. If active node is failed then one of the standby nodes becomes active.</p>
 <p>.NEXT cluster programming model provides the following features in addition to the core model:</p>
 <ol>
 <li>Messaging</li>
@@ -80,7 +80,7 @@
 <ul>
 <li><a href="../../api/DotNext.Net.Cluster.IClusterMember.html">IClusterMember</a> represents individual node in the cluster</li>
 <li><a href="../../api/DotNext.Net.Cluster.ICluster.html">ICluster</a> represents entire cluster. This is an entry point to work with cluster using .NEXT library.</li>
-<li><a href="../../api/DotNext.Net.Cluster.ICluster.html">IExpandableCluster</a> optional interface that extends <code>ICluster</code> and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes</li>
+<li><a href="../../api/DotNext.Net.Cluster.IExpandableCluster.html">IExpandableCluster</a> optional interface that extends <code>ICluster</code> and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes</li>
 <li><a href="../../api/DotNext.Net.Cluster.Messaging.IMessageBus.html">IMessageBus</a> optional interface provides message-based communication between nodes in  point-to-point manner</li>
 <li><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster</a> optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on <a href="../../api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html">audit trail</a>. By default, design of replication infrastructure supports <a href="https://en.wikipedia.org/wiki/Weak_consistency">Weak Consistency</a>.</li>
 </ul>
@@ -104,7 +104,7 @@
 <h1 id="distributed-consensus">Distributed Consensus</h1>
 <p>Consensus Algorithm allows to achieve overall reliability in the presence of faulty nodes. The most commonly used consensus algorithms are:</p>
 <ul>
-<li><a href="https://en.wikipedia.org/wiki/Chandra%E2%80%93Toueg_consensus_algorithm">Chandra-Toueg consensus algorithm</a>)</li>
+<li><a href="https://en.wikipedia.org/wiki/Chandra%E2%80%93Toueg_consensus_algorithm">Chandra-Toueg consensus algorithm</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Paxos_(computer_science)">Paxos</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Raft_(computer_science)">Raft</a></li>
 </ul>
@@ -117,6 +117,14 @@
 </ul>
 <h1 id="replication">Replication</h1>
 <p>Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of <a href="../../api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html">IAuditTrail</a> interface.</p>
+<p><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster</a> contains special method <code>WriteAsync</code> that allows clustered application to submit changes and wait unit they are replicated and committed. The behavior of this method depends on the passed <a href="../../api/DotNext.Net.Cluster.Replication.WriteConcern.html">WriteConcern</a> value. It regulates when to return control back to the client:</p>
+<ul>
+<li><em>None</em> indicates that control should be returned immediately after recording of changeset to the log. This mode doesn't provide any guarantees about consistency of the subsequent reads.</li>
+<li><em>LeaderOnly</em> indicates that control should be returned after commit by leader node. It means that leader has replicated the changes across cluster and mark its local changes as committed. In case of Raft this mode means that changes are replicated to the majority of nodes but committed only by leader.</li>
+<li><em>Majority</em> indicates that control should be returned to the caller when majority of nodes commit the changes.</li>
+<li><em>All</em> indicates that control should be returned to the caller when all clusted nodes commit the changes.</li>
+</ul>
+<p>The current Raft implementation supports <em>None</em> and <em>LeaderOnly</em> write concerns only.</p>
 <h1 id="implementations">Implementations</h1>
 <p>.NEXT offers extensions for ASP.NET Core which allow to build clustered microservices with the following features:</p>
 <ol>
@@ -133,7 +141,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/cluster/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/features/cluster/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

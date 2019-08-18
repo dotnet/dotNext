@@ -8,7 +8,7 @@
     <title>Benchmarks | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Benchmarks | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -74,11 +74,11 @@
 <tbody>
 <tr>
 <td>Host</td>
-<td>.NET Core 2.2.3 (CoreCLR 4.6.27414.05, CoreFX 4.6.27414.05), 64bit RyuJIT</td>
+<td>.NET Core 2.2.6 (CoreCLR 4.6.27817.03, CoreFX 4.6.27818.02), 64bit RyuJIT</td>
 </tr>
 <tr>
 <td>Job</td>
-<td>.NET Core 2.2.3 (CoreCLR 4.6.27414.05, CoreFX 4.6.27414.05), 64bit RyuJIT</td>
+<td>.NET Core 2.2.6 (CoreCLR 4.6.27817.03, CoreFX 4.6.27818.02), 64bit RyuJIT</td>
 </tr>
 <tr>
 <td>LaunchCount</td>
@@ -90,7 +90,7 @@
 </tr>
 <tr>
 <td>OS</td>
-<td>Ubuntu 18.04</td>
+<td>Ubuntu 18.04.2</td>
 </tr>
 <tr>
 <td>CPU</td>
@@ -105,7 +105,7 @@
 <td>4</td>
 </tr>
 <tr>
-<td>Logiccal Cores</td>
+<td>Logical Cores</td>
 <td>8</td>
 </tr>
 <tr>
@@ -115,7 +115,7 @@
 </tbody>
 </table>
 <h1 id="bitwise-equality">Bitwise Equality</h1>
-<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.ValueType-1.html">ValueType&lt;T&gt;.BitwiseEquals</a> with overloaded equality <code>==</code> operator. Testing data types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.BitwiseComparer-1.html">BitwiseComparer&lt;T&gt;.Equals</a> with overloaded equality <code>==</code> operator. Testing data types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
 <table>
 <thead>
 <tr>
@@ -127,10 +127,10 @@
 </thead>
 <tbody>
 <tr>
-<td><code>ValueType&lt;Guid&gt;.BitwiseEquals</code></td>
-<td>9.627 ns</td>
-<td>0.2266 ns</td>
-<td>0.3461 ns</td>
+<td><code>BitwiseComparer&lt;Guid&gt;.Equals</code></td>
+<td>5.104 ns</td>
+<td>0.1364 ns</td>
+<td>0.2459 ns</td>
 </tr>
 <tr>
 <td><code>Guid.Equals</code></td>
@@ -139,22 +139,34 @@
 <td>0.4101 ns</td>
 </tr>
 <tr>
-<td><code>ValueType&lt;BigStruct&gt;.BitwiseEquals</code></td>
-<td>27.097 ns</td>
-<td>0.5794 ns</td>
-<td>1.2221 ns</td>
+<td><code>ReadOnlySpan.SequenceEqual</code> for <code>Guid</code></td>
+<td>12.981 ns</td>
+<td>0.2523 ns</td>
+<td>0.2360 ns</td>
 </tr>
 <tr>
-<td><code>BigStruct.Equals</code></td>
+<td><code>BitwiseComparer&lt;LargeStruct&gt;.Equals</code></td>
+<td>22.542 ns</td>
+<td>0.4742 ns</td>
+<td>0.5461 ns</td>
+</tr>
+<tr>
+<td><code>LargeStruct.Equals</code></td>
 <td>53.299 ns</td>
 <td>0.8754 ns</td>
 <td>0.7760 ns</td>
 </tr>
+<tr>
+<td><code>ReadOnlySpan.SequenceEqual</code> for <code>LargeStruct</code></td>
+<td>24.184 ns</td>
+<td>0.6122 ns</td>
+<td>0.8973 ns</td>
+</tr>
 </tbody>
 </table>
-<p>Bitwise equality method has the better performance than field-by-field equality check because <code>BitwiseEquals</code> utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD.</p>
-<h1 id="array-equality">Array Equality</h1>
-<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.OneDimensionalArray.html">OneDimensionalArray.SequenceEqual</a>, <a href="api/DotNext.OneDimensionalArray.html">OneDimensionalArray.BitwiseEquals</a> and manual equality check between two arrays using <code>for</code> loop. The benchmark is applied to the array of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> elements.</p>
+<p>Bitwise equality method has the better performance than field-by-field equality check because <code>BitwiseEquals</code> utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD. Additionally, it uses <a href="https://en.wikipedia.org/wiki/Data_structure_alignment">aligned memory access</a> in constrast to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal">SequenceEqual</a> method.</p>
+<h1 id="equality-of-arrays">Equality of Arrays</h1>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__">ReadOnlySpan.SequenceEqual</a>, <a href="api/DotNext.OneDimensionalArray.html">OneDimensionalArray.BitwiseEquals</a> and manual equality check between two arrays using <code>for</code> loop. The benchmark is applied to the array of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> elements.</p>
 <p><code>SequenceEqual</code> requires that array element type should implement <a href="https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a> interface and calls <code>Equals(T other)</code> for each element.</p>
 <table>
 <thead>
@@ -168,45 +180,45 @@
 <tbody>
 <tr>
 <td><code>Guid[].BitwiseEquals</code>, small arrays (~10 elements)</td>
-<td>13.73 ns</td>
-<td>0.3562 ns</td>
-<td>0.3157 ns</td>
+<td>9.758 ns</td>
+<td>0.0195 ns</td>
+<td>0.0163 ns</td>
 </tr>
 <tr>
-<td><code>Guid[].SequenceEqual</code>, small arrays (~10 elements)</td>
-<td>34.57 ns</td>
-<td>0.6698 ns</td>
-<td>0.5593 ns</td>
+<td><code>ReadOnlySpan&lt;Guid&gt;.SequenceEqual</code>, small arrays (~10 elements)</td>
+<td>31.963 ns</td>
+<td>0.3506 ns</td>
+<td>0.3279 ns</td>
 </tr>
 <tr>
 <td><code>for</code> loop, small arrays (~10 elements)</td>
-<td>59.13 ns</td>
-<td>1.1550 ns</td>
-<td>1.2358 ns</td>
+<td>58.506 ns</td>
+<td>0.1090 ns</td>
+<td>0.0910 ns</td>
 </tr>
 <tr>
 <td><code>Guid[].BitwiseEquals</code>, large arrays (~100 elements)</td>
-<td>46.78 ns</td>
-<td>0.9868 ns</td>
-<td>1.2480 ns</td>
+<td>45.525 ns</td>
+<td>0.1935 ns</td>
+<td>0.1715 ns</td>
 </tr>
 <tr>
-<td><code>Guid[].SequenceEqual</code>, large arrays (~100 elements)</td>
-<td>307.99 ns</td>
-<td>1.9631 ns</td>
-<td>1.6393 ns</td>
+<td><code>ReadOnlySpan&lt;Guid&gt;.SequenceEqual</code>, large arrays (~100 elements)</td>
+<td>309.409 ns</td>
+<td>6.0189 ns</td>
+<td>7.3917 ns</td>
 </tr>
 <tr>
 <td><code>for</code> loop, large arrays (~100 elements)</td>
-<td>610.53 ns</td>
-<td>9.2729 ns</td>
-<td>8.2202 ns</td>
+<td>727.733 ns</td>
+<td>14.5560 ns</td>
+<td>23.9160 ns</td>
 </tr>
 </tbody>
 </table>
-<p><code>BtiwiseEquals</code> is an absolute winner for equality check between large arrays.</p>
+<p>Bitwise equality is an absolute winner for equality check between arrays of any size.</p>
 <h1 id="bitwise-hash-code">Bitwise Hash Code</h1>
-<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.ValueType-1.html">ValueType&lt;T&gt;.BitwiseHashCode</a> and <code>GetHashCode</code> instance method for the types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.BitwiseComparer-1.html">BitwiseComparer&lt;T&gt;.GetHashCode</a> and <code>GetHashCode</code> instance method for the types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
 <table>
 <thead>
 <tr>
@@ -224,26 +236,26 @@
 <td>0.0183 ns</td>
 </tr>
 <tr>
-<td><code>ValueType&lt;Guid&gt;.BitwiseHashCode</code></td>
+<td><code>BitwiseComparer&lt;Guid&gt;.GetHashCode</code></td>
 <td>8.798 ns</td>
 <td>0.0854 ns</td>
 <td>0.0757 ns</td>
 </tr>
 <tr>
-<td><code>ValueType&lt;BigStructure&gt;.BitwiseHashCode</code></td>
+<td><code>BitwiseComparer&lt;LargeStructure&gt;.GetHashCode</code></td>
 <td>23.087 ns</td>
 <td>0.1273 ns</td>
 <td>0.1191 ns</td>
 </tr>
 <tr>
-<td><code>BigStructure.GetHashCode</code></td>
+<td><code>LargeStructure.GetHashCode</code></td>
 <td>49.613 ns</td>
 <td>0.1804 ns</td>
 <td>0.1506 ns</td>
 </tr>
 </tbody>
 </table>
-<p><code>BitwiseHashCode</code> is very efficient for hashing of large value types.</p>
+<p>Bitwise hash code algorithm is very efficient for hashing of large value types.</p>
 <h1 id="fast-reflection">Fast Reflection</h1>
 <p>The next series of benchmarks demonstrate performance of strongly typed reflection provided by DotNext Reflection library.</p>
 <h2 id="property-getter">Property Getter</h2>
@@ -284,9 +296,9 @@
 </tr>
 <tr>
 <td><code>ObjectAccess</code> class from <em>FastMember</em> library</td>
-<td>19.12 ns</td>
+<td>50.25 ns</td>
 <td>0.3870 ns</td>
-<td>0.9919 ns</td>
+<td>0.8247 ns</td>
 </tr>
 <tr>
 <td>.NET reflection</td>
@@ -298,7 +310,7 @@
 </table>
 <p>Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.</p>
 <h2 id="instance-method-call">Instance Method Call</h2>
-<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/StringMethodReflectionBenchmark.cs">This benchmarks</a> demonstrates overhead of calling instance method <code>IndexOf</code> of type <strong>string</strong> caused by different mechanisms:</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/StringMethodReflectionBenchmark.cs">This benchmark</a> demonstrates overhead of calling instance method <code>IndexOf</code> of type <strong>string</strong> caused by different mechanisms:</p>
 <ol>
 <li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;string&gt;.Method&lt;char, int&gt;.Require&lt;int&gt;(nameof(string.IndexOf))</code></li>
 <li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Type&lt;string&gt;.RequireMethod&lt;(char, int), int&gt;(nameof(string.IndexOf));</code></li>
@@ -426,7 +438,7 @@
 </table>
 <p>DotNext Reflection library offers the best result in case when delegate type exactly matches to the reflected method with small overhead measured in a few nanoseconds.</p>
 <h2 id="static-method-call">Static Method Call</h2>
-<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/TryParseReflectionBenchmark.cs">This benchmarks</a> demonstrates overhead of calling static method <code>TryParse</code> of type <strong>decimal</strong> caused by different mechanisms:</p>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Reflection/TryParseReflectionBenchmark.cs">This benchmark</a> demonstrates overhead of calling static method <code>TryParse</code> of type <strong>decimal</strong> caused by different mechanisms:</p>
 <ol>
 <li>Using strongly typed reflection from DotNext Reflection library: <code>Type&lt;decimal&gt;.Method.Get&lt;TryParseDelegate&gt;(nameof(decimal.TryParse), MethodLookup.Static)</code>. The delegate type exactly matches to the reflected method signature: <code>delegate bool TryParseDelegate(string text, out decimal result)</code></li>
 <li>Using strongly typed reflection from DotNext Reflection library using special delegate type: <code>Function&lt;(string text, decimal result), bool&gt;</code></li>
@@ -440,7 +452,7 @@
 <th>Mean</th>
 <th>Error</th>
 <th>StdDev</th>
-<th></th>
+<th>Median</th>
 </tr>
 </thead>
 <tbody>
@@ -482,6 +494,99 @@
 </tbody>
 </table>
 <p>Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.</p>
+<h1 id="atomic-access-to-arbitrary-value-type">Atomic Access to Arbitrary Value Type</h1>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/Threading/AtomicContainerBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.Threading.Atomic-1.html">Atomic&lt;T&gt;</a> and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+<th>Median</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Atomic</td>
+<td>1.194 ms</td>
+<td>0.0245 ms</td>
+<td>0.2223 ms</td>
+<td>1.144 ms</td>
+</tr>
+<tr>
+<td>Synchronized</td>
+<td>1.502 ms</td>
+<td>0.288 ms</td>
+<td>0.2623 ms</td>
+<td>1.451 ms</td>
+</tr>
+</tbody>
+</table>
+<h1 id="value-delegate">Value Delegate</h1>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.Threading.Atomic-1.html">Atomic&lt;T&gt;</a> and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+<th>Median</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Instance method, regular delegate, has implicit <strong>this</strong></td>
+<td>2.747 ns</td>
+<td>0.0379 ns</td>
+<td>0.0336 ns</td>
+<td>2.741 ns</td>
+</tr>
+<tr>
+<td>Instance method, Value Delegate, has implicit <strong>this</strong></td>
+<td>4.108 ns</td>
+<td>0.0652 ns</td>
+<td>0.0578 ns</td>
+<td>4.101 ns</td>
+</tr>
+<tr>
+<td>Static method, regular delegate, large size of param type, no implicitly captured object</td>
+<td>6.590 ns</td>
+<td>0.3193 ns</td>
+<td>0.9366 ns</td>
+<td>6.435 ns</td>
+</tr>
+<tr>
+<td>Static method, Value Delegate, large size of param type, no implicitly captured object</td>
+<td>17.790 ns</td>
+<td>0.5467 ns</td>
+<td>1.0268 ns</td>
+<td>17.582 ns</td>
+</tr>
+<tr>
+<td>Static method, regular delegate, small size of param type, no implicitly captured object</td>
+<td>85.961 ns</td>
+<td>1.7877 ns</td>
+<td>4.1076 ns</td>
+<td>84.270 ns</td>
+</tr>
+<tr>
+<td>Static method, Value Delegate, small size of param type, no implicitly captured object</td>
+<td>80.220 ns</td>
+<td>0.7253 ns</td>
+<td>0.6430 ns</td>
+<td>80.184 ns</td>
+</tr>
+</tbody>
+</table>
+<p><em>Large size of param type</em> means that the type of the parameter is larger than 64 bit.</p>
+<p>Interpretation of benchmark results:</p>
+<ul>
+<li><em>Proxy</em> mode of Value Delegate adds a small overhead in comparison with regular delegate</li>
+<li>If the type of the parameter is less than or equal to the size of CPU register then Value Delegate offers the best performance</li>
+<li>If the type of the parameter is greater than the size of CPU register then Value Delegate is slower than regular delegate</li>
+</ul>
 </article>
           </div>
           
@@ -490,7 +595,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/benchmarks.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/benchmarks.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

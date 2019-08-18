@@ -8,7 +8,7 @@
     <title>Atomic Operations | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Atomic Operations | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -98,15 +98,20 @@
 </ul>
 <p>Reference types have similar set of atomic operations except arithmetic operations such as increment, decrement and addition.</p>
 <h1 id="atomic-operations-for-scalar-types">Atomic operations for scalar types</h1>
-<p>All atomic operations are extension methods grouped by specific target scalar types:</p>
+<p>Atomic operations are extension methods grouped by specific target scalar types:</p>
 <ul>
-<li><a href="../../api/DotNext.Threading.AtomicInt32.html">AtomicInteger</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int32">int</a></li>
-<li><a href="../../api/DotNext.Threading.AtomicInt64.html">AtomicLong</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int64">long</a></li>
-<li><a href="../../api/DotNext.Threading.AtomicSingle.html">AtomicFloat</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.single">float</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicInt32.html">AtomcInt32</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int32">int</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicInt64.html">AtomicInt64</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.int64">long</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicSingle.html">AtomicSingle</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.single">float</a></li>
 <li><a href="../../api/DotNext.Threading.AtomicDouble.html">AtomicDouble</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.double">double</a></li>
+<li><a href="../../api/DotNext.Threading.AtomicIntPtr.html">AtomicIntPtr</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.intptr">IntPtr</a></li>
 <li><a href="../../api/DotNext.Threading.AtomicReference.html">AtomicReference</a> for <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types">reference types</a></li>
 </ul>
-<p>One exception is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.boolean">bool</a> data type. The only way to use atomic boolean operations is to replace this data type with <a href="../../api/DotNext.Threading.AtomicBoolean.html">AtomicBoolean</a> type.</p>
+<p>Atomic operations for some data types represented by atomic containers instread of extension methods:</p>
+<ul>
+<li><a href="../../api/DotNext.Threading.AtomicBoolean.html">AtomicBoolean</a> for <a href="https://docs.microsoft.com/en-us/dotnet/api/system.boolean">bool</a> data type</li>
+<li><a href="../../api/DotNext.Threading.AtomicEnum-1.html">AtomicEnum</a> for <strong>enum</strong> data types</li>
+</ul>
 <p>The following example demonstrates how to use advanced atomic operations</p>
 <pre><code class="lang-csharp">using DotNext.Threading;
 
@@ -131,6 +136,30 @@ var result = array.IncrementAndGet(2);   //2 is an index of array element to be 
 result = array.VolatileRead(2);  //atomic read of array element
 array.VolatileWrite(2, 30D);  //atomic modification of array element
 </code></pre>
+<h1 id="atomic-operations-with-pointers">Atomic operations with pointers</h1>
+<p>Working with unmanaged memory in multithreaded application also requires atomic operations and volatile memory access. <a href="../../api/DotNext.Threading.AtomicPointer.html">AtomicPointer</a> provides all necessary functionality as extension methods for <a href="../../api/DotNext.Runtime.InteropServices.Pointer-1.html">Pointer&lt;T&gt;</a> data type.</p>
+<h1 id="atomic-access-for-arbitrary-value-types">Atomic access for arbitrary value types</h1>
+<p>Volatile memory access is hardware dependent feature. For instance, on x86 atomic read/write can be guaranteed for 32-bit data types only. On x86_64, this guarantee is extended to 64-bit data type. What if you need to have hardware-independent atomic read/write for arbitrary value type? The naive solution is to use <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.methodimploptions#System_Runtime_CompilerServices_MethodImplOptions_Synchronized">Synchronized</a> method. It can be declared in class only, not in value type. If your volatile field declared in value type then you cannot use such kind of methods or you need to create container in the form of the class which requires allocation on the heap.</p>
+<p><a href="../../api/DotNext.Threading.Atomic-1.html">Atomic&lt;T&gt;</a> is a container that provides atomic operations for arbitrary value type. The container is value type itself and do not require heap allocation. Memory access to the stored value is organized through software-emulated memory barrier which is portable across CPU architectures. Performance impact is very low. Under heavy lock contention, the access time is ~20-30% faster than Synchronized methods. Check <a href="../../benchmarks.html">Benchmarks</a> for information.</p>
+<p>The following example demonstrates how to organize atomic access to field of type <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a>.</p>
+<pre><code class="lang-csharp">using DotNext.Threading;
+
+class MyClass
+{
+	private Atomic&lt;Guid&gt; id;
+
+	public void GenerateNewId() =&gt; id.Write(Guid.NewGuid());	//Write is atomic
+
+	public bool IsEmptyId 
+	{
+		get
+		{
+			id.Read(out var value);	//Read is atomic
+			return value == Guid.Empty;
+		}
+	}
+}
+</code></pre>
 </article>
           </div>
           
@@ -139,7 +168,7 @@ array.VolatileWrite(2, 30D);  //atomic modification of array element
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/core/atomic.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/features/core/atomic.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

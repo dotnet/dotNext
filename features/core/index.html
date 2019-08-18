@@ -8,7 +8,7 @@
     <title>Base Class Library Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Base Class Library Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.42.0.0">
+    <meta name="generator" content="docfx 2.44.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -74,8 +74,8 @@
 <p>Extension methods for random data generation extends both classes <em>System.Random</em> and <em>System.Security.Cryptography.RandomNumberGenerator</em>.</p>
 <h2 id="random-string-generation">Random string generation</h2>
 <p>Provides a way to generate random string of the given length and set of allowed characters.</p>
-<pre><code class="lang-csharp">using System;
-using DotNext;
+<pre><code class="lang-csharp">using DotNext;
+using System;
 
 var rand = new Random();
 var password = rand.NextString(&quot;abc123&quot;, 10);   
@@ -106,6 +106,13 @@ var str = &quot;abc&quot;.Reverse(); //str is &quot;cba&quot;
 var str = &quot;abc&quot;.TrimLength(2);  //str is &quot;ab&quot;
 str = &quot;abc&quot;.TrimLength(4);  //str is &quot;abc&quot;
 </code></pre>
+<h2 id="raw-data">Raw Data</h2>
+<p>Extension method <em>GetRawData</em> allows to obtain managed pointer to the underlying char buffer referenced by the string instance. This method can be used in performance-critical paths in your code</p>
+<pre><code class="lang-csharp">using DotNext;
+
+ref readonly char ch = &quot;str&quot;.GetRawData();  //now ch points to the first string character of 's'
+</code></pre>
+<p>Returned managed pointer is immutable because instantiated string cannot be modified at runtime.</p>
 <h1 id="delegates">Delegates</h1>
 <p>Related classes: <a href="../../api/DotNext.StringExtensions.html">DelegateHelpers</a>, <a href="../../api/DotNext.Func.html">Func</a>, <a href="../../api/DotNext.Converter.html">Converter</a>, <a href="../../api/DotNext.Predicate.html">Predicate</a>.</p>
 <h2 id="change-type-of-delegate">Change type of delegate</h2>
@@ -182,17 +189,11 @@ b = &quot;a&quot;.IsOneOf(&quot;b&quot;, &quot;c&quot;, &quot;d&quot;); //b == f
 <p>Related classes: <a href="../../api/DotNext.OneDimensionalArray.html">OneDimensionalArray</a>.</p>
 <p>Extension methods for slicing, iteration, conversion, element insertion and fast equality check between elements of two arrays.</p>
 <h2 id="equality-check-1">Equality check</h2>
-<p>There are two extension methods for equality check of each element between two arrays:</p>
-<ul>
-<li><em>SequenceEqual</em> performs equality check between each element if element type implements interface <code>IEquatable&lt;T&gt;</code></li>
-<li><em>BitwiseEquals</em> performs bitwise equality between two regions of memory referenced by the arrays. Element type of these arrays should be of unmanaged value type, e.g. <code>int</code>, <code>long</code>, <code>System.Guid</code>.</li>
-</ul>
-<pre><code class="lang-csharp">var array1 = new string[] {&quot;ab&quot;, &quot;bc&quot;};
-array1.SequenceEqual(new [] {&quot;ab&quot;, &quot;bc&quot;}); //true
-var array2 = new int[] { 1, 2, 3 };
+<p><em>BitwiseEquals</em> extension method performs bitwise equality between two regions of memory referenced by the arrays. Element type of these arrays should be of unmanaged value type, e.g. <code>int</code>, <code>long</code>, <code>System.Guid</code>.</p>
+<pre><code class="lang-csharp">var array2 = new int[] { 1, 2, 3 };
 array2.BitwiseEquals(new [] {1, 2, 4});    //false
 </code></pre>
-<p>These methods are fast in comparison to naive implementation using <code>foreach</code> iteration and comparison by index. Read <a href="../../benchmarks.html">Benchmarks</a> for more information.</p>
+<p>This method is faster than naive implementation using <code>foreach</code> iteration and comparison by index. Read <a href="../../benchmarks.html">Benchmarks</a> for more information.</p>
 <h2 id="functional-iteration">Functional iteration</h2>
 <p>Extension method <code>ForEach</code> allows to iterate over array elements and, optionally, modify array element.</p>
 <pre><code class="lang-csharp">var array = new string[] {&quot;ab&quot;, &quot;bc&quot; };
@@ -214,6 +215,19 @@ array = array.RemoveFirst(2);   //array == new []{&quot;c&quot;}
 array = new string[]{&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;}; 
 array = array.Slice(1, 2);      //array == new []{&quot;b&quot;, &quot;c&quot;}
 </code></pre>
+<h1 id="extensions-for-intptr-and-uintptr">Extensions for <code>IntPtr</code> and <code>UIntPtr</code></h1>
+<p>Natural-sized integer data types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.intptr">IntPtr</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.intptr">UIntPtr</a> have no arithmetic, bitwise, and comparison operators as other numeric types in .NET standard library. This is fixed by .NEXT library which provides implementation of these operators in the form of extension methods available for both types from <a href="../../api/DotNext.ValueTypeExtensions.html">ValueTypeExtensions</a> class.</p>
+<p>These methods are implemented as intrinsics using inline IL code so they can be replaced by equivalent assembly instruction by JIT compiler. As a result, they the methods have the same performance as natively supported operators for regular numeric types.</p>
+<p>The following example demonstrates how to use these methods:</p>
+<pre><code class="lang-csharp">using DotNext;
+
+var i = new IntPtr(40);
+i = i.Add(new IntPtr(2));	//i == 42
+if(i.GreaterThan(IntPtr.Zero))
+	i = i.Subtract(new IntPtr(10));
+else
+	i = i.OnesComplement();	//equivalent to operator ~
+</code></pre>
 </article>
           </div>
           
@@ -222,7 +236,7 @@ array = array.Slice(1, 2);      //array == new []{&quot;b&quot;, &quot;c&quot;}
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/core/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/features/core/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
