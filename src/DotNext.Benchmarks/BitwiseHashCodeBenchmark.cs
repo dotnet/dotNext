@@ -21,19 +21,19 @@ namespace DotNext.Benchmarks
         [Benchmark]
         public void GuidBitwiseHashCode()
         {
-            BitwiseComparer<Guid>.Equals(NonEmptyGuid, false);
+            BitwiseComparer<Guid>.GetHashCode(NonEmptyGuid, false);
         }
 
         [Benchmark]
-        public void BigStructureHashCode()
+        public void LargeStructureHashCode()
         {
             NonEmptyLargeStruct.GetHashCode();
         }
 
         [Benchmark]
-        public void BigStructureBitwiseHashCode()
+        public void LargeStructureBitwiseHashCode()
         {
-            BitwiseComparer<BitwiseEqualityBenchmark.LargeStruct>.Equals(NonEmptyLargeStruct, false);
+            BitwiseComparer<BitwiseEqualityBenchmark.LargeStruct>.GetHashCode(NonEmptyLargeStruct, false);
         }
     }
 }

@@ -362,9 +362,17 @@ namespace DotNext.Runtime.InteropServices
         public static int GetHashCode32(IntPtr source, long length, bool salted = true)
             => GetHashCode32(source, length, FNV1a32.Offset, new ValueFunc<int, int, int>(FNV1a32.GetHashCode), salted);
 
-        [RuntimeFeatures(Augmentation = true)]
         internal static int GetHashCode32Aligned(IntPtr source, long length, bool salted)
-            => GetHashCode32Aligned(source, length, FNV1a32.Offset, new ValueFunc<int, int, int>(FNV1a32.GetHashCode), salted);
+        {
+            //do not call overloaded GetHashCode32Aligned accepting ValueFunc because it
+            //is not so performant as manually inlined code
+            var hash = FNV1a32.Offset;
+            for (; length >= sizeof(int); length -= sizeof(int))
+                hash = FNV1a32.GetHashCode(hash, Read<int>(ref source));
+            for (; length > 0L; length -= sizeof(byte))
+                hash = FNV1a32.GetHashCode(hash, Read<byte>(ref source));
+            return salted ? FNV1a32.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
+        }
 
         internal static int GetHashCode32Aligned(IntPtr source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
         {
@@ -375,9 +383,19 @@ namespace DotNext.Runtime.InteropServices
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
-        [RuntimeFeatures(Augmentation = true)]
         internal static long GetHashCode64Aligned(IntPtr source, long length, bool salted)
-            => GetHashCode64Aligned(source, length, FNV1a64.Offset, new ValueFunc<long, long, long>(FNV1a64.GetHashCode), salted);
+        {
+            //do not call overloaded GetHashCode64Aligned accepting ValueFunc because it
+            //is not so performant as manually inlined code
+            var hash = FNV1a64.Offset;
+            for (; length >= sizeof(long); length -= sizeof(long))
+                hash = FNV1a64.GetHashCode(hash, Read<long>(ref source));
+            for (; length >= sizeof(int); length -= sizeof(int))
+                hash = FNV1a64.GetHashCode(hash, Read<int>(ref source));
+            for (; length > 0L; length -= sizeof(byte))
+                hash = FNV1a64.GetHashCode(hash, Read<byte>(ref source));
+            return salted ? FNV1a64.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
+        }
 
         internal static long GetHashCode64Aligned(IntPtr source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
         {
