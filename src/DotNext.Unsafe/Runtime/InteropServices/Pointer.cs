@@ -89,7 +89,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Size of type <typeparamref name="T"/>, in bytes.
         /// </summary>
-        public static int Size => ValueType<T>.Size;
+        public unsafe static int Size => sizeof(T);
 
         private readonly unsafe T* value;
 

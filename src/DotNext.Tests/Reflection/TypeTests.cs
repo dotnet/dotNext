@@ -5,6 +5,8 @@ using Xunit;
 
 namespace DotNext.Reflection
 {
+    using Intrinsics = Runtime.Intrinsics;
+
     public sealed class TypeTests : Assert
     {
         internal static event EventHandler StaticEvent;
@@ -272,10 +274,10 @@ namespace DotNext.Reflection
             NotEqual(new object().GetHashCode(), Type<object>.GetHashCode(new object()));
             var guid = Guid.NewGuid();
             Equal(guid.GetHashCode(), Type<Guid>.GetHashCode(guid));
-            NotEqual(ValueType<Guid>.BitwiseHashCode(guid), Type<Guid>.GetHashCode(guid));
+            NotEqual(Intrinsics.BitwiseHashCode(guid), Type<Guid>.GetHashCode(guid));
             var point = new Point { X = 10, Y = 20 };
             NotEqual(point.GetHashCode(), Type<Point>.GetHashCode(point));
-            Equal(ValueType<Point>.BitwiseHashCode(point), Type<Point>.GetHashCode(point));
+            Equal(Intrinsics.BitwiseHashCode(point), Type<Point>.GetHashCode(point));
         }
 
         [Fact]

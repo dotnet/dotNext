@@ -37,7 +37,7 @@ namespace DotNext.Threading.Tasks
         [Fact]
         public static async Task WhenAny()
         {
-            var box = new ValueType<int>(0);
+            var box = new StrongBox<int>(0);
             var source1 = new ValueTaskCompletionSource();
             var source2 = new ValueTaskCompletionSource();
             var source3 = new ValueTaskCompletionSource();

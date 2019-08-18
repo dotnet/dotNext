@@ -130,6 +130,7 @@ namespace DotNext.Reflection
         /// </remarks>
         public static MethodInfo GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type[] parameters)
         {
+            //TODO: Should be deprecated for .NET Standard 2.1 and replaced with native implementation
             foreach (var method in type.GetMethods(flags))
                 if (method.Name == methodName && method.GetGenericArguments().LongLength == genericParamCount)
                 {
@@ -141,7 +142,7 @@ namespace DotNext.Reflection
                         {
                             var actual = actualParams[i];
                             var expected = parameters[i];
-                            success = IsGenericParameter(actual) && expected is null || actual == expected;
+                            success = IsGenericParameter(actual) && expected is null || actual == expected || actual.IsConstructedGenericType && actual.GetGenericTypeDefinition() == expected;
                         }
                     if (success)
                         return method;

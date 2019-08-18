@@ -67,7 +67,7 @@ namespace DotNext.Runtime.InteropServices
             where T : unmanaged
         {
             var result = Unsafe.Read<T>(source.ToPointer());
-            source += Unsafe.SizeOf<T>();
+            source += sizeof(T);
             return result;
         }
 
@@ -92,7 +92,7 @@ namespace DotNext.Runtime.InteropServices
             where T : unmanaged
         {
             var result = Unsafe.ReadUnaligned<T>(source.ToPointer());
-            source += Unsafe.SizeOf<T>();
+            source += sizeof(T);
             return result;
         }
 
@@ -109,7 +109,7 @@ namespace DotNext.Runtime.InteropServices
             where T : unmanaged
         {
             Unsafe.Write(destination.ToPointer(), value);
-            destination += Unsafe.SizeOf<T>();
+            destination += sizeof(T);
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace DotNext.Runtime.InteropServices
             where T : unmanaged
         {
             Unsafe.WriteUnaligned(destination.ToPointer(), value);
-            destination += Unsafe.SizeOf<T>();
+            destination += sizeof(T);
         }
 
         /// <summary>
@@ -777,7 +777,7 @@ namespace DotNext.Runtime.InteropServices
         [CLSCompliant(false)]
         public static unsafe Span<byte> AsSpan<T>(T* pointer)
             where T : unmanaged
-            => new Span<byte>(pointer, Unsafe.SizeOf<T>());
+            => new Span<byte>(pointer, sizeof(T));
 
         /// <summary>
         /// Copies one value into another.

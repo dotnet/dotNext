@@ -6,6 +6,8 @@ using static InlineIL.IL.Emit;
 
 namespace DotNext
 {
+    using Intrinsics = Runtime.Intrinsics;
+
     /// <summary>
     /// Various extensions for value types.
     /// </summary>
@@ -25,12 +27,12 @@ namespace DotNext
         /// <param name="output">Conversion result.</param>
         /// <typeparam name="From">The type of input struct.</typeparam>
         /// <typeparam name="To">The type of output struct.</typeparam>
-        /// <seealso cref="ValueType{T}.Bitcast{To}"/>
+        /// <seealso cref="Intrinsics.Bitcast{T, TResult}"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Bitcast<From, To>(this From input, out To output)
             where From : unmanaged
             where To : unmanaged
-            => ValueType<From>.Bitcast(in input, out output);
+            => Intrinsics.Bitcast(in input, out output);
 
         /// <summary>
         /// Obtain a value of type <typeparamref name="To"/> by 
@@ -52,7 +54,7 @@ namespace DotNext
             where From : unmanaged
             where To : unmanaged
         {
-            ValueType<From>.Bitcast<To>(in input, out var output);
+            Intrinsics.Bitcast<From, To>(in input, out var output);
             return output;
         }
 
@@ -92,27 +94,6 @@ namespace DotNext
 		public static bool IsOneOf<T>(this T value, params T[] values)
             where T : struct, IEquatable<T>
             => value.IsOneOf((IEnumerable<T>)values);
-
-        /// <summary>
-        /// Create boxed representation of the value type.
-        /// </summary>
-        /// <param name="value">Value to be placed into heap.</param>
-        /// <typeparam name="T">Value type.</typeparam>
-        /// <returns>Boxed representation of value type.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ValueType<T> Box<T>(this T value)
-            where T : struct
-            => new ValueType<T>(value);
-
-        /// <summary>
-        /// Create boxed representation of the nullable value type.
-        /// </summary>
-        /// <param name="value">Value to be placed into heap.</param>
-        /// <typeparam name="T">Value type.</typeparam>
-        /// <returns>Boxed representation of nullable value type; or <see langword="null"/>.</returns>        
-        public static ValueType<T> Box<T>(this T? value)
-            where T : struct
-            => value.HasValue ? new ValueType<T>(value.Value) : null;
 
         /// <summary>
         /// Attempts to get value from nullable container.

@@ -5,6 +5,8 @@ using System;
 
 namespace DotNext.Benchmarks
 {
+    using static Runtime.Intrinsics;
+
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class BitwiseHashCodeBenchmark
@@ -21,7 +23,7 @@ namespace DotNext.Benchmarks
         [Benchmark]
         public void GuidBitwiseHashCode()
         {
-            ValueType<Guid>.BitwiseHashCode(NonEmptyGuid);
+            BitwiseHashCode(NonEmptyGuid, false);
         }
 
         [Benchmark]
@@ -33,7 +35,7 @@ namespace DotNext.Benchmarks
         [Benchmark]
         public void BigStructureBitwiseHashCode()
         {
-            ValueType<BitwiseEqualityBenchmark.LargeStruct>.BitwiseHashCode(NonEmptyBigStruct, false);
+            BitwiseHashCode(NonEmptyBigStruct, false);
         }
     }
 }

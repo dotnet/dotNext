@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 
 namespace DotNext
 {
+    using static Runtime.Intrinsics;
     using Threading;
 
     /// <summary>
@@ -38,7 +39,7 @@ namespace DotNext
             public static implicit operator Tuple(E value) => new Tuple(value);
 
             public bool Equals(Tuple other)
-                => Name is null ? other.Name is null && ValueType<E>.BitwiseEquals(Value, other.Value) : Name == other.Name;
+                => Name is null ? other.Name is null && BitwiseEquals(Value, other.Value) : Name == other.Name;
 
             public override bool Equals(object other) => other is Tuple t && Equals(t);
             public override int GetHashCode() => Name is null ? Value.GetHashCode() : Name.GetHashCode();
