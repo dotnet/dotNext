@@ -51,13 +51,14 @@ namespace DotNext
         [SuppressMessage("Performance", "CA1812", Justification = "It is instantiated by method GetOrCreateValue")]
         private sealed class BackingStorage : Dictionary<long, object>
         {
+
             //ReaderWriterLockSlim is not used because it is heavyweight
             //atomic-based lock is used instead because it is very low probability of concurrent
             //updates of the same backing storage.
 
             private AtomicBoolean lockState;
 
-            public BackingStorage() : base(3) => lockState = new AtomicBoolean(false);
+            internal BackingStorage() : base(3) => lockState = new AtomicBoolean(false);
 
             private void Acquire()
             {
@@ -155,17 +156,20 @@ namespace DotNext
         }
 
         private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new ConditionalWeakTable<object, BackingStorage>();
+        private static readonly ConditionalWeakTable<object, BackingStorage>.CreateValueCallback Factory = CreateStorage;
 
         private readonly object owner;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal UserDataStorage(object owner)
             => this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
+        
+        private static BackingStorage CreateStorage(object key) => new BackingStorage();
 
         private BackingStorage GetStorage(bool createIfNeeded)
         {
             if (createIfNeeded)
-                return UserData.GetOrCreateValue(owner);
+                return UserData.GetValue(owner, Factory);
             else if (UserData.TryGetValue(owner, out var storage))
                 return storage;
             else
