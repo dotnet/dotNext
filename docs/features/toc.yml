@@ -25,6 +25,8 @@
       href: core/sync.md
     - name: Asynchronous Delegates
       href: core/asyncd.md
+    - name: Intrinsics
+      href: core/intrinsics.md
 - name: Threading
   href: threading/index.md
   items:
@@ -85,8 +87,6 @@
       href: unsafe/unstruct.md
     - name: Calling Function by Pointer
       href: unsafe/funcptr.md
-    - name: Low-Level Memory Manipulations
-      href: unsafe/memory.md
 - name: Cluster and Distributed Consensus
   href: cluster/index.md
   items:
