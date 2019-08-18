@@ -130,8 +130,8 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 
 | Method | Mean | Error | StdDev | Median |
 | ---- | ---- | ---- | ---- | ---- |
-| Atomic | 1.194 ms | 0.0245 ms | 0.2223 ms | 1.144 ms |
-| Synchronized | 1.502 ms | 0.288 ms | 0.2623 ms | 1.451 ms |
+| Atomic | 494.2 us | 8.263 us | 71.95 us | 482.1 us |
+| Synchronized | 938.1 us | 7.746 us | 72.56 us | 926.9 us |
 
 # Value Delegate
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](./api/DotNext.Threading.Atomic-1.yml) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
