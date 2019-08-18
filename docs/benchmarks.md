@@ -20,8 +20,8 @@ The configuration of all benchmarks:
 # Bitwise Equality
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs) compares performance of [BitwiseComparer&lt;T&gt;.Equals](./api/DotNext.BitwiseComparer-1.yml) with overloaded equality `==` operator. Testing data types: [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
-| Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- |
+| Method | Mean | Error | StdDev | Median |
+| ---- | ---- | ---- | ---- | ---- |
 | `BitwiseComparer<Guid>.Equals` | 8.327 ns | 0.0260 ns | 0.0243 ns |  8.326 ns |
 | `Guid.Equals` | 12.155 ns | 0.0492 ns | 0.0411 ns | 12.152 ns |
 | `ReadOnlySpan.SequenceEqual` for `Guid` | 12.680 ns | 0.1956 ns | 0.1830 ns | 12.625 ns |
