@@ -5,6 +5,8 @@ using System;
 
 namespace DotNext
 {
+    using Intrinsics = Runtime.Intrinsics;
+
     [SimpleJob(runStrategy: RunStrategy.Throughput, launchCount: 1)]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class GenericEnumBenchmark
@@ -19,7 +21,10 @@ namespace DotNext
 
         private static T ToEnum<T>(int value)
             where T : unmanaged, Enum
-            => value.Bitcast<int, T>();
+        {
+            Intrinsics.Bitcast(value, out T result);
+            return result;
+        }
 
         [Benchmark]
         public void ToInt32UsingConstrainedCall()

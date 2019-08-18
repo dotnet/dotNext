@@ -8,7 +8,6 @@ using System.Reflection;
 namespace DotNext
 {
     using Reflection;
-    using Intrinsics = Runtime.Intrinsics;
     using Runtime.CompilerServices;
     using Runtime.InteropServices;
 
@@ -65,13 +64,18 @@ namespace DotNext
 
         private static MethodCallExpression EqualsMethodForValueType(MemberExpression first, MemberExpression second)
         {
-            var method = typeof(Intrinsics).GetMethod(nameof(Intrinsics.BitwiseEquals)).MakeGenericMethod(first.Type, second.Type);
+            var method = typeof(BitwiseComparer<>)
+                .MakeGenericType(first.Type)
+                .GetMethod(nameof(BitwiseComparer<int>.Equals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly)
+                .MakeGenericMethod(second.Type);
             return Expression.Call(method, first, second);
         }
 
         private static MethodCallExpression HashCodeMethodForValueType(Expression expr, ConstantExpression salted)
         {
-            var method = typeof(Intrinsics).GetMethod(nameof(Intrinsics.BitwiseHashCode), BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Static, 1L, null, typeof(bool)).MakeGenericMethod(expr.Type);
+            var method = typeof(BitwiseComparer<>)
+                .MakeGenericType(expr.Type)
+                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[]{ expr.Type, typeof(bool) });
             return Expression.Call(method, expr, salted);
         }
 

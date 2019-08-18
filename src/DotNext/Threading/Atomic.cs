@@ -6,7 +6,6 @@ using static InlineIL.IL.Emit;
 
 namespace DotNext.Threading
 {
-    using static Runtime.Intrinsics;
     using static Runtime.InteropServices.Memory;
 
     internal static class Atomic
@@ -147,7 +146,7 @@ namespace DotNext.Threading
         {
             Lock();
             var current = value;
-            if (BitwiseEquals(current, expected))
+            if (BitwiseComparer<T>.Equals(current, expected))
                 Copy(in update, out value);
             Copy(in current, out result);
             Unlock();
@@ -163,7 +162,7 @@ namespace DotNext.Threading
         {
             Lock();
             bool result;
-            if (result = BitwiseEquals(value, expected))
+            if (result = BitwiseComparer<T>.Equals(value, expected))
                 Copy(in update, out value);
             Unlock();
             return result;

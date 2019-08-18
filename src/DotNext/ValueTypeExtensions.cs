@@ -6,8 +6,6 @@ using static InlineIL.IL.Emit;
 
 namespace DotNext
 {
-    using Intrinsics = Runtime.Intrinsics;
-
     /// <summary>
     /// Various extensions for value types.
     /// </summary>
@@ -18,45 +16,6 @@ namespace DotNext
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static string ToString<T>(T value, string format, IFormatProvider provider = null) where T : struct, IFormattable => value.ToString(format, provider);
-
-        /// <summary>
-        /// Obtain a value of type <typeparamref name="To"/> by 
-        /// reinterpreting the object representation of <typeparamref name="From"/>.
-        /// </summary>
-        /// <param name="input">A value to convert.</param>
-        /// <param name="output">Conversion result.</param>
-        /// <typeparam name="From">The type of input struct.</typeparam>
-        /// <typeparam name="To">The type of output struct.</typeparam>
-        /// <seealso cref="Intrinsics.Bitcast{T, TResult}"/>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Bitcast<From, To>(this From input, out To output)
-            where From : unmanaged
-            where To : unmanaged
-            => Intrinsics.Bitcast(in input, out output);
-
-        /// <summary>
-        /// Obtain a value of type <typeparamref name="To"/> by 
-        /// reinterpreting the object representation of <typeparamref name="From"/>. 
-        /// </summary>
-        /// <remarks>
-        /// Every bit in the value representation of the returned <typeparamref name="To"/> object 
-        /// is equal to the corresponding bit in the object representation of <typeparamref name="From"/>. 
-        /// The values of padding bits in the returned <typeparamref name="To"/> object are unspecified. 
-        /// The method takes into account size of <typeparamref name="From"/> and <typeparamref name="To"/> types
-        /// and able to provide conversion between types of different size.
-        /// </remarks>
-        /// <param name="input">A value to convert.</param>
-        /// <typeparam name="From">The type of input struct.</typeparam>
-        /// <typeparam name="To">The type of output struct.</typeparam>
-        /// <returns>Conversion result.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static To Bitcast<From, To>(this From input)
-            where From : unmanaged
-            where To : unmanaged
-        {
-            Intrinsics.Bitcast<From, To>(in input, out var output);
-            return output;
-        }
 
         /// <summary>
 		/// Checks whether the specified value is equal to one

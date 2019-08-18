@@ -30,7 +30,7 @@ namespace DotNext.Reflection
         /// <remarks>
         /// For reference types, this delegate always calls <see cref="object.GetHashCode"/> virtual method.
         /// For value type, it calls <see cref="object.GetHashCode"/> if it is overridden by the value type; otherwise,
-        /// it calls <see cref="Intrinsics.BitwiseHashCode{T}(T, bool)"/>.
+        /// it calls <see cref="BitwiseComparer{T}.GetHashCode(T, bool)"/>.
         /// </remarks>
         public static new readonly Operator<T, int> GetHashCode;
 
@@ -41,7 +41,7 @@ namespace DotNext.Reflection
         /// If type <typeparamref name="T"/> has equality operator then use it.
         /// Otherwise, for reference types, this delegate always calls <see cref="object.Equals(object, object)"/> method.
         /// For value type, it calls equality operator or <see cref="IEquatable{T}.Equals(T)"/> if it is implemented by the value type; else,
-        /// it calls <see cref="Intrinsics.BitwiseEquals{T1, T2}"/>.
+        /// it calls <see cref="BitwiseComparer{T}.Equals{G}"/>.
         /// </remarks>
         public static new readonly Operator<T, T, bool> Equals;
 
@@ -57,9 +57,9 @@ namespace DotNext.Reflection
                 var method = RuntimeType.GetHashCodeMethod();
                 if (method is null)
                 {
-                    method = typeof(Intrinsics)
-                                .GetMethod(nameof(Intrinsics.BitwiseHashCode), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, 1, null, typeof(bool))
-                                .MakeGenericMethod(RuntimeType);
+                    method = typeof(BitwiseComparer<>)
+                                .MakeGenericType(RuntimeType)
+                                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new []{ RuntimeType, typeof(bool) });
                     Debug.Assert(!(method is null));
                     GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
                 }
@@ -77,9 +77,10 @@ namespace DotNext.Reflection
                     //3. Use bitwise equality
                     else
                     {
-                        method = typeof(Intrinsics)
-                            .GetMethod(nameof(Intrinsics.BitwiseEquals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
-                            .MakeGenericMethod(RuntimeType, RuntimeType);
+                        method = typeof(BitwiseComparer<>)
+                            .MakeGenericType(RuntimeType)
+                            .GetMethod(nameof(BitwiseComparer<int>.Equals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
+                            .MakeGenericMethod(RuntimeType);
                         Debug.Assert(!(method is null));
                         Equals = Lambda<Operator<T, T, bool>>(Call(null, method, inputParam, secondParam), inputParam, secondParam).Compile();
                     }
