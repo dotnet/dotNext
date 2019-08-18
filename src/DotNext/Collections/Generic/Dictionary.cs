@@ -246,6 +246,17 @@ namespace DotNext.Collections.Generic
         /// <returns>The optional value associated with the key.</returns>
         public static Optional<V> TryGetValue<K, V>(this IDictionary<K, V> dictionary, K key)
             => dictionary.TryGetValue(key, out var value) ? new Optional<V>(value) : Optional<V>.Empty;
+        
+        /// <summary>
+        /// Removes the value with the specified key and return the removed value.
+        /// </summary>
+        /// <param name="dictionary">A dictionary to modify.</param>
+        /// <param name="key">The key of the element to remove.</param>
+        /// <typeparam name="K">Type of dictionary keys.</typeparam>
+        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <returns>The removed value.</returns>
+        public static Optional<V> TryRemove<K, V>(this IDictionary<K, V> dictionary, K key)
+            => dictionary.TryGetValue(key, out var value) && dictionary.Remove(key) ? new Optional<V>(value) : Optional<V>.Empty;
 
         /// <summary>
         /// Gets the value associated with the specified key.

@@ -32,9 +32,6 @@ namespace DotNext
         /// <returns>Allocated data slot.</returns>
         public static UserDataSlot<V> Allocate() => new UserDataSlot<V>(UserDataSlot.NewId);
 
-
-        internal bool Contains(IDictionary<long, object> storage) => storage.ContainsKey(id);
-
         internal V GetUserData(IDictionary<long, object> storage, V defaultValue)
             => storage.TryGetValue(id, out var userData) && userData is V result ? result : defaultValue;
 

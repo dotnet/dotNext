@@ -6,6 +6,8 @@ using System.Threading;
 
 namespace DotNext
 {
+    using AtomicBoolean = Threading.AtomicBoolean;
+
     /// <summary>
     /// Provides access to user data associated with the object.
     /// </summary>
@@ -47,126 +49,108 @@ namespace DotNext
         }
 
         [SuppressMessage("Performance", "CA1812", Justification = "It is instantiated by method GetOrCreateValue")]
-        private sealed class BackingStorage : Dictionary<long, object>, IDisposable
+        private sealed class BackingStorage : Dictionary<long, object>
         {
-            private readonly ReaderWriterLockSlim synchronizer = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
+            //ReaderWriterLockSlim is not used because it is heavyweight
+            //atomic-based lock is used instead because it is very low probability of concurrent
+            //updates of the same backing storage.
+
+            private AtomicBoolean lockState;
+
+            public BackingStorage() : base(3) => lockState = new AtomicBoolean(false);
+
+            private void Acquire()
+            {
+                for(SpinWait spinner; lockState.CompareExchange(false, true); spinner.SpinOnce()) {}
+            }
+
+            private void Release() => lockState.Value = false;
 
             internal V Get<V>(UserDataSlot<V> slot, V defaultValue)
             {
-                synchronizer.EnterReadLock();
+                Acquire();
                 try
                 {
                     return slot.GetUserData(this, defaultValue);
                 }
                 finally
                 {
-                    synchronizer.ExitReadLock();
+                    Release();
                 }
             }
 
             internal V GetOrSet<V, S>(UserDataSlot<V> slot, ref S valueFactory)
                 where S : struct, ISupplier<V>
             {
-                V userData;
-                //fast path - read user data if it is already exists
-                //do not use UpgradeableReadLock due to performance reasons
-                synchronizer.EnterReadLock();
+                Acquire();
                 try
                 {
-                    if (slot.GetUserData(this, out userData))
-                        return userData;
-                }
-                finally
-                {
-                    synchronizer.ExitReadLock();
-                }
-                //non-fast path, no user data presented
-                synchronizer.EnterWriteLock();
-                try
-                {
-                    if (!slot.GetUserData(this, out userData))
+                    if (!slot.GetUserData(this, out var userData))
                         slot.SetUserData(this, userData = valueFactory.Invoke());
                     return userData;
                 }
                 finally
                 {
-                    synchronizer.ExitWriteLock();
+                    Release();
                 }
             }
 
             internal bool Get<V>(UserDataSlot<V> slot, out V userData)
             {
-                synchronizer.EnterReadLock();
+                Acquire();
                 try
                 {
                     return slot.GetUserData(this, out userData);
                 }
                 finally
                 {
-                    synchronizer.ExitReadLock();
+                    Release();
                 }
             }
 
             internal void Set<V>(UserDataSlot<V> slot, V userData)
             {
-                synchronizer.EnterWriteLock();
+                Acquire();
                 try
                 {
                     slot.SetUserData(this, userData);
                 }
                 finally
                 {
-                    synchronizer.ExitWriteLock();
+                    Release();
                 }
             }
 
             internal bool Remove<V>(UserDataSlot<V> slot)
             {
-                synchronizer.EnterWriteLock();
+                Acquire();
                 try
                 {
                     return slot.RemoveUserData(this);
                 }
                 finally
                 {
-                    synchronizer.ExitWriteLock();
+                    Release();
                 }
             }
 
             internal bool Remove<V>(UserDataSlot<V> slot, out V userData)
             {
                 //fast path if user data doesn't exist
-                synchronizer.EnterReadLock();
+                Acquire();
                 try
                 {
-                    if (!slot.Contains(this))
+                    if(slot.GetUserData(this, out userData))
                     {
-                        userData = default;
-                        return false;
+                        slot.RemoveUserData(this);
+                        return true;
                     }
+                    return false;
                 }
                 finally
                 {
-                    synchronizer.ExitReadLock();
+                    Release();
                 }
-                //non-fast path, user data exists, so remove it
-                synchronizer.EnterWriteLock();
-                try
-                {
-                    userData = slot.GetUserData(this, default);
-                    return slot.RemoveUserData(this);
-                }
-                finally
-                {
-                    synchronizer.ExitWriteLock();
-                }
-            }
-
-            void IDisposable.Dispose()
-            {
-                synchronizer.Dispose();
-                Clear();
-                GC.SuppressFinalize(this);
             }
         }
 
