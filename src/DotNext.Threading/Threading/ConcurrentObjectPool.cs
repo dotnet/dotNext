@@ -7,6 +7,8 @@ using System.Threading;
 
 namespace DotNext.Threading
 {
+    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
+
     /// <summary>
     /// Provides container for the thread-unsafe objects that can be shared
     /// between threads concurrently.
@@ -267,6 +269,7 @@ namespace DotNext.Threading
         private static Rental SelectLastRenal(Rental current, Rental update) => current is null || current.IsPredecessorOf(update) ? update : current;
 
         //release object according with Shortest Job First algorithm
+        [RuntimeFeatures(Augmentation = true)]
         private void AdjustAvailableObjectAndCheckStarvation(Rental rental)
         {
             current.Value = rental.Previous;
@@ -297,6 +300,7 @@ namespace DotNext.Threading
         /// Rents the object from this pool.
         /// </summary>
         /// <returns>The object allows to control lifetime of the rent.</returns>
+        [RuntimeFeatures(Augmentation = true)]
         public IRental Rent()
         {
             waitCount.IncrementAndGet();
