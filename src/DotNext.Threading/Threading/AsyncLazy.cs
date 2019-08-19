@@ -12,7 +12,7 @@ namespace DotNext.Threading
     {
         private const string NotAvailable = "<NotAvailable>";
         private volatile Task<T> task;
-        private Func<Task<T>> factory;
+        private ValueFunc<Task<T>> factory;
         private readonly bool resettable;
 
         /// <summary>
@@ -30,10 +30,23 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="valueFactory">The function used to compute actual value.</param>
         /// <param name="resettable"><see langword="true"/> if previously computed value can be removed and computation executed again when it will be requested; <see langword="false"/> if value can be computed exactly once.</param>
-        public AsyncLazy(Func<Task<T>> valueFactory, bool resettable = false)
+        /// <exception cref="ArgumentException"><paramref name="valueFactory"/> doesn't refer to any method.</exception>
+        public AsyncLazy(ValueFunc<Task<T>> valueFactory, bool resettable = false)
         {
+            if (valueFactory.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.EmptyValueDelegate, nameof(valueFactory));
             this.resettable = resettable;
-            factory = valueFactory ?? throw new ArgumentNullException(nameof(valueFactory));
+            factory = valueFactory;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of lazy value.
+        /// </summary>
+        /// <param name="valueFactory">The function used to compute actual value.</param>
+        /// <param name="resettable"><see langword="true"/> if previously computed value can be removed and computation executed again when it will be requested; <see langword="false"/> if value can be computed exactly once.</param>
+        public AsyncLazy(Func<Task<T>> valueFactory, bool resettable = false)
+            : this(new ValueFunc<Task<T>>(valueFactory), resettable)
+        {
         }
 
         /// <summary>
@@ -63,7 +76,7 @@ namespace DotNext.Threading
 
         private T RemoveFactory(Task<T> task)
         {
-            factory = null; //cleanup factory because it may have captured variables and other objects
+            factory = default; //cleanup factory because it may have captured variables and other objects
             return task.Result;
         }
 
@@ -77,7 +90,7 @@ namespace DotNext.Threading
             {
                 if (task is null)
                 {
-                    var t = factory();
+                    var t = factory.Invoke();
                     if (!resettable)
                         t = t.ContinueWith(RemoveFactory, default, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
                     task = t;

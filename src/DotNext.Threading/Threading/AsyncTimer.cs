@@ -15,7 +15,7 @@ namespace DotNext.Threading
     public class AsyncTimer : Disposable
     {
         private volatile RegisteredWaitHandle timerHandle;
-        private readonly Func<CancellationToken, Task<bool>> callback;
+        private readonly ValueFunc<CancellationToken, Task<bool>> callback;
         private AtomicBoolean processingState;
 
         /// <summary>
@@ -23,8 +23,23 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="callback">The timer callback.</param>
         /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="callback"/> doesn't refer to any method.</exception>
+        public AsyncTimer(ValueFunc<CancellationToken, Task<bool>> callback)
+        {
+            if (callback.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.EmptyValueDelegate, nameof(callback));
+            this.callback = callback;
+        }
+
+        /// <summary>
+        /// Initializes a new timer.
+        /// </summary>
+        /// <param name="callback">The timer callback.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="callback"/> is <see langword="null"/>.</exception>
         public AsyncTimer(Func<CancellationToken, Task<bool>> callback)
-            => this.callback = callback ?? throw new ArgumentNullException(nameof(callback));
+            : this(new ValueFunc<CancellationToken, Task<bool>>(callback))
+        {
+        }
 
         private async void OnTimer(object state, bool timedOut)
         {
@@ -35,7 +50,7 @@ namespace DotNext.Threading
             else if (state is CancellationToken token && processingState.FalseToTrue())
                 try
                 {
-                    if (!await callback(token).ConfigureAwait(false))
+                    if (!await callback.Invoke(token).ConfigureAwait(false))
                         Stop();
                 }
                 finally
