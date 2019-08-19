@@ -195,6 +195,7 @@ namespace DotNext.Threading
                 throw new ArgumentOutOfRangeException(nameof(capacity));
             if (factory.IsEmpty)
                 throw new ArgumentException(ExceptionMessages.EmptyValueDelegate, nameof(factory));
+            this.factory = factory;
             var rental = default(Rental);
             Action<Rental> callback = AdjustAvailableObjectAndCheckStarvation;
             for (var index = 0; index < capacity; index++)
