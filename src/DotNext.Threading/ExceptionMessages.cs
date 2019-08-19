@@ -21,5 +21,7 @@ namespace DotNext.Threading
         internal static string TokenNotCancelable => Resources.GetString("TokenNotCancelable");
 
         internal static string UnsupportedLockAcquisition => Resources.GetString("UnsupportedLockAcquisition");
+
+        internal static string EmptyValueDelegate => Resources.GetString("EmptyValueDelegate");
     }
 }

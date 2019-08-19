@@ -82,6 +82,11 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
+
+        /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => action?.Target;
@@ -252,6 +257,11 @@ namespace DotNext
             func = null;
             this.methodPtr = methodPtr;
         }
+
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
 
         /// <summary>
         /// Returns activator for type <typeparamref name="R"/> in the form of typed method pointer.
@@ -449,6 +459,11 @@ namespace DotNext
                 methodPtr = default;
             }
         }
+
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
 
         /// <summary>
         /// Initializes a new delegate using pointer to the static managed method.
@@ -662,6 +677,11 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
+
+        /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => action?.Target;
@@ -838,6 +858,11 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
+
+        /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => func?.Target;
@@ -1011,6 +1036,11 @@ namespace DotNext
             action = null;
             this.methodPtr = methodPtr;
         }
+
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -1193,6 +1223,11 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
+
+        /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => func?.Target;
@@ -1370,6 +1405,11 @@ namespace DotNext
             action = null;
             this.methodPtr = methodPtr;
         }
+
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -1556,6 +1596,11 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
+
+        /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => func?.Target;
@@ -1737,6 +1782,11 @@ namespace DotNext
             action = null;
             this.methodPtr = methodPtr;
         }
+
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -1923,6 +1973,11 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
+
+        /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
         public object Target => func?.Target;
@@ -2104,6 +2159,11 @@ namespace DotNext
             action = null;
             this.methodPtr = methodPtr;
         }
+
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -2291,6 +2351,11 @@ namespace DotNext
             action = null;
             this.methodPtr = methodPtr;
         }
+
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
