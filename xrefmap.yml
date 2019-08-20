@@ -1538,6 +1538,22 @@ references:
   fullName.vb: DotNext.Collections.Generic.Dictionary.TryGetValue(Of K, V)(System.Collections.Generic.IReadOnlyDictionary(Of K, V), K)
   nameWithType: Dictionary.TryGetValue<K, V>(IReadOnlyDictionary<K, V>, K)
   nameWithType.vb: Dictionary.TryGetValue(Of K, V)(IReadOnlyDictionary(Of K, V), K)
+- uid: DotNext.Collections.Generic.Dictionary.TryRemove*
+  name: TryRemove
+  href: api/DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_TryRemove_
+  commentId: Overload:DotNext.Collections.Generic.Dictionary.TryRemove
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.Dictionary.TryRemove
+  nameWithType: Dictionary.TryRemove
+- uid: DotNext.Collections.Generic.Dictionary.TryRemove``2(System.Collections.Generic.IDictionary{``0,``1},``0)
+  name: TryRemove<K, V>(IDictionary<K, V>, K)
+  href: api/DotNext.Collections.Generic.Dictionary.html#DotNext_Collections_Generic_Dictionary_TryRemove__2_System_Collections_Generic_IDictionary___0___1____0_
+  commentId: M:DotNext.Collections.Generic.Dictionary.TryRemove``2(System.Collections.Generic.IDictionary{``0,``1},``0)
+  name.vb: TryRemove(Of K, V)(IDictionary(Of K, V), K)
+  fullName: DotNext.Collections.Generic.Dictionary.TryRemove<K, V>(System.Collections.Generic.IDictionary<K, V>, K)
+  fullName.vb: DotNext.Collections.Generic.Dictionary.TryRemove(Of K, V)(System.Collections.Generic.IDictionary(Of K, V), K)
+  nameWithType: Dictionary.TryRemove<K, V>(IDictionary<K, V>, K)
+  nameWithType.vb: Dictionary.TryRemove(Of K, V)(IDictionary(Of K, V), K)
 - uid: DotNext.Collections.Generic.List
   name: List
   href: api/DotNext.Collections.Generic.List.html
@@ -5012,6 +5028,19 @@ references:
   isSpec: "True"
   fullName: DotNext.ICallable.DynamicInvoke
   nameWithType: ICallable.DynamicInvoke
+- uid: DotNext.ICallable.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ICallable.html#DotNext_ICallable_IsEmpty
+  commentId: P:DotNext.ICallable.IsEmpty
+  fullName: DotNext.ICallable.IsEmpty
+  nameWithType: ICallable.IsEmpty
+- uid: DotNext.ICallable.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ICallable.html#DotNext_ICallable_IsEmpty_
+  commentId: Overload:DotNext.ICallable.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ICallable.IsEmpty
+  nameWithType: ICallable.IsEmpty
 - uid: DotNext.ICallable.Target
   name: Target
   href: api/DotNext.ICallable.html#DotNext_ICallable_Target
@@ -25833,6 +25862,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode(System.Int64, System.Int32, System.Func(Of System.Int32, System.Int32, System.Int32), System.Boolean)
   nameWithType: Pointer<T>.BitwiseHashCode(Int64, Int32, Func<Int32, Int32, Int32>, Boolean)
   nameWithType.vb: Pointer(Of T).BitwiseHashCode(Int64, Int32, Func(Of Int32, Int32, Int32), Boolean)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode(System.Int64,System.Int32,ValueFunc{System.Int32,System.Int32,System.Int32}@,System.Boolean)
+  name: BitwiseHashCode(Int64, Int32, ValueFunc<Int32, Int32, Int32>, Boolean)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode_System_Int64_System_Int32_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode(System.Int64,System.Int32,ValueFunc{System.Int32,System.Int32,System.Int32}@,System.Boolean)
+  name.vb: BitwiseHashCode(Int64, Int32, ByRef ValueFunc(Of Int32, Int32, Int32), Boolean)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.BitwiseHashCode(System.Int64, System.Int32, ValueFunc<System.Int32, System.Int32, System.Int32>, System.Boolean)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode(System.Int64, System.Int32, ByRef ValueFunc(Of System.Int32, System.Int32, System.Int32), System.Boolean)
+  nameWithType: Pointer<T>.BitwiseHashCode(Int64, Int32, ValueFunc<Int32, Int32, Int32>, Boolean)
+  nameWithType.vb: Pointer(Of T).BitwiseHashCode(Int64, Int32, ByRef ValueFunc(Of Int32, Int32, Int32), Boolean)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode*
   name: BitwiseHashCode
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode_
@@ -25859,6 +25897,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode64(System.Int64, System.Int64, System.Func(Of System.Int64, System.Int64, System.Int64), System.Boolean)
   nameWithType: Pointer<T>.BitwiseHashCode64(Int64, Int64, Func<Int64, Int64, Int64>, Boolean)
   nameWithType.vb: Pointer(Of T).BitwiseHashCode64(Int64, Int64, Func(Of Int64, Int64, Int64), Boolean)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode64(System.Int64,System.Int64,ValueFunc{System.Int64,System.Int64,System.Int64}@,System.Boolean)
+  name: BitwiseHashCode64(Int64, Int64, ValueFunc<Int64, Int64, Int64>, Boolean)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode64_System_Int64_System_Int64_ValueFunc_System_Int64_System_Int64_System_Int64___System_Boolean_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode64(System.Int64,System.Int64,ValueFunc{System.Int64,System.Int64,System.Int64}@,System.Boolean)
+  name.vb: BitwiseHashCode64(Int64, Int64, ByRef ValueFunc(Of Int64, Int64, Int64), Boolean)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.BitwiseHashCode64(System.Int64, System.Int64, ValueFunc<System.Int64, System.Int64, System.Int64>, System.Boolean)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode64(System.Int64, System.Int64, ByRef ValueFunc(Of System.Int64, System.Int64, System.Int64), System.Boolean)
+  nameWithType: Pointer<T>.BitwiseHashCode64(Int64, Int64, ValueFunc<Int64, Int64, Int64>, Boolean)
+  nameWithType.vb: Pointer(Of T).BitwiseHashCode64(Int64, Int64, ByRef ValueFunc(Of Int64, Int64, Int64), Boolean)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode64*
   name: BitwiseHashCode64
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode64_
@@ -29242,6 +29289,15 @@ references:
   fullName.vb: DotNext.Threading.AsyncLazy(Of T).AsyncLazy(System.Func(Of System.Threading.Tasks.Task(Of T)), System.Boolean)
   nameWithType: AsyncLazy<T>.AsyncLazy(Func<Task<T>>, Boolean)
   nameWithType.vb: AsyncLazy(Of T).AsyncLazy(Func(Of Task(Of T)), Boolean)
+- uid: DotNext.Threading.AsyncLazy`1.#ctor(ValueFunc{System.Threading.Tasks.Task{`0}},System.Boolean)
+  name: AsyncLazy(ValueFunc<Task<T>>, Boolean)
+  href: api/DotNext.Threading.AsyncLazy-1.html#DotNext_Threading_AsyncLazy_1__ctor_ValueFunc_System_Threading_Tasks_Task__0___System_Boolean_
+  commentId: M:DotNext.Threading.AsyncLazy`1.#ctor(ValueFunc{System.Threading.Tasks.Task{`0}},System.Boolean)
+  name.vb: AsyncLazy(ValueFunc(Of Task(Of T)), Boolean)
+  fullName: DotNext.Threading.AsyncLazy<T>.AsyncLazy(ValueFunc<System.Threading.Tasks.Task<T>>, System.Boolean)
+  fullName.vb: DotNext.Threading.AsyncLazy(Of T).AsyncLazy(ValueFunc(Of System.Threading.Tasks.Task(Of T)), System.Boolean)
+  nameWithType: AsyncLazy<T>.AsyncLazy(ValueFunc<Task<T>>, Boolean)
+  nameWithType.vb: AsyncLazy(Of T).AsyncLazy(ValueFunc(Of Task(Of T)), Boolean)
 - uid: DotNext.Threading.AsyncLazy`1.#ctor*
   name: AsyncLazy
   href: api/DotNext.Threading.AsyncLazy-1.html#DotNext_Threading_AsyncLazy_1__ctor_
@@ -30029,6 +30085,15 @@ references:
   fullName.vb: DotNext.Threading.AsyncTimer.AsyncTimer(System.Func(Of System.Threading.CancellationToken, System.Threading.Tasks.Task(Of System.Boolean)))
   nameWithType: AsyncTimer.AsyncTimer(Func<CancellationToken, Task<Boolean>>)
   nameWithType.vb: AsyncTimer.AsyncTimer(Func(Of CancellationToken, Task(Of Boolean)))
+- uid: DotNext.Threading.AsyncTimer.#ctor(ValueFunc{System.Threading.CancellationToken,System.Threading.Tasks.Task{System.Boolean}})
+  name: AsyncTimer(ValueFunc<CancellationToken, Task<Boolean>>)
+  href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer__ctor_ValueFunc_System_Threading_CancellationToken_System_Threading_Tasks_Task_System_Boolean___
+  commentId: M:DotNext.Threading.AsyncTimer.#ctor(ValueFunc{System.Threading.CancellationToken,System.Threading.Tasks.Task{System.Boolean}})
+  name.vb: AsyncTimer(ValueFunc(Of CancellationToken, Task(Of Boolean)))
+  fullName: DotNext.Threading.AsyncTimer.AsyncTimer(ValueFunc<System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Boolean>>)
+  fullName.vb: DotNext.Threading.AsyncTimer.AsyncTimer(ValueFunc(Of System.Threading.CancellationToken, System.Threading.Tasks.Task(Of System.Boolean)))
+  nameWithType: AsyncTimer.AsyncTimer(ValueFunc<CancellationToken, Task<Boolean>>)
+  nameWithType.vb: AsyncTimer.AsyncTimer(ValueFunc(Of CancellationToken, Task(Of Boolean)))
 - uid: DotNext.Threading.AsyncTimer.#ctor*
   name: AsyncTimer
   href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer__ctor_
@@ -34578,6 +34643,15 @@ references:
   fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool(System.Int32, System.Func(Of T))
   nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool(Int32, Func<T>)
   nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool(Int32, Func(Of T))
+- uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Int32,ValueFunc{`0})
+  name: ConcurrentObjectPool(Int32, ValueFunc<T>)
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Int32_ValueFunc__0__
+  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Int32,ValueFunc{`0})
+  name.vb: ConcurrentObjectPool(Int32, ValueFunc(Of T))
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.ConcurrentObjectPool(System.Int32, ValueFunc<T>)
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool(System.Int32, ValueFunc(Of T))
+  nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool(Int32, ValueFunc<T>)
+  nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool(Int32, ValueFunc(Of T))
 - uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor*
   name: ConcurrentObjectPool
   href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_
@@ -36292,6 +36366,19 @@ references:
   isSpec: "True"
   fullName: DotNext.ValueAction.Invoke
   nameWithType: ValueAction.Invoke
+- uid: DotNext.ValueAction.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueAction.html#DotNext_ValueAction_IsEmpty
+  commentId: P:DotNext.ValueAction.IsEmpty
+  fullName: DotNext.ValueAction.IsEmpty
+  nameWithType: ValueAction.IsEmpty
+- uid: DotNext.ValueAction.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueAction.html#DotNext_ValueAction_IsEmpty_
+  commentId: Overload:DotNext.ValueAction.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueAction.IsEmpty
+  nameWithType: ValueAction.IsEmpty
 - uid: DotNext.ValueAction.op_Equality(DotNext.ValueAction@,DotNext.ValueAction@)
   name: Equality(ValueAction, ValueAction)
   href: api/DotNext.ValueAction.html#DotNext_ValueAction_op_Equality_DotNext_ValueAction__DotNext_ValueAction__
@@ -36513,6 +36600,23 @@ references:
   fullName.vb: DotNext.ValueAction(Of T).Invoke
   nameWithType: ValueAction<T>.Invoke
   nameWithType.vb: ValueAction(Of T).Invoke
+- uid: DotNext.ValueAction`1.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueAction-1.html#DotNext_ValueAction_1_IsEmpty
+  commentId: P:DotNext.ValueAction`1.IsEmpty
+  fullName: DotNext.ValueAction<T>.IsEmpty
+  fullName.vb: DotNext.ValueAction(Of T).IsEmpty
+  nameWithType: ValueAction<T>.IsEmpty
+  nameWithType.vb: ValueAction(Of T).IsEmpty
+- uid: DotNext.ValueAction`1.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueAction-1.html#DotNext_ValueAction_1_IsEmpty_
+  commentId: Overload:DotNext.ValueAction`1.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueAction<T>.IsEmpty
+  fullName.vb: DotNext.ValueAction(Of T).IsEmpty
+  nameWithType: ValueAction<T>.IsEmpty
+  nameWithType.vb: ValueAction(Of T).IsEmpty
 - uid: DotNext.ValueAction`1.op_Equality(DotNext.ValueAction{`0}@,DotNext.ValueAction{`0}@)
   name: Equality(ValueAction<T>, ValueAction<T>)
   href: api/DotNext.ValueAction-1.html#DotNext_ValueAction_1_op_Equality_DotNext_ValueAction__0___DotNext_ValueAction__0___
@@ -36752,6 +36856,23 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2).Invoke
   nameWithType: ValueAction<T1, T2>.Invoke
   nameWithType.vb: ValueAction(Of T1, T2).Invoke
+- uid: DotNext.ValueAction`2.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueAction-2.html#DotNext_ValueAction_2_IsEmpty
+  commentId: P:DotNext.ValueAction`2.IsEmpty
+  fullName: DotNext.ValueAction<T1, T2>.IsEmpty
+  fullName.vb: DotNext.ValueAction(Of T1, T2).IsEmpty
+  nameWithType: ValueAction<T1, T2>.IsEmpty
+  nameWithType.vb: ValueAction(Of T1, T2).IsEmpty
+- uid: DotNext.ValueAction`2.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueAction-2.html#DotNext_ValueAction_2_IsEmpty_
+  commentId: Overload:DotNext.ValueAction`2.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueAction<T1, T2>.IsEmpty
+  fullName.vb: DotNext.ValueAction(Of T1, T2).IsEmpty
+  nameWithType: ValueAction<T1, T2>.IsEmpty
+  nameWithType.vb: ValueAction(Of T1, T2).IsEmpty
 - uid: DotNext.ValueAction`2.op_Equality(DotNext.ValueAction{`0,`1}@,DotNext.ValueAction{`0,`1}@)
   name: Equality(ValueAction<T1, T2>, ValueAction<T1, T2>)
   href: api/DotNext.ValueAction-2.html#DotNext_ValueAction_2_op_Equality_DotNext_ValueAction__0__1___DotNext_ValueAction__0__1___
@@ -36991,6 +37112,23 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2, T3).Invoke
   nameWithType: ValueAction<T1, T2, T3>.Invoke
   nameWithType.vb: ValueAction(Of T1, T2, T3).Invoke
+- uid: DotNext.ValueAction`3.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueAction-3.html#DotNext_ValueAction_3_IsEmpty
+  commentId: P:DotNext.ValueAction`3.IsEmpty
+  fullName: DotNext.ValueAction<T1, T2, T3>.IsEmpty
+  fullName.vb: DotNext.ValueAction(Of T1, T2, T3).IsEmpty
+  nameWithType: ValueAction<T1, T2, T3>.IsEmpty
+  nameWithType.vb: ValueAction(Of T1, T2, T3).IsEmpty
+- uid: DotNext.ValueAction`3.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueAction-3.html#DotNext_ValueAction_3_IsEmpty_
+  commentId: Overload:DotNext.ValueAction`3.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueAction<T1, T2, T3>.IsEmpty
+  fullName.vb: DotNext.ValueAction(Of T1, T2, T3).IsEmpty
+  nameWithType: ValueAction<T1, T2, T3>.IsEmpty
+  nameWithType.vb: ValueAction(Of T1, T2, T3).IsEmpty
 - uid: DotNext.ValueAction`3.op_Equality(DotNext.ValueAction{`0,`1,`2}@,DotNext.ValueAction{`0,`1,`2}@)
   name: Equality(ValueAction<T1, T2, T3>, ValueAction<T1, T2, T3>)
   href: api/DotNext.ValueAction-3.html#DotNext_ValueAction_3_op_Equality_DotNext_ValueAction__0__1__2___DotNext_ValueAction__0__1__2___
@@ -37230,6 +37368,23 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4).Invoke
   nameWithType: ValueAction<T1, T2, T3, T4>.Invoke
   nameWithType.vb: ValueAction(Of T1, T2, T3, T4).Invoke
+- uid: DotNext.ValueAction`4.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueAction-4.html#DotNext_ValueAction_4_IsEmpty
+  commentId: P:DotNext.ValueAction`4.IsEmpty
+  fullName: DotNext.ValueAction<T1, T2, T3, T4>.IsEmpty
+  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4).IsEmpty
+  nameWithType: ValueAction<T1, T2, T3, T4>.IsEmpty
+  nameWithType.vb: ValueAction(Of T1, T2, T3, T4).IsEmpty
+- uid: DotNext.ValueAction`4.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueAction-4.html#DotNext_ValueAction_4_IsEmpty_
+  commentId: Overload:DotNext.ValueAction`4.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueAction<T1, T2, T3, T4>.IsEmpty
+  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4).IsEmpty
+  nameWithType: ValueAction<T1, T2, T3, T4>.IsEmpty
+  nameWithType.vb: ValueAction(Of T1, T2, T3, T4).IsEmpty
 - uid: DotNext.ValueAction`4.op_Equality(DotNext.ValueAction{`0,`1,`2,`3}@,DotNext.ValueAction{`0,`1,`2,`3}@)
   name: Equality(ValueAction<T1, T2, T3, T4>, ValueAction<T1, T2, T3, T4>)
   href: api/DotNext.ValueAction-4.html#DotNext_ValueAction_4_op_Equality_DotNext_ValueAction__0__1__2__3___DotNext_ValueAction__0__1__2__3___
@@ -37469,6 +37624,23 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4, T5).Invoke
   nameWithType: ValueAction<T1, T2, T3, T4, T5>.Invoke
   nameWithType.vb: ValueAction(Of T1, T2, T3, T4, T5).Invoke
+- uid: DotNext.ValueAction`5.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueAction-5.html#DotNext_ValueAction_5_IsEmpty
+  commentId: P:DotNext.ValueAction`5.IsEmpty
+  fullName: DotNext.ValueAction<T1, T2, T3, T4, T5>.IsEmpty
+  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4, T5).IsEmpty
+  nameWithType: ValueAction<T1, T2, T3, T4, T5>.IsEmpty
+  nameWithType.vb: ValueAction(Of T1, T2, T3, T4, T5).IsEmpty
+- uid: DotNext.ValueAction`5.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueAction-5.html#DotNext_ValueAction_5_IsEmpty_
+  commentId: Overload:DotNext.ValueAction`5.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueAction<T1, T2, T3, T4, T5>.IsEmpty
+  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4, T5).IsEmpty
+  nameWithType: ValueAction<T1, T2, T3, T4, T5>.IsEmpty
+  nameWithType.vb: ValueAction(Of T1, T2, T3, T4, T5).IsEmpty
 - uid: DotNext.ValueAction`5.op_Equality(DotNext.ValueAction{`0,`1,`2,`3,`4}@,DotNext.ValueAction{`0,`1,`2,`3,`4}@)
   name: Equality(ValueAction<T1, T2, T3, T4, T5>, ValueAction<T1, T2, T3, T4, T5>)
   href: api/DotNext.ValueAction-5.html#DotNext_ValueAction_5_op_Equality_DotNext_ValueAction__0__1__2__3__4___DotNext_ValueAction__0__1__2__3__4___
@@ -37742,6 +37914,23 @@ references:
   fullName.vb: DotNext.ValueFunc(Of R).Invoke
   nameWithType: ValueFunc<R>.Invoke
   nameWithType.vb: ValueFunc(Of R).Invoke
+- uid: DotNext.ValueFunc`1.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-1.html#DotNext_ValueFunc_1_IsEmpty
+  commentId: P:DotNext.ValueFunc`1.IsEmpty
+  fullName: DotNext.ValueFunc<R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of R).IsEmpty
+  nameWithType: ValueFunc<R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of R).IsEmpty
+- uid: DotNext.ValueFunc`1.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-1.html#DotNext_ValueFunc_1_IsEmpty_
+  commentId: Overload:DotNext.ValueFunc`1.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueFunc<R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of R).IsEmpty
+  nameWithType: ValueFunc<R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of R).IsEmpty
 - uid: DotNext.ValueFunc`1.op_Equality(DotNext.ValueFunc{`0}@,DotNext.ValueFunc{`0}@)
   name: Equality(ValueFunc<R>, ValueFunc<R>)
   href: api/DotNext.ValueFunc-1.html#DotNext_ValueFunc_1_op_Equality_DotNext_ValueFunc__0___DotNext_ValueFunc__0___
@@ -38000,6 +38189,23 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T, R).Invoke
   nameWithType: ValueFunc<T, R>.Invoke
   nameWithType.vb: ValueFunc(Of T, R).Invoke
+- uid: DotNext.ValueFunc`2.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-2.html#DotNext_ValueFunc_2_IsEmpty
+  commentId: P:DotNext.ValueFunc`2.IsEmpty
+  fullName: DotNext.ValueFunc<T, R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of T, R).IsEmpty
+  nameWithType: ValueFunc<T, R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of T, R).IsEmpty
+- uid: DotNext.ValueFunc`2.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-2.html#DotNext_ValueFunc_2_IsEmpty_
+  commentId: Overload:DotNext.ValueFunc`2.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueFunc<T, R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of T, R).IsEmpty
+  nameWithType: ValueFunc<T, R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of T, R).IsEmpty
 - uid: DotNext.ValueFunc`2.op_Equality(DotNext.ValueFunc{`0,`1}@,DotNext.ValueFunc{`0,`1}@)
   name: Equality(ValueFunc<T, R>, ValueFunc<T, R>)
   href: api/DotNext.ValueFunc-2.html#DotNext_ValueFunc_2_op_Equality_DotNext_ValueFunc__0__1___DotNext_ValueFunc__0__1___
@@ -38248,6 +38454,23 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, R).Invoke
   nameWithType: ValueFunc<T1, T2, R>.Invoke
   nameWithType.vb: ValueFunc(Of T1, T2, R).Invoke
+- uid: DotNext.ValueFunc`3.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-3.html#DotNext_ValueFunc_3_IsEmpty
+  commentId: P:DotNext.ValueFunc`3.IsEmpty
+  fullName: DotNext.ValueFunc<T1, T2, R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, R).IsEmpty
+  nameWithType: ValueFunc<T1, T2, R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of T1, T2, R).IsEmpty
+- uid: DotNext.ValueFunc`3.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-3.html#DotNext_ValueFunc_3_IsEmpty_
+  commentId: Overload:DotNext.ValueFunc`3.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueFunc<T1, T2, R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, R).IsEmpty
+  nameWithType: ValueFunc<T1, T2, R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of T1, T2, R).IsEmpty
 - uid: DotNext.ValueFunc`3.op_Equality(DotNext.ValueFunc{`0,`1,`2}@,DotNext.ValueFunc{`0,`1,`2}@)
   name: Equality(ValueFunc<T1, T2, R>, ValueFunc<T1, T2, R>)
   href: api/DotNext.ValueFunc-3.html#DotNext_ValueFunc_3_op_Equality_DotNext_ValueFunc__0__1__2___DotNext_ValueFunc__0__1__2___
@@ -38487,6 +38710,23 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, R).Invoke
   nameWithType: ValueFunc<T1, T2, T3, R>.Invoke
   nameWithType.vb: ValueFunc(Of T1, T2, T3, R).Invoke
+- uid: DotNext.ValueFunc`4.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-4.html#DotNext_ValueFunc_4_IsEmpty
+  commentId: P:DotNext.ValueFunc`4.IsEmpty
+  fullName: DotNext.ValueFunc<T1, T2, T3, R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, R).IsEmpty
+  nameWithType: ValueFunc<T1, T2, T3, R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of T1, T2, T3, R).IsEmpty
+- uid: DotNext.ValueFunc`4.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-4.html#DotNext_ValueFunc_4_IsEmpty_
+  commentId: Overload:DotNext.ValueFunc`4.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueFunc<T1, T2, T3, R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, R).IsEmpty
+  nameWithType: ValueFunc<T1, T2, T3, R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of T1, T2, T3, R).IsEmpty
 - uid: DotNext.ValueFunc`4.op_Equality(DotNext.ValueFunc{`0,`1,`2,`3}@,DotNext.ValueFunc{`0,`1,`2,`3}@)
   name: Equality(ValueFunc<T1, T2, T3, R>, ValueFunc<T1, T2, T3, R>)
   href: api/DotNext.ValueFunc-4.html#DotNext_ValueFunc_4_op_Equality_DotNext_ValueFunc__0__1__2__3___DotNext_ValueFunc__0__1__2__3___
@@ -38726,6 +38966,23 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, R).Invoke
   nameWithType: ValueFunc<T1, T2, T3, T4, R>.Invoke
   nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, R).Invoke
+- uid: DotNext.ValueFunc`5.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-5.html#DotNext_ValueFunc_5_IsEmpty
+  commentId: P:DotNext.ValueFunc`5.IsEmpty
+  fullName: DotNext.ValueFunc<T1, T2, T3, T4, R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, R).IsEmpty
+  nameWithType: ValueFunc<T1, T2, T3, T4, R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, R).IsEmpty
+- uid: DotNext.ValueFunc`5.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-5.html#DotNext_ValueFunc_5_IsEmpty_
+  commentId: Overload:DotNext.ValueFunc`5.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueFunc<T1, T2, T3, T4, R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, R).IsEmpty
+  nameWithType: ValueFunc<T1, T2, T3, T4, R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, R).IsEmpty
 - uid: DotNext.ValueFunc`5.op_Equality(DotNext.ValueFunc{`0,`1,`2,`3,`4}@,DotNext.ValueFunc{`0,`1,`2,`3,`4}@)
   name: Equality(ValueFunc<T1, T2, T3, T4, R>, ValueFunc<T1, T2, T3, T4, R>)
   href: api/DotNext.ValueFunc-5.html#DotNext_ValueFunc_5_op_Equality_DotNext_ValueFunc__0__1__2__3__4___DotNext_ValueFunc__0__1__2__3__4___
@@ -38965,6 +39222,23 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R).Invoke
   nameWithType: ValueFunc<T1, T2, T3, T4, T5, R>.Invoke
   nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, T5, R).Invoke
+- uid: DotNext.ValueFunc`6.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-6.html#DotNext_ValueFunc_6_IsEmpty
+  commentId: P:DotNext.ValueFunc`6.IsEmpty
+  fullName: DotNext.ValueFunc<T1, T2, T3, T4, T5, R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R).IsEmpty
+  nameWithType: ValueFunc<T1, T2, T3, T4, T5, R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, T5, R).IsEmpty
+- uid: DotNext.ValueFunc`6.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueFunc-6.html#DotNext_ValueFunc_6_IsEmpty_
+  commentId: Overload:DotNext.ValueFunc`6.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueFunc<T1, T2, T3, T4, T5, R>.IsEmpty
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R).IsEmpty
+  nameWithType: ValueFunc<T1, T2, T3, T4, T5, R>.IsEmpty
+  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, T5, R).IsEmpty
 - uid: DotNext.ValueFunc`6.op_Equality(DotNext.ValueFunc{`0,`1,`2,`3,`4,`5}@,DotNext.ValueFunc{`0,`1,`2,`3,`4,`5}@)
   name: Equality(ValueFunc<T1, T2, T3, T4, T5, R>, ValueFunc<T1, T2, T3, T4, T5, R>)
   href: api/DotNext.ValueFunc-6.html#DotNext_ValueFunc_6_op_Equality_DotNext_ValueFunc__0__1__2__3__4__5___DotNext_ValueFunc__0__1__2__3__4__5___
@@ -39205,6 +39479,23 @@ references:
   fullName.vb: DotNext.ValueRefAction(Of T, TArgs).Invoke
   nameWithType: ValueRefAction<T, TArgs>.Invoke
   nameWithType.vb: ValueRefAction(Of T, TArgs).Invoke
+- uid: DotNext.ValueRefAction`2.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_IsEmpty
+  commentId: P:DotNext.ValueRefAction`2.IsEmpty
+  fullName: DotNext.ValueRefAction<T, TArgs>.IsEmpty
+  fullName.vb: DotNext.ValueRefAction(Of T, TArgs).IsEmpty
+  nameWithType: ValueRefAction<T, TArgs>.IsEmpty
+  nameWithType.vb: ValueRefAction(Of T, TArgs).IsEmpty
+- uid: DotNext.ValueRefAction`2.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_IsEmpty_
+  commentId: Overload:DotNext.ValueRefAction`2.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueRefAction<T, TArgs>.IsEmpty
+  fullName.vb: DotNext.ValueRefAction(Of T, TArgs).IsEmpty
+  nameWithType: ValueRefAction<T, TArgs>.IsEmpty
+  nameWithType.vb: ValueRefAction(Of T, TArgs).IsEmpty
 - uid: DotNext.ValueRefAction`2.op_Equality(DotNext.ValueRefAction{`0,`1}@,DotNext.ValueAction{`0,`1}@)
   name: Equality(ValueRefAction<T, TArgs>, ValueAction<T, TArgs>)
   href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_op_Equality_DotNext_ValueRefAction__0__1___DotNext_ValueAction__0__1___
@@ -39737,15 +40028,15 @@ references:
   isSpec: "True"
   fullName: DotNext.ValueTypeExtensions.TryGet
   nameWithType: ValueTypeExtensions.TryGet
-- uid: DotNext.ValueTypeExtensions.TryGet``1(System.Nullable{``0},``0@)
+- uid: DotNext.ValueTypeExtensions.TryGet``1(System.Nullable{``0}@,``0@)
   name: TryGet<T>(Nullable<T>, out T)
-  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_TryGet__1_System_Nullable___0____0__
-  commentId: M:DotNext.ValueTypeExtensions.TryGet``1(System.Nullable{``0},``0@)
-  name.vb: TryGet(Of T)(Nullable(Of T), ByRef T)
+  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_TryGet__1_System_Nullable___0_____0__
+  commentId: M:DotNext.ValueTypeExtensions.TryGet``1(System.Nullable{``0}@,``0@)
+  name.vb: TryGet(Of T)(ByRef Nullable(Of T), ByRef T)
   fullName: DotNext.ValueTypeExtensions.TryGet<T>(System.Nullable<T>, out T)
-  fullName.vb: DotNext.ValueTypeExtensions.TryGet(Of T)(System.Nullable(Of T), ByRef T)
+  fullName.vb: DotNext.ValueTypeExtensions.TryGet(Of T)(ByRef System.Nullable(Of T), ByRef T)
   nameWithType: ValueTypeExtensions.TryGet<T>(Nullable<T>, out T)
-  nameWithType.vb: ValueTypeExtensions.TryGet(Of T)(Nullable(Of T), ByRef T)
+  nameWithType.vb: ValueTypeExtensions.TryGet(Of T)(ByRef Nullable(Of T), ByRef T)
 - uid: DotNext.ValueTypeExtensions.Xor(System.IntPtr,System.IntPtr)
   name: Xor(IntPtr, IntPtr)
   href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_Xor_System_IntPtr_System_IntPtr_

@@ -97,7 +97,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTimer__ctor_System_Func_System_Threading_CancellationToken_System_Threading_Tasks_Task_System_Boolean___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTimer.%23ctor(System.Func%7BSystem.Threading.CancellationToken%2CSystem.Threading.Tasks.Task%7BSystem.Boolean%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L26">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L39">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTimer__ctor_" data-uid="DotNext.Threading.AsyncTimer.#ctor*"></a>
   <h4 id="DotNext_Threading_AsyncTimer__ctor_System_Func_System_Threading_CancellationToken_System_Threading_Tasks_Task_System_Boolean___" data-uid="DotNext.Threading.AsyncTimer.#ctor(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task{System.Boolean}})">AsyncTimer(Func&lt;CancellationToken, Task&lt;Boolean&gt;&gt;)</h4>
@@ -142,6 +142,61 @@
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTimer__ctor_ValueFunc_System_Threading_CancellationToken_System_Threading_Tasks_Task_System_Boolean___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTimer.%23ctor(ValueFunc%7BSystem.Threading.CancellationToken%2CSystem.Threading.Tasks.Task%7BSystem.Boolean%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L27">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncTimer__ctor_" data-uid="DotNext.Threading.AsyncTimer.#ctor*"></a>
+  <h4 id="DotNext_Threading_AsyncTimer__ctor_ValueFunc_System_Threading_CancellationToken_System_Threading_Tasks_Task_System_Boolean___" data-uid="DotNext.Threading.AsyncTimer.#ctor(ValueFunc{System.Threading.CancellationToken,System.Threading.Tasks.Task{System.Boolean}})">AsyncTimer(ValueFunc&lt;CancellationToken, Task&lt;Boolean&gt;&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new timer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public AsyncTimer(ValueFunc&lt;CancellationToken, Task&lt;bool&gt;&gt; callback)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;&gt;</td>
+        <td><span class="parametername">callback</span></td>
+        <td><p>The timer callback.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">callback</code> is <span class="xref">null</span>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">callback</code> doesn't refer to any method.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
@@ -149,7 +204,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTimer_IsRunning.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTimer.IsRunning%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L51">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L66">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTimer_IsRunning_" data-uid="DotNext.Threading.AsyncTimer.IsRunning*"></a>
   <h4 id="DotNext_Threading_AsyncTimer_IsRunning" data-uid="DotNext.Threading.AsyncTimer.IsRunning">IsRunning</h4>
@@ -182,7 +237,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTimer_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTimer.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L106">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L121">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTimer_Dispose_" data-uid="DotNext.Threading.AsyncTimer.Dispose*"></a>
   <h4 id="DotNext_Threading_AsyncTimer_Dispose_System_Boolean_" data-uid="DotNext.Threading.AsyncTimer.Dispose(System.Boolean)">Dispose(Boolean)</h4>
@@ -216,7 +271,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTimer_Start_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTimer.Start(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L59">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L74">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTimer_Start_" data-uid="DotNext.Threading.AsyncTimer.Start*"></a>
   <h4 id="DotNext_Threading_AsyncTimer_Start_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncTimer.Start(System.TimeSpan,System.Threading.CancellationToken)">Start(TimeSpan, CancellationToken)</h4>
@@ -272,7 +327,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTimer_Stop_System_Threading_WaitHandle_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTimer.Stop(System.Threading.WaitHandle)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L75">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L90">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTimer_Stop_" data-uid="DotNext.Threading.AsyncTimer.Stop*"></a>
   <h4 id="DotNext_Threading_AsyncTimer_Stop_System_Threading_WaitHandle_" data-uid="DotNext.Threading.AsyncTimer.Stop(System.Threading.WaitHandle)">Stop(WaitHandle)</h4>
@@ -322,7 +377,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTimer_StopAsync.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTimer.StopAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L100">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L115">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTimer_StopAsync_" data-uid="DotNext.Threading.AsyncTimer.StopAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTimer_StopAsync" data-uid="DotNext.Threading.AsyncTimer.StopAsync">StopAsync()</h4>
@@ -354,7 +409,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncTimer_StopAsync_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncTimer.StopAsync(System.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L90">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncTimer.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncTimer_StopAsync_" data-uid="DotNext.Threading.AsyncTimer.StopAsync*"></a>
   <h4 id="DotNext_Threading_AsyncTimer_StopAsync_System_TimeSpan_" data-uid="DotNext.Threading.AsyncTimer.StopAsync(System.TimeSpan)">StopAsync(TimeSpan)</h4>

@@ -119,7 +119,7 @@ and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collectio
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_ConvertValues__3_System_Collections_Generic_IReadOnlyDictionary___0___1__DotNext_ValueFunc___1___2___.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.ConvertValues%60%603(System.Collections.Generic.IReadOnlyDictionary%7B%60%600%2C%60%601%7D%2CDotNext.ValueFunc%7B%60%601%2C%60%602%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L270">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L281">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Dictionary_ConvertValues_" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValues*"></a>
   <h4 id="DotNext_Collections_Generic_Dictionary_ConvertValues__3_System_Collections_Generic_IReadOnlyDictionary___0___1__DotNext_ValueFunc___1___2___" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValues``3(System.Collections.Generic.IReadOnlyDictionary{``0,``1},DotNext.ValueFunc{``1,``2}@)">ConvertValues&lt;K, V, T&gt;(IReadOnlyDictionary&lt;K, V&gt;, ValueFunc&lt;V, T&gt;)</h4>
@@ -201,7 +201,7 @@ and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collectio
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_ConvertValues__3_System_Collections_Generic_IReadOnlyDictionary___0___1__System_Converter___1___2__.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.ConvertValues%60%603(System.Collections.Generic.IReadOnlyDictionary%7B%60%600%2C%60%601%7D%2CSystem.Converter%7B%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L282">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L293">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Dictionary_ConvertValues_" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValues*"></a>
   <h4 id="DotNext_Collections_Generic_Dictionary_ConvertValues__3_System_Collections_Generic_IReadOnlyDictionary___0___1__System_Converter___1___2__" data-uid="DotNext.Collections.Generic.Dictionary.ConvertValues``3(System.Collections.Generic.IReadOnlyDictionary{``0,``1},System.Converter{``1,``2})">ConvertValues&lt;K, V, T&gt;(IReadOnlyDictionary&lt;K, V&gt;, Converter&lt;V, T&gt;)</h4>
@@ -482,6 +482,7 @@ and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collectio
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static V GetOrAdd&lt;K, V&gt;(this Dictionary&lt;K, V&gt; dictionary, K key)
+
     where V : new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1268,7 +1269,7 @@ delegate attached to the dictionary instance.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_TryGetValue__2_System_Collections_Generic_IReadOnlyDictionary___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.TryGetValue%60%602(System.Collections.Generic.IReadOnlyDictionary%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L258">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L269">View Source</a>
   </span>
   <a id="DotNext_Collections_Generic_Dictionary_TryGetValue_" data-uid="DotNext.Collections.Generic.Dictionary.TryGetValue*"></a>
   <h4 id="DotNext_Collections_Generic_Dictionary_TryGetValue__2_System_Collections_Generic_IReadOnlyDictionary___0___1____0_" data-uid="DotNext.Collections.Generic.Dictionary.TryGetValue``2(System.Collections.Generic.IReadOnlyDictionary{``0,``1},``0)">TryGetValue&lt;K, V&gt;(IReadOnlyDictionary&lt;K, V&gt;, K)</h4>
@@ -1315,6 +1316,83 @@ delegate attached to the dictionary instance.</p>
       <tr>
         <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;V&gt;</td>
         <td><p>The optional value associated with the key.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">K</span></td>
+        <td><p>Type of dictionary keys.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">V</span></td>
+        <td><p>Type of dictionary values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Collections_Generic_Dictionary_TryRemove__2_System_Collections_Generic_IDictionary___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Collections.Generic.Dictionary.TryRemove%60%602(System.Collections.Generic.IDictionary%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Collections/Generic/Dictionary.cs/#L258">View Source</a>
+  </span>
+  <a id="DotNext_Collections_Generic_Dictionary_TryRemove_" data-uid="DotNext.Collections.Generic.Dictionary.TryRemove*"></a>
+  <h4 id="DotNext_Collections_Generic_Dictionary_TryRemove__2_System_Collections_Generic_IDictionary___0___1____0_" data-uid="DotNext.Collections.Generic.Dictionary.TryRemove``2(System.Collections.Generic.IDictionary{``0,``1},``0)">TryRemove&lt;K, V&gt;(IDictionary&lt;K, V&gt;, K)</h4>
+  <div class="markdown level1 summary"><p>Removes the value with the specified key and return the removed value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static Optional&lt;V&gt; TryRemove&lt;K, V&gt;(this IDictionary&lt;K, V&gt; dictionary, K key)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.idictionary-2">IDictionary</a>&lt;K, V&gt;</td>
+        <td><span class="parametername">dictionary</span></td>
+        <td><p>A dictionary to modify.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">K</span></td>
+        <td><span class="parametername">key</span></td>
+        <td><p>The key of the element to remove.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;V&gt;</td>
+        <td><p>The removed value.</p>
 </td>
       </tr>
     </tbody>
