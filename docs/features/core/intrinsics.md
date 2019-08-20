@@ -36,7 +36,7 @@ Functionality of [Memory](../../api/DotNext.Runtime.InteropServices.Memory.yml) 
 1. Memory equality and comparison
 1. Utility methods to work with [typedref](https://docs.microsoft.com/en-us/dotnet/api/system.typedreference) special type
 1. Moving memory content
-1. Utilities to work with managed pointers (typed `T&`)
+1. Utilities to work with managed pointers (type `T&`)
 
 All these features allow to manipulate managed and unmanaged memory to achieve the best perfomance. Regular business applications usually don't need such functionality.
 
