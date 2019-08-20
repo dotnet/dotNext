@@ -601,7 +601,18 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">The custom hash function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
-        public unsafe int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
+        public int BitwiseHashCode(long count, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            => BitwiseHashCode(count, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+
+        /// <summary>
+        /// Computes 32-bit hash code for the block of memory identified by this pointer.
+        /// </summary>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+        /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
+        /// <param name="hashFunction">The custom hash function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Content hash code.</returns>
+        public unsafe int BitwiseHashCode(long count, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
             => IsNull ? 0 : Memory.GetHashCode32(value, count * Size, hash, hashFunction, salted);
 
         /// <summary>
@@ -612,8 +623,19 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">The custom hash function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
-        public unsafe long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
+        public unsafe long BitwiseHashCode64(long count, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
             => IsNull ? 0 : Memory.GetHashCode64(value, count * Size, hash, hashFunction, salted);
+
+        /// <summary>
+        /// Computes 64-bit hash code for the block of memory identified by this pointer.
+        /// </summary>
+        /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this pointer.</param>
+        /// <param name="hash">Initial value of the hash to be passed into hashing function.</param>
+        /// <param name="hashFunction">The custom hash function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Content hash code.</returns>
+        public long BitwiseHashCode64(long count, long hash, Func<long, long, long> hashFunction, bool salted = true)
+            => BitwiseHashCode64(count, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
 
         /// <summary>
         /// Bitwise comparison of two memory blocks.

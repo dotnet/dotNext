@@ -1,7 +1,32 @@
 Release Notes
 ====
+# 08-20-2019
 
-# 08-18-209
+<a href="https://www.nuget.org/packages/dotnext/0.13.0">DotNext 0.13.0</a>
+* Fixed bug with equality comparison of **null** arrays inside of [EqualityComparerBuilder](https://sakno.github.io/dotNext/api/DotNext.EqualityComparerBuilder-1.html)
+* Improved debugging experience:
+	* SourceLink is enabled
+	* Debug symbols now embedded into assembly file
+	* NuGet Symbols Package is no longer used
+
+<a href="https://www.nuget.org/packages/dotnext.threading/0.13.0">DotNext.Threading 0.13.0</a>
+* Internals of several classes now based on Value Delegates to reduce memory allocations
+* Improved debugging experience:
+	* SourceLink is enabled
+	* Debug symbols now embedded into assembly file
+	* NuGet Symbols Package is no longer used
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/0.13.0">DotNext.Unsafe 0.13.0</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.reflection/0.13.0">DotNext.Reflection 0.13.0</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/0.13.0">DotNext.Metaprogramming 0.13.0</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/0.3.0">DotNext.Net.Cluster 0.3.0</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.3.0">DotNext.AspNetCore.Cluster 0.3.0</a>
+* Improved debugging experience:
+	* SourceLink is enabled
+	* Debug symbols now embedded into assembly file
+	* NuGet Symbols Package is no longer used
+
+# 08-18-2019
 <a href="https://www.nuget.org/packages/dotnext/0.12.0">DotNext 0.12.0</a>
 * Value (struct) Delegates are introduced as allocation-free alternative to classic delegates
 * Atomic&lt;T&gt; is added to provide atomic memory access operations for arbitrary value types

@@ -7,6 +7,8 @@ using System.Threading;
 
 namespace DotNext.Threading
 {
+    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
+
     /// <summary>
     /// Provides container for the thread-unsafe objects that can be shared
     /// between threads concurrently.
@@ -123,11 +125,11 @@ namespace DotNext.Threading
             //and no longer starving
             //call to this method must be protected by the lock using TryAcquire
             //used by SJF strategy only
-            internal void Renew(long timeToLive, Func<T> factory)
+            internal void Renew(long timeToLive, in ValueFunc<T> factory)
             {
                 this.timeToLive.VolatileWrite(timeToLive);
                 if (resource is null)
-                    resource = factory();
+                    resource = factory.Invoke();
             }
 
             //used by SJF strategy only
@@ -172,11 +174,8 @@ namespace DotNext.Threading
                 resource = null;
             }
         }
-
-        //cached delegates to avoid allocations
-        private static readonly Func<Rental, Rental, Rental> SelectLastRenal = (current, update) => current is null || current.IsPredecessorOf(update) ? update : current;
-        private static readonly Func<Rental, Rental> SelectNextRental = current => current.Next;
-        private readonly Func<T> factory;
+        
+        private readonly ValueFunc<T> factory;
         private AtomicReference<Rental> last, current;
         [SuppressMessage("Design", "IDE0032", Justification = "Volatile operations are applied directly to this field")]
         private int waitCount;
@@ -192,11 +191,13 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentNullException"><paramref name="factory"/> is <see langword="null"/>.</exception>
         /// <seealso href="https://en.wikipedia.org/wiki/Shortest_job_next">Shortest Job First</seealso>
         [SuppressMessage("Reliability", "CA2000", Justification = "Rental object is reusable and should not be destroyed in ctor")]
-        public ConcurrentObjectPool(int capacity, Func<T> factory)
+        public ConcurrentObjectPool(int capacity, ValueFunc<T> factory)
         {
             if (capacity < 1)
                 throw new ArgumentOutOfRangeException(nameof(capacity));
-            this.factory = factory ?? throw new ArgumentNullException(nameof(factory));
+            if (factory.IsEmpty)
+                throw new ArgumentException(ExceptionMessages.EmptyValueDelegate, nameof(factory));
+            this.factory = factory;
             var rental = default(Rental);
             Action<Rental> callback = AdjustAvailableObjectAndCheckStarvation;
             for (var index = 0; index < capacity; index++)
@@ -219,6 +220,20 @@ namespace DotNext.Threading
         }
 
         /// <summary>
+        /// Initializes object pool that will apply Shortest Job First scheduling
+        /// strategy.
+        /// </summary>
+        /// <param name="capacity">The maximum objects in the pool.</param>
+        /// <param name="factory">The delegate instance that is used for lazy instantiation of objects in the pool.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="capacity"/> is less than zero.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="factory"/> is <see langword="null"/>.</exception>
+        /// <seealso href="https://en.wikipedia.org/wiki/Shortest_job_next">Shortest Job First</seealso>
+        public ConcurrentObjectPool(int capacity, Func<T> factory)
+            : this(capacity, new ValueFunc<T>(factory))
+        {
+        }
+
+        /// <summary>
         /// Initializes object pool that will apply Round-robing scheduling
         /// strategy.
         /// </summary>
@@ -228,7 +243,7 @@ namespace DotNext.Threading
         [SuppressMessage("Reliability", "CA2000", Justification = "Rental object is reusable and should not be destroyed in ctor")]
         public ConcurrentObjectPool(IEnumerable<T> objects)
         {
-            factory = null;
+            factory = default;
             var rental = default(Rental);
             var index = 0;
             foreach (var resource in objects)
@@ -249,11 +264,16 @@ namespace DotNext.Threading
             Capacity = index;
         }
 
+        private static Rental SelectNextRental(Rental current) => current.Next;
+
+        private static Rental SelectLastRenal(Rental current, Rental update) => current is null || current.IsPredecessorOf(update) ? update : current;
+
         //release object according with Shortest Job First algorithm
+        [RuntimeFeatures(Augmentation = true)]
         private void AdjustAvailableObjectAndCheckStarvation(Rental rental)
         {
             current.Value = rental.Previous;
-            rental = last.AccumulateAndGet(rental, SelectLastRenal);
+            rental = last.AccumulateAndGet(rental, new ValueFunc<Rental, Rental, Rental>(SelectLastRenal));
             //starvation detected, dispose the resource stored in rental object
             if (rental.Starve())
                 last.Value = rental.IsFirst ? null : rental.Previous;
@@ -280,15 +300,16 @@ namespace DotNext.Threading
         /// Rents the object from this pool.
         /// </summary>
         /// <returns>The object allows to control lifetime of the rent.</returns>
+        [RuntimeFeatures(Augmentation = true)]
         public IRental Rent()
         {
             waitCount.IncrementAndGet();
             for (var spinner = new SpinWait(); ; spinner.SpinOnce())
             {
-                var rental = current.UpdateAndGet(SelectNextRental);
+                var rental = current.UpdateAndGet(new ValueFunc<Rental, Rental>(SelectNextRental));
                 if (!rental.TryAcquire()) continue;
                 waitCount.DecrementAndGet();
-                if (!(factory is null))
+                if (!factory.IsEmpty)
                     rental.Renew(lifetime, factory);
                 return rental;
             }
@@ -310,7 +331,7 @@ namespace DotNext.Threading
                 for (Rental rental = current.Value, next; !(rental is null); rental = next)
                 {
                     next = rental.Next;
-                    rental.Destroy(!(factory is null));
+                    rental.Destroy(!factory.IsEmpty);
                 }
                 current = last = default;
             }

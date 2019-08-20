@@ -13,6 +13,7 @@ namespace DotNext.Runtime.CompilerServices
     /// </remarks>
     /// <typeparam name="TAwaiter">Any type implementing awaiter pattern</typeparam>
     [Concept]
+    [BeforeFieldInit(false)]
     public static class NotifyCompletion<TAwaiter>
         where TAwaiter : INotifyCompletion
     {

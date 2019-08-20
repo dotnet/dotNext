@@ -25,6 +25,9 @@ namespace DotNext
             return salted ? hashCode * HashSalt + RandomExtensions.BitwiseHashSalt : hashCode;
         }
 
+        internal static bool SequenceEqual(IEnumerable<object> first, IEnumerable<object> second)
+            => first is null || second is null ? ReferenceEquals(first, second) : Enumerable.SequenceEqual(first, second);
+
         /// <summary>
         /// Apply specified action to each collection element.
         /// </summary>

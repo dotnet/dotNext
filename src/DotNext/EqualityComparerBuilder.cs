@@ -83,10 +83,8 @@ namespace DotNext
             => itemType.IsValueType ?
                 typeof(OneDimensionalArray)
                         .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, null)
-                        .MakeGenericMethod(itemType) 
-                : typeof(Enumerable)
-                    .GetMethod(nameof(Enumerable.SequenceEqual), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1L, typeof(IEnumerable<>), typeof(IEnumerable<>))
-                    .MakeGenericMethod(itemType);
+                        .MakeGenericMethod(itemType)
+                : new Func<IEnumerable<object>, IEnumerable<object>, bool>(Sequence.SequenceEqual).Method;
         
         private static MethodCallExpression EqualsMethodForArrayElementType(MemberExpression fieldX, MemberExpression fieldY)
         {
@@ -141,7 +139,7 @@ namespace DotNext
                         else if (field.FieldType.IsArray && field.FieldType.GetArrayRank() == 1)
                             condition = EqualsMethodForArrayElementType(fieldX, fieldY);
                         else
-                            condition = Expression.Call(typeof(object).GetMethod(nameof(Equals), new[] { typeof(object), typeof(object) }), fieldX, fieldY);
+                            condition = Expression.Call(new Func<object, object, bool>(Equals).Method, fieldX, fieldY);
                         expr = expr is null ? condition : Expression.AndAlso(expr, condition);
                     }
                 if (x.Type.IsClass)

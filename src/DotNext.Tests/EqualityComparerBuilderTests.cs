@@ -37,11 +37,15 @@ namespace DotNext
         {
             private readonly UnsafeClass obj;
             private readonly UnsafeStruct[] array;
+            private readonly object[] objArray;
+            private readonly IEquatable<string>[] nullArray;
 
             internal ComplexClass(UnsafeClass obj, params UnsafeStruct[] array)
             {
                 this.obj = obj;
                 this.array = array;
+                objArray = new object[] { "1", "2" };
+                nullArray = null;
             }
 
             public Guid Id { get; set; }
