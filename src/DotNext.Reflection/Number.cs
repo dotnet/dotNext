@@ -4,7 +4,7 @@ using System.Globalization;
 namespace DotNext
 {
     using Reflection;
-    using ConceptAttribute = Runtime.CompilerServices.ConceptAttribute;
+    using Runtime.CompilerServices;
 
     /// <summary>
     /// Represents any primitive numeric type.
@@ -16,6 +16,7 @@ namespace DotNext
     /// <typeparam name="T">Primitive numeric type.</typeparam>
     [CLSCompliant(false)]
     [Concept]
+    [BeforeFieldInit(false)]
     public readonly struct Number<T> : IEquatable<T>, IEquatable<Number<T>>, IComparable<T>
         where T : struct, IConvertible, IComparable<T>, IEquatable<T>, IFormattable
     {

@@ -40,7 +40,7 @@ Internal implementation of classes migrated to Value Delegate to reduce memory a
     <PackageReference Include="DotNext" Version="0.13.0" Condition="'$(Configuration)'=='Release'" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
     <PackageReference Include="Fody" Version="5.2.0" PrivateAssets="all" />
-    <PackageReference Include="DotNext.Augmentation.Fody" Version="0.12.4" PrivateAssets="all" />
+    <PackageReference Include="DotNext.Augmentation.Fody" Version="0.13.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
