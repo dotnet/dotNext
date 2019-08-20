@@ -1,6 +1,6 @@
 Release Notes
 ====
-# 08-X-2019
+# 08-20-2019
 
 <a href="https://www.nuget.org/packages/dotnext/0.13.0">DotNext 0.13.0</a>
 * Fixed bug with equality comparison of **null** arrays inside of [EqualityComparerBuilder](https://sakno.github.io/dotNext/api/DotNext.EqualityComparerBuilder-1.html)
