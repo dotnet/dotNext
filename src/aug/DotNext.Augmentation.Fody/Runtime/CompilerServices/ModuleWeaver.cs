@@ -30,6 +30,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             foreach (var type in ModuleDefinition.GetTypes())
             {
+                BeforeFieldInitWeaver.Process(type);
                 foreach (var field in type.Fields)
                     ProcessModifier(new FieldModifierWeaver(field), field.CustomAttributes);
                 foreach (var method in type.Methods)

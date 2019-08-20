@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
-    <Version>0.12.4</Version>
+    <Version>0.13.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
