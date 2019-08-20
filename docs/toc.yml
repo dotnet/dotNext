@@ -8,3 +8,5 @@
   href: https://www.nuget.org/packages?q=DotNext
 - name: Source Code
   href: https://github.com/sakno/dotNext
+- name: Changelog
+  href: https://github.com/sakno/dotNext/blob/master/CHANGELOG.md
