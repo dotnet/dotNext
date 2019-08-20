@@ -115,6 +115,72 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CSystem.Double%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L919">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue*"></a>
+  <h4 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,DotNext.ValueFunc{System.Double,System.Double,System.Double})">AccumulateAndGetValue(Pointer&lt;Double&gt;, Double, ValueFunc&lt;Double, Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
+to the current and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double AccumulateAndGetValue(this Pointer&lt;double&gt; pointer, double x, ValueFunc&lt;double, double, double&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">pointer</span></td>
+        <td><p>A pointer to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_System_Func_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CSystem.Double%2CSystem.Func%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -181,20 +247,20 @@ to the current and given values, returning the updated value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_ValueFunc_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CSystem.Double%2CValueFunc%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int32%7D%2CSystem.Int32%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L919">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L631">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_ValueFunc_System_Double_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,ValueFunc{System.Double,System.Double,System.Double})">AccumulateAndGetValue(Pointer&lt;Double&gt;, Double, ValueFunc&lt;Double, Double, Double&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32})">AccumulateAndGetValue(Pointer&lt;Int32&gt;, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
 to the current and given values, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static double AccumulateAndGetValue(this Pointer&lt;double&gt; pointer, double x, ValueFunc&lt;double, double, double&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int AccumulateAndGetValue(this Pointer&lt;int&gt; pointer, int x, ValueFunc&lt;int, int, int&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -207,19 +273,19 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
         <td><span class="parametername">accumulator</span></td>
         <td><p>A side-effect-free function of two arguments</p>
 </td>
@@ -236,13 +302,13 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_ValueFunc_System_Double_System_Double_System_Double___remarks">Remarks</h5>
+  <h5 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -313,20 +379,20 @@ to the current and given values, returning the updated value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_ValueFunc_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int32%7D%2CSystem.Int32%2CValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int64%7D%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L631">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L727">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_ValueFunc_System_Int32_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,ValueFunc{System.Int32,System.Int32,System.Int32})">AccumulateAndGetValue(Pointer&lt;Int32&gt;, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,DotNext.ValueFunc{System.Int64,System.Int64,System.Int64})">AccumulateAndGetValue(Pointer&lt;Int64&gt;, Int64, ValueFunc&lt;Int64, Int64, Int64&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
 to the current and given values, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int AccumulateAndGetValue(this Pointer&lt;int&gt; pointer, int x, ValueFunc&lt;int, int, int&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public static long AccumulateAndGetValue(this Pointer&lt;long&gt; pointer, long x, ValueFunc&lt;long, long, long&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -339,19 +405,19 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td><span class="parametername">accumulator</span></td>
         <td><p>A side-effect-free function of two arguments</p>
 </td>
@@ -368,13 +434,13 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_ValueFunc_System_Int32_System_Int32_System_Int32___remarks">Remarks</h5>
+  <h5 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -445,20 +511,20 @@ to the current and given values, returning the updated value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_ValueFunc_System_Int64_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int64%7D%2CSystem.Int64%2CValueFunc%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_DotNext_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.IntPtr%7D%2CSystem.IntPtr%2CDotNext.ValueFunc%7BSystem.IntPtr%2CSystem.IntPtr%2CSystem.IntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L727">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L1015">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_ValueFunc_System_Int64_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,ValueFunc{System.Int64,System.Int64,System.Int64})">AccumulateAndGetValue(Pointer&lt;Int64&gt;, Int64, ValueFunc&lt;Int64, Int64, Int64&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_DotNext_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,DotNext.ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})">AccumulateAndGetValue(Pointer&lt;IntPtr&gt;, IntPtr, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
 to the current and given values, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long AccumulateAndGetValue(this Pointer&lt;long&gt; pointer, long x, ValueFunc&lt;long, long, long&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IntPtr AccumulateAndGetValue(this Pointer&lt;IntPtr&gt; pointer, IntPtr x, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -471,19 +537,19 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
         <td><span class="parametername">accumulator</span></td>
         <td><p>A side-effect-free function of two arguments</p>
 </td>
@@ -500,13 +566,13 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_ValueFunc_System_Int64_System_Int64_System_Int64___remarks">Remarks</h5>
+  <h5 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_DotNext_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -577,20 +643,20 @@ to the current and given values, returning the updated value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.IntPtr%7D%2CSystem.IntPtr%2CValueFunc%7BSystem.IntPtr%2CSystem.IntPtr%2CSystem.IntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Single%7D%2CSystem.Single%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L1015">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L823">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})">AccumulateAndGetValue(Pointer&lt;IntPtr&gt;, IntPtr, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,DotNext.ValueFunc{System.Single,System.Single,System.Single})">AccumulateAndGetValue(Pointer&lt;Single&gt;, Single, ValueFunc&lt;Single, Single, Single&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
 to the current and given values, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IntPtr AccumulateAndGetValue(this Pointer&lt;IntPtr&gt; pointer, IntPtr x, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public static float AccumulateAndGetValue(this Pointer&lt;float&gt; pointer, float x, ValueFunc&lt;float, float, float&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -603,19 +669,19 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">accumulator</span></td>
         <td><p>A side-effect-free function of two arguments</p>
 </td>
@@ -632,13 +698,13 @@ to the current and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr___remarks">Remarks</h5>
+  <h5 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -705,72 +771,6 @@ to the current and given values, returning the updated value.</p>
     </tbody>
   </table>
   <h5 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_System_Func_System_Single_System_Single_System_Single___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_ValueFunc_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Single%7D%2CSystem.Single%2CValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L823">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_ValueFunc_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,ValueFunc{System.Single,System.Single,System.Single})">AccumulateAndGetValue(Pointer&lt;Single&gt;, Single, ValueFunc&lt;Single, Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
-to the current and given values, returning the updated value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float AccumulateAndGetValue(this Pointer&lt;float&gt; pointer, float x, ValueFunc&lt;float, float, float&gt; accumulator)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">pointer</span></td>
-        <td><p>A pointer to a value to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><span class="parametername">x</span></td>
-        <td><p>Accumulator operand.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><p>The updated value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_ValueFunc_System_Single_System_Single_System_Single___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -1925,6 +1925,72 @@ to the current and given values, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CSystem.Double%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L947">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue*"></a>
+  <h4 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,DotNext.ValueFunc{System.Double,System.Double,System.Double})">GetAndAccumulateValue(Pointer&lt;Double&gt;, Double, ValueFunc&lt;Double, Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
+to the current and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double GetAndAccumulateValue(this Pointer&lt;double&gt; pointer, double x, ValueFunc&lt;double, double, double&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">pointer</span></td>
+        <td><p>A pointer to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_System_Func_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CSystem.Double%2CSystem.Func%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -1991,20 +2057,20 @@ to the current and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_ValueFunc_System_Double_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CSystem.Double%2CValueFunc%7BSystem.Double%2CSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int32%7D%2CSystem.Int32%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L947">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L659">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_ValueFunc_System_Double_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,ValueFunc{System.Double,System.Double,System.Double})">GetAndAccumulateValue(Pointer&lt;Double&gt;, Double, ValueFunc&lt;Double, Double, Double&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32})">GetAndAccumulateValue(Pointer&lt;Int32&gt;, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
 to the current and given values, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static double GetAndAccumulateValue(this Pointer&lt;double&gt; pointer, double x, ValueFunc&lt;double, double, double&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int GetAndAccumulateValue(this Pointer&lt;int&gt; pointer, int x, ValueFunc&lt;int, int, int&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2017,19 +2083,19 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
         <td><span class="parametername">accumulator</span></td>
         <td><p>A side-effect-free function of two arguments</p>
 </td>
@@ -2046,13 +2112,13 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><p>The original value.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_ValueFunc_System_Double_System_Double_System_Double___remarks">Remarks</h5>
+  <h5 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -2123,20 +2189,20 @@ to the current and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_ValueFunc_System_Int32_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int32%7D%2CSystem.Int32%2CValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int64%7D%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L659">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L755">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_ValueFunc_System_Int32_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,ValueFunc{System.Int32,System.Int32,System.Int32})">GetAndAccumulateValue(Pointer&lt;Int32&gt;, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,DotNext.ValueFunc{System.Int64,System.Int64,System.Int64})">GetAndAccumulateValue(Pointer&lt;Int64&gt;, Int64, ValueFunc&lt;Int64, Int64, Int64&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
 to the current and given values, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int GetAndAccumulateValue(this Pointer&lt;int&gt; pointer, int x, ValueFunc&lt;int, int, int&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public static long GetAndAccumulateValue(this Pointer&lt;long&gt; pointer, long x, ValueFunc&lt;long, long, long&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2149,19 +2215,19 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td><span class="parametername">accumulator</span></td>
         <td><p>A side-effect-free function of two arguments</p>
 </td>
@@ -2178,13 +2244,13 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The original value.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_ValueFunc_System_Int32_System_Int32_System_Int32___remarks">Remarks</h5>
+  <h5 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -2255,20 +2321,20 @@ to the current and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_ValueFunc_System_Int64_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int64%7D%2CSystem.Int64%2CValueFunc%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_DotNext_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.IntPtr%7D%2CSystem.IntPtr%2CDotNext.ValueFunc%7BSystem.IntPtr%2CSystem.IntPtr%2CSystem.IntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L755">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L1043">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_ValueFunc_System_Int64_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,ValueFunc{System.Int64,System.Int64,System.Int64})">GetAndAccumulateValue(Pointer&lt;Int64&gt;, Int64, ValueFunc&lt;Int64, Int64, Int64&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_DotNext_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,DotNext.ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})">GetAndAccumulateValue(Pointer&lt;IntPtr&gt;, IntPtr, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
 to the current and given values, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long GetAndAccumulateValue(this Pointer&lt;long&gt; pointer, long x, ValueFunc&lt;long, long, long&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndAccumulateValue(this Pointer&lt;IntPtr&gt; pointer, IntPtr x, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2281,19 +2347,19 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
         <td><span class="parametername">accumulator</span></td>
         <td><p>A side-effect-free function of two arguments</p>
 </td>
@@ -2310,13 +2376,13 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><p>The original value.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_ValueFunc_System_Int64_System_Int64_System_Int64___remarks">Remarks</h5>
+  <h5 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_DotNext_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -2387,20 +2453,20 @@ to the current and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.IntPtr%7D%2CSystem.IntPtr%2CValueFunc%7BSystem.IntPtr%2CSystem.IntPtr%2CSystem.IntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Single%7D%2CSystem.Single%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L1043">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L851">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})">GetAndAccumulateValue(Pointer&lt;IntPtr&gt;, IntPtr, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,DotNext.ValueFunc{System.Single,System.Single,System.Single})">GetAndAccumulateValue(Pointer&lt;Single&gt;, Single, ValueFunc&lt;Single, Single, Single&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
 to the current and given values, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IntPtr GetAndAccumulateValue(this Pointer&lt;IntPtr&gt; pointer, IntPtr x, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public static float GetAndAccumulateValue(this Pointer&lt;float&gt; pointer, float x, ValueFunc&lt;float, float, float&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2413,19 +2479,19 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
         <td><span class="parametername">x</span></td>
         <td><p>Accumulator operand.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">accumulator</span></td>
         <td><p>A side-effect-free function of two arguments</p>
 </td>
@@ -2442,13 +2508,13 @@ to the current and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
         <td><p>The original value.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr___remarks">Remarks</h5>
+  <h5 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -2515,72 +2581,6 @@ to the current and given values, returning the original value.</p>
     </tbody>
   </table>
   <h5 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_System_Func_System_Single_System_Single_System_Single___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_ValueFunc_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Single%7D%2CSystem.Single%2CValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L851">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_ValueFunc_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,ValueFunc{System.Single,System.Single,System.Single})">GetAndAccumulateValue(Pointer&lt;Single&gt;, Single, ValueFunc&lt;Single, Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the current value referenced by pointer with the results of applying the given function
-to the current and given values, returning the original value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float GetAndAccumulateValue(this Pointer&lt;float&gt; pointer, float x, ValueFunc&lt;float, float, float&gt; accumulator)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">pointer</span></td>
-        <td><p>A pointer to a value to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><span class="parametername">x</span></td>
-        <td><p>Accumulator operand.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><p>The original value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_ValueFunc_System_Single_System_Single_System_Single___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -2865,6 +2865,63 @@ to the current and given values, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__DotNext_ValueFunc_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L987">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue*"></a>
+  <h4 id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__DotNext_ValueFunc_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},DotNext.ValueFunc{System.Double,System.Double})">GetAndUpdateValue(Pointer&lt;Double&gt;, ValueFunc&lt;Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double GetAndUpdateValue(this Pointer&lt;double&gt; pointer, ValueFunc&lt;double, double&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">pointer</span></td>
+        <td><p>A pointer to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Func_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CSystem.Func%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -2922,20 +2979,20 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__ValueFunc_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CValueFunc%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__DotNext_ValueFunc_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int32%7D%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L987">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L699">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__ValueFunc_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},ValueFunc{System.Double,System.Double})">GetAndUpdateValue(Pointer&lt;Double&gt;, ValueFunc&lt;Double, Double&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__DotNext_ValueFunc_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},DotNext.ValueFunc{System.Int32,System.Int32})">GetAndUpdateValue(Pointer&lt;Int32&gt;, ValueFunc&lt;Int32, Int32&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
 of applying the given function, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static double GetAndUpdateValue(this Pointer&lt;double&gt; pointer, ValueFunc&lt;double, double&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int GetAndUpdateValue(this Pointer&lt;int&gt; pointer, ValueFunc&lt;int, int&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -2948,13 +3005,13 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>
@@ -2971,7 +3028,7 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><p>The original value.</p>
 </td>
       </tr>
@@ -3036,20 +3093,20 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__ValueFunc_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int32%7D%2CValueFunc%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__DotNext_ValueFunc_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int64%7D%2CDotNext.ValueFunc%7BSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L699">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L795">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__ValueFunc_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},ValueFunc{System.Int32,System.Int32})">GetAndUpdateValue(Pointer&lt;Int32&gt;, ValueFunc&lt;Int32, Int32&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__DotNext_ValueFunc_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},DotNext.ValueFunc{System.Int64,System.Int64})">GetAndUpdateValue(Pointer&lt;Int64&gt;, ValueFunc&lt;Int64, Int64&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
 of applying the given function, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int GetAndUpdateValue(this Pointer&lt;int&gt; pointer, ValueFunc&lt;int, int&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public static long GetAndUpdateValue(this Pointer&lt;long&gt; pointer, ValueFunc&lt;long, long&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -3062,13 +3119,13 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>
@@ -3085,7 +3142,7 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The original value.</p>
 </td>
       </tr>
@@ -3150,20 +3207,20 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__ValueFunc_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int64%7D%2CValueFunc%7BSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__DotNext_ValueFunc_System_IntPtr_System_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.IntPtr%7D%2CDotNext.ValueFunc%7BSystem.IntPtr%2CSystem.IntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L795">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L1083">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__ValueFunc_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},ValueFunc{System.Int64,System.Int64})">GetAndUpdateValue(Pointer&lt;Int64&gt;, ValueFunc&lt;Int64, Int64&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__DotNext_ValueFunc_System_IntPtr_System_IntPtr__" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},DotNext.ValueFunc{System.IntPtr,System.IntPtr})">GetAndUpdateValue(Pointer&lt;IntPtr&gt;, ValueFunc&lt;IntPtr, IntPtr&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
 of applying the given function, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long GetAndUpdateValue(this Pointer&lt;long&gt; pointer, ValueFunc&lt;long, long&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndUpdateValue(this Pointer&lt;IntPtr&gt; pointer, ValueFunc&lt;IntPtr, IntPtr&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -3176,13 +3233,13 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>
@@ -3199,7 +3256,7 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><p>The original value.</p>
 </td>
       </tr>
@@ -3264,20 +3321,20 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__ValueFunc_System_IntPtr_System_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.IntPtr%7D%2CValueFunc%7BSystem.IntPtr%2CSystem.IntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__DotNext_ValueFunc_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Single%7D%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L1083">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L891">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__ValueFunc_System_IntPtr_System_IntPtr__" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},ValueFunc{System.IntPtr,System.IntPtr})">GetAndUpdateValue(Pointer&lt;IntPtr&gt;, ValueFunc&lt;IntPtr, IntPtr&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__DotNext_ValueFunc_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},DotNext.ValueFunc{System.Single,System.Single})">GetAndUpdateValue(Pointer&lt;Single&gt;, ValueFunc&lt;Single, Single&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
 of applying the given function, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IntPtr GetAndUpdateValue(this Pointer&lt;IntPtr&gt; pointer, ValueFunc&lt;IntPtr, IntPtr&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public static float GetAndUpdateValue(this Pointer&lt;float&gt; pointer, ValueFunc&lt;float, float&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -3290,13 +3347,13 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>
@@ -3313,7 +3370,7 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
         <td><p>The original value.</p>
 </td>
       </tr>
@@ -3354,63 +3411,6 @@ of applying the given function, returning the original value.</p>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">updater</span></td>
-        <td><p>A side-effect-free function</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><p>The original value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__ValueFunc_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Single%7D%2CValueFunc%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L891">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__ValueFunc_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},ValueFunc{System.Single,System.Single})">GetAndUpdateValue(Pointer&lt;Single&gt;, ValueFunc&lt;Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
-of applying the given function, returning the original value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float GetAndUpdateValue(this Pointer&lt;float&gt; pointer, ValueFunc&lt;float, float&gt; updater)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">pointer</span></td>
-        <td><p>A pointer to a value to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>
@@ -3685,6 +3685,63 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__DotNext_ValueFunc_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CDotNext.ValueFunc%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L967">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue*"></a>
+  <h4 id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__DotNext_ValueFunc_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},DotNext.ValueFunc{System.Double,System.Double})">UpdateAndGetValue(Pointer&lt;Double&gt;, ValueFunc&lt;Double, Double&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static double UpdateAndGetValue(this Pointer&lt;double&gt; pointer, ValueFunc&lt;double, double&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">pointer</span></td>
+        <td><p>A pointer to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Func_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CSystem.Func%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -3742,20 +3799,20 @@ of applying the given function, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__ValueFunc_System_Double_System_Double__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Double%7D%2CValueFunc%7BSystem.Double%2CSystem.Double%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__DotNext_ValueFunc_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int32%7D%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L967">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L679">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__ValueFunc_System_Double_System_Double__" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},ValueFunc{System.Double,System.Double})">UpdateAndGetValue(Pointer&lt;Double&gt;, ValueFunc&lt;Double, Double&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__DotNext_ValueFunc_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},DotNext.ValueFunc{System.Int32,System.Int32})">UpdateAndGetValue(Pointer&lt;Int32&gt;, ValueFunc&lt;Int32, Int32&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
 of applying the given function, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static double UpdateAndGetValue(this Pointer&lt;double&gt; pointer, ValueFunc&lt;double, double&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int UpdateAndGetValue(this Pointer&lt;int&gt; pointer, ValueFunc&lt;int, int&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -3768,13 +3825,13 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>
@@ -3791,7 +3848,7 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
@@ -3856,20 +3913,20 @@ of applying the given function, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__ValueFunc_System_Int32_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int32%7D%2CValueFunc%7BSystem.Int32%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__DotNext_ValueFunc_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int64%7D%2CDotNext.ValueFunc%7BSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L679">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L775">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__ValueFunc_System_Int32_System_Int32__" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},ValueFunc{System.Int32,System.Int32})">UpdateAndGetValue(Pointer&lt;Int32&gt;, ValueFunc&lt;Int32, Int32&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__DotNext_ValueFunc_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},DotNext.ValueFunc{System.Int64,System.Int64})">UpdateAndGetValue(Pointer&lt;Int64&gt;, ValueFunc&lt;Int64, Int64&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
 of applying the given function, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int UpdateAndGetValue(this Pointer&lt;int&gt; pointer, ValueFunc&lt;int, int&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public static long UpdateAndGetValue(this Pointer&lt;long&gt; pointer, ValueFunc&lt;long, long&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -3882,13 +3939,13 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>
@@ -3905,7 +3962,7 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
@@ -3970,20 +4027,20 @@ of applying the given function, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__ValueFunc_System_Int64_System_Int64__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Int64%7D%2CValueFunc%7BSystem.Int64%2CSystem.Int64%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__DotNext_ValueFunc_System_IntPtr_System_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.IntPtr%7D%2CDotNext.ValueFunc%7BSystem.IntPtr%2CSystem.IntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L775">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L1063">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__ValueFunc_System_Int64_System_Int64__" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},ValueFunc{System.Int64,System.Int64})">UpdateAndGetValue(Pointer&lt;Int64&gt;, ValueFunc&lt;Int64, Int64&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__DotNext_ValueFunc_System_IntPtr_System_IntPtr__" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},DotNext.ValueFunc{System.IntPtr,System.IntPtr})">UpdateAndGetValue(Pointer&lt;IntPtr&gt;, ValueFunc&lt;IntPtr, IntPtr&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
 of applying the given function, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long UpdateAndGetValue(this Pointer&lt;long&gt; pointer, ValueFunc&lt;long, long&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public static IntPtr UpdateAndGetValue(this Pointer&lt;IntPtr&gt; pointer, ValueFunc&lt;IntPtr, IntPtr&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -3996,13 +4053,13 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>
@@ -4019,7 +4076,7 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
@@ -4084,20 +4141,20 @@ of applying the given function, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__ValueFunc_System_IntPtr_System_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.IntPtr%7D%2CValueFunc%7BSystem.IntPtr%2CSystem.IntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__DotNext_ValueFunc_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Single%7D%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L1063">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L871">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__ValueFunc_System_IntPtr_System_IntPtr__" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},ValueFunc{System.IntPtr,System.IntPtr})">UpdateAndGetValue(Pointer&lt;IntPtr&gt;, ValueFunc&lt;IntPtr, IntPtr&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__DotNext_ValueFunc_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},DotNext.ValueFunc{System.Single,System.Single})">UpdateAndGetValue(Pointer&lt;Single&gt;, ValueFunc&lt;Single, Single&gt;)</h4>
   <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
 of applying the given function, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static IntPtr UpdateAndGetValue(this Pointer&lt;IntPtr&gt; pointer, ValueFunc&lt;IntPtr, IntPtr&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public static float UpdateAndGetValue(this Pointer&lt;float&gt; pointer, ValueFunc&lt;float, float&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -4110,13 +4167,13 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">pointer</span></td>
         <td><p>A pointer to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</td>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>
@@ -4133,7 +4190,7 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
         <td><p>The updated value.</p>
 </td>
       </tr>
@@ -4174,63 +4231,6 @@ of applying the given function, returning the updated value.</p>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">updater</span></td>
-        <td><p>A side-effect-free function</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><p>The updated value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__ValueFunc_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer%7BSystem.Single%7D%2CValueFunc%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Threading/AtomicPointer.cs/#L871">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue*"></a>
-  <h4 id="DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__ValueFunc_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},ValueFunc{System.Single,System.Single})">UpdateAndGetValue(Pointer&lt;Single&gt;, ValueFunc&lt;Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the value referenced by pointer with the results
-of applying the given function, returning the updated value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float UpdateAndGetValue(this Pointer&lt;float&gt; pointer, ValueFunc&lt;float, float&gt; updater)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">pointer</span></td>
-        <td><p>A pointer to a value to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">ValueFunc</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>

@@ -107,7 +107,7 @@ public class Person: IEquatable&lt;Person&gt;
 <li>If field is of value type then equality comparison between two values of the field based on bitwise equality provided by <a href="../../api/DotNext.BitwiseComparer-1.html">BitwiseComparer&lt;T&gt;</a> class.</li>
 <li>Simple equality check is performed for field of primitive or pointer type</li>
 <li><a href="../../api/DotNext.OneDimensionalArray.html">Bitwise equality</a> is performed for field of array type whose elements are of value type</li>
-<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.object.equals">Object.Equals</a> is used to compare elements in the array if field has array type whose elements are of reference type.</li>
+<li><a href="https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable.sequenceequal">Enumerable.SequenceEqual</a> is used to compare elements in the array if field has array type whose elements are of reference type.</li>
 </ul>
 <p>Automatically generated implementation of hash code function follows the similar rules:</p>
 <ul>

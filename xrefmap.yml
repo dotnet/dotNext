@@ -10432,6 +10432,23 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.AllowedNetworks
   nameWithType: ClusterMemberConfiguration.AllowedNetworks
+- uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout
+  name: IClusterMemberConfiguration.ElectionTimeout
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_DotNext_Net_Cluster_Consensus_Raft_IClusterMemberConfiguration_ElectionTimeout
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout
+  name.vb: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
+  nameWithType: ClusterMemberConfiguration.IClusterMemberConfiguration.ElectionTimeout
+  nameWithType.vb: ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
+- uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout*
+  name: IClusterMemberConfiguration.ElectionTimeout
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_DotNext_Net_Cluster_Consensus_Raft_IClusterMemberConfiguration_ElectionTimeout_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout
+  isSpec: "True"
+  name.vb: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
+  nameWithType: ClusterMemberConfiguration.IClusterMemberConfiguration.ElectionTimeout
+  nameWithType.vb: ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
 - uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.LowerElectionTimeout
   name: LowerElectionTimeout
   href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_LowerElectionTimeout
@@ -11029,13 +11046,13 @@ references:
   commentId: T:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator
   nameWithType: IRaftClusterConfigurator
-- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
   name: Initialize(IRaftCluster, IDictionary<String, String>)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Initialize_IRaftCluster_System_Collections_Generic_IDictionary_System_String_System_String__
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Initialize_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_System_Collections_Generic_IDictionary_System_String_System_String__
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
   name.vb: Initialize(IRaftCluster, IDictionary(Of String, String))
-  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster, System.Collections.Generic.IDictionary<System.String, System.String>)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster, System.Collections.Generic.IDictionary(Of System.String, System.String))
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster, System.Collections.Generic.IDictionary<System.String, System.String>)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster, System.Collections.Generic.IDictionary(Of System.String, System.String))
   nameWithType: IRaftClusterConfigurator.Initialize(IRaftCluster, IDictionary<String, String>)
   nameWithType.vb: IRaftClusterConfigurator.Initialize(IRaftCluster, IDictionary(Of String, String))
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize*
@@ -11045,11 +11062,11 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize
   nameWithType: IRaftClusterConfigurator.Initialize
-- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(IRaftCluster)
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster)
   name: Shutdown(IRaftCluster)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Shutdown_IRaftCluster_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(IRaftCluster)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(IRaftCluster)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Shutdown_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster)
   nameWithType: IRaftClusterConfigurator.Shutdown(IRaftCluster)
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown*
   name: Shutdown
@@ -12289,11 +12306,11 @@ references:
   commentId: T:DotNext.Net.Cluster.Messaging.IMessageHandler
   fullName: DotNext.Net.Cluster.Messaging.IMessageHandler
   nameWithType: IMessageHandler
-- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(IAddressee,IMessage,System.Object)
+- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
   name: ReceiveMessage(IAddressee, IMessage, Object)
-  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveMessage_IAddressee_IMessage_System_Object_
-  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(IAddressee,IMessage,System.Object)
-  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(IAddressee, IMessage, System.Object)
+  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveMessage_DotNext_Net_Cluster_Messaging_IAddressee_DotNext_Net_Cluster_Messaging_IMessage_System_Object_
+  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
+  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(DotNext.Net.Cluster.Messaging.IAddressee, DotNext.Net.Cluster.Messaging.IMessage, System.Object)
   nameWithType: IMessageHandler.ReceiveMessage(IAddressee, IMessage, Object)
 - uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage*
   name: ReceiveMessage
@@ -12302,11 +12319,11 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage
   nameWithType: IMessageHandler.ReceiveMessage
-- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(IAddressee,IMessage,System.Object)
+- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
   name: ReceiveSignal(IAddressee, IMessage, Object)
-  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveSignal_IAddressee_IMessage_System_Object_
-  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(IAddressee,IMessage,System.Object)
-  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(IAddressee, IMessage, System.Object)
+  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveSignal_DotNext_Net_Cluster_Messaging_IAddressee_DotNext_Net_Cluster_Messaging_IMessage_System_Object_
+  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
+  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(DotNext.Net.Cluster.Messaging.IAddressee, DotNext.Net.Cluster.Messaging.IMessage, System.Object)
   nameWithType: IMessageHandler.ReceiveSignal(IAddressee, IMessage, Object)
 - uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal*
   name: ReceiveSignal
@@ -24856,6 +24873,23 @@ references:
   isSpec: "True"
   fullName: DotNext.Runtime.CompilerServices.CancellationTokenFuture.AsTask
   nameWithType: CancellationTokenFuture.AsTask
+- uid: DotNext.Runtime.CompilerServices.CancellationTokenFuture.DotNext#Threading#Tasks#Future#IAwaiter#GetResult
+  name: Future.IAwaiter.GetResult()
+  href: api/DotNext.Runtime.CompilerServices.CancellationTokenFuture.html#DotNext_Runtime_CompilerServices_CancellationTokenFuture_DotNext_Threading_Tasks_Future_IAwaiter_GetResult
+  commentId: M:DotNext.Runtime.CompilerServices.CancellationTokenFuture.DotNext#Threading#Tasks#Future#IAwaiter#GetResult
+  name.vb: DotNext.Threading.Tasks.Future.IAwaiter.GetResult()
+  fullName: DotNext.Runtime.CompilerServices.CancellationTokenFuture.DotNext.Threading.Tasks.Future.IAwaiter.GetResult()
+  nameWithType: CancellationTokenFuture.Future.IAwaiter.GetResult()
+  nameWithType.vb: CancellationTokenFuture.DotNext.Threading.Tasks.Future.IAwaiter.GetResult()
+- uid: DotNext.Runtime.CompilerServices.CancellationTokenFuture.DotNext#Threading#Tasks#Future#IAwaiter#GetResult*
+  name: Future.IAwaiter.GetResult
+  href: api/DotNext.Runtime.CompilerServices.CancellationTokenFuture.html#DotNext_Runtime_CompilerServices_CancellationTokenFuture_DotNext_Threading_Tasks_Future_IAwaiter_GetResult_
+  commentId: Overload:DotNext.Runtime.CompilerServices.CancellationTokenFuture.DotNext#Threading#Tasks#Future#IAwaiter#GetResult
+  isSpec: "True"
+  name.vb: DotNext.Threading.Tasks.Future.IAwaiter.GetResult
+  fullName: DotNext.Runtime.CompilerServices.CancellationTokenFuture.DotNext.Threading.Tasks.Future.IAwaiter.GetResult
+  nameWithType: CancellationTokenFuture.Future.IAwaiter.GetResult
+  nameWithType.vb: CancellationTokenFuture.DotNext.Threading.Tasks.Future.IAwaiter.GetResult
 - uid: DotNext.Runtime.CompilerServices.CancellationTokenFuture.GetAwaiter
   name: GetAwaiter()
   href: api/DotNext.Runtime.CompilerServices.CancellationTokenFuture.html#DotNext_Runtime_CompilerServices_CancellationTokenFuture_GetAwaiter
@@ -25234,6 +25268,23 @@ references:
   isSpec: "True"
   fullName: DotNext.Runtime.CompilerServices.WaitHandleFuture.AsTask
   nameWithType: WaitHandleFuture.AsTask
+- uid: DotNext.Runtime.CompilerServices.WaitHandleFuture.DotNext#Threading#Tasks#Future#IAwaiter{System#Boolean}#GetResult
+  name: Future.IAwaiter<Boolean>.GetResult()
+  href: api/DotNext.Runtime.CompilerServices.WaitHandleFuture.html#DotNext_Runtime_CompilerServices_WaitHandleFuture_DotNext_Threading_Tasks_Future_IAwaiter_System_Boolean__GetResult
+  commentId: M:DotNext.Runtime.CompilerServices.WaitHandleFuture.DotNext#Threading#Tasks#Future#IAwaiter{System#Boolean}#GetResult
+  name.vb: DotNext.Threading.Tasks.Future.IAwaiter<System.Boolean>.GetResult()
+  fullName: DotNext.Runtime.CompilerServices.WaitHandleFuture.DotNext.Threading.Tasks.Future.IAwaiter<System.Boolean>.GetResult()
+  nameWithType: WaitHandleFuture.Future.IAwaiter<Boolean>.GetResult()
+  nameWithType.vb: WaitHandleFuture.DotNext.Threading.Tasks.Future.IAwaiter<System.Boolean>.GetResult()
+- uid: DotNext.Runtime.CompilerServices.WaitHandleFuture.DotNext#Threading#Tasks#Future#IAwaiter{System#Boolean}#GetResult*
+  name: Future.IAwaiter<Boolean>.GetResult
+  href: api/DotNext.Runtime.CompilerServices.WaitHandleFuture.html#DotNext_Runtime_CompilerServices_WaitHandleFuture_DotNext_Threading_Tasks_Future_IAwaiter_System_Boolean__GetResult_
+  commentId: Overload:DotNext.Runtime.CompilerServices.WaitHandleFuture.DotNext#Threading#Tasks#Future#IAwaiter{System#Boolean}#GetResult
+  isSpec: "True"
+  name.vb: DotNext.Threading.Tasks.Future.IAwaiter<System.Boolean>.GetResult
+  fullName: DotNext.Runtime.CompilerServices.WaitHandleFuture.DotNext.Threading.Tasks.Future.IAwaiter<System.Boolean>.GetResult
+  nameWithType: WaitHandleFuture.Future.IAwaiter<Boolean>.GetResult
+  nameWithType.vb: WaitHandleFuture.DotNext.Threading.Tasks.Future.IAwaiter<System.Boolean>.GetResult
 - uid: DotNext.Runtime.CompilerServices.WaitHandleFuture.GetAwaiter
   name: GetAwaiter()
   href: api/DotNext.Runtime.CompilerServices.WaitHandleFuture.html#DotNext_Runtime_CompilerServices_WaitHandleFuture_GetAwaiter
@@ -25853,6 +25904,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode(System.Int64, System.Boolean)
   nameWithType: Pointer<T>.BitwiseHashCode(Int64, Boolean)
   nameWithType.vb: Pointer(Of T).BitwiseHashCode(Int64, Boolean)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode(System.Int64,System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32}@,System.Boolean)
+  name: BitwiseHashCode(Int64, Int32, ValueFunc<Int32, Int32, Int32>, Boolean)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode_System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode(System.Int64,System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32}@,System.Boolean)
+  name.vb: BitwiseHashCode(Int64, Int32, ByRef ValueFunc(Of Int32, Int32, Int32), Boolean)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.BitwiseHashCode(System.Int64, System.Int32, DotNext.ValueFunc<System.Int32, System.Int32, System.Int32>, System.Boolean)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode(System.Int64, System.Int32, ByRef DotNext.ValueFunc(Of System.Int32, System.Int32, System.Int32), System.Boolean)
+  nameWithType: Pointer<T>.BitwiseHashCode(Int64, Int32, ValueFunc<Int32, Int32, Int32>, Boolean)
+  nameWithType.vb: Pointer(Of T).BitwiseHashCode(Int64, Int32, ByRef ValueFunc(Of Int32, Int32, Int32), Boolean)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode(System.Int64,System.Int32,System.Func{System.Int32,System.Int32,System.Int32},System.Boolean)
   name: BitwiseHashCode(Int64, Int32, Func<Int32, Int32, Int32>, Boolean)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode_System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_
@@ -25862,15 +25922,6 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode(System.Int64, System.Int32, System.Func(Of System.Int32, System.Int32, System.Int32), System.Boolean)
   nameWithType: Pointer<T>.BitwiseHashCode(Int64, Int32, Func<Int32, Int32, Int32>, Boolean)
   nameWithType.vb: Pointer(Of T).BitwiseHashCode(Int64, Int32, Func(Of Int32, Int32, Int32), Boolean)
-- uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode(System.Int64,System.Int32,ValueFunc{System.Int32,System.Int32,System.Int32}@,System.Boolean)
-  name: BitwiseHashCode(Int64, Int32, ValueFunc<Int32, Int32, Int32>, Boolean)
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode_System_Int64_System_Int32_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode(System.Int64,System.Int32,ValueFunc{System.Int32,System.Int32,System.Int32}@,System.Boolean)
-  name.vb: BitwiseHashCode(Int64, Int32, ByRef ValueFunc(Of Int32, Int32, Int32), Boolean)
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.BitwiseHashCode(System.Int64, System.Int32, ValueFunc<System.Int32, System.Int32, System.Int32>, System.Boolean)
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode(System.Int64, System.Int32, ByRef ValueFunc(Of System.Int32, System.Int32, System.Int32), System.Boolean)
-  nameWithType: Pointer<T>.BitwiseHashCode(Int64, Int32, ValueFunc<Int32, Int32, Int32>, Boolean)
-  nameWithType.vb: Pointer(Of T).BitwiseHashCode(Int64, Int32, ByRef ValueFunc(Of Int32, Int32, Int32), Boolean)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode*
   name: BitwiseHashCode
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode_
@@ -25888,6 +25939,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode64(System.Int64, System.Boolean)
   nameWithType: Pointer<T>.BitwiseHashCode64(Int64, Boolean)
   nameWithType.vb: Pointer(Of T).BitwiseHashCode64(Int64, Boolean)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode64(System.Int64,System.Int64,DotNext.ValueFunc{System.Int64,System.Int64,System.Int64}@,System.Boolean)
+  name: BitwiseHashCode64(Int64, Int64, ValueFunc<Int64, Int64, Int64>, Boolean)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode64_System_Int64_System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64___System_Boolean_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode64(System.Int64,System.Int64,DotNext.ValueFunc{System.Int64,System.Int64,System.Int64}@,System.Boolean)
+  name.vb: BitwiseHashCode64(Int64, Int64, ByRef ValueFunc(Of Int64, Int64, Int64), Boolean)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.BitwiseHashCode64(System.Int64, System.Int64, DotNext.ValueFunc<System.Int64, System.Int64, System.Int64>, System.Boolean)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode64(System.Int64, System.Int64, ByRef DotNext.ValueFunc(Of System.Int64, System.Int64, System.Int64), System.Boolean)
+  nameWithType: Pointer<T>.BitwiseHashCode64(Int64, Int64, ValueFunc<Int64, Int64, Int64>, Boolean)
+  nameWithType.vb: Pointer(Of T).BitwiseHashCode64(Int64, Int64, ByRef ValueFunc(Of Int64, Int64, Int64), Boolean)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode64(System.Int64,System.Int64,System.Func{System.Int64,System.Int64,System.Int64},System.Boolean)
   name: BitwiseHashCode64(Int64, Int64, Func<Int64, Int64, Int64>, Boolean)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode64_System_Int64_System_Int64_System_Func_System_Int64_System_Int64_System_Int64__System_Boolean_
@@ -25897,15 +25957,6 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode64(System.Int64, System.Int64, System.Func(Of System.Int64, System.Int64, System.Int64), System.Boolean)
   nameWithType: Pointer<T>.BitwiseHashCode64(Int64, Int64, Func<Int64, Int64, Int64>, Boolean)
   nameWithType.vb: Pointer(Of T).BitwiseHashCode64(Int64, Int64, Func(Of Int64, Int64, Int64), Boolean)
-- uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode64(System.Int64,System.Int64,ValueFunc{System.Int64,System.Int64,System.Int64}@,System.Boolean)
-  name: BitwiseHashCode64(Int64, Int64, ValueFunc<Int64, Int64, Int64>, Boolean)
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode64_System_Int64_System_Int64_ValueFunc_System_Int64_System_Int64_System_Int64___System_Boolean_
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode64(System.Int64,System.Int64,ValueFunc{System.Int64,System.Int64,System.Int64}@,System.Boolean)
-  name.vb: BitwiseHashCode64(Int64, Int64, ByRef ValueFunc(Of Int64, Int64, Int64), Boolean)
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.BitwiseHashCode64(System.Int64, System.Int64, ValueFunc<System.Int64, System.Int64, System.Int64>, System.Boolean)
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).BitwiseHashCode64(System.Int64, System.Int64, ByRef ValueFunc(Of System.Int64, System.Int64, System.Int64), System.Boolean)
-  nameWithType: Pointer<T>.BitwiseHashCode64(Int64, Int64, ValueFunc<Int64, Int64, Int64>, Boolean)
-  nameWithType.vb: Pointer(Of T).BitwiseHashCode64(Int64, Int64, ByRef ValueFunc(Of Int64, Int64, Int64), Boolean)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.BitwiseHashCode64*
   name: BitwiseHashCode64
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_BitwiseHashCode64_
@@ -29280,6 +29331,15 @@ references:
   fullName.vb: DotNext.Threading.AsyncLazy(Of T).AsyncLazy(T)
   nameWithType: AsyncLazy<T>.AsyncLazy(T)
   nameWithType.vb: AsyncLazy(Of T).AsyncLazy(T)
+- uid: DotNext.Threading.AsyncLazy`1.#ctor(DotNext.ValueFunc{System.Threading.Tasks.Task{`0}},System.Boolean)
+  name: AsyncLazy(ValueFunc<Task<T>>, Boolean)
+  href: api/DotNext.Threading.AsyncLazy-1.html#DotNext_Threading_AsyncLazy_1__ctor_DotNext_ValueFunc_System_Threading_Tasks_Task__0___System_Boolean_
+  commentId: M:DotNext.Threading.AsyncLazy`1.#ctor(DotNext.ValueFunc{System.Threading.Tasks.Task{`0}},System.Boolean)
+  name.vb: AsyncLazy(ValueFunc(Of Task(Of T)), Boolean)
+  fullName: DotNext.Threading.AsyncLazy<T>.AsyncLazy(DotNext.ValueFunc<System.Threading.Tasks.Task<T>>, System.Boolean)
+  fullName.vb: DotNext.Threading.AsyncLazy(Of T).AsyncLazy(DotNext.ValueFunc(Of System.Threading.Tasks.Task(Of T)), System.Boolean)
+  nameWithType: AsyncLazy<T>.AsyncLazy(ValueFunc<Task<T>>, Boolean)
+  nameWithType.vb: AsyncLazy(Of T).AsyncLazy(ValueFunc(Of Task(Of T)), Boolean)
 - uid: DotNext.Threading.AsyncLazy`1.#ctor(System.Func{System.Threading.Tasks.Task{`0}},System.Boolean)
   name: AsyncLazy(Func<Task<T>>, Boolean)
   href: api/DotNext.Threading.AsyncLazy-1.html#DotNext_Threading_AsyncLazy_1__ctor_System_Func_System_Threading_Tasks_Task__0___System_Boolean_
@@ -29289,15 +29349,6 @@ references:
   fullName.vb: DotNext.Threading.AsyncLazy(Of T).AsyncLazy(System.Func(Of System.Threading.Tasks.Task(Of T)), System.Boolean)
   nameWithType: AsyncLazy<T>.AsyncLazy(Func<Task<T>>, Boolean)
   nameWithType.vb: AsyncLazy(Of T).AsyncLazy(Func(Of Task(Of T)), Boolean)
-- uid: DotNext.Threading.AsyncLazy`1.#ctor(ValueFunc{System.Threading.Tasks.Task{`0}},System.Boolean)
-  name: AsyncLazy(ValueFunc<Task<T>>, Boolean)
-  href: api/DotNext.Threading.AsyncLazy-1.html#DotNext_Threading_AsyncLazy_1__ctor_ValueFunc_System_Threading_Tasks_Task__0___System_Boolean_
-  commentId: M:DotNext.Threading.AsyncLazy`1.#ctor(ValueFunc{System.Threading.Tasks.Task{`0}},System.Boolean)
-  name.vb: AsyncLazy(ValueFunc(Of Task(Of T)), Boolean)
-  fullName: DotNext.Threading.AsyncLazy<T>.AsyncLazy(ValueFunc<System.Threading.Tasks.Task<T>>, System.Boolean)
-  fullName.vb: DotNext.Threading.AsyncLazy(Of T).AsyncLazy(ValueFunc(Of System.Threading.Tasks.Task(Of T)), System.Boolean)
-  nameWithType: AsyncLazy<T>.AsyncLazy(ValueFunc<Task<T>>, Boolean)
-  nameWithType.vb: AsyncLazy(Of T).AsyncLazy(ValueFunc(Of Task(Of T)), Boolean)
 - uid: DotNext.Threading.AsyncLazy`1.#ctor*
   name: AsyncLazy
   href: api/DotNext.Threading.AsyncLazy-1.html#DotNext_Threading_AsyncLazy_1__ctor_
@@ -30076,6 +30127,15 @@ references:
   commentId: T:DotNext.Threading.AsyncTimer
   fullName: DotNext.Threading.AsyncTimer
   nameWithType: AsyncTimer
+- uid: DotNext.Threading.AsyncTimer.#ctor(DotNext.ValueFunc{System.Threading.CancellationToken,System.Threading.Tasks.Task{System.Boolean}})
+  name: AsyncTimer(ValueFunc<CancellationToken, Task<Boolean>>)
+  href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer__ctor_DotNext_ValueFunc_System_Threading_CancellationToken_System_Threading_Tasks_Task_System_Boolean___
+  commentId: M:DotNext.Threading.AsyncTimer.#ctor(DotNext.ValueFunc{System.Threading.CancellationToken,System.Threading.Tasks.Task{System.Boolean}})
+  name.vb: AsyncTimer(ValueFunc(Of CancellationToken, Task(Of Boolean)))
+  fullName: DotNext.Threading.AsyncTimer.AsyncTimer(DotNext.ValueFunc<System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Boolean>>)
+  fullName.vb: DotNext.Threading.AsyncTimer.AsyncTimer(DotNext.ValueFunc(Of System.Threading.CancellationToken, System.Threading.Tasks.Task(Of System.Boolean)))
+  nameWithType: AsyncTimer.AsyncTimer(ValueFunc<CancellationToken, Task<Boolean>>)
+  nameWithType.vb: AsyncTimer.AsyncTimer(ValueFunc(Of CancellationToken, Task(Of Boolean)))
 - uid: DotNext.Threading.AsyncTimer.#ctor(System.Func{System.Threading.CancellationToken,System.Threading.Tasks.Task{System.Boolean}})
   name: AsyncTimer(Func<CancellationToken, Task<Boolean>>)
   href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer__ctor_System_Func_System_Threading_CancellationToken_System_Threading_Tasks_Task_System_Boolean___
@@ -30085,15 +30145,6 @@ references:
   fullName.vb: DotNext.Threading.AsyncTimer.AsyncTimer(System.Func(Of System.Threading.CancellationToken, System.Threading.Tasks.Task(Of System.Boolean)))
   nameWithType: AsyncTimer.AsyncTimer(Func<CancellationToken, Task<Boolean>>)
   nameWithType.vb: AsyncTimer.AsyncTimer(Func(Of CancellationToken, Task(Of Boolean)))
-- uid: DotNext.Threading.AsyncTimer.#ctor(ValueFunc{System.Threading.CancellationToken,System.Threading.Tasks.Task{System.Boolean}})
-  name: AsyncTimer(ValueFunc<CancellationToken, Task<Boolean>>)
-  href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer__ctor_ValueFunc_System_Threading_CancellationToken_System_Threading_Tasks_Task_System_Boolean___
-  commentId: M:DotNext.Threading.AsyncTimer.#ctor(ValueFunc{System.Threading.CancellationToken,System.Threading.Tasks.Task{System.Boolean}})
-  name.vb: AsyncTimer(ValueFunc(Of CancellationToken, Task(Of Boolean)))
-  fullName: DotNext.Threading.AsyncTimer.AsyncTimer(ValueFunc<System.Threading.CancellationToken, System.Threading.Tasks.Task<System.Boolean>>)
-  fullName.vb: DotNext.Threading.AsyncTimer.AsyncTimer(ValueFunc(Of System.Threading.CancellationToken, System.Threading.Tasks.Task(Of System.Boolean)))
-  nameWithType: AsyncTimer.AsyncTimer(ValueFunc<CancellationToken, Task<Boolean>>)
-  nameWithType.vb: AsyncTimer.AsyncTimer(ValueFunc(Of CancellationToken, Task(Of Boolean)))
 - uid: DotNext.Threading.AsyncTimer.#ctor*
   name: AsyncTimer
   href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer__ctor_
@@ -32667,6 +32718,15 @@ references:
   commentId: T:DotNext.Threading.AtomicPointer
   fullName: DotNext.Threading.AtomicPointer
   nameWithType: AtomicPointer
+- uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,DotNext.ValueFunc{System.Double,System.Double,System.Double})
+  name: AccumulateAndGetValue(Pointer<Double>, Double, ValueFunc<Double, Double, Double>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double__
+  commentId: M:DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,DotNext.ValueFunc{System.Double,System.Double,System.Double})
+  name.vb: AccumulateAndGetValue(Pointer(Of Double), Double, ValueFunc(Of Double, Double, Double))
+  fullName: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Double>, System.Double, DotNext.ValueFunc<System.Double, System.Double, System.Double>)
+  fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), System.Double, DotNext.ValueFunc(Of System.Double, System.Double, System.Double))
+  nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Double>, Double, ValueFunc<Double, Double, Double>)
+  nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Double), Double, ValueFunc(Of Double, Double, Double))
 - uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,System.Func{System.Double,System.Double,System.Double})
   name: AccumulateAndGetValue(Pointer<Double>, Double, Func<Double, Double, Double>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_System_Func_System_Double_System_Double_System_Double__
@@ -32676,15 +32736,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), System.Double, System.Func(Of System.Double, System.Double, System.Double))
   nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Double>, Double, Func<Double, Double, Double>)
   nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Double), Double, Func(Of Double, Double, Double))
-- uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,ValueFunc{System.Double,System.Double,System.Double})
-  name: AccumulateAndGetValue(Pointer<Double>, Double, ValueFunc<Double, Double, Double>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_ValueFunc_System_Double_System_Double_System_Double__
-  commentId: M:DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,ValueFunc{System.Double,System.Double,System.Double})
-  name.vb: AccumulateAndGetValue(Pointer(Of Double), Double, ValueFunc(Of Double, Double, Double))
-  fullName: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Double>, System.Double, ValueFunc<System.Double, System.Double, System.Double>)
-  fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), System.Double, ValueFunc(Of System.Double, System.Double, System.Double))
-  nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Double>, Double, ValueFunc<Double, Double, Double>)
-  nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Double), Double, ValueFunc(Of Double, Double, Double))
+- uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32})
+  name: AccumulateAndGetValue(Pointer<Int32>, Int32, ValueFunc<Int32, Int32, Int32>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32__
+  commentId: M:DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32})
+  name.vb: AccumulateAndGetValue(Pointer(Of Int32), Int32, ValueFunc(Of Int32, Int32, Int32))
+  fullName: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Int32>, System.Int32, DotNext.ValueFunc<System.Int32, System.Int32, System.Int32>)
+  fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), System.Int32, DotNext.ValueFunc(Of System.Int32, System.Int32, System.Int32))
+  nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Int32>, Int32, ValueFunc<Int32, Int32, Int32>)
+  nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Int32), Int32, ValueFunc(Of Int32, Int32, Int32))
 - uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,System.Func{System.Int32,System.Int32,System.Int32})
   name: AccumulateAndGetValue(Pointer<Int32>, Int32, Func<Int32, Int32, Int32>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__
@@ -32694,15 +32754,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), System.Int32, System.Func(Of System.Int32, System.Int32, System.Int32))
   nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Int32>, Int32, Func<Int32, Int32, Int32>)
   nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Int32), Int32, Func(Of Int32, Int32, Int32))
-- uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,ValueFunc{System.Int32,System.Int32,System.Int32})
-  name: AccumulateAndGetValue(Pointer<Int32>, Int32, ValueFunc<Int32, Int32, Int32>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_ValueFunc_System_Int32_System_Int32_System_Int32__
-  commentId: M:DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,ValueFunc{System.Int32,System.Int32,System.Int32})
-  name.vb: AccumulateAndGetValue(Pointer(Of Int32), Int32, ValueFunc(Of Int32, Int32, Int32))
-  fullName: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Int32>, System.Int32, ValueFunc<System.Int32, System.Int32, System.Int32>)
-  fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), System.Int32, ValueFunc(Of System.Int32, System.Int32, System.Int32))
-  nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Int32>, Int32, ValueFunc<Int32, Int32, Int32>)
-  nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Int32), Int32, ValueFunc(Of Int32, Int32, Int32))
+- uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,DotNext.ValueFunc{System.Int64,System.Int64,System.Int64})
+  name: AccumulateAndGetValue(Pointer<Int64>, Int64, ValueFunc<Int64, Int64, Int64>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64__
+  commentId: M:DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,DotNext.ValueFunc{System.Int64,System.Int64,System.Int64})
+  name.vb: AccumulateAndGetValue(Pointer(Of Int64), Int64, ValueFunc(Of Int64, Int64, Int64))
+  fullName: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Int64>, System.Int64, DotNext.ValueFunc<System.Int64, System.Int64, System.Int64>)
+  fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), System.Int64, DotNext.ValueFunc(Of System.Int64, System.Int64, System.Int64))
+  nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Int64>, Int64, ValueFunc<Int64, Int64, Int64>)
+  nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Int64), Int64, ValueFunc(Of Int64, Int64, Int64))
 - uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,System.Func{System.Int64,System.Int64,System.Int64})
   name: AccumulateAndGetValue(Pointer<Int64>, Int64, Func<Int64, Int64, Int64>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_System_Func_System_Int64_System_Int64_System_Int64__
@@ -32712,15 +32772,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), System.Int64, System.Func(Of System.Int64, System.Int64, System.Int64))
   nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Int64>, Int64, Func<Int64, Int64, Int64>)
   nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Int64), Int64, Func(Of Int64, Int64, Int64))
-- uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,ValueFunc{System.Int64,System.Int64,System.Int64})
-  name: AccumulateAndGetValue(Pointer<Int64>, Int64, ValueFunc<Int64, Int64, Int64>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_ValueFunc_System_Int64_System_Int64_System_Int64__
-  commentId: M:DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,ValueFunc{System.Int64,System.Int64,System.Int64})
-  name.vb: AccumulateAndGetValue(Pointer(Of Int64), Int64, ValueFunc(Of Int64, Int64, Int64))
-  fullName: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Int64>, System.Int64, ValueFunc<System.Int64, System.Int64, System.Int64>)
-  fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), System.Int64, ValueFunc(Of System.Int64, System.Int64, System.Int64))
-  nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Int64>, Int64, ValueFunc<Int64, Int64, Int64>)
-  nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Int64), Int64, ValueFunc(Of Int64, Int64, Int64))
+- uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,DotNext.ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})
+  name: AccumulateAndGetValue(Pointer<IntPtr>, IntPtr, ValueFunc<IntPtr, IntPtr, IntPtr>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_DotNext_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__
+  commentId: M:DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,DotNext.ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})
+  name.vb: AccumulateAndGetValue(Pointer(Of IntPtr), IntPtr, ValueFunc(Of IntPtr, IntPtr, IntPtr))
+  fullName: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.IntPtr>, System.IntPtr, DotNext.ValueFunc<System.IntPtr, System.IntPtr, System.IntPtr>)
+  fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), System.IntPtr, DotNext.ValueFunc(Of System.IntPtr, System.IntPtr, System.IntPtr))
+  nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<IntPtr>, IntPtr, ValueFunc<IntPtr, IntPtr, IntPtr>)
+  nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of IntPtr), IntPtr, ValueFunc(Of IntPtr, IntPtr, IntPtr))
 - uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,System.Func{System.IntPtr,System.IntPtr,System.IntPtr})
   name: AccumulateAndGetValue(Pointer<IntPtr>, IntPtr, Func<IntPtr, IntPtr, IntPtr>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_System_Func_System_IntPtr_System_IntPtr_System_IntPtr__
@@ -32730,15 +32790,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), System.IntPtr, System.Func(Of System.IntPtr, System.IntPtr, System.IntPtr))
   nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<IntPtr>, IntPtr, Func<IntPtr, IntPtr, IntPtr>)
   nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of IntPtr), IntPtr, Func(Of IntPtr, IntPtr, IntPtr))
-- uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})
-  name: AccumulateAndGetValue(Pointer<IntPtr>, IntPtr, ValueFunc<IntPtr, IntPtr, IntPtr>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__
-  commentId: M:DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})
-  name.vb: AccumulateAndGetValue(Pointer(Of IntPtr), IntPtr, ValueFunc(Of IntPtr, IntPtr, IntPtr))
-  fullName: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.IntPtr>, System.IntPtr, ValueFunc<System.IntPtr, System.IntPtr, System.IntPtr>)
-  fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), System.IntPtr, ValueFunc(Of System.IntPtr, System.IntPtr, System.IntPtr))
-  nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<IntPtr>, IntPtr, ValueFunc<IntPtr, IntPtr, IntPtr>)
-  nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of IntPtr), IntPtr, ValueFunc(Of IntPtr, IntPtr, IntPtr))
+- uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,DotNext.ValueFunc{System.Single,System.Single,System.Single})
+  name: AccumulateAndGetValue(Pointer<Single>, Single, ValueFunc<Single, Single, Single>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single__
+  commentId: M:DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,DotNext.ValueFunc{System.Single,System.Single,System.Single})
+  name.vb: AccumulateAndGetValue(Pointer(Of Single), Single, ValueFunc(Of Single, Single, Single))
+  fullName: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Single>, System.Single, DotNext.ValueFunc<System.Single, System.Single, System.Single>)
+  fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), System.Single, DotNext.ValueFunc(Of System.Single, System.Single, System.Single))
+  nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Single>, Single, ValueFunc<Single, Single, Single>)
+  nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Single), Single, ValueFunc(Of Single, Single, Single))
 - uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,System.Func{System.Single,System.Single,System.Single})
   name: AccumulateAndGetValue(Pointer<Single>, Single, Func<Single, Single, Single>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_System_Func_System_Single_System_Single_System_Single__
@@ -32748,15 +32808,6 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), System.Single, System.Func(Of System.Single, System.Single, System.Single))
   nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Single>, Single, Func<Single, Single, Single>)
   nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Single), Single, Func(Of Single, Single, Single))
-- uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,ValueFunc{System.Single,System.Single,System.Single})
-  name: AccumulateAndGetValue(Pointer<Single>, Single, ValueFunc<Single, Single, Single>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_ValueFunc_System_Single_System_Single_System_Single__
-  commentId: M:DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,ValueFunc{System.Single,System.Single,System.Single})
-  name.vb: AccumulateAndGetValue(Pointer(Of Single), Single, ValueFunc(Of Single, Single, Single))
-  fullName: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Single>, System.Single, ValueFunc<System.Single, System.Single, System.Single>)
-  fullName.vb: DotNext.Threading.AtomicPointer.AccumulateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), System.Single, ValueFunc(Of System.Single, System.Single, System.Single))
-  nameWithType: AtomicPointer.AccumulateAndGetValue(Pointer<Single>, Single, ValueFunc<Single, Single, Single>)
-  nameWithType.vb: AtomicPointer.AccumulateAndGetValue(Pointer(Of Single), Single, ValueFunc(Of Single, Single, Single))
 - uid: DotNext.Threading.AtomicPointer.AccumulateAndGetValue*
   name: AccumulateAndGetValue
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_AccumulateAndGetValue_
@@ -32972,6 +33023,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AtomicPointer.DecrementValue
   nameWithType: AtomicPointer.DecrementValue
+- uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,DotNext.ValueFunc{System.Double,System.Double,System.Double})
+  name: GetAndAccumulateValue(Pointer<Double>, Double, ValueFunc<Double, Double, Double>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_DotNext_ValueFunc_System_Double_System_Double_System_Double__
+  commentId: M:DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,DotNext.ValueFunc{System.Double,System.Double,System.Double})
+  name.vb: GetAndAccumulateValue(Pointer(Of Double), Double, ValueFunc(Of Double, Double, Double))
+  fullName: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer<System.Double>, System.Double, DotNext.ValueFunc<System.Double, System.Double, System.Double>)
+  fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), System.Double, DotNext.ValueFunc(Of System.Double, System.Double, System.Double))
+  nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Double>, Double, ValueFunc<Double, Double, Double>)
+  nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Double), Double, ValueFunc(Of Double, Double, Double))
 - uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,System.Func{System.Double,System.Double,System.Double})
   name: GetAndAccumulateValue(Pointer<Double>, Double, Func<Double, Double, Double>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_System_Func_System_Double_System_Double_System_Double__
@@ -32981,15 +33041,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), System.Double, System.Func(Of System.Double, System.Double, System.Double))
   nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Double>, Double, Func<Double, Double, Double>)
   nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Double), Double, Func(Of Double, Double, Double))
-- uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,ValueFunc{System.Double,System.Double,System.Double})
-  name: GetAndAccumulateValue(Pointer<Double>, Double, ValueFunc<Double, Double, Double>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Double_ValueFunc_System_Double_System_Double_System_Double__
-  commentId: M:DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Double,ValueFunc{System.Double,System.Double,System.Double})
-  name.vb: GetAndAccumulateValue(Pointer(Of Double), Double, ValueFunc(Of Double, Double, Double))
-  fullName: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer<System.Double>, System.Double, ValueFunc<System.Double, System.Double, System.Double>)
-  fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), System.Double, ValueFunc(Of System.Double, System.Double, System.Double))
-  nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Double>, Double, ValueFunc<Double, Double, Double>)
-  nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Double), Double, ValueFunc(Of Double, Double, Double))
+- uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32})
+  name: GetAndAccumulateValue(Pointer<Int32>, Int32, ValueFunc<Int32, Int32, Int32>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32__
+  commentId: M:DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32})
+  name.vb: GetAndAccumulateValue(Pointer(Of Int32), Int32, ValueFunc(Of Int32, Int32, Int32))
+  fullName: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer<System.Int32>, System.Int32, DotNext.ValueFunc<System.Int32, System.Int32, System.Int32>)
+  fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), System.Int32, DotNext.ValueFunc(Of System.Int32, System.Int32, System.Int32))
+  nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Int32>, Int32, ValueFunc<Int32, Int32, Int32>)
+  nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Int32), Int32, ValueFunc(Of Int32, Int32, Int32))
 - uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,System.Func{System.Int32,System.Int32,System.Int32})
   name: GetAndAccumulateValue(Pointer<Int32>, Int32, Func<Int32, Int32, Int32>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_System_Func_System_Int32_System_Int32_System_Int32__
@@ -32999,15 +33059,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), System.Int32, System.Func(Of System.Int32, System.Int32, System.Int32))
   nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Int32>, Int32, Func<Int32, Int32, Int32>)
   nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Int32), Int32, Func(Of Int32, Int32, Int32))
-- uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,ValueFunc{System.Int32,System.Int32,System.Int32})
-  name: GetAndAccumulateValue(Pointer<Int32>, Int32, ValueFunc<Int32, Int32, Int32>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Int32_ValueFunc_System_Int32_System_Int32_System_Int32__
-  commentId: M:DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Int32,ValueFunc{System.Int32,System.Int32,System.Int32})
-  name.vb: GetAndAccumulateValue(Pointer(Of Int32), Int32, ValueFunc(Of Int32, Int32, Int32))
-  fullName: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer<System.Int32>, System.Int32, ValueFunc<System.Int32, System.Int32, System.Int32>)
-  fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), System.Int32, ValueFunc(Of System.Int32, System.Int32, System.Int32))
-  nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Int32>, Int32, ValueFunc<Int32, Int32, Int32>)
-  nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Int32), Int32, ValueFunc(Of Int32, Int32, Int32))
+- uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,DotNext.ValueFunc{System.Int64,System.Int64,System.Int64})
+  name: GetAndAccumulateValue(Pointer<Int64>, Int64, ValueFunc<Int64, Int64, Int64>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64__
+  commentId: M:DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,DotNext.ValueFunc{System.Int64,System.Int64,System.Int64})
+  name.vb: GetAndAccumulateValue(Pointer(Of Int64), Int64, ValueFunc(Of Int64, Int64, Int64))
+  fullName: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer<System.Int64>, System.Int64, DotNext.ValueFunc<System.Int64, System.Int64, System.Int64>)
+  fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), System.Int64, DotNext.ValueFunc(Of System.Int64, System.Int64, System.Int64))
+  nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Int64>, Int64, ValueFunc<Int64, Int64, Int64>)
+  nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Int64), Int64, ValueFunc(Of Int64, Int64, Int64))
 - uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,System.Func{System.Int64,System.Int64,System.Int64})
   name: GetAndAccumulateValue(Pointer<Int64>, Int64, Func<Int64, Int64, Int64>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_System_Func_System_Int64_System_Int64_System_Int64__
@@ -33017,15 +33077,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), System.Int64, System.Func(Of System.Int64, System.Int64, System.Int64))
   nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Int64>, Int64, Func<Int64, Int64, Int64>)
   nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Int64), Int64, Func(Of Int64, Int64, Int64))
-- uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,ValueFunc{System.Int64,System.Int64,System.Int64})
-  name: GetAndAccumulateValue(Pointer<Int64>, Int64, ValueFunc<Int64, Int64, Int64>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Int64_ValueFunc_System_Int64_System_Int64_System_Int64__
-  commentId: M:DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Int64,ValueFunc{System.Int64,System.Int64,System.Int64})
-  name.vb: GetAndAccumulateValue(Pointer(Of Int64), Int64, ValueFunc(Of Int64, Int64, Int64))
-  fullName: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer<System.Int64>, System.Int64, ValueFunc<System.Int64, System.Int64, System.Int64>)
-  fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), System.Int64, ValueFunc(Of System.Int64, System.Int64, System.Int64))
-  nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Int64>, Int64, ValueFunc<Int64, Int64, Int64>)
-  nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Int64), Int64, ValueFunc(Of Int64, Int64, Int64))
+- uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,DotNext.ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})
+  name: GetAndAccumulateValue(Pointer<IntPtr>, IntPtr, ValueFunc<IntPtr, IntPtr, IntPtr>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_DotNext_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__
+  commentId: M:DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,DotNext.ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})
+  name.vb: GetAndAccumulateValue(Pointer(Of IntPtr), IntPtr, ValueFunc(Of IntPtr, IntPtr, IntPtr))
+  fullName: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer<System.IntPtr>, System.IntPtr, DotNext.ValueFunc<System.IntPtr, System.IntPtr, System.IntPtr>)
+  fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), System.IntPtr, DotNext.ValueFunc(Of System.IntPtr, System.IntPtr, System.IntPtr))
+  nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<IntPtr>, IntPtr, ValueFunc<IntPtr, IntPtr, IntPtr>)
+  nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of IntPtr), IntPtr, ValueFunc(Of IntPtr, IntPtr, IntPtr))
 - uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,System.Func{System.IntPtr,System.IntPtr,System.IntPtr})
   name: GetAndAccumulateValue(Pointer<IntPtr>, IntPtr, Func<IntPtr, IntPtr, IntPtr>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_System_Func_System_IntPtr_System_IntPtr_System_IntPtr__
@@ -33035,15 +33095,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), System.IntPtr, System.Func(Of System.IntPtr, System.IntPtr, System.IntPtr))
   nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<IntPtr>, IntPtr, Func<IntPtr, IntPtr, IntPtr>)
   nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of IntPtr), IntPtr, Func(Of IntPtr, IntPtr, IntPtr))
-- uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})
-  name: GetAndAccumulateValue(Pointer<IntPtr>, IntPtr, ValueFunc<IntPtr, IntPtr, IntPtr>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_IntPtr_ValueFunc_System_IntPtr_System_IntPtr_System_IntPtr__
-  commentId: M:DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.IntPtr,ValueFunc{System.IntPtr,System.IntPtr,System.IntPtr})
-  name.vb: GetAndAccumulateValue(Pointer(Of IntPtr), IntPtr, ValueFunc(Of IntPtr, IntPtr, IntPtr))
-  fullName: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer<System.IntPtr>, System.IntPtr, ValueFunc<System.IntPtr, System.IntPtr, System.IntPtr>)
-  fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), System.IntPtr, ValueFunc(Of System.IntPtr, System.IntPtr, System.IntPtr))
-  nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<IntPtr>, IntPtr, ValueFunc<IntPtr, IntPtr, IntPtr>)
-  nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of IntPtr), IntPtr, ValueFunc(Of IntPtr, IntPtr, IntPtr))
+- uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,DotNext.ValueFunc{System.Single,System.Single,System.Single})
+  name: GetAndAccumulateValue(Pointer<Single>, Single, ValueFunc<Single, Single, Single>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single__
+  commentId: M:DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,DotNext.ValueFunc{System.Single,System.Single,System.Single})
+  name.vb: GetAndAccumulateValue(Pointer(Of Single), Single, ValueFunc(Of Single, Single, Single))
+  fullName: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer<System.Single>, System.Single, DotNext.ValueFunc<System.Single, System.Single, System.Single>)
+  fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), System.Single, DotNext.ValueFunc(Of System.Single, System.Single, System.Single))
+  nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Single>, Single, ValueFunc<Single, Single, Single>)
+  nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Single), Single, ValueFunc(Of Single, Single, Single))
 - uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,System.Func{System.Single,System.Single,System.Single})
   name: GetAndAccumulateValue(Pointer<Single>, Single, Func<Single, Single, Single>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_System_Func_System_Single_System_Single_System_Single__
@@ -33053,15 +33113,6 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), System.Single, System.Func(Of System.Single, System.Single, System.Single))
   nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Single>, Single, Func<Single, Single, Single>)
   nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Single), Single, Func(Of Single, Single, Single))
-- uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,ValueFunc{System.Single,System.Single,System.Single})
-  name: GetAndAccumulateValue(Pointer<Single>, Single, ValueFunc<Single, Single, Single>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Single_ValueFunc_System_Single_System_Single_System_Single__
-  commentId: M:DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Single,ValueFunc{System.Single,System.Single,System.Single})
-  name.vb: GetAndAccumulateValue(Pointer(Of Single), Single, ValueFunc(Of Single, Single, Single))
-  fullName: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer<System.Single>, System.Single, ValueFunc<System.Single, System.Single, System.Single>)
-  fullName.vb: DotNext.Threading.AtomicPointer.GetAndAccumulateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), System.Single, ValueFunc(Of System.Single, System.Single, System.Single))
-  nameWithType: AtomicPointer.GetAndAccumulateValue(Pointer<Single>, Single, ValueFunc<Single, Single, Single>)
-  nameWithType.vb: AtomicPointer.GetAndAccumulateValue(Pointer(Of Single), Single, ValueFunc(Of Single, Single, Single))
 - uid: DotNext.Threading.AtomicPointer.GetAndAccumulateValue*
   name: GetAndAccumulateValue
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndAccumulateValue_
@@ -33121,6 +33172,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AtomicPointer.GetAndSetValue
   nameWithType: AtomicPointer.GetAndSetValue
+- uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},DotNext.ValueFunc{System.Double,System.Double})
+  name: GetAndUpdateValue(Pointer<Double>, ValueFunc<Double, Double>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__DotNext_ValueFunc_System_Double_System_Double__
+  commentId: M:DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},DotNext.ValueFunc{System.Double,System.Double})
+  name.vb: GetAndUpdateValue(Pointer(Of Double), ValueFunc(Of Double, Double))
+  fullName: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer<System.Double>, DotNext.ValueFunc<System.Double, System.Double>)
+  fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), DotNext.ValueFunc(Of System.Double, System.Double))
+  nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Double>, ValueFunc<Double, Double>)
+  nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Double), ValueFunc(Of Double, Double))
 - uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Func{System.Double,System.Double})
   name: GetAndUpdateValue(Pointer<Double>, Func<Double, Double>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Func_System_Double_System_Double__
@@ -33130,15 +33190,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), System.Func(Of System.Double, System.Double))
   nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Double>, Func<Double, Double>)
   nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Double), Func(Of Double, Double))
-- uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},ValueFunc{System.Double,System.Double})
-  name: GetAndUpdateValue(Pointer<Double>, ValueFunc<Double, Double>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Double__ValueFunc_System_Double_System_Double__
-  commentId: M:DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Double},ValueFunc{System.Double,System.Double})
-  name.vb: GetAndUpdateValue(Pointer(Of Double), ValueFunc(Of Double, Double))
-  fullName: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer<System.Double>, ValueFunc<System.Double, System.Double>)
-  fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), ValueFunc(Of System.Double, System.Double))
-  nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Double>, ValueFunc<Double, Double>)
-  nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Double), ValueFunc(Of Double, Double))
+- uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},DotNext.ValueFunc{System.Int32,System.Int32})
+  name: GetAndUpdateValue(Pointer<Int32>, ValueFunc<Int32, Int32>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__DotNext_ValueFunc_System_Int32_System_Int32__
+  commentId: M:DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},DotNext.ValueFunc{System.Int32,System.Int32})
+  name.vb: GetAndUpdateValue(Pointer(Of Int32), ValueFunc(Of Int32, Int32))
+  fullName: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer<System.Int32>, DotNext.ValueFunc<System.Int32, System.Int32>)
+  fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), DotNext.ValueFunc(Of System.Int32, System.Int32))
+  nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Int32>, ValueFunc<Int32, Int32>)
+  nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Int32), ValueFunc(Of Int32, Int32))
 - uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Func{System.Int32,System.Int32})
   name: GetAndUpdateValue(Pointer<Int32>, Func<Int32, Int32>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Func_System_Int32_System_Int32__
@@ -33148,15 +33208,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), System.Func(Of System.Int32, System.Int32))
   nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Int32>, Func<Int32, Int32>)
   nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Int32), Func(Of Int32, Int32))
-- uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},ValueFunc{System.Int32,System.Int32})
-  name: GetAndUpdateValue(Pointer<Int32>, ValueFunc<Int32, Int32>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__ValueFunc_System_Int32_System_Int32__
-  commentId: M:DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},ValueFunc{System.Int32,System.Int32})
-  name.vb: GetAndUpdateValue(Pointer(Of Int32), ValueFunc(Of Int32, Int32))
-  fullName: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer<System.Int32>, ValueFunc<System.Int32, System.Int32>)
-  fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), ValueFunc(Of System.Int32, System.Int32))
-  nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Int32>, ValueFunc<Int32, Int32>)
-  nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Int32), ValueFunc(Of Int32, Int32))
+- uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},DotNext.ValueFunc{System.Int64,System.Int64})
+  name: GetAndUpdateValue(Pointer<Int64>, ValueFunc<Int64, Int64>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__DotNext_ValueFunc_System_Int64_System_Int64__
+  commentId: M:DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},DotNext.ValueFunc{System.Int64,System.Int64})
+  name.vb: GetAndUpdateValue(Pointer(Of Int64), ValueFunc(Of Int64, Int64))
+  fullName: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer<System.Int64>, DotNext.ValueFunc<System.Int64, System.Int64>)
+  fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), DotNext.ValueFunc(Of System.Int64, System.Int64))
+  nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Int64>, ValueFunc<Int64, Int64>)
+  nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Int64), ValueFunc(Of Int64, Int64))
 - uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Func{System.Int64,System.Int64})
   name: GetAndUpdateValue(Pointer<Int64>, Func<Int64, Int64>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Func_System_Int64_System_Int64__
@@ -33166,15 +33226,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), System.Func(Of System.Int64, System.Int64))
   nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Int64>, Func<Int64, Int64>)
   nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Int64), Func(Of Int64, Int64))
-- uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},ValueFunc{System.Int64,System.Int64})
-  name: GetAndUpdateValue(Pointer<Int64>, ValueFunc<Int64, Int64>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__ValueFunc_System_Int64_System_Int64__
-  commentId: M:DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},ValueFunc{System.Int64,System.Int64})
-  name.vb: GetAndUpdateValue(Pointer(Of Int64), ValueFunc(Of Int64, Int64))
-  fullName: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer<System.Int64>, ValueFunc<System.Int64, System.Int64>)
-  fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), ValueFunc(Of System.Int64, System.Int64))
-  nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Int64>, ValueFunc<Int64, Int64>)
-  nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Int64), ValueFunc(Of Int64, Int64))
+- uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},DotNext.ValueFunc{System.IntPtr,System.IntPtr})
+  name: GetAndUpdateValue(Pointer<IntPtr>, ValueFunc<IntPtr, IntPtr>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__DotNext_ValueFunc_System_IntPtr_System_IntPtr__
+  commentId: M:DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},DotNext.ValueFunc{System.IntPtr,System.IntPtr})
+  name.vb: GetAndUpdateValue(Pointer(Of IntPtr), ValueFunc(Of IntPtr, IntPtr))
+  fullName: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer<System.IntPtr>, DotNext.ValueFunc<System.IntPtr, System.IntPtr>)
+  fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), DotNext.ValueFunc(Of System.IntPtr, System.IntPtr))
+  nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<IntPtr>, ValueFunc<IntPtr, IntPtr>)
+  nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of IntPtr), ValueFunc(Of IntPtr, IntPtr))
 - uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.Func{System.IntPtr,System.IntPtr})
   name: GetAndUpdateValue(Pointer<IntPtr>, Func<IntPtr, IntPtr>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_Func_System_IntPtr_System_IntPtr__
@@ -33184,15 +33244,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), System.Func(Of System.IntPtr, System.IntPtr))
   nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<IntPtr>, Func<IntPtr, IntPtr>)
   nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of IntPtr), Func(Of IntPtr, IntPtr))
-- uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},ValueFunc{System.IntPtr,System.IntPtr})
-  name: GetAndUpdateValue(Pointer<IntPtr>, ValueFunc<IntPtr, IntPtr>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__ValueFunc_System_IntPtr_System_IntPtr__
-  commentId: M:DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},ValueFunc{System.IntPtr,System.IntPtr})
-  name.vb: GetAndUpdateValue(Pointer(Of IntPtr), ValueFunc(Of IntPtr, IntPtr))
-  fullName: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer<System.IntPtr>, ValueFunc<System.IntPtr, System.IntPtr>)
-  fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), ValueFunc(Of System.IntPtr, System.IntPtr))
-  nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<IntPtr>, ValueFunc<IntPtr, IntPtr>)
-  nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of IntPtr), ValueFunc(Of IntPtr, IntPtr))
+- uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},DotNext.ValueFunc{System.Single,System.Single})
+  name: GetAndUpdateValue(Pointer<Single>, ValueFunc<Single, Single>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__DotNext_ValueFunc_System_Single_System_Single__
+  commentId: M:DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},DotNext.ValueFunc{System.Single,System.Single})
+  name.vb: GetAndUpdateValue(Pointer(Of Single), ValueFunc(Of Single, Single))
+  fullName: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer<System.Single>, DotNext.ValueFunc<System.Single, System.Single>)
+  fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), DotNext.ValueFunc(Of System.Single, System.Single))
+  nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Single>, ValueFunc<Single, Single>)
+  nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Single), ValueFunc(Of Single, Single))
 - uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Func{System.Single,System.Single})
   name: GetAndUpdateValue(Pointer<Single>, Func<Single, Single>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Func_System_Single_System_Single__
@@ -33202,15 +33262,6 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), System.Func(Of System.Single, System.Single))
   nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Single>, Func<Single, Single>)
   nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Single), Func(Of Single, Single))
-- uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},ValueFunc{System.Single,System.Single})
-  name: GetAndUpdateValue(Pointer<Single>, ValueFunc<Single, Single>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_DotNext_Runtime_InteropServices_Pointer_System_Single__ValueFunc_System_Single_System_Single__
-  commentId: M:DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer{System.Single},ValueFunc{System.Single,System.Single})
-  name.vb: GetAndUpdateValue(Pointer(Of Single), ValueFunc(Of Single, Single))
-  fullName: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer<System.Single>, ValueFunc<System.Single, System.Single>)
-  fullName.vb: DotNext.Threading.AtomicPointer.GetAndUpdateValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), ValueFunc(Of System.Single, System.Single))
-  nameWithType: AtomicPointer.GetAndUpdateValue(Pointer<Single>, ValueFunc<Single, Single>)
-  nameWithType.vb: AtomicPointer.GetAndUpdateValue(Pointer(Of Single), ValueFunc(Of Single, Single))
 - uid: DotNext.Threading.AtomicPointer.GetAndUpdateValue*
   name: GetAndUpdateValue
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_GetAndUpdateValue_
@@ -33270,6 +33321,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AtomicPointer.IncrementValue
   nameWithType: AtomicPointer.IncrementValue
+- uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},DotNext.ValueFunc{System.Double,System.Double})
+  name: UpdateAndGetValue(Pointer<Double>, ValueFunc<Double, Double>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__DotNext_ValueFunc_System_Double_System_Double__
+  commentId: M:DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},DotNext.ValueFunc{System.Double,System.Double})
+  name.vb: UpdateAndGetValue(Pointer(Of Double), ValueFunc(Of Double, Double))
+  fullName: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Double>, DotNext.ValueFunc<System.Double, System.Double>)
+  fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), DotNext.ValueFunc(Of System.Double, System.Double))
+  nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Double>, ValueFunc<Double, Double>)
+  nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Double), ValueFunc(Of Double, Double))
 - uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},System.Func{System.Double,System.Double})
   name: UpdateAndGetValue(Pointer<Double>, Func<Double, Double>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__System_Func_System_Double_System_Double__
@@ -33279,15 +33339,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), System.Func(Of System.Double, System.Double))
   nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Double>, Func<Double, Double>)
   nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Double), Func(Of Double, Double))
-- uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},ValueFunc{System.Double,System.Double})
-  name: UpdateAndGetValue(Pointer<Double>, ValueFunc<Double, Double>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Double__ValueFunc_System_Double_System_Double__
-  commentId: M:DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Double},ValueFunc{System.Double,System.Double})
-  name.vb: UpdateAndGetValue(Pointer(Of Double), ValueFunc(Of Double, Double))
-  fullName: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Double>, ValueFunc<System.Double, System.Double>)
-  fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Double), ValueFunc(Of System.Double, System.Double))
-  nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Double>, ValueFunc<Double, Double>)
-  nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Double), ValueFunc(Of Double, Double))
+- uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},DotNext.ValueFunc{System.Int32,System.Int32})
+  name: UpdateAndGetValue(Pointer<Int32>, ValueFunc<Int32, Int32>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__DotNext_ValueFunc_System_Int32_System_Int32__
+  commentId: M:DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},DotNext.ValueFunc{System.Int32,System.Int32})
+  name.vb: UpdateAndGetValue(Pointer(Of Int32), ValueFunc(Of Int32, Int32))
+  fullName: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Int32>, DotNext.ValueFunc<System.Int32, System.Int32>)
+  fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), DotNext.ValueFunc(Of System.Int32, System.Int32))
+  nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Int32>, ValueFunc<Int32, Int32>)
+  nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Int32), ValueFunc(Of Int32, Int32))
 - uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},System.Func{System.Int32,System.Int32})
   name: UpdateAndGetValue(Pointer<Int32>, Func<Int32, Int32>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__System_Func_System_Int32_System_Int32__
@@ -33297,15 +33357,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), System.Func(Of System.Int32, System.Int32))
   nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Int32>, Func<Int32, Int32>)
   nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Int32), Func(Of Int32, Int32))
-- uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},ValueFunc{System.Int32,System.Int32})
-  name: UpdateAndGetValue(Pointer<Int32>, ValueFunc<Int32, Int32>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int32__ValueFunc_System_Int32_System_Int32__
-  commentId: M:DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int32},ValueFunc{System.Int32,System.Int32})
-  name.vb: UpdateAndGetValue(Pointer(Of Int32), ValueFunc(Of Int32, Int32))
-  fullName: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Int32>, ValueFunc<System.Int32, System.Int32>)
-  fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int32), ValueFunc(Of System.Int32, System.Int32))
-  nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Int32>, ValueFunc<Int32, Int32>)
-  nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Int32), ValueFunc(Of Int32, Int32))
+- uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},DotNext.ValueFunc{System.Int64,System.Int64})
+  name: UpdateAndGetValue(Pointer<Int64>, ValueFunc<Int64, Int64>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__DotNext_ValueFunc_System_Int64_System_Int64__
+  commentId: M:DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},DotNext.ValueFunc{System.Int64,System.Int64})
+  name.vb: UpdateAndGetValue(Pointer(Of Int64), ValueFunc(Of Int64, Int64))
+  fullName: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Int64>, DotNext.ValueFunc<System.Int64, System.Int64>)
+  fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), DotNext.ValueFunc(Of System.Int64, System.Int64))
+  nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Int64>, ValueFunc<Int64, Int64>)
+  nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Int64), ValueFunc(Of Int64, Int64))
 - uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},System.Func{System.Int64,System.Int64})
   name: UpdateAndGetValue(Pointer<Int64>, Func<Int64, Int64>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__System_Func_System_Int64_System_Int64__
@@ -33315,15 +33375,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), System.Func(Of System.Int64, System.Int64))
   nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Int64>, Func<Int64, Int64>)
   nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Int64), Func(Of Int64, Int64))
-- uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},ValueFunc{System.Int64,System.Int64})
-  name: UpdateAndGetValue(Pointer<Int64>, ValueFunc<Int64, Int64>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Int64__ValueFunc_System_Int64_System_Int64__
-  commentId: M:DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Int64},ValueFunc{System.Int64,System.Int64})
-  name.vb: UpdateAndGetValue(Pointer(Of Int64), ValueFunc(Of Int64, Int64))
-  fullName: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Int64>, ValueFunc<System.Int64, System.Int64>)
-  fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Int64), ValueFunc(Of System.Int64, System.Int64))
-  nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Int64>, ValueFunc<Int64, Int64>)
-  nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Int64), ValueFunc(Of Int64, Int64))
+- uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},DotNext.ValueFunc{System.IntPtr,System.IntPtr})
+  name: UpdateAndGetValue(Pointer<IntPtr>, ValueFunc<IntPtr, IntPtr>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__DotNext_ValueFunc_System_IntPtr_System_IntPtr__
+  commentId: M:DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},DotNext.ValueFunc{System.IntPtr,System.IntPtr})
+  name.vb: UpdateAndGetValue(Pointer(Of IntPtr), ValueFunc(Of IntPtr, IntPtr))
+  fullName: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.IntPtr>, DotNext.ValueFunc<System.IntPtr, System.IntPtr>)
+  fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), DotNext.ValueFunc(Of System.IntPtr, System.IntPtr))
+  nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<IntPtr>, ValueFunc<IntPtr, IntPtr>)
+  nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of IntPtr), ValueFunc(Of IntPtr, IntPtr))
 - uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},System.Func{System.IntPtr,System.IntPtr})
   name: UpdateAndGetValue(Pointer<IntPtr>, Func<IntPtr, IntPtr>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__System_Func_System_IntPtr_System_IntPtr__
@@ -33333,15 +33393,15 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), System.Func(Of System.IntPtr, System.IntPtr))
   nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<IntPtr>, Func<IntPtr, IntPtr>)
   nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of IntPtr), Func(Of IntPtr, IntPtr))
-- uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},ValueFunc{System.IntPtr,System.IntPtr})
-  name: UpdateAndGetValue(Pointer<IntPtr>, ValueFunc<IntPtr, IntPtr>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_IntPtr__ValueFunc_System_IntPtr_System_IntPtr__
-  commentId: M:DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.IntPtr},ValueFunc{System.IntPtr,System.IntPtr})
-  name.vb: UpdateAndGetValue(Pointer(Of IntPtr), ValueFunc(Of IntPtr, IntPtr))
-  fullName: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.IntPtr>, ValueFunc<System.IntPtr, System.IntPtr>)
-  fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.IntPtr), ValueFunc(Of System.IntPtr, System.IntPtr))
-  nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<IntPtr>, ValueFunc<IntPtr, IntPtr>)
-  nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of IntPtr), ValueFunc(Of IntPtr, IntPtr))
+- uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},DotNext.ValueFunc{System.Single,System.Single})
+  name: UpdateAndGetValue(Pointer<Single>, ValueFunc<Single, Single>)
+  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__DotNext_ValueFunc_System_Single_System_Single__
+  commentId: M:DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},DotNext.ValueFunc{System.Single,System.Single})
+  name.vb: UpdateAndGetValue(Pointer(Of Single), ValueFunc(Of Single, Single))
+  fullName: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Single>, DotNext.ValueFunc<System.Single, System.Single>)
+  fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), DotNext.ValueFunc(Of System.Single, System.Single))
+  nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Single>, ValueFunc<Single, Single>)
+  nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Single), ValueFunc(Of Single, Single))
 - uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},System.Func{System.Single,System.Single})
   name: UpdateAndGetValue(Pointer<Single>, Func<Single, Single>)
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__System_Func_System_Single_System_Single__
@@ -33351,15 +33411,6 @@ references:
   fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), System.Func(Of System.Single, System.Single))
   nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Single>, Func<Single, Single>)
   nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Single), Func(Of Single, Single))
-- uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},ValueFunc{System.Single,System.Single})
-  name: UpdateAndGetValue(Pointer<Single>, ValueFunc<Single, Single>)
-  href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_DotNext_Runtime_InteropServices_Pointer_System_Single__ValueFunc_System_Single_System_Single__
-  commentId: M:DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer{System.Single},ValueFunc{System.Single,System.Single})
-  name.vb: UpdateAndGetValue(Pointer(Of Single), ValueFunc(Of Single, Single))
-  fullName: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer<System.Single>, ValueFunc<System.Single, System.Single>)
-  fullName.vb: DotNext.Threading.AtomicPointer.UpdateAndGetValue(DotNext.Runtime.InteropServices.Pointer(Of System.Single), ValueFunc(Of System.Single, System.Single))
-  nameWithType: AtomicPointer.UpdateAndGetValue(Pointer<Single>, ValueFunc<Single, Single>)
-  nameWithType.vb: AtomicPointer.UpdateAndGetValue(Pointer(Of Single), ValueFunc(Of Single, Single))
 - uid: DotNext.Threading.AtomicPointer.UpdateAndGetValue*
   name: UpdateAndGetValue
   href: api/DotNext.Threading.AtomicPointer.html#DotNext_Threading_AtomicPointer_UpdateAndGetValue_
@@ -34634,6 +34685,15 @@ references:
   fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool(System.Collections.Generic.IEnumerable(Of T))
   nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool(IEnumerable<T>)
   nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool(IEnumerable(Of T))
+- uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Int32,DotNext.ValueFunc{`0})
+  name: ConcurrentObjectPool(Int32, ValueFunc<T>)
+  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Int32_DotNext_ValueFunc__0__
+  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Int32,DotNext.ValueFunc{`0})
+  name.vb: ConcurrentObjectPool(Int32, ValueFunc(Of T))
+  fullName: DotNext.Threading.ConcurrentObjectPool<T>.ConcurrentObjectPool(System.Int32, DotNext.ValueFunc<T>)
+  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool(System.Int32, DotNext.ValueFunc(Of T))
+  nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool(Int32, ValueFunc<T>)
+  nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool(Int32, ValueFunc(Of T))
 - uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Int32,System.Func{`0})
   name: ConcurrentObjectPool(Int32, Func<T>)
   href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Int32_System_Func__0__
@@ -34643,15 +34703,6 @@ references:
   fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool(System.Int32, System.Func(Of T))
   nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool(Int32, Func<T>)
   nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool(Int32, Func(Of T))
-- uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Int32,ValueFunc{`0})
-  name: ConcurrentObjectPool(Int32, ValueFunc<T>)
-  href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_System_Int32_ValueFunc__0__
-  commentId: M:DotNext.Threading.ConcurrentObjectPool`1.#ctor(System.Int32,ValueFunc{`0})
-  name.vb: ConcurrentObjectPool(Int32, ValueFunc(Of T))
-  fullName: DotNext.Threading.ConcurrentObjectPool<T>.ConcurrentObjectPool(System.Int32, ValueFunc<T>)
-  fullName.vb: DotNext.Threading.ConcurrentObjectPool(Of T).ConcurrentObjectPool(System.Int32, ValueFunc(Of T))
-  nameWithType: ConcurrentObjectPool<T>.ConcurrentObjectPool(Int32, ValueFunc<T>)
-  nameWithType.vb: ConcurrentObjectPool(Of T).ConcurrentObjectPool(Int32, ValueFunc(Of T))
 - uid: DotNext.Threading.ConcurrentObjectPool`1.#ctor*
   name: ConcurrentObjectPool
   href: api/DotNext.Threading.ConcurrentObjectPool-1.html#DotNext_Threading_ConcurrentObjectPool_1__ctor_
