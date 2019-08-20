@@ -83,10 +83,8 @@ namespace DotNext
             => itemType.IsValueType ?
                 typeof(OneDimensionalArray)
                         .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, null)
-                        .MakeGenericMethod(itemType) 
-                : typeof(Enumerable)
-                    .GetMethod(nameof(Enumerable.SequenceEqual), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1L, typeof(IEnumerable<>), typeof(IEnumerable<>))
-                    .MakeGenericMethod(itemType);
+                        .MakeGenericMethod(itemType)
+                : new Func<IEnumerable<object>, IEnumerable<object>, bool>(Sequence.SequenceEqual).Method;
         
         private static MethodCallExpression EqualsMethodForArrayElementType(MemberExpression fieldX, MemberExpression fieldY)
         {
