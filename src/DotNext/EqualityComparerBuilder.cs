@@ -139,7 +139,7 @@ namespace DotNext
                         else if (field.FieldType.IsArray && field.FieldType.GetArrayRank() == 1)
                             condition = EqualsMethodForArrayElementType(fieldX, fieldY);
                         else
-                            condition = Expression.Call(typeof(object).GetMethod(nameof(Equals), new[] { typeof(object), typeof(object) }), fieldX, fieldY);
+                            condition = Expression.Call(new Func<object, object, bool>(Equals).Method, fieldX, fieldY);
                         expr = expr is null ? condition : Expression.AndAlso(expr, condition);
                     }
                 if (x.Type.IsClass)
