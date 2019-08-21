@@ -2,7 +2,7 @@ Release Notes
 ====
 # 08-21-2019
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.3.1">DotNext.AspNetCore.Cluster 0.3.1</a>
-* Fixed correct detection of local IP address
+* Fixed detection of local IP address
 * Improved IPv6 support
 
 # 08-20-2019
