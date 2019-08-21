@@ -46,7 +46,7 @@ namespace DotNext.Net
                     var endpoint = uri.ToEndPoint();
                     if (endpoint is null)
                         continue;
-                    else if (endpoint.Address.Equals(IPAddress.Any) || endpoint.Address.Equals(IPAddress.IPv6Any))
+                    else if (endpoint.Address.IsOneOf(IPAddress.Any, IPAddress.IPv6Any))
                         foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
                             foreach (var nicAddr in nic.GetIPProperties().UnicastAddresses)
                                 result.Add(new IPEndPoint(nicAddr.Address, endpoint.Port));
