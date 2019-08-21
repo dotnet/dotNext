@@ -393,6 +393,7 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static Span&lt;byte&gt; AsSpan&lt;T&gt;(T*pointer)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -763,6 +764,7 @@ public static void Copy(void *source, void *destination, long length)</code></pr
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(in T input, out T output)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -945,6 +947,7 @@ public static bool Equals(void *first, void *second, long length)</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetBoxedValue&lt;T&gt;(object box)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2010,6 +2013,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(ref IntPtr source)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2079,6 +2083,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T ReadUnaligned&lt;T&gt;(ref IntPtr source)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2147,6 +2152,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static void Swap&lt;T&gt;(T*first, T*second)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2327,6 +2333,7 @@ public static void Swap&lt;T&gt;(T*first, T*second)
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static T*ToPointer&lt;T&gt;(this IntPtr source)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2396,6 +2403,7 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(ref IntPtr destination, T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2455,6 +2463,7 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteUnaligned&lt;T&gt;(ref IntPtr destination, T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
