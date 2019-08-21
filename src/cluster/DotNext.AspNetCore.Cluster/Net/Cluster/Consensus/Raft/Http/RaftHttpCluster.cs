@@ -311,7 +311,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             //this check allows to prevent situation when request comes earlier than initialization 
             if(localMember is null)
-                throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+            {
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return context.Response.WriteAsync(ExceptionMessages.UnresolvedLocalMember, Token);
+            }
             var networks = allowedNetworks;
             //checks whether the client's address is allowed
             if (networks.Count > 0 && networks.FirstOrDefault(context.Connection.RemoteIpAddress.IsIn) is null)
