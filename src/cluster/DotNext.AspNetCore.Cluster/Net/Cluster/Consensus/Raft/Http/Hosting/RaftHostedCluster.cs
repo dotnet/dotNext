@@ -5,6 +5,7 @@ using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
@@ -41,8 +42,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 
         public override async Task StartAsync(CancellationToken token)
         {
-            await base.StartAsync(token).ConfigureAwait(false);
             await host.StartAsync(token).ConfigureAwait(false);
+            await base.StartAsync(token).ConfigureAwait(false);
         }
 
         public override async Task StopAsync(CancellationToken token)
@@ -50,6 +51,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
             await host.StopAsync(token).ConfigureAwait(false);
             await base.StopAsync(token).ConfigureAwait(false);
         }
+
+        private protected override Predicate<RaftClusterMember> LocalMemberFinder => host.Services.GetRequiredService<IServer>().GetHostingAddresses().Contains;
 
         protected override void Dispose(bool disposing)
         {

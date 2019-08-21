@@ -9,8 +9,6 @@ namespace DotNext.Net
 {
     internal static class Network
     {
-        private static readonly IPAddress Any = new IPAddress(new byte[] { 0, 0, 0, 0 });
-
         internal static bool IsIn(this IPAddress address, IPNetwork network) => network.Contains(address);
 
         internal static IPEndPoint ToEndPoint(this Uri memberUri)
@@ -21,15 +19,13 @@ namespace DotNext.Net
                 case UriHostNameType.IPv6:
                     return new IPEndPoint(IPAddress.Parse(memberUri.Host), memberUri.Port);
                 case UriHostNameType.Dns:
-                    if (memberUri.IsLoopback)
-                        return new IPEndPoint(IPAddress.Loopback, memberUri.Port);
-                    goto default;
+                    return memberUri.IsLoopback ? new IPEndPoint(IPAddress.Loopback, memberUri.Port) : null;
                 default:
                     return null;
             }
         }
 
-        public static UriBuilder SetHostAndPort(this UriBuilder builder, IPEndPoint endpoint)
+        internal static UriBuilder SetHostAndPort(this UriBuilder builder, IPEndPoint endpoint)
         {
             builder.Port = endpoint.Port;
             builder.Host = endpoint.Address.ToString();
@@ -48,7 +44,7 @@ namespace DotNext.Net
                     var endpoint = uri.ToEndPoint();
                     if (endpoint is null)
                         continue;
-                    else if (endpoint.Address.Equals(Any))
+                    else if (endpoint.Address.IsOneOf(IPAddress.Any, IPAddress.IPv6Any))
                         foreach (var nic in NetworkInterface.GetAllNetworkInterfaces())
                             foreach (var nicAddr in nic.GetIPProperties().UnicastAddresses)
                                 result.Add(new IPEndPoint(nicAddr.Address, endpoint.Port));

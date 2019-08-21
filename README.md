@@ -35,31 +35,11 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-20-2019
+Release Date: 08-21-2019
 
-<a href="https://www.nuget.org/packages/dotnext/0.13.0">DotNext 0.13.0</a>
-* Fixed bug with equality comparison of **null** arrays inside of [EqualityComparerBuilder](https://sakno.github.io/dotNext/api/DotNext.EqualityComparerBuilder-1.html)
-* Improved debugging experience:
-	* SourceLink is enabled
-	* Debug symbols now embedded into assembly file
-	* NuGet Symbols Package is no longer used
-
-<a href="https://www.nuget.org/packages/dotnext.threading/0.13.0">DotNext.Threading 0.13.0</a>
-* Internals of several classes now based on Value Delegates to reduce memory allocations
-* Improved debugging experience:
-	* SourceLink is enabled
-	* Debug symbols now embedded into assembly file
-	* NuGet Symbols Package is no longer used
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/0.13.0">DotNext.Unsafe 0.13.0</a><br/>
-<a href="https://www.nuget.org/packages/dotnext.reflection/0.13.0">DotNext.Reflection 0.13.0</a><br/>
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/0.13.0">DotNext.Metaprogramming 0.13.0</a><br/>
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/0.3.0">DotNext.Net.Cluster 0.3.0</a><br/>
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.3.0">DotNext.AspNetCore.Cluster 0.3.0</a>
-* Improved debugging experience:
-	* SourceLink is enabled
-	* Debug symbols now embedded into assembly file
-	* NuGet Symbols Package is no longer used
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.3.1">DotNext.AspNetCore.Cluster 0.3.1</a>
+* Fixed correct detection of local IP address
+* Improved IPv6 support
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

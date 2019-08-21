@@ -11,7 +11,6 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -19,8 +18,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
-        private delegate ICollection<IPEndPoint> HostingAddressesProvider();
-
         private readonly IRaftClusterConfigurator configurator;
         private readonly IMessageHandler messageHandler;
 
@@ -30,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         [SuppressMessage("Usage", "CA2213", Justification = "This object is disposed via RaftCluster.members collection")]
         private RaftClusterMember localMember;
-        private readonly HostingAddressesProvider hostingAddresses;
+        
         private readonly IHttpMessageHandlerFactory httpHandlerFactory;
         private protected readonly TimeSpan RequestTimeout;
         private readonly DuplicateRequestDetector duplicationDetector;
@@ -56,7 +53,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             configurator = dependencies.GetService<IRaftClusterConfigurator>();
             messageHandler = dependencies.GetService<IMessageHandler>();
             AuditTrail = dependencies.GetService<IPersistentState>();
-            hostingAddresses = dependencies.GetRequiredService<IServer>().GetHostingAddresses;
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             var loggerFactory = dependencies.GetRequiredService<ILoggerFactory>();
             Logger = loggerFactory.CreateLogger(GetType());
@@ -175,10 +171,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public event ClusterChangedEventHandler MemberAdded;
         public event ClusterChangedEventHandler MemberRemoved;
 
+        private protected abstract Predicate<RaftClusterMember> LocalMemberFinder { get; }
+
         public override Task StartAsync(CancellationToken token)
         {
             //detect local member
-            localMember = FindMember(hostingAddresses().Contains);
+            localMember = FindMember(LocalMemberFinder);
             if (localMember is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             configurator?.Initialize(this, metadata);
@@ -311,6 +309,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal Task ProcessRequest(HttpContext context)
         {
+            //this check allows to prevent situation when request comes earlier than initialization 
+            if(localMember is null)
+            {
+                context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+                return context.Response.WriteAsync(ExceptionMessages.UnresolvedLocalMember, Token);
+            }
             var networks = allowedNetworks;
             //checks whether the client's address is allowed
             if (networks.Count > 0 && networks.FirstOrDefault(context.Connection.RemoteIpAddress.IsIn) is null)

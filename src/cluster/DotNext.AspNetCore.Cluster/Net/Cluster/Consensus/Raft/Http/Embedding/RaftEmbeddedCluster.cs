@@ -2,12 +2,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
+using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
     internal sealed class RaftEmbeddedCluster : RaftHttpCluster
     {
         internal readonly PathString ProtocolPath;
+        private readonly IServer server;
 
         public RaftEmbeddedCluster(IServiceProvider services)
             : base(services, out var members)
@@ -16,6 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             ProtocolPath = config.ResourcePath;
             foreach (var memberUri in config.Members)
                 members.Add(CreateMember(memberUri));
+            server = services.GetRequiredService<IServer>();
         }
 
         private protected override RaftClusterMember CreateMember(Uri address)
@@ -24,5 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             member.DefaultRequestHeaders.ConnectionClose = OpenConnectionForEachRequest;
             return member;
         }
+
+        private protected override Predicate<RaftClusterMember> LocalMemberFinder => server.GetHostingAddresses().Contains;
     }
 }
