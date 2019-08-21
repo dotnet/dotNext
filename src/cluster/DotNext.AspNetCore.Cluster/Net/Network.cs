@@ -27,7 +27,7 @@ namespace DotNext.Net
             }
         }
 
-        public static UriBuilder SetHostAndPort(this UriBuilder builder, IPEndPoint endpoint)
+        internal static UriBuilder SetHostAndPort(this UriBuilder builder, IPEndPoint endpoint)
         {
             builder.Port = endpoint.Port;
             builder.Host = endpoint.Address.ToString();
