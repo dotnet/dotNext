@@ -42,8 +42,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 
         public override async Task StartAsync(CancellationToken token)
         {
-            await base.StartAsync(token).ConfigureAwait(false);
             await host.StartAsync(token).ConfigureAwait(false);
+            await base.StartAsync(token).ConfigureAwait(false);
         }
 
         public override async Task StopAsync(CancellationToken token)

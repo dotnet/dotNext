@@ -24,6 +24,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                 await host.StartAsync();
                 object service = host.Services.GetService<ICluster>();
                 NotNull(service);
+                //check whether the local member present
+                var count = 0;
+                foreach (var member in host.Services.GetService<ICluster>().Members)
+                    if (!member.IsRemote)
+                        count += 1;
+                Equal(1, count);
                 service = host.Services.GetService<IExpandableCluster>();
                 NotNull(service);
                 service = host.Services.GetService<IRaftCluster>();
