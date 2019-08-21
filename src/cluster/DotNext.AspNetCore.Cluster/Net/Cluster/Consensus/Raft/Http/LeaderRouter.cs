@@ -33,8 +33,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 }
                 else if (leader.IsRemote)
                 {
-                    var newAddress = new UriBuilder(context.Request.GetEncodedUrl()).SetHostAndPort(leader.Endpoint).Uri.AbsoluteUri;
-                    context.Response.Redirect(newAddress, false);
+                    var builder = new UriBuilder(context.Request.GetEncodedUrl()) { Host = leader.Endpoint.Address.ToString() };
+                    context.Response.Redirect(builder.Uri.AbsoluteUri, false);
                 }
                 else
                     return next(context);
