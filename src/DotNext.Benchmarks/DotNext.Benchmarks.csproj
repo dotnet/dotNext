@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <StartupObject>DotNext.Program</StartupObject>
     <LangVersion>latest</LangVersion>
@@ -25,6 +25,7 @@
     <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
+    <TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
 
 
