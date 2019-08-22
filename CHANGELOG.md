@@ -1,5 +1,11 @@
 Release Notes
 ====
+
+# 08-22-2019
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.3.3">DotNext.AspNetCore.Cluster 0.3.3</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/0.3.3">DotNext.Net.Cluster 0.3.3</a>
+* Reduced number of logs produced by cluster node
+
 # 08-21-2019
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.3.2">DotNext.AspNetCore.Cluster 0.3.2</a>
 * Fixed endpoint redirection to leader node
