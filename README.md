@@ -35,10 +35,11 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-21-2019
+Release Date: 08-22-2019
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.3.2">DotNext.AspNetCore.Cluster 0.3.2</a>
-* Fixed endpoint redirection to leader node
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.3.3">DotNext.AspNetCore.Cluster 0.3.3</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/0.3.3">DotNext.Net.Cluster 0.3.3</a>
+* Reduced number of logs produced by cluster node
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

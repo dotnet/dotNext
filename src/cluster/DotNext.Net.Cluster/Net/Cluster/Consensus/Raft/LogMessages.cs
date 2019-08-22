@@ -13,10 +13,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.Net.Cluster.Consensus.Raft.LogMessages", Assembly.GetExecutingAssembly());
 
         internal static void DowngradingToFollowerState(this ILogger logger)
-            => logger.LogInformation(Resources.GetString("DowngradingToFollowerState"));
+            => logger.LogDebug(Resources.GetString("DowngradingToFollowerState"));
 
         internal static void DowngradedToFollowerState(this ILogger logger)
-            => logger.LogInformation(Resources.GetString("DowngradedToFollowerState"));
+            => logger.LogDebug(Resources.GetString("DowngradedToFollowerState"));
 
         internal static void TransitionToFollowerStateStarted(this ILogger logger)
             => logger.LogInformation(Resources.GetString("TransitionToFollowerStateStarted"));
