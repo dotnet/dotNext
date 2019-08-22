@@ -27,6 +27,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             IConfiguration memberConfig)
             => services.AddClusterAsSingleton<RaftEmbeddedCluster, RaftEmbeddedClusterMemberConfiguration>(memberConfig);
 
+        private static void ConfigureConsensusProtocolHandler(this RaftHttpCluster cluster, IApplicationBuilder builder)
+            => builder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent }).Run(cluster.ProcessRequest);
+
         /// <summary>
         /// Setup Raft protocol handler as middleware for the specified application.
         /// </summary>
@@ -35,11 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         public static IApplicationBuilder UseConsensusProtocolHandler(this IApplicationBuilder builder)
         {
             var cluster = builder.ApplicationServices.GetRequiredService<RaftEmbeddedCluster>();
-            return builder.Map(cluster.ProtocolPath, pathBuilder =>
-            {
-                pathBuilder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent });
-                pathBuilder.Run(cluster.ProcessRequest);
-            });
+            return builder.Map(cluster.ProtocolPath, cluster.ConfigureConsensusProtocolHandler);
         }
     }
 }
