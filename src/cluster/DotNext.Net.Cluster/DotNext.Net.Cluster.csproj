@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.3.0</Version>
+    <Version>0.3.3</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Basic framework for building clusters of microservices</Description>
@@ -15,8 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>Consensus;Raft;ASP.NET Core</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Debug information is now embedded into compiled library
-SourceLink is enabled</PackageReleaseNotes>
+    <PackageReleaseNotes>Reduced number of logs produced by cluster node</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
