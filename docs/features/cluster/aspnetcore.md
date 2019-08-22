@@ -86,6 +86,9 @@ The application should be configured properly to work as a cluster node. The fol
 
 `requestJournal` configuration section is rarely used and useful for high-load scenario only.
 
+> [!NOTE]
+> Usually, real-world ASP.NET Core application hosted on `0.0.0.0`(IPv4) or `::`(IPv6). When testing locally, use explicit loopback IP instead of `localhost` as host name for all nodes in `members` section.
+
 Choose `lowerElectionTimeout` and `upperElectionTimeout` according with the quality of your network. If values are small then you get frequent elections and migration of leader node.
 
 ## Runtime Hook
@@ -197,7 +200,9 @@ sealed class Startup : StartupBase
 }
 ```
 
-Note that `BecomeClusterMember` declared in [DotNext.Net.Cluster.Consensus.Raft.Http.Embedding](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.yml) namespace. 
+Note that `BecomeClusterMember` declared in [DotNext.Net.Cluster.Consensus.Raft.Http.Embedding](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.yml) namespace.
+
+`UseConsensusProtocolHandler` method should be called before registration of any authentication/authorization middleware.
 
 # Redirection to Leader
 Now cluster of ASP.NET Core applications can receive requests from outside. Some of these requests may be handled by leader node only. .NEXT cluster programming model provides a way to automatically redirect request to leader node if it was originally received by follower node. The redirection is organized with help of _301 Moved Permanently_ status code. Every follower node knows the actual address of the leader node. If cluster or its partition doesn't have leader then node returns _503 Service Unavailable_. 
