@@ -1,5 +1,11 @@
 Release Notes
 ====
+
+# 08-22-2019
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.3.3">DotNext.AspNetCore.Cluster 0.3.3</a><br/>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/0.3.3">DotNext.Net.Cluster 0.3.3</a>
+* Reduced number of logs produced by cluster node
+
 # 08-21-2019
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.3.2">DotNext.AspNetCore.Cluster 0.3.2</a>
 * Fixed endpoint redirection to leader node
@@ -62,8 +68,8 @@ This release introduces a new feature called Value Delegates which are allocatio
 <a href="https://www.nuget.org/packages/dotnext.unsafe/0.12.0">DotNext.Unsafe 0.12.0</a>
 * [UnmanagedFunction](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.UnmanagedFunction.html) and [UnmanagedFunction&lt;R&gt;](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.UnmanagedFunction-1.html) classes are introduced to call unmanaged functions by pointer
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/0.12.0">DotNext.Net.Cluster 0.2.0</a>
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.12.0">DotNext.AspNetCore.Cluster 0.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/0.2.0">DotNext.Net.Cluster 0.2.0</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.2.0">DotNext.AspNetCore.Cluster 0.2.0</a>
 * Raft client is now capable to ensure that changes are committed by leader node using [WriteConcern](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Replication.WriteConcern.html)
 
 
