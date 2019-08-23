@@ -15,8 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>unsafe;unmanaged;pointer;pinvoke;interop</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Debug information is now embedded into compiled library
-SourceLink is enabled</PackageReleaseNotes>
+    <PackageReleaseNotes>Support for pointer arithmetic with operand of type IntPtr</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
