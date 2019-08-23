@@ -8,7 +8,7 @@ Result Type
 using DotNext;
 
 Func<string, int> parser = int.Parse;
-Result<int> result = parser.TryInvoke("42").OrInvoke(error => 0);
+Result<int> result = parser.TryInvoke("42");
 if(result)  //successful
 {
     var i = (int) result;
@@ -19,11 +19,11 @@ else
 }
 ```
 
-This type is paired with [Optional](../../api/DotNext.Optional-1.yml) data type. `Result<T>` can be converted to it implicitly. But conversion is losing information about exception:
+This type is paired with [Optional](../../api/DotNext.Optional-1.yml) data type. `Result<T>` can be converted to it implicitly. But conversion loses information about exception:
 
 ```csharp
 using DotNext;
 
 Func<string, int> parser = int.Parse;
-Optional<int> result = parser.TryInvoke("42").OrInvoke(error => 0);
+int result = parser.TryInvoke("42").OrInvoke(error => 0);
 ```
