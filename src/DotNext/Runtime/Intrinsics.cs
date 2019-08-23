@@ -69,7 +69,7 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The value type to be converted.</typeparam>
         /// <typeparam name="TResult">The type of output struct.</typeparam>
         public static void Bitcast<T, TResult>(in T input, out TResult output)
-            where T : struct
+            where T : unmanaged
             where TResult : unmanaged
         {
             //ldobj/stobj pair is used instead of cpobj because this instruction
