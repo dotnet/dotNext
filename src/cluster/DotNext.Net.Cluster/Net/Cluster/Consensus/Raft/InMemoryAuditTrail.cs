@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             long? IMessage.Length => 0L;
             Task IMessage.CopyToAsync(Stream output) => Task.CompletedTask;
 
-            ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask();
+            ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask(Task.CompletedTask);
 
             public ContentType Type { get; } = new ContentType(MediaTypeNames.Application.Octet);
             long ILogEntry.Term => 0L;
@@ -57,28 +57,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bool IMessage.IsReusable => true;
         }
 
-        private sealed class CommitEventExecutor
-        {
-            private readonly long startIndex, count;
-
-            internal CommitEventExecutor(long startIndex, long count)
-            {
-                this.startIndex = startIndex;
-                this.count = count;
-            }
-
-            private void Invoke(InMemoryAuditTrail auditTrail) => auditTrail?.Committed?.Invoke(auditTrail, startIndex, count);
-
-            private void Invoke(object auditTrail) => Invoke(auditTrail as InMemoryAuditTrail);
-
-            public static implicit operator WaitCallback(CommitEventExecutor executor) => executor is null ? default(WaitCallback) : executor.Invoke;
-        }
-
         private static readonly ILogEntry First = new InitialLogEntry();
         private static readonly ILogEntry[] EmptyLog = { First };
 
         private long commitIndex;
         private volatile ILogEntry[] log;
+        private long offset;
 
         private long term;
         private volatile IRaftClusterMember votedFor;
@@ -99,7 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ValueTask IPersistentState.UpdateTermAsync(long value)
         {
             term.VolatileWrite(value);
-            return new ValueTask();
+            return new ValueTask(Task.CompletedTask);
         }
 
         ValueTask<long> IPersistentState.IncrementTermAsync() => new ValueTask<long>(term.IncrementAndGet());
@@ -107,7 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember member)
         {
             votedFor = member;
-            return new ValueTask();
+            return new ValueTask(Task.CompletedTask);
         }
 
         /// <summary>
@@ -168,16 +152,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public event CommitEventHandler<ILogEntry> Committed;
 
-        private long Commit(long startIndex, long count)
+        private Task OnCommmitted(long startIndex, long count)
         {
-            count = Math.Min(log.LongLength - startIndex, count);
-            if (count > 0L)
-            {
-                commitIndex = startIndex + count - 1;
-                //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
-                ThreadPool.QueueUserWorkItem(new CommitEventExecutor(startIndex, count), this);
-            }
-            return count;
+            ICollection<Task> tasks = new LinkedList<Task>();
+            foreach (CommitEventHandler<ILogEntry> handler in Committed?.GetInvocationList() ?? Array.Empty<CommitEventHandler<ILogEntry>>())
+                tasks.Add(handler(this, startIndex, count));
+            return Task.WhenAll(tasks);
         }
 
         async ValueTask<long> IAuditTrail<ILogEntry>.CommitAsync(long startIndex, long? endIndex)
@@ -185,8 +165,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
                 startIndex = Math.Max(commitIndex, startIndex);
-                var count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;
-                return count > 0L ? Commit(startIndex, count) : 0L;
+                var count = endIndex.HasValue ?
+                    Math.Min(log.LongLength - startIndex, endIndex.Value - startIndex + 1L) :
+                    log.LongLength - startIndex;
+                if (count > 0L)
+                {
+                    commitIndex = startIndex + count - 1;
+                    await OnCommmitted(startIndex, count).ConfigureAwait(false);
+                }
+                return count;
+            }
+        }
+
+        /// <summary>
+        /// Performs log compaction.
+        /// </summary>
+        /// <returns>The task representing compaction process.</returns>
+        public ValueTask ForceCompactionAsync()
+        {
+            using(this.AcquireWriteLockAsync(CancellationToken.None))
+            {
+                //remove all records up to commitIndex inclusive
+                var newLog = new ILogEntry[log.LongLength - commitIndex];
             }
         }
 
