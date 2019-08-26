@@ -73,7 +73,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <remarks>
         /// Log compaction allows to remove committed log entries from the log and reduce its size.
         /// </remarks>
-        /// <returns>The task representing asynchronous state of compaction process.</returns>
-        ValueTask ForceCompactionAsync();
+        /// <returns>The number of removed entries.</returns>
+        ValueTask<long> ForceCompactionAsync();
     }
 }

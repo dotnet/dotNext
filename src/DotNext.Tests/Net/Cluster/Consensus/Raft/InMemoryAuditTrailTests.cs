@@ -39,11 +39,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
             }
 
-            internal void OnCommitted(IAuditTrail<ILogEntry> sender, long startIndex, long count)
+            internal Task OnCommitted(IAuditTrail<ILogEntry> sender, long startIndex, long count)
             {
                 Count = count;
                 Set();
+                return Task.CompletedTask;
             }
+        }
+
+        [Fact]
+        public static async Task LogCompaction()
+        {
+            IPersistentState auditTrail = new InMemoryAuditTrail();
+            var entry1 = new LogEntry("SET X=0") { Term = 1 };
+            var entry2 = new LogEntry("SET Y=0") { Term = 2 };
+            var entry3 = new LogEntry("SET Z=0") { Term = 5 };
+            Equal(1L, await auditTrail.AppendAsync(new[] { entry1, entry2, entry3 }));
+            Equal(0L, await auditTrail.ForceCompactionAsync());
+            Equal(2L, await auditTrail.CommitAsync(1L, 2L));
+            Equal(2L, auditTrail.GetLastIndex(true));
+            Equal(2L, await auditTrail.ForceCompactionAsync());
+            Equal(2L, auditTrail.GetLastIndex(true));
+            Equal(3L, auditTrail.GetLastIndex(false));
+            Equal(5L, (await auditTrail.GetEntriesAsync(3L))[0].Term);
+            var entry4 = new LogEntry("SET H=0") { Term = 7 };
+            Equal(4L, await auditTrail.AppendAsync(new[] { entry4 }));
+            Equal(2L, auditTrail.GetLastIndex(true));
+            Equal(4L, auditTrail.GetLastIndex(false));
+            Equal(2L, await auditTrail.CommitAsync(3L));
+            Equal(4L, auditTrail.GetLastIndex(true));
+            Equal(2L, await auditTrail.ForceCompactionAsync());
         }
 
         [Fact]

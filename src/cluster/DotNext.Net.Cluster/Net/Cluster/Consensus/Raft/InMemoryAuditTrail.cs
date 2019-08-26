@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Net.Mime;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -60,9 +61,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private static readonly ILogEntry First = new InitialLogEntry();
         private static readonly ILogEntry[] EmptyLog = { First };
 
-        private long commitIndex;
+        private long commitIndex, offset;
         private volatile ILogEntry[] log;
-        private long offset;
 
         private long term;
         private volatile IRaftClusterMember votedFor;
@@ -71,6 +71,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Initializes a new audit trail with empty log.
         /// </summary>
         public InMemoryAuditTrail() => log = EmptyLog;
+        
+        //converts record index into array index
+        private long this[long recordIndex]
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => recordIndex - offset.VolatileRead();
+        }
 
         long IPersistentState.Term => term.VolatileRead();
 
@@ -100,10 +107,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="committed"><see langword="true"/> to get the index of highest log entry known to be committed; <see langword="false"/> to get the index of the last log entry.</param>
         /// <returns>The index of the log entry.</returns>
         public long GetLastIndex(bool committed)
-            => committed ? commitIndex : Math.Max(0, log.LongLength - 1L);
+            => committed ? commitIndex.VolatileRead() : (Math.Max(0, log.LongLength - 1L) + offset.VolatileRead());
 
         private IReadOnlyList<ILogEntry> GetEntries(long startIndex, long endIndex)
-            => log.Slice(startIndex, endIndex - startIndex + 1);
+            => log.Slice(this[startIndex], endIndex - startIndex + 1);
 
         async ValueTask<IReadOnlyList<ILogEntry>> IAuditTrail<ILogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
         {
@@ -111,17 +118,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return GetEntries(startIndex, endIndex ?? GetLastIndex(false));
         }
 
-
         private long Append(ILogEntry[] entries, long? startIndex)
         {
             long result;
             if (startIndex.HasValue)
             {
                 result = startIndex.Value;
-                log = log.RemoveLast(log.LongLength - result);
+                log = log.RemoveLast(log.LongLength - this[result]);
             }
             else
-                result = log.LongLength;
+                result = log.LongLength + offset;
             var newLog = new ILogEntry[entries.Length + log.LongLength];
             Array.Copy(log, newLog, log.LongLength);
             entries.CopyTo(newLog, log.LongLength);
@@ -164,13 +170,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
-                startIndex = Math.Max(commitIndex, startIndex);
+                startIndex = Math.Max(commitIndex.VolatileRead(), startIndex);
                 var count = endIndex.HasValue ?
-                    Math.Min(log.LongLength - startIndex, endIndex.Value - startIndex + 1L) :
-                    log.LongLength - startIndex;
+                    Math.Min(log.LongLength - this[startIndex], this[endIndex.Value - startIndex + 1L]) :
+                    log.LongLength - this[startIndex];
                 if (count > 0L)
                 {
-                    commitIndex = startIndex + count - 1;
+                    commitIndex.VolatileWrite(startIndex + count - 1);
                     await OnCommmitted(startIndex, count).ConfigureAwait(false);
                 }
                 return count;
@@ -180,13 +186,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Performs log compaction.
         /// </summary>
-        /// <returns>The task representing compaction process.</returns>
-        public ValueTask ForceCompactionAsync()
+        /// <returns>The number of removed entries.</returns>
+        public async ValueTask<long> ForceCompactionAsync()
         {
-            using(this.AcquireWriteLockAsync(CancellationToken.None))
+            using(await this.AcquireWriteLockAsync(CancellationToken.None))
             {
+                var ci = this[commitIndex.VolatileRead()];
                 //remove all records up to commitIndex inclusive
-                var newLog = new ILogEntry[log.LongLength - commitIndex];
+                var newLog = new ILogEntry[log.LongLength - ci];
+                newLog[0] = First;
+                offset.Add(ci);
+                Array.Copy(log, ci + 1, newLog, 1L, newLog.LongLength - 1L);
+                log = newLog;
+                return ci;
             }
         }
 
