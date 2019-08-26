@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry3 = new LogEntry("SET Z=0") { Term = 5 };
             Equal(1L, await auditTrail.AppendAsync(new[] { entry1, entry2, entry3 }));
             Equal(0L, await auditTrail.ForceCompactionAsync());
-            Equal(2L, await auditTrail.CommitAsync(1L, 2L));
+            Equal(2L, await auditTrail.CommitAsync(2L));
             Equal(2L, auditTrail.GetLastIndex(true));
             Equal(2L, await auditTrail.ForceCompactionAsync());
             Equal(2L, auditTrail.GetLastIndex(true));
@@ -66,7 +66,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(4L, await auditTrail.AppendAsync(new[] { entry4 }));
             Equal(2L, auditTrail.GetLastIndex(true));
             Equal(4L, auditTrail.GetLastIndex(false));
-            Equal(2L, await auditTrail.CommitAsync(3L));
+            Equal(2L, await auditTrail.CommitAsync());
             Equal(4L, auditTrail.GetLastIndex(true));
             Equal(2L, await auditTrail.ForceCompactionAsync());
         }
@@ -103,7 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (var detector = new CommitDetector())
             {
                 auditTrail.Committed += detector.OnCommitted;
-                Equal(2, await auditTrail.CommitAsync(1));
+                Equal(2, await auditTrail.CommitAsync());
                 await detector.Wait();
                 Equal(2, auditTrail.GetLastIndex(true));
                 Equal(2, detector.Count);

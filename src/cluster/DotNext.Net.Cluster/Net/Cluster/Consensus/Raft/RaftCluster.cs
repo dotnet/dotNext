@@ -354,10 +354,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (entries.Count > 0L)
                         await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
 
-                    var currentIndex = auditTrail.GetLastIndex(true);
-                    var result = commitIndex <= currentIndex ||
-                                 await auditTrail.CommitAsync(currentIndex + 1L, commitIndex).ConfigureAwait(false) > 0;
-                    return new Result<bool>(auditTrail.Term, result);
+                    return new Result<bool>(auditTrail.Term, await auditTrail.CommitAsync(commitIndex).ConfigureAwait(false) > 0);
                 }
                 else
                     return new Result<bool>(auditTrail.Term, false);

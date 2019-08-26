@@ -166,11 +166,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return Task.WhenAll(tasks);
         }
 
-        async ValueTask<long> IAuditTrail<ILogEntry>.CommitAsync(long startIndex, long? endIndex)
+        async ValueTask<long> IAuditTrail<ILogEntry>.CommitAsync(long? endIndex)
         {
             using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
-                startIndex = Math.Max(commitIndex.VolatileRead(), startIndex);
+                var startIndex = commitIndex.VolatileRead() + 1L;
                 var count = endIndex.HasValue ?
                     Math.Min(log.LongLength - this[startIndex], this[endIndex.Value - startIndex + 1L]) :
                     log.LongLength - this[startIndex];
