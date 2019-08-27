@@ -287,7 +287,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         candidateState.Dispose();
                         return;
                     case LeaderState leaderState:
-                        await leaderState.StopLeading().OnCompleted().ConfigureAwait(false);
+                        await leaderState.StopLeading(token).OnCompleted().ConfigureAwait(false);
                         leaderState.Dispose();
                         return;
                 }
@@ -310,7 +310,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     break;
                 case LeaderState leaderState:
                     var newState = new FollowerState(this);
-                    await leaderState.StopLeading().ConfigureAwait(false);
+                    await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
                     leaderState.Dispose();
                     state = newState.StartServing(electionTimeout);
                     break;
@@ -398,7 +398,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.Acquire(token).ConfigureAwait(false))
                 if (state is LeaderState leaderState)
                 {
-                    await leaderState.StopLeading().ConfigureAwait(false);
+                    await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
                     leaderState.Dispose();
                     state = new FollowerState(this).StartServing(electionTimeout);
                     Leader = null;

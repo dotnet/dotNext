@@ -40,6 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
+        private readonly AsyncManualResetEvent stopEvent;
 
         internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
             : base(stateMachine)
@@ -47,6 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             currentTerm = term;
             this.allowPartitioning = allowPartitioning;
             timerCancellation = new CancellationTokenSource();
+            stopEvent = new AsyncManualResetEvent(false);
         }
 
         //true if at least one entry from current term is stored on this node; otherwise, false
@@ -154,6 +156,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (await DoHeartbeats((IAuditTrail<ILogEntry>)transactionLog).ConfigureAwait(false))
                     continue;
                 heartbeatTimer?.Unregister(null);
+                stopEvent.Set();
                 break;
             }
             while (heartbeatCounter.DecrementAndGet() > 0L);
@@ -179,22 +182,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return this;
         }
 
-        private static async Task StopLeading(RegisteredWaitHandle handle)
-        {
-            using (var signal = new ManualResetEvent(false))
-            {
-                handle.Unregister(signal);
-                await signal.WaitAsync();
-            }
-        }
-
-        internal Task StopLeading()
+        internal Task StopLeading(CancellationToken token)
         {
             var handle = Interlocked.Exchange(ref heartbeatTimer, null);
             if (handle is null || timerCancellation.IsCancellationRequested)
                 return Task.CompletedTask;
             timerCancellation.Cancel(false);
-            return StopLeading(handle);
+            return stopEvent.Wait(token);
         }
 
         protected override void Dispose(bool disposing)
@@ -202,6 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (disposing)
             {
                 timerCancellation.Dispose();
+                stopEvent.Dispose();
                 Interlocked.Exchange(ref heartbeatTimer, null)?.Unregister(null);
             }
             base.Dispose(disposing);
