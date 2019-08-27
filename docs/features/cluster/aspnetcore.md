@@ -58,6 +58,7 @@ The application should be configured properly to work as a cluster node. The fol
 		"key": "value"
 	},
 	"allowedNetworks" : ["127.0.0.0", "255.255.0.0/16", "2001:0db9::1/64"],
+	"hostAddressHint" : "192.168.0.1",
 	"requestJournal" :
 	{
 		"memoryLimit": 5,
@@ -83,6 +84,7 @@ The application should be configured properly to work as a cluster node. The fol
 | requestJournal:memoryLimit | No | 10 | The maximum amount of memory (in MB) utilized by internal buffer used to track duplicate messages |
 | requestJournal:expiration | No | 00:00:10 | The eviction time of the record containing unique request identifier |
 | requestJournal:pollingInterval | No | 00:01:00 | Gets the maximum time after which the buffer updates its memory statistics |
+| hostAddressHint | No | N/A | Allows to specify real IP address of the host where cluster node launched. Usually it is needed when node executed inside of Docker container. If this parameter is not specified then cluster node may fail to detect itself because network interfaces inside of Docker container have different addresses in comparison with real host network interfaces. The value can be defined at container startup time, e.g. `docker container run -e "member-config:hostAddressHint=$(hostname -i)"` |
 
 `requestJournal` configuration section is rarely used and useful for high-load scenario only.
 
