@@ -33,8 +33,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         };
 
-        private static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
-
         private Task heartbeatTask;
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
@@ -49,6 +47,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             timerCancellation = new CancellationTokenSource();
             forcedReplication = new AsyncAutoResetEvent(false);
         }
+
+        private static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
 
         //true if at least one entry from current term is stored on this node; otherwise, false
         private static async Task<Result<bool>> AppendEntriesAsync(IRaftClusterMember member, long commitIndex,
