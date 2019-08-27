@@ -29,6 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                         .Run(ProcessRequest);
                 })
                 .Build();
+            config.SetupHostAddressHint(host.ServerFeatures);
             foreach (var memberUri in config.Members)
                 members.Add(CreateMember(memberUri));
         }

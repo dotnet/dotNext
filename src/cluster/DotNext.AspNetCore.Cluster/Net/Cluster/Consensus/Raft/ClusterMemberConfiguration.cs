@@ -11,7 +11,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </summary>
     public class ClusterMemberConfiguration : IClusterMemberConfiguration
     {
-        static ClusterMemberConfiguration() => IPNetworkConverter.Register();
+        static ClusterMemberConfiguration()
+        {
+            IPNetworkConverter.Register();
+            IPAddressConverter.Register();
+        }
 
         private ElectionTimeout electionTimeout;
 
