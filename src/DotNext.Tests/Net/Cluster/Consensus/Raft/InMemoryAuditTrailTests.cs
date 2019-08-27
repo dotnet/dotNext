@@ -39,10 +39,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
             }
 
-            internal void OnCommitted(IAuditTrail<ILogEntry> sender, long startIndex, long count)
+            internal Task OnCommitted(IAuditTrail<ILogEntry> sender, long startIndex, long count)
             {
                 Count = count;
                 Set();
+                return Task.CompletedTask;
             }
         }
 
@@ -78,7 +79,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (var detector = new CommitDetector())
             {
                 auditTrail.Committed += detector.OnCommitted;
-                Equal(2, await auditTrail.CommitAsync(1));
+                Equal(2, await auditTrail.CommitAsync());
                 await detector.Wait();
                 Equal(2, auditTrail.GetLastIndex(true));
                 Equal(2, detector.Count);

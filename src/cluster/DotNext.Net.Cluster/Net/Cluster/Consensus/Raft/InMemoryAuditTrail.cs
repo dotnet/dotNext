@@ -116,7 +116,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="committed"><see langword="true"/> to get the index of highest log entry known to be committed; <see langword="false"/> to get the index of the last log entry.</param>
         /// <returns>The index of the log entry.</returns>
         public long GetLastIndex(bool committed)
-            => committed ? commitIndex : Math.Max(0, log.LongLength - 1L);
+            => committed ? commitIndex.VolatileRead() : Math.Max(0, log.LongLength - 1L);
 
         private IReadOnlyList<ILogEntry> GetEntries(long startIndex, long endIndex)
             => log.Slice(startIndex, endIndex - startIndex + 1);
@@ -168,25 +168,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public event CommitEventHandler<ILogEntry> Committed;
 
-        private long Commit(long startIndex, long count)
+        private Task OnCommmitted(long startIndex, long count)
         {
-            count = Math.Min(log.LongLength - startIndex, count);
-            if (count > 0L)
-            {
-                commitIndex = startIndex + count - 1;
-                //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
-                ThreadPool.QueueUserWorkItem(new CommitEventExecutor(startIndex, count), this);
-            }
-            return count;
+            ICollection<Task> tasks = new LinkedList<Task>();
+            foreach (CommitEventHandler<ILogEntry> handler in Committed?.GetInvocationList() ?? Array.Empty<CommitEventHandler<ILogEntry>>())
+                tasks.Add(handler(this, startIndex, count));
+            return Task.WhenAll(tasks);
         }
 
-        async ValueTask<long> IAuditTrail<ILogEntry>.CommitAsync(long startIndex, long? endIndex)
+        async ValueTask<long> IAuditTrail<ILogEntry>.CommitAsync(long? endIndex)
         {
             using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
-                startIndex = Math.Max(commitIndex, startIndex);
+                var startIndex = commitIndex.VolatileRead() + 1L;
                 var count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;
-                return count > 0L ? Commit(startIndex, count) : 0L;
+                if(count > 0)
+                {
+                    commitIndex.VolatileWrite(startIndex + count - 1);
+                    await OnCommmitted(startIndex, count).ConfigureAwait(false);
+                }
+                return count;
             }
         }
 

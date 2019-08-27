@@ -278,6 +278,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 { "partitioning", "true" },
                 { "metadata:nodeName", "TestNode" },
                 { "hostAddressHint", "127.0.0.1" },
+                { "heartbeatThreshold", "0.3" },
                 { "members:0", "http://localhost:3262" },
                 { "members:1", "http://localhost:3263" }
             };

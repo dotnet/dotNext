@@ -1,7 +1,5 @@
 DowngradingToFollowerState=Member is downgrading to follower state
 DowngradedToFollowerState=Member is downgraded to follower state
-TransitionToFollowerStateStarted=Transition to Follower state started
-TransitionToFollowerStateCompleted=Transition to Follower state completed
 TransitionToCandidateStateStarted=Transition to Candidate state started
 TransitionToCandidateStateCompleted=Transition to Candidate state completed
 TransitionToLeaderStateStarted=Transition to Leader state started

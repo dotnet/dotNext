@@ -53,10 +53,9 @@ namespace DotNext.Net.Cluster.Replication
         /// <remarks>
         /// This method should updates cached value provided by method <see cref="GetLastIndex"/> called with argument of value <see langword="true"/>.
         /// </remarks>
-        /// <param name="startIndex">The index of the first entry to commit, inclusively.</param>
-        /// <param name="endIndex">The index of the last entry to commit, inclusively; if <see langword="null"/> then commits all log entries started from <paramref name="startIndex"/> to the last existing log entry.</param>
+        /// <param name="endIndex">The index of the last entry to commit, inclusively; if <see langword="null"/> then commits all log entries started from the first uncommitted entry to the last existing log entry.</param>
         /// <returns>The actual number of committed entries.</returns>
-        ValueTask<long> CommitAsync(long startIndex, long? endIndex = null);
+        ValueTask<long> CommitAsync(long? endIndex = null);
 
         /// <summary>
         /// Gets the first ephemeral log entry that is present in the empty log.

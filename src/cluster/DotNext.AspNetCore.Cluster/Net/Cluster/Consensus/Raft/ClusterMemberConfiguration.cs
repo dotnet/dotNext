@@ -22,7 +22,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Initializes a new default configuration.
         /// </summary>
-        public ClusterMemberConfiguration() => electionTimeout = ElectionTimeout.Recommended;
+        public ClusterMemberConfiguration()
+        {
+            electionTimeout = ElectionTimeout.Recommended;
+            HeartbeatThreshold = 0.5D;
+            Metadata = new Dictionary<string, string>();
+            AllowedNetworks = new HashSet<IPNetwork>();
+        }
 
         /// <summary>
         /// Represents set of networks from which remote member can make
@@ -33,7 +39,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Example of IPv4 network: 192.168.0.0/24
         /// </remarks>
         [CLSCompliant(false)]
-        public HashSet<IPNetwork> AllowedNetworks { get; } = new HashSet<IPNetwork>();
+        public HashSet<IPNetwork> AllowedNetworks { get; }
 
         /// <summary>
         /// Gets lower possible value of leader election timeout, in milliseconds.
@@ -53,6 +59,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             set => electionTimeout = electionTimeout.Modify(electionTimeout.LowerValue, value);
         }
 
+        /// <summary>
+        /// Gets or sets threshold of the heartbeat timeout.
+        /// </summary>
+        public double HeartbeatThreshold { get; set; }
+
         ElectionTimeout IClusterMemberConfiguration.ElectionTimeout => electionTimeout;
 
         /// <summary>
@@ -62,11 +73,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <see langword="false"/> value allows to build CA distributed cluster
         /// while <see langword="true"/> value allows to build CP/AP distributed cluster. 
         /// </remarks>
-        public bool Partitioning { get; set; } = false;
+        public bool Partitioning { get; set; }
 
         /// <summary>
         /// Gets metadata associated with local cluster member.
         /// </summary>
-        public IDictionary<string, string> Metadata { get; } = new Dictionary<string, string>();
+        public IDictionary<string, string> Metadata { get; }
     }
 }

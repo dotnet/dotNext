@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Replication;
     using Threading;
+    using static Threading.Tasks.Continuation;
 
     internal sealed class LeaderState : RaftState
     {
@@ -20,8 +20,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ReplicatedWithCurrentTerm,  //means that node accepts the entries with the current term
             Canceled
         }
+        
+        private static readonly ValueFunc<long, long> IndexDecrement = new ValueFunc<long, long>(DecrementIndex);
+        private Task heartbeatTask;
+        private readonly long currentTerm;
+        private readonly bool allowPartitioning;
+        private readonly CancellationTokenSource timerCancellation;
+        private readonly IAsyncEvent forcedReplication;
 
-        private static readonly Func<Task<Result<bool>>, Result<MemberHealthStatus>> HealthStatusContinuation = task =>
+        internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
+            : base(stateMachine)
+        {
+            currentTerm = term;
+            this.allowPartitioning = allowPartitioning;
+            timerCancellation = new CancellationTokenSource();
+            forcedReplication = new AsyncAutoResetEvent(false);
+        }
+
+        private static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
+
+        private static Result<MemberHealthStatus> HealthStatusContinuation(Task<Result<bool>> task)
         {
             Result<MemberHealthStatus> result;
             if (task.IsCanceled)
@@ -31,20 +49,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else
                 result = new Result<MemberHealthStatus>(task.Result.Term, task.Result.Value ? MemberHealthStatus.ReplicatedWithCurrentTerm : MemberHealthStatus.Replicated);
             return result;
-        };
-
-        private long heartbeatCounter;
-        private volatile RegisteredWaitHandle heartbeatTimer;
-        private readonly long currentTerm;
-        private readonly bool allowPartitioning;
-        private readonly CancellationTokenSource timerCancellation;
-
-        internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
-            : base(stateMachine)
-        {
-            currentTerm = term;
-            this.allowPartitioning = allowPartitioning;
-            timerCancellation = new CancellationTokenSource();
         }
 
         //true if at least one entry from current term is stored on this node; otherwise, false
@@ -73,7 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 result = result.SetValue(entries.Any(entry => entry.Term == term));
             }
             else
-                logger.ReplicationFailed(member.Endpoint, member.NextIndex.DecrementAndGet());
+                logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
 
             return result;
         }
@@ -91,12 +95,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ICollection<Task<Result<MemberHealthStatus>>> tasks = new LinkedList<Task<Result<MemberHealthStatus>>>();
             //send heartbeat in parallel
             var commitIndex = transactionLog.GetLastIndex(true);
+            Func<Task<Result<bool>>, Result<MemberHealthStatus>> continuation = HealthStatusContinuation; 
             foreach (var member in stateMachine.Members)
                 if (member.IsRemote)
                     tasks.Add(AppendEntriesAsync(member, commitIndex, currentTerm, transactionLog, stateMachine.Logger, timerCancellation.Token)
-                        .ContinueWith(HealthStatusContinuation, default, TaskContinuationOptions.ExecuteSynchronously,
+                        .ContinueWith(continuation, default, TaskContinuationOptions.ExecuteSynchronously,
                             TaskScheduler.Current));
-            var quorum = 1;  //because we know the entry is replicated in this node
+            var quorum = 1;  //because we know that the entry is replicated in this node
             var commitQuorum = 1;
             var term = currentTerm;
             foreach (var task in tasks)
@@ -106,6 +111,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 switch (result.Value)
                 {
                     case MemberHealthStatus.Canceled: //leading was canceled
+                        //ensure that all requests are canceled
+                        await Task.WhenAll(tasks).ConfigureAwait(false);
                         return false;
                     case MemberHealthStatus.Replicated:
                         quorum += 1;
@@ -128,9 +135,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //majority of nodes accept entries with a least one entry from current term
             if (commitQuorum > 0)
             {
-                commitIndex += 1;
-                var count = await transactionLog.CommitAsync(commitIndex); //commit all entries started from first uncommitted index to the end
-                stateMachine.Logger.CommitSuccessful(commitIndex, count);
+                var count = await transactionLog.CommitAsync(); //commit all entries started from first uncommitted index to the end
+                stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
                 return CheckTerm(term);
             }
             stateMachine.Logger.CommitFailed(quorum, commitIndex);
@@ -142,23 +148,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return false;
         }
 
-        private async void DoHeartbeats(object transactionLog, bool timedOut)
+        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<ILogEntry> auditTrail)
         {
-            Debug.Assert(transactionLog is IAuditTrail<ILogEntry>);
-            if (IsDisposed || !timedOut || heartbeatCounter.IncrementAndGet() > 1L)
-                return;
-            do
+            while(await DoHeartbeats(auditTrail).ConfigureAwait(false))
             {
-                if (await DoHeartbeats((IAuditTrail<ILogEntry>)transactionLog).ConfigureAwait(false))
-                    continue;
-                heartbeatTimer?.Unregister(null);
-                break;
+                var task = await forcedReplication.Wait(period, timerCancellation.Token).OnCompleted().ConfigureAwait(false);
+                if(task.IsCanceled)
+                    break;
             }
-            while (heartbeatCounter.DecrementAndGet() > 0L);
         }
 
-        internal void ForceReplication(IAuditTrail<ILogEntry> transactionLog)
-            => DoHeartbeats(transactionLog, true);
+        internal void ForceReplication() => forcedReplication.Signal();
 
         /// <summary>
         /// Starts cluster synchronization.
@@ -167,32 +167,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="transactionLog">Transaction log.</param>
         internal LeaderState StartLeading(TimeSpan period, IAuditTrail<ILogEntry> transactionLog)
         {
-            heartbeatCounter.VolatileWrite(0L);
             if (transactionLog != null)
                 foreach (var member in stateMachine.Members)
                     member.NextIndex = transactionLog.GetLastIndex(false) + 1;
-            heartbeatTimer = ThreadPool.RegisterWaitForSingleObject(timerCancellation.Token.WaitHandle, DoHeartbeats,
-                transactionLog, period, false);
-            DoHeartbeats(transactionLog, true); //execute heartbeats immediately without delay provided by RegisterWaitForSingleObject
+            heartbeatTask = DoHeartbeats(period, transactionLog);
             return this;
         }
 
-        private static async Task StopLeading(RegisteredWaitHandle handle)
+        internal override Task StopAsync()
         {
-            using (var signal = new ManualResetEvent(false))
-            {
-                handle.Unregister(signal);
-                await signal.WaitAsync();
-            }
-        }
-
-        internal Task StopLeading()
-        {
-            var handle = Interlocked.Exchange(ref heartbeatTimer, null);
-            if (handle is null || timerCancellation.IsCancellationRequested)
-                return Task.CompletedTask;
             timerCancellation.Cancel(false);
-            return StopLeading(handle);
+            return heartbeatTask;
         }
 
         protected override void Dispose(bool disposing)
@@ -200,7 +185,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (disposing)
             {
                 timerCancellation.Dispose();
-                Interlocked.Exchange(ref heartbeatTimer, null)?.Unregister(null);
+                forcedReplication.Dispose();
+                heartbeatTask = null;
             }
             base.Dispose(disposing);
         }
