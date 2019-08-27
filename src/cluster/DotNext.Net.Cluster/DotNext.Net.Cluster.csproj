@@ -7,7 +7,7 @@
     <Version>0.4.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
-    <Description>Basic framework for building clusters of microservices</Description>
+    <Description>Basic framework for building clusters</Description>
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>

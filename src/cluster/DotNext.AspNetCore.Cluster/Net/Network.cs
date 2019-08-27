@@ -7,6 +7,8 @@ using IServerAddresses = Microsoft.AspNetCore.Hosting.Server.Features.IServerAdd
 
 namespace DotNext.Net
 {
+    using HostAddressHintFeature = AspNetCore.Hosting.Server.Features.HostAddressHintFeature;
+
     internal static class Network
     {
         internal static bool IsIn(this IPAddress address, IPNetwork network) => network.Contains(address);
@@ -31,6 +33,7 @@ namespace DotNext.Net
             if (feature is null || feature.Addresses.Count == 0)
                 return Array.Empty<IPEndPoint>();
             var result = new HashSet<IPEndPoint>();
+            var hint = server.Features.Get<HostAddressHintFeature>()?.Address;
             foreach (var address in feature.Addresses)
                 if (Uri.TryCreate(address, UriKind.Absolute, out var uri))
                 {
@@ -43,6 +46,9 @@ namespace DotNext.Net
                                 result.Add(new IPEndPoint(nicAddr.Address, endpoint.Port));
                     else
                         result.Add(endpoint);
+                    //add host address hint if it is available
+                    if (!(hint is null))
+                        result.Add(new IPEndPoint(hint, endpoint.Port));
                 }
             return result;
         }
