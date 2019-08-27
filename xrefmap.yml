@@ -10449,6 +10449,19 @@ references:
   fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
   nameWithType: ClusterMemberConfiguration.IClusterMemberConfiguration.ElectionTimeout
   nameWithType.vb: ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
+- uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.HeartbeatThreshold
+  name: HeartbeatThreshold
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_HeartbeatThreshold
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.HeartbeatThreshold
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.HeartbeatThreshold
+  nameWithType: ClusterMemberConfiguration.HeartbeatThreshold
+- uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.HeartbeatThreshold*
+  name: HeartbeatThreshold
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_HeartbeatThreshold_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.HeartbeatThreshold
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.HeartbeatThreshold
+  nameWithType: ClusterMemberConfiguration.HeartbeatThreshold
 - uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.LowerElectionTimeout
   name: LowerElectionTimeout
   href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_LowerElectionTimeout
@@ -10698,6 +10711,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
   nameWithType: IClusterMemberConfiguration.ElectionTimeout
+- uid: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.HeartbeatThreshold
+  name: HeartbeatThreshold
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_IClusterMemberConfiguration_HeartbeatThreshold
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.HeartbeatThreshold
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.HeartbeatThreshold
+  nameWithType: IClusterMemberConfiguration.HeartbeatThreshold
+- uid: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.HeartbeatThreshold*
+  name: HeartbeatThreshold
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_IClusterMemberConfiguration_HeartbeatThreshold_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.HeartbeatThreshold
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.HeartbeatThreshold
+  nameWithType: IClusterMemberConfiguration.HeartbeatThreshold
 - uid: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.Partitioning
   name: Partitioning
   href: api/DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_IClusterMemberConfiguration_Partitioning
@@ -10858,15 +10884,15 @@ references:
   fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.ILogEntry>.AppendAsync
   nameWithType: InMemoryAuditTrail.IAuditTrail<ILogEntry>.AppendAsync
   nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.ILogEntry>.AppendAsync
-- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#ILogEntry}#CommitAsync(System.Int64,System.Nullable{System.Int64})
-  name: IAuditTrail<ILogEntry>.CommitAsync(Int64, Nullable<Int64>)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_ILogEntry__CommitAsync_System_Int64_System_Nullable_System_Int64__
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#ILogEntry}#CommitAsync(System.Int64,System.Nullable{System.Int64})
-  name.vb: DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.ILogEntry>.CommitAsync(Int64, Nullable(Of Int64))
-  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.ILogEntry>.CommitAsync(System.Int64, System.Nullable<System.Int64>)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.ILogEntry>.CommitAsync(System.Int64, System.Nullable(Of System.Int64))
-  nameWithType: InMemoryAuditTrail.IAuditTrail<ILogEntry>.CommitAsync(Int64, Nullable<Int64>)
-  nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.ILogEntry>.CommitAsync(Int64, Nullable(Of Int64))
+- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#ILogEntry}#CommitAsync(System.Nullable{System.Int64})
+  name: IAuditTrail<ILogEntry>.CommitAsync(Nullable<Int64>)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_ILogEntry__CommitAsync_System_Nullable_System_Int64__
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#ILogEntry}#CommitAsync(System.Nullable{System.Int64})
+  name.vb: DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.ILogEntry>.CommitAsync(Nullable(Of Int64))
+  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.ILogEntry>.CommitAsync(System.Nullable<System.Int64>)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.ILogEntry>.CommitAsync(System.Nullable(Of System.Int64))
+  nameWithType: InMemoryAuditTrail.IAuditTrail<ILogEntry>.CommitAsync(Nullable<Int64>)
+  nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.ILogEntry>.CommitAsync(Nullable(Of Int64))
 - uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#ILogEntry}#CommitAsync*
   name: IAuditTrail<ILogEntry>.CommitAsync
   href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_ILogEntry__CommitAsync_
@@ -12709,15 +12735,15 @@ references:
   fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of LogEntry).AppendAsync
   nameWithType: IAuditTrail<LogEntry>.AppendAsync
   nameWithType.vb: IAuditTrail(Of LogEntry).AppendAsync
-- uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.CommitAsync(System.Int64,System.Nullable{System.Int64})
-  name: CommitAsync(Int64, Nullable<Int64>)
-  href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_CommitAsync_System_Int64_System_Nullable_System_Int64__
-  commentId: M:DotNext.Net.Cluster.Replication.IAuditTrail`1.CommitAsync(System.Int64,System.Nullable{System.Int64})
-  name.vb: CommitAsync(Int64, Nullable(Of Int64))
-  fullName: DotNext.Net.Cluster.Replication.IAuditTrail<LogEntry>.CommitAsync(System.Int64, System.Nullable<System.Int64>)
-  fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of LogEntry).CommitAsync(System.Int64, System.Nullable(Of System.Int64))
-  nameWithType: IAuditTrail<LogEntry>.CommitAsync(Int64, Nullable<Int64>)
-  nameWithType.vb: IAuditTrail(Of LogEntry).CommitAsync(Int64, Nullable(Of Int64))
+- uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.CommitAsync(System.Nullable{System.Int64})
+  name: CommitAsync(Nullable<Int64>)
+  href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_CommitAsync_System_Nullable_System_Int64__
+  commentId: M:DotNext.Net.Cluster.Replication.IAuditTrail`1.CommitAsync(System.Nullable{System.Int64})
+  name.vb: CommitAsync(Nullable(Of Int64))
+  fullName: DotNext.Net.Cluster.Replication.IAuditTrail<LogEntry>.CommitAsync(System.Nullable<System.Int64>)
+  fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of LogEntry).CommitAsync(System.Nullable(Of System.Int64))
+  nameWithType: IAuditTrail<LogEntry>.CommitAsync(Nullable<Int64>)
+  nameWithType.vb: IAuditTrail(Of LogEntry).CommitAsync(Nullable(Of Int64))
 - uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.CommitAsync*
   name: CommitAsync
   href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_CommitAsync_
