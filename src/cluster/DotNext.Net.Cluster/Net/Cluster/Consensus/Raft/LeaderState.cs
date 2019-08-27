@@ -20,19 +20,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ReplicatedWithCurrentTerm,  //means that node accepts the entries with the current term
             Canceled
         }
-
-        private static readonly Func<Task<Result<bool>>, Result<MemberHealthStatus>> HealthStatusContinuation = task =>
-        {
-            Result<MemberHealthStatus> result;
-            if (task.IsCanceled)
-                result = new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Canceled);
-            else if (task.IsFaulted)
-                result = new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Unavailable);
-            else
-                result = new Result<MemberHealthStatus>(task.Result.Term, task.Result.Value ? MemberHealthStatus.ReplicatedWithCurrentTerm : MemberHealthStatus.Replicated);
-            return result;
-        };
-
+        
+        private static readonly ValueFunc<long, long> IndexDecrement = new ValueFunc<long, long>(DecrementIndex);
         private Task heartbeatTask;
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
@@ -49,6 +38,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
+
+        private static Result<MemberHealthStatus> HealthStatusContinuation(Task<Result<bool>> task)
+        {
+            Result<MemberHealthStatus> result;
+            if (task.IsCanceled)
+                result = new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Canceled);
+            else if (task.IsFaulted)
+                result = new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Unavailable);
+            else
+                result = new Result<MemberHealthStatus>(task.Result.Term, task.Result.Value ? MemberHealthStatus.ReplicatedWithCurrentTerm : MemberHealthStatus.Replicated);
+            return result;
+        }
 
         //true if at least one entry from current term is stored on this node; otherwise, false
         private static async Task<Result<bool>> AppendEntriesAsync(IRaftClusterMember member, long commitIndex,
@@ -76,7 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 result = result.SetValue(entries.Any(entry => entry.Term == term));
             }
             else
-                logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(DecrementIndex));
+                logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
 
             return result;
         }
@@ -94,12 +95,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ICollection<Task<Result<MemberHealthStatus>>> tasks = new LinkedList<Task<Result<MemberHealthStatus>>>();
             //send heartbeat in parallel
             var commitIndex = transactionLog.GetLastIndex(true);
+            Func<Task<Result<bool>>, Result<MemberHealthStatus>> continuation = HealthStatusContinuation; 
             foreach (var member in stateMachine.Members)
                 if (member.IsRemote)
                     tasks.Add(AppendEntriesAsync(member, commitIndex, currentTerm, transactionLog, stateMachine.Logger, timerCancellation.Token)
-                        .ContinueWith(HealthStatusContinuation, default, TaskContinuationOptions.ExecuteSynchronously,
+                        .ContinueWith(continuation, default, TaskContinuationOptions.ExecuteSynchronously,
                             TaskScheduler.Current));
-            var quorum = 1;  //because we know the entry is replicated in this node
+            var quorum = 1;  //because we know that the entry is replicated in this node
             var commitQuorum = 1;
             var term = currentTerm;
             foreach (var task in tasks)
