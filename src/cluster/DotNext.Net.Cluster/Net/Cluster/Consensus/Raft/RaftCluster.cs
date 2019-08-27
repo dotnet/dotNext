@@ -262,7 +262,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public virtual Task StartAsync(CancellationToken token)
         {
             //start node in Follower state
-            state = new FollowerState(this).StartServing(electionTimeout);
+            state = new FollowerState(this).StartServing(TimeSpan.FromMilliseconds(electionTimeout));
             return Task.CompletedTask;
         }
 
@@ -277,20 +277,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             members.ForEach(CancelPendingRequests);
             leader = null;
             using (await transitionSync.Acquire(token).ConfigureAwait(false))
-                switch (Interlocked.Exchange(ref state, null))
-                {
-                    case FollowerState followerState:
-                        followerState.Dispose();
-                        return;
-                    case CandidateState candidateState:
-                        await candidateState.StopVoting().OnCompleted().ConfigureAwait(false);
-                        candidateState.Dispose();
-                        return;
-                    case LeaderState leaderState:
-                        await leaderState.StopLeading(token).OnCompleted().ConfigureAwait(false);
-                        leaderState.Dispose();
-                        return;
-                }
+            {
+                var currentState = Interlocked.Exchange(ref state, null);
+                await currentState.StopAsync().OnCompleted().ConfigureAwait(false);
+                currentState.Dispose();
+            }
         }
 
         private async Task StepDown(long newTerm) //true - need to update leader, false - leave leader value as is
@@ -310,15 +301,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     break;
                 case LeaderState leaderState:
                     var newState = new FollowerState(this);
-                    await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
+                    await leaderState.StopAsync().ConfigureAwait(false);
+                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
                     leaderState.Dispose();
-                    state = newState.StartServing(electionTimeout);
                     break;
                 case CandidateState candidateState:
                     newState = new FollowerState(this);
-                    await candidateState.StopVoting().ConfigureAwait(false);
+                    await candidateState.StopAsync().ConfigureAwait(false);
+                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
                     candidateState.Dispose();
-                    state = newState.StartServing(electionTimeout);
                     break;
             }
             Logger.DowngradedToFollowerState();
@@ -398,9 +389,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.Acquire(token).ConfigureAwait(false))
                 if (state is LeaderState leaderState)
                 {
-                    await leaderState.StopLeading(transitionCancellation.Token).ConfigureAwait(false);
+                    await leaderState.StopAsync().ConfigureAwait(false);
+                    state = new FollowerState(this).StartServing(TimeSpan.FromMilliseconds(electionTimeout));
                     leaderState.Dispose();
-                    state = new FollowerState(this).StartServing(electionTimeout);
                     Leader = null;
                     return true;
                 }
@@ -494,7 +485,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (leaderState is null)
                         throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
                     else
-                        leaderState.ForceReplication(auditTrail);
+                        leaderState.ForceReplication();
                 }
                 while (!await notifier.Wait(TimeSpan.FromMilliseconds(electionTimeout), transitionCancellation.Token).ConfigureAwait(false));
             }

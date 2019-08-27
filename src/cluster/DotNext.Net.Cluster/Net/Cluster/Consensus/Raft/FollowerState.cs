@@ -1,46 +1,56 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Threading;
+
     internal sealed class FollowerState : RaftState
     {
-        private readonly AutoResetEvent refreshEvent;
-        private volatile RegisteredWaitHandle timerHandle;
+        private readonly IAsyncEvent refreshEvent;
+        private readonly CancellationTokenSource trackerCancellation;
+        private Task tracker;
 
-        internal FollowerState(IRaftStateMachine stateMachine)
+        internal FollowerState(IRaftStateMachine stateMachine) 
             : base(stateMachine)
         {
-            refreshEvent = new AutoResetEvent(false);
+            refreshEvent = new AsyncAutoResetEvent(false);
+            trackerCancellation = new CancellationTokenSource();
         }
 
-        private void TimerEvent(object state, bool timedOut)
+        private static async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, Action candidateState, CancellationToken token)
         {
-            if (IsDisposed || !timedOut)
-                return;
-            timerHandle.Unregister(null);
-            stateMachine.MoveToCandidateState();
+            //spin loop to wait for the timeout
+            while(await refreshEvent.Wait(timeout, token).ConfigureAwait(false)) { }
+            //timeout happened, move to candidate state
+            candidateState();
         }
 
-        internal FollowerState StartServing(int timeout)
+        internal FollowerState StartServing(TimeSpan timeout)
         {
-            refreshEvent.Reset();
-            timerHandle = ThreadPool.RegisterWaitForSingleObject(refreshEvent, TimerEvent,
-                null, timeout, false);
+            tracker = Track(timeout, refreshEvent, stateMachine.MoveToCandidateState, trackerCancellation.Token);
             return this;
+        }
+
+        internal override Task StopAsync()
+        {
+            trackerCancellation.Cancel();
+            return tracker;
         }
 
         internal void Refresh()
         {
             stateMachine.Logger.TimeoutReset();
-            refreshEvent.Set();
+            refreshEvent.Signal();
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
-                timerHandle?.Unregister(null);
                 refreshEvent.Dispose();
+                tracker = null;
             }
             base.Dispose(disposing);
         }

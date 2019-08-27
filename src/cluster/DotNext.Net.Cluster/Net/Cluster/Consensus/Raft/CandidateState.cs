@@ -53,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private readonly CancellationTokenSource votingCancellation;
         internal readonly long Term;
-        private volatile Task votingTask;
+        private Task votingTask;
 
         internal CandidateState(IRaftStateMachine stateMachine, long term)
             : base(stateMachine)
@@ -128,7 +128,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Cancels candidate state.
         /// </summary>
-        internal Task StopVoting()
+        internal override Task StopAsync()
         {
             votingCancellation.Cancel();
             return votingTask ?? Task.CompletedTask;
