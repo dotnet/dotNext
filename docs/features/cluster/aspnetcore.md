@@ -66,7 +66,8 @@ The application should be configured properly to work as a cluster node. The fol
 		"pollingInterval" : "00:01:00"
 	},
 	"resourcePath" : "/cluster-consensus/raft",
-	"port" : 3262
+	"port" : 3262,
+	"heartbeatThreshold" : 0.5
 }
 ```
 
