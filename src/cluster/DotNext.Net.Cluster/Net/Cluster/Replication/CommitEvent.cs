@@ -1,4 +1,6 @@
-﻿namespace DotNext.Net.Cluster.Replication
+﻿using System.Threading.Tasks;
+
+namespace DotNext.Net.Cluster.Replication
 {
     using Threading;
     using IMessage = Messaging.IMessage;
@@ -19,8 +21,11 @@
             }
         }
 
-        private void OnCommitted(IAuditTrail<LogEntry> sender, long startIndex, long count)
-            => SetIfCommitted(sender);
+        private Task OnCommitted(IAuditTrail<LogEntry> sender, long startIndex, long count)
+        {
+            SetIfCommitted(sender);
+            return Task.CompletedTask;
+        }
 
         internal void AttachTo(IAuditTrail<LogEntry> auditTrail)
         {
