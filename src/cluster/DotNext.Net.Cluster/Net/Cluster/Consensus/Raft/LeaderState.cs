@@ -33,6 +33,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         };
 
+        private static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
+
         private long heartbeatCounter;
         private volatile RegisteredWaitHandle heartbeatTimer;
         private readonly long currentTerm;
@@ -73,7 +75,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 result = result.SetValue(entries.Any(entry => entry.Term == term));
             }
             else
-                logger.ReplicationFailed(member.Endpoint, member.NextIndex.DecrementAndGet());
+                logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(DecrementIndex));
 
             return result;
         }
