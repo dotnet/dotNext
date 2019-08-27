@@ -126,6 +126,7 @@ sealed class Startup : StartupBase
 		&quot;key&quot;: &quot;value&quot;
 	},
 	&quot;allowedNetworks&quot; : [&quot;127.0.0.0&quot;, &quot;255.255.0.0/16&quot;, &quot;2001:0db9::1/64&quot;],
+	&quot;hostAddressHint&quot; : &quot;192.168.0.1&quot;,
 	&quot;requestJournal&quot; :
 	{
 		&quot;memoryLimit&quot;: 5,
@@ -217,6 +218,12 @@ sealed class Startup : StartupBase
 <td>No</td>
 <td>00:01:00</td>
 <td>Gets the maximum time after which the buffer updates its memory statistics</td>
+</tr>
+<tr>
+<td>hostAddressHint</td>
+<td>No</td>
+<td>N/A</td>
+<td>Allows to specify real IP address of the host where cluster node launched. Usually it is needed when node executed inside of Docker container. If this parameter is not specified then cluster node may fail to detect itself because network interfaces inside of Docker container have different addresses in comparison with real host network interfaces. The value can be defined at container startup time, e.g. <code>docker container run -e &quot;member-config:hostAddressHint=$(hostname -i)&quot;</code></td>
 </tr>
 </tbody>
 </table>
