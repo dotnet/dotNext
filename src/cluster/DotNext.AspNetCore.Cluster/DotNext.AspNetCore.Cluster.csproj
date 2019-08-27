@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.3.3</Version>
+    <Version>0.3.5</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Framework for fault-tolerant clustered microservices based on ASP.NET Core</Description>
@@ -15,7 +15,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>consensus;raft;aspnetcore</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Reduced number of logs produced by cluster node</PackageReleaseNotes>
+    <PackageReleaseNotes>Support of address translation when configuring cluster nodes</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
