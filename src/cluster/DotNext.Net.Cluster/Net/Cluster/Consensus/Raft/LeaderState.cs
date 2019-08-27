@@ -183,7 +183,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (disposing)
             {
-                Dispose(timerCancellation, forcedReplication);
+                timerCancellation.Dispose();
+                forcedReplication.Dispose();
                 heartbeatTask = null;
             }
             base.Dispose(disposing);

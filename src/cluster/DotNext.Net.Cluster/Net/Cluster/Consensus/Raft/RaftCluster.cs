@@ -143,6 +143,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile int electionTimeout;
         private readonly CancellationTokenSource transitionCancellation;
         private IPersistentState auditTrail;
+        private readonly double heartbeatThreshold;
 
         /// <summary>
         /// Initializes a new cluster manager for the local node.
@@ -159,6 +160,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
             auditTrail = new InMemoryAuditTrail();
+            heartbeatThreshold = config.HeartbeatThreshold;
         }
 
         private static bool IsLocalMember(TMember member) => !member.IsRemote;
@@ -421,7 +423,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
-            Logger.TransitionToFollowerStateStarted();
             using (var lockHolder = await transitionSync.TryAcquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (lockHolder)
                 {
@@ -429,8 +430,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         electionTimeout = electionTimeoutProvider.RandomTimeout();
                     await (newTerm.HasValue ? StepDown(newTerm.Value) : StepDown()).ConfigureAwait(false);
                 }
-
-            Logger.TransitionToFollowerStateCompleted();
         }
 
         async void IRaftStateMachine.MoveToCandidateState()
@@ -458,7 +457,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     candidateState.Dispose();
                     Leader = newLeader as TMember;
-                    state = new LeaderState(this, allowPartitioning, auditTrail.Term).StartLeading(TimeSpan.FromMilliseconds(electionTimeout / 2D),
+                    state = new LeaderState(this, allowPartitioning, auditTrail.Term).StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
                         auditTrail);
                     Logger.TransitionToLeaderStateCompleted();
                 }

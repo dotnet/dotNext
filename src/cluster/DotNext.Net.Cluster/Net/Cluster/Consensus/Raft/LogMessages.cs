@@ -18,12 +18,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static void DowngradedToFollowerState(this ILogger logger)
             => logger.LogDebug(Resources.GetString("DowngradedToFollowerState"));
 
-        internal static void TransitionToFollowerStateStarted(this ILogger logger)
-            => logger.LogInformation(Resources.GetString("TransitionToFollowerStateStarted"));
-
-        internal static void TransitionToFollowerStateCompleted(this ILogger logger)
-            => logger.LogInformation(Resources.GetString("TransitionToFollowerStateCompleted"));
-
         internal static void TransitionToCandidateStateStarted(this ILogger logger)
             => logger.LogInformation(Resources.GetString("TransitionToCandidateStateStarted"));
 
