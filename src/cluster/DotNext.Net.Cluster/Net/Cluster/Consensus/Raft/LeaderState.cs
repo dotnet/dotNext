@@ -135,9 +135,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //majority of nodes accept entries with a least one entry from current term
             if (commitQuorum > 0)
             {
-                commitIndex += 1;
-                var count = await transactionLog.CommitAsync(commitIndex); //commit all entries started from first uncommitted index to the end
-                stateMachine.Logger.CommitSuccessful(commitIndex, count);
+                var count = await transactionLog.CommitAsync(); //commit all entries started from first uncommitted index to the end
+                stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
                 return CheckTerm(term);
             }
             stateMachine.Logger.CommitFailed(quorum, commitIndex);
