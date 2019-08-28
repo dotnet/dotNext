@@ -2,12 +2,14 @@
 
 namespace DotNext.Threading
 {
+    using TimeStamp = Diagnostics.TimeStamp;
+
     /// <summary>
     /// Helps to compute timeout for asynchronous operations.
     /// </summary>
     public readonly struct Timeout
     {
-        private readonly long created;
+        private readonly TimeStamp created;
         private readonly TimeSpan timeout;
 
         /// <summary>
@@ -16,18 +18,16 @@ namespace DotNext.Threading
         /// <param name="timeout">Max duration of operation.</param>
         public Timeout(TimeSpan timeout)
         {
-            created = CurrentUnixTime;
+            created = TimeStamp.Current;
             this.timeout = timeout;
         }
-
-        private static long CurrentUnixTime => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
         internal bool Zero => timeout == TimeSpan.Zero;
 
         /// <summary>
         /// Indicates that timeout is reached.
         /// </summary>
-        public bool IsExpired => CurrentUnixTime - created > timeout.TotalMilliseconds;
+        public bool IsExpired => created.Elapsed > timeout;
 
         /// <summary>
         /// Throws <see cref="TimeoutException"/> if timeout occurs.

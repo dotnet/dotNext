@@ -18,6 +18,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         TimeSpan ElectionTimeout { get; }
 
         /// <summary>
+        /// Establishes metrics collector.
+        /// </summary>
+        MetricsCollector Metrics { set; }
+
+        /// <summary>
         /// Defines persistent state for the Raft-based cluster.
         /// </summary>
         new IPersistentState AuditTrail { get; set; }

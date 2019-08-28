@@ -189,7 +189,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The number of removed entries.</returns>
         public async ValueTask<long> ForceCompactionAsync()
         {
-            using(await this.AcquireWriteLockAsync(CancellationToken.None))
+            using(await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
                 var ci = this[commitIndex.VolatileRead()];
                 //remove all records up to commitIndex inclusive
