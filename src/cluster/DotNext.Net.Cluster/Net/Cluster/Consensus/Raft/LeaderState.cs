@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
         private readonly IAsyncEvent forcedReplication;
-        internal Action<TimeSpan> BroadcastTimeCallback;
+        internal ILeaderStateMetrics Metrics;
 
         internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
             : base(stateMachine)
@@ -116,7 +116,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     case MemberHealthStatus.Canceled: //leading was canceled
                         //ensure that all requests are canceled
                         await Task.WhenAll(tasks).ConfigureAwait(false);
-                        BroadcastTimeCallback?.Invoke(timeStamp.Elapsed);
+                        Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
                         return false;
                     case MemberHealthStatus.Replicated:
                         quorum += 1;
@@ -135,7 +135,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 task.Dispose();
             }
 
-            BroadcastTimeCallback?.Invoke(timeStamp.Elapsed);
+            Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
             tasks.Clear();
             //majority of nodes accept entries with a least one entry from current term
             if (commitQuorum > 0)

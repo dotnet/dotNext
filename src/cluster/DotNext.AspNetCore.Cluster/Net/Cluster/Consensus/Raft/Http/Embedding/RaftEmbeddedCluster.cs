@@ -24,7 +24,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
         private protected override RaftClusterMember CreateMember(Uri address)
         {
-            var member = new RaftClusterMember(this, address, new Uri(ProtocolPath.Value, UriKind.Relative)) { Timeout = RequestTimeout };
+            var member = new RaftClusterMember(this, address, new Uri(ProtocolPath.Value, UriKind.Relative)) 
+            { 
+                Timeout = RequestTimeout,
+                Metrics = Metrics as HttpMetricsCollector
+            };
             member.DefaultRequestHeaders.ConnectionClose = OpenConnectionForEachRequest;
             return member;
         }

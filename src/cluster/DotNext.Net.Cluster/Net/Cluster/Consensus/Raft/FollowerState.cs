@@ -11,6 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly IAsyncEvent refreshEvent;
         private readonly CancellationTokenSource trackerCancellation;
         private Task tracker;
+        internal IFollowerStateMetrics Metrics;
 
         internal FollowerState(IRaftStateMachine stateMachine) 
             : base(stateMachine)
@@ -43,6 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             stateMachine.Logger.TimeoutReset();
             refreshEvent.Signal();
+            Metrics?.ReportHeartbeat();
         }
 
         protected override void Dispose(bool disposing)

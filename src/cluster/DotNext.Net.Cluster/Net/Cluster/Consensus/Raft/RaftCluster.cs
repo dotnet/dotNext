@@ -144,7 +144,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly CancellationTokenSource transitionCancellation;
         private IPersistentState auditTrail;
         private readonly double heartbeatThreshold;
-        private MetricsCollector collector;
 
         /// <summary>
         /// Initializes a new cluster manager for the local node.
@@ -234,7 +233,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Establishes metrics collector.
         /// </summary>
-        public MetricsCollector Metrics { set => collector = value; }
+        public MetricsCollector Metrics 
+        { 
+            protected get;
+            set;
+        }
 
         /// <summary>
         /// Gets Term value maintained by local member.
@@ -270,7 +273,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public virtual Task StartAsync(CancellationToken token)
         {
             //start node in Follower state
-            state = new FollowerState(this).StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+            state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
             return Task.CompletedTask;
         }
 
@@ -308,16 +311,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     followerState.Refresh();
                     break;
                 case LeaderState leaderState:
-                    var newState = new FollowerState(this);
+                    var newState = new FollowerState(this) { Metrics = Metrics };
                     await leaderState.StopAsync().ConfigureAwait(false);
                     state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
                     leaderState.Dispose();
+                    Metrics?.MovedToFollowerState();
                     break;
                 case CandidateState candidateState:
-                    newState = new FollowerState(this);
+                    newState = new FollowerState(this) { Metrics = Metrics };
                     await candidateState.StopAsync().ConfigureAwait(false);
                     state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
                     candidateState.Dispose();
+                    Metrics?.MovedToFollowerState();
                     break;
             }
             Logger.DowngradedToFollowerState();
@@ -399,7 +404,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (state is LeaderState leaderState)
                 {
                     await leaderState.StopAsync().ConfigureAwait(false);
-                    state = new FollowerState(this).StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
                     leaderState.Dispose();
                     Leader = null;
                     return true;
@@ -450,6 +455,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     var localMember = FindMember(IsLocalMember);
                     await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     //vote for self
                     state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
+                    Metrics?.MovedToCandidateState();
                     Logger.TransitionToCandidateStateCompleted();
                 }
         }
@@ -459,16 +465,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Logger.TransitionToLeaderStateStarted();
             using (var lockHolder = await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-            {
                 if (lockHolder && state is CandidateState candidateState && candidateState.Term == auditTrail.Term)
                 {
                     candidateState.Dispose();
                     Leader = newLeader as TMember;
-                    state = new LeaderState(this, allowPartitioning, auditTrail.Term).StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
+                    state = new LeaderState(this, allowPartitioning, auditTrail.Term) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
                         auditTrail);
+                    Metrics?.MovedToLeaderState();
                     Logger.TransitionToLeaderStateCompleted();
                 }
-            }
         }
 
         private async Task WaitForCommit(long commitIndex)
