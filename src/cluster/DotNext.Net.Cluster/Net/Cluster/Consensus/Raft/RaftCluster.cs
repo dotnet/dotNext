@@ -368,19 +368,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
             {
                 if (auditTrail.Term > senderTerm) //currentTerm > term
-                    return new Result<bool>(auditTrail.Term, false);
+                    goto reject;
                 if (auditTrail.Term < senderTerm)
                 {
                     Leader = null;
                     await StepDown(senderTerm).ConfigureAwait(false);
                 }
+                else if(state is FollowerState follower)
+                    follower.Refresh();
                 else
-                    (state as FollowerState)?.Refresh();
+                    goto reject;
                 if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm).ConfigureAwait(false))
                 {
                     await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
                     return new Result<bool>(auditTrail.Term, true);
                 }
+            reject:
                 return new Result<bool>(auditTrail.Term, false);
             }
         }
@@ -479,11 +482,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 do
                 {
-                    var leaderState = state as LeaderState;
-                    if (leaderState is null)
-                        throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+                    if (state is LeaderState leader)
+                        leader.ForceReplication();
                     else
-                        leaderState.ForceReplication();
+                        throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
                 }
                 while (!await notifier.Wait(TimeSpan.FromMilliseconds(electionTimeout), transitionCancellation.Token).ConfigureAwait(false));
             }
