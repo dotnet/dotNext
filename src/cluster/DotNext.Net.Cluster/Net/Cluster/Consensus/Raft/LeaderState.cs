@@ -9,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Replication;
     using Threading;
+    using TimeStamp = Diagnostics.TimeStamp;
     using static Threading.Tasks.Continuation;
 
     internal sealed class LeaderState : RaftState
@@ -27,6 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
         private readonly IAsyncEvent forcedReplication;
+        internal Action<TimeSpan> BroadcastTimeCallback;
 
         internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
             : base(stateMachine)
@@ -92,6 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task<bool> DoHeartbeats(IAuditTrail<ILogEntry> transactionLog)
         {
+            var timeStamp = TimeStamp.Current;
             ICollection<Task<Result<MemberHealthStatus>>> tasks = new LinkedList<Task<Result<MemberHealthStatus>>>();
             //send heartbeat in parallel
             var commitIndex = transactionLog.GetLastIndex(true);
@@ -113,6 +116,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     case MemberHealthStatus.Canceled: //leading was canceled
                         //ensure that all requests are canceled
                         await Task.WhenAll(tasks).ConfigureAwait(false);
+                        BroadcastTimeCallback?.Invoke(timeStamp.Elapsed);
                         return false;
                     case MemberHealthStatus.Replicated:
                         quorum += 1;
@@ -131,6 +135,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 task.Dispose();
             }
 
+            BroadcastTimeCallback?.Invoke(timeStamp.Elapsed);
             tasks.Clear();
             //majority of nodes accept entries with a least one entry from current term
             if (commitQuorum > 0)

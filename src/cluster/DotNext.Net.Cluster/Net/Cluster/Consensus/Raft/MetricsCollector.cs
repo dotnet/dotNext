@@ -12,8 +12,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// The callback used to report broadcast time.
         /// </summary>
         /// <remarks>
-        /// Broadcast time is the time spent accessing the cluster nodes caused by Candidate and Leader states.
+        /// Broadcast time is the time spent accessing the cluster nodes caused by Leader states.
         /// </remarks>
-        public Action<long> BroadcastTimeCallback;
+        public Action<TimeSpan> BroadcastTimeCallback;
     }
 }

@@ -144,6 +144,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly CancellationTokenSource transitionCancellation;
         private IPersistentState auditTrail;
         private readonly double heartbeatThreshold;
+        private MetricsCollector collector;
 
         /// <summary>
         /// Initializes a new cluster manager for the local node.
@@ -229,6 +230,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         IEnumerable<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
         IReadOnlyCollection<IClusterMember> ICluster.Members => Members;
+
+        /// <summary>
+        /// Establishes metrics collector.
+        /// </summary>
+        public MetricsCollector Metrics { set => collector = value; }
 
         /// <summary>
         /// Gets Term value maintained by local member.
