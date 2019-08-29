@@ -8,16 +8,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     public sealed class InMemoryAuditTrailTests : Assert
     {
-        private sealed class LogEntry : TextMessage, ILogEntry
-        {
-            public LogEntry(string command)
-                : base(command, "Entry")
-            {
-            }
-
-            public long Term { get; set; }
-        }
-
         [Fact]
         public static async Task RaftPersistentState()
         {
@@ -51,9 +41,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task LogCompaction()
         {
             IPersistentState auditTrail = new InMemoryAuditTrail();
-            var entry1 = new LogEntry("SET X=0") { Term = 1 };
-            var entry2 = new LogEntry("SET Y=0") { Term = 2 };
-            var entry3 = new LogEntry("SET Z=0") { Term = 5 };
+            var entry1 = new TestLogEntry("SET X=0") { Term = 1 };
+            var entry2 = new TestLogEntry("SET Y=0") { Term = 2 };
+            var entry3 = new TestLogEntry("SET Z=0") { Term = 5 };
             Equal(1L, await auditTrail.AppendAsync(new[] { entry1, entry2, entry3 }));
             Equal(0L, await auditTrail.ForceCompactionAsync());
             Equal(2L, await auditTrail.CommitAsync(2L));
@@ -62,7 +52,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(2L, auditTrail.GetLastIndex(true));
             Equal(3L, auditTrail.GetLastIndex(false));
             Equal(5L, (await auditTrail.GetEntriesAsync(3L))[0].Term);
-            var entry4 = new LogEntry("SET H=0") { Term = 7 };
+            var entry4 = new TestLogEntry("SET H=0") { Term = 7 };
             Equal(4L, await auditTrail.AppendAsync(new[] { entry4 }));
             Equal(2L, auditTrail.GetLastIndex(true));
             Equal(4L, auditTrail.GetLastIndex(false));
@@ -77,24 +67,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IPersistentState auditTrail = new InMemoryAuditTrail();
             Equal(0, auditTrail.GetLastIndex(false));
             Equal(0, auditTrail.GetLastIndex(true));
-            var entry1 = new LogEntry("SET X=0") { Term = 1 };
-            var entry2 = new LogEntry("SET Y=0") { Term = 2 };
+            var entry1 = new TestLogEntry("SET X=0") { Term = 1 };
+            var entry2 = new TestLogEntry("SET Y=0") { Term = 2 };
             Equal(1, await auditTrail.AppendAsync(new[] { entry1, entry2 }));
             Equal(0, auditTrail.GetLastIndex(true));
             Equal(2, auditTrail.GetLastIndex(false));
             var entries = await auditTrail.GetEntriesAsync(1, 2);
             Equal(2, entries.Count);
-            entry1 = (LogEntry)entries[0];
-            entry2 = (LogEntry)entries[1];
+            entry1 = (TestLogEntry)entries[0];
+            entry2 = (TestLogEntry)entries[1];
             Equal("SET X=0", entry1.Content);
             Equal("SET Y=0", entry2.Content);
             //now replace entry at index 2 with new entry
-            entry2 = new LogEntry("ADD") { Term = 3 };
+            entry2 = new TestLogEntry("ADD") { Term = 3 };
             Equal(2, await auditTrail.AppendAsync(new[] { entry2 }, 2));
             entries = await auditTrail.GetEntriesAsync(1, 2);
             Equal(2, entries.Count);
-            entry1 = (LogEntry)entries[0];
-            entry2 = (LogEntry)entries[1];
+            entry1 = (TestLogEntry)entries[0];
+            entry2 = (TestLogEntry)entries[1];
             Equal("SET X=0", entry1.Content);
             Equal("ADD", entry2.Content);
             Equal(2, auditTrail.GetLastIndex(false));

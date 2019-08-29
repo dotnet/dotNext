@@ -58,8 +58,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bool IMessage.IsReusable => true;
         }
 
-        private static readonly ILogEntry First = new InitialLogEntry();
-        private static readonly ILogEntry[] EmptyLog = { First };
+        private static ref readonly ILogEntry First => ref EmptyLog[0];
+        internal static readonly ILogEntry[] EmptyLog = { new InitialLogEntry() };
 
         private long commitIndex, offset;
         private volatile ILogEntry[] log;
