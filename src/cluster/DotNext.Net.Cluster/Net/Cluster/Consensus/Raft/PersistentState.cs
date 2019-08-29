@@ -15,25 +15,59 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using Threading;
     using CommitEventHandler = Replication.CommitEventHandler<ILogEntry>;
     using IAuditTrail = Replication.IAuditTrail<ILogEntry>;
+    using static Runtime.InteropServices.Memory;
 
     public sealed class PersistentState : Disposable, IPersistentState
     {
+        private const byte EmptyContentIndicator = 0;
+
         private sealed class LogEntry : ILogEntry
         {
             private readonly MemoryMappedFile mappedFile;
             private readonly long contentOffset;
             internal readonly long Length;
 
-            internal LogEntry(MemoryMappedFile mappedFile, long offset, long maxRecordSize)
+            private LogEntry(MemoryMappedFile mappedFile, string name, string type, long term, long length, long contentOffset)
             {
                 this.mappedFile = mappedFile;
+                this.contentOffset = contentOffset;
+                Length = length;
+                Term = term;
+                Type = new ContentType(type);
+            }
+
+            internal static LogEntry Create(MemoryMappedFile mappedFile, long offset, long maxRecordSize)
+            {
                 using(var reader = new BinaryReader(mappedFile.CreateViewStream(offset, maxRecordSize, MemoryMappedFileAccess.Read), UTF8, false))
+                    return reader.ReadByte() == EmptyContentIndicator ?
+                        null :
+                        new LogEntry(mappedFile, reader.ReadString(), reader.ReadString(), reader.ReadInt64(), reader.ReadInt64(), reader.BaseStream.Position + offset);
+            }
+
+            private static unsafe IntPtr GetPointer(UnmanagedMemoryStream stream)
+                => new IntPtr(stream.PositionPointer);
+
+            internal static async Task WriteAsync(ILogEntry entry, MemoryMappedFile output, long offset, long maxRecordSize)
+            {
+                using(var content = output.CreateViewStream(offset, maxRecordSize))
                 {
-                    Name = reader.ReadString();
-                    Type = new ContentType(reader.ReadString());
-                    Term = reader.ReadInt64();
-                    Length = reader.ReadInt64();
-                    contentOffset = reader.BaseStream.Position + offset;
+                    IntPtr lengthPtr;
+                    //write metadata
+                    using(var writer = new BinaryWriter(content, UTF8, true))
+                    {
+                        writer.Write(1);    //indicates that content is not empty
+                        writer.Write(entry.Name);
+                        writer.Write(entry.Type.ToString());
+                        writer.Write(entry.Term);
+                        lengthPtr = GetPointer(content);    //remember position of length value
+                        writer.Write(0L);
+                    }
+                    //write content
+                    var position = content.Position;
+                    await entry.CopyToAsync(content).ConfigureAwait(false);
+                    //write length
+                    WriteUnaligned(ref lengthPtr, content.Position - position);
+                    await content.FlushAsync().ConfigureAwait(false);
                 }
             }
 
@@ -65,18 +99,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             N  8 bytes = max number of entries
             OF 8 bytes = record index offset
             C  8 bytes = number of committed entries
-            Allocation table:
-            [8 bytes = pointer to the entry content] X N
             Payload:
             [metadata, length = 8 bytes, content] X N
          */
         private sealed class Partition : Disposable
         {
-            private const long AllocationTableEntrySize = sizeof(long);
             private const long MaxNumberOfEntriesOffset = 0L;
             private const long RecordIndexOffsetOffset = MaxNumberOfEntriesOffset + sizeof(long);
             private const long CommittedEntriesOffset = RecordIndexOffsetOffset + sizeof(long);
-            private const long AllocationTableOffset = CommittedEntriesOffset + sizeof(long);
+            private const long PayloadOffset = CommittedEntriesOffset + sizeof(long);
 
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor headersView;
@@ -86,10 +117,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Capacity = recordsPerPartition;
                 this.maxRecordSize = maxRecordSize;
-                var preambleSize = sizeof(long) * 3 + AllocationTableEntrySize * recordsPerPartition;
-                mappedFile = MemoryMappedFile.CreateFromFile(fileName, FileMode.OpenOrCreate, null, preambleSize + recordsPerPartition * maxRecordSize, MemoryMappedFileAccess.ReadWrite);
-                headersView = mappedFile.CreateViewAccessor(0L, preambleSize, MemoryMappedFileAccess.ReadWrite); 
+                mappedFile = MemoryMappedFile.CreateFromFile(fileName, FileMode.OpenOrCreate, null, PayloadOffset + recordsPerPartition * maxRecordSize, MemoryMappedFileAccess.ReadWrite);
+                headersView = mappedFile.CreateViewAccessor(0L, PayloadOffset, MemoryMappedFileAccess.ReadWrite); 
                 headersView.Write(MaxNumberOfEntriesOffset, recordsPerPartition);
+            }
+
+            internal Partition(string fileName, long recordsPerPartition, long maxRecordSize, long partitionNumber)
+                : this(fileName, recordsPerPartition, maxRecordSize)
+            {
+                headersView.Write(RecordIndexOffsetOffset, partitionNumber * recordsPerPartition);
+                headersView.Flush();
             }
 
             internal long RecordsPerPartition => headersView.ReadInt64(MaxNumberOfEntriesOffset);
@@ -97,7 +134,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal long IndexOffset
             {
                 get => headersView.ReadInt64(RecordIndexOffsetOffset);
-                set => headersView.Write(RecordIndexOffsetOffset, value);
             }
 
             internal long CommittedEntries
@@ -126,8 +162,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            internal void Flush() => headersView.Flush();
-
             internal ILogEntry this[long index]
             {
                 get
@@ -135,12 +169,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     var offset = IndexOffset;
                     if(index == 0L && offset == 0L)
                         return First;
-                    //find offset to the table entry
-                    offset = AllocationTableOffset + (index - offset) * AllocationTableEntrySize;
-                    //offset to the entry content
-                    offset = headersView.ReadInt64(offset);
-                    return index == 0L ? null : new LogEntry(mappedFile, offset, maxRecordSize);
+                    index -= offset;
+                    offset = PayloadOffset + index * maxRecordSize;
+                    return LogEntry.Create(mappedFile, offset, maxRecordSize);
                 }
+            }
+
+            internal Task WriteAsync(ILogEntry entry, long index)
+            {
+                var offset = payloadOffset + index * maxRecordSize;
+                //write content
+                return LogEntry.WriteAsync(entry, mappedFile, offset, maxRecordSize);
             }
 
             protected override void Dispose(bool disposing)
@@ -258,16 +297,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private long commitIndex, lastIndex;
         private readonly long recordsPerPartition;
+        private readonly long maxRecordSize;
         private readonly AsyncReaderWriterLock syncRoot;
         //key is the number of partition
         private readonly Dictionary<long, Partition> partitionTable;
         private readonly NodeState state;
+        private readonly DirectoryInfo location;
 
         public PersistentState(DirectoryInfo location, long recordsPerPartition, long maxRecordSize)
         {
             if(!location.Exists)
                 location.Create();
+            this.location = location;
             this.recordsPerPartition = recordsPerPartition;
+            this.maxRecordSize = maxRecordSize;
             syncRoot = new AsyncReaderWriterLock();
             partitionTable = new Dictionary<long, Partition>();
             //load all partitions from file system
@@ -298,8 +341,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The index of the log entry.</returns>
         public long GetLastIndex(bool committed) => committed ? commitIndex.VolatileRead() : lastIndex.VolatileRead();
 
+        private long PartitionOf(long recordIndex) => recordIndex / recordsPerPartition;
+
         private bool TryGetPartition(long recordIndex, out Partition partition)
-            => partitionTable.TryGetValue(recordIndex / recordsPerPartition, out partition);
+            => partitionTable.TryGetValue(PartitionOf(recordIndex), out partition);
+        
+        private Partition GetOrCreatePartition(long recordIndex)
+        {
+            var partitionNumber = PartitionOf(recordIndex);
+            if(!partitionTable.TryGetValue(partitionNumber, out var partition))
+                partition = new Partition(Path.Combine(location.FullName, partitionNumber.ToString()), recordsPerPartition, maxRecordSize, partitionNumber);
+            return partition;
+        }
 
         private IReadOnlyList<ILogEntry> GetEntries(long startIndex, long endIndex)
         {
@@ -308,27 +361,43 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if(partitionTable.Count == 0)
                 return startIndex == 0L ? InMemoryAuditTrail.EmptyLog : Array.Empty<LogEntry>();
 
-            var result = new List<ILogEntry>();
-            for(;startIndex <= endIndex; startIndex += 1L)
-                if(TryGetPartition(startIndex, out var partition))
+            var result = new ILogEntry[endIndex - startIndex + 1L];
+            for(var i = 0L; startIndex <= endIndex; startIndex++, i++)
+            {
+                ILogEntry entry;
+                if(TryGetPartition(startIndex, out var partition) && (entry = partition[startIndex]) != null)
+                    result[i] = entry;
+                else
                 {
-                    var entry = partition[startIndex];
-                    if(entry is null)
-                        break;
-                    result.Add(entry);
+                    result = result.RemoveLast(result.LongLength - i);
+                    break;
                 }
+            }
             return result;
         }
         
         async ValueTask<IReadOnlyList<ILogEntry>> IAuditTrail.GetEntriesAsync(long startIndex, long? endIndex)
         {
-            using(await syncRoot.AcquireReadLockAsync(CancellationToken.None))
+            using(await syncRoot.AcquireReadLockAsync(CancellationToken.None).ConfigureAwait(false))
                 return GetEntries(startIndex, endIndex ?? lastIndex);
         }
 
-        ValueTask<long> IAuditTrail.AppendAsync(IReadOnlyList<ILogEntry> entries, long? startIndex)
+        private ValueTask AppendAsync(ILogEntry entry, long index)
+            => new ValueTask(GetOrCreatePartition(index).WriteAsync(entry, index));
+
+        private async ValueTask<long> AppendAsync(IReadOnlyList<ILogEntry> entries, long startIndex)
         {
-            throw new NotImplementedException();
+            for(var i = 0; i < entries.Count; i++)
+                await AppendAsync(entries[i], startIndex + i).ConfigureAwait(false);
+            return startIndex;
+        }
+
+        async ValueTask<long> IAuditTrail.AppendAsync(IReadOnlyList<ILogEntry> entries, long? startIndex)
+        {
+            if (entries.Count == 0)
+                throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
+            using(await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
+                return await AppendAsync(entries, startIndex ?? lastIndex + 1L).ConfigureAwait(false);
         }
 
         /// <summary>
