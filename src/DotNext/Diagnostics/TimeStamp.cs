@@ -9,7 +9,7 @@ namespace DotNext.Diagnostics
     /// <remarks>
     /// This class can be used as allocation-free alternative to <see cref="System.Diagnostics.Stopwatch"/>.
     /// </remarks>
-    public readonly struct TimeStamp : IEquatable<TimeStamp>
+    public readonly struct TimeStamp : IEquatable<TimeStamp>, IComparable<TimeStamp>
     {
         private readonly long ticks;
 
@@ -47,6 +47,13 @@ namespace DotNext.Diagnostics
         public bool Equals(TimeStamp other) => ticks == other.ticks;
 
         /// <summary>
+        /// Compares this time stamp with the given value.
+        /// </summary>
+        /// <param name="other">The time stamp to compare.</param>
+        /// <returns>The result of comparison.</returns>
+        public int CompareTo(TimeStamp other) => ticks.CompareTo(other.ticks);
+
+        /// <summary>
         /// Determines whether the current time stamp equals to the specified time stamp.
         /// </summary>
         /// <param name="other">The time stamp to compare.</param>
@@ -79,6 +86,38 @@ namespace DotNext.Diagnostics
         /// <param name="first">The first time stamp to compare.</param>
         /// <param name="second">The second time stamp to compare.</param>
         /// <returns><see langword="false"/> if both time stamps are equal; otherwise, <see langword="true"/>.</returns>
-        public static bool operator !=(TimeStamp first, TimeStamp second) => first.ticks != second.ticks; 
+        public static bool operator !=(TimeStamp first, TimeStamp second) => first.ticks != second.ticks;
+
+        /// <summary>
+        /// Determines whether the first time stamp is greater than the second.
+        /// </summary>
+        /// <param name="first">The first time stamp to compare.</param>
+        /// <param name="second">The second time stampt to compare.</param>
+        /// <returns><see langword="true"/> if <paramref name="first"/> is greater than <paramref name="second"/>.</returns>
+        public static bool operator >(TimeStamp first, TimeStamp second) => first.ticks > second.ticks;
+
+        /// <summary>
+        /// Determines whether the first time stamp is less than the second.
+        /// </summary>
+        /// <param name="first">The first time stamp to compare.</param>
+        /// <param name="second">The second time stampt to compare.</param>
+        /// <returns><see langword="true"/> if <paramref name="first"/> is less than <paramref name="second"/>.</returns>
+        public static bool operator <(TimeStamp first, TimeStamp second) => first.ticks < second.ticks;
+
+        /// <summary>
+        /// Determines whether the first time stamp is greater than or equal to the second.
+        /// </summary>
+        /// <param name="first">The first time stamp to compare.</param>
+        /// <param name="second">The second time stampt to compare.</param>
+        /// <returns><see langword="true"/> if <paramref name="first"/> is greater than or equal to <paramref name="second"/>.</returns>
+        public static bool operator >=(TimeStamp first, TimeStamp second) => first.ticks >= second.ticks;
+
+        /// <summary>
+        /// Determines whether the first time stamp is less than or equal to the second.
+        /// </summary>
+        /// <param name="first">The first time stamp to compare.</param>
+        /// <param name="second">The second time stampt to compare.</param>
+        /// <returns><see langword="true"/> if <paramref name="first"/> is less than or equal to <paramref name="second"/>.</returns>
+        public static bool operator <=(TimeStamp first, TimeStamp second) => first.ticks <= second.ticks;
     }
 }
