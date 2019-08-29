@@ -201,7 +201,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     stateView.Write(TermOffset, value);
                     stateView.Flush();
-                    term = value;
+                    term.VolatileWrite(value);
                 }
             }
 
