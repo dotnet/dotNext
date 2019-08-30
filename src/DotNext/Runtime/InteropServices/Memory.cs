@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
+using SafeMemoryMappedViewHandle = Microsoft.Win32.SafeHandles.SafeMemoryMappedViewHandle;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -44,6 +45,18 @@ namespace DotNext.Runtime.InteropServices
         public static readonly void* NullPtr = IntPtr.Zero.ToPointer();
 
         /// <summary>
+        /// Obtains a pointer to the block of memory representing memory-mapped file.
+        /// </summary>
+        /// <param name="handle">The handle describing memory-mapped file.</param>
+        /// <returns>The pointer to the memory-mapped file.</returns>
+        public static unsafe IntPtr AcquirePointer(this SafeMemoryMappedViewHandle handle)
+        {
+            var ptr = default(byte*);
+            handle.AcquirePointer(ref ptr);
+            return new IntPtr(ptr);
+        }
+
+        /// <summary>
         /// Converts the value of this instance to a pointer of the specified type.
         /// </summary>
         /// <param name="source">The value to be converted into pointer.</param>
@@ -69,6 +82,42 @@ namespace DotNext.Runtime.InteropServices
             var result = Unsafe.Read<T>(source.ToPointer());
             source += sizeof(T);
             return result;
+        }
+
+        /// <summary>
+        /// Writes the characters in UTF-16 encoding to the specified address in the memory and adjust the pointer.
+        /// </summary>
+        /// <remarks>
+        /// This method encodes the characters as null-terminated string.
+        /// </remarks>
+        /// <param name="destination">The location of in the memory.</param>
+        /// <param name="str">The characters to be written into the memory.</param>
+        public static unsafe void WriteString(ref IntPtr destination, ReadOnlySpan<char> str)
+        {
+            var len = str.Length;
+            var dest = new Span<char>(destination.ToPointer(), len + 1);
+            str.CopyTo(dest);
+            dest[len] = default;
+            destination += dest.Length * sizeof(char);
+        }
+
+        /// <summary>
+        /// Writes the string in UTF-16 encoding to the specified address in the memory and adjust the pointer.
+        /// </summary>
+        /// <param name="destination">The location of in the memory.</param>
+        /// <param name="str">The string to be written into the memory.</param>
+        public static unsafe void WriteString(ref IntPtr destination, string str) => WriteString(ref destination, str.AsSpan());
+
+        /// <summary>
+        /// Reads UTF-16 encoded string from the specified memory location and adjust the pointer.
+        /// </summary>
+        /// <param name="source">The pointer to the memory location containing null-terminated characters.</param>
+        /// <returns>The string decoded from the memory.</returns>
+        public static unsafe string ReadString(ref IntPtr source)
+        {
+            var str = new string(source.ToPointer<char>());
+            source += (str.Length + 1) * sizeof(char);
+            return str;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

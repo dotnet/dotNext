@@ -112,5 +112,21 @@ namespace DotNext.Runtime.InteropServices
             True(Memory.IsNull(in ch));
             Throws<NullReferenceException>(NullRefCheck);
         }
+
+        [Fact]
+        public static void ReadWriteString()
+        {
+            using(var memory = new UnmanagedMemory(1024))
+            {
+                IntPtr ptr = memory.Pointer;
+                Memory.WriteString(ref ptr, "string1");
+                Memory.WriteString(ref ptr, "string2");
+                Memory.WriteUnaligned(ref ptr, 42L);
+                ptr = memory.Pointer;
+                Equal("string1", Memory.ReadString(ref ptr));
+                Equal("string2", Memory.ReadString(ref ptr));
+                Equal(42L, Memory.ReadUnaligned<long>(ref ptr));
+            }
+        }
     }
 }

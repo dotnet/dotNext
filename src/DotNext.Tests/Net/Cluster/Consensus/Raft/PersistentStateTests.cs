@@ -8,6 +8,8 @@ using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using static Messaging.Messenger;
+
     public sealed class PersistentStateTests : Assert
     {
         private sealed class ClusterMemberMock : IRaftClusterMember
@@ -81,6 +83,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(1, state.Term);
                 False(state.IsVotedFor(null));
                 True(state.IsVotedFor(member));
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
+            }
+        }
+
+        [Fact]
+        public static async Task QueryAppendEntries()
+        {
+            var entry = new TestLogEntry("SET X = 0") { Term = 42L };
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition, MaxRecordSize);
+            try
+            {
+                var entries = await state.GetEntriesAsync(0L);
+                Equal(1L, entries.Count);
+                Equal(state.First, entries[0]);
+                entries = await state.GetEntriesAsync(1L);
+                Equal(0L, entries.Count);
+
+                Equal(1L, await state.AppendAsync(new[] { entry }));
+                entries = await state.GetEntriesAsync(0L);
+                Equal(2, entries.Count);
+                Equal(state.First, entries[0]);
+                Equal(42L, entries[1].Term);
+                Equal("SET X = 0", await entries[1].ReadAsTextAsync());
             }
             finally
             {

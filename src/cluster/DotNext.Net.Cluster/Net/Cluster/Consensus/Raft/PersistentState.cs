@@ -8,6 +8,7 @@ using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Text.Encoding;
+using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -15,7 +16,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using Threading;
     using CommitEventHandler = Replication.CommitEventHandler<ILogEntry>;
     using IAuditTrail = Replication.IAuditTrail<ILogEntry>;
-    using static Runtime.InteropServices.Memory;
 
     public sealed class PersistentState : Disposable, IPersistentState
     {
@@ -34,39 +34,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Length = length;
                 Term = term;
                 Type = new ContentType(type);
+                Name = name;
             }
 
             internal static LogEntry Create(MemoryMappedFile mappedFile, long offset, long maxRecordSize)
             {
-                using(var reader = new BinaryReader(mappedFile.CreateViewStream(offset, maxRecordSize, MemoryMappedFileAccess.Read), UTF8, false))
+                using (var reader = new BinaryReader(mappedFile.CreateViewStream(offset, maxRecordSize, MemoryMappedFileAccess.Read), UTF8, false))
                     return reader.ReadByte() == EmptyContentIndicator ?
                         null :
                         new LogEntry(mappedFile, reader.ReadString(), reader.ReadString(), reader.ReadInt64(), reader.ReadInt64(), reader.BaseStream.Position + offset);
-            }
 
-            private static unsafe IntPtr GetPointer(UnmanagedMemoryStream stream)
-                => new IntPtr(stream.PositionPointer);
+            }
 
             internal static async Task WriteAsync(ILogEntry entry, MemoryMappedFile output, long offset, long maxRecordSize)
             {
-                using(var content = output.CreateViewStream(offset, maxRecordSize))
+                using (var content = output.CreateViewStream(offset, maxRecordSize))
+                using (var writer = new BinaryWriter(content, UTF8, true))
                 {
-                    IntPtr lengthPtr;
                     //write metadata
-                    using(var writer = new BinaryWriter(content, UTF8, true))
-                    {
-                        writer.Write(1);    //indicates that content is not empty
-                        writer.Write(entry.Name);
-                        writer.Write(entry.Type.ToString());
-                        writer.Write(entry.Term);
-                        lengthPtr = GetPointer(content);    //remember position of length value
-                        writer.Write(0L);
-                    }
+                    writer.Write((byte)1);    //indicates that content is not empty
+                    writer.Write(entry.Name);
+                    writer.Write(entry.Type.ToString());
+                    writer.Write(entry.Term);
+                    var lengthPos = content.Position;    //remember position of length value
+                    writer.Write(0L);
                     //write content
-                    var position = content.Position;
                     await entry.CopyToAsync(content).ConfigureAwait(false);
                     //write length
-                    WriteUnaligned(ref lengthPtr, content.Position - position);
+                    var length = content.Position - lengthPos - sizeof(long);
+                    content.Position = lengthPos;
+                    writer.Write(length);
                     await content.FlushAsync().ConfigureAwait(false);
                 }
             }
@@ -96,7 +93,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /*
             Partition file format:
             FileName - number of partition
-            N  8 bytes = max number of entries
             OF 8 bytes = record index offset
             C  8 bytes = number of committed entries
             Payload:
@@ -104,8 +100,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
          */
         private sealed class Partition : Disposable
         {
-            private const long MaxNumberOfEntriesOffset = 0L;
-            private const long RecordIndexOffsetOffset = MaxNumberOfEntriesOffset + sizeof(long);
+            private const long RecordIndexOffsetOffset = 0;
             private const long CommittedEntriesOffset = RecordIndexOffsetOffset + sizeof(long);
             private const long PayloadOffset = CommittedEntriesOffset + sizeof(long);
 
@@ -118,18 +113,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Capacity = recordsPerPartition;
                 this.maxRecordSize = maxRecordSize;
                 mappedFile = MemoryMappedFile.CreateFromFile(fileName, FileMode.OpenOrCreate, null, PayloadOffset + recordsPerPartition * maxRecordSize, MemoryMappedFileAccess.ReadWrite);
-                headersView = mappedFile.CreateViewAccessor(0L, PayloadOffset, MemoryMappedFileAccess.ReadWrite); 
-                headersView.Write(MaxNumberOfEntriesOffset, recordsPerPartition);
+                headersView = mappedFile.CreateViewAccessor(0L, PayloadOffset, MemoryMappedFileAccess.ReadWrite);
             }
 
             internal Partition(string fileName, long recordsPerPartition, long maxRecordSize, long partitionNumber)
                 : this(fileName, recordsPerPartition, maxRecordSize)
             {
                 headersView.Write(RecordIndexOffsetOffset, partitionNumber * recordsPerPartition);
-                headersView.Flush();
             }
 
-            internal long RecordsPerPartition => headersView.ReadInt64(MaxNumberOfEntriesOffset);
+            internal void FlushHeaders() => headersView.Flush();
 
             internal long IndexOffset
             {
@@ -151,10 +144,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 get
                 {
                     var result = IndexOffset == 0L ? 1L : 0L;
-                    while(result < Capacity)
+                    while (result < Capacity)
                     {
-                        var offset = AllocationTableOffset + result * AllocationTableEntrySize;
-                        if(headersView.ReadInt64(offset) == 0L)
+                        var offset = PayloadOffset + result * maxRecordSize;
+                        if (headersView.ReadByte(offset) == EmptyContentIndicator)
                             break;
                         result += 1L;
                     }
@@ -176,11 +169,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal Task WriteAsync(ILogEntry entry, long index)
-            {
-                var offset = payloadOffset + index * maxRecordSize;
-                //write content
-                return LogEntry.WriteAsync(entry, mappedFile, offset, maxRecordSize);
-            }
+                => LogEntry.WriteAsync(entry, mappedFile, PayloadOffset + index * maxRecordSize, maxRecordSize);
 
             protected override void Dispose(bool disposing)
             {
@@ -295,6 +284,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        private static readonly ValueFunc<long, long, long> MaxFunc = new ValueFunc<long, long, long>(Math.Max);
         private long commitIndex, lastIndex;
         private readonly long recordsPerPartition;
         private readonly long maxRecordSize;
@@ -331,6 +321,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
         }
 
+
         /// <summary>
         /// Gets index of the committed or last log entry.
         /// </summary>
@@ -349,8 +340,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private Partition GetOrCreatePartition(long recordIndex)
         {
             var partitionNumber = PartitionOf(recordIndex);
-            if(!partitionTable.TryGetValue(partitionNumber, out var partition))
-                partition = new Partition(Path.Combine(location.FullName, partitionNumber.ToString()), recordsPerPartition, maxRecordSize, partitionNumber);
+            if (!partitionTable.TryGetValue(partitionNumber, out var partition))
+            {
+                partition = new Partition(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), recordsPerPartition, maxRecordSize, partitionNumber);
+                partition.FlushHeaders();
+                partitionTable.Add(partitionNumber, partition);
+            }
             return partition;
         }
 
@@ -387,8 +382,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async ValueTask<long> AppendAsync(IReadOnlyList<ILogEntry> entries, long startIndex)
         {
-            for(var i = 0; i < entries.Count; i++)
-                await AppendAsync(entries[i], startIndex + i).ConfigureAwait(false);
+            for (var i = 0; i < entries.Count; i++)
+            {
+                var idx = startIndex + i;
+                lastIndex.AccumulateAndGet(idx, in MaxFunc);
+                await AppendAsync(entries[i], idx).ConfigureAwait(false);
+            }
             return startIndex;
         }
 
