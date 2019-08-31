@@ -65,14 +65,5 @@ namespace DotNext.Net.Cluster.Replication
         /// Index of such entry is always 0.
         /// </remarks>
         ref readonly LogEntry First { get; }
-
-        /// <summary>
-        /// Forces log compaction.
-        /// </summary>
-        /// <remarks>
-        /// Log compaction allows to remove committed log entries from the log and reduce its size.
-        /// </remarks>
-        /// <returns>The number of removed entries.</returns>
-        ValueTask<long> ForceCompactionAsync();
     }
 }

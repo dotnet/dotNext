@@ -71,9 +71,9 @@ namespace DotNext.Net.Cluster.Messaging
             content.CanSeek ? CopyToAsyncAndSeek(content, output) : content.CopyToAsync(output);
 
         ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
-            => CopyToAsync(content, output, token, true);
+            => CopyToAsync(content, output, true, token);
 
-        internal static async ValueTask CopyToAsync(Stream source, PipeWriter output, CancellationToken token, bool resetStream)
+        internal static async ValueTask CopyToAsync(Stream source, PipeWriter output, bool resetStream, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             var buffer = new byte[BufferSize];

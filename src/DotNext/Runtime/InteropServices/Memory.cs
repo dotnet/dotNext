@@ -5,7 +5,6 @@ using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
-using SafeMemoryMappedViewHandle = Microsoft.Win32.SafeHandles.SafeMemoryMappedViewHandle;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -43,18 +42,6 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         [CLSCompliant(false)]
         public static readonly void* NullPtr = IntPtr.Zero.ToPointer();
-
-        /// <summary>
-        /// Obtains a pointer to the block of memory representing memory-mapped file.
-        /// </summary>
-        /// <param name="handle">The handle describing memory-mapped file.</param>
-        /// <returns>The pointer to the memory-mapped file.</returns>
-        public static unsafe IntPtr AcquirePointer(this SafeMemoryMappedViewHandle handle)
-        {
-            var ptr = default(byte*);
-            handle.AcquirePointer(ref ptr);
-            return new IntPtr(ptr);
-        }
 
         /// <summary>
         /// Converts the value of this instance to a pointer of the specified type.
