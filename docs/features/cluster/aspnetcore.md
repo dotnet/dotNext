@@ -253,6 +253,57 @@ Messaging inside of cluster supports redirection to the leader as well as for ex
 # Replication
 Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface. By default, it is implemented as in-memory storage which is suitable only for applications that doesn't have replicated state. If your application has it then implement this interface manually and use reliable storage such as disk and inject this implementation through `AuditTrail` property in [IRaftCluster](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.yml) interface. This injection should be done in user-defined implementation of [IRaftClusterConfigurator](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.yml) interface registered as a singleton service in ASP.NET Core application.
 
+# Metrics
+It is possible to measure runtime metrics of Raft node internals using [HttpMetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html) class. The reporting mechanism is agnostic  to the underlying metrics delivery library such as [AppMetrics](https://github.com/AppMetrics/AppMetrics).
+
+The class contains methods that are called automatically. You can override them and implement necessary reporting logic. By default, these methods do nothing.
+
+The metrics collector should be registered as singleton service using Dependency Injection. However, the type of the service used for registration should of [MetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html) type.
+
+```csharp
+using DotNext.Net.Cluster.Consensus.Raft;
+using DotNext.Net.Cluster.Consensus.Raft.Http;
+using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+sealed class MyCollector : HttpMetricsCollector
+{
+	public override void ReportResponseTime(TimeSpan value)
+    {
+		//report response time of the cluster member
+    } 
+
+	public override void ReportBroadcastTime(TimeSpan value)
+    {
+		//report broadcast time measured during sending the request to all cluster members
+    }
+}
+
+sealed class Startup : StartupBase
+{
+    private readonly IConfiguration configuration;
+
+    public Startup(IConfiguration configuration) => this.configuration = configuration;
+
+    public override void Configure(IApplicationBuilder app)
+    {
+        app.UseConsensusProtocolHandler()
+			.RedirectToLeader("/endpoint1")
+			.RedirectToLeader("/endpoint2");
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+		services.AddSingleton<MetricsCollector, MyCollector>().BecomeClusterMember(configuration);
+    }
+}
+```
+
+It is possible to derive directly from [MetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html) if you don't need to receive metrics related to HTTP-specific implementation of Raft algorithm.
+
 # Example
 There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. Before starting instances you need to build application. All nodes can be started using the following script:
 ```bash
