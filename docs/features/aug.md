@@ -16,8 +16,8 @@ Therefore, Augmented Compilation is an optional feature in .NEXT landscape. This
 To use Augmented Compilation, you need to declare necessary build components as a part of MSBuild processing pipeline inside **csproj** file:
 ```xml
 <ItemGroup>
-	<PackageReference Include="Fody" Version="5.1.1" PrivateAssets="all" />
-	<PackageReference Include="DotNext.Augmentation.Fody" Version="0.12.2" PrivateAssets="all"/>
+	<PackageReference Include="Fody" Version="6.0.0" PrivateAssets="all" />
+	<PackageReference Include="DotNext.Augmentation.Fody" Version="0.14.0" PrivateAssets="all"/>
 </ItemGroup>
 ```
 

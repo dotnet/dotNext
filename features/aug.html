@@ -84,8 +84,8 @@
 <p>Therefore, Augmented Compilation is an optional feature in .NEXT landscape. This means that you always has a choice between convenience by cost of augmented compilation and redundant code written by yourself.</p>
 <p>To use Augmented Compilation, you need to declare necessary build components as a part of MSBuild processing pipeline inside <strong>csproj</strong> file:</p>
 <pre><code class="lang-xml">&lt;ItemGroup&gt;
-	&lt;PackageReference Include=&quot;Fody&quot; Version=&quot;5.1.1&quot; PrivateAssets=&quot;all&quot; /&gt;
-	&lt;PackageReference Include=&quot;DotNext.Augmentation.Fody&quot; Version=&quot;0.12.2&quot; PrivateAssets=&quot;all&quot;/&gt;
+	&lt;PackageReference Include=&quot;Fody&quot; Version=&quot;6.0.0&quot; PrivateAssets=&quot;all&quot; /&gt;
+	&lt;PackageReference Include=&quot;DotNext.Augmentation.Fody&quot; Version=&quot;0.14.0&quot; PrivateAssets=&quot;all&quot;/&gt;
 &lt;/ItemGroup&gt;
 </code></pre>
 <p>If you use additional Fody weavers then they should be declared after <code>DotNext.Augmentation.Fody</code> weaver.</p>
