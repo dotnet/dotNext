@@ -4,7 +4,7 @@ Base Class Library Enhancements
 # Randomization
 Related class: [RandomExtensions](../../api/DotNext.RandomExtensions.yml)
 
-Extension methods for random data generation extends both classes _System.Random_ and _System.Security.Cryptography.RandomNumberGenerator_.
+Extension methods for random data generation extends both classes [Random](https://docs.microsoft.com/en-us/dotnet/api/system.random) and [RandomNumberGenerator](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator).
 
 ## Random string generation
 Provides a way to generate random string of the given length and set of allowed characters.
@@ -18,7 +18,7 @@ var password = rand.NextString("abc123", 10);
 //each character is equal to 'a', 'b', 'c', '1', '2' or '3'
 ```
 
-The same extension method is provided for class _System.Security.Cryptography.RandomNumberGenerator_.
+The same extension method is provided for class [RandomNumberGenerator](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator).
 
 ## Random boolean generation
 Provides a way to generate boolean value with the given probability
@@ -29,7 +29,7 @@ var rand = new Random();
 var b = rand.NextBoolean(0.3D); //0.3 is a probability of TRUE value
 ```
 
-The same extension method is provided for class _System.Security.Cryptography.RandomNumberGenerator_.
+The same extension method is provided for class [RandomNumberGenerator](https://docs.microsoft.com/en-us/dotnet/api/system.security.cryptography.randomnumbergenerator).
 
 # String extensions
 Related class: [StringExtensions](../../api/DotNext.StringExtensions.yml).
@@ -56,7 +56,7 @@ Extension method _GetRawData_ allows to obtain managed pointer to the underlying
 ```csharp
 using DotNext;
 
-ref readonly char ch = "str".GetRawData();  //now ch points to the first string character of 's'
+ref readonly char ch = ref "str".GetRawData();  //now ch points to the first string character of 's'
 ```
 
 Returned managed pointer is immutable because instantiated string cannot be modified at runtime.
@@ -83,7 +83,7 @@ var parseInt = typeof(int).GetMethod(nameof(int.Parse)).CreateDelegate<Func<stri
 ```
 
 ## Specialized delegate converters
-Conversion between mostly used delegate types: `Predicate<T>`, `Func<I, O>` and `Converter<I, O>`.
+Conversion between mostly used delegate types: [Predicate&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1), [Func&lt;T, TResult&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-2?view=netcore-3.0) and [Converter&lt;TInput, TOutput&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.converter-2).
 
 ```csharp
 using DotNext;
@@ -94,7 +94,7 @@ Converter<string, bool> isEmptyConv = isEmpty.AsConverter();
 ```
 
 ## Predefined delegates
-Cached delegate instances for mostly used delegate types: `Predicate<T>`, `Func<I, O>` and `Converter<I, O>`.
+Cached delegate instances for mostly used delegate types: [Predicate&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.predicate-1), [Func&lt;T, TResult&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-2?view=netcore-3.0) and [Converter&lt;TInput, TOutput&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.converter-2).
 
 ```csharp
 using DotNext;
