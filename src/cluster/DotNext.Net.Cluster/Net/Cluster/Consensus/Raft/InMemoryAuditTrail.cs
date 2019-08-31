@@ -118,7 +118,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => committed ? commitIndex.VolatileRead() : Math.Max(0, log.LongLength - 1L);
 
         private IReadOnlyList<ILogEntry> GetEntries(long startIndex, long endIndex)
-            => log.Slice(startIndex, endIndex - startIndex + 1);
+        {
+            if(startIndex < 0L)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            if(endIndex < 0L)
+                throw new ArgumentOutOfRangeException(nameof(endIndex));
+            return endIndex < startIndex || startIndex >= log.LongLength ? 
+                Array.Empty<ILogEntry>() :
+                log.Slice(startIndex, endIndex - startIndex + 1);
+        }
 
         async ValueTask<IReadOnlyList<ILogEntry>> IAuditTrail<ILogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
         {
