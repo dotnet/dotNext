@@ -213,3 +213,19 @@ if(i.GreaterThan(IntPtr.Zero))
 else
 	i = i.OnesComplement();	//equivalent to operator ~
 ```
+
+# Timestamp
+[TimeStamp](https://sakno.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) value type can be used as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch) when you need to measure time intervals.
+
+```csharp
+using Dotnext.Diagnostics;
+using System;
+
+var timestamp = Timestamp.Current;
+//long-running operation
+Console.WriteLine(current.Elapsed);
+```
+
+`Elapsed` property returning value of [TimeSpan](https://docs.microsoft.com/en-us/dotnet/api/system.timespan) type which indicates the difference between `timestamp` and the current point in time.
+
+This type should not be used as unique identifier of some point in time. The created time stamp may identify the time since the start of the process, OS, user session or whatever else.
