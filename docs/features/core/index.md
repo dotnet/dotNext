@@ -215,7 +215,7 @@ else
 ```
 
 # Timestamp
-[TimeStamp](https://sakno.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) value type can be used as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch) when you need to measure time intervals.
+[Timestamp](https://sakno.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) value type can be used as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch) when you need to measure time intervals.
 
 ```csharp
 using Dotnext.Diagnostics;
