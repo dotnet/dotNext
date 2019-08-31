@@ -5,6 +5,7 @@ using DotNext.Net.Cluster.Replication;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace RaftNode
 {
@@ -27,7 +28,7 @@ namespace RaftNode
             cluster.AuditTrail.Committed += OnCommitted;
         }
 
-        private static async void OnCommitted(IAuditTrail<ILogEntry> sender, long startIndex, long count)
+        private static async Task OnCommitted(IAuditTrail<ILogEntry> sender, long startIndex, long count)
         {
             foreach (var entry in await sender.GetEntriesAsync(startIndex, startIndex + count).ConfigureAwait(false))
             {

@@ -2,10 +2,11 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    using FalseTask = Tasks.CompletedTask<bool, Generic.BooleanConst.False>;
+
     /// <summary>
     /// Represents asynchronous timer.
     /// </summary>
@@ -14,9 +15,43 @@ namespace DotNext.Threading
     /// </remarks>
     public class AsyncTimer : Disposable
     {
-        private volatile RegisteredWaitHandle timerHandle;
+        private sealed class TimerCompletionSource : TaskCompletionSource<bool>, IDisposable
+        {
+            private readonly CancellationTokenSource cancellation;
+
+            internal TimerCompletionSource(CancellationToken token) 
+                => cancellation = CancellationTokenSource.CreateLinkedTokenSource(token);
+
+            internal void RequestCancellation() => cancellation.Cancel();
+
+            internal async void Execute(TimeSpan dueTime, TimeSpan period, ValueFunc<CancellationToken, Task<bool>> callback)
+            {
+                try
+                {
+                    await System.Threading.Tasks.Task.Delay(dueTime, cancellation.Token).ConfigureAwait(false);
+                    while(await callback.Invoke(cancellation.Token).ConfigureAwait(false))
+                        await System.Threading.Tasks.Task.Delay(period, cancellation.Token).ConfigureAwait(false);
+                    TrySetResult(true);
+                }
+                catch(OperationCanceledException)
+                {
+                    TrySetResult(false);
+                }
+                catch(Exception e)
+                {
+                    TrySetException(e);
+                }
+                finally
+                {
+                    cancellation.Dispose();
+                }
+            }
+
+            public void Dispose() => cancellation.Dispose();
+        }
+
+        private volatile TimerCompletionSource timerTask;
         private readonly ValueFunc<CancellationToken, Task<bool>> callback;
-        private AtomicBoolean processingState;
 
         /// <summary>
         /// Initializes a new timer.
@@ -41,29 +76,38 @@ namespace DotNext.Threading
         {
         }
 
-        private async void OnTimer(object state, bool timedOut)
-        {
-            if (IsDisposed)
-            { }
-            else if (!timedOut)
-                Stop();
-            else if (state is CancellationToken token && processingState.FalseToTrue())
-                try
-                {
-                    if (!await callback.Invoke(token).ConfigureAwait(false))
-                        Stop();
-                }
-                finally
-                {
-                    processingState.Value = false;
-                }
-
-        }
-
         /// <summary>
         /// Indicates that this timer is running.
         /// </summary>
-        public bool IsRunning => timerHandle != null;
+        public bool IsRunning
+        {
+            get
+            {
+                var task = timerTask;
+                return task != null && !task.Task.IsCompleted;
+            }
+        }
+
+        /// <summary>
+        /// Starts the timer.
+        /// </summary>
+        /// <param name="dueTime">The amount of time to delay before the invoking the timer callback.</param>
+        /// <param name="period">The time interval between invocations of the timer callback.</param>
+        /// <param name="token">The token that can be used to stop execution of the timer.</param>
+        /// <returns><see langword="true"/> if timer was in stopped state; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool Start(TimeSpan dueTime, TimeSpan period, CancellationToken token = default)
+        {
+            token.ThrowIfCancellationRequested();
+            if(timerTask is null || timerTask.Task.IsCompleted)
+            {
+                var source = new TimerCompletionSource(token);
+                source.Execute(dueTime, period, callback);
+                timerTask = source;
+                return true;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Starts the timer.
@@ -71,48 +115,22 @@ namespace DotNext.Threading
         /// <param name="period">The time interval between invocations of the timer callback.</param>
         /// <param name="token">The token that can be used to stop execution of the timer.</param>
         /// <returns><see langword="true"/> if timer was in stopped state; otherwise, <see langword="false"/>.</returns>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public bool Start(TimeSpan period, CancellationToken token = default)
-        {
-            token.ThrowIfCancellationRequested();
-            if (timerHandle != null) return false;
-            processingState.Value = false;
-            timerHandle = ThreadPool.RegisterWaitForSingleObject(token.WaitHandle, OnTimer, token, period, false);
-            return true;
-
-        }
+            => Start(period, period, token);
 
         /// <summary>
         /// Stops timer execution.
         /// </summary>
-        /// <param name="stopHandle">The handle to be signaled when timer stops gracefully.</param>
-        /// <returns><see langword="true"/> if timer was in started state; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/> if timer shutdown was initiated by the callback; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public bool Stop(WaitHandle stopHandle = null)
+        public Task<bool> StopAsync()
         {
-            if (timerHandle is null)
-                return false;
-            var result = timerHandle.Unregister(stopHandle);
-            timerHandle = null;
-            return result;
+            var result = timerTask;
+            if(result is null)
+                return FalseTask.Task;
+            result.RequestCancellation();
+            return result.Task;
         }
-
-        /// <summary>
-        /// Stops timer execution.
-        /// </summary>
-        /// <param name="timeout">The timeout used to wait for timer graceful shutdown.</param>
-        /// <returns><see langword="true"/> if timer was in started state; <see langword="false"/> if timeout reached.</returns>
-        public async Task<bool> StopAsync(TimeSpan timeout)
-        {
-            using (var notifier = new ManualResetEvent(false))
-                return Stop(notifier) && await notifier.WaitAsync(timeout);
-        }
-
-        /// <summary>
-        /// Stops timer execution.
-        /// </summary>
-        /// <returns><see langword="true"/> if timer was in started state; otherwise, <see langword="false"/>.</returns>
-        public Task<bool> StopAsync() => StopAsync(InfiniteTimeSpan);
 
         /// <summary>
         /// Releases all resources associated with this timer.
@@ -122,8 +140,7 @@ namespace DotNext.Threading
         {
             if (disposing)
             {
-                timerHandle?.Unregister(null);
-                timerHandle = null;
+                Interlocked.Exchange(ref timerTask, null)?.Dispose();
             }
             base.Dispose(disposing);
         }

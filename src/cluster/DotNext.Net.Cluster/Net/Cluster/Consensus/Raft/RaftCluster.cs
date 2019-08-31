@@ -231,6 +231,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         IReadOnlyCollection<IClusterMember> ICluster.Members => Members;
 
         /// <summary>
+        /// Establishes metrics collector.
+        /// </summary>
+        public MetricsCollector Metrics 
+        { 
+            protected get;
+            set;
+        }
+
+        /// <summary>
         /// Gets Term value maintained by local member.
         /// </summary>
         public long Term => auditTrail.Term;
@@ -264,7 +273,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public virtual Task StartAsync(CancellationToken token)
         {
             //start node in Follower state
-            state = new FollowerState(this).StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+            state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
             return Task.CompletedTask;
         }
 
@@ -302,16 +311,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     followerState.Refresh();
                     break;
                 case LeaderState leaderState:
-                    var newState = new FollowerState(this);
+                    var newState = new FollowerState(this) { Metrics = Metrics };
                     await leaderState.StopAsync().ConfigureAwait(false);
                     state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
                     leaderState.Dispose();
+                    Metrics?.MovedToFollowerState();
                     break;
                 case CandidateState candidateState:
-                    newState = new FollowerState(this);
+                    newState = new FollowerState(this) { Metrics = Metrics };
                     await candidateState.StopAsync().ConfigureAwait(false);
                     state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
                     candidateState.Dispose();
+                    Metrics?.MovedToFollowerState();
                     break;
             }
             Logger.DowngradedToFollowerState();
@@ -346,8 +357,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                     if (entries.Count > 0L)
                         await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
-
-                   var result = commitIndex <= auditTrail.GetLastIndex(true) ||
+                    var result = commitIndex <= auditTrail.GetLastIndex(true) ||
                                  await auditTrail.CommitAsync(commitIndex).ConfigureAwait(false) > 0;
                     return new Result<bool>(auditTrail.Term, result);
                 }
@@ -368,19 +378,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
             {
                 if (auditTrail.Term > senderTerm) //currentTerm > term
-                    return new Result<bool>(auditTrail.Term, false);
+                    goto reject;
                 if (auditTrail.Term < senderTerm)
                 {
                     Leader = null;
                     await StepDown(senderTerm).ConfigureAwait(false);
                 }
+                else if(state is FollowerState follower)
+                    follower.Refresh();
                 else
-                    (state as FollowerState)?.Refresh();
+                    goto reject;
                 if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm).ConfigureAwait(false))
                 {
                     await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
                     return new Result<bool>(auditTrail.Term, true);
                 }
+            reject:
                 return new Result<bool>(auditTrail.Term, false);
             }
         }
@@ -391,7 +404,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (state is LeaderState leaderState)
                 {
                     await leaderState.StopAsync().ConfigureAwait(false);
-                    state = new FollowerState(this).StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
                     leaderState.Dispose();
                     Leader = null;
                     return true;
@@ -442,6 +455,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     var localMember = FindMember(IsLocalMember);
                     await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     //vote for self
                     state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
+                    Metrics?.MovedToCandidateState();
                     Logger.TransitionToCandidateStateCompleted();
                 }
         }
@@ -451,16 +465,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Logger.TransitionToLeaderStateStarted();
             using (var lockHolder = await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-            {
                 if (lockHolder && state is CandidateState candidateState && candidateState.Term == auditTrail.Term)
                 {
                     candidateState.Dispose();
                     Leader = newLeader as TMember;
-                    state = new LeaderState(this, allowPartitioning, auditTrail.Term).StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
+                    state = new LeaderState(this, allowPartitioning, auditTrail.Term) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
                         auditTrail);
+                    Metrics?.MovedToLeaderState();
                     Logger.TransitionToLeaderStateCompleted();
                 }
-            }
         }
 
         private async Task WaitForCommit(long commitIndex)
@@ -479,11 +492,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 do
                 {
-                    var leaderState = state as LeaderState;
-                    if (leaderState is null)
-                        throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+                    if (state is LeaderState leader)
+                        leader.ForceReplication();
                     else
-                        leaderState.ForceReplication();
+                        throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
                 }
                 while (!await notifier.Wait(TimeSpan.FromMilliseconds(electionTimeout), transitionCancellation.Token).ConfigureAwait(false));
             }

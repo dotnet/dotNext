@@ -74,8 +74,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public static implicit operator WaitCallback(CommitEventExecutor executor) => executor is null ? default(WaitCallback) : executor.Invoke;
         }
 
-        private static readonly ILogEntry First = new InitialLogEntry();
-        private static readonly ILogEntry[] EmptyLog = { First };
+        private static readonly ILogEntry[] EmptyLog = { new InitialLogEntry() };
 
         private long commitIndex;
         private volatile ILogEntry[] log;
@@ -119,7 +118,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => committed ? commitIndex.VolatileRead() : Math.Max(0, log.LongLength - 1L);
 
         private IReadOnlyList<ILogEntry> GetEntries(long startIndex, long endIndex)
-            => log.Slice(startIndex, endIndex - startIndex + 1);
+        {
+            if(startIndex < 0L)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            if(endIndex < 0L)
+                throw new ArgumentOutOfRangeException(nameof(endIndex));
+            return endIndex < startIndex || startIndex >= log.LongLength ? 
+                Array.Empty<ILogEntry>() :
+                log.Slice(startIndex, endIndex - startIndex + 1);
+        }
 
         async ValueTask<IReadOnlyList<ILogEntry>> IAuditTrail<ILogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
         {
@@ -191,6 +198,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        ref readonly ILogEntry IAuditTrail<ILogEntry>.First => ref First;
+        ref readonly ILogEntry IAuditTrail<ILogEntry>.First => ref EmptyLog[0];
     }
 }

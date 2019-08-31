@@ -11,6 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using Threading;
+    using TimeStamp = Diagnostics.TimeStamp;
 
     internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, IAddressee
     {
@@ -26,6 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private volatile MemberMetadata metadata;
         private ClusterMemberStatusChanged memberStatusChanged;
         private long nextIndex;
+        internal IHttpClientMetrics Metrics;
 
         internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
             : base(context.CreateHttpHandler(), true)
@@ -62,6 +64,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.RequestUri = resourcePath;
 
             var response = default(HttpResponseMessage);
+            var timeStamp = TimeStamp.Current;
             try
             {
                 response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
@@ -89,6 +92,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             finally
             {
                 Disposable.Dispose(response, response?.Content, request);
+                Metrics?.ReportResponseTime(timeStamp.Elapsed);
             }
         }
 

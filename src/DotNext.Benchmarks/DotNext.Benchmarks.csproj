@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <StartupObject>DotNext.Program</StartupObject>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
-    <Version>0.13.0</Version>
+    <Version>0.14.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Various benchmarks demonstrating performance aspects of .NEXT extensions</Description>
@@ -25,6 +25,7 @@
     <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
+    <TieredCompilation>true</TieredCompilation>
   </PropertyGroup>
 
 
@@ -39,13 +40,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Reflection" Version="0.13.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext.Reflection" Version="0.14.0" Condition="'$(Configuration)'=='Release'" />
     
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.13.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="0.14.0" Condition="'$(Configuration)'=='Release'" />
 
     <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Metaprogramming" Version="0.13.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext.Metaprogramming" Version="0.14.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
 </Project>

@@ -70,12 +70,15 @@ namespace DotNext.Net.Cluster.Messaging
         Task IMessage.CopyToAsync(Stream output) =>
             content.CanSeek ? CopyToAsyncAndSeek(content, output) : content.CopyToAsync(output);
 
-        async ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
+        ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
+            => CopyToAsync(content, output, true, token);
+
+        internal static async ValueTask CopyToAsync(Stream source, PipeWriter output, bool resetStream, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             var buffer = new byte[BufferSize];
             int count;
-            while ((count = await content.ReadAsync(buffer, 0, buffer.Length, token).ConfigureAwait(false)) > 0)
+            while ((count = await source.ReadAsync(buffer, 0, buffer.Length, token).ConfigureAwait(false)) > 0)
             {
                 var result = await output.WriteAsync(new ReadOnlyMemory<byte>(buffer, 0, count), token).ConfigureAwait(false);
                 if (result.IsCompleted)
@@ -89,8 +92,8 @@ namespace DotNext.Net.Cluster.Messaging
                     throw new OperationCanceledException(token);
             }
 
-            if (content.CanSeek)
-                content.Seek(0, SeekOrigin.Begin);
+            if (resetStream && source.CanSeek)
+                source.Seek(0, SeekOrigin.Begin);
         }
 
         /// <summary>

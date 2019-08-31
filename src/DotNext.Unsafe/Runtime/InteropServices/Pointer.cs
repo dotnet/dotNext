@@ -669,6 +669,19 @@ namespace DotNext.Runtime.InteropServices
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value + offset);
 
         /// <summary>
+        /// Adds an offset to the value of a pointer.
+        /// </summary>
+        /// <remarks>
+        /// The offset specifies number of elements of type <typeparamref name="T"/>, not bytes.
+        /// </remarks>
+        /// <param name="pointer">The pointer to add the offset to.</param>
+        /// <param name="offset">The offset to add.</param>
+        /// <returns>A new pointer that reflects the addition of offset to pointer.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe Pointer<T> operator +(Pointer<T> pointer, IntPtr offset)
+            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.Address.Add(offset));
+
+        /// <summary>
         /// Subtracts an offset from the value of a pointer.
         /// </summary>
         /// <remarks>
@@ -680,6 +693,19 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe Pointer<T> operator -(Pointer<T> pointer, int offset)
             => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.value - offset);
+
+        /// <summary>
+        /// Subtracts an offset from the value of a pointer.
+        /// </summary>
+        /// <remarks>
+        /// The offset specifies number of elements of type <typeparamref name="T"/>, not bytes.
+        /// </remarks>
+        /// <param name="pointer">The pointer to subtract the offset from.</param>
+        /// <param name="offset">The offset to subtract.</param>
+        /// <returns>A new pointer that reflects the subtraction of offset from pointer.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static unsafe Pointer<T> operator -(Pointer<T> pointer, IntPtr offset)
+            => pointer.IsNull ? throw new NullPointerException() : new Pointer<T>(pointer.Address.Subtract(offset));
 
         /// <summary>
         /// Adds an offset to the value of a pointer.

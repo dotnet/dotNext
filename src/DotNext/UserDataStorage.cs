@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace DotNext
 {
@@ -60,30 +59,23 @@ namespace DotNext
 
             internal BackingStorage() : base(3) => lockState = new AtomicBoolean(false);
 
-            private void Acquire()
-            {
-                for(SpinWait spinner; lockState.CompareExchange(false, true); spinner.SpinOnce()) {}
-            }
-
-            private void Release() => lockState.Value = false;
-
             internal V Get<V>(UserDataSlot<V> slot, V defaultValue)
             {
-                Acquire();
+                lockState.Acquire();
                 try
                 {
                     return slot.GetUserData(this, defaultValue);
                 }
                 finally
                 {
-                    Release();
+                    lockState.Release();
                 }
             }
 
             internal V GetOrSet<V, S>(UserDataSlot<V> slot, ref S valueFactory)
                 where S : struct, ISupplier<V>
             {
-                Acquire();
+                lockState.Acquire();
                 try
                 {
                     if (!slot.GetUserData(this, out var userData))
@@ -92,53 +84,53 @@ namespace DotNext
                 }
                 finally
                 {
-                    Release();
+                    lockState.Release();
                 }
             }
 
             internal bool Get<V>(UserDataSlot<V> slot, out V userData)
             {
-                Acquire();
+                lockState.Acquire();
                 try
                 {
                     return slot.GetUserData(this, out userData);
                 }
                 finally
                 {
-                    Release();
+                    lockState.Release();
                 }
             }
 
             internal void Set<V>(UserDataSlot<V> slot, V userData)
             {
-                Acquire();
+                lockState.Acquire();
                 try
                 {
                     slot.SetUserData(this, userData);
                 }
                 finally
                 {
-                    Release();
+                    lockState.Release();
                 }
             }
 
             internal bool Remove<V>(UserDataSlot<V> slot)
             {
-                Acquire();
+                lockState.Acquire();
                 try
                 {
                     return slot.RemoveUserData(this);
                 }
                 finally
                 {
-                    Release();
+                    lockState.Release();
                 }
             }
 
             internal bool Remove<V>(UserDataSlot<V> slot, out V userData)
             {
                 //fast path if user data doesn't exist
-                Acquire();
+                lockState.Acquire();
                 try
                 {
                     if(slot.GetUserData(this, out userData))
@@ -150,7 +142,7 @@ namespace DotNext
                 }
                 finally
                 {
-                    Release();
+                    lockState.Release();
                 }
             }
         }

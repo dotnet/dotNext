@@ -3,7 +3,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>0.13.0</Version>
+    <Version>0.14.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Asynchronous locks and .NET threading extensions</Description>
@@ -14,9 +14,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>async;lock;objectpool</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-    <PackageReleaseNotes>Debug information is now embedded into compiled library
-SourceLink is enabled
-Internal implementation of classes migrated to Value Delegate to reduce memory allocations</PackageReleaseNotes>
+    <PackageReleaseNotes>https://github.com/sakno/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 

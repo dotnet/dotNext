@@ -29,7 +29,7 @@ namespace RaftNode
                 {"partitioning", "false"},
                 {"lowerElectionTimeout", "150" },
                 {"upperElectionTimeout", "300" },
-                {"heartbeatThreshold", "0.3"},
+                {"heartbeatThreshold", "0"},
                 {"members:0", "https://localhost:3262"},
                 {"members:1", "https://localhost:3263"},
                 {"members:2", "https://localhost:3264"},
