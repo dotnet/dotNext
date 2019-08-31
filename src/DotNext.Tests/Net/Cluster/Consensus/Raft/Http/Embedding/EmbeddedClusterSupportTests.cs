@@ -263,6 +263,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                     default:
                         throw new Exception();
                 }
+                //check metrics
+                var numberOfRequests = 
+                    (host1.Services.GetService<MetricsCollector>() as TestMetricsCollector).RequestCount +
+                    (host2.Services.GetService<MetricsCollector>() as TestMetricsCollector).RequestCount +
+                    (host3.Services.GetService<MetricsCollector>() as TestMetricsCollector).RequestCount;
+                
+                var hasLeader = (host1.Services.GetService<MetricsCollector>() as TestMetricsCollector).LeaderStateIndicator |
+                    (host2.Services.GetService<MetricsCollector>() as TestMetricsCollector).LeaderStateIndicator |
+                    (host3.Services.GetService<MetricsCollector>() as TestMetricsCollector).LeaderStateIndicator;
+                
+                var heartbeats = (host1.Services.GetService<MetricsCollector>() as TestMetricsCollector).HeartbeatCount +
+                    (host2.Services.GetService<MetricsCollector>() as TestMetricsCollector).HeartbeatCount +
+                    (host3.Services.GetService<MetricsCollector>() as TestMetricsCollector).HeartbeatCount;
+
+                True(hasLeader);
+                True(numberOfRequests > 0);
+                True(heartbeats > 0);
 
                 await host3.StopAsync();
                 await host2.StopAsync();
