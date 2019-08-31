@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
-    <Version>0.13.0</Version>
+    <Version>0.14.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FodyHelpers" Version="5.2.0" />
+    <PackageReference Include="FodyHelpers" Version="6.0.0" />
   </ItemGroup>
 
 </Project>
