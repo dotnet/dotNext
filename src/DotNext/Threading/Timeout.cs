@@ -2,14 +2,14 @@
 
 namespace DotNext.Threading
 {
-    using TimeStamp = Diagnostics.TimeStamp;
+    using Timestamp = Diagnostics.Timestamp;
 
     /// <summary>
     /// Helps to compute timeout for asynchronous operations.
     /// </summary>
     public readonly struct Timeout
     {
-        private readonly TimeStamp created;
+        private readonly Timestamp created;
         private readonly TimeSpan timeout;
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace DotNext.Threading
         /// <param name="timeout">Max duration of operation.</param>
         public Timeout(TimeSpan timeout)
         {
-            created = TimeStamp.Current;
+            created = Timestamp.Current;
             this.timeout = timeout;
         }
 

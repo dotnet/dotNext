@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using Threading;
-    using TimeStamp = Diagnostics.TimeStamp;
+    using Timestamp = Diagnostics.Timestamp;
 
     internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, IAddressee
     {
@@ -64,7 +64,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.RequestUri = resourcePath;
 
             var response = default(HttpResponseMessage);
-            var timeStamp = TimeStamp.Current;
+            var timeStamp = Timestamp.Current;
             try
             {
                 response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)

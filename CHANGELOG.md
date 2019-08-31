@@ -3,7 +3,7 @@ Release Notes
 
 # 08-31-2019
 <a href="https://www.nuget.org/packages/dotnext/0.14.0">DotNext 0.14.0</a>
-* [TimeStamp](https://sakno.github.io/dotNext/api/DotNext.Diagnostics.TimeStamp.html) type is introduced as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch)
+* [Timestamp](https://sakno.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) type is introduced as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch)
 * [Memory](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Memory.html) class now have methods for reading and writing null-terminated UTF-16 string from/to unmanaged or pinned managed memory
 
 <a href="https://www.nuget.org/packages/dotnext.threading/0.14.0">DotNext.Threading 0.14.0</a>
