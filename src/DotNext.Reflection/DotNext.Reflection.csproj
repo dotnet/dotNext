@@ -37,9 +37,9 @@
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.4" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01" PrivateAssets="All" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="0.13.0" Condition="'$(Configuration)'=='Release'" />
-    <PackageReference Include="Fody" Version="5.2.0" PrivateAssets="all" />
-    <PackageReference Include="DotNext.Augmentation.Fody" Version="0.13.0" PrivateAssets="all" />
+    <PackageReference Include="DotNext" Version="0.14.0" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="Fody" Version="6.0.0" PrivateAssets="all" />
+    <PackageReference Include="DotNext.Augmentation.Fody" Version="0.14.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
