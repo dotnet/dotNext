@@ -375,6 +375,52 @@ sealed class Startup : StartupBase
 </ul>
 <h1 id="replication">Replication</h1>
 <p>Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> interface. By default, it is implemented as in-memory storage which is suitable only for applications that doesn't have replicated state. If your application has it then implement this interface manually and use reliable storage such as disk and inject this implementation through <code>AuditTrail</code> property in <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a> interface. This injection should be done in user-defined implementation of <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html">IRaftClusterConfigurator</a> interface registered as a singleton service in ASP.NET Core application.</p>
+<h1 id="metrics">Metrics</h1>
+<p>It is possible to measure runtime metrics of Raft node internals using <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html">HttpMetricsCollector</a> class. The reporting mechanism is agnostic  to the underlying metrics delivery library such as <a href="https://github.com/AppMetrics/AppMetrics">AppMetrics</a>.</p>
+<p>The class contains methods that are called automatically. You can override them and implement necessary reporting logic. By default, these methods do nothing.</p>
+<p>The metrics collector should be registered as singleton service using Dependency Injection. However, the type of the service used for registration should of <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html">MetricsCollector</a> type.</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
+using DotNext.Net.Cluster.Consensus.Raft.Http;
+using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+sealed class MyCollector : HttpMetricsCollector
+{
+	public override void ReportResponseTime(TimeSpan value)
+    {
+		//report response time of the cluster member
+    } 
+
+	public override void ReportBroadcastTime(TimeSpan value)
+    {
+		//report broadcast time measured during sending the request to all cluster members
+    }
+}
+
+sealed class Startup : StartupBase
+{
+    private readonly IConfiguration configuration;
+
+    public Startup(IConfiguration configuration) =&gt; this.configuration = configuration;
+
+    public override void Configure(IApplicationBuilder app)
+    {
+        app.UseConsensusProtocolHandler()
+			.RedirectToLeader(&quot;/endpoint1&quot;)
+			.RedirectToLeader(&quot;/endpoint2&quot;);
+    }
+
+    public override void ConfigureServices(IServiceCollection services)
+    {
+		services.AddSingleton&lt;MetricsCollector, MyCollector&gt;().BecomeClusterMember(configuration);
+    }
+}
+</code></pre>
+<p>It is possible to derive directly from <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html">MetricsCollector</a> if you don't need to receive metrics related to HTTP-specific implementation of Raft algorithm.</p>
+<p>Implementation of reporting method should fast as possible or asynchronous. If reporting causes I/O operations synchronously then it affects the overall performance of Cluster library internals such as communication with other cluster members which is time-critical.</p>
 <h1 id="example">Example</h1>
 <p>There is Raft playground represented by RaftNode application. You can find this app <a href="https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode">here</a>. This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. Before starting instances you need to build application. All nodes can be started using the following script:</p>
 <pre><code class="lang-bash">dotnet RaftNode.dll 3262

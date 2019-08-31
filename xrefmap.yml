@@ -2918,6 +2918,212 @@ references:
   fullName.vb: DotNext.DelegateHelpers.Unbind(Of G, T1, T2, T3, T4, T5, R)(System.Func(Of T1, T2, T3, T4, T5, R))
   nameWithType: DelegateHelpers.Unbind<G, T1, T2, T3, T4, T5, R>(Func<T1, T2, T3, T4, T5, R>)
   nameWithType.vb: DelegateHelpers.Unbind(Of G, T1, T2, T3, T4, T5, R)(Func(Of T1, T2, T3, T4, T5, R))
+- uid: DotNext.Diagnostics
+  name: DotNext.Diagnostics
+  href: api/DotNext.Diagnostics.html
+  commentId: N:DotNext.Diagnostics
+  fullName: DotNext.Diagnostics
+  nameWithType: DotNext.Diagnostics
+- uid: DotNext.Diagnostics.Timestamp
+  name: Timestamp
+  href: api/DotNext.Diagnostics.Timestamp.html
+  commentId: T:DotNext.Diagnostics.Timestamp
+  fullName: DotNext.Diagnostics.Timestamp
+  nameWithType: Timestamp
+- uid: DotNext.Diagnostics.Timestamp.CompareTo(DotNext.Diagnostics.Timestamp)
+  name: CompareTo(Timestamp)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_CompareTo_DotNext_Diagnostics_Timestamp_
+  commentId: M:DotNext.Diagnostics.Timestamp.CompareTo(DotNext.Diagnostics.Timestamp)
+  fullName: DotNext.Diagnostics.Timestamp.CompareTo(DotNext.Diagnostics.Timestamp)
+  nameWithType: Timestamp.CompareTo(Timestamp)
+- uid: DotNext.Diagnostics.Timestamp.CompareTo*
+  name: CompareTo
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_CompareTo_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.CompareTo
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.CompareTo
+  nameWithType: Timestamp.CompareTo
+- uid: DotNext.Diagnostics.Timestamp.Current
+  name: Current
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_Current
+  commentId: P:DotNext.Diagnostics.Timestamp.Current
+  fullName: DotNext.Diagnostics.Timestamp.Current
+  nameWithType: Timestamp.Current
+- uid: DotNext.Diagnostics.Timestamp.Current*
+  name: Current
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_Current_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.Current
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.Current
+  nameWithType: Timestamp.Current
+- uid: DotNext.Diagnostics.Timestamp.Elapsed
+  name: Elapsed
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_Elapsed
+  commentId: P:DotNext.Diagnostics.Timestamp.Elapsed
+  fullName: DotNext.Diagnostics.Timestamp.Elapsed
+  nameWithType: Timestamp.Elapsed
+- uid: DotNext.Diagnostics.Timestamp.Elapsed*
+  name: Elapsed
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_Elapsed_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.Elapsed
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.Elapsed
+  nameWithType: Timestamp.Elapsed
+- uid: DotNext.Diagnostics.Timestamp.Equals(DotNext.Diagnostics.Timestamp)
+  name: Equals(Timestamp)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_Equals_DotNext_Diagnostics_Timestamp_
+  commentId: M:DotNext.Diagnostics.Timestamp.Equals(DotNext.Diagnostics.Timestamp)
+  fullName: DotNext.Diagnostics.Timestamp.Equals(DotNext.Diagnostics.Timestamp)
+  nameWithType: Timestamp.Equals(Timestamp)
+- uid: DotNext.Diagnostics.Timestamp.Equals(System.Object)
+  name: Equals(Object)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_Equals_System_Object_
+  commentId: M:DotNext.Diagnostics.Timestamp.Equals(System.Object)
+  fullName: DotNext.Diagnostics.Timestamp.Equals(System.Object)
+  nameWithType: Timestamp.Equals(Object)
+- uid: DotNext.Diagnostics.Timestamp.Equals*
+  name: Equals
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_Equals_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.Equals
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.Equals
+  nameWithType: Timestamp.Equals
+- uid: DotNext.Diagnostics.Timestamp.GetHashCode
+  name: GetHashCode()
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_GetHashCode
+  commentId: M:DotNext.Diagnostics.Timestamp.GetHashCode
+  fullName: DotNext.Diagnostics.Timestamp.GetHashCode()
+  nameWithType: Timestamp.GetHashCode()
+- uid: DotNext.Diagnostics.Timestamp.GetHashCode*
+  name: GetHashCode
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_GetHashCode_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.GetHashCode
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.GetHashCode
+  nameWithType: Timestamp.GetHashCode
+- uid: DotNext.Diagnostics.Timestamp.op_Equality(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  name: Equality(Timestamp, Timestamp)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_Equality_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_
+  commentId: M:DotNext.Diagnostics.Timestamp.op_Equality(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  fullName: DotNext.Diagnostics.Timestamp.Equality(DotNext.Diagnostics.Timestamp, DotNext.Diagnostics.Timestamp)
+  nameWithType: Timestamp.Equality(Timestamp, Timestamp)
+- uid: DotNext.Diagnostics.Timestamp.op_Equality*
+  name: Equality
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_Equality_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.op_Equality
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.Equality
+  nameWithType: Timestamp.Equality
+- uid: DotNext.Diagnostics.Timestamp.op_GreaterThan(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  name: GreaterThan(Timestamp, Timestamp)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_GreaterThan_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_
+  commentId: M:DotNext.Diagnostics.Timestamp.op_GreaterThan(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  fullName: DotNext.Diagnostics.Timestamp.GreaterThan(DotNext.Diagnostics.Timestamp, DotNext.Diagnostics.Timestamp)
+  nameWithType: Timestamp.GreaterThan(Timestamp, Timestamp)
+- uid: DotNext.Diagnostics.Timestamp.op_GreaterThan*
+  name: GreaterThan
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_GreaterThan_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.op_GreaterThan
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.GreaterThan
+  nameWithType: Timestamp.GreaterThan
+- uid: DotNext.Diagnostics.Timestamp.op_GreaterThanOrEqual(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  name: GreaterThanOrEqual(Timestamp, Timestamp)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_GreaterThanOrEqual_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_
+  commentId: M:DotNext.Diagnostics.Timestamp.op_GreaterThanOrEqual(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  fullName: DotNext.Diagnostics.Timestamp.GreaterThanOrEqual(DotNext.Diagnostics.Timestamp, DotNext.Diagnostics.Timestamp)
+  nameWithType: Timestamp.GreaterThanOrEqual(Timestamp, Timestamp)
+- uid: DotNext.Diagnostics.Timestamp.op_GreaterThanOrEqual*
+  name: GreaterThanOrEqual
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_GreaterThanOrEqual_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.op_GreaterThanOrEqual
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.GreaterThanOrEqual
+  nameWithType: Timestamp.GreaterThanOrEqual
+- uid: DotNext.Diagnostics.Timestamp.op_Implicit(DotNext.Diagnostics.Timestamp)~System.TimeSpan
+  name: Implicit(Timestamp to TimeSpan)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_Implicit_DotNext_Diagnostics_Timestamp__System_TimeSpan
+  commentId: M:DotNext.Diagnostics.Timestamp.op_Implicit(DotNext.Diagnostics.Timestamp)~System.TimeSpan
+  name.vb: Widening(Timestamp to TimeSpan)
+  fullName: DotNext.Diagnostics.Timestamp.Implicit(DotNext.Diagnostics.Timestamp to System.TimeSpan)
+  fullName.vb: DotNext.Diagnostics.Timestamp.Widening(DotNext.Diagnostics.Timestamp to System.TimeSpan)
+  nameWithType: Timestamp.Implicit(Timestamp to TimeSpan)
+  nameWithType.vb: Timestamp.Widening(Timestamp to TimeSpan)
+- uid: DotNext.Diagnostics.Timestamp.op_Implicit*
+  name: Implicit
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_Implicit_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.op_Implicit
+  isSpec: "True"
+  name.vb: Widening
+  fullName: DotNext.Diagnostics.Timestamp.Implicit
+  fullName.vb: DotNext.Diagnostics.Timestamp.Widening
+  nameWithType: Timestamp.Implicit
+  nameWithType.vb: Timestamp.Widening
+- uid: DotNext.Diagnostics.Timestamp.op_Inequality(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  name: Inequality(Timestamp, Timestamp)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_Inequality_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_
+  commentId: M:DotNext.Diagnostics.Timestamp.op_Inequality(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  fullName: DotNext.Diagnostics.Timestamp.Inequality(DotNext.Diagnostics.Timestamp, DotNext.Diagnostics.Timestamp)
+  nameWithType: Timestamp.Inequality(Timestamp, Timestamp)
+- uid: DotNext.Diagnostics.Timestamp.op_Inequality*
+  name: Inequality
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_Inequality_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.op_Inequality
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.Inequality
+  nameWithType: Timestamp.Inequality
+- uid: DotNext.Diagnostics.Timestamp.op_LessThan(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  name: LessThan(Timestamp, Timestamp)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_LessThan_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_
+  commentId: M:DotNext.Diagnostics.Timestamp.op_LessThan(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  fullName: DotNext.Diagnostics.Timestamp.LessThan(DotNext.Diagnostics.Timestamp, DotNext.Diagnostics.Timestamp)
+  nameWithType: Timestamp.LessThan(Timestamp, Timestamp)
+- uid: DotNext.Diagnostics.Timestamp.op_LessThan*
+  name: LessThan
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_LessThan_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.op_LessThan
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.LessThan
+  nameWithType: Timestamp.LessThan
+- uid: DotNext.Diagnostics.Timestamp.op_LessThanOrEqual(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  name: LessThanOrEqual(Timestamp, Timestamp)
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_LessThanOrEqual_DotNext_Diagnostics_Timestamp_DotNext_Diagnostics_Timestamp_
+  commentId: M:DotNext.Diagnostics.Timestamp.op_LessThanOrEqual(DotNext.Diagnostics.Timestamp,DotNext.Diagnostics.Timestamp)
+  fullName: DotNext.Diagnostics.Timestamp.LessThanOrEqual(DotNext.Diagnostics.Timestamp, DotNext.Diagnostics.Timestamp)
+  nameWithType: Timestamp.LessThanOrEqual(Timestamp, Timestamp)
+- uid: DotNext.Diagnostics.Timestamp.op_LessThanOrEqual*
+  name: LessThanOrEqual
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_op_LessThanOrEqual_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.op_LessThanOrEqual
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.LessThanOrEqual
+  nameWithType: Timestamp.LessThanOrEqual
+- uid: DotNext.Diagnostics.Timestamp.ToString
+  name: ToString()
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_ToString
+  commentId: M:DotNext.Diagnostics.Timestamp.ToString
+  fullName: DotNext.Diagnostics.Timestamp.ToString()
+  nameWithType: Timestamp.ToString()
+- uid: DotNext.Diagnostics.Timestamp.ToString*
+  name: ToString
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_ToString_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.ToString
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.ToString
+  nameWithType: Timestamp.ToString
+- uid: DotNext.Diagnostics.Timestamp.Value
+  name: Value
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_Value
+  commentId: P:DotNext.Diagnostics.Timestamp.Value
+  fullName: DotNext.Diagnostics.Timestamp.Value
+  nameWithType: Timestamp.Value
+- uid: DotNext.Diagnostics.Timestamp.Value*
+  name: Value
+  href: api/DotNext.Diagnostics.Timestamp.html#DotNext_Diagnostics_Timestamp_Value_
+  commentId: Overload:DotNext.Diagnostics.Timestamp.Value
+  isSpec: "True"
+  fullName: DotNext.Diagnostics.Timestamp.Value
+  nameWithType: Timestamp.Value
 - uid: DotNext.Disposable
   name: Disposable
   href: api/DotNext.Disposable.html
@@ -10432,23 +10638,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.AllowedNetworks
   nameWithType: ClusterMemberConfiguration.AllowedNetworks
-- uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout
-  name: IClusterMemberConfiguration.ElectionTimeout
-  href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_DotNext_Net_Cluster_Consensus_Raft_IClusterMemberConfiguration_ElectionTimeout
-  commentId: P:DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout
-  name.vb: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
-  fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
-  nameWithType: ClusterMemberConfiguration.IClusterMemberConfiguration.ElectionTimeout
-  nameWithType.vb: ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
-- uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout*
-  name: IClusterMemberConfiguration.ElectionTimeout
-  href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_DotNext_Net_Cluster_Consensus_Raft_IClusterMemberConfiguration_ElectionTimeout_
-  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout
-  isSpec: "True"
-  name.vb: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
-  fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
-  nameWithType: ClusterMemberConfiguration.IClusterMemberConfiguration.ElectionTimeout
-  nameWithType.vb: ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
 - uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.HeartbeatThreshold
   name: HeartbeatThreshold
   href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_HeartbeatThreshold
@@ -10673,6 +10862,25 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.BecomeClusterMember
   nameWithType: ConfigurationExtensions.BecomeClusterMember
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector
+  name: HttpMetricsCollector
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html
+  commentId: T:DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector
+  nameWithType: HttpMetricsCollector
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.ReportResponseTime(System.TimeSpan)
+  name: ReportResponseTime(TimeSpan)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_Http_HttpMetricsCollector_ReportResponseTime_System_TimeSpan_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.ReportResponseTime(System.TimeSpan)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.ReportResponseTime(System.TimeSpan)
+  nameWithType: HttpMetricsCollector.ReportResponseTime(TimeSpan)
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.ReportResponseTime*
+  name: ReportResponseTime
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_Http_HttpMetricsCollector_ReportResponseTime_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.ReportResponseTime
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.ReportResponseTime
+  nameWithType: HttpMetricsCollector.ReportResponseTime
 - uid: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter
   name: LeaderRouter
   href: api/DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.html
@@ -11053,6 +11261,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.ElectionTimeout
   nameWithType: IRaftCluster.ElectionTimeout
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Metrics
+  name: Metrics
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Metrics
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Metrics
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Metrics
+  nameWithType: IRaftCluster.Metrics
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Metrics*
+  name: Metrics
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Metrics_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Metrics
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Metrics
+  nameWithType: IRaftCluster.Metrics
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.Term
   name: Term
   href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html#DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_Term
@@ -11072,13 +11293,13 @@ references:
   commentId: T:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator
   nameWithType: IRaftClusterConfigurator
-- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
   name: Initialize(IRaftCluster, IDictionary<String, String>)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Initialize_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_System_Collections_Generic_IDictionary_System_String_System_String__
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Initialize_IRaftCluster_System_Collections_Generic_IDictionary_System_String_System_String__
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
   name.vb: Initialize(IRaftCluster, IDictionary(Of String, String))
-  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster, System.Collections.Generic.IDictionary<System.String, System.String>)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster, System.Collections.Generic.IDictionary(Of System.String, System.String))
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster, System.Collections.Generic.IDictionary<System.String, System.String>)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster, System.Collections.Generic.IDictionary(Of System.String, System.String))
   nameWithType: IRaftClusterConfigurator.Initialize(IRaftCluster, IDictionary<String, String>)
   nameWithType.vb: IRaftClusterConfigurator.Initialize(IRaftCluster, IDictionary(Of String, String))
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize*
@@ -11088,11 +11309,11 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize
   nameWithType: IRaftClusterConfigurator.Initialize
-- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster)
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(IRaftCluster)
   name: Shutdown(IRaftCluster)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Shutdown_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Shutdown_IRaftCluster_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(IRaftCluster)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(IRaftCluster)
   nameWithType: IRaftClusterConfigurator.Shutdown(IRaftCluster)
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown*
   name: Shutdown
@@ -11162,6 +11383,77 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterMember.VoteAsync
   nameWithType: IRaftClusterMember.VoteAsync
+- uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector
+  name: MetricsCollector
+  href: api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html
+  commentId: T:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector
+  fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector
+  nameWithType: MetricsCollector
+- uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToCandidateState
+  name: MovedToCandidateState()
+  href: api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_MetricsCollector_MovedToCandidateState
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToCandidateState
+  fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToCandidateState()
+  nameWithType: MetricsCollector.MovedToCandidateState()
+- uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToCandidateState*
+  name: MovedToCandidateState
+  href: api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_MetricsCollector_MovedToCandidateState_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToCandidateState
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToCandidateState
+  nameWithType: MetricsCollector.MovedToCandidateState
+- uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToFollowerState
+  name: MovedToFollowerState()
+  href: api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_MetricsCollector_MovedToFollowerState
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToFollowerState
+  fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToFollowerState()
+  nameWithType: MetricsCollector.MovedToFollowerState()
+- uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToFollowerState*
+  name: MovedToFollowerState
+  href: api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_MetricsCollector_MovedToFollowerState_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToFollowerState
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToFollowerState
+  nameWithType: MetricsCollector.MovedToFollowerState
+- uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToLeaderState
+  name: MovedToLeaderState()
+  href: api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_MetricsCollector_MovedToLeaderState
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToLeaderState
+  fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToLeaderState()
+  nameWithType: MetricsCollector.MovedToLeaderState()
+- uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToLeaderState*
+  name: MovedToLeaderState
+  href: api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_MetricsCollector_MovedToLeaderState_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToLeaderState
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.MovedToLeaderState
+  nameWithType: MetricsCollector.MovedToLeaderState
+- uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportBroadcastTime(System.TimeSpan)
+  name: ReportBroadcastTime(TimeSpan)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_MetricsCollector_ReportBroadcastTime_System_TimeSpan_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportBroadcastTime(System.TimeSpan)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportBroadcastTime(System.TimeSpan)
+  nameWithType: MetricsCollector.ReportBroadcastTime(TimeSpan)
+- uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportBroadcastTime*
+  name: ReportBroadcastTime
+  href: api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_MetricsCollector_ReportBroadcastTime_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportBroadcastTime
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportBroadcastTime
+  nameWithType: MetricsCollector.ReportBroadcastTime
+- uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportHeartbeat
+  name: ReportHeartbeat()
+  href: api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_MetricsCollector_ReportHeartbeat
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportHeartbeat
+  fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportHeartbeat()
+  nameWithType: MetricsCollector.ReportHeartbeat()
+- uid: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportHeartbeat*
+  name: ReportHeartbeat
+  href: api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html#DotNext_Net_Cluster_Consensus_Raft_MetricsCollector_ReportHeartbeat_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportHeartbeat
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.ReportHeartbeat
+  nameWithType: MetricsCollector.ReportHeartbeat
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1
   name: RaftCluster<TMember>
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html
@@ -11520,6 +11812,23 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).Members
   nameWithType: RaftCluster<TMember>.Members
   nameWithType.vb: RaftCluster(Of TMember).Members
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Metrics
+  name: Metrics
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Metrics
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Metrics
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.Metrics
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).Metrics
+  nameWithType: RaftCluster<TMember>.Metrics
+  nameWithType.vb: RaftCluster(Of TMember).Metrics
+- uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Metrics*
+  name: Metrics
+  href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html#DotNext_Net_Cluster_Consensus_Raft_RaftCluster_1_Metrics_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.Metrics
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.RaftCluster<TMember>.Metrics
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.RaftCluster(Of TMember).Metrics
+  nameWithType: RaftCluster<TMember>.Metrics
+  nameWithType.vb: RaftCluster(Of TMember).Metrics
 - uid: DotNext.Net.Cluster.Consensus.Raft.RaftCluster`1.MutableMemberCollection
   name: RaftCluster<TMember>.MutableMemberCollection
   href: api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.MutableMemberCollection.html
@@ -12332,11 +12641,11 @@ references:
   commentId: T:DotNext.Net.Cluster.Messaging.IMessageHandler
   fullName: DotNext.Net.Cluster.Messaging.IMessageHandler
   nameWithType: IMessageHandler
-- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
+- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(IAddressee,IMessage,System.Object)
   name: ReceiveMessage(IAddressee, IMessage, Object)
-  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveMessage_DotNext_Net_Cluster_Messaging_IAddressee_DotNext_Net_Cluster_Messaging_IMessage_System_Object_
-  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
-  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(DotNext.Net.Cluster.Messaging.IAddressee, DotNext.Net.Cluster.Messaging.IMessage, System.Object)
+  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveMessage_IAddressee_IMessage_System_Object_
+  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(IAddressee,IMessage,System.Object)
+  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(IAddressee, IMessage, System.Object)
   nameWithType: IMessageHandler.ReceiveMessage(IAddressee, IMessage, Object)
 - uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage*
   name: ReceiveMessage
@@ -12345,11 +12654,11 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage
   nameWithType: IMessageHandler.ReceiveMessage
-- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
+- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(IAddressee,IMessage,System.Object)
   name: ReceiveSignal(IAddressee, IMessage, Object)
-  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveSignal_DotNext_Net_Cluster_Messaging_IAddressee_DotNext_Net_Cluster_Messaging_IMessage_System_Object_
-  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
-  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(DotNext.Net.Cluster.Messaging.IAddressee, DotNext.Net.Cluster.Messaging.IMessage, System.Object)
+  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveSignal_IAddressee_IMessage_System_Object_
+  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(IAddressee,IMessage,System.Object)
+  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(IAddressee, IMessage, System.Object)
   nameWithType: IMessageHandler.ReceiveSignal(IAddressee, IMessage, Object)
 - uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal*
   name: ReceiveSignal
@@ -25628,6 +25937,22 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Memory.Read(Of T)(ByRef System.IntPtr)
   nameWithType: Memory.Read<T>(ref IntPtr)
   nameWithType.vb: Memory.Read(Of T)(ByRef IntPtr)
+- uid: DotNext.Runtime.InteropServices.Memory.ReadString(System.IntPtr@)
+  name: ReadString(ref IntPtr)
+  href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_ReadString_System_IntPtr__
+  commentId: M:DotNext.Runtime.InteropServices.Memory.ReadString(System.IntPtr@)
+  name.vb: ReadString(ByRef IntPtr)
+  fullName: DotNext.Runtime.InteropServices.Memory.ReadString(ref System.IntPtr)
+  fullName.vb: DotNext.Runtime.InteropServices.Memory.ReadString(ByRef System.IntPtr)
+  nameWithType: Memory.ReadString(ref IntPtr)
+  nameWithType.vb: Memory.ReadString(ByRef IntPtr)
+- uid: DotNext.Runtime.InteropServices.Memory.ReadString*
+  name: ReadString
+  href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_ReadString_
+  commentId: Overload:DotNext.Runtime.InteropServices.Memory.ReadString
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.Memory.ReadString
+  nameWithType: Memory.ReadString
 - uid: DotNext.Runtime.InteropServices.Memory.ReadUnaligned*
   name: ReadUnaligned
   href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_ReadUnaligned_
@@ -25717,6 +26042,31 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Memory.Write(Of T)(ByRef System.IntPtr, T)
   nameWithType: Memory.Write<T>(ref IntPtr, T)
   nameWithType.vb: Memory.Write(Of T)(ByRef IntPtr, T)
+- uid: DotNext.Runtime.InteropServices.Memory.WriteString(System.IntPtr@,System.ReadOnlySpan{System.Char})
+  name: WriteString(ref IntPtr, ReadOnlySpan<Char>)
+  href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_WriteString_System_IntPtr__System_ReadOnlySpan_System_Char__
+  commentId: M:DotNext.Runtime.InteropServices.Memory.WriteString(System.IntPtr@,System.ReadOnlySpan{System.Char})
+  name.vb: WriteString(ByRef IntPtr, ReadOnlySpan(Of Char))
+  fullName: DotNext.Runtime.InteropServices.Memory.WriteString(ref System.IntPtr, System.ReadOnlySpan<System.Char>)
+  fullName.vb: DotNext.Runtime.InteropServices.Memory.WriteString(ByRef System.IntPtr, System.ReadOnlySpan(Of System.Char))
+  nameWithType: Memory.WriteString(ref IntPtr, ReadOnlySpan<Char>)
+  nameWithType.vb: Memory.WriteString(ByRef IntPtr, ReadOnlySpan(Of Char))
+- uid: DotNext.Runtime.InteropServices.Memory.WriteString(System.IntPtr@,System.String)
+  name: WriteString(ref IntPtr, String)
+  href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_WriteString_System_IntPtr__System_String_
+  commentId: M:DotNext.Runtime.InteropServices.Memory.WriteString(System.IntPtr@,System.String)
+  name.vb: WriteString(ByRef IntPtr, String)
+  fullName: DotNext.Runtime.InteropServices.Memory.WriteString(ref System.IntPtr, System.String)
+  fullName.vb: DotNext.Runtime.InteropServices.Memory.WriteString(ByRef System.IntPtr, System.String)
+  nameWithType: Memory.WriteString(ref IntPtr, String)
+  nameWithType.vb: Memory.WriteString(ByRef IntPtr, String)
+- uid: DotNext.Runtime.InteropServices.Memory.WriteString*
+  name: WriteString
+  href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_WriteString_
+  commentId: Overload:DotNext.Runtime.InteropServices.Memory.WriteString
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.Memory.WriteString
+  nameWithType: Memory.WriteString
 - uid: DotNext.Runtime.InteropServices.Memory.WriteUnaligned*
   name: WriteUnaligned
   href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_WriteUnaligned_
@@ -26270,6 +26620,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Addition(DotNext.Runtime.InteropServices.Pointer(Of T), System.Int64)
   nameWithType: Pointer<T>.Addition(Pointer<T>, Int64)
   nameWithType.vb: Pointer(Of T).Addition(Pointer(Of T), Int64)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.op_Addition(DotNext.Runtime.InteropServices.Pointer{`0},System.IntPtr)
+  name: Addition(Pointer<T>, IntPtr)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_Addition_DotNext_Runtime_InteropServices_Pointer__0__System_IntPtr_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.op_Addition(DotNext.Runtime.InteropServices.Pointer{`0},System.IntPtr)
+  name.vb: Addition(Pointer(Of T), IntPtr)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Addition(DotNext.Runtime.InteropServices.Pointer<T>, System.IntPtr)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Addition(DotNext.Runtime.InteropServices.Pointer(Of T), System.IntPtr)
+  nameWithType: Pointer<T>.Addition(Pointer<T>, IntPtr)
+  nameWithType.vb: Pointer(Of T).Addition(Pointer(Of T), IntPtr)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.op_Addition(DotNext.Runtime.InteropServices.Pointer{`0},System.UInt64)
   name: Addition(Pointer<T>, UInt64)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_Addition_DotNext_Runtime_InteropServices_Pointer__0__System_UInt64_
@@ -26442,6 +26801,15 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Subtraction(DotNext.Runtime.InteropServices.Pointer(Of T), System.Int64)
   nameWithType: Pointer<T>.Subtraction(Pointer<T>, Int64)
   nameWithType.vb: Pointer(Of T).Subtraction(Pointer(Of T), Int64)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.IntPtr)
+  name: Subtraction(Pointer<T>, IntPtr)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_DotNext_Runtime_InteropServices_Pointer__0__System_IntPtr_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.IntPtr)
+  name.vb: Subtraction(Pointer(Of T), IntPtr)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Subtraction(DotNext.Runtime.InteropServices.Pointer<T>, System.IntPtr)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Subtraction(DotNext.Runtime.InteropServices.Pointer(Of T), System.IntPtr)
+  nameWithType: Pointer<T>.Subtraction(Pointer<T>, IntPtr)
+  nameWithType.vb: Pointer(Of T).Subtraction(Pointer(Of T), IntPtr)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.op_Subtraction(DotNext.Runtime.InteropServices.Pointer{`0},System.UInt64)
   name: Subtraction(Pointer<T>, UInt64)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_Subtraction_DotNext_Runtime_InteropServices_Pointer__0__System_UInt64_
@@ -30176,6 +30544,12 @@ references:
   commentId: M:DotNext.Threading.AsyncTimer.Start(System.TimeSpan,System.Threading.CancellationToken)
   fullName: DotNext.Threading.AsyncTimer.Start(System.TimeSpan, System.Threading.CancellationToken)
   nameWithType: AsyncTimer.Start(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.AsyncTimer.Start(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)
+  name: Start(TimeSpan, TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer_Start_System_TimeSpan_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.AsyncTimer.Start(System.TimeSpan,System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.AsyncTimer.Start(System.TimeSpan, System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: AsyncTimer.Start(TimeSpan, TimeSpan, CancellationToken)
 - uid: DotNext.Threading.AsyncTimer.Start*
   name: Start
   href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer_Start_
@@ -30183,31 +30557,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncTimer.Start
   nameWithType: AsyncTimer.Start
-- uid: DotNext.Threading.AsyncTimer.Stop(System.Threading.WaitHandle)
-  name: Stop(WaitHandle)
-  href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer_Stop_System_Threading_WaitHandle_
-  commentId: M:DotNext.Threading.AsyncTimer.Stop(System.Threading.WaitHandle)
-  fullName: DotNext.Threading.AsyncTimer.Stop(System.Threading.WaitHandle)
-  nameWithType: AsyncTimer.Stop(WaitHandle)
-- uid: DotNext.Threading.AsyncTimer.Stop*
-  name: Stop
-  href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer_Stop_
-  commentId: Overload:DotNext.Threading.AsyncTimer.Stop
-  isSpec: "True"
-  fullName: DotNext.Threading.AsyncTimer.Stop
-  nameWithType: AsyncTimer.Stop
 - uid: DotNext.Threading.AsyncTimer.StopAsync
   name: StopAsync()
   href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer_StopAsync
   commentId: M:DotNext.Threading.AsyncTimer.StopAsync
   fullName: DotNext.Threading.AsyncTimer.StopAsync()
   nameWithType: AsyncTimer.StopAsync()
-- uid: DotNext.Threading.AsyncTimer.StopAsync(System.TimeSpan)
-  name: StopAsync(TimeSpan)
-  href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer_StopAsync_System_TimeSpan_
-  commentId: M:DotNext.Threading.AsyncTimer.StopAsync(System.TimeSpan)
-  fullName: DotNext.Threading.AsyncTimer.StopAsync(System.TimeSpan)
-  nameWithType: AsyncTimer.StopAsync(TimeSpan)
 - uid: DotNext.Threading.AsyncTimer.StopAsync*
   name: StopAsync
   href: api/DotNext.Threading.AsyncTimer.html#DotNext_Threading_AsyncTimer_StopAsync_
