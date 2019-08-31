@@ -304,6 +304,8 @@ sealed class Startup : StartupBase
 
 It is possible to derive directly from [MetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html) if you don't need to receive metrics related to HTTP-specific implementation of Raft algorithm.
 
+Implementation of reporting method should fast as possible or asynchronous. If reporting causes I/O operations synchronously then it affects the overall performance of Cluster library internals such as communication with other cluster members which is time-critical.
+
 # Example
 There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. Before starting instances you need to build application. All nodes can be started using the following script:
 ```bash
