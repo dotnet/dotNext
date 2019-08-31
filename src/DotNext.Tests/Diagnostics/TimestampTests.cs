@@ -4,16 +4,16 @@ using Xunit;
 
 namespace DotNext.Diagnostics
 {
-    public sealed class TimeStampTests : Assert
+    public sealed class TimestampTests : Assert
     {
         [Fact]
         public static void MeasurementTest()
         {
-            var ts = TimeStamp.Current;
+            var ts = Timestamp.Current;
             Thread.Sleep(10);
             True(ts.Elapsed >= TimeSpan.FromMilliseconds(10));
-            True(TimeStamp.Current > ts);
-            True(TimeStamp.Current != ts);
+            True(Timestamp.Current > ts);
+            True(Timestamp.Current != ts);
             var other = ts;
             True(other == ts);
         }

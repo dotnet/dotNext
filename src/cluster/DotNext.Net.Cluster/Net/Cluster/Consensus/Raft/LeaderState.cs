@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Replication;
     using Threading;
-    using TimeStamp = Diagnostics.TimeStamp;
+    using Timestamp = Diagnostics.Timestamp;
     using static Threading.Tasks.Continuation;
 
     internal sealed class LeaderState : RaftState
@@ -94,7 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task<bool> DoHeartbeats(IAuditTrail<ILogEntry> transactionLog)
         {
-            var timeStamp = TimeStamp.Current;
+            var timeStamp = Timestamp.Current;
             ICollection<Task<Result<MemberHealthStatus>>> tasks = new LinkedList<Task<Result<MemberHealthStatus>>>();
             //send heartbeat in parallel
             var commitIndex = transactionLog.GetLastIndex(true);
