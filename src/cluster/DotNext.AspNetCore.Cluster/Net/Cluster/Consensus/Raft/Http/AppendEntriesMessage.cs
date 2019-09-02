@@ -46,7 +46,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             public long Term { get; }
 
-            public bool IsSnapshot { get; set; }
+            public bool IsSnapshot { get; }
         }
 
         private IReadOnlyList<IRaftLogEntry> entries;
