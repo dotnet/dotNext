@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </summary>
     public sealed class InMemoryAuditTrail : AsyncReaderWriterLock, IPersistentState
     {
-        private sealed class BufferedLogEntry : BinaryMessage, ILogEntry
+        private sealed class BufferedLogEntry : BinaryMessage, IRaftLogEntry
         {
             private BufferedLogEntry(ReadOnlyMemory<byte> content, string name, ContentType type, long term)
                 : base(content, name, type)
@@ -25,7 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Term = term;
             }
 
-            internal static async Task<BufferedLogEntry> CreateBufferedEntryAsync(ILogEntry entry)
+            internal static async Task<BufferedLogEntry> CreateBufferedEntryAsync(IRaftLogEntry entry)
             {
                 ReadOnlyMemory<byte> content;
                 using (var ms = new MemoryStream(1024))
@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public long Term { get; }
         }
 
-        private sealed class InitialLogEntry : ILogEntry
+        private sealed class InitialLogEntry : IRaftLogEntry
         {
             string IMessage.Name => "NOP";
             long? IMessage.Length => 0L;
@@ -52,7 +52,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask();
 
             public ContentType Type { get; } = new ContentType(MediaTypeNames.Application.Octet);
-            long ILogEntry.Term => 0L;
+            long IRaftLogEntry.Term => 0L;
 
             bool IMessage.IsReusable => true;
         }
@@ -74,10 +74,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public static implicit operator WaitCallback(CommitEventExecutor executor) => executor is null ? default(WaitCallback) : executor.Invoke;
         }
 
-        private static readonly ILogEntry[] EmptyLog = { new InitialLogEntry() };
+        private static readonly IRaftLogEntry[] EmptyLog = { new InitialLogEntry() };
 
         private long commitIndex;
-        private volatile ILogEntry[] log;
+        private volatile IRaftLogEntry[] log;
 
         private long term;
         private volatile IRaftClusterMember votedFor;
@@ -117,25 +117,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public long GetLastIndex(bool committed)
             => committed ? commitIndex.VolatileRead() : Math.Max(0, log.LongLength - 1L);
 
-        private IReadOnlyList<ILogEntry> GetEntries(long startIndex, long endIndex)
+        private IReadOnlyList<IRaftLogEntry> GetEntries(long startIndex, long endIndex)
         {
             if(startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             if(endIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(endIndex));
             return endIndex < startIndex || startIndex >= log.LongLength ? 
-                Array.Empty<ILogEntry>() :
+                Array.Empty<IRaftLogEntry>() :
                 log.Slice(startIndex, endIndex - startIndex + 1);
         }
 
-        async ValueTask<IReadOnlyList<ILogEntry>> IAuditTrail<ILogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
+        async ValueTask<IReadOnlyList<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
         {
             using (await this.AcquireReadLockAsync(CancellationToken.None).ConfigureAwait(false))
                 return GetEntries(startIndex, endIndex ?? GetLastIndex(false));
         }
 
 
-        private long Append(ILogEntry[] entries, long? startIndex)
+        private long Append(IRaftLogEntry[] entries, long? startIndex)
         {
             long result;
             if (startIndex.HasValue)
@@ -145,20 +145,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else
                 result = log.LongLength;
-            var newLog = new ILogEntry[entries.Length + log.LongLength];
+            var newLog = new IRaftLogEntry[entries.Length + log.LongLength];
             Array.Copy(log, newLog, log.LongLength);
             entries.CopyTo(newLog, log.LongLength);
             log = newLog;
             return result;
         }
 
-        async ValueTask<long> IAuditTrail<ILogEntry>.AppendAsync(IReadOnlyList<ILogEntry> entries, long? startIndex)
+        async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long? startIndex)
         {
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
             using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
-                var bufferedEntries = new ILogEntry[entries.Count];
+                var bufferedEntries = new IRaftLogEntry[entries.Count];
                 for (var i = 0; i < entries.Count; i++)
                 {
                     var entry = entries[i];
@@ -173,17 +173,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// The event that is raised when actual commit happen.
         /// </summary>
-        public event CommitEventHandler<ILogEntry> Committed;
+        public event CommitEventHandler<IRaftLogEntry> Committed;
 
         private Task OnCommmitted(long startIndex, long count)
         {
             ICollection<Task> tasks = new LinkedList<Task>();
-            foreach (CommitEventHandler<ILogEntry> handler in Committed?.GetInvocationList() ?? Array.Empty<CommitEventHandler<ILogEntry>>())
+            foreach (CommitEventHandler<IRaftLogEntry> handler in Committed?.GetInvocationList() ?? Array.Empty<CommitEventHandler<IRaftLogEntry>>())
                 tasks.Add(handler(this, startIndex, count));
             return Task.WhenAll(tasks);
         }
 
-        async ValueTask<long> IAuditTrail<ILogEntry>.CommitAsync(long? endIndex)
+        async ValueTask<long> IAuditTrail<IRaftLogEntry>.CommitAsync(long? endIndex)
         {
             using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
@@ -198,6 +198,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        ref readonly ILogEntry IAuditTrail<ILogEntry>.First => ref EmptyLog[0];
+        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref EmptyLog[0];
     }
 }

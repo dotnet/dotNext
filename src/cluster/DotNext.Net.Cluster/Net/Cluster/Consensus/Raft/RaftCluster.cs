@@ -180,7 +180,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         protected bool IsLeaderLocal => state is LeaderState;
 
-        IAuditTrail<ILogEntry> IReplicationCluster<ILogEntry>.AuditTrail => auditTrail;
+        IAuditTrail<IRaftLogEntry> IReplicationCluster<IRaftLogEntry>.AuditTrail => auditTrail;
 
         /// <summary>
         /// Associates audit trail with the current instance.
@@ -346,7 +346,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, IReadOnlyList<ILogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
+        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, IReadOnlyList<IRaftLogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (auditTrail.Term <= senderTerm &&
@@ -486,7 +486,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
              *      then client needs to wait (maximum is electionTimeout), which is
              *      worst case but it should happen rarely
              */
-            var notifier = new CommitEvent<ILogEntry>(commitIndex);
+            var notifier = new CommitEvent<IRaftLogEntry>(commitIndex);
             notifier.AttachTo(auditTrail);
             try
             {
@@ -506,7 +506,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private async Task WriteAsync<T>(DataHandler<T, ILogEntry> handler, T input, bool waitForCommit)
+        private async Task WriteAsync<T>(DataHandler<T, IRaftLogEntry> handler, T input, bool waitForCommit)
         {
             var entries = await handler(input).ConfigureAwait(false);
             if (entries.Count == 0)
@@ -520,7 +520,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
         }
 
-        Task IReplicationCluster<ILogEntry>.WriteAsync<T>(DataHandler<T, ILogEntry> handler, T input, WriteConcern concern)
+        Task IReplicationCluster<IRaftLogEntry>.WriteAsync<T>(DataHandler<T, IRaftLogEntry> handler, T input, WriteConcern concern)
         {
             switch (concern)
             {

@@ -25,14 +25,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private sealed class LogEntryContent : OutboundMessageContent
         {
-            internal LogEntryContent(ILogEntry entry)
+            internal LogEntryContent(IRaftLogEntry entry)
                 : base(entry)
             {
                 Headers.Add(RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
             }
         }
 
-        private sealed class ReceivedLogEntry : InboundMessageContent, ILogEntry
+        private sealed class ReceivedLogEntry : InboundMessageContent, IRaftLogEntry
         {
             internal ReceivedLogEntry(MultipartSection section)
                 : base(section)
@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             public long Term { get; }
         }
 
-        private IReadOnlyList<ILogEntry> entries;
+        private IReadOnlyList<IRaftLogEntry> entries;
         internal readonly long PrevLogIndex;
         internal readonly long PrevLogTerm;
         internal readonly long CommitIndex;
@@ -69,9 +69,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
-        internal IReadOnlyList<ILogEntry> Entries
+        internal IReadOnlyList<IRaftLogEntry> Entries
         {
-            get => entries ?? Array.Empty<ILogEntry>();
+            get => entries ?? Array.Empty<IRaftLogEntry>();
             set => entries = value;
         }
 
@@ -79,11 +79,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var boundary = request.GetMultipartBoundary();
             if (string.IsNullOrEmpty(boundary))
-                this.entries = Array.Empty<ILogEntry>();
+                this.entries = Array.Empty<IRaftLogEntry>();
             else
             {
                 var reader = new MultipartReader(boundary, request.Body);
-                var entries = new List<ILogEntry>(10);
+                var entries = new List<IRaftLogEntry>(10);
                 while (true)
                 {
                     var section = await reader.ReadNextSectionAsync(token).ConfigureAwait(false);

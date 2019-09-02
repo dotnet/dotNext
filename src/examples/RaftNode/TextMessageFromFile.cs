@@ -3,7 +3,7 @@ using DotNext.Net.Cluster.Messaging;
 
 namespace RaftNode
 {
-    internal sealed class TextMessageFromFile : TextMessage, ILogEntry
+    internal sealed class TextMessageFromFile : TextMessage, IRaftLogEntry
     {
         internal new const string Type = "TextMessage";
 

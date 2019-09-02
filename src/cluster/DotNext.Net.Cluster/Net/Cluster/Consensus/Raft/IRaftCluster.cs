@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents cluster of nodes coordinated using Raft consensus protocol.
     /// </summary>
-    public interface IRaftCluster : Replication.IReplicationCluster<ILogEntry>
+    public interface IRaftCluster : Replication.IReplicationCluster<IRaftLogEntry>
     {
         /// <summary>
         /// Gets term number used by Raft algorithm to check the consistency of the cluster.

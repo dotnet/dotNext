@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         //true if at least one entry from current term is stored on this node; otherwise, false
         private static async Task<Result<bool>> AppendEntriesAsync(IRaftClusterMember member, long commitIndex,
             long term,
-            IAuditTrail<ILogEntry> transactionLog, ILogger logger, CancellationToken token)
+            IAuditTrail<IRaftLogEntry> transactionLog, ILogger logger, CancellationToken token)
         {
             var currentIndex = transactionLog.GetLastIndex(false);
             logger.ReplicationStarted(member.Endpoint, currentIndex);
@@ -65,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                                  transactionLog.First).Term;
             var entries = currentIndex >= member.NextIndex
                 ? await transactionLog.GetEntriesAsync(member.NextIndex).ConfigureAwait(false)
-                : Array.Empty<ILogEntry>();
+                : Array.Empty<IRaftLogEntry>();
             logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
             //trying to replicate
             var result = await member
@@ -92,7 +92,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return false;
         }
 
-        private async Task<bool> DoHeartbeats(IAuditTrail<ILogEntry> transactionLog)
+        private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> transactionLog)
         {
             var timeStamp = Timestamp.Current;
             ICollection<Task<Result<MemberHealthStatus>>> tasks = new LinkedList<Task<Result<MemberHealthStatus>>>();
@@ -153,7 +153,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return false;
         }
 
-        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<ILogEntry> auditTrail)
+        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail)
         {
             while(await DoHeartbeats(auditTrail).ConfigureAwait(false))
             {
@@ -170,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="period">Time period of Heartbeats</param>
         /// <param name="transactionLog">Transaction log.</param>
-        internal LeaderState StartLeading(TimeSpan period, IAuditTrail<ILogEntry> transactionLog)
+        internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog)
         {
             if (transactionLog != null)
                 foreach (var member in stateMachine.Members)

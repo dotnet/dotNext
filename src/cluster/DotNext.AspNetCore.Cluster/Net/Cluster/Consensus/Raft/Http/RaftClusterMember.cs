@@ -106,7 +106,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         Task<bool> IClusterMember.ResignAsync(CancellationToken token)
             => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalEndpoint), token);
 
-        Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync(long term, IReadOnlyList<ILogEntry> entries,
+        Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync(long term, IReadOnlyList<IRaftLogEntry> entries,
             long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             => Endpoint.Equals(context.LocalEndpoint)
                 ? Task.FromResult(new Result<bool>(term, true))

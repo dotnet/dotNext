@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
             }
 
-            internal Task OnCommitted(IAuditTrail<ILogEntry> sender, long startIndex, long count)
+            internal Task OnCommitted(IAuditTrail<IRaftLogEntry> sender, long startIndex, long count)
             {
                 Count = count;
                 Set();
