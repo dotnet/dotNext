@@ -13,8 +13,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     [CLSCompliant(false)]
     public static class LeaderRouter
     {
-
-
         private sealed class RedirectionMiddleware
         {
             private readonly RequestDelegate next;
