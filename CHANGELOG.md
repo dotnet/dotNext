@@ -2,8 +2,9 @@ Release Notes
 ====
 
 # 09-02-2019
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.5.1">DotNext.AspNetCore.Cluster 0.5.1</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.5.5">DotNext.AspNetCore.Cluster 0.5.5</a>
 * Automatic redirection to leader now works correctly with reverse proxies
+* Custom redirection logic is introduced
 
 # 08-31-2019
 <a href="https://www.nuget.org/packages/dotnext/0.14.0">DotNext 0.14.0</a>
