@@ -1,6 +1,7 @@
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using TextMessage = Messaging.TextMessage;
+    using ILogEntry = Replication.ILogEntry;
 
     internal sealed class TestLogEntry : TextMessage, IRaftLogEntry
     {
@@ -10,5 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         public long Term { get; set; }
+
+        bool ILogEntry.IsSnapshot => false;
     }
 }
