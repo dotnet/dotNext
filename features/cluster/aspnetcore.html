@@ -366,6 +366,33 @@ sealed class Startup : StartupBase
 }
 </code></pre>
 <p>This redirection can be transparent to actual client if you use reverse proxy server such as NGINX. Reverse proxy can automatically handle redirection without returning control to the client.</p>
+<h2 id="custom-redirections">Custom Redirections</h2>
+<p>It is possible to change default behavior of redirection where <em>301 Moved Permanently</em> status code is used. You can pass custom implementation into the optional parameter of <code>RedirectToLeader</code> method.</p>
+<p>The following example demonstrates how to return <em>404 Not Found</em> and location of Leader node as its body.</p>
+<pre><code class="lang-csharp">private static void CustomRedirection(HttpResponse response, Uri leaderUri)
+{
+    response.StatusCode = StatusCodes.Status404NotFound;
+    using(var writer = new StreamWriter(response.Body))
+    {
+      writer.Write(leaderUri.AbsoluteUri);
+    }
+}
+
+public override void Configure(IApplicationBuilder app)
+{
+    app.UseConsensusProtocolHandler()
+        .RedirectToLeader(&quot;/endpoint1&quot;, redirection: CustomRedirection);
+}
+</code></pre>
+<p>The customized redirection should be as fast as possible and therefore doesn't follow to <code>async</code> method pattern.</p>
+<h2 id="port-mapping">Port mapping</h2>
+<p>Redirection mechanism trying to construct valid URI of the leader node based on its actual IP address. Identification of the address is not a problem unlike port number. The infrastructure cannot use the port if its <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webhost">WebHost</a> because of Hosted Mode or the port from the incoming <code>Host</code> header because it can be rewritten by reverse proxy. The only way is to use the inbound port of the TCP listener responsible for handling all incoming HTTP requests. It is valid for the non-containerized environment. Inside of the container the ASP.NET Core application port is mapped to the externally visible port which not always the same. In this case you can specify port for redirections explicitly as follows:</p>
+<pre><code class="lang-csharp">public override void Configure(IApplicationBuilder app)
+{
+    app.UseConsensusProtocolHandler()
+      .RedirectToLeader(&quot;/endpoint1&quot;, applicationPortHint: 3265);
+}
+</code></pre>
 <h1 id="messaging">Messaging</h1>
 <p>.NEXT extension for ASP.NET Core supports messaging beween nodes through HTTP out-of-the-box. However, the infrastructure don't know how to handle custom messages. Therefore, if you want to utilize this functionality then you need to implement <a href="../../api/DotNext.Net.Cluster.Messaging.IMessageHandler.html">IMessageHandler</a> interface.</p>
 <p>Messaging inside of cluster supports redirection to the leader as well as for external client. But this mechanism implemented differently and represented by the following methods declared in <a href="../../api/DotNext.Net.Cluster.Messaging.IMessageBus.html">IMessageBus</a> interface:</p>

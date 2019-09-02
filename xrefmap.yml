@@ -10638,23 +10638,6 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.AllowedNetworks
   nameWithType: ClusterMemberConfiguration.AllowedNetworks
-- uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout
-  name: IClusterMemberConfiguration.ElectionTimeout
-  href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_DotNext_Net_Cluster_Consensus_Raft_IClusterMemberConfiguration_ElectionTimeout
-  commentId: P:DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout
-  name.vb: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
-  fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
-  nameWithType: ClusterMemberConfiguration.IClusterMemberConfiguration.ElectionTimeout
-  nameWithType.vb: ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
-- uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout*
-  name: IClusterMemberConfiguration.ElectionTimeout
-  href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_DotNext_Net_Cluster_Consensus_Raft_IClusterMemberConfiguration_ElectionTimeout_
-  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext#Net#Cluster#Consensus#Raft#IClusterMemberConfiguration#ElectionTimeout
-  isSpec: "True"
-  name.vb: DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
-  fullName: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
-  nameWithType: ClusterMemberConfiguration.IClusterMemberConfiguration.ElectionTimeout
-  nameWithType.vb: ClusterMemberConfiguration.DotNext.Net.Cluster.Consensus.Raft.IClusterMemberConfiguration.ElectionTimeout
 - uid: DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.HeartbeatThreshold
   name: HeartbeatThreshold
   href: api/DotNext.Net.Cluster.Consensus.Raft.ClusterMemberConfiguration.html#DotNext_Net_Cluster_Consensus_Raft_ClusterMemberConfiguration_HeartbeatThreshold
@@ -10904,12 +10887,15 @@ references:
   commentId: T:DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter
   fullName: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter
   nameWithType: LeaderRouter
-- uid: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Http.PathString)
-  name: RedirectToLeader(IApplicationBuilder, PathString)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.html#DotNext_Net_Cluster_Consensus_Raft_Http_LeaderRouter_RedirectToLeader_Microsoft_AspNetCore_Builder_IApplicationBuilder_Microsoft_AspNetCore_Http_PathString_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Http.PathString)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder, Microsoft.AspNetCore.Http.PathString)
-  nameWithType: LeaderRouter.RedirectToLeader(IApplicationBuilder, PathString)
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Http.PathString,System.Nullable{System.Int32},System.Action{Microsoft.AspNetCore.Http.HttpResponse,System.Uri})
+  name: RedirectToLeader(IApplicationBuilder, PathString, Nullable<Int32>, Action<HttpResponse, Uri>)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.html#DotNext_Net_Cluster_Consensus_Raft_Http_LeaderRouter_RedirectToLeader_Microsoft_AspNetCore_Builder_IApplicationBuilder_Microsoft_AspNetCore_Http_PathString_System_Nullable_System_Int32__System_Action_Microsoft_AspNetCore_Http_HttpResponse_System_Uri__
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Http.PathString,System.Nullable{System.Int32},System.Action{Microsoft.AspNetCore.Http.HttpResponse,System.Uri})
+  name.vb: RedirectToLeader(IApplicationBuilder, PathString, Nullable(Of Int32), Action(Of HttpResponse, Uri))
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder, Microsoft.AspNetCore.Http.PathString, System.Nullable<System.Int32>, System.Action<Microsoft.AspNetCore.Http.HttpResponse, System.Uri>)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder, Microsoft.AspNetCore.Http.PathString, System.Nullable(Of System.Int32), System.Action(Of Microsoft.AspNetCore.Http.HttpResponse, System.Uri))
+  nameWithType: LeaderRouter.RedirectToLeader(IApplicationBuilder, PathString, Nullable<Int32>, Action<HttpResponse, Uri>)
+  nameWithType.vb: LeaderRouter.RedirectToLeader(IApplicationBuilder, PathString, Nullable(Of Int32), Action(Of HttpResponse, Uri))
 - uid: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader*
   name: RedirectToLeader
   href: api/DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.html#DotNext_Net_Cluster_Consensus_Raft_Http_LeaderRouter_RedirectToLeader_
@@ -11310,13 +11296,13 @@ references:
   commentId: T:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator
   nameWithType: IRaftClusterConfigurator
-- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
   name: Initialize(IRaftCluster, IDictionary<String, String>)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Initialize_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_System_Collections_Generic_IDictionary_System_String_System_String__
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Initialize_IRaftCluster_System_Collections_Generic_IDictionary_System_String_System_String__
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster,System.Collections.Generic.IDictionary{System.String,System.String})
   name.vb: Initialize(IRaftCluster, IDictionary(Of String, String))
-  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster, System.Collections.Generic.IDictionary<System.String, System.String>)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster, System.Collections.Generic.IDictionary(Of System.String, System.String))
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster, System.Collections.Generic.IDictionary<System.String, System.String>)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize(IRaftCluster, System.Collections.Generic.IDictionary(Of System.String, System.String))
   nameWithType: IRaftClusterConfigurator.Initialize(IRaftCluster, IDictionary<String, String>)
   nameWithType.vb: IRaftClusterConfigurator.Initialize(IRaftCluster, IDictionary(Of String, String))
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize*
@@ -11326,11 +11312,11 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Initialize
   nameWithType: IRaftClusterConfigurator.Initialize
-- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster)
+- uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(IRaftCluster)
   name: Shutdown(IRaftCluster)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Shutdown_DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(DotNext.Net.Cluster.Consensus.Raft.IRaftCluster)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html#DotNext_Net_Cluster_Consensus_Raft_IRaftClusterConfigurator_Shutdown_IRaftCluster_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(IRaftCluster)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown(IRaftCluster)
   nameWithType: IRaftClusterConfigurator.Shutdown(IRaftCluster)
 - uid: DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.Shutdown*
   name: Shutdown
@@ -12658,11 +12644,11 @@ references:
   commentId: T:DotNext.Net.Cluster.Messaging.IMessageHandler
   fullName: DotNext.Net.Cluster.Messaging.IMessageHandler
   nameWithType: IMessageHandler
-- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
+- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(IAddressee,IMessage,System.Object)
   name: ReceiveMessage(IAddressee, IMessage, Object)
-  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveMessage_DotNext_Net_Cluster_Messaging_IAddressee_DotNext_Net_Cluster_Messaging_IMessage_System_Object_
-  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
-  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(DotNext.Net.Cluster.Messaging.IAddressee, DotNext.Net.Cluster.Messaging.IMessage, System.Object)
+  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveMessage_IAddressee_IMessage_System_Object_
+  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(IAddressee,IMessage,System.Object)
+  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage(IAddressee, IMessage, System.Object)
   nameWithType: IMessageHandler.ReceiveMessage(IAddressee, IMessage, Object)
 - uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage*
   name: ReceiveMessage
@@ -12671,11 +12657,11 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveMessage
   nameWithType: IMessageHandler.ReceiveMessage
-- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
+- uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(IAddressee,IMessage,System.Object)
   name: ReceiveSignal(IAddressee, IMessage, Object)
-  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveSignal_DotNext_Net_Cluster_Messaging_IAddressee_DotNext_Net_Cluster_Messaging_IMessage_System_Object_
-  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.IMessage,System.Object)
-  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(DotNext.Net.Cluster.Messaging.IAddressee, DotNext.Net.Cluster.Messaging.IMessage, System.Object)
+  href: api/DotNext.Net.Cluster.Messaging.IMessageHandler.html#DotNext_Net_Cluster_Messaging_IMessageHandler_ReceiveSignal_IAddressee_IMessage_System_Object_
+  commentId: M:DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(IAddressee,IMessage,System.Object)
+  fullName: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal(IAddressee, IMessage, System.Object)
   nameWithType: IMessageHandler.ReceiveSignal(IAddressee, IMessage, Object)
 - uid: DotNext.Net.Cluster.Messaging.IMessageHandler.ReceiveSignal*
   name: ReceiveSignal

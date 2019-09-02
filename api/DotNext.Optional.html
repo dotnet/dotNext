@@ -660,6 +660,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T? OrNull&lt;T&gt;(this in Optional&lt;T&gt; value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -727,6 +728,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T? &gt; OrNull&lt;T&gt;(this Task&lt;Optional&lt;T&gt;&gt; task)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -794,6 +796,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OrThrow&lt;T, E&gt;(this Task&lt;Optional&lt;T&gt;&gt; task)
+
     where E : Exception, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -866,6 +869,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OrThrow&lt;T, E&gt;(this Task&lt;Optional&lt;T&gt;&gt; task, Func&lt;E&gt; exceptionFactory)
+
     where E : Exception</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -944,6 +948,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Optional&lt;T&gt; ToOptional&lt;T&gt;(this in T? value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
