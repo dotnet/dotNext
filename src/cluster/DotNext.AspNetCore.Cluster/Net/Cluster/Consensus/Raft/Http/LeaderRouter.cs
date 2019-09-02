@@ -34,6 +34,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 else if (leader.IsRemote)
                 {
                     var builder = new UriBuilder(context.Request.GetEncodedUrl()) { Host = leader.Endpoint.Address.ToString() };
+                    if (context.Request.IsPassedThroughProxy())
+                    {
+                        builder.Port = context.Connection.LocalPort;
+                    }
                     context.Response.Redirect(builder.Uri.AbsoluteUri, false);
                 }
                 else

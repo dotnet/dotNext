@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 09-02-2019
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.5.1">DotNext.AspNetCore.Cluster 0.5.1</a>
+* Automatic redirection to leader now works correctly with reverse proxies
+
 # 08-31-2019
 <a href="https://www.nuget.org/packages/dotnext/0.14.0">DotNext 0.14.0</a>
 * [Timestamp](https://sakno.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) type is introduced as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -7,10 +8,15 @@ using IServerAddresses = Microsoft.AspNetCore.Hosting.Server.Features.IServerAdd
 
 namespace DotNext.Net
 {
-    using HostAddressHintFeature = AspNetCore.Hosting.Server.Features.HostAddressHintFeature;
+    using AspNetCore.Hosting.Server.Features;
 
     internal static class Network
     {
+        private const string ForwardedHeader = "Forwarded";
+        private const string ForwardedForHeader = "X-Forwarded-For";
+        private const string ForwardedHostHeader = "X-Forwarded-Host";
+        private const string ForwardedProtoHeader = "X-Forwarded-Proto";
+
         internal static bool IsIn(this IPAddress address, IPNetwork network) => network.Contains(address);
 
         internal static IPEndPoint ToEndPoint(this Uri memberUri)
@@ -51,6 +57,18 @@ namespace DotNext.Net
                         result.Add(new IPEndPoint(hint, endpoint.Port));
                 }
             return result;
+        }
+
+        internal static bool IsPassedThroughProxy(this HttpRequest request)
+        {
+            var feature = request.HttpContext.Features.Get<ReverseProxyFeature>();
+            if (feature is null)
+            {
+                var headers = request.Headers;
+                return headers.ContainsKey(ForwardedHeader) || headers.ContainsKey(ForwardedForHeader) || headers.ContainsKey(ForwardedHostHeader) || headers.ContainsKey(ForwardedProtoHeader);
+            }
+            else
+                return feature.IsProxied;
         }
     }
 }

@@ -35,30 +35,10 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 08-31-2019
+Release Date: 09-02-2019
 
-<a href="https://www.nuget.org/packages/dotnext/0.14.0">DotNext 0.14.0</a>
-* [Timestamp](https://sakno.github.io/dotNext/api/DotNext.Diagnostics.Timestamp.html) type is introduced as allocation-free alternative to [Stopwatch](https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.stopwatch)
-* [Memory](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Memory.html) class now have methods for reading and writing null-terminated UTF-16 string from/to unmanaged or pinned managed memory
-* Updated InlineIL dependency to 1.3.1
-
-<a href="https://www.nuget.org/packages/dotnext.threading/0.14.0">DotNext.Threading 0.14.0</a>
-* [AsyncTimer](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTimer.html) is completely rewritten in backward-incompatible way. Wait handle are no longer used.
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/0.14.0">DotNext.Unsafe 0.14.0</a><br/>
-<a href="https://www.nuget.org/packages/dotnext.reflection/0.14.0">DotNext.Reflection 0.14.0</a><br/>
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/0.14.0">DotNext.Metaprogramming 0.14.0</a>
-* Small code fixes
-* Updated `DotNext` dependency to 0.14.0
-* Updated `Fody` dependency to 6.0.0
-* Updated augmented compilation to 0.14.0
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/0.5.0">DotNext.Net.Cluster 0.5.0</a><br/>
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.5.0">DotNext.AspNetCore.Cluster 0.5.0</a>
-* Measurement of runtime metrics are introduced and exposed through [MetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html) and [HttpMetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html) classes
-
-<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/0.14.0">DotNext.Augmentation.Fody 0.14.0</a>
-* Updated `Fody` dependency to 6.0.0
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.5.1">DotNext.AspNetCore.Cluster 0.5.1</a>
+* Automatic redirection to leader now works correctly with reverse proxies
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
