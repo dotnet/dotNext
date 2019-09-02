@@ -4,13 +4,11 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Replication
 {
-    using IMessage = Messaging.IMessage;
-
     /// <summary>
     /// Represents audit trail responsible for maintaining log entries.
     /// </summary>
     public interface IAuditTrail<LogEntry>
-        where LogEntry : class, IMessage
+        where LogEntry : class, ILogEntry
     {
         /// <summary>
         /// Gets index of the committed or last log entry.

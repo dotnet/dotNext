@@ -40,6 +40,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return new BufferedLogEntry(content, entry.Name, entry.Type, entry.Term);
             }
 
+            bool ILogEntry.IsSnapshot => false;
+
             public long Term { get; }
         }
 
@@ -55,6 +57,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             long IRaftLogEntry.Term => 0L;
 
             bool IMessage.IsReusable => true;
+
+            bool ILogEntry.IsSnapshot => false;
         }
 
         private sealed class CommitEventExecutor

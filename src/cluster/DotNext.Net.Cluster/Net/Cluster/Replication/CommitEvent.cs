@@ -3,10 +3,9 @@
 namespace DotNext.Net.Cluster.Replication
 {
     using Threading;
-    using IMessage = Messaging.IMessage;
 
     internal sealed class CommitEvent<LogEntry> : AsyncManualResetEvent
-        where LogEntry : class, IMessage
+        where LogEntry : class, ILogEntry
     {
         private readonly long expectedIndex;
 
