@@ -7,7 +7,7 @@ using IServerAddresses = Microsoft.AspNetCore.Hosting.Server.Features.IServerAdd
 
 namespace DotNext.Net
 {
-    using HostAddressHintFeature = AspNetCore.Hosting.Server.Features.HostAddressHintFeature;
+    using AspNetCore.Hosting.Server.Features;
 
     internal static class Network
     {
