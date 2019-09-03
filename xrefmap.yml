@@ -10887,15 +10887,15 @@ references:
   commentId: T:DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter
   fullName: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter
   nameWithType: LeaderRouter
-- uid: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Http.PathString,System.Nullable{System.Int32},System.Action{Microsoft.AspNetCore.Http.HttpResponse,System.Uri})
-  name: RedirectToLeader(IApplicationBuilder, PathString, Nullable<Int32>, Action<HttpResponse, Uri>)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.html#DotNext_Net_Cluster_Consensus_Raft_Http_LeaderRouter_RedirectToLeader_Microsoft_AspNetCore_Builder_IApplicationBuilder_Microsoft_AspNetCore_Http_PathString_System_Nullable_System_Int32__System_Action_Microsoft_AspNetCore_Http_HttpResponse_System_Uri__
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Http.PathString,System.Nullable{System.Int32},System.Action{Microsoft.AspNetCore.Http.HttpResponse,System.Uri})
-  name.vb: RedirectToLeader(IApplicationBuilder, PathString, Nullable(Of Int32), Action(Of HttpResponse, Uri))
-  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder, Microsoft.AspNetCore.Http.PathString, System.Nullable<System.Int32>, System.Action<Microsoft.AspNetCore.Http.HttpResponse, System.Uri>)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder, Microsoft.AspNetCore.Http.PathString, System.Nullable(Of System.Int32), System.Action(Of Microsoft.AspNetCore.Http.HttpResponse, System.Uri))
-  nameWithType: LeaderRouter.RedirectToLeader(IApplicationBuilder, PathString, Nullable<Int32>, Action<HttpResponse, Uri>)
-  nameWithType.vb: LeaderRouter.RedirectToLeader(IApplicationBuilder, PathString, Nullable(Of Int32), Action(Of HttpResponse, Uri))
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Http.PathString,System.Nullable{System.Int32},System.Func{Microsoft.AspNetCore.Http.HttpResponse,System.Uri,System.Threading.Tasks.Task})
+  name: RedirectToLeader(IApplicationBuilder, PathString, Nullable<Int32>, Func<HttpResponse, Uri, Task>)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.html#DotNext_Net_Cluster_Consensus_Raft_Http_LeaderRouter_RedirectToLeader_Microsoft_AspNetCore_Builder_IApplicationBuilder_Microsoft_AspNetCore_Http_PathString_System_Nullable_System_Int32__System_Func_Microsoft_AspNetCore_Http_HttpResponse_System_Uri_System_Threading_Tasks_Task__
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder,Microsoft.AspNetCore.Http.PathString,System.Nullable{System.Int32},System.Func{Microsoft.AspNetCore.Http.HttpResponse,System.Uri,System.Threading.Tasks.Task})
+  name.vb: RedirectToLeader(IApplicationBuilder, PathString, Nullable(Of Int32), Func(Of HttpResponse, Uri, Task))
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder, Microsoft.AspNetCore.Http.PathString, System.Nullable<System.Int32>, System.Func<Microsoft.AspNetCore.Http.HttpResponse, System.Uri, System.Threading.Tasks.Task>)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader(Microsoft.AspNetCore.Builder.IApplicationBuilder, Microsoft.AspNetCore.Http.PathString, System.Nullable(Of System.Int32), System.Func(Of Microsoft.AspNetCore.Http.HttpResponse, System.Uri, System.Threading.Tasks.Task))
+  nameWithType: LeaderRouter.RedirectToLeader(IApplicationBuilder, PathString, Nullable<Int32>, Func<HttpResponse, Uri, Task>)
+  nameWithType.vb: LeaderRouter.RedirectToLeader(IApplicationBuilder, PathString, Nullable(Of Int32), Func(Of HttpResponse, Uri, Task))
 - uid: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.RedirectToLeader*
   name: RedirectToLeader
   href: api/DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.html#DotNext_Net_Cluster_Consensus_Raft_Http_LeaderRouter_RedirectToLeader_

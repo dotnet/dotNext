@@ -369,13 +369,10 @@ sealed class Startup : StartupBase
 <h2 id="custom-redirections">Custom Redirections</h2>
 <p>It is possible to change default behavior of redirection where <em>301 Moved Permanently</em> status code is used. You can pass custom implementation into the optional parameter of <code>RedirectToLeader</code> method.</p>
 <p>The following example demonstrates how to return <em>404 Not Found</em> and location of Leader node as its body.</p>
-<pre><code class="lang-csharp">private static void CustomRedirection(HttpResponse response, Uri leaderUri)
+<pre><code class="lang-csharp">private static Task CustomRedirection(HttpResponse response, Uri leaderUri)
 {
     response.StatusCode = StatusCodes.Status404NotFound;
-    using(var writer = new StreamWriter(response.Body))
-    {
-      writer.Write(leaderUri.AbsoluteUri);
-    }
+    return response.WriteAsync(leaderUri.AbsoluteUri);
 }
 
 public override void Configure(IApplicationBuilder app)
@@ -384,7 +381,7 @@ public override void Configure(IApplicationBuilder app)
         .RedirectToLeader(&quot;/endpoint1&quot;, redirection: CustomRedirection);
 }
 </code></pre>
-<p>The customized redirection should be as fast as possible and therefore doesn't follow to <code>async</code> method pattern.</p>
+<p>The customized redirection should be as fast as possible and don't block the caller.</p>
 <h2 id="port-mapping">Port mapping</h2>
 <p>Redirection mechanism trying to construct valid URI of the leader node based on its actual IP address. Identification of the address is not a problem unlike port number. The infrastructure cannot use the port if its <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webhost">WebHost</a> because of Hosted Mode or the port from the incoming <code>Host</code> header because it can be rewritten by reverse proxy. The only way is to use the inbound port of the TCP listener responsible for handling all incoming HTTP requests. It is valid for the non-containerized environment. Inside of the container the ASP.NET Core application port is mapped to the externally visible port which not always the same. In this case you can specify port for redirections explicitly as follows:</p>
 <pre><code class="lang-csharp">public override void Configure(IApplicationBuilder app)
