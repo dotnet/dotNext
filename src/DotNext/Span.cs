@@ -313,5 +313,50 @@ namespace DotNext
         /// <returns>Trimmed span.</returns>
         public static ReadOnlySpan<T> TrimLength<T>(this ReadOnlySpan<T> span, int maxLength)
             => span.Length <= maxLength ? span : span.Slice(0, maxLength);
+
+        /// <summary>
+        /// Returns the zero-based index of the first occurrence of the specified value in the <see cref="Span{T}"/>. The search starts at a specified position. 
+        /// </summary>
+        /// <typeparam name="T">The of the elements in the span.</typeparam>
+        /// <param name="span"></param>
+        /// <param name="value"></param>
+        /// <param name="startIndex">The search starting position.</param>
+        /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
+        /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
+        public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, in ValueFunc<T, T, bool> comparer)
+        {
+            if (span.IsEmpty)
+                return -1;
+            ref var reference = ref AsRef(in span[0]);
+            for (var i = startIndex; i < span.Length; i++)
+                if (comparer.Invoke(reference, value))
+                    return i;
+                else
+                    reference = ref Add(ref reference, 1);
+            return -1;
+        }
+
+        /// <summary>
+        /// Returns the zero-based index of the first occurrence of the specified value in the <see cref="Span{T}"/>. The search starts at a specified position. 
+        /// </summary>
+        /// <typeparam name="T">The of the elements in the span.</typeparam>
+        /// <param name="span"></param>
+        /// <param name="value"></param>
+        /// <param name="startIndex">The search starting position.</param>
+        /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
+        /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
+        public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, Func<T, T, bool> comparer) => IndexOf(span, value, startIndex, new ValueFunc<T, T, bool>(comparer));
+
+        public static void ForEach<T>(this Span<T> span, in ValueRefAction<T, int> action)
+        {
+            if (span.IsEmpty)
+                return;
+            ref var reference = ref span[0];
+            for (var i = 0; i < span.Length; i++)
+            {
+                action.Invoke(ref reference, i);
+                reference = ref Add(ref reference, 1);
+            }
+        }
     }
 }
