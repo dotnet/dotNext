@@ -249,13 +249,10 @@ It is possible to change default behavior of redirection where _301 Moved Perman
 The following example demonstrates how to return _404 Not Found_ and location of Leader node as its body.
 
 ```csharp
-private static void CustomRedirection(HttpResponse response, Uri leaderUri)
+private static Task CustomRedirection(HttpResponse response, Uri leaderUri)
 {
     response.StatusCode = StatusCodes.Status404NotFound;
-    using(var writer = new StreamWriter(response.Body))
-    {
-      writer.Write(leaderUri.AbsoluteUri);
-    }
+    return response.WriteAsync(leaderUri.AbsoluteUri);
 }
 
 public override void Configure(IApplicationBuilder app)
@@ -265,7 +262,7 @@ public override void Configure(IApplicationBuilder app)
 }
 ```
 
-The customized redirection should be as fast as possible and therefore doesn't follow to `async` method pattern.
+The customized redirection should be as fast as possible and don't block the caller.
 
 ## Port mapping
 Redirection mechanism trying to construct valid URI of the leader node based on its actual IP address. Identification of the address is not a problem unlike port number. The infrastructure cannot use the port if its [WebHost](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webhost) because of Hosted Mode or the port from the incoming `Host` header because it can be rewritten by reverse proxy. The only way is to use the inbound port of the TCP listener responsible for handling all incoming HTTP requests. It is valid for the non-containerized environment. Inside of the container the ASP.NET Core application port is mapped to the externally visible port which not always the same. In this case you can specify port for redirections explicitly as follows:
