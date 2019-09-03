@@ -18,37 +18,38 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             private readonly RequestDelegate next;
             private readonly RaftHttpCluster cluster;
             private readonly int? applicationPortHint;
-            private readonly Action<HttpResponse, Uri> redirection;
+            private readonly Func<HttpResponse, Uri, Task> redirection;
+            private readonly PathString pathMatch;
 
-            internal RedirectionMiddleware(RaftHttpCluster cluster, RequestDelegate next, int? applicationPortHint, Action<HttpResponse, Uri> redirection)
+            internal RedirectionMiddleware(RaftHttpCluster cluster, RequestDelegate next, PathString pathMatch, int? applicationPortHint, Func<HttpResponse, Uri, Task> redirection)
             {
                 this.cluster = cluster;
                 this.next = next;
                 this.applicationPortHint = applicationPortHint;
                 this.redirection = redirection ?? Redirect;
+                this.pathMatch = pathMatch;
             }
 
-            private static void Redirect(HttpResponse response, Uri leaderUri) => response.Redirect(leaderUri.AbsoluteUri, false);
+            private static Task Redirect(HttpResponse response, Uri leaderUri)
+            {
+                response.Redirect(leaderUri.AbsoluteUri, false);
+                return Task.CompletedTask;
+            }
 
             internal Task Redirect(HttpContext context)
             {
-                var leader = cluster.Leader;
-                if (leader is null)
+                if (context.Request.Path.StartsWithSegments(pathMatch, StringComparison.OrdinalIgnoreCase))
                 {
-                    context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                }
-                else if (leader.IsRemote)
-                {
-                    var builder = new UriBuilder(context.Request.GetEncodedUrl())
+                    var leader = cluster.Leader;
+                    if (leader is null)
                     {
-                        Host = leader.Endpoint.Address.ToString(),
-                        Port = applicationPortHint ?? context.Connection.LocalPort
-                    };
-                    redirection(context.Response, builder.Uri);
+                        context.Response.StatusCode = StatusCodes.Status503ServiceUnavailable;
+                        return Task.CompletedTask;
+                    }
+                    else if (leader.IsRemote)
+                        return redirection(context.Response, new UriBuilder(context.Request.GetEncodedUrl()) { Host = leader.Endpoint.Address.ToString(), Port = applicationPortHint ?? context.Connection.LocalPort }.Uri);
                 }
-                else
-                    return next(context);
-                return Task.CompletedTask;
+                return next(context);
             }
         }
 
@@ -69,10 +70,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// <param name="applicationPortHint">The port number to be inserted into Location header instead of automatically detected port of the local TCP listener.</param>
         /// <param name="redirection">The redirection logic.</param>
         /// <returns>The request processing pipeline builder.</returns>
-        public static IApplicationBuilder RedirectToLeader(this IApplicationBuilder builder, PathString path, int? applicationPortHint = null, Action<HttpResponse, Uri> redirection = null)
+        public static IApplicationBuilder RedirectToLeader(this IApplicationBuilder builder, PathString path, int? applicationPortHint = null, Func<HttpResponse, Uri, Task> redirection = null)
         {
             var cluster = builder.ApplicationServices.GetRequiredService<RaftHttpCluster>();
-            return builder.Map(path, pathBuilder => pathBuilder.Use(next => new RedirectionMiddleware(cluster, next, applicationPortHint, redirection).Redirect));
+            return builder.Use(next => new RedirectionMiddleware(cluster, next, path, applicationPortHint, redirection).Redirect);
         }
     }
 }

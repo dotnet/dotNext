@@ -1,6 +1,11 @@
 Release Notes
 ====
 
+# 09-03-2019
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.5.7">DotNext.AspNetCore.Cluster 0.5.7</a>
+* Custom redirection logic can be asynchronous
+* Fixed compatibility of redirection to leader with MVC
+
 # 09-02-2019
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.5.5">DotNext.AspNetCore.Cluster 0.5.5</a>
 * Automatic redirection to leader now works correctly with reverse proxies
