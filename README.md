@@ -35,11 +35,11 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 09-02-2019
+Release Date: 09-03-2019
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.5.5">DotNext.AspNetCore.Cluster 0.5.5</a>
-* Automatic redirection to leader now works correctly with reverse proxies
-* Custom redirection logic is introduced
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.5.7">DotNext.AspNetCore.Cluster 0.5.7</a>
+* Custom redirection logic can be asynchronous
+* Fixed compatibility of redirection to leader with MVC
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
