@@ -15,6 +15,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents in-memory audit trail for Raft-based cluster node.
     /// </summary>
+    /// <remarks>
+    /// In-memory audit trail doesn't support compaction.
+    /// It is recommended to use this audit trail for testing purposes only.
+    /// </remarks>
     public sealed class InMemoryAuditTrail : AsyncReaderWriterLock, IPersistentState
     {
         private sealed class BufferedLogEntry : BinaryMessage, IRaftLogEntry
@@ -205,5 +209,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref EmptyLog[0];
+
+        bool IAuditTrail<IRaftLogEntry>.IsCompactionSupported => false;
     }
 }
