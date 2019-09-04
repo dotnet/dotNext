@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
+using static Microsoft.Net.Http.Headers.HeaderNames;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -32,7 +33,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             private static Task Redirect(HttpResponse response, Uri leaderUri)
             {
-                response.Redirect(leaderUri.AbsoluteUri, false);
+                response.StatusCode = StatusCodes.Status307TemporaryRedirect;
+                response.Headers[Location] = leaderUri.AbsoluteUri;
                 return Task.CompletedTask;
             }
 
