@@ -83,6 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private static readonly IRaftLogEntry[] EmptyLog = { new InitialLogEntry() };
+        internal static ref readonly IRaftLogEntry First => ref EmptyLog[0];
 
         private long commitIndex;
         private volatile IRaftLogEntry[] log;
@@ -143,7 +144,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await this.AcquireReadLockAsync(CancellationToken.None).ConfigureAwait(false))
                 return GetEntries(startIndex, endIndex ?? GetLastIndex(false));
         }
-
 
         private long Append(IRaftLogEntry[] entries, long? startIndex)
         {
@@ -208,7 +208,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref EmptyLog[0];
+        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref First;
 
         bool IAuditTrail<IRaftLogEntry>.IsCompactionSupported => false;
     }
