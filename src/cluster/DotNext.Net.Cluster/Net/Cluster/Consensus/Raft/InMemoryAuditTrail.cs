@@ -82,8 +82,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public static implicit operator WaitCallback(CommitEventExecutor executor) => executor is null ? default(WaitCallback) : executor.Invoke;
         }
 
-        private static readonly IRaftLogEntry[] EmptyLog = { new InitialLogEntry() };
-        internal static ref readonly IRaftLogEntry First => ref EmptyLog[0];
+        internal static readonly IRaftLogEntry[] EmptyLog = { new InitialLogEntry() };
 
         private long commitIndex;
         private volatile IRaftLogEntry[] log;
@@ -208,8 +207,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref First;
-
-        bool IAuditTrail<IRaftLogEntry>.IsCompactionSupported => false;
+        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref EmptyLog[0];
     }
 }

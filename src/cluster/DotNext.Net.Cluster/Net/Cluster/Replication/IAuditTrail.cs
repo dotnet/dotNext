@@ -11,12 +11,6 @@ namespace DotNext.Net.Cluster.Replication
         where LogEntry : class, ILogEntry
     {
         /// <summary>
-        /// Gets a value indicating that this audit trail supports log compaction.
-        /// </summary>
-        /// <value><see langword="true"/> if log compaction is supported; otherwise, <see langword="false"/>.</value>
-        bool IsCompactionSupported { get; }
-
-        /// <summary>
         /// Gets index of the committed or last log entry.
         /// </summary>
         /// <remarks>
