@@ -129,7 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(endIndex));
             if (endIndex >= log.Length)
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
-            return endIndex < startIndex || startIndex >= log.LongLength ? 
+            return endIndex < startIndex ? 
                 Array.Empty<IRaftLogEntry>() :
                 log.Slice(startIndex, endIndex - startIndex + 1);
         }
