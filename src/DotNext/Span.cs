@@ -345,8 +345,14 @@ namespace DotNext
         /// <param name="startIndex">The search starting position.</param>
         /// <param name="comparer">The comparer used to compare the expected value and the actual value from the span.</param>
         /// <returns>The zero-based index position of <paramref name="value"/> from the start of the given span if that value is found, or -1 if it is not.</returns>
-        public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, Func<T, T, bool> comparer) => IndexOf(span, value, startIndex, new ValueFunc<T, T, bool>(comparer));
+        public static int IndexOf<T>(this ReadOnlySpan<T> span, T value, int startIndex, Func<T, T, bool> comparer) => IndexOf(span, value, startIndex, new ValueFunc<T, T, bool>(comparer, true));
 
+        /// <summary>
+        /// Iterates over elements of the span.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements.</typeparam>
+        /// <param name="span">The span to iterate.</param>
+        /// <param name="action">The action to be applied for each element of the span.</param>
         public static void ForEach<T>(this Span<T> span, in ValueRefAction<T, int> action)
         {
             if (span.IsEmpty)
@@ -358,5 +364,13 @@ namespace DotNext
                 reference = ref Add(ref reference, 1);
             }
         }
+
+        /// <summary>
+        /// Iterates over elements of the span.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements.</typeparam>
+        /// <param name="span">The span to iterate.</param>
+        /// <param name="action">The action to be applied for each element of the span.</param>
+        public static void ForEach<T>(this Span<T> span, RefAction<T, int> action) => ForEach(span, new ValueRefAction<T, int>(action, true));
     }
 }

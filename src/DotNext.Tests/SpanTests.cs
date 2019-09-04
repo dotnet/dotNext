@@ -48,5 +48,16 @@ namespace DotNext
             Equal(3UL, span[0]);
             Equal(2UL, span[1]);
         }
+
+        [Fact]
+        public static void ForEach()
+        {
+            Span<long> span = new long[] { 3, 2, 6, 4 };
+            span.ForEach((ref long value, int index) => value += index);
+            Equal(3, span[0]);
+            Equal(3, span[1]);
+            Equal(8, span[2]);
+            Equal(7, span[3]);
+        }
     }
 }
