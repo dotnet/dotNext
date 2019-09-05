@@ -49,16 +49,16 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         public string Name { get; }
 
-        bool IMessage.IsReusable => true;
+        bool IDataTransferObject.IsReusable => true;
 
-        long? IMessage.Length => Content.Length;
+        long? IDataTransferObject.Length => Content.Length;
 
         /// <summary>
         /// Gets media type of the message.
         /// </summary>
         public ContentType Type { get; }
 
-        async Task IMessage.CopyToAsync(Stream output)
+        async Task IDataTransferObject.CopyToAsync(Stream output)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             foreach (var segment in Content)
@@ -69,7 +69,7 @@ namespace DotNext.Net.Cluster.Messaging
                 }
         }
 
-        async ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
+        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             foreach (var segment in Content)
             {

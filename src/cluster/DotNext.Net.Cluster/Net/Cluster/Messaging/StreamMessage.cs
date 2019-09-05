@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using static IO.StreamExtensions;
+
     /// <summary>
     /// Represents message which content is represented by <see cref="Stream"/>.
     /// </summary>
     public class StreamMessage : Disposable, IDisposableMessage
     {
-        private const int BufferSize = 1024;
         private readonly bool leaveOpen;
         private readonly Stream content;
 
@@ -59,7 +60,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         public bool IsReusable => content.CanSeek;
 
-        long? IMessage.Length => content.CanSeek ? content.Length : default(long?);
+        long? IDataTransferObject.Length => content.CanSeek ? content.Length : default(long?);
 
         private static async Task CopyToAsyncAndSeek(Stream input, Stream output)
         {
@@ -67,34 +68,11 @@ namespace DotNext.Net.Cluster.Messaging
             input.Seek(0, SeekOrigin.Begin);
         }
 
-        Task IMessage.CopyToAsync(Stream output) =>
+        Task IDataTransferObject.CopyToAsync(Stream output) =>
             content.CanSeek ? CopyToAsyncAndSeek(content, output) : content.CopyToAsync(output);
 
-        ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
-            => CopyToAsync(content, output, true, token);
-
-        internal static async ValueTask CopyToAsync(Stream source, PipeWriter output, bool resetStream, CancellationToken token)
-        {
-            //TODO: Should be rewritten for .NET Standard 2.1
-            var buffer = new byte[BufferSize];
-            int count;
-            while ((count = await source.ReadAsync(buffer, 0, buffer.Length, token).ConfigureAwait(false)) > 0)
-            {
-                var result = await output.WriteAsync(new ReadOnlyMemory<byte>(buffer, 0, count), token).ConfigureAwait(false);
-                if (result.IsCompleted)
-                    break;
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token);
-                result = await output.FlushAsync(token).ConfigureAwait(false);
-                if (result.IsCompleted)
-                    break;
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token);
-            }
-
-            if (resetStream && source.CanSeek)
-                source.Seek(0, SeekOrigin.Begin);
-        }
+        ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
+            => content.CopyToAsync(output, true, token: token);
 
         /// <summary>
         /// Releases resources associated with this message.

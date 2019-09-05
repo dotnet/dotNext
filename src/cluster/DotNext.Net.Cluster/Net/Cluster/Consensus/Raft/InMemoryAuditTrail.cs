@@ -52,15 +52,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private sealed class InitialLogEntry : IRaftLogEntry
         {
             string IMessage.Name => "NOP";
-            long? IMessage.Length => 0L;
-            Task IMessage.CopyToAsync(Stream output) => Task.CompletedTask;
+            long? IDataTransferObject.Length => 0L;
+            Task IDataTransferObject.CopyToAsync(Stream output) => Task.CompletedTask;
 
-            ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask();
+            ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask();
 
             public ContentType Type { get; } = new ContentType(MediaTypeNames.Application.Octet);
             long IRaftLogEntry.Term => 0L;
 
-            bool IMessage.IsReusable => true;
+            bool IDataTransferObject.IsReusable => true;
 
             bool ILogEntry.IsSnapshot => false;
         }

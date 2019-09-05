@@ -42,22 +42,22 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         public int Length => Type.GetEncoding().GetByteCount(Content);
 
-        bool IMessage.IsReusable => true;
+        bool IDataTransferObject.IsReusable => true;
 
-        long? IMessage.Length => Length;
+        long? IDataTransferObject.Length => Length;
 
         /// <summary>
         /// The message content.
         /// </summary>
         public string Content { get; }
 
-        async Task IMessage.CopyToAsync(Stream output)
+        async Task IDataTransferObject.CopyToAsync(Stream output)
         {
             using (var writer = new StreamWriter(output, Type.GetEncoding(), 1024, true) { AutoFlush = true })
                 await writer.WriteAsync(Content).ConfigureAwait(false);
         }
 
-        async ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
+        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             var encoding = Type.GetEncoding();

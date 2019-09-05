@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Messaging
             return result;
         }
 
-        async Task IMessage.CopyToAsync(Stream output)
+        async Task IDataTransferObject.CopyToAsync(Stream output)
         {
             using (var stream = file.Open(FileMode.Open))
             {
@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Messaging
             }
         }
 
-        async ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
+        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             using (var stream = file.Open(FileMode.Open))
@@ -46,9 +46,9 @@ namespace DotNext.Net.Cluster.Messaging
             }
         }
 
-        long? IMessage.Length => file.Length;
+        long? IDataTransferObject.Length => file.Length;
 
-        bool IMessage.IsReusable => false;
+        bool IDataTransferObject.IsReusable => false;
 
         public string Name { get; }
 
