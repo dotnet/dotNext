@@ -134,7 +134,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal readonly long IndexOffset;
 
             internal Partition(string fileName, long recordsPerPartition, AsyncLock syncRoot)
-                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, 2048, FileOptions.RandomAccess | FileOptions.WriteThrough)
+                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, 2048, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
                 this.syncRoot = syncRoot;
                 payloadOffset = AllocationTableOffset + AllocationTableEntrySize * recordsPerPartition;
@@ -393,9 +393,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private bool TryGetPartition(long recordIndex, out Partition partition)
             => partitionTable.TryGetValue(PartitionOf(recordIndex), out partition);
 
-        private Partition GetOrCreatePartition(long recordIndex)
+        private Partition GetOrCreatePartition(long recordIndex, out long partitionNumber)
         {
-            var partitionNumber = PartitionOf(recordIndex);
+            partitionNumber = PartitionOf(recordIndex);
             if (!partitionTable.TryGetValue(partitionNumber, out var partition))
             {
                 partition = new Partition(location, recordsPerPartition, partitionNumber, AsyncLock.Exclusive(syncRoot));
@@ -439,17 +439,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return GetEntries(startIndex, endIndex ?? lastIndex);
         }
 
-        private Task AppendAsync(IRaftLogEntry entry, long index)
-            => GetOrCreatePartition(index).WriteAsync(entry, index);
-
         private async Task<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
         {
+            long partitionLow = 0, partitionHigh = 0;
             for (var i = 0; i < entries.Count; i++)
             {
                 var idx = startIndex + i;
                 lastIndex.AccumulateAndGet(idx, in MaxFunc);
-                await AppendAsync(entries[i], idx).ConfigureAwait(false);
+                await GetOrCreatePartition(idx, out var partitionNumber).WriteAsync(entries[i], idx).ConfigureAwait(false);
+                partitionLow = Math.Min(partitionLow, partitionNumber);
+                partitionHigh = Math.Max(partitionHigh, partitionNumber);
             }
+            //flush all touched partitions
+            Task flushTask;
+            switch(partitionHigh - partitionLow)
+            {
+                case 0:
+                    flushTask = partitionTable[partitionLow].FlushAsync();
+                    break;
+                case 1:
+                    flushTask = Task.WhenAll(partitionTable[partitionLow].FlushAsync(), partitionTable[partitionHigh].FlushAsync());
+                    break;
+                default:
+                    ICollection<Task> flushTasks = new LinkedList<Task>();
+                    while (partitionLow <= partitionHigh)
+                        flushTasks.Add(partitionTable[partitionLow++].FlushAsync());
+                    flushTask = Task.WhenAll(flushTasks);
+                    break;
+            }
+            await flushTask.ConfigureAwait(false);
             return startIndex;
         }
 
