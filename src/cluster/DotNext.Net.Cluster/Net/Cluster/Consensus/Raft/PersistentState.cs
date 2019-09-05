@@ -441,6 +441,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
         {
+            if (startIndex <= state.CommitIndex)
+                throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             long partitionLow = 0, partitionHigh = 0;
             for (var i = 0; i < entries.Count; i++)
             {

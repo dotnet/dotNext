@@ -21,5 +21,7 @@ namespace DotNext
         internal static string LocalNodeNotLeader => Resources.GetString("LocalNodeNotLeader");
 
         internal static string InvalidEntryIndex(long index) => string.Format(Resources.GetString("InvalidEntryIndex"), index);
+
+        internal static string InvalidAppendIndex => Resources.GetString("InvalidAppendIndex");
     }
 }

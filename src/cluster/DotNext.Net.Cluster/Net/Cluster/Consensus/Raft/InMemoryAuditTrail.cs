@@ -153,6 +153,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (startIndex.HasValue)
             {
                 result = startIndex.Value;
+                if (result <= commitIndex.VolatileRead())
+                    throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 log = log.RemoveLast(log.LongLength - result);
             }
             else

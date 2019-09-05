@@ -45,6 +45,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="startIndex"><see langword="null"/> to append entries into the end of the log; or index from which all previous log entries should be dropped and replaced with new entries.</param>
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
         Task<long> AppendAsync(IReadOnlyList<LogEntry> entries, long? startIndex = null);
 
         /// <summary>
