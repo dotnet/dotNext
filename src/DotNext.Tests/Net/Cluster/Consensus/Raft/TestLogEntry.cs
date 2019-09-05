@@ -1,3 +1,5 @@
+using System;
+
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using TextMessage = Messaging.TextMessage;
@@ -8,7 +10,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public TestLogEntry(string command)
             : base(command, "Entry")
         {
+            Timestamp = DateTimeOffset.UtcNow;
         }
+
+        public DateTimeOffset Timestamp { get; }
 
         public long Term { get; set; }
 
