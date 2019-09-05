@@ -37,7 +37,7 @@ namespace DotNext.IO
         /// <param name="offset">The offset in the underlying stream.</param>
         /// <param name="length">The length of the segment.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is larger than the reamining length of the underlying stream; or <paramref name="offset"/> if greater than the length of the underlying stream.</exception>
-        public void SetRange(long offset, long length)
+        public void Adjust(long offset, long length)
         {
             if (offset < 0L || offset > baseStream.Length)
                 throw new ArgumentOutOfRangeException(nameof(offset));

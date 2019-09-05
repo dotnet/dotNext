@@ -13,7 +13,7 @@ namespace DotNext.IO
             using (var segment = new StreamSegment(ms))
             {
                 Equal(0, segment.Position);
-                segment.SetRange(0, 2);
+                segment.Adjust(0, 2);
                 Equal(1, segment.ReadByte());
                 Equal(1, segment.Position);
 
@@ -31,7 +31,7 @@ namespace DotNext.IO
             var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
             using (var segment = new StreamSegment(ms))
             {
-                segment.SetRange(1L, 2L);
+                segment.Adjust(1L, 2L);
                 var buffer = new byte[4];
                 Equal(2, segment.Read(buffer, 0, buffer.Length));
                 Equal(3, buffer[0]);
@@ -49,7 +49,7 @@ namespace DotNext.IO
             var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
             using (var segment = new StreamSegment(ms))
             {
-                segment.SetRange(1L, 2L);
+                segment.Adjust(1L, 2L);
                 var buffer = new byte[4];
                 Equal(2, await segment.ReadAsync(buffer, 0, buffer.Length));
                 Equal(3, buffer[0]);

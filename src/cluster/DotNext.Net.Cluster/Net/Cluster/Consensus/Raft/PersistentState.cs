@@ -57,19 +57,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal const long TimestampOffset = TermOffset + sizeof(long);
             internal const long LengthOffset = TimestampOffset + sizeof(long);
 
-            private readonly Stream partition;
+            private readonly StreamSegment content;
             private readonly long contentOffset;
             private readonly AsyncLock syncRoot;
 
-            internal LogEntry(BinaryReader reader, AsyncLock syncRoot)
+            internal LogEntry(BinaryReader reader, StreamSegment cachedContent, AsyncLock syncRoot)
             {
                 this.syncRoot = syncRoot;
-                partition = reader.BaseStream;
                 //parse entry metadata
                 Term = reader.ReadInt64();
                 Timestamp = new DateTimeOffset(reader.ReadInt64(), TimeSpan.Zero);
                 Length = reader.ReadInt64();
                 contentOffset = reader.BaseStream.Position;
+                content = cachedContent;
             }
 
             /// <summary>
@@ -91,23 +91,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 writer.Write(length);
             }
 
-            /// <summary>
-            /// Gets the stream representing the content of this log entry.
-            /// </summary>
-            public Stream AsStream()
-            {
-                var result = new StreamSegment(partition);
-                result.SetRange(contentOffset, Length);
-                return result;
-            }
-
             async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
             {
                 using (await syncRoot.Acquire(token).ConfigureAwait(false))
-                using (var segment = AsStream())
                 {
-                    await segment.CopyToAsync(output, 1024, token).ConfigureAwait(false);
+                    content.Adjust(contentOffset, Length);
+                    await content.CopyToAsync(output, 1024, token).ConfigureAwait(false);
                 }
+            }
+
+            async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
+            {
+                using (await syncRoot.Acquire(token).ConfigureAwait(false))
+                    await CopyToAsync(output, token);
             }
             
             /// <summary>
@@ -116,13 +112,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="output">The writer.</param>
             /// <param name="token">The token that can be used to cancel operation.</param>
             /// <returns>The task representing asynchronous execution of this method.</returns>
-            public async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
+            public ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
             {
-                using (await syncRoot.Acquire(token).ConfigureAwait(false))
-                using (var segment = AsStream())
-                {
-                    await segment.CopyToAsync(output, false, token: token).ConfigureAwait(false);
-                }
+                content.Adjust(contentOffset, Length);
+                return content.CopyToAsync(output, false, token: token);
             }
 
             long? IDataTransferObject.Length => Length;
@@ -158,6 +151,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly long payloadOffset;
             private readonly BinaryReader reader;
             private readonly BinaryWriter writer;
+            private readonly StreamSegment cachedContent;
             internal readonly long IndexOffset;
 
             internal Partition(string fileName, long recordsPerPartition, AsyncLock syncRoot)
@@ -170,6 +164,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     SetLength(payloadOffset);
                 reader = new BinaryReader(this, UTF8, true);
                 writer = new BinaryWriter(this, UTF8, true);
+                cachedContent = new StreamSegment(this);
                 //restore index offset
                 Position = IndexOffsetOffset;
                 IndexOffset = reader.ReadInt64();
@@ -218,7 +213,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (offset == 0L)
                         return null;
                     Position = offset;
-                    return new LogEntry(reader, syncRoot);
+                    return new LogEntry(reader, cachedContent, syncRoot);
                 }
             }
 
