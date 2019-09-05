@@ -151,7 +151,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="length">The number of elements located in the unmanaged memory identified by this pointer.</param>
         /// <returns><see cref="Span{T}"/> representing elements in the unmanaged memory.</returns>
-        public unsafe Span<T> ToSpan(int length) => new Span<T>(value, length);
+        public unsafe Span<T> ToSpan(int length) => IsNull ? default : new Span<T>(value, length);
 
         /// <summary>
         /// Converts this pointer into span of bytes.
@@ -466,10 +466,16 @@ namespace DotNext.Runtime.InteropServices
         /// This method returns <see cref="Stream"/> compatible over the memory identified by this pointer. No copying is performed.
         /// </remarks>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> referenced by this memory.</param>
+        /// <param name="access">The type of the access supported by the returned stream.</param>
         /// <returns>The stream representing the memory identified by this pointer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe Stream AsStream(long count)
-            => IsNull ? Stream.Null : new UnmanagedMemoryStream(As<byte>().value, count * Size);
+        public unsafe Stream AsStream(long count, FileAccess access = FileAccess.ReadWrite)
+        {
+            if(IsNull)
+                return Stream.Null;
+            count = count * Size;
+            return new UnmanagedMemoryStream(As<byte>().value, count, count, access);
+        }
 
         /// <summary>
         /// Copies block of memory referenced by this pointer

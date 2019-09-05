@@ -12,7 +12,7 @@ namespace DotNext.Runtime.InteropServices
     /// The allocated unmanaged memory is not controlled by GC. However, the unmanaged memory 
     /// will be released automatically if GC collects the instance of this type.
     /// </remarks>
-    public abstract class UnmanagedMemoryHandle : SafeHandle, ICloneable, IEquatable<UnmanagedMemoryHandle>
+    public abstract class UnmanagedMemoryHandle : SafeHandle, ICloneable, IEquatable<UnmanagedMemoryHandle>, IUnmanagedMemory
     {
         private protected UnmanagedMemoryHandle(long size, bool zeroMem)
             : base(IntPtr.Zero, true)
