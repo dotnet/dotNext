@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal const long TimestampOffset = TermOffset + sizeof(long);
             internal const long LengthOffset = TimestampOffset + sizeof(long);
 
-            private readonly Stream content;
+            private readonly Stream partition;
             private readonly long contentOffset;
             internal readonly long Length;
             private readonly AsyncLock syncRoot;
@@ -62,7 +62,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal LogEntry(BinaryReader reader, AsyncLock syncRoot)
             {
                 this.syncRoot = syncRoot;
-                content = reader.BaseStream;
+                partition = reader.BaseStream;
                 //parse entry metadata
                 Term = reader.ReadInt64();
                 Timestamp = new DateTimeOffset(reader.ReadInt64(), TimeSpan.Zero);
@@ -87,7 +87,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
             {
                 using (await syncRoot.Acquire(token).ConfigureAwait(false))
-                using (var segment = new StreamSegment(content))
+                using (var segment = new StreamSegment(partition))
                 {
                     segment.SetRange(contentOffset, Length);
                     await segment.CopyToAsync(output, 1024, token).ConfigureAwait(false);
@@ -97,7 +97,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
             {
                 using (await syncRoot.Acquire(token).ConfigureAwait(false))
-                using (var segment = new StreamSegment(content))
+                using (var segment = new StreamSegment(partition))
                 {
                     segment.SetRange(contentOffset, Length);
                     await segment.CopyToAsync(output, false, token: token).ConfigureAwait(false);
@@ -407,7 +407,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private IReadOnlyList<IRaftLogEntry> GetEntries(long startIndex, long endIndex)
         {
-            if (startIndex > lastIndex)
+            if (startIndex > lastIndex.VolatileRead())
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
             if (endIndex < startIndex)
                 return Array.Empty<LogEntry>();
