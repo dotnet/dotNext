@@ -101,8 +101,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var entries = await state.GetEntriesAsync(0L);
                 Equal(1L, entries.Count);
                 Equal(state.First, entries[0]);
-                entries = await state.GetEntriesAsync(1L);
-                Equal(0L, entries.Count);
 
                 Equal(1L, await state.AppendAsync(new[] { entry }));
                 entries = await state.GetEntriesAsync(0L);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.IO.Pipelines;
@@ -133,7 +134,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal readonly long IndexOffset;
 
             internal Partition(string fileName, long recordsPerPartition, AsyncLock syncRoot)
-                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read)
+                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, 2048, FileOptions.RandomAccess | FileOptions.WriteThrough)
             {
                 this.syncRoot = syncRoot;
                 payloadOffset = AllocationTableOffset + AllocationTableEntrySize * recordsPerPartition;
@@ -194,25 +195,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            internal Task WriteAsync(IRaftLogEntry entry, long index)
+            internal async Task WriteAsync(IRaftLogEntry entry, long index)
             {
                 //calculate relative index
                 index -= IndexOffset;
                 //calculate offset of the previous entry
-                if (index == 0L)
-                    Position = payloadOffset;
+                long offset;
+                if (index == 0L || index == 1L && IndexOffset == 0L)
+                    offset = payloadOffset;
                 else
                 {
                     //read position of the previous entry
                     Position = AllocationTableOffset + (index - 1) * AllocationTableEntrySize;
-                    var offset = reader.ReadInt64();
+                    offset = reader.ReadInt64();
+                    Debug.Assert(offset > 0, "Previous entry doesn't exist for unknown reason");
                     //read length of the previous entry
                     Position = offset + LogEntry.LengthOffset;
                     //calculate offset to the newly entry
                     offset = reader.ReadInt64();
-                    Position += offset;
+                    offset += Position;
                 }
-                return LogEntry.WriteAsync(entry, writer);
+                //record offset into the table
+                Position = offset;
+                await LogEntry.WriteAsync(entry, writer).ConfigureAwait(false);
+                //record new log entry to the allocation table
+                Position = AllocationTableOffset + index * AllocationTableEntrySize;
+                writer.Write(offset);
             }
 
             protected override void Dispose(bool disposing)
@@ -399,6 +407,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private IReadOnlyList<IRaftLogEntry> GetEntries(long startIndex, long endIndex)
         {
+            if (startIndex > lastIndex)
+                throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
             if (endIndex < startIndex)
                 return Array.Empty<LogEntry>();
             if (partitionTable.Count == 0)
@@ -421,6 +431,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async Task<IReadOnlyList<IRaftLogEntry>> IAuditTrail.GetEntriesAsync(long startIndex, long? endIndex)
         {
+            if (startIndex < 0L)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            if (endIndex < 0L)
+                throw new ArgumentOutOfRangeException(nameof(endIndex));
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
                 return GetEntries(startIndex, endIndex ?? lastIndex);
         }
