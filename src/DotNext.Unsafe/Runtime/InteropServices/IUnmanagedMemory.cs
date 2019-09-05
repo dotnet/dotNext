@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -29,5 +30,12 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         Span<byte> Bytes { get; }
+
+        /// <summary>
+        /// Represents unmanaged memory as stream.
+        /// </summary>
+        /// <returns>The stream of unmanaged memory.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        Stream AsStream();
     }
 }
