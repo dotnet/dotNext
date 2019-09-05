@@ -48,6 +48,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
          * 8 bytes = content length
          * octet stream = content
          */
+         /// <summary>
+         /// Represents persistent log entry.
+         /// </summary>
         protected sealed class LogEntry : IRaftLogEntry
         {
             internal const long TermOffset = 0L;
@@ -56,7 +59,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private readonly Stream partition;
             private readonly long contentOffset;
-            internal readonly long Length;
             private readonly AsyncLock syncRoot;
 
             internal LogEntry(BinaryReader reader, AsyncLock syncRoot)
@@ -69,6 +71,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Length = reader.ReadInt64();
                 contentOffset = reader.BaseStream.Position;
             }
+
+            /// <summary>
+            /// Gets length of the log entry content, in bytes.
+            /// </summary>
+            public long Length { get; }
 
             bool ILogEntry.IsSnapshot => false;
 
@@ -84,22 +91,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 writer.Write(length);
             }
 
+            /// <summary>
+            /// Gets the stream representing the content of this log entry.
+            /// </summary>
+            public Stream AsStream()
+            {
+                var result = new StreamSegment(partition);
+                result.SetRange(contentOffset, Length);
+                return result;
+            }
+
             async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
             {
                 using (await syncRoot.Acquire(token).ConfigureAwait(false))
-                using (var segment = new StreamSegment(partition))
+                using (var segment = AsStream())
                 {
-                    segment.SetRange(contentOffset, Length);
                     await segment.CopyToAsync(output, 1024, token).ConfigureAwait(false);
                 }
             }
-
-            async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
+            
+            /// <summary>
+            /// Copies the log entry content into the specified pipe writer.
+            /// </summary>
+            /// <param name="output">The writer.</param>
+            /// <param name="token">The token that can be used to cancel operation.</param>
+            /// <returns>The task representing asynchronous execution of this method.</returns>
+            public async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
             {
                 using (await syncRoot.Acquire(token).ConfigureAwait(false))
-                using (var segment = new StreamSegment(partition))
+                using (var segment = AsStream())
                 {
-                    segment.SetRange(contentOffset, Length);
                     await segment.CopyToAsync(output, false, token: token).ConfigureAwait(false);
                 }
             }
@@ -107,8 +128,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             long? IDataTransferObject.Length => Length;
             bool IDataTransferObject.IsReusable => true;
 
+            /// <summary>
+            /// Gets Raft term of this log entry.
+            /// </summary>
             public long Term { get; }
 
+            /// <summary>
+            /// Gets timestamp of this log entry.
+            /// </summary>
             public DateTimeOffset Timestamp { get; }
         }
 
