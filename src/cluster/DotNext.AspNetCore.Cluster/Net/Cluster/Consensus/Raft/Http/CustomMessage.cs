@@ -1,8 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Net.Mime;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 
@@ -13,6 +18,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage>
     {
+        //request - represents custom message name
+        private const string MessageNameHeader = "X-Raft-Message-Name";
         private static readonly ValueParser<DeliveryMode> DeliveryModeParser = Enum.TryParse;
 
         internal enum DeliveryMode
@@ -20,6 +27,55 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             OneWayNoAck,
             OneWay,
             RequestReply
+        }
+
+        private sealed class OutboundMessageContent : OutboundTransferObject
+        {
+            internal OutboundMessageContent(IMessage message)
+                : base(message)
+            {
+                Headers.ContentType = MediaTypeHeaderValue.Parse(message.Type.ToString());
+                Headers.Add(MessageNameHeader, message.Name);
+            }
+
+            internal static Task WriteTo(IMessage message, HttpResponse response)
+            {
+                response.ContentType = message.Type.ToString();
+                response.ContentLength = message.Length;
+                response.Headers.Add(MessageNameHeader, message.Name);
+                return message.CopyToAsync(response.Body);
+            }
+        }
+
+        private protected class InboundMessageContent : StreamMessage
+        {
+            private InboundMessageContent(Stream content, bool leaveOpen, string name, ContentType type)
+                : base(content, leaveOpen, name, type)
+            {
+            }
+
+            internal InboundMessageContent(HttpRequest request)
+                : this(request.Body, true, ParseHeader<StringValues>(MessageNameHeader, request.Headers.TryGetValue),
+                    new ContentType(request.ContentType))
+            {
+            }
+
+            private protected InboundMessageContent(MultipartSection section)
+                : this(section.Body, true, ParseHeader<StringValues>(MessageNameHeader, section.Headers.TryGetValue),
+                    new ContentType(section.ContentType))
+            {
+
+            }
+
+            internal static async Task<TResponse> FromResponseAsync<TResponse>(HttpResponseMessage response,
+                MessageReader<TResponse> reader)
+            {
+                var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
+                var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
+                using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                using (var message = new InboundMessageContent(content, true, name, contentType))
+                    return await reader(message).ConfigureAwait(false);
+            }
         }
 
         internal new const string MessageType = "CustomMessage";

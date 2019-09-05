@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents log entry in the audit trail.
     /// </summary>
-    public interface ILogEntry : Messaging.IMessage
+    public interface ILogEntry : IDataTransferObject
     {
         /// <summary>
         /// Gets a value indicating that this entry is a snapshot entry.

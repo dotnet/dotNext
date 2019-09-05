@@ -19,7 +19,7 @@ namespace DotNext
         /// Gets length of the object payload, in bytes.
         /// </summary>
         /// <remarks>
-        /// If value is <see langword="null"/> then length of the message cannot be determined.
+        /// If value is <see langword="null"/> then length of the payload cannot be determined.
         /// </remarks>
         long? Length { get; }
 

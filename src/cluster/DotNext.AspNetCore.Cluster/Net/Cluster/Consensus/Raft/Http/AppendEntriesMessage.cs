@@ -8,6 +8,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
@@ -24,20 +26,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const string SnapshotRecordHeader = "X-Raft-Record-Snapshot";
         private const string CommitIndexHeader = "X-Raft-Commit-Index";
 
-        private sealed class LogEntryContent : OutboundMessageContent
+        private sealed class LogEntryContent : OutboundTransferObject
         {
+            internal static readonly MediaTypeHeaderValue ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Octet);
+
             internal LogEntryContent(IRaftLogEntry entry)
                 : base(entry)
             {
+                Headers.ContentType = ContentType;
                 Headers.Add(RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
                 Headers.Add(SnapshotRecordHeader, entry.IsSnapshot.ToString(InvariantCulture));
             }
         }
 
-        private sealed class ReceivedLogEntry : InboundMessageContent, IRaftLogEntry
+        private sealed class ReceivedLogEntry : StreamTransferObject, IRaftLogEntry
         {
             internal ReceivedLogEntry(MultipartSection section)
-                : base(section)
+                : base(section.Body, true)
             {
                 HeadersReader<StringValues> headers = section.Headers.TryGetValue;
                 Term = ParseHeader(RequestVoteMessage.RecordTermHeader, headers, Int64Parser);

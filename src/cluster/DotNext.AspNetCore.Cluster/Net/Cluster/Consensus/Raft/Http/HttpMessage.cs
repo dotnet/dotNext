@@ -1,20 +1,15 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Messaging;
-
     internal abstract class HttpMessage
     {
         private static readonly ValueParser<string> StringParser = delegate (string str, out string value)
@@ -40,67 +35,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         //request - represents request message type
         private const string MessageTypeHeader = "X-Raft-Message-Type";
 
-        //request - represents custom message name
-        private const string MessageNameHeader = "X-Raft-Message-Name";
-
         //request - represents unique request identifier
         private const string RequestIdHeader = "X-Request-ID";
 
-        private protected class OutboundMessageContent : HttpContent
+        private protected class OutboundTransferObject : HttpContent
         {
-            private readonly IMessage message;
+            private readonly IDataTransferObject dto;
 
-            internal OutboundMessageContent(IMessage message)
-            {
-                this.message = message;
-                Headers.ContentType = MediaTypeHeaderValue.Parse(message.Type.ToString());
-                Headers.Add(MessageNameHeader, message.Name);
-            }
-
-            internal static Task WriteTo(IMessage message, HttpResponse response)
-            {
-                response.ContentType = message.Type.ToString();
-                response.ContentLength = message.Length;
-                response.Headers.Add(MessageNameHeader, message.Name);
-                return message.CopyToAsync(response.Body);
-            }
+            internal OutboundTransferObject(IDataTransferObject dto) => this.dto = dto;
 
             protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext context)
-                => message.CopyToAsync(stream);
+                => dto.CopyToAsync(stream);
 
             protected sealed override bool TryComputeLength(out long length)
-                => message.Length.TryGet(out length);
-        }
-
-        private protected class InboundMessageContent : StreamMessage
-        {
-            private InboundMessageContent(Stream content, bool leaveOpen, string name, ContentType type)
-                : base(content, leaveOpen, name, type)
-            {
-            }
-
-            internal InboundMessageContent(HttpRequest request)
-                : this(request.Body, true, ParseHeader<StringValues>(MessageNameHeader, request.Headers.TryGetValue),
-                    new ContentType(request.ContentType))
-            {
-            }
-
-            private protected InboundMessageContent(MultipartSection section)
-                : this(section.Body, true, ParseHeader<StringValues>(MessageNameHeader, section.Headers.TryGetValue),
-                    new ContentType(section.ContentType))
-            {
-
-            }
-
-            internal static async Task<TResponse> FromResponseAsync<TResponse>(HttpResponseMessage response,
-                MessageReader<TResponse> reader)
-            {
-                var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
-                var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
-                using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                using (var message = new InboundMessageContent(content, true, name, contentType))
-                    return await reader(message).ConfigureAwait(false);
-            }
+                => dto.Length.TryGet(out length);
         }
 
         internal readonly string Id;

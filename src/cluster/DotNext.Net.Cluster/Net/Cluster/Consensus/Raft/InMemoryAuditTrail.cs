@@ -21,13 +21,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </remarks>
     public sealed class InMemoryAuditTrail : AsyncReaderWriterLock, IPersistentState
     {
-        private sealed class BufferedLogEntry : BinaryMessage, IRaftLogEntry
+        private sealed class BufferedLogEntry : BinaryTransferObject, IRaftLogEntry
         {
-            private BufferedLogEntry(ReadOnlyMemory<byte> content, string name, ContentType type, long term)
-                : base(content, name, type)
-            {
-                Term = term;
-            }
+            private BufferedLogEntry(ReadOnlyMemory<byte> content, long term) : base(content) => Term = term;
 
             internal static async Task<BufferedLogEntry> CreateBufferedEntryAsync(IRaftLogEntry entry)
             {
@@ -41,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         : new ReadOnlyMemory<byte>(ms.ToArray());
                 }
 
-                return new BufferedLogEntry(content, entry.Name, entry.Type, entry.Term);
+                return new BufferedLogEntry(content, entry.Term);
             }
 
             bool ILogEntry.IsSnapshot => false;
@@ -51,13 +47,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private sealed class InitialLogEntry : IRaftLogEntry
         {
-            string IMessage.Name => "NOP";
             long? IDataTransferObject.Length => 0L;
             Task IDataTransferObject.CopyToAsync(Stream output) => Task.CompletedTask;
 
             ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask();
 
-            public ContentType Type { get; } = new ContentType(MediaTypeNames.Application.Octet);
             long IRaftLogEntry.Term => 0L;
 
             bool IDataTransferObject.IsReusable => true;
