@@ -38,14 +38,14 @@ namespace DotNext
 
         long? IDataTransferObject.Length => Content.Length;
 
-        async Task IDataTransferObject.CopyToAsync(Stream output)
+        async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             foreach (var segment in Content)
                 using (var array = new ArrayRental<byte>(segment.Length))
                 {
                     segment.CopyTo(array.Memory);
-                    await output.WriteAsync(array, 0, segment.Length).ConfigureAwait(false);
+                    await output.WriteAsync(array, 0, segment.Length, token).ConfigureAwait(false);
                 }
         }
 

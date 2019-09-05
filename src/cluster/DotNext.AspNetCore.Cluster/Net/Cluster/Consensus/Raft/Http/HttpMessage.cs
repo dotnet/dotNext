@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 
@@ -99,10 +100,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 ? result
                 : throw new RaftProtocolException(ExceptionMessages.IncorrectResponse);
 
-        private protected static Task SaveResponse(HttpResponse response, bool result)
+        private protected static Task SaveResponse(HttpResponse response, bool result, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
-            return response.WriteAsync(result.ToString(InvariantCulture));
+            return response.WriteAsync(result.ToString(InvariantCulture), token);
         }
 
         private protected static T ParseHeader<THeaders, T>(string headerName, HeadersReader<THeaders> reader,

@@ -70,7 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
                     .ConfigureAwait(false)).EnsureSuccessStatusCode();
                 ChangeStatus(AvailableStatus);
-                return await message.ParseResponse(response).ConfigureAwait(false);
+                return await message.ParseResponse(response, token).ConfigureAwait(false);
             }
             catch (HttpRequestException e)
             {

@@ -136,8 +136,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
+        Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response);
 
-        public new Task SaveResponse(HttpResponse response, Result<bool> result) => RaftHttpMessage.SaveResponse(response, result);
+        public new Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
     }
 }

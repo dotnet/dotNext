@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
@@ -8,6 +7,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 
@@ -37,19 +37,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 Headers.ContentType = MediaTypeHeaderValue.Parse(message.Type.ToString());
                 Headers.Add(MessageNameHeader, message.Name);
             }
-
-            internal static Task WriteTo(IMessage message, HttpResponse response)
-            {
-                response.ContentType = message.Type.ToString();
-                response.ContentLength = message.Length;
-                response.Headers.Add(MessageNameHeader, message.Name);
-                return message.CopyToAsync(response.Body);
-            }
         }
 
-        private protected class InboundMessageContent : StreamMessage
+        private sealed class InboundMessageContent : StreamMessage
         {
-            private InboundMessageContent(Stream content, bool leaveOpen, string name, ContentType type)
+            internal InboundMessageContent(Stream content, bool leaveOpen, string name, ContentType type)
                 : base(content, leaveOpen, name, type)
             {
             }
@@ -58,23 +50,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 : this(request.Body, true, ParseHeader<StringValues>(MessageNameHeader, request.Headers.TryGetValue),
                     new ContentType(request.ContentType))
             {
-            }
-
-            private protected InboundMessageContent(MultipartSection section)
-                : this(section.Body, true, ParseHeader<StringValues>(MessageNameHeader, section.Headers.TryGetValue),
-                    new ContentType(section.ContentType))
-            {
-
-            }
-
-            internal static async Task<TResponse> FromResponseAsync<TResponse>(HttpResponseMessage response,
-                MessageReader<TResponse> reader)
-            {
-                var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
-                var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
-                using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                using (var message = new InboundMessageContent(content, true, name, contentType))
-                    return await reader(message).ConfigureAwait(false);
             }
         }
 
@@ -121,14 +96,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Content = new OutboundMessageContent(Message);
         }
 
-        public Task SaveResponse(HttpResponse response, IMessage message)
+        public Task SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
-            return OutboundMessageContent.WriteTo(message, response);
+            response.ContentType = message.Type.ToString();
+            response.ContentLength = message.Length;
+            response.Headers.Add(MessageNameHeader, message.Name);
+            return message.CopyToAsync(response.Body, token);
         }
 
         //do not parse response because this is one-way message
-        Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response) => NullMessage.Task;
+        Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response, CancellationToken token) => NullMessage.Task;
+
+        private protected static async Task<T> ParseResponse<T>(HttpResponseMessage response, MessageReader<T> reader, CancellationToken token)
+        {
+            var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
+            var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
+            using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+            using (var message = new InboundMessageContent(content, true, name, contentType))
+                return await reader(message, token).ConfigureAwait(false);
+        }
     }
 
     internal sealed class CustomMessage<T> : CustomMessage, IHttpMessageReader<T>
@@ -137,7 +124,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal CustomMessage(IPEndPoint sender, IMessage message, MessageReader<T> reader) : base(sender, message, DeliveryMode.RequestReply) => this.reader = reader;
 
-        Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response)
-            => InboundMessageContent.FromResponseAsync(response, reader);
+        Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response, CancellationToken token)
+            => ParseResponse<T>(response, reader, token);
     }
 }

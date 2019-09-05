@@ -196,12 +196,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var sender = FindMember(request.Sender.Represents);
             if (sender is null)
-                await request.SaveResponse(response, new Result<bool>(Term, false)).ConfigureAwait(false);
+                await request.SaveResponse(response, new Result<bool>(Term, false), Token).ConfigureAwait(false);
             else
             {
                 await request.SaveResponse(response,
                     await ReceiveVote(sender, request.ConsensusTerm, request.LastLogIndex, request.LastLogTerm)
-                        .ConfigureAwait(false)).ConfigureAwait(false);
+                        .ConfigureAwait(false), Token).ConfigureAwait(false);
                 sender.Touch();
             }
         }
@@ -209,14 +209,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async Task Resign(ResignMessage request, HttpResponse response)
         {
             var sender = FindMember(request.Sender.Represents);
-            await request.SaveResponse(response, await ReceiveResign().ConfigureAwait(false)).ConfigureAwait(false);
+            await request.SaveResponse(response, await ReceiveResign().ConfigureAwait(false), Token).ConfigureAwait(false);
             sender?.Touch();
         }
 
         private Task GetMetadata(MetadataMessage request, HttpResponse response)
         {
             var sender = FindMember(request.Sender.Represents);
-            var result = request.SaveResponse(response, metadata);
+            var result = request.SaveResponse(response, metadata, Token);
             sender?.Touch();
             return result;
         }
@@ -232,20 +232,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 await message.ParseEntriesAsync(request, Token).ConfigureAwait(false);
                 await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
                     message.Entries, message.PrevLogIndex,
-                    message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false)).ConfigureAwait(false);
+                    message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false), Token).ConfigureAwait(false);
             }
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
-        private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IMessageHandler handler, HttpResponse response)
+        private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IMessageHandler handler, HttpResponse response, CancellationToken token)
         {
             const long maxSize = 30720;   //30 KB
             var length = message.Length;
             IDisposableMessage buffered;
             if (length.HasValue && length.Value < maxSize)
-                buffered = await StreamMessage.CreateBufferedMessageAsync(message).ConfigureAwait(false);
+                buffered = await StreamMessage.CreateBufferedMessageAsync(message, token).ConfigureAwait(false);
             else
-                buffered = await FileMessage.CreateAsync(message).ConfigureAwait(false);
+                buffered = await FileMessage.CreateAsync(message, token).ConfigureAwait(false);
             response.OnCompleted(async delegate ()
             {
                 using (buffered)
@@ -253,19 +253,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             });
         }
 
-        private static Task ReceiveOneWayMessage(ISubscriber sender, CustomMessage request, IMessageHandler handler, bool reliable, HttpResponse response)
+        private static Task ReceiveOneWayMessage(ISubscriber sender, CustomMessage request, IMessageHandler handler, bool reliable, HttpResponse response, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status204NoContent;
             //drop duplicated request
             if (response.HttpContext.Features.Get<DuplicateRequestDetector>().IsDuplicate(request))
                 return Task.CompletedTask;
-            return reliable ? handler.ReceiveSignal(sender, request.Message, response.HttpContext) : ReceiveOneWayMessageFastAck(sender, request.Message, handler, response);
+            return reliable ? handler.ReceiveSignal(sender, request.Message, response.HttpContext) : ReceiveOneWayMessageFastAck(sender, request.Message, handler, response, token);
         }
 
-        private static async Task ReceiveMessage(ISubscriber sender, CustomMessage request, IMessageHandler handler, HttpResponse response)
+        private static async Task ReceiveMessage(ISubscriber sender, CustomMessage request, IMessageHandler handler, HttpResponse response, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
-            await request.SaveResponse(response, await handler.ReceiveMessage(sender, request.Message, response.HttpContext).ConfigureAwait(false)).ConfigureAwait(false);
+            await request.SaveResponse(response, await handler.ReceiveMessage(sender, request.Message, response.HttpContext).ConfigureAwait(false), token).ConfigureAwait(false);
         }
 
         private Task ReceiveMessage(CustomMessage message, HttpResponse response)
@@ -286,13 +286,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 switch (message.Mode)
                 {
                     case CustomMessage.DeliveryMode.RequestReply:
-                        task = ReceiveMessage(sender, message, messageHandler, response);
+                        task = ReceiveMessage(sender, message, messageHandler, response, Token);
                         break;
                     case CustomMessage.DeliveryMode.OneWay:
-                        task = ReceiveOneWayMessage(sender, message, messageHandler, true, response);
+                        task = ReceiveOneWayMessage(sender, message, messageHandler, true, response, Token);
                         break;
                     case CustomMessage.DeliveryMode.OneWayNoAck:
-                        task = ReceiveOneWayMessage(sender, message, messageHandler, false, response);
+                        task = ReceiveOneWayMessage(sender, message, messageHandler, false, response, Token);
                         break;
                     default:
                         response.StatusCode = StatusCodes.Status400BadRequest;

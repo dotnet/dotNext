@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Net.Mime;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
@@ -27,11 +28,12 @@ namespace DotNext.Net.Cluster.Messaging
         /// Creates copy of the original message stored in the managed heap.
         /// </summary>
         /// <param name="message">The origin message.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The message which stores the content of the original message in the memory.</returns>
-        public static async Task<StreamMessage> CreateBufferedMessageAsync(IMessage message)
+        public static async Task<StreamMessage> CreateBufferedMessageAsync(IMessage message, CancellationToken token = default)
         {
             var content = new MemoryStream(2048);
-            await message.CopyToAsync(content).ConfigureAwait(false);
+            await message.CopyToAsync(content, token).ConfigureAwait(false);
             content.Seek(0, SeekOrigin.Begin);
             return new StreamMessage(content, false, message.Name, message.Type);
         }

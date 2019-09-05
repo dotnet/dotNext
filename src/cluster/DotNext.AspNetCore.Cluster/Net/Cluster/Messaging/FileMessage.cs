@@ -18,21 +18,21 @@ namespace DotNext.Net.Cluster.Messaging
             file = new FileInfo(Path.GetTempFileName());
         }
 
-        internal static async Task<FileMessage> CreateAsync(IMessage source)
+        internal static async Task<FileMessage> CreateAsync(IMessage source, CancellationToken token)
         {
             var result = new FileMessage(source.Name, source.Type);
             using (var stream = result.file.Create())
             {
-                await source.CopyToAsync(stream).ConfigureAwait(false);
+                await source.CopyToAsync(stream, token).ConfigureAwait(false);
             }
             return result;
         }
 
-        async Task IDataTransferObject.CopyToAsync(Stream output)
+        async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
             using (var stream = file.Open(FileMode.Open))
             {
-                await stream.CopyToAsync(output).ConfigureAwait(false);
+                await stream.CopyToAsync(output, 1024, token).ConfigureAwait(false);
             }
         }
 

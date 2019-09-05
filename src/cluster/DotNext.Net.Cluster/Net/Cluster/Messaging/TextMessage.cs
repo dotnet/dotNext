@@ -51,7 +51,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         public string Content { get; }
 
-        async Task IDataTransferObject.CopyToAsync(Stream output)
+        async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
             using (var writer = new StreamWriter(output, Type.GetEncoding(), 1024, true) { AutoFlush = true })
                 await writer.WriteAsync(Content).ConfigureAwait(false);

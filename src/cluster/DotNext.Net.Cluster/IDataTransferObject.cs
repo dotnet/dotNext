@@ -26,8 +26,9 @@ namespace DotNext
         /// <summary>
         /// Copies the object content into the specified stream.
         /// </summary>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <param name="output">The output stream receiving object content.</param>
-        Task CopyToAsync(Stream output);
+        Task CopyToAsync(Stream output, CancellationToken token = default);
 
         /// <summary>
         /// Copies the object content into the specified pipe writer.

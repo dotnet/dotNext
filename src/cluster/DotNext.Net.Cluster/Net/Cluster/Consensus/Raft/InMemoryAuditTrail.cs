@@ -30,12 +30,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Timestamp = timestamp;
             }
 
-            internal static async Task<BufferedLogEntry> CreateBufferedEntryAsync(IRaftLogEntry entry)
+            internal static async Task<BufferedLogEntry> CreateBufferedEntryAsync(IRaftLogEntry entry, CancellationToken token = default)
             {
                 ReadOnlyMemory<byte> content;
                 using (var ms = new MemoryStream(1024))
                 {
-                    await entry.CopyToAsync(ms).ConfigureAwait(false);
+                    await entry.CopyToAsync(ms, token).ConfigureAwait(false);
                     ms.Seek(0, SeekOrigin.Begin);
                     content = ms.TryGetBuffer(out var segment)
                         ? segment
@@ -55,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private sealed class InitialLogEntry : IRaftLogEntry
         {
             long? IDataTransferObject.Length => 0L;
-            Task IDataTransferObject.CopyToAsync(Stream output) => Task.CompletedTask;
+            Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
 
             ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask();
 

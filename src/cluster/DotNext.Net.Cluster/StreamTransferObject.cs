@@ -35,14 +35,14 @@ namespace DotNext
 
         long? IDataTransferObject.Length => content.CanSeek ? content.Length : default(long?);
 
-        private static async Task CopyToAsyncAndSeek(Stream input, Stream output)
+        private static async Task CopyToAsyncAndSeek(Stream input, Stream output, CancellationToken token)
         {
-            await input.CopyToAsync(output).ConfigureAwait(false);
+            await input.CopyToAsync(output, 1024, token).ConfigureAwait(false);
             input.Seek(0, SeekOrigin.Begin);
         }
 
-        Task IDataTransferObject.CopyToAsync(Stream output) =>
-            content.CanSeek ? CopyToAsyncAndSeek(content, output) : content.CopyToAsync(output);
+        Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) =>
+            content.CanSeek ? CopyToAsyncAndSeek(content, output, token) : content.CopyToAsync(output, 1024, token);
 
         ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
             => content.CopyToAsync(output, true, token: token);

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Primitives;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 
@@ -38,11 +39,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return new Result<bool>(term, result);
         }
 
-        private protected static Task SaveResponse(HttpResponse response, Result<bool> result)
+        private protected static Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
             response.Headers.Add(TermHeader, result.Term.ToString(InvariantCulture));
-            return response.WriteAsync(result.Value.ToString(InvariantCulture));
+            return response.WriteAsync(result.Value.ToString(InvariantCulture), token);
         }
     }
 }
