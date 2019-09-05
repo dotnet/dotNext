@@ -13,6 +13,8 @@ namespace RaftNode
 
         }
 
+        bool DotNext.Net.Cluster.Replication.ILogEntry.IsSnapshot => false;
+
         public long Term { get; set; }
     }
 }
