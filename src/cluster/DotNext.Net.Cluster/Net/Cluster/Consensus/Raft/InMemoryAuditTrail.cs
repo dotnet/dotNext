@@ -23,7 +23,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private sealed class BufferedLogEntry : BinaryTransferObject, IRaftLogEntry
         {
-            private BufferedLogEntry(ReadOnlyMemory<byte> content, long term) : base(content) => Term = term;
+            private BufferedLogEntry(ReadOnlyMemory<byte> content, long term, DateTimeOffset timestamp) 
+                : base(content)
+            {
+                Term = term;
+                Timestamp = timestamp;
+            }
 
             internal static async Task<BufferedLogEntry> CreateBufferedEntryAsync(IRaftLogEntry entry)
             {
@@ -37,12 +42,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         : new ReadOnlyMemory<byte>(ms.ToArray());
                 }
 
-                return new BufferedLogEntry(content, entry.Term);
+                return new BufferedLogEntry(content, entry.Term, entry.Timestamp.ToUniversalTime());
             }
 
             bool ILogEntry.IsSnapshot => false;
 
             public long Term { get; }
+
+            public DateTimeOffset Timestamp { get; }
         }
 
         private sealed class InitialLogEntry : IRaftLogEntry
@@ -57,6 +64,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bool IDataTransferObject.IsReusable => true;
 
             bool ILogEntry.IsSnapshot => false;
+
+            DateTimeOffset ILogEntry.Timestamp => default;
         }
 
         private sealed class CommitEventExecutor
