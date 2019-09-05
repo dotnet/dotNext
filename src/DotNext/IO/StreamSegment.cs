@@ -31,6 +31,9 @@ namespace DotNext.IO
         /// <summary>
         /// Establishes segment bounds.
         /// </summary>
+        /// <remarks>
+        /// This method modifies <see cref="Stream.Position"/> property of the underlying stream.
+        /// </remarks>
         /// <param name="offset">The offset in the underlying stream.</param>
         /// <param name="length">The length of the segment.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is larger than the reamining length of the underlying stream; or <paramref name="offset"/> if greater than the length of the underlying stream.</exception>
