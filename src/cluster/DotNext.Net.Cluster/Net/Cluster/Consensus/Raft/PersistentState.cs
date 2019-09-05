@@ -354,6 +354,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         public PersistentState(DirectoryInfo location, long recordsPerPartition)
         {
+            if(recordsPerPartition < 1L)
+                throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!location.Exists)
                 location.Create();
             this.location = location;
@@ -377,7 +379,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
         }
 
-
         /// <summary>
         /// Gets index of the committed or last log entry.
         /// </summary>
@@ -399,7 +400,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (!partitionTable.TryGetValue(partitionNumber, out var partition))
             {
                 partition = new Partition(location, recordsPerPartition, partitionNumber, AsyncLock.Exclusive(syncRoot));
-                partition.Flush();
                 partitionTable.Add(partitionNumber, partition);
             }
             return partition;
