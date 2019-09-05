@@ -141,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 log.Slice(startIndex, endIndex - startIndex + 1);
         }
 
-        async ValueTask<IReadOnlyList<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
+        async Task<IReadOnlyList<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
         {
             using (await this.AcquireReadLockAsync(CancellationToken.None).ConfigureAwait(false))
                 return GetEntries(startIndex, endIndex ?? GetLastIndex(false));
@@ -164,7 +164,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         }
 
-        async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long? startIndex)
+        async Task<long> IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long? startIndex)
         {
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
@@ -195,7 +195,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return Task.WhenAll(tasks);
         }
 
-        async ValueTask<long> IAuditTrail<IRaftLogEntry>.CommitAsync(long? endIndex)
+        async Task<long> IAuditTrail<IRaftLogEntry>.CommitAsync(long? endIndex)
         {
             using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
