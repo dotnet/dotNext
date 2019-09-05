@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Threading;
     using Timestamp = Diagnostics.Timestamp;
 
-    internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, IAddressee
+    internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, ISubscriber
     {
         private const string UserAgent = "Raft.NET";
 
@@ -137,14 +137,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
             => SendAsync<TResponse, CustomMessage<TResponse>>(new CustomMessage<TResponse>(context.LocalEndpoint, message, responseReader) { RespectLeadership = respectLeadership }, token);
 
-        Task<TResponse> IAddressee.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
+        Task<TResponse> ISubscriber.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
             => SendMessageAsync(message, responseReader, false, token);
 
         internal Task SendSignalAsync(CustomMessage message, CancellationToken token) =>
             SendAsync<IMessage, CustomMessage>(message, token);
 
 
-        Task IAddressee.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
+        Task ISubscriber.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
         {
             var request = new CustomMessage(context.LocalEndpoint, message, requiresConfirmation);
             return SendSignalAsync(request, token);

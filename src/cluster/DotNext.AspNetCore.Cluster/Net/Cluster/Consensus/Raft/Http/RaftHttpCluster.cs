@@ -72,9 +72,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         ILogger IHostingContext.Logger => Logger;
 
-        IReadOnlyCollection<IAddressee> IMessageBus.Members => Members;
+        IReadOnlyCollection<ISubscriber> IMessageBus.Members => Members;
 
-        IAddressee IMessageBus.Leader => Leader;
+        ISubscriber IMessageBus.Leader => Leader;
 
         private async void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
@@ -237,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
-        private static async Task ReceiveOneWayMessageFastAck(IAddressee sender, IMessage message, IMessageHandler handler, HttpResponse response)
+        private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IMessageHandler handler, HttpResponse response)
         {
             const long maxSize = 30720;   //30 KB
             var length = message.Length;
@@ -253,7 +253,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             });
         }
 
-        private static Task ReceiveOneWayMessage(IAddressee sender, CustomMessage request, IMessageHandler handler, bool reliable, HttpResponse response)
+        private static Task ReceiveOneWayMessage(ISubscriber sender, CustomMessage request, IMessageHandler handler, bool reliable, HttpResponse response)
         {
             response.StatusCode = StatusCodes.Status204NoContent;
             //drop duplicated request
@@ -262,7 +262,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return reliable ? handler.ReceiveSignal(sender, request.Message, response.HttpContext) : ReceiveOneWayMessageFastAck(sender, request.Message, handler, response);
         }
 
-        private static async Task ReceiveMessage(IAddressee sender, CustomMessage request, IMessageHandler handler, HttpResponse response)
+        private static async Task ReceiveMessage(ISubscriber sender, CustomMessage request, IMessageHandler handler, HttpResponse response)
         {
             response.StatusCode = StatusCodes.Status200OK;
             await request.SaveResponse(response, await handler.ReceiveMessage(sender, request.Message, response.HttpContext).ConfigureAwait(false)).ConfigureAwait(false);

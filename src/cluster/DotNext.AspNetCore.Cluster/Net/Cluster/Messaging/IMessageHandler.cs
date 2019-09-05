@@ -20,7 +20,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="context">The context of the underlying network request.</param>
         /// <returns>The response message.</returns>
         [ReliabilityContract(Consistency.MayCorruptProcess, Cer.Success)]
-        Task<IMessage> ReceiveMessage(IAddressee sender, IMessage message, object context);
+        Task<IMessage> ReceiveMessage(ISubscriber sender, IMessage message, object context);
 
         /// <summary>
         /// Handles incoming signal from the specified cluster member.
@@ -29,6 +29,6 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="signal">The received message representing signal.</param>
         /// <param name="context">The context of the underlying network request.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        Task ReceiveSignal(IAddressee sender, IMessage signal, object context);
+        Task ReceiveSignal(ISubscriber sender, IMessage signal, object context);
     }
 }

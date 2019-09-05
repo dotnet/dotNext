@@ -13,12 +13,12 @@ namespace DotNext.Net.Cluster.Messaging
         /// <summary>
         /// Gets the leader node.
         /// </summary>
-        new IAddressee Leader { get; }
+        new ISubscriber Leader { get; }
 
         /// <summary>
         /// Represents a collection of nodes in the network.
         /// </summary>
-        new IReadOnlyCollection<IAddressee> Members { get; }
+        new IReadOnlyCollection<ISubscriber> Members { get; }
 
         /// <summary>
         /// Sends a message to the cluster leader.
