@@ -189,14 +189,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public event CommitEventHandler<IRaftLogEntry> Committed;
 
-        private Task OnCommmitted(long startIndex, long count)
-        {
-            ICollection<Task> tasks = new LinkedList<Task>();
-            foreach (CommitEventHandler<IRaftLogEntry> handler in Committed?.GetInvocationList() ?? Array.Empty<CommitEventHandler<IRaftLogEntry>>())
-                tasks.Add(handler(this, startIndex, count));
-            return Task.WhenAll(tasks);
-        }
-
         async Task<long> IAuditTrail<IRaftLogEntry>.CommitAsync(long? endIndex)
         {
             long startIndex, count;
@@ -207,7 +199,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (count > 0)
                     commitIndex.VolatileWrite(startIndex + count - 1);
             }
-            await OnCommmitted(startIndex, count).ConfigureAwait(false);
+            //raise Committed event
+            foreach (CommitEventHandler<IRaftLogEntry> handler in Committed?.GetInvocationList() ?? Array.Empty<CommitEventHandler<IRaftLogEntry>>())
+                await handler(this, startIndex, count).ConfigureAwait(false);
             return count;
         }
 
