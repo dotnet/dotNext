@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using Buffers;
     using static Mime.ContentTypeExtensions;
 
     /// <summary>
@@ -53,8 +54,20 @@ namespace DotNext.Net.Cluster.Messaging
 
         async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
-            using (var writer = new StreamWriter(output, Type.GetEncoding(), 1024, true) { AutoFlush = true })
-                await writer.WriteAsync(Content).ConfigureAwait(false);
+            //TODO: Should be rewritten for .NET Standard 2.1
+            const int charsBufferSize = 512;
+            var encoding = Type.GetEncoding();
+            using (var buffer = new ArrayRental<byte>(encoding.GetMaxByteCount(charsBufferSize)))
+            {
+                var offset = 0;
+                do
+                {
+                    var n = encoding.GetBytes(Content, offset, Math.Min(Content.Length - offset, charsBufferSize), buffer, 0);
+                    await output.WriteAsync(buffer, 0, n).ConfigureAwait(false);
+                    offset += n;
+                }
+                while (offset < Content.Length);
+            }
         }
 
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
