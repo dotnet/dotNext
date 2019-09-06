@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.IO.Pipelines;
 using System.Net.Mime;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -70,24 +71,34 @@ namespace DotNext.Net.Cluster.Messaging
             }
         }
 
+        private static unsafe int Encode(Encoding encoding, ReadOnlySpan<char> chunk, byte[] output)
+        {
+            fixed (char* source = chunk)
+            fixed (byte* dest = output)
+            {
+                return encoding.GetBytes(source, chunk.Length, dest, output.Length);
+            }
+        }
+
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
+            const int charsBuffserSize = 512;
             var encoding = Type.GetEncoding();
-            foreach (var chunk in Content.Split(512))
-            {
-                var bytes = new ReadOnlyMemory<byte>(encoding.GetBytes(chunk.ToArray()));
-                var result = await output.WriteAsync(bytes, token);
-                if (result.IsCompleted)
-                    break;
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token);
-                result = await output.FlushAsync(token);
-                if (result.IsCompleted)
-                    break;
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token);
-            }
+            using (var bytes = new ArrayRental<byte>(encoding.GetMaxByteCount(charsBuffserSize)))
+                foreach (var chunk in Content.Split(charsBuffserSize))
+                {
+                    var result = await output.WriteAsync(new ReadOnlyMemory<byte>(bytes, 0, Encode(encoding, chunk.Span, bytes)), token);
+                    if (result.IsCompleted)
+                        break;
+                    if (result.IsCanceled)
+                        throw new OperationCanceledException(token);
+                    result = await output.FlushAsync(token);
+                    if (result.IsCompleted)
+                        break;
+                    if (result.IsCanceled)
+                        throw new OperationCanceledException(token);
+                }
         }
 
         /// <summary>
