@@ -395,6 +395,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     reader.Dispose();
                     writer.Dispose();
+                    cachedContent.Dispose();
                 }
                 base.Dispose(disposing);
             }
