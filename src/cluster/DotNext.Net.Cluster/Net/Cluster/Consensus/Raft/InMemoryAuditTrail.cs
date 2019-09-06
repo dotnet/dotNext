@@ -199,17 +199,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async Task<long> IAuditTrail<IRaftLogEntry>.CommitAsync(long? endIndex)
         {
+            long startIndex, count;
             using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
-                var startIndex = commitIndex.VolatileRead() + 1L;
-                var count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;
-                if(count > 0)
-                {
+                startIndex = commitIndex.VolatileRead() + 1L;
+                count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;
+                if (count > 0)
                     commitIndex.VolatileWrite(startIndex + count - 1);
-                    await OnCommmitted(startIndex, count).ConfigureAwait(false);
-                }
-                return count;
             }
+            await OnCommmitted(startIndex, count).ConfigureAwait(false);
+            return count;
         }
 
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref EmptyLog[0];
