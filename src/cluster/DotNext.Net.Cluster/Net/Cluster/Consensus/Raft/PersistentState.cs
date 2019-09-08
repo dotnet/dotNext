@@ -14,10 +14,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using IO;
+    using Replication;
     using Threading;
-    using CommitEventHandler = Replication.CommitEventHandler<IRaftLogEntry>;
-    using IAuditTrail = Replication.IAuditTrail<IRaftLogEntry>;
-    using ILogEntry = Replication.ILogEntry;
 
     /// <summary>
     /// Represents persistent audit trail which uses file system
@@ -518,6 +516,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly Dictionary<long, Partition> partitionTable;
         private readonly NodeState state;
         private readonly DirectoryInfo location;
+        private readonly AsyncManualResetEvent commitEvent;
 
         public PersistentState(DirectoryInfo location, long recordsPerPartition)
         {
@@ -527,6 +526,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 location.Create();
             this.location = location;
             this.recordsPerPartition = recordsPerPartition;
+            commitEvent = new AsyncManualResetEvent(false);
             syncRoot = new AsyncExclusiveLock();
             partitionTable = new Dictionary<long, Partition>();
             //load all partitions from file system
@@ -596,7 +596,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         }
 
-        async Task<IReadOnlyList<IRaftLogEntry>> IAuditTrail.GetEntriesAsync(long startIndex, long? endIndex)
+        async Task<IReadOnlyList<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -640,7 +640,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return startIndex;
         }
 
-        async Task<long> IAuditTrail.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long? startIndex)
+        async Task<long> IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long? startIndex)
         {
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
@@ -648,17 +648,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return await AppendAsync(entries, startIndex ?? lastIndex + 1L).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// The event that is raised when actual commit happen.
-        /// </summary>
-        public event CommitEventHandler Committed;
+        Task IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
+            => index > 1L ? CommitEvent.WaitForCommitAsync(this, commitEvent, index, timeout, token) : Task.FromException(new ArgumentOutOfRangeException(nameof(index)));
 
         Task<long> IAuditTrail.CommitAsync(long? endIndex)
         {
             throw new NotImplementedException();
         }
 
-        ref readonly IRaftLogEntry IAuditTrail.First => ref InMemoryAuditTrail.EmptyLog[0];
+        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref InMemoryAuditTrail.EmptyLog[0];
 
         /// <summary>
         /// Forces log compaction.
@@ -691,6 +689,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     partition.Dispose();
                 partitionTable.Clear();
                 state.Dispose();
+                commitEvent.Dispose();
             }
             base.Dispose(disposing);
         }

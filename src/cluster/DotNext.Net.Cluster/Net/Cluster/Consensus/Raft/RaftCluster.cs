@@ -476,58 +476,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
         }
 
-        private async Task WaitForCommit(long commitIndex)
-        {
-            /*
-             * Performance of this method is optimized as follows:
-             * 1. If the current node is leader then this method forces replication
-             *      without waiting for the scheduled heartbeat. This is the best case
-             * 2. If the current node is downgraded to the follower during replication
-             *      then client needs to wait (maximum is electionTimeout), which is
-             *      worst case but it should happen rarely
-             */
-            var notifier = new CommitEvent<IRaftLogEntry>(commitIndex);
-            notifier.AttachTo(auditTrail);
-            try
-            {
-                do
-                {
-                    if (state is LeaderState leader)
-                        leader.ForceReplication();
-                    else
-                        throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
-                }
-                while (!await notifier.Wait(TimeSpan.FromMilliseconds(electionTimeout), transitionCancellation.Token).ConfigureAwait(false));
-            }
-            finally
-            {
-                notifier.DetachFrom(auditTrail);
-                notifier.Dispose();
-            }
-        }
-
-        private async Task WriteAsync<T>(DataHandler<T, IRaftLogEntry> handler, T input, bool waitForCommit)
+        private async Task WriteAsync<T>(DataHandler<T, IRaftLogEntry> handler, T input, bool waitForCommit, TimeSpan timeout)
         {
             var entries = await handler(input).ConfigureAwait(false);
             if (entries.Count == 0)
                 return;
             var index = await auditTrail.AppendAsync(entries).ConfigureAwait(false);
             if (waitForCommit)
-                await WaitForCommit(index + entries.Count - 1L).ConfigureAwait(false);
+                await auditTrail.WaitForCommitAsync(index + entries.Count - 1L, timeout).ConfigureAwait(false);
             else if (IsLeaderLocal)
                 return;
             else
                 throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
         }
 
-        Task IReplicationCluster<IRaftLogEntry>.WriteAsync<T>(DataHandler<T, IRaftLogEntry> handler, T input, WriteConcern concern)
+        Task IReplicationCluster<IRaftLogEntry>.WriteAsync<T>(DataHandler<T, IRaftLogEntry> handler, T input, WriteConcern concern, TimeSpan timeout)
         {
             switch (concern)
             {
                 case WriteConcern.None:
-                    return WriteAsync(handler, input, false);
+                    return WriteAsync(handler, input, false, timeout);
                 case WriteConcern.LeaderOnly:
-                    return WriteAsync(handler, input, true);
+                    return WriteAsync(handler, input, true, timeout);
                 default:
                     return Task.FromException(new NotSupportedException());
             }

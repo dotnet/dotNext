@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
-using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Messaging;
     using Replication;
     using Threading;
 
@@ -68,23 +66,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             DateTimeOffset ILogEntry.Timestamp => default;
         }
 
-        private sealed class CommitEventExecutor
-        {
-            private readonly long startIndex, count;
-
-            internal CommitEventExecutor(long startIndex, long count)
-            {
-                this.startIndex = startIndex;
-                this.count = count;
-            }
-
-            private void Invoke(InMemoryAuditTrail auditTrail) => auditTrail?.Committed?.Invoke(auditTrail, startIndex, count);
-
-            private void Invoke(object auditTrail) => Invoke(auditTrail as InMemoryAuditTrail);
-
-            public static implicit operator WaitCallback(CommitEventExecutor executor) => executor is null ? default(WaitCallback) : executor.Invoke;
-        }
-
         internal static readonly IRaftLogEntry[] EmptyLog = { new InitialLogEntry() };
 
         private long commitIndex;
@@ -92,11 +73,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private long term;
         private volatile IRaftClusterMember votedFor;
+        private readonly AsyncManualResetEvent commitEvent;
 
         /// <summary>
         /// Initializes a new audit trail with empty log.
         /// </summary>
-        public InMemoryAuditTrail() => log = EmptyLog;
+        public InMemoryAuditTrail()
+        {
+            log = EmptyLog;
+            commitEvent = new AsyncManualResetEvent(false);
+        }
 
         long IPersistentState.Term => term.VolatileRead();
 
@@ -184,12 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        /// <summary>
-        /// The event that is raised when actual commit happen.
-        /// </summary>
-        public event CommitEventHandler<IRaftLogEntry> Committed;
-
-        async Task<long> IAuditTrail<IRaftLogEntry>.CommitAsync(long? endIndex)
+        async Task<long> IAuditTrail.CommitAsync(long? endIndex)
         {
             long startIndex, count;
             using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
@@ -199,12 +180,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (count > 0)
                     commitIndex.VolatileWrite(startIndex + count - 1);
             }
-            //raise Committed event
-            foreach (CommitEventHandler<IRaftLogEntry> handler in Committed?.GetInvocationList() ?? Array.Empty<CommitEventHandler<IRaftLogEntry>>())
-                await handler(this, startIndex, count).ConfigureAwait(false);
             return count;
         }
 
+        Task IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
+            => index > 1L ? CommitEvent.WaitForCommitAsync(this, commitEvent, index, timeout, token) : Task.FromException(new ArgumentOutOfRangeException(nameof(index)));
+
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref EmptyLog[0];
+
+        /// <summary>
+        /// Releases all resources associated with this audit trail.
+        /// </summary>
+        /// <param name="disposing">Indicates whether the <see cref="Dispose(bool)"/> has been called directly or from finalizer.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if(disposing)
+                commitEvent.Dispose();
+            base.Dispose(disposing);
+        }
     }
 }

@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
-        private readonly IAsyncEvent forcedReplication;
+        private readonly AsyncManualResetEvent forcedReplication;
         internal ILeaderStateMetrics Metrics;
 
         internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             currentTerm = term;
             this.allowPartitioning = allowPartitioning;
             timerCancellation = new CancellationTokenSource();
-            forcedReplication = new AsyncAutoResetEvent(false);
+            forcedReplication = new AsyncManualResetEvent(false);
         }
 
         private static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
@@ -140,7 +140,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //majority of nodes accept entries with a least one entry from current term
             if (commitQuorum > 0)
             {
-                var count = await transactionLog.CommitAsync(); //commit all entries started from first uncommitted index to the end
+                var count = await transactionLog.CommitAsync().ConfigureAwait(false); //commit all entries started from first uncommitted index to the end
                 stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
                 return CheckTerm(term);
             }
@@ -163,7 +163,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        internal void ForceReplication() => forcedReplication.Signal();
+        internal void ForceReplication() => forcedReplication.Set(true);
 
         /// <summary>
         /// Starts cluster synchronization.

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Replication
@@ -7,8 +8,7 @@ namespace DotNext.Net.Cluster.Replication
     /// <summary>
     /// Represents audit trail responsible for maintaining log entries.
     /// </summary>
-    public interface IAuditTrail<LogEntry>
-        where LogEntry : class, ILogEntry
+    public interface IAuditTrail
     {
         /// <summary>
         /// Gets index of the committed or last log entry.
@@ -20,6 +20,35 @@ namespace DotNext.Net.Cluster.Replication
         /// <returns>The index of the log entry.</returns>
         long GetLastIndex(bool committed);
 
+        /// <summary>
+        /// Waits for the commit.
+        /// </summary>
+        /// <param name="index">The index of the log record to be committed.</param>
+        /// <param name="timeout">The timeout used to wait for the commit.</param>
+        /// <param name="token">The token that can be used to cancel waiting.</param>
+        /// <returns>The task representing waiting operation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 1.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+        Task WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token = default);
+
+        /// <summary>
+        /// Commits log entries into the underlying storage and marks these entries as committed.
+        /// </summary>
+        /// <remarks>
+        /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="true"/>.
+        /// This method may force log compaction and squash all committed entries into single entry called snapshot.
+        /// </remarks>
+        /// <param name="endIndex">The index of the last entry to commit, inclusively; if <see langword="null"/> then commits all log entries started from the first uncommitted entry to the last existing log entry.</param>
+        /// <returns>The actual number of committed entries.</returns>
+        Task<long> CommitAsync(long? endIndex = null);
+    }
+
+    /// <summary>
+    /// Represents audit trail responsible for maintaining log entries.
+    /// </summary>
+    public interface IAuditTrail<LogEntry> : IAuditTrail
+        where LogEntry : class, ILogEntry
+    {
         /// <summary>
         /// Gets log entries in the specified range.
         /// </summary>
@@ -39,7 +68,7 @@ namespace DotNext.Net.Cluster.Replication
         /// Adds uncommitted log entries into this log.
         /// </summary>
         /// <remarks>
-        /// This method should updates cached value provided by method <see cref="GetLastIndex"/> called with argument of value <see langword="false"/>.
+        /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
         /// </remarks>
         /// <param name="entries">The entries to be added into this log.</param>
         /// <param name="startIndex"><see langword="null"/> to append entries into the end of the log; or index from which all previous log entries should be dropped and replaced with new entries.</param>
@@ -47,22 +76,6 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
         Task<long> AppendAsync(IReadOnlyList<LogEntry> entries, long? startIndex = null);
-
-        /// <summary>
-        /// The event that is raised when actual commit happen.
-        /// </summary>
-        event CommitEventHandler<LogEntry> Committed;
-
-        /// <summary>
-        /// Commits log entries into the underlying storage and marks these entries as committed.
-        /// </summary>
-        /// <remarks>
-        /// This method should updates cached value provided by method <see cref="GetLastIndex"/> called with argument of value <see langword="true"/>.
-        /// This method may force log compaction and squash all committed entries into single entry called snapshot.
-        /// </remarks>
-        /// <param name="endIndex">The index of the last entry to commit, inclusively; if <see langword="null"/> then commits all log entries started from the first uncommitted entry to the last existing log entry.</param>
-        /// <returns>The actual number of committed entries.</returns>
-        Task<long> CommitAsync(long? endIndex = null);
 
         /// <summary>
         /// Gets the first ephemeral log entry that is present in the empty log.

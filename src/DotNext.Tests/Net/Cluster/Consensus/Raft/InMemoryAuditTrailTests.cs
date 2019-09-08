@@ -1,5 +1,4 @@
-﻿using DotNext.Net.Cluster.Replication;
-using DotNext.Threading;
+﻿using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -17,23 +16,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(10, auditTrail.Term);
             await auditTrail.IncrementTermAsync();
             Equal(11, auditTrail.Term);
-        }
-
-        private sealed class CommitDetector : AsyncManualResetEvent
-        {
-            internal long Count;
-
-            internal CommitDetector()
-                : base(false)
-            {
-            }
-
-            internal Task OnCommitted(IAuditTrail<IRaftLogEntry> sender, long startIndex, long count)
-            {
-                Count = count;
-                Set();
-                return Task.CompletedTask;
-            }
         }
 
         [Fact]
@@ -65,14 +47,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(2, auditTrail.GetLastIndex(false));
             Equal(0, auditTrail.GetLastIndex(true));
             //commit all entries
-            using (var detector = new CommitDetector())
-            {
-                auditTrail.Committed += detector.OnCommitted;
-                Equal(2, await auditTrail.CommitAsync());
-                await detector.Wait();
-                Equal(2, auditTrail.GetLastIndex(true));
-                Equal(2, detector.Count);
-            }
+            Equal(2, await auditTrail.CommitAsync());
+            await auditTrail.WaitForCommitAsync(2, TimeSpan.Zero);
+            Equal(2, auditTrail.GetLastIndex(true));
         }
     }
 }

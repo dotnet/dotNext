@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.Pipelines;
-using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,7 +19,7 @@ namespace DotNext
         /// Initializes a new message.
         /// </summary>
         /// <param name="content">The message content.</param>
-        /// <param name="leaveOpen"><see langword="true"/> to leave the stream open after <see cref="StreamMessage"/> object is disposed; otherwise, <see langword="false"/>.</param>
+        /// <param name="leaveOpen"><see langword="true"/> to leave the stream open after <see cref="StreamTransferObject"/> object is disposed; otherwise, <see langword="false"/>.</param>
         public StreamTransferObject(Stream content, bool leaveOpen)
         {
             this.leaveOpen = leaveOpen;

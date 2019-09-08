@@ -26,10 +26,11 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="handler">The handler used to produce change set in the form of log entries.</param>
         /// <param name="input">The value to be passed into the data handler.</param>
         /// <param name="concern">The value describing level of acknowledgment from cluster.</param>
+        /// <param name="timeout">The timeout of the asynchronous operation.</param>
         /// <returns>The task representing asynchronous state of this operation.</returns>
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
         /// <exception cref="NotSupportedException">The specified level of acknowledgment is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task WriteAsync<T>(DataHandler<T, LogEntry> handler, T input, WriteConcern concern);
+        Task WriteAsync<T>(DataHandler<T, LogEntry> handler, T input, WriteConcern concern, TimeSpan timeout);
     }
 }

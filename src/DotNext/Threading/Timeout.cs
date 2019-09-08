@@ -39,6 +39,17 @@ namespace DotNext.Threading
         }
 
         /// <summary>
+        /// Throws <see cref="TimeoutException"/> if timeout occurs.
+        /// </summary>
+        /// <param name="remaining">The remaining time before timeout.</param>
+        public void ThrowIfExpired(out TimeSpan remaining)
+        {
+            remaining = timeout - created.Elapsed;
+            if (remaining <= TimeSpan.Zero)
+                throw new TimeoutException();
+        }
+
+        /// <summary>
         /// Indicates that timeout is reached.
         /// </summary>
         /// <param name="timeout">Timeout control object.</param>
