@@ -482,12 +482,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entries.Count == 0)
                 return;
             var index = await auditTrail.AppendAsync(entries).ConfigureAwait(false);
-            if (waitForCommit)
-                await auditTrail.WaitForCommitAsync(index + entries.Count - 1L, timeout).ConfigureAwait(false);
-            else if (IsLeaderLocal)
-                return;
-            else
+            if(!(state is LeaderState leaderState))
                 throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+            if (waitForCommit)
+                await auditTrail.WaitForCommitAsync(index + entries.Count - 1L, timeout, leaderState.Token).ConfigureAwait(false);
         }
 
         Task IReplicationCluster<IRaftLogEntry>.WriteAsync<T>(DataHandler<T, IRaftLogEntry> handler, T input, WriteConcern concern, TimeSpan timeout)

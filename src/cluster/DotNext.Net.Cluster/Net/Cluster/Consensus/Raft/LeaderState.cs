@@ -179,6 +179,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return this;
         }
 
+        //the token that can be used to track leadership
+        internal CancellationToken Token => timerCancellation.Token;
+
         internal override Task StopAsync()
         {
             timerCancellation.Cancel(false);
