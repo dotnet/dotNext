@@ -180,7 +180,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         //the token that can be used to track leadership
-        internal CancellationToken Token => timerCancellation.Token;
+        internal CancellationToken Token => IsDisposed ? new CancellationToken(true) : timerCancellation.Token;
 
         internal override Task StopAsync()
         {
