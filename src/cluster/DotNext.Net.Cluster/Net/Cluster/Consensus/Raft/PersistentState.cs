@@ -493,6 +493,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        private sealed class LogEntryList : List<IRaftLogEntry>, ILogEntryList<IRaftLogEntry>
+        {
+            private AsyncLock.Holder readLock;
+
+            internal LogEntryList(int capacity, AsyncLock.Holder readLock) : base(capacity) => this.readLock = readLock;
+
+            private void Dispose(bool disposing)
+            {
+                if (disposing)
+                    Clear();
+                readLock.Dispose();
+            }
+
+            void IDisposable.Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            ~LogEntryList() => Dispose(false);
+        }
         
 
         private static readonly ValueFunc<long, long, long> MaxFunc = new ValueFunc<long, long, long>(Math.Max);
@@ -571,19 +592,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ILogEntryList<IRaftLogEntry> result;
             if (partitionTable.Count > 0)
             {
-                result = new IRaftLogEntry[endIndex - startIndex + 1L];
+                var list = new LogEntryList((int)Math.Min(int.MaxValue, endIndex - startIndex + 1L), readLock);
                 for (var i = 0L; startIndex <= endIndex; startIndex++, i++)
                 {
                     IRaftLogEntry entry;
                     if (TryGetPartition(startIndex, out var partition) && (entry = partition[startIndex]) != null)
-                        result[i] = entry;
-                    else
-                    {
-                        result = result.RemoveLast(result.LongLength - i);
-                        break;
-                    }
+                        list.Add(entry);
                 }
-
+                result = list;
             }
             else
             {
