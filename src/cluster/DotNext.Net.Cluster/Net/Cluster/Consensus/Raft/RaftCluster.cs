@@ -270,11 +270,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="token">The token that can be used to cancel initialization process.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        public virtual Task StartAsync(CancellationToken token)
+        public virtual async Task StartAsync(CancellationToken token)
         {
+            await auditTrail.EnsureConsistencyAsync(token).ConfigureAwait(false);
             //start node in Follower state
             state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -476,11 +476,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
         }
 
-        private async Task WriteAsync<T>(DataHandler<T, IRaftLogEntry> handler, T input, bool waitForCommit, TimeSpan timeout)
+        private async Task WriteAsync(IReadOnlyList<IRaftLogEntry> entries, bool waitForCommit, TimeSpan timeout)
         {
-            var entries = await handler(input).ConfigureAwait(false);
-            if (entries.Count == 0)
-                return;
             var index = await auditTrail.AppendAsync(entries).ConfigureAwait(false);
             if(!(state is LeaderState leaderState))
                 throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
@@ -488,14 +485,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await auditTrail.WaitForCommitAsync(index + entries.Count - 1L, timeout, leaderState.Token).ConfigureAwait(false);
         }
 
-        Task IReplicationCluster<IRaftLogEntry>.WriteAsync<T>(DataHandler<T, IRaftLogEntry> handler, T input, WriteConcern concern, TimeSpan timeout)
+        /// <summary>
+        /// Writes message into the cluster according with the specified concern.
+        /// </summary>
+        /// <param name="entries">The number of commands to be committed into the audit trail.</param>
+        /// <param name="concern">The value describing level of acknowledgment from cluster.</param>
+        /// <param name="timeout">The timeout of the asynchronous operation.</param>
+        /// <returns>The task representing asynchronous state of this operation.</returns>
+        /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
+        /// <exception cref="NotSupportedException">The specified level of acknowledgment is not supported.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task WriteAsync(IReadOnlyList<IRaftLogEntry> entries, WriteConcern concern, TimeSpan timeout)
         {
+            if (entries.Count == 0)
+                return Task.CompletedTask;
             switch (concern)
             {
                 case WriteConcern.None:
-                    return WriteAsync(handler, input, false, timeout);
+                    return WriteAsync(entries, false, timeout);
                 case WriteConcern.LeaderOnly:
-                    return WriteAsync(handler, input, true, timeout);
+                    return WriteAsync(entries, true, timeout);
                 default:
                     return Task.FromException(new NotSupportedException());
             }

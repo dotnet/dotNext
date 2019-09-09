@@ -36,11 +36,30 @@ namespace DotNext.Net.Cluster.Replication
         /// </summary>
         /// <remarks>
         /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="true"/>.
-        /// This method may force log compaction and squash all committed entries into single entry called snapshot.
+        /// Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.
         /// </remarks>
         /// <param name="endIndex">The index of the last entry to commit, inclusively; if <see langword="null"/> then commits all log entries started from the first uncommitted entry to the last existing log entry.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of committed entries.</returns>
-        Task<long> CommitAsync(long? endIndex = null);
+        Task<long> CommitAsync(long endIndex, CancellationToken token);
+
+        /// <summary>
+        /// Commits log entries into the underlying storage and marks these entries as committed.
+        /// </summary>
+        /// <remarks>
+        /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="true"/>.
+        /// Additionally, it may force log compaction and squash all committed entries into single entry called snapshot.
+        /// </remarks>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The actual number of committed entries.</returns>
+        Task<long> CommitAsync(CancellationToken token);
+
+        /// <summary>
+        /// Ensures that all committed entries are applied to the underlying data state machine known as database engine.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of the method.</returns>
+        Task EnsureConsistencyAsync(CancellationToken token = default);
     }
 
     /// <summary>
@@ -72,12 +91,23 @@ namespace DotNext.Net.Cluster.Replication
         /// with the audit trail segment with entries.
         /// </remarks>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
-        /// <param name="endIndex">The index of the last requested log entry, inclusively; <see langword="null"/> to return all log entries started from <paramref name="startIndex"/> to the last existing log entry.</param>
+        /// <param name="endIndex">The index of the last requested log entry, inclusively.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        Task<ILogEntryList<LogEntry>> GetEntriesAsync(long startIndex, long? endIndex = null);
+        Task<ILogEntryList<LogEntry>> GetEntriesAsync(long startIndex, long endIndex, CancellationToken token);
+
+        /// <summary>
+        /// Gets log entries starting from the specified index to the last log entry.
+        /// </summary>
+        /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The collection of log entries.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
+        /// <seealso cref="ILogEntry.IsSnapshot"/>
+        Task<ILogEntryList<LogEntry>> GetEntriesAsync(long startIndex, CancellationToken token);
 
         /// <summary>
         /// Adds uncommitted log entries into this log.
@@ -86,11 +116,22 @@ namespace DotNext.Net.Cluster.Replication
         /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
         /// </remarks>
         /// <param name="entries">The entries to be added into this log.</param>
-        /// <param name="startIndex"><see langword="null"/> to append entries into the end of the log; or index from which all previous log entries should be dropped and replaced with new entries.</param>
-        /// <returns>Index of the first added entry.</returns>
+        /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
+        /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
-        Task<long> AppendAsync(IReadOnlyList<LogEntry> entries, long? startIndex = null);
+        Task AppendAsync(IReadOnlyList<LogEntry> entries, long startIndex);
+
+        /// <summary>
+        /// Adds uncommitted log entries to the end of this log.
+        /// </summary>
+        /// <remarks>
+        /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
+        /// </remarks>
+        /// <param name="entries">The entries to be added into this log.</param>
+        /// <returns>Index of the first added entry.</returns>
+        /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
+        Task<long> AppendAsync(IReadOnlyList<LogEntry> entries);
 
         /// <summary>
         /// Gets the first ephemeral log entry that is present in the empty log.
