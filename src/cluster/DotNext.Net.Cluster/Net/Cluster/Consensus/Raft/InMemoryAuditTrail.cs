@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using System.Collections;
     using Replication;
     using Threading;
 
@@ -66,6 +68,44 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             DateTimeOffset ILogEntry.Timestamp => default;
         }
 
+        private sealed class LogEntryList : ILogEntryList<IRaftLogEntry>
+        {
+            private readonly long startIndex;
+            private readonly long endIndex;
+            private readonly IRaftLogEntry[] entries;
+            private AsyncLock.Holder readLock;
+
+            internal LogEntryList(IRaftLogEntry[] entries, long startIndex, long endIndex, AsyncLock.Holder readLock)
+            {
+                this.entries = entries;
+                this.startIndex = startIndex;
+                this.endIndex = endIndex;
+                this.readLock = readLock;
+            }
+
+            public IRaftLogEntry this[int index] => entries[index + startIndex];
+
+            public int Count => checked((int)(endIndex - startIndex + 1));
+
+            public IEnumerator<IRaftLogEntry> GetEnumerator()
+            {
+                for (var index = startIndex; index <= endIndex; index++)
+                    yield return entries[index];
+            }
+
+            private void Dispose() => readLock.Dispose();
+
+            void IDisposable.Dispose()
+            {
+                Dispose();
+                GC.SuppressFinalize(this);
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            ~LogEntryList() => Dispose();
+        }
+
         internal static readonly IRaftLogEntry[] EmptyLog = { new InitialLogEntry() };
 
         private long commitIndex;
@@ -74,6 +114,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private long term;
         private volatile IRaftClusterMember votedFor;
         private readonly AsyncManualResetEvent commitEvent;
+        private readonly ILogEntryList<BufferedLogEntry> emptyLog;
 
         /// <summary>
         /// Initializes a new audit trail with empty log.
@@ -82,6 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             log = EmptyLog;
             commitEvent = new AsyncManualResetEvent(false);
+            emptyLog = new LogEntryList<BufferedLogEntry>();
         }
 
         long IPersistentState.Term => term.VolatileRead();
@@ -114,24 +156,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public long GetLastIndex(bool committed)
             => committed ? commitIndex.VolatileRead() : Math.Max(0, log.LongLength - 1L);
 
-        private IReadOnlyList<IRaftLogEntry> GetEntries(long startIndex, long endIndex)
+        private async Task<ILogEntryList<IRaftLogEntry>> GetEntriesAsync(long startIndex, long endIndex)
         {
-            if(startIndex < 0L)
+            if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            if(endIndex < 0L)
+            if (endIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(endIndex));
+            if (endIndex < startIndex)
+                return emptyLog;
+            var readLock = await this.AcquireReadLockAsync(CancellationToken.None).ConfigureAwait(false);
             if (endIndex >= log.Length)
+            {
+                readLock.Dispose();
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
-            return endIndex < startIndex ? 
-                Array.Empty<IRaftLogEntry>() :
-                log.Slice(startIndex, endIndex - startIndex + 1);
+            }
+            return new LogEntryList(log, startIndex, endIndex, readLock);
         }
 
-        async Task<IReadOnlyList<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
-        {
-            using (await this.AcquireReadLockAsync(CancellationToken.None).ConfigureAwait(false))
-                return GetEntries(startIndex, endIndex ?? GetLastIndex(false));
-        }
+        Task<ILogEntryList<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
+            => GetEntriesAsync(startIndex, endIndex ?? GetLastIndex(false));
 
         private long Append(IRaftLogEntry[] entries, long? startIndex)
         {
@@ -194,8 +237,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="disposing">Indicates whether the <see cref="Dispose(bool)"/> has been called directly or from finalizer.</param>
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
+            {
+                emptyLog.Dispose();
                 commitEvent.Dispose();
+            }
             base.Dispose(disposing);
         }
     }

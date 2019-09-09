@@ -44,8 +44,22 @@ namespace DotNext.Net.Cluster.Replication
     }
 
     /// <summary>
+    /// Represents log entry reader.
+    /// </summary>
+    /// <remarks>
+    /// The log entry is valid only during the iteration of the reader. The call of <see cref="System.Collections.IEnumerator.MoveNext()"/> invalidates the current log entry.
+    /// </remarks>
+    /// <typeparam name="LogEntry">The type of the log entry maintained by the audit trail.</typeparam>
+    public interface ILogEntryList<out LogEntry> : IReadOnlyList<LogEntry>, IDisposable
+        where LogEntry : class, ILogEntry
+    {
+        //TODO: This interface should implement IAsyncEnumerable interface starting from .NET Standard 2.1
+    }
+
+    /// <summary>
     /// Represents audit trail responsible for maintaining log entries.
     /// </summary>
+    /// <typeparam name="LogEntry">The type of the log entry maintained by the audit trail.</typeparam>
     public interface IAuditTrail<LogEntry> : IAuditTrail
         where LogEntry : class, ILogEntry
     {
@@ -54,15 +68,16 @@ namespace DotNext.Net.Cluster.Replication
         /// </summary>
         /// <remarks>
         /// This method may return less entries than <c>endIndex - startIndex + 1</c>. This may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
-        /// In this case the first entry in the collection is a snapshot entry.
+        /// In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="IDisposable.Dispose"/> to release resources associated
+        /// with the audit trail segment with entries.
         /// </remarks>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
         /// <param name="endIndex">The index of the last requested log entry, inclusively; <see langword="null"/> to return all log entries started from <paramref name="startIndex"/> to the last existing log entry.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
-        /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index if the last added entry.</exception>
+        /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        Task<IReadOnlyList<LogEntry>> GetEntriesAsync(long startIndex, long? endIndex = null);
+        Task<ILogEntryList<LogEntry>> GetEntriesAsync(long startIndex, long? endIndex = null);
 
         /// <summary>
         /// Adds uncommitted log entries into this log.

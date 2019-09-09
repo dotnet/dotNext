@@ -61,26 +61,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var currentIndex = transactionLog.GetLastIndex(false);
             logger.ReplicationStarted(member.Endpoint, currentIndex);
             var precedingIndex = Math.Max(0, member.NextIndex - 1);
-            var precedingTerm = (await transactionLog.GetEntryAsync(precedingIndex).ConfigureAwait(false) ??
-                                 transactionLog.First).Term;
-            var entries = currentIndex >= member.NextIndex
-                ? await transactionLog.GetEntriesAsync(member.NextIndex).ConfigureAwait(false)
-                : Array.Empty<IRaftLogEntry>();
-            logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
-            //trying to replicate
-            var result = await member
-                .AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token)
-                .ConfigureAwait(false);
-            if (result.Value)
+            var precedingTerm = await transactionLog.GetTermAsync(precedingIndex).ConfigureAwait(false);
+            Result<bool> result;
+            using (var entries = currentIndex >= member.NextIndex ? await transactionLog.GetEntriesAsync(member.NextIndex).ConfigureAwait(false) : new EmptyLogEntryList<IRaftLogEntry>())
             {
-                logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
-                member.NextIndex.VolatileWrite(currentIndex + 1);
-                //checks whether the at least one entry from current term is stored on this node
-                result = result.SetValue(entries.Any(entry => entry.Term == term));
-            }
-            else
-                logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
+                logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
+                //trying to replicate
+                result = await member.AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false);
 
+                if (result.Value)
+                {
+                    logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
+                    member.NextIndex.VolatileWrite(currentIndex + 1);
+                    //checks whether the at least one entry from current term is stored on this node
+                    result = result.SetValue(entries.Any(entry => entry.Term == term));
+                }
+                else
+                    logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
+            }
             return result;
         }
 
