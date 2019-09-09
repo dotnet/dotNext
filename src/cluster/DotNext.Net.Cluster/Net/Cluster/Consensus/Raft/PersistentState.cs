@@ -649,7 +649,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         Task IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
-            => index > 1L ? CommitEvent.WaitForCommitAsync(this, commitEvent, index, timeout, token) : Task.FromException(new ArgumentOutOfRangeException(nameof(index)));
+            => index >= 0L ? CommitEvent.WaitForCommitAsync(this, commitEvent, index, timeout, token) : Task.FromException(new ArgumentOutOfRangeException(nameof(index)));
 
         Task<long> IAuditTrail.CommitAsync(long? endIndex)
         {
