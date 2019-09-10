@@ -350,7 +350,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (auditTrail.Term <= senderTerm &&
-                    await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm).ConfigureAwait(false))
+                    await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, transitionCancellation.Token).ConfigureAwait(false))
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
@@ -358,7 +358,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (entries.Count > 0L)
                         await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
                     var result = commitIndex <= auditTrail.GetLastIndex(true) ||
-                                 await auditTrail.CommitAsync(commitIndex).ConfigureAwait(false) > 0;
+                                 await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
                     return new Result<bool>(auditTrail.Term, result);
                 }
                 else
@@ -388,7 +388,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     follower.Refresh();
                 else
                     goto reject;
-                if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm).ConfigureAwait(false))
+                if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, transitionCancellation.Token).ConfigureAwait(false))
                 {
                     await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
                     return new Result<bool>(auditTrail.Term, true);

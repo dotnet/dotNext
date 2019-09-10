@@ -61,9 +61,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var currentIndex = transactionLog.GetLastIndex(false);
             logger.ReplicationStarted(member.Endpoint, currentIndex);
             var precedingIndex = Math.Max(0, member.NextIndex - 1);
-            var precedingTerm = await transactionLog.GetTermAsync(precedingIndex).ConfigureAwait(false);
+            var precedingTerm = await transactionLog.GetTermAsync(precedingIndex, token).ConfigureAwait(false);
             Result<bool> result;
-            using (var entries = currentIndex >= member.NextIndex ? await transactionLog.GetEntriesAsync(member.NextIndex).ConfigureAwait(false) : new EmptyLogEntryList<IRaftLogEntry>())
+            using (var entries = currentIndex >= member.NextIndex ? await transactionLog.GetEntriesAsync(member.NextIndex, token).ConfigureAwait(false) : new LogEntryList<IRaftLogEntry>())
             {
                 logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
                 //trying to replicate
@@ -138,7 +138,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //majority of nodes accept entries with a least one entry from current term
             if (commitQuorum > 0)
             {
-                var count = await transactionLog.CommitAsync().ConfigureAwait(false); //commit all entries started from first uncommitted index to the end
+                var count = await transactionLog.CommitAsync(timerCancellation.Token).ConfigureAwait(false); //commit all entries started from first uncommitted index to the end
                 stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
                 return CheckTerm(term);
             }

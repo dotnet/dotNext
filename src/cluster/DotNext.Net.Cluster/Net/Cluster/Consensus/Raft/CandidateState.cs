@@ -24,8 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private static async Task<Result<VotingResult>> VoteAsync(IRaftClusterMember voter, long term, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
             {
                 var lastIndex = auditTrail.GetLastIndex(false);
-                var lastTerm = (await auditTrail.GetEntryAsync(lastIndex).ConfigureAwait(false) ?? auditTrail.First)
-                    .Term;
+                var lastTerm = await auditTrail.GetTermAsync(lastIndex, token).ConfigureAwait(false);
                 VotingResult result;
                 try
                 {
