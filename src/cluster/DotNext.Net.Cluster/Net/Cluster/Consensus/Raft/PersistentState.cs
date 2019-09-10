@@ -409,6 +409,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var newLength = reader.ReadInt64();
                 if (newLength > 0)
                     SetLength(newLength);
+                else
+                    return Task.CompletedTask;
                 //Erase allocation table entries
                 //TODO: Heap buffer should be replaced with Span and stack allocation in .NET Standard 2.1
                 var buffer = new byte[AllocationTableEntrySize * (Capacity - startIndex)];
