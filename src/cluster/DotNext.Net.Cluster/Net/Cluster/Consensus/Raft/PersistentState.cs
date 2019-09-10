@@ -59,7 +59,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly StreamSegment content;
             private readonly long contentOffset;
 
-            internal LogEntry(BinaryReader reader, StreamSegment cachedContent)
+            internal LogEntry(BinaryReader reader, StreamSegment cachedContent, bool snapshot = false)
             {
                 //parse entry metadata
                 Term = reader.ReadInt64();
@@ -67,6 +67,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Length = reader.ReadInt64();
                 contentOffset = reader.BaseStream.Position;
                 content = cachedContent;
+                IsSnapshot = snapshot;
             }
 
             /// <summary>
@@ -74,7 +75,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public long Length { get; }
 
-            bool ILogEntry.IsSnapshot => false;
+            /// <summary>
+            /// Gets a value indicating that this entry is a snapshot entry.
+            /// </summary>
+            public bool IsSnapshot { get; }
 
             internal LogEntry AdjustPosition()
             {
@@ -258,6 +262,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public DateTimeOffset Timestamp { get; }
         }
 
+        private abstract class LogFileStream : FileStream
+        {
+            private protected readonly BinaryReader reader;
+            private protected readonly BinaryWriter writer;
+            private protected readonly StreamSegment cachedContent;
+
+            private protected LogFileStream(string fileName, int bufferSize, FileOptions options)
+                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options)
+            {
+                reader = new BinaryReader(this, Encoding.UTF8, true);
+                writer = new BinaryWriter(this, Encoding.UTF8, false);
+                cachedContent = new StreamSegment(this);
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if(disposing)
+                {
+                    reader.Dispose();
+                    writer.Dispose();
+                    cachedContent.Dispose();
+                }
+                base.Dispose(disposing);
+            }
+        }
+
         /*
             Partition file format:
             FileName - number of partition
@@ -267,28 +297,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Payload:
             [metadata, 8 bytes = length, content] X number of entries
          */
-        private sealed class Partition : FileStream
+        private sealed class Partition : LogFileStream
         {
             private const long AllocationTableEntrySize = sizeof(long);
             private const long IndexOffsetOffset = 0;
             private const long AllocationTableOffset = IndexOffsetOffset + sizeof(long);
 
             private readonly long payloadOffset;
-            private readonly BinaryReader reader;
-            private readonly BinaryWriter writer;
-            private readonly StreamSegment cachedContent;
             internal readonly long IndexOffset;
 
             internal Partition(string fileName, long recordsPerPartition)
-                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, 2048, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
+                : base(fileName, 2048, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
                 payloadOffset = AllocationTableOffset + AllocationTableEntrySize * recordsPerPartition;
                 Capacity = recordsPerPartition;
                 if (Length == 0)
                     SetLength(payloadOffset);
-                reader = new BinaryReader(this, Encoding.UTF8, true);
-                writer = new BinaryWriter(this, Encoding.UTF8, true);
-                cachedContent = new StreamSegment(this);
                 //restore index offset
                 Position = IndexOffsetOffset;
                 IndexOffset = reader.ReadInt64();
@@ -366,32 +390,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Position = AllocationTableOffset + index * AllocationTableEntrySize;
                 writer.Write(offset);
             }
-
-            protected override void Dispose(bool disposing)
-            {
-                if (disposing)
-                {
-                    reader.Dispose();
-                    writer.Dispose();
-                    cachedContent.Dispose();
-                }
-                base.Dispose(disposing);
-            }
         }
 
         /*
          * Binary format is the same as for LogEntry
          */
-        private sealed class Snapshot : FileStream
+        private sealed class Snapshot : LogFileStream
         {
             private const string FileName = "snapshot";
 
-            private readonly BinaryWriter writer;
-
             internal Snapshot(DirectoryInfo location)
-                : base(Path.Combine(location.FullName, FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, 2048, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.WriteThrough)
+                : base(Path.Combine(location.FullName, FileName), 2048, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.WriteThrough)
             {
-                writer = new BinaryWriter(this, Encoding.UTF8, true);
             }
 
             internal Task SaveAsync(IRaftLogEntry entry, CancellationToken token)
@@ -400,11 +410,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return LogEntry.WriteAsync(entry, writer, token);
             }
 
-            protected override void Dispose(bool disposing)
+            internal LogEntry Load()
             {
-                if (disposing)
-                    writer.Dispose();
-                base.Dispose(disposing);
+                Position = 0;
+                return new LogEntry(reader, cachedContent, true);
             }
         }
 
