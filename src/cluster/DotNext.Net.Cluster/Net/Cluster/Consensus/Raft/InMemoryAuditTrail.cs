@@ -105,7 +105,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ~LogEntryList() => Dispose();
         }
 
-        internal static readonly IRaftLogEntry[] EmptyLog = { new InitialLogEntry() };
+        internal static readonly IRaftLogEntry[] InitialLog = { new InitialLogEntry() };
 
         private long commitIndex, lastApplied;
         private volatile IRaftLogEntry[] log;
@@ -125,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public InMemoryAuditTrail()
         {
             lastApplied = -1L;
-            log = EmptyLog;
+            log = InitialLog;
             commitEvent = new AsyncManualResetEvent(false);
             emptyLog = new LogEntryList<BufferedLogEntry>();
             syncRoot = new AsyncReaderWriterLock();
@@ -165,7 +165,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            var readLock = await this.AcquireReadLockAsync(token).ConfigureAwait(false);
+            var readLock = await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
             return new LogEntryList(log, startIndex, GetLastIndex(false), readLock);
         }
 
@@ -177,7 +177,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(endIndex));
             if (endIndex < startIndex)
                 return emptyLog;
-            var readLock = await this.AcquireReadLockAsync(token).ConfigureAwait(false);
+            var readLock = await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
             if (endIndex >= log.Length)
             {
                 readLock.Dispose();
@@ -278,7 +278,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
             => index >= 0L ? CommitEvent.WaitForCommitAsync(this, commitEvent, index, timeout, token) : Task.FromException(new ArgumentOutOfRangeException(nameof(index)));
 
-        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref EmptyLog[0];
+        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref InitialLog[0];
 
         /// <summary>
         /// Releases all resources associated with this audit trail.
