@@ -118,6 +118,48 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Fact]
+        public static async Task Overwrite()
+        {
+            var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+            var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
+            var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
+            var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
+            var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
+
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            try
+            {
+                Equal(1L, await state.AppendAsync(new[] { entry2, entry3, entry4, entry5 }));
+                Equal(4L, state.GetLastIndex(false));
+                Equal(0L, state.GetLastIndex(true));
+                await state.AppendAsync(new[] { entry1 }, 1L);
+                Equal(1L, state.GetLastIndex(false));
+                Equal(0L, state.GetLastIndex(true));
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
+            }
+
+            //read again
+            state = new PersistentState(dir, RecordsPerPartition);
+            try
+            {
+                Equal(1L, state.GetLastIndex(false));
+                Equal(0L, state.GetLastIndex(true));
+                var entries = await state.GetEntriesAsync(1L, CancellationToken.None);
+                Equal(1, entries.Count);
+                Equal(entry1.Content, await entries[0].ReadAsTextAsync(Encoding.UTF8));
+                entries.Dispose();
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
+            }
+        }
+
+        [Fact]
         public static async Task PartitionOverflow()
         {
             var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };

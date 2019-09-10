@@ -274,7 +274,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options)
             {
                 reader = new BinaryReader(this, Encoding.UTF8, true);
-                writer = new BinaryWriter(this, Encoding.UTF8, false);
+                writer = new BinaryWriter(this, Encoding.UTF8, true);
                 cachedContent = new StreamSegment(this);
             }
 
@@ -308,8 +308,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly long payloadOffset;
             internal readonly long IndexOffset;
 
-            internal Partition(string fileName, long recordsPerPartition)
-                : base(fileName, 2048, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
+            internal Partition(string fileName, int bufferSize, long recordsPerPartition)
+                : base(fileName, bufferSize, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
                 payloadOffset = AllocationTableOffset + AllocationTableEntrySize * recordsPerPartition;
                 Capacity = recordsPerPartition;
@@ -320,8 +320,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 IndexOffset = reader.ReadInt64();
             }
 
-            internal Partition(DirectoryInfo location, long recordsPerPartition, long partitionNumber)
-                : this(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), recordsPerPartition)
+            internal Partition(DirectoryInfo location, int bufferSize, long recordsPerPartition, long partitionNumber)
+                : this(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, recordsPerPartition)
             {
                 Position = IndexOffsetOffset;
                 writer.Write(IndexOffset = partitionNumber * recordsPerPartition);
@@ -329,24 +329,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             //max number of entries
             internal long Capacity { get; }
-
-            //current count of entries
-            internal long Count
-            {
-                get
-                {
-                    var result = IndexOffset == 0L ? 1L : 0L;
-                    while (result < Capacity)
-                    {
-                        Position = AllocationTableOffset + result * AllocationTableEntrySize;
-                        if (reader.ReadInt64() == 0L)
-                            break;
-                        else
-                            result += 1;
-                    }
-                    return result;
-                }
-            }
 
             internal LogEntry this[long index]
             {
@@ -394,29 +376,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Position = AllocationTableOffset + index * AllocationTableEntrySize;
                 writer.Write(offset);
             }
-
-            //drops all subsequent records
-            internal Task ShrinkAsync(long startIndex)
-            {
-                //calculate relative index
-                startIndex -= IndexOffset + 1;
-                Debug.Assert(startIndex >= 0 && startIndex <= Capacity);
-                if (startIndex == Capacity)
-                    return Task.CompletedTask;
-                //1. Find offset to the startIndex entry and shrink the partition
-                var allocTableEntryOffset = AllocationTableOffset + startIndex * AllocationTableEntrySize;
-                Position = allocTableEntryOffset;
-                var newLength = reader.ReadInt64();
-                if (newLength > 0)
-                    SetLength(newLength);
-                else
-                    return Task.CompletedTask;
-                //Erase allocation table entries
-                //TODO: Heap buffer should be replaced with Span and stack allocation in .NET Standard 2.1
-                var buffer = new byte[AllocationTableEntrySize * (Capacity - startIndex)];
-                Position = allocTableEntryOffset;
-                return WriteAsync(buffer, 0, buffer.Length);
-            }
         }
 
         /*
@@ -426,8 +385,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             private const string FileName = "snapshot";
 
-            internal Snapshot(DirectoryInfo location)
-                : base(Path.Combine(location.FullName, FileName), 2048, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.WriteThrough)
+            internal Snapshot(DirectoryInfo location, int bufferSize)
+                : base(Path.Combine(location.FullName, FileName), bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.WriteThrough)
             {
             }
 
@@ -449,6 +408,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             8 bytes = Term
             8 bytes = CommitIndex
             8 bytes = LastApplied
+            8 bytes = LastIndex
             4 bytes = Node port
             4 bytes = Address Length
             octet string = IP Address
@@ -460,14 +420,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private const long TermOffset = 0L;
             private const long CommitIndexOffset = TermOffset + sizeof(long);
             private const long LastAppliedOffset = CommitIndexOffset + sizeof(long);
-            private const long PortOffset = LastAppliedOffset + sizeof(long);
+            private const long LastIndexOffset = LastAppliedOffset + sizeof(long);
+            private const long PortOffset = LastIndexOffset + sizeof(long);
             private const long AddressLengthOffset = PortOffset + sizeof(int);
             private const long AddressOffset = AddressLengthOffset + sizeof(int);
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor stateView;
             private readonly AsyncLock syncRoot;
             private volatile IPEndPoint votedFor;
-            private long term;  //volatile
+            private long term, commitIndex, lastIndex, lastApplied;  //volatile
 
             internal NodeState(DirectoryInfo location, AsyncLock writeLock)
             {
@@ -475,6 +436,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 syncRoot = writeLock;
                 stateView = mappedFile.CreateViewAccessor();
                 term = stateView.ReadInt64(TermOffset);
+                commitIndex = stateView.ReadInt64(CommitIndexOffset);
+                lastIndex = stateView.ReadInt64(LastIndexOffset);
+                lastApplied = stateView.ReadInt64(LastAppliedOffset);
                 var port = stateView.ReadInt32(PortOffset);
                 var length = stateView.ReadInt32(AddressLengthOffset);
                 if (length == 0)
@@ -489,14 +453,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal long CommitIndex
             {
-                get => stateView.ReadInt64(CommitIndexOffset);
-                set => stateView.Write(CommitIndexOffset, value);
+                get => commitIndex.VolatileRead();
+                set
+                {
+                    stateView.Write(CommitIndexOffset, value);
+                    commitIndex.VolatileWrite(value);
+                }
             }
 
             internal long LastApplied
             {
-                get => stateView.ReadInt64(LastAppliedOffset);
-                set => stateView.Write(LastAppliedOffset, value);
+                get => lastApplied.VolatileRead();
+                set
+                {
+                    stateView.Write(LastAppliedOffset, value);
+                    lastApplied.VolatileWrite(value);
+                }
+            }
+
+            internal long LastIndex
+            {
+                get => lastIndex.VolatileRead();
+                set
+                {
+                    stateView.Write(LastIndexOffset, value);
+                    lastIndex.VolatileWrite(value);
+                }
             }
 
             internal long Term => term.VolatileRead();
@@ -640,8 +622,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public abstract ValueTask CopyToAsync(PipeWriter output, CancellationToken token);
         }
 
-        private static readonly ValueFunc<long, long, long> MaxFunc = new ValueFunc<long, long, long>(Math.Max);
-        private long lastIndex;
+        private const int DefaultBufferSize = 2048;
         private readonly long recordsPerPartition;
         //key is the number of partition
         private readonly Dictionary<long, Partition> partitionTable;
@@ -652,19 +633,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly AsyncExclusiveLock syncRoot;
         private readonly ILogEntryList<IRaftLogEntry> emptyLog;
         private readonly ILogEntryList<IRaftLogEntry> initialLog;
+        private readonly int bufferSize;
 
         /// <summary>
         /// Initializes a new persistent audit trail.
         /// </summary>
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
+        /// <param name="bufferSize">Optional size of in-memory buffer for I/O operations.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1.</exception>
-        public PersistentState(DirectoryInfo path, long recordsPerPartition)
+        public PersistentState(DirectoryInfo path, long recordsPerPartition, int bufferSize = DefaultBufferSize)
         {
             if(recordsPerPartition < 1L)
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
+            this.bufferSize = bufferSize;
             location = path;
             this.recordsPerPartition = recordsPerPartition;
             commitEvent = new AsyncManualResetEvent(false);
@@ -676,12 +660,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             foreach (var file in path.EnumerateFiles())
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
-                    var partition = new Partition(file.FullName, recordsPerPartition);
-                    lastIndex += partition.Count;
+                    var partition = new Partition(file.FullName, bufferSize, recordsPerPartition);
                     partitionTable[partitionNumber] = partition;
                 }
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
-            snapshot = new Snapshot(path);
+            snapshot = new Snapshot(path, bufferSize);
         }
 
         /// <summary>
@@ -689,9 +672,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
+        /// <param name="bufferSize">Optional size of in-memory buffer for I/O operations.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1.</exception>
-        public PersistentState(string path, long recordsPerPartition)
-            : this(new DirectoryInfo(path), recordsPerPartition)
+        public PersistentState(string path, long recordsPerPartition, int bufferSize = DefaultBufferSize)
+            : this(new DirectoryInfo(path), recordsPerPartition, bufferSize)
         {
         }
 
@@ -703,7 +687,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </remarks>
         /// <param name="committed"><see langword="true"/> to get the index of highest log entry known to be committed; <see langword="false"/> to get the index of the last log entry.</param>
         /// <returns>The index of the log entry.</returns>
-        public long GetLastIndex(bool committed) => committed ? state.CommitIndex : lastIndex.VolatileRead();
+        public long GetLastIndex(bool committed) => committed ? state.CommitIndex : state.LastIndex;
 
         private long PartitionOf(long recordIndex) => recordIndex / recordsPerPartition;
 
@@ -715,7 +699,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             partitionNumber = PartitionOf(recordIndex);
             if (!partitionTable.TryGetValue(partitionNumber, out var partition))
             {
-                partition = new Partition(location, recordsPerPartition, partitionNumber);
+                partition = new Partition(location, bufferSize, recordsPerPartition, partitionNumber);
                 partitionTable.Add(partitionNumber, partition);
             }
             return partition;
@@ -723,12 +707,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private ILogEntryList<IRaftLogEntry> GetEntries(long startIndex, long endIndex, AsyncLock.Holder readLock, CancellationToken token)
         {
-            if (startIndex > lastIndex.VolatileRead())
+            if (startIndex > state.LastIndex)
             {
                 readLock.Dispose();
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
             }
-            if(endIndex > lastIndex)
+            if(endIndex > state.LastIndex)
             {
                 readLock.Dispose();
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
@@ -789,31 +773,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             var readLock = await syncRoot.AcquireLockAsync(token).ConfigureAwait(false);
-            return GetEntries(startIndex, lastIndex.VolatileRead(), readLock, token);
+            return GetEntries(startIndex, state.LastIndex, readLock, token);
         }
 
         private async Task<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
         {
-            var lastIndex = this.lastIndex.VolatileRead();
             if (startIndex <= state.CommitIndex)
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-            if (startIndex > lastIndex + 1)
+            if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            var dropNeeded = startIndex <= lastIndex;
             long partitionLow = 0, partitionHigh = 0;
-            var lastPartition = default(Partition);
             for (var i = 0; i < entries.Count; i++)
             {
-                lastIndex = startIndex + i;
-                lastIndex.AccumulateAndGet(lastIndex, in MaxFunc);
-                lastPartition = GetOrCreatePartition(lastIndex, out var partitionNumber);
-                await lastPartition.WriteAsync(entries[i], lastIndex).ConfigureAwait(false);
+                var insertionIndex = startIndex + i;
+                await GetOrCreatePartition(insertionIndex, out var partitionNumber).WriteAsync(entries[i], insertionIndex).ConfigureAwait(false);
+                state.LastIndex = insertionIndex;
                 partitionLow = Math.Min(partitionLow, partitionNumber);
                 partitionHigh = Math.Max(partitionHigh, partitionNumber);
             }
-            //drop all subsequent records
-            if (dropNeeded && lastPartition != null)
-                await lastPartition.ShrinkAsync(lastIndex).ConfigureAwait(false);
             //flush all touched partitions
             Task flushTask;
             switch (partitionHigh - partitionLow)
@@ -848,7 +825,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
-                return await AppendAsync(entries, lastIndex.VolatileRead() + 1L).ConfigureAwait(false);
+                return await AppendAsync(entries, state.LastIndex + 1L).ConfigureAwait(false);
         }
 
         Task IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
@@ -962,7 +939,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Releases all resources associated with this audit trail.
         /// </summary>
-        /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer.</param>
+        /// <param name="disposing"><see langword="true"/> if called from <see cref="IDisposable.Dispose()"/>; <see langword="false"/> if called from finalizer.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
