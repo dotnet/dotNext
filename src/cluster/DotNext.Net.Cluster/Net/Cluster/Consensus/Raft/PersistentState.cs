@@ -37,21 +37,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <description>file containing snapshot</description>
     /// </item>
     /// </list>
+    /// The audit trail supports log compaction. However, it doesn't know how to interpret and reduce log records during compaction.
+    /// To do that, you can override <see cref="CreateSnapshotBuilder"/> method and implement state machine logic.
     /// </remarks>
     public class PersistentState : Disposable, IPersistentState
     {
-        /*
-         * Log entry format:
-         * 8 bytes = term
-         * 8 bytes = timestamp (UTC)
-         * 8 bytes = content length
-         * octet stream = content
-         */
          /// <summary>
          /// Represents persistent log entry.
          /// </summary>
         protected sealed class LogEntry : IRaftLogEntry
         {
+            /*
+             * Log entry format:
+             * 8 bytes = term
+             * 8 bytes = timestamp (UTC)
+             * 8 bytes = content length
+             * octet string = content
+             */
             internal const long TermOffset = 0L;
             internal const long TimestampOffset = TermOffset + sizeof(long);
             internal const long LengthOffset = TimestampOffset + sizeof(long);
@@ -353,6 +355,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     var offset = IndexOffset;
                     //calculate relative index
                     index -= offset;
+                    Debug.Assert(index >= 0 && index < Capacity);
                     //find pointer to the content
                     Position = AllocationTableOffset + index * AllocationTableEntrySize;
                     offset = reader.ReadInt64();
@@ -367,6 +370,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 //calculate relative index
                 index -= IndexOffset;
+                Debug.Assert(index >= 0 && index < Capacity);
                 //calculate offset of the previous entry
                 long offset;
                 if (index == 0L || index == 1L && IndexOffset == 0L)
@@ -389,6 +393,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 //record new log entry to the allocation table
                 Position = AllocationTableOffset + index * AllocationTableEntrySize;
                 writer.Write(offset);
+            }
+
+            //drops all subsequent records
+            internal Task ShrinkAsync(long startIndex)
+            {
+                //calculate relative index
+                startIndex -= IndexOffset + 1;
+                Debug.Assert(startIndex >= 0 && startIndex <= Capacity);
+                if (startIndex == Capacity)
+                    return Task.CompletedTask;
+                //1. Find offset to the startIndex entry and shrink the partition
+                var allocTableEntryOffset = AllocationTableOffset + startIndex * AllocationTableEntrySize;
+                Position = allocTableEntryOffset;
+                var newLength = reader.ReadInt64();
+                if (newLength > 0)
+                    SetLength(newLength);
+                //Erase allocation table entries
+                //TODO: Heap buffer should be replaced with Span and stack allocation in .NET Standard 2.1
+                var buffer = new byte[AllocationTableEntrySize * (Capacity - startIndex)];
+                Position = allocTableEntryOffset;
+                return WriteAsync(buffer, 0, buffer.Length);
             }
         }
 
@@ -626,13 +651,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly ILogEntryList<IRaftLogEntry> emptyLog;
         private readonly ILogEntryList<IRaftLogEntry> initialLog;
 
-        public PersistentState(DirectoryInfo location, long recordsPerPartition)
+        /// <summary>
+        /// Initializes a new persistent audit trail.
+        /// </summary>
+        /// <param name="path">The path to the folder to be used by audit trail.</param>
+        /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1.</exception>
+        public PersistentState(DirectoryInfo path, long recordsPerPartition)
         {
             if(recordsPerPartition < 1L)
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
-            if (!location.Exists)
-                location.Create();
-            this.location = location;
+            if (!path.Exists)
+                path.Create();
+            location = path;
             this.recordsPerPartition = recordsPerPartition;
             commitEvent = new AsyncManualResetEvent(false);
             syncRoot = new AsyncExclusiveLock();
@@ -640,17 +671,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             emptyLog = new LogEntryList<LogEntry>();
             initialLog = new LogEntryList<IRaftLogEntry>(InMemoryAuditTrail.InitialLog);
             //load all partitions from file system
-            foreach (var file in location.EnumerateFiles())
+            foreach (var file in path.EnumerateFiles())
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
                     var partition = new Partition(file.FullName, recordsPerPartition);
                     lastIndex += partition.Count;
                     partitionTable[partitionNumber] = partition;
                 }
-            state = new NodeState(location, AsyncLock.Exclusive(syncRoot));
-            snapshot = new Snapshot(location);
+            state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
+            snapshot = new Snapshot(path);
         }
 
+        /// <summary>
+        /// Initializes a new persistent audit trail.
+        /// </summary>
+        /// <param name="path">The path to the folder to be used by audit trail.</param>
+        /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1.</exception>
         public PersistentState(string path, long recordsPerPartition)
             : this(new DirectoryInfo(path), recordsPerPartition)
         {
@@ -689,21 +726,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 readLock.Dispose();
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
             }
+            if(endIndex > lastIndex)
+            {
+                readLock.Dispose();
+                throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
+            }
             ILogEntryList<IRaftLogEntry> result;
             if (partitionTable.Count > 0)
                 try
                 {
                     var list = new LogEntryList((int)Math.Min(int.MaxValue, endIndex - startIndex + 1L), readLock);
-                    while (startIndex <= endIndex)
+                    for (; startIndex <= endIndex;token.ThrowIfCancellationRequested(), startIndex++)
                     {
                         IRaftLogEntry entry;
-                        if (startIndex == 0L)
+                        if (startIndex == 0L)   //handle ephemeral entity
                             entry = InMemoryAuditTrail.InitialLog[0];
-                        else if (!TryGetPartition(startIndex, out var partition) || (entry = partition[startIndex]) is null)
+                        else if (TryGetPartition(startIndex, out var partition)) //handle regular record
+                            entry = partition[startIndex];
+                        else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)    //probably the record is snapshotted
+                        {
+                            if (list.Count == 0)
+                                entry = snapshot.Load();
+                            else
+                                continue;
+                        }
+                        else
                             break;
+                        Debug.Assert(entry != null);
                         list.Add(entry);
-                        token.ThrowIfCancellationRequested();
-                        startIndex += 1;
                     }
                     result = list;
                 }
@@ -742,19 +792,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
         {
+            var lastIndex = this.lastIndex.VolatileRead();
             if (startIndex <= state.CommitIndex)
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-            if (startIndex > (lastIndex.VolatileRead() + 1))
+            if (startIndex > lastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
+            var dropNeeded = startIndex <= lastIndex;
             long partitionLow = 0, partitionHigh = 0;
+            var lastPartition = default(Partition);
             for (var i = 0; i < entries.Count; i++)
             {
-                var idx = startIndex + i;
-                lastIndex.AccumulateAndGet(idx, in MaxFunc);
-                await GetOrCreatePartition(idx, out var partitionNumber).WriteAsync(entries[i], idx).ConfigureAwait(false);
+                lastIndex = startIndex + i;
+                lastIndex.AccumulateAndGet(lastIndex, in MaxFunc);
+                lastPartition = GetOrCreatePartition(lastIndex, out var partitionNumber);
+                await lastPartition.WriteAsync(entries[i], lastIndex).ConfigureAwait(false);
                 partitionLow = Math.Min(partitionLow, partitionNumber);
                 partitionHigh = Math.Max(partitionHigh, partitionNumber);
             }
+            //drop all subsequent records
+            if (dropNeeded && lastPartition != null)
+                await lastPartition.ShrinkAsync(lastIndex).ConfigureAwait(false);
             //flush all touched partitions
             Task flushTask;
             switch (partitionHigh - partitionLow)
@@ -900,6 +957,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember member) => state.UpdateVotedForAsync(member?.Endpoint);
 
+        /// <summary>
+        /// Releases all resources associated with this audit trail.
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
