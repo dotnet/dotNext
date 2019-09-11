@@ -13,6 +13,10 @@ namespace DotNext.IO
     /// <summary>
     /// Represents high-level read/write methods for the stream.
     /// </summary>
+    /// <remarks>
+    /// This class provides alternative way to read and write typed data from/to the stream
+    /// without instantiation of <see cref="BinaryReader"/> and <see cref="BinaryWriter"/>.
+    /// </remarks>
     public static class StreamExtensions
     {
         private static unsafe int GetBytes(this Encoder encoder, string value, int charOffset, int charCount, byte[] buffer, bool flush)
