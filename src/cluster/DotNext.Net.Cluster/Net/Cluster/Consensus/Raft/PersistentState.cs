@@ -7,7 +7,6 @@ using System.IO.Pipelines;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text;
 using static System.Globalization.CultureInfo;
 using static System.Buffers.Binary.BinaryPrimitives;
 
@@ -15,6 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO;
     using Replication;
+    using Text;
     using Threading;
     using static Collections.Generic.Dictionary;
 
@@ -130,7 +130,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </remarks>
             /// <param name="count">The number of bytes to read.</param>
             /// <returns>The span of bytes representing buffer segment.</returns>
-            /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="buffer"/>.</exception>
             /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
             public ReadOnlySpan<byte> Read(int count)
                 => content.ReadBytes(buffer, count);
@@ -144,7 +143,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="count">The number of bytes to read.</param>
             /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
             /// <returns>The span of bytes representing buffer segment.</returns>
-            /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="buffer"/>.</exception>
             /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
             public Task<ReadOnlyMemory<byte>> ReadAsync(int count, CancellationToken token = default)
                 => content.ReadBytesAsync(buffer, count, token);
@@ -156,10 +154,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// The characters should be prefixed with the length in the underlying stream.
             /// </remarks>
             /// <param name="length">The length of the string, in bytes.</param>
-            /// <param name="encoding">The encoding of the characters.</param>
+            /// <param name="context">The decoding context.</param>
             /// <returns>The string decoded from the log entry content stream.</returns>
-            public unsafe string ReadString(int length, Encoding encoding)
-                => content.ReadString(buffer, length, encoding);
+            public unsafe string ReadString(int length, DecodingContext context)
+                => content.ReadString(buffer, length, context);
 
             /// <summary>
             /// Reads the string asynchronously using the specified encoding.
@@ -167,12 +165,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <remarks>
             /// The characters should be prefixed with the length in the underlying stream.
             /// </remarks>
-            /// <param name="length">The length of the string.</param>
-            /// <param name="encoding">The encoding of the characters.</param>
+            /// <param name="length">The length of the string, in bytes.</param>
+            /// <param name="context">The decoding context.</param>
             /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
             /// <returns>The string decoded from the log entry content stream.</returns>
-            public Task<string> ReadStringAsync(int length, Encoding encoding, CancellationToken token = default)
-                => content.ReadStringAsync(buffer, length, encoding, token);
+            public Task<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
+                => content.ReadStringAsync(buffer, length, context, token);
 
             /// <summary>
             /// Copies the object content into the specified stream.
@@ -284,7 +282,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     offset = ReadInt64LittleEndian(this.ReadBytes(buffer, sizeof(long)));   //do not read 4 bytes asynchronously
                     offset += Position;
                 }
-                //write offset into the table
+                //write content
                 Position = offset;
                 await LogEntry.WriteAsync(entry, this, buffer).ConfigureAwait(false);
                 //record new log entry to the allocation table
