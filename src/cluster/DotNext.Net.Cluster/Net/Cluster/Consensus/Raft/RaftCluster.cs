@@ -196,6 +196,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             get => auditTrail;
         }
 
+        IAuditTrail IReplicationCluster.AuditTrail => auditTrail;
+
         /// <summary>
         /// Gets token that can be used for all internal asynchronous operations.
         /// </summary>

@@ -7,14 +7,25 @@ namespace DotNext.Net.Cluster.Replication
     /// <summary>
     /// Represents replication cluster.
     /// </summary>
+    public interface IReplicationCluster : ICluster
+    {
+        /// <summary>
+        /// Gets transaction log used for replication.
+        /// </summary>
+        IAuditTrail AuditTrail { get; }
+    }
+
+    /// <summary>
+    /// Represents replication cluster.
+    /// </summary>
     /// <typeparam name="LogEntry">The type of the log entry in the transaction log.</typeparam>
-    public interface IReplicationCluster<LogEntry> : ICluster
+    public interface IReplicationCluster<LogEntry> : IReplicationCluster
         where LogEntry : class, ILogEntry
     {
         /// <summary>
         /// Gets transaction log used for replication.
         /// </summary>
-        IAuditTrail<LogEntry> AuditTrail { get; }
+        new IAuditTrail<LogEntry> AuditTrail { get; }
 
         /// <summary>
         /// Writes message into the cluster according with the specified concern.
