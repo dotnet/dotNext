@@ -814,11 +814,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Swap<T>(T* first, T* second)
             where T : unmanaged
-        {
-            var tmp = *first;
-            *first = *second;
-            *second = tmp;
-        }
+            => Swap(ref first[0], ref second[0]);
 
         /// <summary>
         /// Converts typed reference into managed pointer.
