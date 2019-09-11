@@ -117,7 +117,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents reader/writer lock used for synchronized access to this method.
         /// </summary>
-        protected readonly AsyncReaderWriterLock syncRoot;
+        private readonly AsyncReaderWriterLock syncRoot;
 
         /// <summary>
         /// Initializes a new audit trail with empty log.

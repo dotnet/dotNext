@@ -251,7 +251,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var offset = IndexOffset;
                 //calculate relative index
                 index -= offset;
-                Debug.Assert(index >= 0 && index < Capacity);
+                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}");
                 //find pointer to the content
                 Position = AllocationTableOffset + index * AllocationTableEntrySize;
                 offset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), buffer));   //do not read 4 bytes asynchronously
@@ -265,7 +265,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 //calculate relative index
                 index -= IndexOffset;
-                Debug.Assert(index >= 0 && index < Capacity);
+                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}");
                 //calculate offset of the previous entry
                 long offset;
                 if (index == 0L || index == 1L && IndexOffset == 0L)
