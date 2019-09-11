@@ -204,6 +204,77 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 (state as IDisposable)?.Dispose();
             }
+
+            //read again
+            state = new PersistentState(dir, RecordsPerPartition);
+            try
+            {
+                var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
+                Equal(6, entries.Count);
+                Equal(state.First, entries[0]);
+                Equal(42L, entries[1].Term);
+                Equal(entry1.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                Equal(entry1.Timestamp, entries[1].Timestamp);
+                Equal(43L, entries[2].Term);
+                Equal(entry2.Content, await entries[2].ReadAsTextAsync(Encoding.UTF8));
+                Equal(entry2.Timestamp, entries[2].Timestamp);
+                Equal(44L, entries[3].Term);
+                Equal(entry3.Content, await entries[3].ReadAsTextAsync(Encoding.UTF8));
+                Equal(entry3.Timestamp, entries[3].Timestamp);
+                Equal(45L, entries[4].Term);
+                Equal(entry4.Content, await entries[4].ReadAsTextAsync(Encoding.UTF8));
+                Equal(entry4.Timestamp, entries[4].Timestamp);
+                Equal(46L, entries[5].Term);
+                Equal(entry5.Content, await entries[5].ReadAsTextAsync(Encoding.UTF8));
+                Equal(entry5.Timestamp, entries[5].Timestamp);
+                entries.Dispose();
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
+            }
+        }
+
+        [Fact]
+        public static async Task Commit()
+        {
+            var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+            var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
+            var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
+            var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
+            var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
+            
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            try
+            {
+                Equal(1L, await state.AppendAsync(new[] { entry1 }));
+                Equal(2L, await state.AppendAsync(new[] { entry2, entry3, entry4, entry5 }));
+
+                Equal(1L, await state.CommitAsync(1L, CancellationToken.None));
+                Equal(2L, await state.CommitAsync(3L, CancellationToken.None));
+                Equal(0L, await state.CommitAsync(2L, CancellationToken.None));
+                Equal(3L, state.GetLastIndex(true));
+                Equal(5L, state.GetLastIndex(false));
+
+                await ThrowsAsync<InvalidOperationException>(() => state.AppendAsync(new[] { entry1 }, 1L));
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
+            }
+
+            //read again
+            state = new PersistentState(dir, RecordsPerPartition);
+            try
+            {
+                Equal(3L, state.GetLastIndex(true));
+                Equal(5L, state.GetLastIndex(false));
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
+            }
         }
     }
 }

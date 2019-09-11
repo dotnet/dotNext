@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Buffers;
 
 namespace DotNext.Buffers
@@ -38,9 +39,28 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Gets value indicating that this object is empty.
+        /// </summary>
+        public bool IsEmpty => array is null;
+
+        /// <summary>
         /// Gets memory associated with the rented array.
         /// </summary>
         public Memory<T> Memory => array is null ? default : new Memory<T>(array);
+
+        /// <summary>
+        /// Gets array element by its index.
+        /// </summary>
+        /// <param name="index">The index of the array element.</param>
+        /// <returns>The managed pointer to the array element.</returns>
+        public ref T this[long index] => ref array[index];
+
+        /// <summary>
+        /// Obtains managed pointer to the first element of the rented array.
+        /// </summary>
+        /// <returns>The managed pointer to the first element of the rented array.</returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public ref T GetPinnableReference() => ref array[0];
 
         /// <summary>
         /// Obtains rented array.

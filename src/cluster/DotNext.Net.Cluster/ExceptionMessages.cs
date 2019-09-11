@@ -23,7 +23,5 @@ namespace DotNext
         internal static string InvalidEntryIndex(long index) => string.Format(Resources.GetString("InvalidEntryIndex"), index);
 
         internal static string InvalidAppendIndex => Resources.GetString("InvalidAppendIndex");
-
-        internal static string BufferTooSmall => Resources.GetString("BufferTooSmall");
     }
 }

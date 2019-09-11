@@ -165,7 +165,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
-        /// Copies specified number of bytes from one address in memory to another.
+        /// Copies the specified number of bytes from one address in memory to another.
         /// </summary>
         /// <param name="source">The address of the bytes to copy.</param>
         /// <param name="destination">The target address.</param>
@@ -176,13 +176,53 @@ namespace DotNext.Runtime.InteropServices
             => Buffer.MemoryCopy(source, destination, length, length);
 
         /// <summary>
-        /// Copies specified number of bytes from one address in memory to another.
+        /// Copies the specified number of bytes from one address in memory to another.
         /// </summary>
         /// <param name="source">The address of the bytes to copy.</param>
         /// <param name="destination">The target address.</param>
         /// <param name="length">The number of bytes to copy from source address to destination.</param>
 		public static void Copy(IntPtr source, IntPtr destination, long length)
             => Copy(source.ToPointer(), destination.ToPointer(), length);
+        
+        /// <summary>
+        /// Copies the specified number of elements from source address to the destination address.
+        /// </summary>
+        /// <param name="source">The address of the bytes to copy.</param>
+        /// <param name="destination">The target address.</param>
+        /// <param name="count">The number of elements to copy.</param>
+        /// <typeparam name="T">The type of the element.</typeparam>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Copy<T>(T* source, ref T destination, uint count)
+            where T : unmanaged
+        {
+            Push(ref destination);
+            Push(source);
+            Push(count);
+            Sizeof(typeof(T));
+            Mul_Ovf_Un();
+            Cpblk();
+        }
+
+        /// <summary>
+        /// Copies the specified number of elements from source address to the destination address.
+        /// </summary>
+        /// <param name="source">The address of the bytes to copy.</param>
+        /// <param name="destination">The target address.</param>
+        /// <param name="count">The number of elements to copy.</param>
+        /// <typeparam name="T">The type of the element.</typeparam>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Copy<T>(ref T source, ref T destination, uint count)
+            where T : unmanaged
+        {
+            Push(ref destination);
+            Push(ref source);
+            Push(count);
+            Sizeof(typeof(T));
+            Mul_Ovf_Un();
+            Cpblk();
+        }
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory, 64-bit version.

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DotNext
 {
-    using static IO.StreamExtensions;
+    using IO;
 
     /// <summary>
     /// Represents object which content is represented by <see cref="Stream"/>.

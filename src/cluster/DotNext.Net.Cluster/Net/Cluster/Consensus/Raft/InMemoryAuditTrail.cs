@@ -245,7 +245,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await ApplyAsync(token).ConfigureAwait(false);
                 }
             }
-            return count;
+            return Math.Max(count, 0L);
         }
 
         Task<long> IAuditTrail.CommitAsync(long endIndex, CancellationToken token)

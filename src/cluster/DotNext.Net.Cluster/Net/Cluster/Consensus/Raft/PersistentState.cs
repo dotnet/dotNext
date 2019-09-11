@@ -12,7 +12,6 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Buffers;
     using IO;
     using Replication;
     using Threading;
@@ -112,21 +111,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="buffer"/>.</exception>
             /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
             public ReadOnlySpan<byte> Read(byte[] buffer, int count)
-            {
-                if (count == 0)
-                    return default;
-                if (count > buffer.LongLength)
-                    throw new ArgumentOutOfRangeException(nameof(count));
-                var bytesRead = 0;
-                do
-                {
-                    var n = content.Read(buffer, bytesRead, count - bytesRead);
-                    if (n == 0)
-                        throw new EndOfStreamException();
-                    bytesRead += n;
-                } while (bytesRead < count);
-                return new ReadOnlySpan<byte>(buffer, 0, bytesRead);
-            }
+                => content.ReadBytes(buffer, count);
 
             /// <summary>
             /// Reads asynchronously the number of bytes using the pre-allocated buffer.
@@ -140,22 +125,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <returns>The span of bytes representing buffer segment.</returns>
             /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="buffer"/>.</exception>
             /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
-            public async Task<ReadOnlyMemory<byte>> ReadAsync(byte[] buffer, int count, CancellationToken token = default)
-            {
-                if (count == 0)
-                    return default;
-                if (count > buffer.LongLength)
-                    throw new ArgumentOutOfRangeException(nameof(count));
-                var bytesRead = 0;
-                do
-                {
-                    var n = await content.ReadAsync(buffer, bytesRead, count - bytesRead, token).ConfigureAwait(false);
-                    if (n == 0)
-                        throw new EndOfStreamException();
-                    bytesRead += n;
-                } while (bytesRead < count);
-                return new ReadOnlyMemory<byte>(buffer, 0, bytesRead);
-            }
+            public Task<ReadOnlyMemory<byte>> ReadAsync(byte[] buffer, int count, CancellationToken token = default)
+                => content.ReadBytesAsync(buffer, count, token);
 
             /// <summary>
             /// Reads the string using the specified encoding.
@@ -164,37 +135,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// The characters should be prefixed with the length in the underlying stream.
             /// </remarks>
             /// <param name="buffer">The buffer that is allocated by the caller.</param>
-            /// <param name="length">The length of the string.</param>
+            /// <param name="length">The length of the string, in bytes.</param>
             /// <param name="encoding">The encoding of the characters.</param>
-            /// <param name="charBufferSize">The size of the temporary buffer used to store portion of the string, in bytes.</param>
             /// <returns>The string decoded from the log entry content stream.</returns>
-            public unsafe string ReadString(byte[] buffer, int length, Encoding encoding, int charBufferSize = 512)
-            {
-                //TODO: Should be rewritten for .NET Standard 2.1
-                var maxCharBytesSize = Math.Min(charBufferSize, buffer.Length);
-                var maxCharsSize = encoding.GetMaxCharCount(maxCharBytesSize);
-                var charBuffer = stackalloc char[maxCharsSize];
-                var sb = default(StringBuilder);
-                int currentPos = 0;
-                do
-                {
-                    var readLength = Math.Min(length - currentPos, maxCharBytesSize);
-                    var n = content.Read(buffer, 0, readLength);
-                    if (n == 0)
-                        throw new EndOfStreamException();
-                    int charsRead;
-                    fixed (byte* rb = buffer)
-                        charsRead = encoding.GetChars(rb, n, charBuffer, maxCharsSize);
-                    if (currentPos == 0 && n == length)
-                        return new string(charBuffer, 0, charsRead);
-                    if (sb is null)
-                        sb = new StringBuilder(length);
-                    sb.Append(charBuffer, charsRead);
-                    currentPos += n;
-                }
-                while (currentPos < length);
-                return sb.ToString();
-            }
+            public unsafe string ReadString(byte[] buffer, int length, Encoding encoding)
+                => content.ReadString(buffer, length, encoding);
 
             /// <summary>
             /// Reads the string asynchronously using the specified encoding.
@@ -207,33 +152,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="encoding">The encoding of the characters.</param>
             /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
             /// <returns>The string decoded from the log entry content stream.</returns>
-            public async Task<string> ReadStringAsync(byte[] buffer, int length, Encoding encoding, CancellationToken token = default)
-            {
-                //TODO: Should be rewritten for .NET Standard 2.1
-                var maxCharBytesSize = Math.Min(encoding.GetMaxByteCount(length), buffer.Length);
-                var maxCharsSize = encoding.GetMaxCharCount(maxCharBytesSize);
-                var sb = default(StringBuilder);
-                using (var charBuffer = new ArrayRental<char>(maxCharsSize))
-                {
-                    int currentPos = 0;
-                    do
-                    {
-                        var readLength = Math.Min(length - currentPos, maxCharBytesSize);
-                        var n = await content.ReadAsync(buffer, 0, readLength, token).ConfigureAwait(false);
-                        if (n == 0)
-                            throw new EndOfStreamException();
-                        var charsRead = encoding.GetChars(buffer, 0, n, charBuffer, 0);
-                        if (currentPos == 0 && n == length)
-                            return new string(charBuffer, 0, charsRead);
-                        if (sb is null)
-                            sb = new StringBuilder(length);
-                        sb.Append(charBuffer, 0, charsRead);
-                        currentPos += n;
-                    }
-                    while (currentPos < length);
-                }
-                return sb.ToString();
-            }
+            public Task<string> ReadStringAsync(byte[] buffer, int length, Encoding encoding, CancellationToken token = default)
+                => content.ReadStringAsync(buffer, length, encoding, token);
 
             /// <summary>
             /// Copies the object content into the specified stream.
@@ -369,7 +289,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     offset = reader.ReadInt64();
                     offset += Position;
                 }
-                //record offset into the table
+                //write offset into the table
                 Position = offset;
                 await LogEntry.WriteAsync(entry, writer).ConfigureAwait(false);
                 //record new log entry to the allocation table
@@ -450,6 +370,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     votedFor = new IPEndPoint(new IPAddress(address), port);
                 }
             }
+
+            internal void Flush() => stateView.Flush();
 
             internal long CommitIndex
             {
@@ -792,6 +714,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 partitionHigh = Math.Max(partitionHigh, partitionNumber);
             }
             //flush all touched partitions
+            state.Flush();
             Task flushTask;
             switch (partitionHigh - partitionLow)
             {
@@ -895,7 +818,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await ForceCompaction(token).ConfigureAwait(false);
                 }
             }
-            return count;
+            return Math.Max(count, 0L);
         }
 
         Task<long> IAuditTrail.CommitAsync(long endIndex, CancellationToken token) => CommitAsync(endIndex, token);
@@ -916,6 +839,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await ApplyAsync(partition[i].AdjustPosition()).ConfigureAwait(false);
                     state.LastApplied = i;
                 }
+            state.Flush();
         }
 
         async Task IAuditTrail.EnsureConsistencyAsync(CancellationToken token)
