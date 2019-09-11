@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Text;
 using static System.Globalization.CultureInfo;
+using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -53,22 +54,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft
              * 8 bytes = content length
              * octet string = content
              */
-            internal const long TermOffset = 0L;
-            internal const long TimestampOffset = TermOffset + sizeof(long);
-            internal const long LengthOffset = TimestampOffset + sizeof(long);
+            internal const int TermOffset = 0;
+            internal const int TimestampOffset = TermOffset + sizeof(long);
+            internal const int LengthOffset = TimestampOffset + sizeof(long);
+            private const int MetadataSize = sizeof(long) * 3;
 
             private readonly StreamSegment content;
             private readonly long contentOffset;
+            private readonly byte[] buffer;
 
-            internal LogEntry(BinaryReader reader, StreamSegment cachedContent, bool snapshot = false)
+            private LogEntry(StreamSegment cachedContent, byte[] sharedBuffer, long term, long timestamp, long length, long contentOffset, bool snapshot)
             {
-                //parse entry metadata
-                Term = reader.ReadInt64();
-                Timestamp = new DateTimeOffset(reader.ReadInt64(), TimeSpan.Zero);
-                Length = reader.ReadInt64();
-                contentOffset = reader.BaseStream.Position;
+                Term = term;
+                Timestamp = new DateTimeOffset(timestamp, TimeSpan.Zero);
+                Length = length;
+                this.contentOffset = contentOffset;
                 content = cachedContent;
+                buffer = sharedBuffer;
                 IsSnapshot = snapshot;
+            }
+
+            internal static async Task<LogEntry> ReadAsync(StreamSegment cachedContent, byte[] sharedBuffer, bool snapshot, CancellationToken token)
+            {
+                //parse entry metadata, 24 bytes
+                var metadata = await cachedContent.BaseStream.ReadBytesAsync(sharedBuffer, MetadataSize, token).ConfigureAwait(false);
+                return new LogEntry(cachedContent, sharedBuffer,
+                    ReadInt64LittleEndian(metadata.Span.Slice(TermOffset, sizeof(long))),   //term
+                    ReadInt64LittleEndian(metadata.Span.Slice(TimestampOffset, sizeof(long))),  //timestamp
+                    ReadInt64LittleEndian(metadata.Span.Slice(LengthOffset, sizeof(long))), //length
+                    cachedContent.BaseStream.Position,
+                    snapshot);
             }
 
             /// <summary>
@@ -87,16 +102,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return this;
             }
 
-            internal static async Task WriteAsync(IRaftLogEntry entry, BinaryWriter writer, CancellationToken token = default)
+            internal static async Task WriteAsync(IRaftLogEntry entry, Stream output, byte[] buffer, CancellationToken token = default)
             {
-                writer.Write(entry.Term);
-                writer.Write(entry.Timestamp.UtcTicks);
-                var lengthPos = writer.BaseStream.Position; //remember position of the length
-                writer.Write(default(long));
-                await entry.CopyToAsync(writer.BaseStream, token).ConfigureAwait(false);
-                var length = writer.BaseStream.Position - lengthPos - sizeof(long);
-                writer.BaseStream.Position = lengthPos;
-                writer.Write(length);
+                //write term
+                WriteInt64LittleEndian(new Span<byte>(buffer, TermOffset, sizeof(long)), entry.Term);
+                //write timestamp
+                WriteInt64LittleEndian(new Span<byte>(buffer, TimestampOffset, sizeof(long)), entry.Timestamp.UtcTicks);
+                //write empty length
+                WriteInt64LittleEndian(new Span<byte>(buffer, LengthOffset, sizeof(long)), 0L);
+                //write metadata into stream
+                await output.WriteAsync(buffer, 0, MetadataSize, token).ConfigureAwait(false);
+
+                var currentPos = output.Position;
+                await entry.CopyToAsync(output, token).ConfigureAwait(false);
+                var length = output.Position - currentPos;
+                //write length of the stream
+                output.Position = currentPos - sizeof(long);
+                WriteInt64LittleEndian(buffer, length);
+                await output.WriteAsync(buffer, 0, sizeof(long)).ConfigureAwait(false);
             }
 
             /// <summary>
@@ -105,12 +128,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <remarks>
             /// You can use <see cref="System.Buffers.Binary.BinaryPrimitives"/> to decode the returned bytes.
             /// </remarks>
-            /// <param name="buffer">The buffer that is allocated by the caller.</param>
             /// <param name="count">The number of bytes to read.</param>
             /// <returns>The span of bytes representing buffer segment.</returns>
             /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="buffer"/>.</exception>
             /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
-            public ReadOnlySpan<byte> Read(byte[] buffer, int count)
+            public ReadOnlySpan<byte> Read(int count)
                 => content.ReadBytes(buffer, count);
 
             /// <summary>
@@ -119,13 +141,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <remarks>
             /// You can use <see cref="System.Buffers.Binary.BinaryPrimitives"/> to decode the returned bytes.
             /// </remarks>
-            /// <param name="buffer">The buffer that is allocated by the caller.</param>
             /// <param name="count">The number of bytes to read.</param>
             /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
             /// <returns>The span of bytes representing buffer segment.</returns>
             /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="buffer"/>.</exception>
             /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
-            public Task<ReadOnlyMemory<byte>> ReadAsync(byte[] buffer, int count, CancellationToken token = default)
+            public Task<ReadOnlyMemory<byte>> ReadAsync(int count, CancellationToken token = default)
                 => content.ReadBytesAsync(buffer, count, token);
 
             /// <summary>
@@ -134,11 +155,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <remarks>
             /// The characters should be prefixed with the length in the underlying stream.
             /// </remarks>
-            /// <param name="buffer">The buffer that is allocated by the caller.</param>
             /// <param name="length">The length of the string, in bytes.</param>
             /// <param name="encoding">The encoding of the characters.</param>
             /// <returns>The string decoded from the log entry content stream.</returns>
-            public unsafe string ReadString(byte[] buffer, int length, Encoding encoding)
+            public unsafe string ReadString(int length, Encoding encoding)
                 => content.ReadString(buffer, length, encoding);
 
             /// <summary>
@@ -147,12 +167,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <remarks>
             /// The characters should be prefixed with the length in the underlying stream.
             /// </remarks>
-            /// <param name="buffer">The buffer that is allocated by the caller.</param>
             /// <param name="length">The length of the string.</param>
             /// <param name="encoding">The encoding of the characters.</param>
             /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
             /// <returns>The string decoded from the log entry content stream.</returns>
-            public Task<string> ReadStringAsync(byte[] buffer, int length, Encoding encoding, CancellationToken token = default)
+            public Task<string> ReadStringAsync(int length, Encoding encoding, CancellationToken token = default)
                 => content.ReadStringAsync(buffer, length, encoding, token);
 
             /// <summary>
@@ -184,32 +203,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public DateTimeOffset Timestamp { get; }
         }
 
-        private abstract class LogFileStream : FileStream
-        {
-            private protected readonly BinaryReader reader;
-            private protected readonly BinaryWriter writer;
-            private protected readonly StreamSegment cachedContent;
-
-            private protected LogFileStream(string fileName, int bufferSize, FileOptions options)
-                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options)
-            {
-                reader = new BinaryReader(this, Encoding.UTF8, true);
-                writer = new BinaryWriter(this, Encoding.UTF8, true);
-                cachedContent = new StreamSegment(this);
-            }
-
-            protected override void Dispose(bool disposing)
-            {
-                if(disposing)
-                {
-                    reader.Dispose();
-                    writer.Dispose();
-                    cachedContent.Dispose();
-                }
-                base.Dispose(disposing);
-            }
-        }
-
         /*
             Partition file format:
             FileName - number of partition
@@ -219,7 +212,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Payload:
             [metadata, 8 bytes = length, content] X number of entries
          */
-        private sealed class Partition : LogFileStream
+        private sealed class Partition : FileStream
         {
             private const long AllocationTableEntrySize = sizeof(long);
             private const long IndexOffsetOffset = 0;
@@ -227,45 +220,47 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private readonly long payloadOffset;
             internal readonly long IndexOffset;
+            private readonly byte[] buffer;
+            private readonly StreamSegment segment;
 
-            internal Partition(string fileName, int bufferSize, long recordsPerPartition)
-                : base(fileName, bufferSize, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
+            internal Partition(string fileName, byte[] sharedBuffer, long recordsPerPartition)
+                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
                 payloadOffset = AllocationTableOffset + AllocationTableEntrySize * recordsPerPartition;
                 Capacity = recordsPerPartition;
+                buffer = sharedBuffer;
                 if (Length == 0)
                     SetLength(payloadOffset);
                 //restore index offset
                 Position = IndexOffsetOffset;
-                IndexOffset = reader.ReadInt64();
+                IndexOffset = ReadInt64LittleEndian(this.ReadBytes(sharedBuffer, sizeof(long)));
+                segment = new StreamSegment(this);
             }
 
-            internal Partition(DirectoryInfo location, int bufferSize, long recordsPerPartition, long partitionNumber)
-                : this(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, recordsPerPartition)
+            internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber)
+                : this(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), sharedBuffer, recordsPerPartition)
             {
                 Position = IndexOffsetOffset;
-                writer.Write(IndexOffset = partitionNumber * recordsPerPartition);
+                WriteInt64BigEndian(sharedBuffer, IndexOffset = partitionNumber * recordsPerPartition);
+                Write(sharedBuffer, 0, sizeof(long));
             }
 
             //max number of entries
             internal long Capacity { get; }
 
-            internal LogEntry this[long index]
+            internal Task<LogEntry> ReadAsync(long index, CancellationToken token)
             {
-                get
-                {
-                    var offset = IndexOffset;
-                    //calculate relative index
-                    index -= offset;
-                    Debug.Assert(index >= 0 && index < Capacity);
-                    //find pointer to the content
-                    Position = AllocationTableOffset + index * AllocationTableEntrySize;
-                    offset = reader.ReadInt64();
-                    if (offset == 0L)
-                        return null;
-                    Position = offset;
-                    return new LogEntry(reader, cachedContent);
-                }
+                var offset = IndexOffset;
+                //calculate relative index
+                index -= offset;
+                Debug.Assert(index >= 0 && index < Capacity);
+                //find pointer to the content
+                Position = AllocationTableOffset + index * AllocationTableEntrySize;
+                offset = ReadInt64LittleEndian(this.ReadBytes(buffer, sizeof(long)));   //do not read 4 bytes asynchronously
+                if (offset == 0L)
+                    return null;
+                Position = offset;
+                return LogEntry.ReadAsync(segment, buffer, false, token);
             }
 
             internal async Task WriteAsync(IRaftLogEntry entry, long index)
@@ -281,45 +276,64 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     //read position of the previous entry
                     Position = AllocationTableOffset + (index - 1) * AllocationTableEntrySize;
-                    offset = reader.ReadInt64();
+                    offset = ReadInt64LittleEndian(this.ReadBytes(buffer, sizeof(long)));   //do not read 4 bytes asynchronously
                     Debug.Assert(offset > 0, "Previous entry doesn't exist for unknown reason");
                     //read length of the previous entry
                     Position = offset + LogEntry.LengthOffset;
                     //calculate offset to the newly entry
-                    offset = reader.ReadInt64();
+                    offset = ReadInt64LittleEndian(this.ReadBytes(buffer, sizeof(long)));   //do not read 4 bytes asynchronously
                     offset += Position;
                 }
                 //write offset into the table
                 Position = offset;
-                await LogEntry.WriteAsync(entry, writer).ConfigureAwait(false);
+                await LogEntry.WriteAsync(entry, this, buffer).ConfigureAwait(false);
                 //record new log entry to the allocation table
                 Position = AllocationTableOffset + index * AllocationTableEntrySize;
-                writer.Write(offset);
+                WriteInt64LittleEndian(buffer, offset);
+                await WriteAsync(buffer, 0, sizeof(long)).ConfigureAwait(false);
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                    segment.Dispose();
+                base.Dispose(disposing);
             }
         }
 
         /*
          * Binary format is the same as for LogEntry
          */
-        private sealed class Snapshot : LogFileStream
+        private sealed class Snapshot : FileStream
         {
             private const string FileName = "snapshot";
+            private readonly byte[] buffer;
+            private readonly StreamSegment segment;
 
-            internal Snapshot(DirectoryInfo location, int bufferSize)
-                : base(Path.Combine(location.FullName, FileName), bufferSize, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.WriteThrough)
+            internal Snapshot(DirectoryInfo location, byte[] sharedBuffer)
+                : base(Path.Combine(location.FullName, FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.WriteThrough)
             {
+                buffer = sharedBuffer;
+                segment = new StreamSegment(this);
             }
 
             internal Task SaveAsync(IRaftLogEntry entry, CancellationToken token)
             {
                 SetLength(0L);
-                return LogEntry.WriteAsync(entry, writer, token);
+                return LogEntry.WriteAsync(entry, this, buffer, token);
             }
 
-            internal LogEntry Load()
+            internal Task<LogEntry> LoadAsync(CancellationToken token)
             {
                 Position = 0;
-                return new LogEntry(reader, cachedContent, true);
+                return LogEntry.ReadAsync(segment, buffer, true, token);
+            }
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                    segment.Dispose();
+                base.Dispose(disposing);
             }
         }
 
@@ -545,6 +559,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private const int DefaultBufferSize = 2048;
+        private const int MinBufferSize = 128;
         private readonly long recordsPerPartition;
         //key is the number of partition
         private readonly Dictionary<long, Partition> partitionTable;
@@ -555,7 +570,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly AsyncExclusiveLock syncRoot;
         private readonly ILogEntryList<IRaftLogEntry> emptyLog;
         private readonly ILogEntryList<IRaftLogEntry> initialLog;
-        private readonly int bufferSize;
+        private readonly byte[] sharedBuffer;
 
         /// <summary>
         /// Initializes a new persistent audit trail.
@@ -563,14 +578,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
         /// <param name="bufferSize">Optional size of in-memory buffer for I/O operations.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1; or <paramref name="bufferSize"/> is too small.</exception>
         public PersistentState(DirectoryInfo path, long recordsPerPartition, int bufferSize = DefaultBufferSize)
         {
+            if (bufferSize < MinBufferSize)
+                throw new ArgumentOutOfRangeException(nameof(bufferSize));
             if(recordsPerPartition < 1L)
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
-            this.bufferSize = bufferSize;
+            sharedBuffer = new byte[bufferSize];
             location = path;
             this.recordsPerPartition = recordsPerPartition;
             commitEvent = new AsyncManualResetEvent(false);
@@ -582,11 +599,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             foreach (var file in path.EnumerateFiles())
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
-                    var partition = new Partition(file.FullName, bufferSize, recordsPerPartition);
+                    var partition = new Partition(file.FullName, sharedBuffer, recordsPerPartition);
                     partitionTable[partitionNumber] = partition;
                 }
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
-            snapshot = new Snapshot(path, bufferSize);
+            snapshot = new Snapshot(path, sharedBuffer);
         }
 
         /// <summary>
@@ -621,13 +638,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             partitionNumber = PartitionOf(recordIndex);
             if (!partitionTable.TryGetValue(partitionNumber, out var partition))
             {
-                partition = new Partition(location, bufferSize, recordsPerPartition, partitionNumber);
+                partition = new Partition(location, sharedBuffer, recordsPerPartition, partitionNumber);
                 partitionTable.Add(partitionNumber, partition);
             }
             return partition;
         }
 
-        private ILogEntryList<IRaftLogEntry> GetEntries(long startIndex, long endIndex, AsyncLock.Holder readLock, CancellationToken token)
+        private async Task<ILogEntryList<IRaftLogEntry>> GetEntries(long startIndex, long endIndex, AsyncLock.Holder readLock, CancellationToken token)
         {
             if (startIndex > state.LastIndex)
             {
@@ -644,17 +661,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 try
                 {
                     var list = new LogEntryList((int)Math.Min(int.MaxValue, endIndex - startIndex + 1L), readLock);
-                    for (; startIndex <= endIndex;token.ThrowIfCancellationRequested(), startIndex++)
+                    for (; startIndex <= endIndex; startIndex++)
                     {
                         IRaftLogEntry entry;
                         if (startIndex == 0L)   //handle ephemeral entity
                             entry = InMemoryAuditTrail.InitialLog[0];
                         else if (TryGetPartition(startIndex, out var partition)) //handle regular record
-                            entry = partition[startIndex];
+                            entry = await partition.ReadAsync(startIndex, token).ConfigureAwait(false);
                         else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)    //probably the record is snapshotted
                         {
                             if (list.Count == 0)
-                                entry = snapshot.Load();
+                                entry = await snapshot.LoadAsync(token).ConfigureAwait(false);
                             else
                                 continue;
                         }
@@ -687,7 +704,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (endIndex < startIndex)
                 return emptyLog;
             var readLock = await syncRoot.AcquireLockAsync(token).ConfigureAwait(false);
-            return GetEntries(startIndex, endIndex, readLock, token);
+            return await GetEntries(startIndex, endIndex, readLock, token).ConfigureAwait(false);
         }
 
         async Task<ILogEntryList<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, CancellationToken token)
@@ -695,7 +712,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             var readLock = await syncRoot.AcquireLockAsync(token).ConfigureAwait(false);
-            return GetEntries(startIndex, state.LastIndex, readLock, token);
+            return await GetEntries(startIndex, state.LastIndex, readLock, token).ConfigureAwait(false);
         }
 
         private async Task<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
@@ -772,9 +789,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             //2. Do compaction
             foreach (var partition in compactionScope.Values)
-                for (var i = 0L; i < recordsPerPartition; token.ThrowIfCancellationRequested(), i++)
+                for (var i = 0L; i < recordsPerPartition; i++)
                     if (partition.IndexOffset > 0L || i > 0L) //ignore the ephemeral entry
-                        await builder.ApplyCoreAsync(partition[i].AdjustPosition()).ConfigureAwait(false);
+                        await builder.ApplyCoreAsync((await partition.ReadAsync(i, token).ConfigureAwait(false)).AdjustPosition()).ConfigureAwait(false);
             //3. Persist snapshot
             await snapshot.SaveAsync(builder, token).ConfigureAwait(false);
             //4. Remove snapshotted partitions
@@ -833,10 +850,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task ApplyAsync(CancellationToken token)
         {
-            for (var i = state.LastApplied + 1L; i <= state.CommitIndex; token.ThrowIfCancellationRequested(), i++)
+            for (var i = state.LastApplied + 1L; i <= state.CommitIndex; i++)
                 if (TryGetPartition(i, out var partition))
                 {
-                    await ApplyAsync(partition[i].AdjustPosition()).ConfigureAwait(false);
+                    await ApplyAsync((await partition.ReadAsync(i, token).ConfigureAwait(false)).AdjustPosition()).ConfigureAwait(false);
                     state.LastApplied = i;
                 }
             state.Flush();

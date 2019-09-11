@@ -13,7 +13,6 @@ namespace DotNext.IO
     /// </remarks>
     public sealed class StreamSegment : Stream
     {
-        private readonly Stream baseStream;
         private long length, position;
 
         /// <summary>
@@ -23,10 +22,15 @@ namespace DotNext.IO
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
         public StreamSegment(Stream stream)
         {
-            baseStream = stream ?? throw new ArgumentNullException(nameof(stream));
+            BaseStream = stream ?? throw new ArgumentNullException(nameof(stream));
             length = stream.Length;
             position = 0L;
         }
+
+        /// <summary>
+        /// Gets underlying stream.
+        /// </summary>
+        public Stream BaseStream { get; }
 
         /// <summary>
         /// Establishes segment bounds.
@@ -39,26 +43,26 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is larger than the reamining length of the underlying stream; or <paramref name="offset"/> if greater than the length of the underlying stream.</exception>
         public void Adjust(long offset, long length)
         {
-            if (offset < 0L || offset > baseStream.Length)
+            if (offset < 0L || offset > BaseStream.Length)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            if (length < 0L || length > baseStream.Length - offset)
+            if (length < 0L || length > BaseStream.Length - offset)
                 throw new ArgumentOutOfRangeException(nameof(length));
             this.length = length;
             Position = 0L;
-            baseStream.Position = offset;
+            BaseStream.Position = offset;
         }
 
         /// <summary>
         /// Gets a value indicating whether the current stream supports reading.
         /// </summary>
         /// <value><see langword="true"/> if the stream supports reading; otherwise, <see langword="false"/>.</value>
-        public override bool CanRead => baseStream.CanRead;
+        public override bool CanRead => BaseStream.CanRead;
 
         /// <summary>
         /// Gets a value indicating whether the current stream supports seeking.
         /// </summary>
         /// <value><see langword="true"/> if the stream supports seeking; otherwise, <see langword="false"/>.</value>
-        public override bool CanSeek => baseStream.CanSeek;
+        public override bool CanSeek => BaseStream.CanSeek;
 
         /// <summary>
         /// Gets a value indicating whether the current stream supports writing.
@@ -88,20 +92,20 @@ namespace DotNext.IO
         /// <summary>
         /// Clears all buffers for this stream and causes any buffered data to be written to the underlying device.
         /// </summary>
-        public override void Flush() => baseStream.Flush();
+        public override void Flush() => BaseStream.Flush();
 
         /// <summary>
         /// Asynchronously clears all buffers for this stream, causes any buffered data to  be written to the underlying device, and monitors cancellation requests.
         /// </summary>
         /// <param name="token">The token to monitor for cancellation requests.</param>
         /// <returns>A task that represents the asynchronous flush operation.</returns>
-        public override Task FlushAsync(CancellationToken token = default) => baseStream.FlushAsync(token);
+        public override Task FlushAsync(CancellationToken token = default) => BaseStream.FlushAsync(token);
 
         /// <summary>
         /// Gets a value that determines whether the current stream can time out.
         /// </summary>
         /// <value>A value that determines whether the current stream can time out.</value>
-        public override bool CanTimeout => baseStream.CanTimeout;
+        public override bool CanTimeout => BaseStream.CanTimeout;
 
         /// <summary>
         /// Reads a byte from the stream and advances the position within the stream by one byte, or returns -1 if at the end of the stream.
@@ -112,7 +116,7 @@ namespace DotNext.IO
             if (position >= length)
                 return -1;
             position += 1;
-            return baseStream.ReadByte();
+            return BaseStream.ReadByte();
         }
 
         /// <summary>
@@ -131,7 +135,7 @@ namespace DotNext.IO
         /// <returns>The total number of bytes read into the buffer.</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            count = baseStream.Read(buffer, offset, Math.Min(count, (int)(length - position)));
+            count = BaseStream.Read(buffer, offset, Math.Min(count, (int)(length - position)));
             position += count;
             return count;
         }
@@ -146,7 +150,7 @@ namespace DotNext.IO
         /// <returns>The total number of bytes read into the buffer.</returns>
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
         {
-            count = await baseStream.ReadAsync(buffer, offset, Math.Min(count, (int)(length - position))).ConfigureAwait(false);
+            count = await BaseStream.ReadAsync(buffer, offset, Math.Min(count, (int)(length - position))).ConfigureAwait(false);
             position += count;
             return count;
         }
@@ -185,7 +189,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is greater than remaining length of the stream.</exception>
         public override void SetLength(long value)
         {
-            if (value > baseStream.Length - baseStream.Position)
+            if (value > BaseStream.Length - BaseStream.Position)
                 throw new ArgumentOutOfRangeException(nameof(value));
             length = value;
         }
@@ -216,8 +220,8 @@ namespace DotNext.IO
         /// <value> A value, in miliseconds, that determines how long the stream will attempt to read before timing out.</value>
         public override int ReadTimeout
         {
-            get => baseStream.ReadTimeout;
-            set => baseStream.ReadTimeout = value;
+            get => BaseStream.ReadTimeout;
+            set => BaseStream.ReadTimeout = value;
         }
 
         /// <summary>
@@ -226,8 +230,8 @@ namespace DotNext.IO
         /// <value>A value, in miliseconds, that determines how long the stream will attempt to write before timing out.</value>
         public override int WriteTimeout
         {
-            get => baseStream.WriteTimeout;
-            set => baseStream.WriteTimeout = value;
+            get => BaseStream.WriteTimeout;
+            set => BaseStream.WriteTimeout = value;
         }
     }
 }
