@@ -221,7 +221,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly byte[] buffer;
             private readonly StreamSegment segment;
 
-            internal Partition(string fileName, byte[] sharedBuffer, long recordsPerPartition)
+            private Partition(string fileName, byte[] sharedBuffer, long recordsPerPartition, bool restoreIndexOffset)
                 : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
                 payloadOffset = AllocationTableOffset + AllocationTableEntrySize * recordsPerPartition;
@@ -229,17 +229,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 buffer = sharedBuffer;
                 if (Length == 0)
                     SetLength(payloadOffset);
-                //restore index offset
-                Position = IndexOffsetOffset;
-                IndexOffset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), sharedBuffer));
                 segment = new StreamSegment(this);
+                //restore index offset
+                IndexOffset = restoreIndexOffset ? ReadInt64LittleEndian(this.ReadBytes(sizeof(long), sharedBuffer)) : 0;
+            }
+
+
+            internal Partition(string fileName, byte[] sharedBuffer, long recordsPerPartition)
+                : this(fileName, sharedBuffer, recordsPerPartition, true)
+            {
             }
 
             internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber)
-                : this(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), sharedBuffer, recordsPerPartition)
+                : this(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), sharedBuffer, recordsPerPartition, false)
             {
-                Position = IndexOffsetOffset;
-                WriteInt64BigEndian(sharedBuffer, IndexOffset = partitionNumber * recordsPerPartition);
+                WriteInt64LittleEndian(sharedBuffer, IndexOffset = partitionNumber * recordsPerPartition);
                 Write(sharedBuffer, 0, sizeof(long));
             }
 
@@ -251,7 +255,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var offset = IndexOffset;
                 //calculate relative index
                 index -= offset;
-                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}");
+                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {IndexOffset}");
                 //find pointer to the content
                 Position = AllocationTableOffset + index * AllocationTableEntrySize;
                 offset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), buffer));   //do not read 4 bytes asynchronously
@@ -265,7 +269,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 //calculate relative index
                 index -= IndexOffset;
-                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}");
+                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {IndexOffset}");
                 //calculate offset of the previous entry
                 long offset;
                 if (index == 0L || index == 1L && IndexOffset == 0L)
