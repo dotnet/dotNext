@@ -33,7 +33,7 @@ namespace DotNext.IO
         /// <param name="context">The encoding.</param>
         /// <param name="buffer">The buffer allocated by the caller needed for characters encoding.</param>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding.</exception>
-        public static unsafe void WriteString(this Stream stream, string value, EncodingContext context, byte[] buffer)
+        public static void WriteString(this Stream stream, string value, EncodingContext context, byte[] buffer)
         {
             if(value.Length == 0)
                 return;
@@ -92,11 +92,11 @@ namespace DotNext.IO
         /// Reads the string using the specified encoding.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
-        /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <param name="length">The length of the string, in bytes.</param>
         /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <returns>The string decoded from the log entry content stream.</returns>
-        public static string ReadString(this Stream stream, byte[] buffer, int length, DecodingContext context)
+        public static string ReadString(this Stream stream, int length, DecodingContext context, byte[] buffer)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
@@ -136,12 +136,12 @@ namespace DotNext.IO
         /// Reads the string asynchronously using the specified encoding.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
-        /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <param name="length">The length of the string.</param>
         /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The string decoded from the log entry content stream.</returns>
-        public static async Task<string> ReadStringAsync(this Stream stream, byte[] buffer, int length, DecodingContext context, CancellationToken token = default)
+        public static async Task<string> ReadStringAsync(this Stream stream, int length, DecodingContext context, byte[] buffer, CancellationToken token = default)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
@@ -184,12 +184,12 @@ namespace DotNext.IO
         /// You can use <see cref="System.Buffers.Binary.BinaryPrimitives"/> to decode the returned bytes.
         /// </remarks>
         /// <param name="stream">The stream to read from.</param>
-        /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <param name="count">The number of bytes to read.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <returns>The span of bytes representing buffer segment.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="buffer"/>.</exception>
         /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
-        public static ReadOnlySpan<byte> ReadBytes(this Stream stream, byte[] buffer, int count)
+        public static ReadOnlySpan<byte> ReadBytes(this Stream stream, int count, byte[] buffer)
         {
             if (count == 0)
                 return default;
@@ -213,13 +213,13 @@ namespace DotNext.IO
         /// You can use <see cref="System.Buffers.Binary.BinaryPrimitives"/> to decode the returned bytes.
         /// </remarks>
         /// <param name="stream">The stream to read from.</param>
-        /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <param name="count">The number of bytes to read.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The span of bytes representing buffer segment.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="buffer"/>.</exception>
         /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
-        public static async Task<ReadOnlyMemory<byte>> ReadBytesAsync(this Stream stream, byte[] buffer, int count, CancellationToken token = default)
+        public static async Task<ReadOnlyMemory<byte>> ReadBytesAsync(this Stream stream, int count, byte[] buffer, CancellationToken token = default)
         {
             if (count == 0)
                 return default;

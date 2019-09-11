@@ -15,7 +15,7 @@ namespace DotNext.IO
                 ms.Write(encoding.GetBytes(helloWorld));
                 ms.Position = 0;
                 var buffer = new byte[bufferSize];
-                Equal(helloWorld, ms.ReadString(buffer, encoding.GetByteCount(helloWorld), encoding));
+                Equal(helloWorld, ms.ReadString(encoding.GetByteCount(helloWorld), encoding, buffer));
             }
         }
 
@@ -40,7 +40,7 @@ namespace DotNext.IO
                 await ms.WriteAsync(encoding.GetBytes(helloWorld));
                 ms.Position = 0;
                 var buffer = new byte[bufferSize];
-                Equal(helloWorld, await ms.ReadStringAsync(buffer, encoding.GetByteCount(helloWorld), encoding));
+                Equal(helloWorld, await ms.ReadStringAsync(encoding.GetByteCount(helloWorld), encoding, buffer));
             }
         }
 
@@ -66,7 +66,7 @@ namespace DotNext.IO
                 var buffer = new byte[bufferSize];
                 ms.WriteString(helloWorld, encoding, buffer);
                 ms.Position = 0;
-                Equal(helloWorld, ms.ReadString(buffer, encoding.GetByteCount(helloWorld), encoding));
+                Equal(helloWorld, ms.ReadString(encoding.GetByteCount(helloWorld), encoding, buffer));
             }
         }
 
@@ -91,7 +91,7 @@ namespace DotNext.IO
                 var buffer = new byte[bufferSize];
                 await ms.WriteStringAsync(helloWorld, encoding, buffer);
                 ms.Position = 0;
-                Equal(helloWorld, await ms.ReadStringAsync(buffer, encoding.GetByteCount(helloWorld), encoding));
+                Equal(helloWorld, await ms.ReadStringAsync(encoding.GetByteCount(helloWorld), encoding, buffer));
             }
         }
 

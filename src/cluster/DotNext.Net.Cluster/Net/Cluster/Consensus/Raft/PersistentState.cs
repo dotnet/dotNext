@@ -77,7 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal static async Task<LogEntry> ReadAsync(StreamSegment cachedContent, byte[] sharedBuffer, bool snapshot, CancellationToken token)
             {
                 //parse entry metadata, 24 bytes
-                var metadata = await cachedContent.BaseStream.ReadBytesAsync(sharedBuffer, MetadataSize, token).ConfigureAwait(false);
+                var metadata = await cachedContent.BaseStream.ReadBytesAsync(MetadataSize, sharedBuffer, token).ConfigureAwait(false);
                 return new LogEntry(cachedContent, sharedBuffer,
                     ReadInt64LittleEndian(metadata.Span.Slice(TermOffset, sizeof(long))),   //term
                     ReadInt64LittleEndian(metadata.Span.Slice(TimestampOffset, sizeof(long))),  //timestamp
@@ -132,7 +132,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <returns>The span of bytes representing buffer segment.</returns>
             /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
             public ReadOnlySpan<byte> Read(int count)
-                => content.ReadBytes(buffer, count);
+                => content.ReadBytes(count, buffer);
 
             /// <summary>
             /// Reads asynchronously the number of bytes using the pre-allocated buffer.
@@ -145,7 +145,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <returns>The span of bytes representing buffer segment.</returns>
             /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
             public Task<ReadOnlyMemory<byte>> ReadAsync(int count, CancellationToken token = default)
-                => content.ReadBytesAsync(buffer, count, token);
+                => content.ReadBytesAsync(count, buffer, token);
 
             /// <summary>
             /// Reads the string using the specified encoding.
@@ -156,8 +156,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="length">The length of the string, in bytes.</param>
             /// <param name="context">The decoding context.</param>
             /// <returns>The string decoded from the log entry content stream.</returns>
-            public unsafe string ReadString(int length, DecodingContext context)
-                => content.ReadString(buffer, length, context);
+            public string ReadString(int length, DecodingContext context)
+                => content.ReadString(length, context, buffer);
 
             /// <summary>
             /// Reads the string asynchronously using the specified encoding.
@@ -170,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
             /// <returns>The string decoded from the log entry content stream.</returns>
             public Task<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
-                => content.ReadStringAsync(buffer, length, context, token);
+                => content.ReadStringAsync(length, context, buffer, token);
 
             /// <summary>
             /// Copies the object content into the specified stream.
@@ -231,7 +231,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     SetLength(payloadOffset);
                 //restore index offset
                 Position = IndexOffsetOffset;
-                IndexOffset = ReadInt64LittleEndian(this.ReadBytes(sharedBuffer, sizeof(long)));
+                IndexOffset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), sharedBuffer));
                 segment = new StreamSegment(this);
             }
 
@@ -254,7 +254,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Debug.Assert(index >= 0 && index < Capacity);
                 //find pointer to the content
                 Position = AllocationTableOffset + index * AllocationTableEntrySize;
-                offset = ReadInt64LittleEndian(this.ReadBytes(buffer, sizeof(long)));   //do not read 4 bytes asynchronously
+                offset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), buffer));   //do not read 4 bytes asynchronously
                 if (offset == 0L)
                     return null;
                 Position = offset;
@@ -274,12 +274,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     //read position of the previous entry
                     Position = AllocationTableOffset + (index - 1) * AllocationTableEntrySize;
-                    offset = ReadInt64LittleEndian(this.ReadBytes(buffer, sizeof(long)));   //do not read 4 bytes asynchronously
+                    offset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), buffer));   //do not read 4 bytes asynchronously
                     Debug.Assert(offset > 0, "Previous entry doesn't exist for unknown reason");
                     //read length of the previous entry
                     Position = offset + LogEntry.LengthOffset;
                     //calculate offset to the newly entry
-                    offset = ReadInt64LittleEndian(this.ReadBytes(buffer, sizeof(long)));   //do not read 4 bytes asynchronously
+                    offset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), buffer));   //do not read 4 bytes asynchronously
                     offset += Position;
                 }
                 //write content
