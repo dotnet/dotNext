@@ -149,11 +149,14 @@ namespace DotNext.Runtime.InteropServices
             Equal('c', chars2[1]);
         }
 
-        [Fact]
-        public unsafe static void PointerConversion()
+        [Theory]
+        [InlineData(-3893957)]
+        [InlineData(int.MaxValue)]
+        [InlineData(int.MinValue)]
+        public unsafe static void PointerConversion(int value)
         {
-            var ptr = new IntPtr(-3893957);
-            Equal(ptr, new IntPtr(ptr.ToPointer<byte>()));
+            var ptr = new IntPtr(value).ToPointer<byte>();
+            Equal(new IntPtr(value), new IntPtr(ptr));
         }
     }
 }
