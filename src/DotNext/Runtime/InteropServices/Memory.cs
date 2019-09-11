@@ -122,6 +122,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Vector<byte> ReadVector(ref IntPtr source)
         {
+            //TODO: The method can be removed in .NET Standard 2.0
             var result = Unsafe.Read<Vector<byte>>(source.ToPointer());
             source += Vector<byte>.Count;
             return result;
