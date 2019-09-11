@@ -85,7 +85,7 @@ namespace DotNext.IO.MemoryMappedFiles
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public void Clear()
         {
-            if(ptr == Memory.NullPtr)
+            if(ptr == default)
                 throw new ObjectDisposedException(GetType().Name);
             Memory.ClearBits(new IntPtr(ptr), Size);
         }

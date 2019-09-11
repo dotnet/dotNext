@@ -64,7 +64,7 @@ namespace DotNext.Runtime.InteropServices
             /// <returns><see langword="true"/>, if next element is available; <see langword="false"/>, if end of sequence reached.</returns>
             public bool MoveNext()
             {
-                if (ptr == Memory.NullPtr)
+                if (ptr == default)
                     return false;
                 index += 1L;
                 return index < count;
@@ -508,7 +508,7 @@ namespace DotNext.Runtime.InteropServices
         public unsafe bool IsNull
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => value == Memory.NullPtr;
+            get => value == default;
         }
 
         /// <summary>

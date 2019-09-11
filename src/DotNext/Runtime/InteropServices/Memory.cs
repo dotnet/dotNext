@@ -38,12 +38,6 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
-        /// Represents null pointer.
-        /// </summary>
-        [CLSCompliant(false)]
-        public static readonly void* NullPtr = IntPtr.Zero.ToPointer();
-
-        /// <summary>
         /// Converts the value of this instance to a pointer of the specified type.
         /// </summary>
         /// <param name="source">The value to be converted into pointer.</param>
@@ -51,9 +45,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The typed pointer.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T* ToPointer<T>(this IntPtr source)
-            where T : unmanaged
-            => (T*)source.ToPointer();
+        public static T* ToPointer<T>(this IntPtr source) where T : unmanaged => (T*)source;
 
         /// <summary>
         /// Reads a value of type <typeparamref name="T"/> from the given location
