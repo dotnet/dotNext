@@ -536,7 +536,7 @@ namespace DotNext.Runtime.InteropServices
                 if (IsNull)
                     throw new NullPointerException();
                 else
-                    return ref Unsafe.AsRef<T>(value);
+                    return ref value[0];
             }
         }
 

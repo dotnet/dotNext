@@ -195,14 +195,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Copy<T>(T* source, ref T destination, uint count)
             where T : unmanaged
-        {
-            Push(ref destination);
-            Push(source);
-            Push(count);
-            Sizeof(typeof(T));
-            Mul_Ovf_Un();
-            Cpblk();
-        }
+            => Copy(ref source[0], ref destination, count);
 
         /// <summary>
         /// Copies the specified number of elements from source address to the destination address.
@@ -222,6 +215,7 @@ namespace DotNext.Runtime.InteropServices
             Sizeof(typeof(T));
             Mul_Ovf_Un();
             Cpblk();
+            Ret();
         }
 
         /// <summary>
