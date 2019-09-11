@@ -45,7 +45,27 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The typed pointer.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T* ToPointer<T>(this IntPtr source) where T : unmanaged => (T*)source;
+        public static T* ToPointer<T>(this IntPtr source) 
+            where T : unmanaged
+        {
+            Push(source);
+            return ReturnPointer<T>();
+        }
+
+        /// <summary>
+        /// Converts the value of this instance to a pointer of the specified type.
+        /// </summary>
+        /// <param name="source">The value to be converted into pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The typed pointer.</returns>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T* ToPointer<T>(this UIntPtr source)
+            where T : unmanaged
+        {
+            Push(source);
+            return ReturnPointer<T>();
+        }
 
         /// <summary>
         /// Reads a value of type <typeparamref name="T"/> from the given location

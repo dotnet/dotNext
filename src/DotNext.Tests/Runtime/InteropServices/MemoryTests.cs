@@ -148,5 +148,12 @@ namespace DotNext.Runtime.InteropServices
             Equal('b', chars2[0]);
             Equal('c', chars2[1]);
         }
+
+        [Fact]
+        public unsafe static void PointerConversion()
+        {
+            var ptr = new IntPtr(-3893957);
+            Equal(ptr, new IntPtr(ptr.ToPointer<byte>()));
+        }
     }
 }
