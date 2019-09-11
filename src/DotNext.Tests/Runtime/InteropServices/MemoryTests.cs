@@ -139,6 +139,15 @@ namespace DotNext.Runtime.InteropServices
             Equal('c', chars2[1]);
         }
 
+        [Fact]
+        public static unsafe void CopyValue()
+        {
+            int a = 42, b = 0;
+            Memory.Copy(&a, &b);
+            Equal(a, b);
+            Equal(42, b);
+        }
+
         [Theory]
         [InlineData(-3893957)]
         [InlineData(int.MaxValue)]

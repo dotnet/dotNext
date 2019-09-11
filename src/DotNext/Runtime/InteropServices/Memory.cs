@@ -881,6 +881,18 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
+        /// Copies one value into another.
+        /// </summary>
+        /// <typeparam name="T">The value type to copy.</typeparam>
+        /// <param name="input">The reference to the source location.</param>
+        /// <param name="output">The reference to the destination location.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static void Copy<T>(T* input, T* output)
+            where T : unmanaged
+            => Copy<T>(in input[0], out output[0]);
+
+        /// <summary>
         /// Determines whether the specified managed pointer is <see langword="null"/>.
         /// </summary>
         /// <param name="value">The managed pointer to check.</param>
