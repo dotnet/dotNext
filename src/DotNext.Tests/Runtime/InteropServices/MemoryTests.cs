@@ -139,16 +139,6 @@ namespace DotNext.Runtime.InteropServices
             Equal('c', chars2[1]);
         }
 
-        [Fact]
-        public unsafe static void CopyFromStack()
-        {
-            var chars1 = stackalloc char[] {'a', 'b', 'c'};
-            var chars2 = new char[2];
-            Memory.Copy(&chars1[1], ref chars2[0], 2);
-            Equal('b', chars2[0]);
-            Equal('c', chars2[1]);
-        }
-
         [Theory]
         [InlineData(-3893957)]
         [InlineData(int.MaxValue)]

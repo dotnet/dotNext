@@ -196,19 +196,6 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The number of bytes to copy from source address to destination.</param>
 		public static void Copy(IntPtr source, IntPtr destination, long length)
             => Copy(source.ToPointer(), destination.ToPointer(), length);
-        
-        /// <summary>
-        /// Copies the specified number of elements from source address to the destination address.
-        /// </summary>
-        /// <param name="source">The address of the bytes to copy.</param>
-        /// <param name="destination">The target address.</param>
-        /// <param name="count">The number of elements to copy.</param>
-        /// <typeparam name="T">The type of the element.</typeparam>
-        [CLSCompliant(false)]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Copy<T>(T* source, ref T destination, uint count)
-            where T : unmanaged
-            => Copy(ref source[0], ref destination, count);
 
         /// <summary>
         /// Copies the specified number of elements from source address to the destination address.
