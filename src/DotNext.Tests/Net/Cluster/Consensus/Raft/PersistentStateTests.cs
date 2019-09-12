@@ -354,6 +354,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 await state.AppendAsync(entries);
                 await state.CommitAsync(CancellationToken.None);
+                var readResult = await state.GetEntriesAsync(1, 6, CancellationToken.None);
+                Equal(1, readResult.Count);
+                True(readResult[0].IsSnapshot);
+                readResult.Dispose();
+                readResult = await state.GetEntriesAsync(1, CancellationToken.None);
+                Equal(3, readResult.Count);
+                True(readResult[0].IsSnapshot);
+                False(readResult[1].IsSnapshot);
+                False(readResult[2].IsSnapshot);
+                readResult.Dispose();
             }
             finally
             {

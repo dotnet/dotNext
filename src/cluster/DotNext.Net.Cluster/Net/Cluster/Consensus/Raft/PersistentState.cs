@@ -119,7 +119,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 //write length of the stream
                 output.Position = currentPos - sizeof(long);
                 WriteInt64LittleEndian(buffer, length);
-                await output.WriteAsync(buffer, 0, sizeof(long)).ConfigureAwait(false);
+                await output.WriteAsync(buffer, 0, sizeof(long), token).ConfigureAwait(false);
             }
 
             /// <summary>
@@ -248,7 +248,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Write(sharedBuffer, 0, sizeof(long));
             }
 
-            internal Task<LogEntry> ReadAsync(long index, bool absoluteIndex, CancellationToken token)
+            internal async Task<LogEntry> ReadAsync(long index, bool absoluteIndex, CancellationToken token)
             {
                 //calculate relative index
                 if (absoluteIndex)
@@ -256,11 +256,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {IndexOffset}");
                 //find pointer to the content
                 Position = AllocationTableOffset + index * AllocationTableEntrySize;
-                var offset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), buffer));   //do not read 4 bytes asynchronously
+                var offset = ReadInt64LittleEndian((await this.ReadBytesAsync(sizeof(long), buffer, token).ConfigureAwait(false)).Span);  
                 if (offset == 0L)
                     return null;
                 Position = offset;
-                return LogEntry.ReadAsync(segment, buffer, false, token);
+                return await LogEntry.ReadAsync(segment, buffer, false, token).ConfigureAwait(false);
             }
 
             internal async Task WriteAsync(IRaftLogEntry entry, long index)
@@ -276,12 +276,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     //read position of the previous entry
                     Position = AllocationTableOffset + (index - 1) * AllocationTableEntrySize;
-                    offset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), buffer));   //do not read 4 bytes asynchronously
+                    offset = ReadInt64LittleEndian((await this.ReadBytesAsync(sizeof(long), buffer).ConfigureAwait(false)).Span);
                     Debug.Assert(offset > 0, "Previous entry doesn't exist for unknown reason");
                     //read length of the previous entry
                     Position = offset + LogEntry.LengthOffset;
                     //calculate offset to the newly entry
-                    offset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), buffer));   //do not read 4 bytes asynchronously
+                    offset = ReadInt64LittleEndian((await this.ReadBytesAsync(sizeof(long), buffer).ConfigureAwait(false)).Span);
                     offset += Position;
                 }
                 //write content
@@ -670,10 +670,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                             entry = await partition.ReadAsync(startIndex, true, token).ConfigureAwait(false);
                         else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)    //probably the record is snapshotted
                         {
-                            if (list.Count == 0)
-                                entry = await snapshot.LoadAsync(token).ConfigureAwait(false);
-                            else
-                                continue;
+                            entry = await snapshot.LoadAsync(token).ConfigureAwait(false);
+                            //skip squashed log entries
+                            startIndex = state.CommitIndex - (state.CommitIndex + 1) % recordsPerPartition;
                         }
                         else
                             break;
@@ -857,12 +856,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task ApplyAsync(CancellationToken token)
         {
-            for (var i = state.LastApplied + 1L; i <= state.CommitIndex; i++)
+            for (var i = state.LastApplied + 1L; i <= state.CommitIndex; state.LastApplied = i++)
                 if (TryGetPartition(i, out var partition))
-                {
                     await ApplyAsync((await partition.ReadAsync(i, true, token).ConfigureAwait(false)).AdjustPosition()).ConfigureAwait(false);
-                    state.LastApplied = i;
-                }
+                else
+                    Debug.Fail($"Log entry with index {i} doesn't have partition");
             state.Flush();
         }
 
