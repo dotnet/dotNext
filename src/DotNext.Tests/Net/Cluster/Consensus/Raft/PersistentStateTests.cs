@@ -6,10 +6,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using System.IO.Pipelines;
     using static Messaging.Messenger;
+    using ILogEntry = Replication.ILogEntry;
 
     public sealed class PersistentStateTests : Assert
     {
@@ -53,6 +56,69 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public override int GetHashCode() => Endpoint.GetHashCode();
 
             public override string ToString() => Endpoint.ToString();
+        }
+
+        private sealed class Int64LogEntry: BinaryTransferObject, IRaftLogEntry
+        {
+            internal Int64LogEntry(long value)
+                : base(ToMemory(value))
+            {
+                Timestamp = DateTimeOffset.UtcNow;
+            }
+
+            public long Term { get; set; }
+
+            bool ILogEntry.IsSnapshot => false;
+
+            public DateTimeOffset Timestamp { get; }
+
+            private static ReadOnlyMemory<byte> ToMemory(long value)
+            {
+                var result = new Memory<byte>(new byte[sizeof(long)]);
+                WriteInt64LittleEndian(result.Span, value);
+                return result;
+            }
+        }
+
+        private sealed class TestAuditTrail : PersistentState
+        {
+            internal long Value;
+
+            private sealed class SimpleSnapshotBuilder : SnapshotBuilder
+            {
+                private long currentValue;
+                private readonly byte[] sharedBuffer;
+
+                internal SimpleSnapshotBuilder(byte[] buffer) => sharedBuffer = buffer;
+
+                public override Task CopyToAsync(Stream output, CancellationToken token)
+                {
+                    WriteInt64LittleEndian(sharedBuffer, currentValue);
+                    return output.WriteAsync(sharedBuffer, 0, sizeof(long), token);
+                }
+
+                public override async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
+                {
+                    WriteInt64LittleEndian(sharedBuffer, currentValue);
+                    await output.WriteAsync(new ReadOnlyMemory<byte>(sharedBuffer, 0, sizeof(long)), token);
+                }
+
+                protected override async ValueTask ApplyAsync(LogEntry entry)
+                {
+                    currentValue = ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
+                }
+            }
+
+            internal TestAuditTrail(string path)
+                : base(path, RecordsPerPartition)
+            {
+            }
+
+            private static async Task<long> Decode(LogEntry entry) => ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
+
+            protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await Decode(entry);
+
+            protected override SnapshotBuilder CreateSnapshotBuilder(byte[] buffer) => new SimpleSnapshotBuilder(buffer);
         }
 
         private const long RecordsPerPartition = 4;
@@ -270,6 +336,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Equal(3L, state.GetLastIndex(true));
                 Equal(5L, state.GetLastIndex(false));
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
+            }
+        }
+
+        [Fact]
+        public static async Task Compaction()
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            IPersistentState state = new TestAuditTrail(dir);
+            try
+            {
+                await state.AppendAsync(entries);
+                await state.CommitAsync(CancellationToken.None);
             }
             finally
             {

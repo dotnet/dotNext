@@ -177,7 +177,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
             /// <param name="output">The output stream receiving object content.</param>
-            public Task CopyToAsync(Stream output, CancellationToken token) => AdjustPosition().content.CopyToAsync(output, 1024, token);
+            public Task CopyToAsync(Stream output, CancellationToken token) => AdjustPosition().content.CopyToAsync(output, buffer, token);
 
             /// <summary>
             /// Copies the log entry content into the specified pipe writer.
@@ -185,7 +185,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="output">The writer.</param>
             /// <param name="token">The token that can be used to cancel operation.</param>
             /// <returns>The task representing asynchronous execution of this method.</returns>
-            public ValueTask CopyToAsync(PipeWriter output, CancellationToken token) => AdjustPosition().content.CopyToAsync(output, false, token: token);
+            public ValueTask CopyToAsync(PipeWriter output, CancellationToken token) => AdjustPosition().content.CopyToAsync(output, false, buffer, token);
 
             long? IDataTransferObject.Length => Length;
             bool IDataTransferObject.IsReusable => true;
@@ -218,6 +218,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private readonly long payloadOffset;
             internal readonly long IndexOffset;
+            internal readonly long Capacity;    //max number of entries
             private readonly byte[] buffer;
             private readonly StreamSegment segment;
 
@@ -247,18 +248,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Write(sharedBuffer, 0, sizeof(long));
             }
 
-            //max number of entries
-            internal long Capacity { get; }
-
-            internal Task<LogEntry> ReadAsync(long index, CancellationToken token)
+            internal Task<LogEntry> ReadAsync(long index, bool absoluteIndex, CancellationToken token)
             {
-                var offset = IndexOffset;
                 //calculate relative index
-                index -= offset;
+                if (absoluteIndex)
+                    index -= IndexOffset;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {IndexOffset}");
                 //find pointer to the content
                 Position = AllocationTableOffset + index * AllocationTableEntrySize;
-                offset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), buffer));   //do not read 4 bytes asynchronously
+                var offset = ReadInt64LittleEndian(this.ReadBytes(sizeof(long), buffer));   //do not read 4 bytes asynchronously
                 if (offset == 0L)
                     return null;
                 Position = offset;
@@ -669,7 +667,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         if (startIndex == 0L)   //handle ephemeral entity
                             entry = InMemoryAuditTrail.InitialLog[0];
                         else if (TryGetPartition(startIndex, out var partition)) //handle regular record
-                            entry = await partition.ReadAsync(startIndex, token).ConfigureAwait(false);
+                            entry = await partition.ReadAsync(startIndex, true, token).ConfigureAwait(false);
                         else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)    //probably the record is snapshotted
                         {
                             if (list.Count == 0)
@@ -776,8 +774,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Creates a new snapshot builder.
         /// </summary>
+        /// <param name="buffer">Preallocated buffer that can be used to perform I/O operations.</param>
         /// <returns>The snapshot builder; or <see langword="null"/> if snapshotting is not supported.</returns>
-        protected virtual SnapshotBuilder CreateSnapshotBuilder() => null;
+        protected virtual SnapshotBuilder CreateSnapshotBuilder(byte[] buffer) => null;
 
         private async Task ForceCompaction(SnapshotBuilder builder, long commitIndex, CancellationToken token)
         {
@@ -786,14 +785,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             foreach (var (partNumber, partition) in partitionTable)
             {
                 token.ThrowIfCancellationRequested();
-                if (partition.IndexOffset + recordsPerPartition <= commitIndex)
+                if (partition.IndexOffset + partition.Capacity <= commitIndex)
                     compactionScope.Add(partNumber, partition);
             }
             //2. Do compaction
             foreach (var partition in compactionScope.Values)
-                for (var i = 0L; i < recordsPerPartition; i++)
+                for (var i = 0L; i < partition.Capacity; i++)
                     if (partition.IndexOffset > 0L || i > 0L) //ignore the ephemeral entry
-                        await builder.ApplyCoreAsync((await partition.ReadAsync(i, token).ConfigureAwait(false)).AdjustPosition()).ConfigureAwait(false);
+                        await builder.ApplyCoreAsync((await partition.ReadAsync(i, false, token).ConfigureAwait(false)).AdjustPosition()).ConfigureAwait(false);
             //3. Persist snapshot
             await snapshot.SaveAsync(builder, token).ConfigureAwait(false);
             //4. Remove snapshotted partitions
@@ -804,23 +803,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 partition.Dispose();
                 File.Delete(fileName);
             }
+            compactionScope.Clear();
         }
 
         private Task ForceCompaction(CancellationToken token)
         {
-            var builder = CreateSnapshotBuilder();
+            var builder = CreateSnapshotBuilder(sharedBuffer);
             if (builder is null)
                 return Task.CompletedTask;
             else
+            {
+                var commitIndex = state.CommitIndex;
                 try
                 {
-                    var commitIndex = state.CommitIndex;
                     return commitIndex >= recordsPerPartition ? ForceCompaction(builder, commitIndex, token) : Task.CompletedTask;
                 }
                 finally
                 {
                     builder.Dispose();
                 }
+            }
         }
 
         private async Task<long> CommitAsync(long? endIndex, CancellationToken token)
@@ -847,6 +849,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Applies the command represented by the log entry to the underlying database engine.
         /// </summary>
+        /// <remarks>
+        /// The base method does nothing so you don't need to call base implementation.
+        /// </remarks>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected virtual ValueTask ApplyAsync(LogEntry entry) => new ValueTask(Task.CompletedTask);
 
@@ -855,7 +860,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             for (var i = state.LastApplied + 1L; i <= state.CommitIndex; i++)
                 if (TryGetPartition(i, out var partition))
                 {
-                    await ApplyAsync((await partition.ReadAsync(i, token).ConfigureAwait(false)).AdjustPosition()).ConfigureAwait(false);
+                    await ApplyAsync((await partition.ReadAsync(i, true, token).ConfigureAwait(false)).AdjustPosition()).ConfigureAwait(false);
                     state.LastApplied = i;
                 }
             state.Flush();

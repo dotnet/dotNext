@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace DotNext
 {
+    using Buffers;
     using IO;
 
     /// <summary>
@@ -12,6 +13,7 @@ namespace DotNext
     /// </summary>
     public class StreamTransferObject : Disposable, IDataTransferObject
     {
+        private const int DefaultBufferSize = 1024;
         private readonly bool leaveOpen;
         private readonly Stream content;
 
@@ -33,17 +35,19 @@ namespace DotNext
 
         long? IDataTransferObject.Length => content.CanSeek ? content.Length : default(long?);
 
-        private static async Task CopyToAsyncAndSeek(Stream input, Stream output, CancellationToken token)
+        async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
-            await input.CopyToAsync(output, 1024, token).ConfigureAwait(false);
-            input.Seek(0, SeekOrigin.Begin);
+            using (var buffer = new ArrayRental<byte>(DefaultBufferSize))
+                await content.CopyToAsync(output, buffer, token).ConfigureAwait(false);
+            if (content.CanSeek)
+                content.Seek(0, SeekOrigin.Begin);
         }
 
-        Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) =>
-            content.CanSeek ? CopyToAsyncAndSeek(content, output, token) : content.CopyToAsync(output, 1024, token);
-
-        ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
-            => content.CopyToAsync(output, true, token: token);
+        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
+        {
+            using (var buffer = new ArrayRental<byte>(DefaultBufferSize))
+                await content.CopyToAsync(output, true, buffer, token).ConfigureAwait(false);
+        }
 
         /// <summary>
         /// Releases resources associated with this object.

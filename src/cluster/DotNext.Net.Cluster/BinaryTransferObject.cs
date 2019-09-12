@@ -58,11 +58,6 @@ namespace DotNext
                     break;
                 if (result.IsCanceled)
                     throw new OperationCanceledException(token);
-                result = await output.FlushAsync(token);
-                if (result.IsCompleted)
-                    break;
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token);
             }
         }
     }

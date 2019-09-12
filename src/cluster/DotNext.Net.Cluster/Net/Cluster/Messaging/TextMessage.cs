@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Messaging
 {
     using Buffers;
+    using IO;
     using static Mime.ContentTypeExtensions;
 
     /// <summary>
@@ -56,22 +57,12 @@ namespace DotNext.Net.Cluster.Messaging
         async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
-            const int charsBufferSize = 512;
-            var encoding = Type.GetEncoding();
-            using (var buffer = new ArrayRental<byte>(encoding.GetMaxByteCount(charsBufferSize)))
-            {
-                var offset = 0;
-                do
-                {
-                    var n = encoding.GetBytes(Content, offset, Math.Min(Content.Length - offset, charsBufferSize), buffer, 0);
-                    await output.WriteAsync(buffer, 0, n).ConfigureAwait(false);
-                    offset += n;
-                }
-                while (offset < Content.Length);
-            }
+            const int defaultBufferSize = 128;
+            using (var buffer = new ArrayRental<byte>(defaultBufferSize))
+                await output.WriteStringAsync(Content, Type.GetEncoding(), buffer, token).ConfigureAwait(false);
         }
 
-        private static unsafe int Encode(Encoding encoding, ReadOnlySpan<char> chunk, byte[] output)
+        private static unsafe int Encode(Encoding encoding, ReadOnlySpan<char> chunk, Span<byte> output)
         {
             fixed (char* source = chunk)
             fixed (byte* dest = output)
@@ -83,22 +74,14 @@ namespace DotNext.Net.Cluster.Messaging
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
-            const int charsBuffserSize = 512;
             var encoding = Type.GetEncoding();
-            using (var bytes = new ArrayRental<byte>(encoding.GetMaxByteCount(charsBuffserSize)))
-                foreach (var chunk in Content.Split(charsBuffserSize))
-                {
-                    var result = await output.WriteAsync(new ReadOnlyMemory<byte>(bytes, 0, Encode(encoding, chunk.Span, bytes)), token);
-                    if (result.IsCompleted)
-                        break;
-                    if (result.IsCanceled)
-                        throw new OperationCanceledException(token);
-                    result = await output.FlushAsync(token);
-                    if (result.IsCompleted)
-                        break;
-                    if (result.IsCanceled)
-                        throw new OperationCanceledException(token);
-                }
+            var bytesCount = encoding.GetByteCount(Content);
+            var buffer = output.GetMemory(bytesCount);
+            Encode(encoding, Content.AsSpan(), buffer.Span);
+            output.Advance(bytesCount);
+            var result = await output.FlushAsync(token);
+            if (result.IsCanceled)
+                throw new OperationCanceledException(token);
         }
 
         /// <summary>
