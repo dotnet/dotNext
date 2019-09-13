@@ -51,13 +51,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
              * Log entry format:
              * 8 bytes = term
              * 8 bytes = timestamp (UTC)
-             * 8 bytes = content length
              * octet string = content
              */
-            internal const int TermOffset = 0;
-            internal const int TimestampOffset = TermOffset + sizeof(long);
-            internal const int LengthOffset = TimestampOffset + sizeof(long);
-            private const int MetadataSize = sizeof(long) * 3;
+            private const int TermOffset = 0;
+            private const int TimestampOffset = TermOffset + sizeof(long);
+            internal const int MetadataSize = sizeof(long) * 2;
 
             private readonly StreamSegment content;
             private readonly long contentOffset;
@@ -74,14 +72,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 IsSnapshot = snapshot;
             }
 
-            internal static async Task<LogEntry> ReadAsync(StreamSegment cachedContent, byte[] sharedBuffer, bool snapshot, CancellationToken token)
+            internal static async Task<LogEntry> ReadAsync(StreamSegment cachedContent, byte[] sharedBuffer, long length, bool snapshot, CancellationToken token)
             {
-                //parse entry metadata, 24 bytes
+                //parse entry metadata, 16 bytes
                 var metadata = await cachedContent.BaseStream.ReadBytesAsync(MetadataSize, sharedBuffer, token).ConfigureAwait(false);
                 return new LogEntry(cachedContent, sharedBuffer,
                     ReadInt64LittleEndian(metadata.Span.Slice(TermOffset, sizeof(long))),   //term
                     ReadInt64LittleEndian(metadata.Span.Slice(TimestampOffset, sizeof(long))),  //timestamp
-                    ReadInt64LittleEndian(metadata.Span.Slice(LengthOffset, sizeof(long))), //length
+                    length,
                     cachedContent.BaseStream.Position,
                     snapshot);
             }
@@ -102,24 +100,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return this;
             }
 
-            internal static async Task WriteAsync(IRaftLogEntry entry, Stream output, byte[] buffer, CancellationToken token = default)
+            internal static async Task<long> WriteAsync(IRaftLogEntry entry, Stream output, byte[] buffer, CancellationToken token = default)
             {
                 //write term
                 WriteInt64LittleEndian(new Span<byte>(buffer, TermOffset, sizeof(long)), entry.Term);
                 //write timestamp
                 WriteInt64LittleEndian(new Span<byte>(buffer, TimestampOffset, sizeof(long)), entry.Timestamp.UtcTicks);
-                //write empty length
-                WriteInt64LittleEndian(new Span<byte>(buffer, LengthOffset, sizeof(long)), 0L);
                 //write metadata into stream
                 await output.WriteAsync(buffer, 0, MetadataSize, token).ConfigureAwait(false);
 
                 var currentPos = output.Position;
                 await entry.CopyToAsync(output, token).ConfigureAwait(false);
-                var length = output.Position - currentPos;
-                //write length of the stream
-                output.Position = currentPos - sizeof(long);
-                WriteInt64LittleEndian(buffer, length);
-                await output.WriteAsync(buffer, 0, sizeof(long), token).ConfigureAwait(false);
+                return output.Position - currentPos;
             }
 
             /// <summary>
@@ -206,13 +198,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             FileName - number of partition
             OF 8 bytes = record index offset
             Allocation table:
-            [8 bytes = pointer to content] X number of entries
+            [8 bytes = pointer to content, 8 bytes = content length] X number of entries
             Payload:
-            [metadata, 8 bytes = length, content] X number of entries
+            [metadata, content] X number of entries
          */
         private sealed class Partition : FileStream
         {
-            private const long AllocationTableEntrySize = sizeof(long);
+            private const int AllocationTableEntrySize = sizeof(long) * 2;
             private const long IndexOffsetOffset = 0;
             private const long AllocationTableOffset = IndexOffsetOffset + sizeof(long);
 
@@ -256,11 +248,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {IndexOffset}");
                 //find pointer to the content
                 Position = AllocationTableOffset + index * AllocationTableEntrySize;
-                var offset = ReadInt64LittleEndian((await this.ReadBytesAsync(sizeof(long), buffer, token).ConfigureAwait(false)).Span);  
+                var entry = await this.ReadBytesAsync(AllocationTableEntrySize, buffer, token).ConfigureAwait(false);
+                var offset = ReadInt64LittleEndian(entry.Span);
+                var length = ReadInt64LittleEndian(entry.Span.Slice(sizeof(long)));
                 if (offset == 0L)
                     return null;
                 Position = offset;
-                return await LogEntry.ReadAsync(segment, buffer, false, token).ConfigureAwait(false);
+                return await LogEntry.ReadAsync(segment, buffer, length, false, token).ConfigureAwait(false);
             }
 
             internal async Task WriteAsync(IRaftLogEntry entry, long index)
@@ -269,28 +263,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 index -= IndexOffset;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {IndexOffset}");
                 //calculate offset of the previous entry
-                long offset;
+                long offset, length;
                 if (index == 0L || index == 1L && IndexOffset == 0L)
                     offset = payloadOffset;
                 else
                 {
-                    //read position of the previous entry
+                    //read content offset and the length of the previous entry
                     Position = AllocationTableOffset + (index - 1) * AllocationTableEntrySize;
-                    offset = ReadInt64LittleEndian((await this.ReadBytesAsync(sizeof(long), buffer).ConfigureAwait(false)).Span);
+                    var entryRecord = await this.ReadBytesAsync(LogEntry.MetadataSize, buffer).ConfigureAwait(false);
+                    offset = ReadInt64LittleEndian(entryRecord.Span);
+                    length = ReadInt64LittleEndian(entryRecord.Span.Slice(sizeof(long)));
                     Debug.Assert(offset > 0, "Previous entry doesn't exist for unknown reason");
-                    //read length of the previous entry
-                    Position = offset + LogEntry.LengthOffset;
-                    //calculate offset to the newly entry
-                    offset = ReadInt64LittleEndian((await this.ReadBytesAsync(sizeof(long), buffer).ConfigureAwait(false)).Span);
-                    offset += Position;
+                    offset += LogEntry.MetadataSize + length;
                 }
                 //write content
                 Position = offset;
-                await LogEntry.WriteAsync(entry, this, buffer).ConfigureAwait(false);
+                length = await LogEntry.WriteAsync(entry, this, buffer).ConfigureAwait(false);
                 //record new log entry to the allocation table
                 Position = AllocationTableOffset + index * AllocationTableEntrySize;
                 WriteInt64LittleEndian(buffer, offset);
-                await WriteAsync(buffer, 0, sizeof(long)).ConfigureAwait(false);
+                WriteInt64LittleEndian(new Span<byte>(buffer).Slice(sizeof(long)), length);
+                await WriteAsync(buffer, 0, AllocationTableEntrySize).ConfigureAwait(false);
             }
 
             protected override void Dispose(bool disposing)
@@ -326,7 +319,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal Task<LogEntry> LoadAsync(CancellationToken token)
             {
                 Position = 0;
-                return LogEntry.ReadAsync(segment, buffer, true, token);
+                return LogEntry.ReadAsync(segment, buffer, Length - LogEntry.MetadataSize, true, token);
             }
 
             protected override void Dispose(bool disposing)
