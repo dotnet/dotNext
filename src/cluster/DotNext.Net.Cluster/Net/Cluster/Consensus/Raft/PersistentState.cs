@@ -189,8 +189,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal readonly long Capacity;    //max number of entries
             private readonly byte[] buffer;
             private readonly StreamSegment segment;
+            private readonly LogEntryMetadata[] lookupCache;
 
-            internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber)
+            internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber, bool useLookupCache)
                 : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
                 payloadOffset = LogEntryMetadata.Size * recordsPerPartition;
@@ -200,6 +201,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     SetLength(payloadOffset);
                 segment = new StreamSegment(this);
                 IndexOffset = partitionNumber * recordsPerPartition;
+                lookupCache = useLookupCache ? new LogEntryMetadata[recordsPerPartition] : null;
             }
 
             internal async Task<LogEntry> ReadAsync(long index, bool absoluteIndex, CancellationToken token)
@@ -209,8 +211,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     index -= IndexOffset;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {IndexOffset}");
                 //find pointer to the content
-                Position = index * LogEntryMetadata.Size;
-                var metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer, token).ConfigureAwait(false)).Span);
+                LogEntryMetadata metadata;
+                if (lookupCache is null)
+                {
+                    Position = index * LogEntryMetadata.Size;
+                    metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer, token).ConfigureAwait(false)).Span);
+                }
+                else
+                    metadata = lookupCache[index];
                 if (metadata.Offset == 0L)
                     return null;
                 return new LogEntry(segment, buffer, metadata);
@@ -226,11 +234,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 LogEntryMetadata metadata;
                 if (index == 0L || index == 1L && IndexOffset == 0L)
                     offset = payloadOffset;
-                else
+                else if (lookupCache is null)
                 {
                     //read content offset and the length of the previous entry
                     Position = (index - 1) * LogEntryMetadata.Size;
                     metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer).ConfigureAwait(false)).Span);
+                    Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
+                    offset = metadata.Length + metadata.Offset;
+                }
+                else
+                {
+                    metadata = lookupCache[index - 1];
                     Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
                     offset = metadata.Length + metadata.Offset;
                 }
@@ -242,6 +256,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 MemoryMarshal.Write(buffer, ref metadata);
                 Position = index * LogEntryMetadata.Size;
                 await WriteAsync(buffer, 0, LogEntryMetadata.Size).ConfigureAwait(false);
+                //update cache
+                if (!(lookupCache is null))
+                    lookupCache[index] = metadata;
             }
 
             protected override void Dispose(bool disposing)
@@ -527,6 +544,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly ILogEntryList<IRaftLogEntry> emptyLog;
         private readonly ILogEntryList<IRaftLogEntry> initialLog;
         private readonly byte[] sharedBuffer;
+        private readonly bool useLookupCache;
 
         /// <summary>
         /// Initializes a new persistent audit trail.
@@ -534,8 +552,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
         /// <param name="bufferSize">Optional size of in-memory buffer for I/O operations.</param>
+        /// <param name="useCaching"><see langword="true"/> to in-memory cache for faster read/write of log entries; <see langword="false"/> to reduce the memory by the cost of the performance.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1; or <paramref name="bufferSize"/> is too small.</exception>
-        public PersistentState(DirectoryInfo path, long recordsPerPartition, int bufferSize = DefaultBufferSize)
+        public PersistentState(DirectoryInfo path, long recordsPerPartition, int bufferSize = DefaultBufferSize, bool useCaching = true)
         {
             if (bufferSize < MinBufferSize)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
@@ -545,6 +564,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 path.Create();
             sharedBuffer = new byte[bufferSize];
             location = path;
+            useLookupCache = useCaching;
             this.recordsPerPartition = recordsPerPartition;
             commitEvent = new AsyncManualResetEvent(false);
             syncRoot = new AsyncExclusiveLock();
@@ -554,7 +574,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //load all partitions from file system
             foreach (var file in path.EnumerateFiles())
                 if (long.TryParse(file.Name, out var partitionNumber))
-                    partitionTable[partitionNumber] = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber);
+                    partitionTable[partitionNumber] = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber, useCaching);
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
             snapshot = new Snapshot(path, sharedBuffer);
         }
@@ -591,7 +611,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             partitionNumber = PartitionOf(recordIndex);
             if (!partitionTable.TryGetValue(partitionNumber, out var partition))
             {
-                partition = new Partition(location, sharedBuffer, recordsPerPartition, partitionNumber);
+                partition = new Partition(location, sharedBuffer, recordsPerPartition, partitionNumber, useLookupCache);
                 partitionTable.Add(partitionNumber, partition);
             }
             return partition;
