@@ -196,7 +196,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /*
             Partition file format:
             FileName - number of partition
-            OF 8 bytes = record index offset
             Allocation table:
             [8 bytes = pointer to content, 8 bytes = content length] X number of entries
             Payload:
@@ -205,8 +204,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private sealed class Partition : FileStream
         {
             private const int AllocationTableEntrySize = sizeof(long) * 2;
-            private const long IndexOffsetOffset = 0;
-            private const long AllocationTableOffset = IndexOffsetOffset + sizeof(long);
+            private const long AllocationTableOffset = 0L;
 
             private readonly long payloadOffset;
             internal readonly long IndexOffset;
@@ -214,8 +212,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly byte[] buffer;
             private readonly StreamSegment segment;
 
-            private Partition(string fileName, byte[] sharedBuffer, long recordsPerPartition, bool restoreIndexOffset)
-                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
+            internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber)
+                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
                 payloadOffset = AllocationTableOffset + AllocationTableEntrySize * recordsPerPartition;
                 Capacity = recordsPerPartition;
@@ -224,20 +222,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     SetLength(payloadOffset);
                 segment = new StreamSegment(this);
                 //restore index offset
-                IndexOffset = restoreIndexOffset ? ReadInt64LittleEndian(this.ReadBytes(sizeof(long), sharedBuffer)) : 0;
-            }
-
-
-            internal Partition(string fileName, byte[] sharedBuffer, long recordsPerPartition)
-                : this(fileName, sharedBuffer, recordsPerPartition, true)
-            {
-            }
-
-            internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber)
-                : this(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), sharedBuffer, recordsPerPartition, false)
-            {
-                WriteInt64LittleEndian(sharedBuffer, IndexOffset = partitionNumber * recordsPerPartition);
-                Write(sharedBuffer, 0, sizeof(long));
+                IndexOffset = partitionNumber * recordsPerPartition;
             }
 
             internal async Task<LogEntry> ReadAsync(long index, bool absoluteIndex, CancellationToken token)
@@ -576,7 +561,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (bufferSize < MinBufferSize)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
-            if(recordsPerPartition < 1L)
+            if (recordsPerPartition < 1L)
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
@@ -591,10 +576,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //load all partitions from file system
             foreach (var file in path.EnumerateFiles())
                 if (long.TryParse(file.Name, out var partitionNumber))
-                {
-                    var partition = new Partition(file.FullName, sharedBuffer, recordsPerPartition);
-                    partitionTable[partitionNumber] = partition;
-                }
+                    partitionTable[partitionNumber] = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber);
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
             snapshot = new Snapshot(path, sharedBuffer);
         }
