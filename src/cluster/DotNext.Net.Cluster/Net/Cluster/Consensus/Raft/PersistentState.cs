@@ -178,9 +178,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Partition file format:
             FileName - number of partition
             Allocation table:
-            [8 bytes = pointer to content, 8 bytes = term, 8 bytes = timestamp, 8 bytes = content length] X number of entries
+            [struct LogEntryMetadata] X number of entries
             Payload:
-            [metadata, content] X number of entries
+            [octet string] X number of entries
          */
         private sealed class Partition : FileStream
         {
@@ -270,7 +270,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /*
-         * Binary format is the same as for LogEntry
+         * Binary format:
+         * [struct LogEntryMetadata] X 1
+         * [octet string] X 1
          */
         private sealed class Snapshot : FileStream
         {
