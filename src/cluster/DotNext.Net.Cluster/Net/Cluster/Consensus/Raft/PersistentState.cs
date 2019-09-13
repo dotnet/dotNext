@@ -5,10 +5,11 @@ using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.IO.Pipelines;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
-using static System.Buffers.Binary.BinaryPrimitives;
+using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -42,52 +43,46 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </remarks>
     public class PersistentState : Disposable, IPersistentState
     {
+        internal readonly struct LogEntryMetadata
+        {
+            internal readonly long Term, Timestamp, Length, Offset;
+
+            internal LogEntryMetadata(IRaftLogEntry entry, long offset, long length)
+            {
+                Term = entry.Term;
+                Timestamp = entry.Timestamp.UtcTicks;
+                Length = length;
+                Offset = offset;
+            }
+
+            internal static unsafe int Size
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => sizeof(LogEntryMetadata);
+            }
+        }
+
          /// <summary>
          /// Represents persistent log entry.
          /// </summary>
         protected sealed class LogEntry : IRaftLogEntry
         {
-            /*
-             * Log entry format:
-             * 8 bytes = term
-             * 8 bytes = timestamp (UTC)
-             * octet string = content
-             */
-            private const int TermOffset = 0;
-            private const int TimestampOffset = TermOffset + sizeof(long);
-            internal const int MetadataSize = sizeof(long) * 2;
-
             private readonly StreamSegment content;
-            private readonly long contentOffset;
+            private readonly LogEntryMetadata metadata;
             private readonly byte[] buffer;
 
-            private LogEntry(StreamSegment cachedContent, byte[] sharedBuffer, long term, long timestamp, long length, long contentOffset, bool snapshot)
+            internal LogEntry(StreamSegment cachedContent, byte[] sharedBuffer, in LogEntryMetadata metadata, bool snapshot = false)
             {
-                Term = term;
-                Timestamp = new DateTimeOffset(timestamp, TimeSpan.Zero);
-                Length = length;
-                this.contentOffset = contentOffset;
+                this.metadata = metadata;
                 content = cachedContent;
                 buffer = sharedBuffer;
                 IsSnapshot = snapshot;
             }
 
-            internal static async Task<LogEntry> ReadAsync(StreamSegment cachedContent, byte[] sharedBuffer, long length, bool snapshot, CancellationToken token)
-            {
-                //parse entry metadata, 16 bytes
-                var metadata = await cachedContent.BaseStream.ReadBytesAsync(MetadataSize, sharedBuffer, token).ConfigureAwait(false);
-                return new LogEntry(cachedContent, sharedBuffer,
-                    ReadInt64LittleEndian(metadata.Span.Slice(TermOffset, sizeof(long))),   //term
-                    ReadInt64LittleEndian(metadata.Span.Slice(TimestampOffset, sizeof(long))),  //timestamp
-                    length,
-                    cachedContent.BaseStream.Position,
-                    snapshot);
-            }
-
             /// <summary>
             /// Gets length of the log entry content, in bytes.
             /// </summary>
-            public long Length { get; }
+            public long Length => metadata.Length;
 
             /// <summary>
             /// Gets a value indicating that this entry is a snapshot entry.
@@ -96,22 +91,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal LogEntry AdjustPosition()
             {
-                content.Adjust(contentOffset, Length);
+                content.Adjust(metadata.Offset, Length);
                 return this;
-            }
-
-            internal static async Task<long> WriteAsync(IRaftLogEntry entry, Stream output, byte[] buffer, CancellationToken token = default)
-            {
-                //write term
-                WriteInt64LittleEndian(new Span<byte>(buffer, TermOffset, sizeof(long)), entry.Term);
-                //write timestamp
-                WriteInt64LittleEndian(new Span<byte>(buffer, TimestampOffset, sizeof(long)), entry.Timestamp.UtcTicks);
-                //write metadata into stream
-                await output.WriteAsync(buffer, 0, MetadataSize, token).ConfigureAwait(false);
-
-                var currentPos = output.Position;
-                await entry.CopyToAsync(output, token).ConfigureAwait(false);
-                return output.Position - currentPos;
             }
 
             /// <summary>
@@ -185,27 +166,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets Raft term of this log entry.
             /// </summary>
-            public long Term { get; }
+            public long Term => metadata.Term;
 
             /// <summary>
             /// Gets timestamp of this log entry.
             /// </summary>
-            public DateTimeOffset Timestamp { get; }
+            public DateTimeOffset Timestamp => new DateTimeOffset(metadata.Timestamp, TimeSpan.Zero);
         }
 
         /*
             Partition file format:
             FileName - number of partition
             Allocation table:
-            [8 bytes = pointer to content, 8 bytes = content length] X number of entries
+            [8 bytes = pointer to content, 8 bytes = term, 8 bytes = timestamp, 8 bytes = content length] X number of entries
             Payload:
             [metadata, content] X number of entries
          */
         private sealed class Partition : FileStream
         {
-            private const int AllocationTableEntrySize = sizeof(long) * 2;
-            private const long AllocationTableOffset = 0L;
-
             private readonly long payloadOffset;
             internal readonly long IndexOffset;
             internal readonly long Capacity;    //max number of entries
@@ -215,7 +193,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber)
                 : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
-                payloadOffset = AllocationTableOffset + AllocationTableEntrySize * recordsPerPartition;
+                payloadOffset = LogEntryMetadata.Size * recordsPerPartition;
                 Capacity = recordsPerPartition;
                 buffer = sharedBuffer;
                 if (Length == 0)
@@ -231,14 +209,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     index -= IndexOffset;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {IndexOffset}");
                 //find pointer to the content
-                Position = AllocationTableOffset + index * AllocationTableEntrySize;
-                var entry = await this.ReadBytesAsync(AllocationTableEntrySize, buffer, token).ConfigureAwait(false);
-                var offset = ReadInt64LittleEndian(entry.Span);
-                var length = ReadInt64LittleEndian(entry.Span.Slice(sizeof(long)));
-                if (offset == 0L)
+                Position = index * LogEntryMetadata.Size;
+                var metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer, token).ConfigureAwait(false)).Span);
+                if (metadata.Offset == 0L)
                     return null;
-                Position = offset;
-                return await LogEntry.ReadAsync(segment, buffer, length, false, token).ConfigureAwait(false);
+                return new LogEntry(segment, buffer, metadata);
             }
 
             internal async Task WriteAsync(IRaftLogEntry entry, long index)
@@ -247,27 +222,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 index -= IndexOffset;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {IndexOffset}");
                 //calculate offset of the previous entry
-                long offset, length;
+                long offset;
+                LogEntryMetadata metadata;
                 if (index == 0L || index == 1L && IndexOffset == 0L)
                     offset = payloadOffset;
                 else
                 {
                     //read content offset and the length of the previous entry
-                    Position = AllocationTableOffset + (index - 1) * AllocationTableEntrySize;
-                    var entryRecord = await this.ReadBytesAsync(LogEntry.MetadataSize, buffer).ConfigureAwait(false);
-                    offset = ReadInt64LittleEndian(entryRecord.Span);
-                    length = ReadInt64LittleEndian(entryRecord.Span.Slice(sizeof(long)));
-                    Debug.Assert(offset > 0, "Previous entry doesn't exist for unknown reason");
-                    offset += LogEntry.MetadataSize + length;
+                    Position = (index - 1) * LogEntryMetadata.Size;
+                    metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer).ConfigureAwait(false)).Span);
+                    Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
+                    offset = metadata.Length + metadata.Offset;
                 }
                 //write content
                 Position = offset;
-                length = await LogEntry.WriteAsync(entry, this, buffer).ConfigureAwait(false);
+                await entry.CopyToAsync(this).ConfigureAwait(false);
+                metadata = new LogEntryMetadata(entry, offset, Position - offset);
                 //record new log entry to the allocation table
-                Position = AllocationTableOffset + index * AllocationTableEntrySize;
-                WriteInt64LittleEndian(buffer, offset);
-                WriteInt64LittleEndian(new Span<byte>(buffer).Slice(sizeof(long)), length);
-                await WriteAsync(buffer, 0, AllocationTableEntrySize).ConfigureAwait(false);
+                MemoryMarshal.Write(buffer, ref metadata);
+                Position = index * LogEntryMetadata.Size;
+                await WriteAsync(buffer, 0, LogEntryMetadata.Size).ConfigureAwait(false);
             }
 
             protected override void Dispose(bool disposing)
@@ -294,16 +268,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 segment = new StreamSegment(this);
             }
 
-            internal Task SaveAsync(IRaftLogEntry entry, CancellationToken token)
+            internal async Task SaveAsync(IRaftLogEntry entry, CancellationToken token)
             {
-                SetLength(0L);
-                return LogEntry.WriteAsync(entry, this, buffer, token);
+                Position = LogEntryMetadata.Size;
+                await entry.CopyToAsync(this, token).ConfigureAwait(false);
+                var metadata = new LogEntryMetadata(entry, LogEntryMetadata.Size, Length - LogEntryMetadata.Size);
+                Position = 0;
+                MemoryMarshal.Write(buffer, ref metadata);
+                await WriteAsync(buffer, 0, LogEntryMetadata.Size, token).ConfigureAwait(false);
             }
 
-            internal Task<LogEntry> LoadAsync(CancellationToken token)
+            internal async Task<LogEntry> LoadAsync(CancellationToken token)
             {
                 Position = 0;
-                return LogEntry.ReadAsync(segment, buffer, Length - LogEntry.MetadataSize, true, token);
+                var metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer, token).ConfigureAwait(false)).Span);
+                return new LogEntry(segment, buffer, metadata, true);
             }
 
             protected override void Dispose(bool disposing)
