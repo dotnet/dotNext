@@ -219,9 +219,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                     metadata = lookupCache[index];
-                if (metadata.Offset == 0L)
-                    return null;
-                return new LogEntry(segment, buffer, metadata);
+                return metadata.Offset > 0 ? new LogEntry(segment, buffer, metadata) : null;
             }
 
             internal async Task WriteAsync(IRaftLogEntry entry, long index)
