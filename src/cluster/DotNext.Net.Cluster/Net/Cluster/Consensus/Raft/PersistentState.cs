@@ -213,20 +213,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal Partition PopulateCache()
             {
-                if(lookupCache is null)
-                    goto methodExit;
-                Position = 0;
-                for(int index = 0, count; index < lookupCache.Length; index += count)
-                {
-                    count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
-                    var maxBytes = count * LogEntryMetadata.Size;
-                    if(Read(buffer, 0, maxBytes) < maxBytes)
-                        throw new EndOfStreamException();
-                    var source = new Span<byte>(buffer, 0, maxBytes);
-                    var destination = MemoryMarshal.AsBytes(new Span<LogEntryMetadata>(lookupCache).Slice(index));
-                    source.CopyTo(destination);
-                }
-            methodExit:
+                if(lookupCache != null)
+                    for(int index = 0, count; index < lookupCache.Length; index += count)
+                    {
+                        count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
+                        var maxBytes = count * LogEntryMetadata.Size;
+                        if(Read(buffer, 0, maxBytes) < maxBytes)
+                            throw new EndOfStreamException();
+                        var source = new Span<byte>(buffer, 0, maxBytes);
+                        var destination = MemoryMarshal.AsBytes(new Span<LogEntryMetadata>(lookupCache).Slice(index));
+                        source.CopyTo(destination);
+                    }
                 return this;
             }
 
