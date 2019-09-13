@@ -221,7 +221,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (Length == 0)
                     SetLength(payloadOffset);
                 segment = new StreamSegment(this);
-                //restore index offset
                 IndexOffset = partitionNumber * recordsPerPartition;
             }
 
