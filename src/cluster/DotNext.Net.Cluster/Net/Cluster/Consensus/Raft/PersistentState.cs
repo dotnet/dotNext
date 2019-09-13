@@ -153,6 +153,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public Task CopyToAsync(Stream output, CancellationToken token) => AdjustPosition().content.CopyToAsync(output, buffer, token);
 
             /// <summary>
+            /// Copies the object content into the specified stream synchronously.
+            /// </summary>
+            /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+            /// <param name="output">The output stream receiving object content.</param>
+            public void CopyTo(Stream output, CancellationToken token) => AdjustPosition().content.CopyTo(output, buffer, token);
+
+            /// <summary>
             /// Copies the log entry content into the specified pipe writer.
             /// </summary>
             /// <param name="output">The writer.</param>
