@@ -109,8 +109,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             }
 
-            internal TestAuditTrail(string path)
-                : base(path, RecordsPerPartition)
+            internal TestAuditTrail(string path, bool useCaching)
+                : base(path, RecordsPerPartition, useCaching: useCaching)
             {
             }
 
@@ -225,8 +225,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        [Fact]
-        public static async Task PartitionOverflow()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public static async Task PartitionOverflow(bool useCaching)
         {
             var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
             var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -235,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
             
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching);
             try
             {
                 var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
@@ -272,7 +274,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read again
-            state = new PersistentState(dir, RecordsPerPartition);
+            state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching);
             try
             {
                 var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
@@ -301,8 +303,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        [Fact]
-        public static async Task Commit()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public static async Task Commit(bool useCaching)
         {
             var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
             var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
@@ -311,7 +315,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
             
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching);
             try
             {
                 Equal(1L, await state.AppendAsync(new[] { entry1 }));
@@ -331,7 +335,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read again
-            state = new PersistentState(dir, RecordsPerPartition);
+            state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching);
             try
             {
                 Equal(3L, state.GetLastIndex(true));
@@ -343,13 +347,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        [Fact]
-        public static async Task Compaction()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public static async Task Compaction(bool useCaching)
         {
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            IPersistentState state = new TestAuditTrail(dir);
+            IPersistentState state = new TestAuditTrail(dir, useCaching);
             try
             {
                 await state.AppendAsync(entries);

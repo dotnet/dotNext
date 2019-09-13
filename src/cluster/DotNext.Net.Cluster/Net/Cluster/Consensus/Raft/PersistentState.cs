@@ -211,7 +211,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 lookupCache = useLookupCache ? new LogEntryMetadata[recordsPerPartition] : null;
             }
 
-            internal async Task<LogEntry> ReadAsync(long index, bool absoluteIndex, CancellationToken token)
+            internal Partition PopulateCache()
+            {
+                if(lookupCache is null)
+                    goto methodExit;
+                Position = 0;
+                for(int index = 0, count; index < lookupCache.Length; index += count)
+                {
+                    count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
+                    var maxBytes = count * LogEntryMetadata.Size;
+                    if(Read(buffer, 0, maxBytes) < maxBytes)
+                        throw new EndOfStreamException();
+                    var source = new Span<byte>(buffer, 0, maxBytes);
+                    var destination = MemoryMarshal.AsBytes(new Span<LogEntryMetadata>(lookupCache).Slice(index));
+                    source.CopyTo(destination);
+                }
+            methodExit:
+                return this;
+            }
+
+            internal async ValueTask<LogEntry> ReadAsync(long index, bool absoluteIndex, CancellationToken token)
             {
                 //calculate relative index
                 if (absoluteIndex)
@@ -581,7 +600,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //load all partitions from file system
             foreach (var file in path.EnumerateFiles())
                 if (long.TryParse(file.Name, out var partitionNumber))
-                    partitionTable[partitionNumber] = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber, useCaching);
+                    partitionTable[partitionNumber] = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber, useCaching).PopulateCache();
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
             snapshot = new Snapshot(path, sharedBuffer);
         }
@@ -592,9 +611,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
         /// <param name="bufferSize">Optional size of in-memory buffer for I/O operations.</param>
+        /// <param name="useCaching"><see langword="true"/> to in-memory cache for faster read/write of log entries; <see langword="false"/> to reduce the memory by the cost of the performance.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1.</exception>
-        public PersistentState(string path, long recordsPerPartition, int bufferSize = DefaultBufferSize)
-            : this(new DirectoryInfo(path), recordsPerPartition, bufferSize)
+        public PersistentState(string path, long recordsPerPartition, int bufferSize = DefaultBufferSize, bool useCaching = true)
+            : this(new DirectoryInfo(path), recordsPerPartition, bufferSize, useCaching)
         {
         }
 
