@@ -259,5 +259,26 @@ namespace DotNext.IO
             }
             return totalBytes;
         }
+
+        /// <summary>
+        /// Synchronously reads the bytes from the source stream and writes them to another stream, using a specified buffer.
+        /// </summary>
+        /// <param name="source">The source stream to read from.</param>
+        /// <param name="destination">The destination stream to write to.</param>
+        /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
+        /// <param name="token">The token that can be used to cancel this operation.</param>
+        /// <returns>The total number of copied bytes.</returns>
+        public static long CopyTo(this Stream source, Stream destination, byte[] buffer, CancellationToken token = default)
+        {
+            var totalBytes = 0L;
+            int count;
+            while ((count = source.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                totalBytes += count;
+                token.ThrowIfCancellationRequested();
+                destination.Write(buffer, 0, count);
+            }
+            return totalBytes;
+        }
     }
 }
