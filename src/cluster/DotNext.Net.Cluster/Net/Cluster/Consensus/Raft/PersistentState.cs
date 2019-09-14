@@ -791,7 +791,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(entries, startIndex).ConfigureAwait(false);
+                await AddEntriesAsync(entries, startIndex).ConfigureAwait(false);
         }
 
          /// <summary>
