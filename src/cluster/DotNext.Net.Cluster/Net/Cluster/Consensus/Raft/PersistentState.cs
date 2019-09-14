@@ -337,12 +337,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             8 bytes = LastIndex
             4 bytes = Node port
             4 bytes = Address Length
-            octet string = IP Address
+            octet string = IP Address (16 bytes for IPv6)
          */
         private sealed class NodeState : Disposable
         {
             private const string FileName = "node.state";
-            private const long Capacity = 1024; //1 KB
+            private const long Capacity = 128;
             private const long TermOffset = 0L;
             private const long CommitIndexOffset = TermOffset + sizeof(long);
             private const long LastAppliedOffset = CommitIndexOffset + sizeof(long);
