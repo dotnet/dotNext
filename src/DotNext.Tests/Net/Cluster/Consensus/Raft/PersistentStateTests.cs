@@ -193,8 +193,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
 
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
-            try
+            using(var state = new PersistentState(dir, RecordsPerPartition))
             {
                 Equal(1L, await state.AppendAsync(new[] { entry2, entry3, entry4, entry5 }));
                 Equal(4L, state.GetLastIndex(false));
@@ -203,14 +202,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(1L, state.GetLastIndex(false));
                 Equal(0L, state.GetLastIndex(true));
             }
-            finally
-            {
-                (state as IDisposable)?.Dispose();
-            }
 
             //read again
-            state = new PersistentState(dir, RecordsPerPartition);
-            try
+            using(var state = new PersistentState(dir, RecordsPerPartition))
             {
                 Equal(1L, state.GetLastIndex(false));
                 Equal(0L, state.GetLastIndex(true));
@@ -218,10 +212,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(1, entries.Count);
                 Equal(entry1.Content, await entries[0].ReadAsTextAsync(Encoding.UTF8));
                 entries.Dispose();
-            }
-            finally
-            {
-                (state as IDisposable)?.Dispose();
             }
         }
 
@@ -315,8 +305,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
             
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching);
-            try
+            using(var state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching))
             {
                 Equal(1L, await state.AppendAsync(new[] { entry1 }));
                 Equal(2L, await state.AppendAsync(new[] { entry2, entry3, entry4, entry5 }));
@@ -329,21 +318,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
                 await ThrowsAsync<InvalidOperationException>(() => state.AppendAsync(new[] { entry1 }, 1L));
             }
-            finally
-            {
-                (state as IDisposable)?.Dispose();
-            }
 
             //read again
-            state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching);
-            try
+            using(var state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching))
             {
                 Equal(3L, state.GetLastIndex(true));
                 Equal(5L, state.GetLastIndex(false));
-            }
-            finally
-            {
-                (state as IDisposable)?.Dispose();
             }
         }
 
@@ -355,8 +335,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            IPersistentState state = new TestAuditTrail(dir, useCaching);
-            try
+            using(var state = new TestAuditTrail(dir, useCaching))
             {
                 await state.AppendAsync(entries);
                 await state.CommitAsync(CancellationToken.None);
@@ -370,10 +349,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 False(readResult[1].IsSnapshot);
                 False(readResult[2].IsSnapshot);
                 readResult.Dispose();
-            }
-            finally
-            {
-                (state as IDisposable)?.Dispose();
             }
         }
     }

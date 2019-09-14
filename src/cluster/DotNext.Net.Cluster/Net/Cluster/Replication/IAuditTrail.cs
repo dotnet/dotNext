@@ -41,6 +41,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="endIndex">The index of the last entry to commit, inclusively; if <see langword="null"/> then commits all log entries started from the first uncommitted entry to the last existing log entry.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of committed entries.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
         Task<long> CommitAsync(long endIndex, CancellationToken token);
 
         /// <summary>
@@ -52,6 +53,7 @@ namespace DotNext.Net.Cluster.Replication
         /// </remarks>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of committed entries.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
         Task<long> CommitAsync(CancellationToken token);
 
         /// <summary>
@@ -59,6 +61,7 @@ namespace DotNext.Net.Cluster.Replication
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
         Task EnsureConsistencyAsync(CancellationToken token = default);
     }
 
@@ -86,7 +89,7 @@ namespace DotNext.Net.Cluster.Replication
         /// Gets log entries in the specified range.
         /// </summary>
         /// <remarks>
-        /// This method may return less entries than <c>endIndex - startIndex + 1</c>. This may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
+        /// This method may return less entries than <c>endIndex - startIndex + 1</c>. It may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
         /// In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="IDisposable.Dispose"/> to release resources associated
         /// with the audit trail segment with entries.
         /// </remarks>
