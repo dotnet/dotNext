@@ -59,6 +59,6 @@ The following example demonstrates how to check whether the managed pointer is *
 using DotNext.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 
-var nullref = Unsafe.AsRef<byte>(Memory.NullPtr);
+var nullref = Unsafe.AsRef<byte>(default(void*));
 Memory.IsNull(in nullref);
 ```

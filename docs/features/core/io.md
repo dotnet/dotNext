@@ -17,7 +17,6 @@ The following example demonstrates how to use these methods:
 ```csharp
 using DotNext.Buffers;
 using DotNext.IO;
-using System.Buffers;
 using System.Buffers.Binary;
 using System.IO;
 
@@ -31,3 +30,24 @@ using(var buffer = new ArrayRental<byte>(1024)) //rent the buffer
 ```
 
 # Segmenting streams
+In some cases you may need to hide the entire stream from the callee for the reading operation. This can be necessary to protect underlying stream from accidental seeking. [StreamSegment](https://sakno.github.io/dotNext/api/DotNext.IO.StreamSegment.html) do the same for streams as [ArraySegment](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1) for arrays.
+
+> [!NOTE]
+> Stream segment is read-only stream that cannot be used for writes
+
+The segment can be reused for multiple consumers because its position and length can be adjusted for the same instance.
+
+```csharp
+using DotNext.IO;
+using System.IO;
+
+using(var fs = new FileStream("content.bin", FileMode.Open, FileAccess.Read, FileShare.Read))
+using(var segment = new StreamSegment(fs))
+{
+    foreach(Action<Stream> consumer in consumers)
+    {
+        segment.Adjust(10L, 1024L); //fs is limited to the segment limited by the offset of 10 from the beginning of the stream and length of 1024 bytes
+        consumer(segment);
+    }
+}
+```
