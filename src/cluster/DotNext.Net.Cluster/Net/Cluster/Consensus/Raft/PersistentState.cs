@@ -204,12 +204,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 payloadOffset = LogEntryMetadata.Size * recordsPerPartition;
                 Capacity = recordsPerPartition;
                 buffer = sharedBuffer;
-                if (Length == 0)
-                    SetLength(payloadOffset);
                 segment = new StreamSegment(this);
                 IndexOffset = partitionNumber * recordsPerPartition;
                 lookupCache = useLookupCache ? new LogEntryMetadata[recordsPerPartition] : null;
             }
+
+            internal void Allocate(long initialSize) => SetLength(Math.Max(initialSize, payloadOffset));
 
             internal Partition PopulateCache()
             {
@@ -556,6 +556,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private const int DefaultBufferSize = 2048;
         private const int MinBufferSize = 128;
+        private const long DefaultPartitionSize = 0;
         private readonly long recordsPerPartition;
         //key is the number of partition
         private readonly Dictionary<long, Partition> partitionTable;
@@ -568,6 +569,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly ILogEntryList<IRaftLogEntry> initialLog;
         private readonly byte[] sharedBuffer;
         private readonly bool useLookupCache;
+        private readonly long initialSize;
 
         /// <summary>
         /// Initializes a new persistent audit trail.
@@ -575,9 +577,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
         /// <param name="bufferSize">Optional size of in-memory buffer for I/O operations.</param>
+        /// <param name="initialPartitionSize">The initial size of the file that holds the partition with log entries.</param>
         /// <param name="useCaching"><see langword="true"/> to in-memory cache for faster read/write of log entries; <see langword="false"/> to reduce the memory by the cost of the performance.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1; or <paramref name="bufferSize"/> is too small.</exception>
-        public PersistentState(DirectoryInfo path, long recordsPerPartition, int bufferSize = DefaultBufferSize, bool useCaching = true)
+        public PersistentState(DirectoryInfo path, long recordsPerPartition, int bufferSize = DefaultBufferSize, long initialPartitionSize = DefaultPartitionSize, bool useCaching = true)
         {
             if (bufferSize < MinBufferSize)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
@@ -589,6 +592,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             location = path;
             useLookupCache = useCaching;
             this.recordsPerPartition = recordsPerPartition;
+            initialSize = initialPartitionSize;
             commitEvent = new AsyncManualResetEvent(false);
             syncRoot = new AsyncExclusiveLock();
             partitionTable = new Dictionary<long, Partition>();
@@ -608,10 +612,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
         /// <param name="bufferSize">Optional size of in-memory buffer for I/O operations.</param>
+        /// <param name="initialPartitionSize">The initial size of the file that holds the partition with log entries.</param>
         /// <param name="useCaching"><see langword="true"/> to in-memory cache for faster read/write of log entries; <see langword="false"/> to reduce the memory by the cost of the performance.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1.</exception>
-        public PersistentState(string path, long recordsPerPartition, int bufferSize = DefaultBufferSize, bool useCaching = true)
-            : this(new DirectoryInfo(path), recordsPerPartition, bufferSize, useCaching)
+        public PersistentState(string path, long recordsPerPartition, int bufferSize = DefaultBufferSize, long initialPartitionSize = DefaultPartitionSize, bool useCaching = true)
+            : this(new DirectoryInfo(path), recordsPerPartition, bufferSize, initialPartitionSize, useCaching)
         {
         }
 
@@ -636,6 +641,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (!partitionTable.TryGetValue(partitionNumber, out var partition))
             {
                 partition = new Partition(location, sharedBuffer, recordsPerPartition, partitionNumber, useLookupCache);
+                partition.Allocate(initialSize);
                 partitionTable.Add(partitionNumber, partition);
             }
             return partition;
