@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO
 {
@@ -219,7 +220,7 @@ namespace DotNext.IO
         /// <typeparam name="T">The value type to be deserialized.</typeparam>
         /// <returns>The value deserialized from the stream.</returns>
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-        public static T Read<T>(this Stream stream, byte[] buffer)
+        public unsafe static T Read<T>(this Stream stream, byte[] buffer)
             where T : unmanaged
             => MemoryMarshal.Read<T>(ReadBytes(stream, sizeof(T), buffer));
         
@@ -232,9 +233,9 @@ namespace DotNext.IO
         /// <typeparam name="T">The value type to be deserialized.</typeparam>
         /// <returns>The value deserialized from the stream.</returns>
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-        public static Task<T> ReadAsync<T>(this Stream stream, byte[] buffer, CancellationToken token = default)
+        public static async Task<T> ReadAsync<T>(this Stream stream, byte[] buffer, CancellationToken token = default)
             where T : unmanaged
-            => MemoryMarshal.Read<T>(await ReadBytesAsync(stream, sizeof(T), buffer, token).ConfigureAwait(false));
+            => MemoryMarshal.Read<T>((await ReadBytesAsync(stream, SizeOf<T>(), buffer, token).ConfigureAwait(false)).Span);
         
         /// <summary>
         /// Serializes value to the stream.
@@ -243,7 +244,7 @@ namespace DotNext.IO
         /// <param name="value">The value to be written into the stream.</param>
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
-        public static void Write<T>(this Stream stream, ref T value, byte[] buffer)
+        public unsafe static void Write<T>(this Stream stream, ref T value, byte[] buffer)
             where T : unmanaged
         {
             MemoryMarshal.Write(buffer, ref value);
@@ -256,13 +257,14 @@ namespace DotNext.IO
         /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The value to be written into the stream.</param>
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
         /// <returns>The task representing asynchronous st</returns>
         public static Task WriteAsync<T>(this Stream stream, ref T value, byte[] buffer, CancellationToken token = default)
             where T : unmanaged
         {
             MemoryMarshal.Write(buffer, ref value);
-            return stream.WriteAsync(buffer, 0, sizeof(T), token);
+            return stream.WriteAsync(buffer, 0, SizeOf<T>(), token);
         }
 
         /// <summary>
