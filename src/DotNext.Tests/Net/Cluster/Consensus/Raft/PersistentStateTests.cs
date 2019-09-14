@@ -227,7 +227,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
             
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching);
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching, initialPartitionSize: 1024 * 1024);
             try
             {
                 var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
@@ -264,7 +264,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read again
-            state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching);
+            state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching, initialPartitionSize: 1024 * 1024);
             try
             {
                 var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
@@ -339,6 +339,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 await state.AppendAsync(entries);
                 await state.CommitAsync(CancellationToken.None);
+                var readResult = await state.GetEntriesAsync(1, 6, CancellationToken.None);
+                Equal(1, readResult.Count);
+                True(readResult[0].IsSnapshot);
+                readResult.Dispose();
+                readResult = await state.GetEntriesAsync(1, CancellationToken.None);
+                Equal(3, readResult.Count);
+                True(readResult[0].IsSnapshot);
+                False(readResult[1].IsSnapshot);
+                False(readResult[2].IsSnapshot);
+                readResult.Dispose();
+            }
+
+            //read agian
+            using(var state = new TestAuditTrail(dir, useCaching))
+            {
                 var readResult = await state.GetEntriesAsync(1, 6, CancellationToken.None);
                 Equal(1, readResult.Count);
                 True(readResult[0].IsSnapshot);
