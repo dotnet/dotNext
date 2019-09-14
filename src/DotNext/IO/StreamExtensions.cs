@@ -207,7 +207,7 @@ namespace DotNext.IO
                     throw new EndOfStreamException();
                 bytesRead += n;
             } while (bytesRead < count);
-            return new ReadOnlySpan<byte>(buffer, 0, bytesRead);
+            return new ReadOnlySpan<byte>(buffer, 0, count);
         }
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace DotNext.IO
                     throw new EndOfStreamException();
                 bytesRead += n;
             } while (bytesRead < count);
-            return new ReadOnlyMemory<byte>(buffer, 0, bytesRead);
+            return new ReadOnlyMemory<byte>(buffer, 0, count);
         }
 
         /// <summary>
