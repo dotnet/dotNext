@@ -17,7 +17,7 @@ To use Augmented Compilation, you need to declare necessary build components as 
 ```xml
 <ItemGroup>
 	<PackageReference Include="Fody" Version="6.0.0" PrivateAssets="all" />
-	<PackageReference Include="DotNext.Augmentation.Fody" Version="0.14.0" PrivateAssets="all"/>
+	<PackageReference Include="DotNext.Augmentation.Fody" Version="1.0.0" PrivateAssets="all"/>
 </ItemGroup>
 ```
 

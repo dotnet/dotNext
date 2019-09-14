@@ -27,6 +27,8 @@
       href: core/asyncd.md
     - name: Intrinsics
       href: core/intrinsics.md
+    - name: I/O Enhancements
+      href: core/io.md
 - name: Threading
   href: threading/index.md
   items:
