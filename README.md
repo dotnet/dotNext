@@ -45,8 +45,8 @@ Changelog for previous versions located [here](./CHANGELOG.md).
 
 # Release Policy
 * The libraries are versioned according with [Semantic Versioning 2.0](https://semver.org/).
-* API is unstable prior to `1.0` version because the library is in active development. Backward compatibility is not guaranteed.
-* Version 0.x relies on .NET Standard 2.0.
+* API can be backward incompatible between 0.x versions
+* Version 0.x and 1.x relies on .NET Standard 2.0
 * Support of newer versions of .NET Standard is aligned with .NET Core LTS (Long-Term Support) release train. For example, support for .NET Standard 2.1 is scheduled no earlier than in November, 2019. Check [.NET Core Support Policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) for more information.
 
 # Development Process
