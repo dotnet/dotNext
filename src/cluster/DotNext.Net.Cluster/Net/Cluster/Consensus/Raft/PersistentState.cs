@@ -238,7 +238,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (lookupCache is null)
                 {
                     Position = index * LogEntryMetadata.Size;
-                    metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer, token).ConfigureAwait(false)).Span);
+                    metadata = await this.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
                 }
                 else
                     metadata = lookupCache[index];
@@ -259,7 +259,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     //read content offset and the length of the previous entry
                     Position = (index - 1) * LogEntryMetadata.Size;
-                    metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer).ConfigureAwait(false)).Span);
+                    metadata = await this.ReadAsync<LogEntryMetadata>(buffer).ConfigureAwait(false);
                     Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
                     offset = metadata.Length + metadata.Offset;
                 }
@@ -274,9 +274,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await entry.CopyToAsync(this).ConfigureAwait(false);
                 metadata = new LogEntryMetadata(entry, offset, Position - offset);
                 //record new log entry to the allocation table
-                MemoryMarshal.Write(buffer, ref metadata);
                 Position = index * LogEntryMetadata.Size;
-                await WriteAsync(buffer, 0, LogEntryMetadata.Size).ConfigureAwait(false);
+                await this.WriteAsync(buffer, ref metadata).ConfigureAwait(false);
                 //update cache
                 if (!(lookupCache is null))
                     lookupCache[index] = metadata;
@@ -314,14 +313,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await entry.CopyToAsync(this, token).ConfigureAwait(false);
                 var metadata = new LogEntryMetadata(entry, LogEntryMetadata.Size, Length - LogEntryMetadata.Size);
                 Position = 0;
-                MemoryMarshal.Write(buffer, ref metadata);
-                await WriteAsync(buffer, 0, LogEntryMetadata.Size, token).ConfigureAwait(false);
+                await WriteAsync(buffer, ref metadata, token).ConfigureAwait(false);
             }
 
             internal async Task<LogEntry> LoadAsync(CancellationToken token)
             {
                 Position = 0;
-                var metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer, token).ConfigureAwait(false)).Span);
+                var metadata = await this.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
                 return new LogEntry(segment, buffer, metadata, true);
             }
 
