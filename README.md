@@ -65,6 +65,9 @@ This is the major release of all parts of .NEXT library. Now the version is 1.0.
 * Redirection to leader now uses `307 Temporary Redirect` instead of `302 Moved Temporarily` by default
 * Compatibility with persistent WAL is provided
 
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.0.0">DotNext.Augmentation.Fody 1.0.0</a>
+* Behavior of augmented compilation is stabilized
+
 Changelog for previous versions located [here](./CHANGELOG.md).
 
 # Release Policy
