@@ -3,6 +3,8 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO
 {
@@ -32,7 +34,7 @@ namespace DotNext.IO
         /// <remarks>
         /// This method doesn't encode the length of the string.
         /// </remarks>
-        /// <param name="stream">The stream to write to.</param>
+        /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The string to be encoded.</param>
         /// <param name="context">The encoding.</param>
         /// <param name="buffer">The buffer allocated by the caller needed for characters encoding.</param>
@@ -64,7 +66,7 @@ namespace DotNext.IO
         /// <remarks>
         /// This method doesn't encode the length of the string.
         /// </remarks>
-        /// <param name="stream">The stream to write to.</param>
+        /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The string to be encoded.</param>
         /// <param name="context">The encoding context.</param>
         /// <param name="buffer">The buffer allocated by the caller needed for characters encoding.</param>
@@ -192,7 +194,7 @@ namespace DotNext.IO
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <returns>The span of bytes representing buffer segment.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than the length of <paramref name="buffer"/>.</exception>
-        /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
+        /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
         public static ReadOnlySpan<byte> ReadBytes(this Stream stream, int count, byte[] buffer)
         {
             if (count == 0)
@@ -207,7 +209,62 @@ namespace DotNext.IO
                     throw new EndOfStreamException();
                 bytesRead += n;
             } while (bytesRead < count);
-            return new ReadOnlySpan<byte>(buffer, 0, bytesRead);
+            return new ReadOnlySpan<byte>(buffer, 0, count);
+        }
+
+        /// <summary>
+        /// Deserializes the value type from the stream.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <typeparam name="T">The value type to be deserialized.</typeparam>
+        /// <returns>The value deserialized from the stream.</returns>
+        /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+        public unsafe static T Read<T>(this Stream stream, byte[] buffer)
+            where T : unmanaged
+            => MemoryMarshal.Read<T>(ReadBytes(stream, sizeof(T), buffer));
+        
+        /// <summary>
+        /// Asynchronously deserializes the value type from the stream.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <typeparam name="T">The value type to be deserialized.</typeparam>
+        /// <returns>The value deserialized from the stream.</returns>
+        /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+        public static async Task<T> ReadAsync<T>(this Stream stream, byte[] buffer, CancellationToken token = default)
+            where T : unmanaged
+            => MemoryMarshal.Read<T>((await ReadBytesAsync(stream, SizeOf<T>(), buffer, token).ConfigureAwait(false)).Span);
+        
+        /// <summary>
+        /// Serializes value to the stream.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to be written into the stream.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <typeparam name="T">The value type to be serialized.</typeparam>
+        public unsafe static void Write<T>(this Stream stream, ref T value, byte[] buffer)
+            where T : unmanaged
+        {
+            MemoryMarshal.Write(buffer, ref value);
+            stream.Write(buffer, 0, sizeof(T));
+        }
+
+        /// <summary>
+        /// Asynchronously serializes value to the stream.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to be written into the stream.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <typeparam name="T">The value type to be serialized.</typeparam>
+        /// <returns>The task representing asynchronous st</returns>
+        public static Task WriteAsync<T>(this Stream stream, ref T value, byte[] buffer, CancellationToken token = default)
+            where T : unmanaged
+        {
+            MemoryMarshal.Write(buffer, ref value);
+            return stream.WriteAsync(buffer, 0, SizeOf<T>(), token);
         }
 
         /// <summary>
@@ -237,14 +294,14 @@ namespace DotNext.IO
                     throw new EndOfStreamException();
                 bytesRead += n;
             } while (bytesRead < count);
-            return new ReadOnlyMemory<byte>(buffer, 0, bytesRead);
+            return new ReadOnlyMemory<byte>(buffer, 0, count);
         }
 
         /// <summary>
         /// Asynchronously reads the bytes from the source stream and writes them to another stream, using a specified buffer.
         /// </summary>
         /// <param name="source">The source stream to read from.</param>
-        /// <param name="destination">The destination stream to write to.</param>
+        /// <param name="destination">The destination stream to write into.</param>
         /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
         /// <param name="token">The token that can be used to cancel this operation.</param>
         /// <returns>The total number of copied bytes.</returns>
@@ -264,7 +321,7 @@ namespace DotNext.IO
         /// Synchronously reads the bytes from the source stream and writes them to another stream, using a specified buffer.
         /// </summary>
         /// <param name="source">The source stream to read from.</param>
-        /// <param name="destination">The destination stream to write to.</param>
+        /// <param name="destination">The destination stream to write into.</param>
         /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
         /// <param name="token">The token that can be used to cancel this operation.</param>
         /// <returns>The total number of copied bytes.</returns>

@@ -211,7 +211,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal void Allocate(long initialSize) => SetLength(Math.Max(initialSize, payloadOffset));
 
-            internal Partition PopulateCache()
+            internal void PopulateCache()
             {
                 if(lookupCache != null)
                     for(int index = 0, count; index < lookupCache.Length; index += count)
@@ -224,7 +224,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         var destination = MemoryMarshal.AsBytes(new Span<LogEntryMetadata>(lookupCache).Slice(index));
                         source.CopyTo(destination);
                     }
-                return this;
             }
 
             internal async ValueTask<LogEntry> ReadAsync(long index, bool absoluteIndex, CancellationToken token)
@@ -238,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (lookupCache is null)
                 {
                     Position = index * LogEntryMetadata.Size;
-                    metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer, token).ConfigureAwait(false)).Span);
+                    metadata = await this.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
                 }
                 else
                     metadata = lookupCache[index];
@@ -259,7 +258,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     //read content offset and the length of the previous entry
                     Position = (index - 1) * LogEntryMetadata.Size;
-                    metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer).ConfigureAwait(false)).Span);
+                    metadata = await this.ReadAsync<LogEntryMetadata>(buffer).ConfigureAwait(false);
                     Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
                     offset = metadata.Length + metadata.Offset;
                 }
@@ -274,9 +273,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await entry.CopyToAsync(this).ConfigureAwait(false);
                 metadata = new LogEntryMetadata(entry, offset, Position - offset);
                 //record new log entry to the allocation table
-                MemoryMarshal.Write(buffer, ref metadata);
                 Position = index * LogEntryMetadata.Size;
-                await WriteAsync(buffer, 0, LogEntryMetadata.Size).ConfigureAwait(false);
+                await this.WriteAsync(ref metadata, buffer).ConfigureAwait(false);
                 //update cache
                 if (!(lookupCache is null))
                     lookupCache[index] = metadata;
@@ -314,15 +312,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await entry.CopyToAsync(this, token).ConfigureAwait(false);
                 var metadata = new LogEntryMetadata(entry, LogEntryMetadata.Size, Length - LogEntryMetadata.Size);
                 Position = 0;
-                MemoryMarshal.Write(buffer, ref metadata);
-                await WriteAsync(buffer, 0, LogEntryMetadata.Size, token).ConfigureAwait(false);
+                await this.WriteAsync(ref metadata, buffer, token).ConfigureAwait(false);
             }
 
             internal async Task<LogEntry> LoadAsync(CancellationToken token)
             {
                 Position = 0;
-                var metadata = MemoryMarshal.Read<LogEntryMetadata>((await this.ReadBytesAsync(LogEntryMetadata.Size, buffer, token).ConfigureAwait(false)).Span);
-                return new LogEntry(segment, buffer, metadata, true);
+                return new LogEntry(segment, buffer, await this.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false), true);
             }
 
             protected override void Dispose(bool disposing)
@@ -601,7 +597,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //load all partitions from file system
             foreach (var file in path.EnumerateFiles())
                 if (long.TryParse(file.Name, out var partitionNumber))
-                    partitionTable[partitionNumber] = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber, useCaching).PopulateCache();
+                {
+                    var partition = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber, useCaching);
+                    partition.PopulateCache();
+                    partitionTable[partitionNumber] = partition;
+                }
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
             snapshot = new Snapshot(path, sharedBuffer);
         }
@@ -791,7 +791,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(entries, startIndex).ConfigureAwait(false);
+                await AddEntriesAsync(entries, startIndex).ConfigureAwait(false);
         }
 
          /// <summary>
