@@ -190,5 +190,18 @@ namespace DotNext.Collections.Generic
             list.Insert(low, item);
             return low;
         }
+
+        /// <summary>
+        /// Inserts the item into sorted list.
+        /// </summary>
+        /// <remarks>
+        /// Time complexity of this operation is O(log N), where N is a size of the list.
+        /// </remarks>
+        /// <typeparam name="T">The type of the items in the list.</typeparam>
+        /// <param name="list">The list to insert into.</param>
+        /// <param name="item">The item to be added into the list.</param>
+        /// <param name="comparer">The comparer function.</param>
+        /// <returns>The actual index of the inserted item.</returns>
+        public static int InsertOrdered<T>(this IList<T> list, T item, Comparison<T> comparer) => InsertOrdered(list, item, comparer.AsValueFunc());
     }
 }

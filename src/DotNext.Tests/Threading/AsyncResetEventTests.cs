@@ -56,7 +56,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static async Task SetAutoresetForManualEvent()
+        public static async Task AutoresetForManualEvent()
         {
             using (var resetEvent = new AsyncManualResetEvent(false))
             {
@@ -76,6 +76,18 @@ namespace DotNext.Threading
                 t.Join();
                 False(resetEvent.IsSet);
                 False(await resetEvent.Wait(TimeSpan.Zero));
+            }
+        }
+
+        [Fact]
+        public static void AutoresetOfSignaledManualEvent()
+        {
+            using (var resetEvent = new AsyncManualResetEvent(true))
+            {
+                True(resetEvent.IsSet);
+                False(resetEvent.Set());
+                False(resetEvent.Set(true));
+                False(resetEvent.IsSet);
             }
         }
 

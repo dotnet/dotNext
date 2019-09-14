@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Primitives;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 
@@ -42,8 +43,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Headers.Add(RecordTermHeader, LastLogTerm.ToString(InvariantCulture));
         }
 
-        Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
+        Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response);
 
-        public new Task SaveResponse(HttpResponse response, Result<bool> result) => RaftHttpMessage.SaveResponse(response, result);
+        public new Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
     }
 }

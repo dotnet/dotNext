@@ -2,90 +2,134 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
-using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Messaging;
+    using System.Collections;
     using Replication;
     using Threading;
 
     /// <summary>
     /// Represents in-memory audit trail for Raft-based cluster node.
     /// </summary>
-    public sealed class InMemoryAuditTrail : AsyncReaderWriterLock, IPersistentState
+    /// <remarks>
+    /// In-memory audit trail doesn't support compaction.
+    /// It is recommended to use this audit trail for testing purposes only.
+    /// </remarks>
+    public class InMemoryAuditTrail : Disposable, IPersistentState
     {
-        private sealed class BufferedLogEntry : BinaryMessage, ILogEntry
+        private sealed class BufferedLogEntry : BinaryTransferObject, IRaftLogEntry
         {
-            private BufferedLogEntry(ReadOnlyMemory<byte> content, string name, ContentType type, long term)
-                : base(content, name, type)
+            private BufferedLogEntry(ReadOnlyMemory<byte> content, long term, DateTimeOffset timestamp) 
+                : base(content)
             {
                 Term = term;
+                Timestamp = timestamp;
             }
 
-            internal static async Task<BufferedLogEntry> CreateBufferedEntryAsync(ILogEntry entry)
+            internal static async Task<BufferedLogEntry> CreateBufferedEntryAsync(IRaftLogEntry entry, CancellationToken token = default)
             {
                 ReadOnlyMemory<byte> content;
                 using (var ms = new MemoryStream(1024))
                 {
-                    await entry.CopyToAsync(ms).ConfigureAwait(false);
+                    await entry.CopyToAsync(ms, token).ConfigureAwait(false);
                     ms.Seek(0, SeekOrigin.Begin);
                     content = ms.TryGetBuffer(out var segment)
                         ? segment
                         : new ReadOnlyMemory<byte>(ms.ToArray());
                 }
 
-                return new BufferedLogEntry(content, entry.Name, entry.Type, entry.Term);
+                return new BufferedLogEntry(content, entry.Term, entry.Timestamp.ToUniversalTime());
             }
+
+            bool ILogEntry.IsSnapshot => false;
 
             public long Term { get; }
+
+            public DateTimeOffset Timestamp { get; }
         }
 
-        private sealed class InitialLogEntry : ILogEntry
+        private sealed class InitialLogEntry : IRaftLogEntry
         {
-            string IMessage.Name => "NOP";
-            long? IMessage.Length => 0L;
-            Task IMessage.CopyToAsync(Stream output) => Task.CompletedTask;
+            long? IDataTransferObject.Length => 0L;
+            Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
 
-            ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask();
+            ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask();
 
-            public ContentType Type { get; } = new ContentType(MediaTypeNames.Application.Octet);
-            long ILogEntry.Term => 0L;
+            long IRaftLogEntry.Term => 0L;
 
-            bool IMessage.IsReusable => true;
+            bool IDataTransferObject.IsReusable => true;
+
+            bool ILogEntry.IsSnapshot => false;
+
+            DateTimeOffset ILogEntry.Timestamp => default;
         }
 
-        private sealed class CommitEventExecutor
+        private sealed class LogEntryList : ILogEntryList<IRaftLogEntry>
         {
-            private readonly long startIndex, count;
+            private readonly long startIndex;
+            private readonly long endIndex;
+            private readonly IRaftLogEntry[] entries;
+            private AsyncLock.Holder readLock;
 
-            internal CommitEventExecutor(long startIndex, long count)
+            internal LogEntryList(IRaftLogEntry[] entries, long startIndex, long endIndex, AsyncLock.Holder readLock)
             {
+                this.entries = entries;
                 this.startIndex = startIndex;
-                this.count = count;
+                this.endIndex = endIndex;
+                this.readLock = readLock;
             }
 
-            private void Invoke(InMemoryAuditTrail auditTrail) => auditTrail?.Committed?.Invoke(auditTrail, startIndex, count);
+            public IRaftLogEntry this[int index] => entries[index + startIndex];
 
-            private void Invoke(object auditTrail) => Invoke(auditTrail as InMemoryAuditTrail);
+            public int Count => checked((int)(endIndex - startIndex + 1));
 
-            public static implicit operator WaitCallback(CommitEventExecutor executor) => executor is null ? default(WaitCallback) : executor.Invoke;
+            public IEnumerator<IRaftLogEntry> GetEnumerator()
+            {
+                for (var index = startIndex; index <= endIndex; index++)
+                    yield return entries[index];
+            }
+
+            private void Dispose() => readLock.Dispose();
+
+            void IDisposable.Dispose()
+            {
+                Dispose();
+                GC.SuppressFinalize(this);
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            ~LogEntryList() => Dispose();
         }
 
-        private static readonly ILogEntry[] EmptyLog = { new InitialLogEntry() };
+        internal static readonly IRaftLogEntry[] InitialLog = { new InitialLogEntry() };
 
-        private long commitIndex;
-        private volatile ILogEntry[] log;
+        private long commitIndex, lastApplied;
+        private volatile IRaftLogEntry[] log;
 
         private long term;
         private volatile IRaftClusterMember votedFor;
+        private readonly AsyncManualResetEvent commitEvent;
+        private readonly ILogEntryList<BufferedLogEntry> emptyLog;
+        /// <summary>
+        /// Represents reader/writer lock used for synchronized access to this method.
+        /// </summary>
+        private readonly AsyncReaderWriterLock syncRoot;
 
         /// <summary>
         /// Initializes a new audit trail with empty log.
         /// </summary>
-        public InMemoryAuditTrail() => log = EmptyLog;
+        public InMemoryAuditTrail()
+        {
+            lastApplied = -1L;
+            log = InitialLog;
+            commitEvent = new AsyncManualResetEvent(false);
+            emptyLog = new LogEntryList<BufferedLogEntry>();
+            syncRoot = new AsyncReaderWriterLock();
+        }
 
         long IPersistentState.Term => term.VolatileRead();
 
@@ -117,87 +161,138 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public long GetLastIndex(bool committed)
             => committed ? commitIndex.VolatileRead() : Math.Max(0, log.LongLength - 1L);
 
-        private IReadOnlyList<ILogEntry> GetEntries(long startIndex, long endIndex)
+        async Task<ILogEntryList<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, CancellationToken token)
         {
-            if(startIndex < 0L)
+            if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            if(endIndex < 0L)
+            var readLock = await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
+            return new LogEntryList(log, startIndex, GetLastIndex(false), readLock);
+        }
+
+        async Task<ILogEntryList<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, long endIndex, CancellationToken token)
+        {
+            if (startIndex < 0L)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            if (endIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(endIndex));
-            return endIndex < startIndex || startIndex >= log.LongLength ? 
-                Array.Empty<ILogEntry>() :
-                log.Slice(startIndex, endIndex - startIndex + 1);
-        }
-
-        async ValueTask<IReadOnlyList<ILogEntry>> IAuditTrail<ILogEntry>.GetEntriesAsync(long startIndex, long? endIndex)
-        {
-            using (await this.AcquireReadLockAsync(CancellationToken.None).ConfigureAwait(false))
-                return GetEntries(startIndex, endIndex ?? GetLastIndex(false));
-        }
-
-
-        private long Append(ILogEntry[] entries, long? startIndex)
-        {
-            long result;
-            if (startIndex.HasValue)
+            if (endIndex < startIndex)
+                return emptyLog;
+            var readLock = await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false);
+            if (endIndex >= log.Length)
             {
-                result = startIndex.Value;
-                log = log.RemoveLast(log.LongLength - result);
+                readLock.Dispose();
+                throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
             }
-            else
-                result = log.LongLength;
-            var newLog = new ILogEntry[entries.Length + log.LongLength];
+            return new LogEntryList(log, startIndex, endIndex, readLock);
+        }
+
+        private void Append(IRaftLogEntry[] entries, long startIndex)
+        {
+            if(startIndex < log.LongLength)
+                log = log.RemoveLast(log.LongLength - startIndex);
+            var newLog = new IRaftLogEntry[entries.Length + log.LongLength];
             Array.Copy(log, newLog, log.LongLength);
             entries.CopyTo(newLog, log.LongLength);
             log = newLog;
-            return result;
         }
 
-        async ValueTask<long> IAuditTrail<ILogEntry>.AppendAsync(IReadOnlyList<ILogEntry> entries, long? startIndex)
+        private async Task<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long? startIndex)
+        {
+            if(startIndex is null)
+                startIndex = log.LongLength;
+            else if(startIndex <= GetLastIndex(true))
+                throw new InvalidOperationException();
+            else if(startIndex > log.LongLength)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            var bufferedEntries = new IRaftLogEntry[entries.Count];
+            for (var i = 0; i < entries.Count; i++)
+            {
+                var entry = entries[i];
+                bufferedEntries[i] = entry.IsReusable
+                    ? entry
+                    : await BufferedLogEntry.CreateBufferedEntryAsync(entry).ConfigureAwait(false);
+            }
+            Append(bufferedEntries, startIndex.Value);
+            return startIndex.Value;
+        }
+
+        async Task IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
         {
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
-            using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-            {
-                var bufferedEntries = new ILogEntry[entries.Count];
-                for (var i = 0; i < entries.Count; i++)
-                {
-                    var entry = entries[i];
-                    bufferedEntries[i] = entry.IsReusable
-                        ? entry
-                        : await BufferedLogEntry.CreateBufferedEntryAsync(entry).ConfigureAwait(false);
-                }
-                return Append(bufferedEntries, startIndex);
-            }
+            using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
+                await AppendAsync(entries, startIndex).ConfigureAwait(false);
+        }
+        
+        async Task<long> IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries)
+        {
+            if (entries.Count == 0)
+                throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
+            using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
+                return await AppendAsync(entries, null).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// The event that is raised when actual commit happen.
-        /// </summary>
-        public event CommitEventHandler<ILogEntry> Committed;
-
-        private Task OnCommmitted(long startIndex, long count)
+        private async Task<long> CommitAsync(long? endIndex, CancellationToken token)
         {
-            ICollection<Task> tasks = new LinkedList<Task>();
-            foreach (CommitEventHandler<ILogEntry> handler in Committed?.GetInvocationList() ?? Array.Empty<CommitEventHandler<ILogEntry>>())
-                tasks.Add(handler(this, startIndex, count));
-            return Task.WhenAll(tasks);
-        }
-
-        async ValueTask<long> IAuditTrail<ILogEntry>.CommitAsync(long? endIndex)
-        {
-            using (await this.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
+            long count;
+            using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
             {
-                var startIndex = commitIndex.VolatileRead() + 1L;
-                var count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;
-                if(count > 0)
+                var startIndex = GetLastIndex(true) + 1L;
+                count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;
+                if (count > 0)
                 {
                     commitIndex.VolatileWrite(startIndex + count - 1);
-                    await OnCommmitted(startIndex, count).ConfigureAwait(false);
+                    await ApplyAsync(token).ConfigureAwait(false);
                 }
-                return count;
+            }
+            return Math.Max(count, 0L);
+        }
+
+        Task<long> IAuditTrail.CommitAsync(long endIndex, CancellationToken token)
+            => CommitAsync(endIndex, token);
+        
+        Task<long> IAuditTrail.CommitAsync(CancellationToken token)
+            => CommitAsync(null, token);
+
+        /// <summary>
+        /// Applies the command represented by the log entry to the underlying database engine.
+        /// </summary>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        protected virtual ValueTask ApplyAsync(IRaftLogEntry entry) => new ValueTask(Task.CompletedTask);
+
+        private async Task ApplyAsync(CancellationToken token)
+        {
+            for(var i = lastApplied.VolatileRead() + 1L; i <= commitIndex.VolatileRead(); token.ThrowIfCancellationRequested(), i++)
+            {
+                await ApplyAsync(log[i]).ConfigureAwait(false);
+                lastApplied.VolatileWrite(i);
             }
         }
 
-        ref readonly ILogEntry IAuditTrail<ILogEntry>.First => ref EmptyLog[0];
+        async Task IAuditTrail.EnsureConsistencyAsync(CancellationToken token)
+        {
+            using(await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
+                await ApplyAsync(token).ConfigureAwait(false);
+        }
+
+        Task IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
+            => index >= 0L ? CommitEvent.WaitForCommitAsync(this, commitEvent, index, timeout, token) : Task.FromException(new ArgumentOutOfRangeException(nameof(index)));
+
+        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref InitialLog[0];
+
+        /// <summary>
+        /// Releases all resources associated with this audit trail.
+        /// </summary>
+        /// <param name="disposing">Indicates whether the <see cref="Dispose(bool)"/> has been called directly or from finalizer.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                emptyLog.Dispose();
+                commitEvent.Dispose();
+                syncRoot.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }

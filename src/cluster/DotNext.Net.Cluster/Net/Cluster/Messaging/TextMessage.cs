@@ -2,11 +2,14 @@ using System;
 using System.IO;
 using System.IO.Pipelines;
 using System.Net.Mime;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using Buffers;
+    using IO;
     using static Mime.ContentTypeExtensions;
 
     /// <summary>
@@ -42,39 +45,43 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         public int Length => Type.GetEncoding().GetByteCount(Content);
 
-        bool IMessage.IsReusable => true;
+        bool IDataTransferObject.IsReusable => true;
 
-        long? IMessage.Length => Length;
+        long? IDataTransferObject.Length => Length;
 
         /// <summary>
         /// The message content.
         /// </summary>
         public string Content { get; }
 
-        async Task IMessage.CopyToAsync(Stream output)
+        async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
-            using (var writer = new StreamWriter(output, Type.GetEncoding(), 1024, true) { AutoFlush = true })
-                await writer.WriteAsync(Content).ConfigureAwait(false);
+            //TODO: Should be rewritten for .NET Standard 2.1
+            const int defaultBufferSize = 128;
+            using (var buffer = new ArrayRental<byte>(defaultBufferSize))
+                await output.WriteStringAsync(Content, Type.GetEncoding(), buffer, token).ConfigureAwait(false);
         }
 
-        async ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
+        private static unsafe int Encode(Encoding encoding, ReadOnlySpan<char> chunk, Span<byte> output)
+        {
+            fixed (char* source = chunk)
+            fixed (byte* dest = output)
+            {
+                return encoding.GetBytes(source, chunk.Length, dest, output.Length);
+            }
+        }
+
+        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             var encoding = Type.GetEncoding();
-            foreach (var chunk in Content.Split(512))
-            {
-                var bytes = new ReadOnlyMemory<byte>(encoding.GetBytes(chunk.ToArray()));
-                var result = await output.WriteAsync(bytes, token);
-                if (result.IsCompleted)
-                    break;
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token);
-                result = await output.FlushAsync(token);
-                if (result.IsCompleted)
-                    break;
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token);
-            }
+            var bytesCount = encoding.GetByteCount(Content);
+            var buffer = output.GetMemory(bytesCount);
+            Encode(encoding, Content.AsSpan(), buffer.Span);
+            output.Advance(bytesCount);
+            var result = await output.FlushAsync(token);
+            if (result.IsCanceled)
+                throw new OperationCanceledException(token);
         }
 
         /// <summary>

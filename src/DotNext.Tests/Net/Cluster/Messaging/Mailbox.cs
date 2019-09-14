@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 using static Xunit.Assert;
 
@@ -6,7 +7,7 @@ namespace DotNext.Net.Cluster.Messaging
 {
     internal sealed class Mailbox : ConcurrentQueue<StreamMessage>, IMessageHandler
     {
-        async Task<IMessage> IMessageHandler.ReceiveMessage(IAddressee sender, IMessage message, object context)
+        async Task<IMessage> IMessageHandler.ReceiveMessage(ISubscriber sender, IMessage message, object context)
         {
             Equal("Request", message.Name);
             Equal("text/plain", message.Type.MediaType);
@@ -15,7 +16,7 @@ namespace DotNext.Net.Cluster.Messaging
             return new TextMessage("Pong", "Reply");
         }
 
-        async Task IMessageHandler.ReceiveSignal(IAddressee sender, IMessage signal, object context)
+        async Task IMessageHandler.ReceiveSignal(ISubscriber sender, IMessage signal, object context)
            => Enqueue(await StreamMessage.CreateBufferedMessageAsync(signal).ConfigureAwait(false));
     }
 }

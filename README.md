@@ -12,6 +12,7 @@
 | [Concept Types](https://github.com/dotnet/csharplang/issues/110) | [Documentation](https://sakno.github.io/dotNext/features/concept.html) |
 | [Expression Trees covering additional language constructs](https://github.com/dotnet/csharplang/issues/158), i.e. `foreach`, `await`, patterns, multi-line lambda expressions | [Metaprogramming](https://sakno.github.io/dotNext/features/metaprogramming/index.html) |
 | [Async Locks](https://github.com/dotnet/corefx/issues/34073) | [Documentation](https://sakno.github.io/dotNext/features/threading/index.html) |
+| [High-performance general purpose Write Ahead Log](https://github.com/dotnet/corefx/issues/25034) |  | 
 
 Quick overview of additional features:
 
@@ -35,18 +36,44 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 09-03-2019
+Release Date: 09-XX-2019
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/0.5.7">DotNext.AspNetCore.Cluster 0.5.7</a>
-* Custom redirection logic can be asynchronous
-* Fixed compatibility of redirection to leader with MVC
+This is the major release of all parts of .NEXT library. Now the version is 1.0.0 and backward compatibility is guaranteed across all 1.x releases. The main motivation of this release is to produce stable API because .NEXT library active using in production code, especially Raft implementation.
+
+<a href="https://www.nuget.org/packages/dotnext/1.0.0">DotNext 1.0.0</a>
+* Optimized some methods of [Memory](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Memory.html) class
+* Extension methods for I/O are introduced. Now you don't need to instantiate [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader) or [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter) for high-level parsing of stream content. Encoding and decoding of strings are fully supported. Moreover, these methods are asynchronous in contrast to methods of `BinaryReader` and `BinaryWriter`.
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.0.0">DotNext.Reflection 1.0.0</a>
+* API is stabilized
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.0.0">DotNext.Metaprogramming 1.0.0</a>
+* API is stabilized
+
+<a href="https://www.nuget.org/packages/dotnext.threading/1.0.0">DotNext.Threading 1.0.0</a>
+* [AsyncManualResetEvent](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncManualResetEvent.html) has auto-reset optional behavior which allows to repeatedly unblock many waiters
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.0.0">DotNext.Unsafe 1.0.0</a>
+* [MemoryMappedFileExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.html) allows to work with virtual memory associated with memory-mapped file using unsafe pointer or [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) to achieve the best performance.
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.0.0">DotNext.Net.Cluster 1.0.0</a>
+* Audit trail programming model is redesigned
+* Persistent and high-performance Write Ahead Log (WAL) is introduced
+* Log compaction is supported
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.0.0">DotNext.AspNetCore.Cluster 1.0.0</a>
+* Redirection to leader now uses `307 Temporary Redirect` instead of `302 Moved Temporarily` by default
+* Compatibility with persistent WAL is provided
+
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.0.0">DotNext.Augmentation.Fody 1.0.0</a>
+* Behavior of augmented compilation is stabilized
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
 # Release Policy
 * The libraries are versioned according with [Semantic Versioning 2.0](https://semver.org/).
-* API is unstable prior to `1.0` version because the library is in active development. Backward compatibility is not guaranteed.
-* Version 0.x relies on .NET Standard 2.0.
+* API can be backward incompatible between 0.x versions
+* Version 0.x and 1.x relies on .NET Standard 2.0
 * Support of newer versions of .NET Standard is aligned with .NET Core LTS (Long-Term Support) release train. For example, support for .NET Standard 2.1 is scheduled no earlier than in November, 2019. Check [.NET Core Support Policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) for more information.
 
 # Development Process

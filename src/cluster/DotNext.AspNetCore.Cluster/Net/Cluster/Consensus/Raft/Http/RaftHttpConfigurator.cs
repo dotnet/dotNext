@@ -27,7 +27,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 .AddSingleton<ICluster>(clusterNodeCast)
                 .AddSingleton<IRaftCluster>(clusterNodeCast)
                 .AddSingleton<IMessageBus>(clusterNodeCast)
-                .AddSingleton<IReplicationCluster<ILogEntry>>(clusterNodeCast)
+                .AddSingleton<IReplicationCluster>(clusterNodeCast)
+                .AddSingleton<IReplicationCluster<IRaftLogEntry>>(clusterNodeCast)
                 .AddSingleton<IExpandableCluster>(clusterNodeCast);
         }
 

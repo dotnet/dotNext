@@ -1,39 +1,17 @@
-﻿using System.Threading.Tasks;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Replication
 {
     using Threading;
-    using IMessage = Messaging.IMessage;
 
-    internal sealed class CommitEvent<LogEntry> : AsyncManualResetEvent
-        where LogEntry : class, IMessage
+    internal static class CommitEvent
     {
-        private readonly long expectedIndex;
-
-        internal CommitEvent(long expectedIndex) : base(false) => this.expectedIndex = expectedIndex;
-
-        private void SetIfCommitted(IAuditTrail<LogEntry> auditTrail)
+        internal static async Task WaitForCommitAsync(IAuditTrail log, AsyncManualResetEvent commitEvent, long index, TimeSpan timeout, CancellationToken token)
         {
-            if (auditTrail.GetLastIndex(true) >= expectedIndex)
-            {
-                Set();
-                DetachFrom(auditTrail);
-            }
+            for(var timeoutMeasurement = new Timeout(timeout); log.GetLastIndex(true) < index; await commitEvent.Wait(timeout, token).ConfigureAwait(false))
+                timeoutMeasurement.ThrowIfExpired(out timeout);
         }
-
-        private Task OnCommitted(IAuditTrail<LogEntry> sender, long startIndex, long count)
-        {
-            SetIfCommitted(sender);
-            return Task.CompletedTask;
-        }
-
-        internal void AttachTo(IAuditTrail<LogEntry> auditTrail)
-        {
-            auditTrail.Committed += OnCommitted;
-            SetIfCommitted(auditTrail);
-        }
-
-        internal void DetachFrom(IAuditTrail<LogEntry> auditTrail)
-            => auditTrail.Committed -= OnCommitted;
     }
 }

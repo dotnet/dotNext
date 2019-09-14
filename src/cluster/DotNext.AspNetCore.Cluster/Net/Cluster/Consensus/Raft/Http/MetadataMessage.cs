@@ -3,6 +3,7 @@ using Microsoft.Extensions.Primitives;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
@@ -26,14 +27,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
-        async Task<MemberMetadata> IHttpMessageReader<MemberMetadata>.ParseResponse(HttpResponseMessage response)
+        async Task<MemberMetadata> IHttpMessageReader<MemberMetadata>.ParseResponse(HttpResponseMessage response, CancellationToken token)
         {
             var serializer = new DataContractJsonSerializer(typeof(MemberMetadata));
             using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 return (MemberMetadata)serializer.ReadObject(stream);
         }
 
-        public Task SaveResponse(HttpResponse response, MemberMetadata metadata)
+        public Task SaveResponse(HttpResponse response, MemberMetadata metadata, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
             var serializer = new DataContractJsonSerializer(typeof(MemberMetadata));

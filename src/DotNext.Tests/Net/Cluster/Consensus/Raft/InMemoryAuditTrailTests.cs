@@ -1,5 +1,5 @@
-﻿using DotNext.Net.Cluster.Replication;
-using DotNext.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -19,23 +19,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(11, auditTrail.Term);
         }
 
-        private sealed class CommitDetector : AsyncManualResetEvent
-        {
-            internal long Count;
-
-            internal CommitDetector()
-                : base(false)
-            {
-            }
-
-            internal Task OnCommitted(IAuditTrail<ILogEntry> sender, long startIndex, long count)
-            {
-                Count = count;
-                Set();
-                return Task.CompletedTask;
-            }
-        }
-
         [Fact]
         public static async Task Appending()
         {
@@ -47,32 +30,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(1, await auditTrail.AppendAsync(new[] { entry1, entry2 }));
             Equal(0, auditTrail.GetLastIndex(true));
             Equal(2, auditTrail.GetLastIndex(false));
-            var entries = await auditTrail.GetEntriesAsync(1, 2);
+            var entries = await auditTrail.GetEntriesAsync(1, 2, CancellationToken.None);
             Equal(2, entries.Count);
             entry1 = (TestLogEntry)entries[0];
             entry2 = (TestLogEntry)entries[1];
             Equal("SET X=0", entry1.Content);
             Equal("SET Y=0", entry2.Content);
+            entries.Dispose();
             //now replace entry at index 2 with new entry
             entry2 = new TestLogEntry("ADD") { Term = 3 };
-            Equal(2, await auditTrail.AppendAsync(new[] { entry2 }, 2));
-            entries = await auditTrail.GetEntriesAsync(1, 2);
+            await auditTrail.AppendAsync(new[] { entry2 }, 2);
+            entries = await auditTrail.GetEntriesAsync(1, 2, CancellationToken.None);
             Equal(2, entries.Count);
             entry1 = (TestLogEntry)entries[0];
             entry2 = (TestLogEntry)entries[1];
             Equal("SET X=0", entry1.Content);
             Equal("ADD", entry2.Content);
+            entries.Dispose();
             Equal(2, auditTrail.GetLastIndex(false));
             Equal(0, auditTrail.GetLastIndex(true));
             //commit all entries
-            using (var detector = new CommitDetector())
-            {
-                auditTrail.Committed += detector.OnCommitted;
-                Equal(2, await auditTrail.CommitAsync());
-                await detector.Wait();
-                Equal(2, auditTrail.GetLastIndex(true));
-                Equal(2, detector.Count);
-            }
+            Equal(2, await auditTrail.CommitAsync(CancellationToken.None));
+            await auditTrail.WaitForCommitAsync(2, TimeSpan.Zero);
+            Equal(2, auditTrail.GetLastIndex(true));
         }
     }
 }

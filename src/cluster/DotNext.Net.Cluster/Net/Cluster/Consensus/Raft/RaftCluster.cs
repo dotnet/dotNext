@@ -180,7 +180,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         protected bool IsLeaderLocal => state is LeaderState;
 
-        IAuditTrail<ILogEntry> IReplicationCluster<ILogEntry>.AuditTrail => auditTrail;
+        IAuditTrail<IRaftLogEntry> IReplicationCluster<IRaftLogEntry>.AuditTrail => auditTrail;
 
         /// <summary>
         /// Associates audit trail with the current instance.
@@ -195,6 +195,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             get => auditTrail;
         }
+
+        IAuditTrail IReplicationCluster.AuditTrail => auditTrail;
 
         /// <summary>
         /// Gets token that can be used for all internal asynchronous operations.
@@ -270,11 +272,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="token">The token that can be used to cancel initialization process.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        public virtual Task StartAsync(CancellationToken token)
+        public virtual async Task StartAsync(CancellationToken token)
         {
+            await auditTrail.EnsureConsistencyAsync(token).ConfigureAwait(false);
             //start node in Follower state
             state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
-            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -346,11 +348,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, IReadOnlyList<ILogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
+        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, IReadOnlyList<IRaftLogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (auditTrail.Term <= senderTerm &&
-                    await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm).ConfigureAwait(false))
+                    await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, transitionCancellation.Token).ConfigureAwait(false))
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
@@ -358,7 +360,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (entries.Count > 0L)
                         await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
                     var result = commitIndex <= auditTrail.GetLastIndex(true) ||
-                                 await auditTrail.CommitAsync(commitIndex).ConfigureAwait(false) > 0;
+                                 await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
                     return new Result<bool>(auditTrail.Term, result);
                 }
                 else
@@ -388,7 +390,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     follower.Refresh();
                 else
                     goto reject;
-                if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm).ConfigureAwait(false))
+                if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, transitionCancellation.Token).ConfigureAwait(false))
                 {
                     await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
                     return new Result<bool>(auditTrail.Term, true);
@@ -476,58 +478,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
         }
 
-        private async Task WaitForCommit(long commitIndex)
+        private async Task WriteAsync(IReadOnlyList<IRaftLogEntry> entries, bool waitForCommit, TimeSpan timeout)
         {
-            /*
-             * Performance of this method is optimized as follows:
-             * 1. If the current node is leader then this method forces replication
-             *      without waiting for the scheduled heartbeat. This is the best case
-             * 2. If the current node is downgraded to the follower during replication
-             *      then client needs to wait (maximum is electionTimeout), which is
-             *      worst case but it should happen rarely
-             */
-            var notifier = new CommitEvent<ILogEntry>(commitIndex);
-            notifier.AttachTo(auditTrail);
-            try
-            {
-                do
-                {
-                    if (state is LeaderState leader)
-                        leader.ForceReplication();
-                    else
-                        throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
-                }
-                while (!await notifier.Wait(TimeSpan.FromMilliseconds(electionTimeout), transitionCancellation.Token).ConfigureAwait(false));
-            }
-            finally
-            {
-                notifier.DetachFrom(auditTrail);
-                notifier.Dispose();
-            }
-        }
-
-        private async Task WriteAsync<T>(DataHandler<T, ILogEntry> handler, T input, bool waitForCommit)
-        {
-            var entries = await handler(input).ConfigureAwait(false);
-            if (entries.Count == 0)
-                return;
             var index = await auditTrail.AppendAsync(entries).ConfigureAwait(false);
-            if (waitForCommit)
-                await WaitForCommit(index + entries.Count - 1L).ConfigureAwait(false);
-            else if (IsLeaderLocal)
-                return;
-            else
+            if(!(state is LeaderState leaderState))
                 throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
+            if (waitForCommit)
+                await auditTrail.WaitForCommitAsync(index + entries.Count - 1L, timeout, leaderState.Token).ConfigureAwait(false);
         }
 
-        Task IReplicationCluster<ILogEntry>.WriteAsync<T>(DataHandler<T, ILogEntry> handler, T input, WriteConcern concern)
+        /// <summary>
+        /// Writes message into the cluster according with the specified concern.
+        /// </summary>
+        /// <param name="entries">The number of commands to be committed into the audit trail.</param>
+        /// <param name="concern">The value describing level of acknowledgment from cluster.</param>
+        /// <param name="timeout">The timeout of the asynchronous operation.</param>
+        /// <returns>The task representing asynchronous state of this operation.</returns>
+        /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
+        /// <exception cref="NotSupportedException">The specified level of acknowledgment is not supported.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task WriteAsync(IReadOnlyList<IRaftLogEntry> entries, WriteConcern concern, TimeSpan timeout)
         {
+            if (entries.Count == 0)
+                return Task.CompletedTask;
             switch (concern)
             {
                 case WriteConcern.None:
-                    return WriteAsync(handler, input, false);
+                    return WriteAsync(entries, false, timeout);
                 case WriteConcern.LeaderOnly:
-                    return WriteAsync(handler, input, true);
+                    return WriteAsync(entries, true, timeout);
                 default:
                     return Task.FromException(new NotSupportedException());
             }

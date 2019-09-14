@@ -18,25 +18,25 @@ namespace DotNext.Net.Cluster.Messaging
             file = new FileInfo(Path.GetTempFileName());
         }
 
-        internal static async Task<FileMessage> CreateAsync(IMessage source)
+        internal static async Task<FileMessage> CreateAsync(IMessage source, CancellationToken token)
         {
             var result = new FileMessage(source.Name, source.Type);
             using (var stream = result.file.Create())
             {
-                await source.CopyToAsync(stream).ConfigureAwait(false);
+                await source.CopyToAsync(stream, token).ConfigureAwait(false);
             }
             return result;
         }
 
-        async Task IMessage.CopyToAsync(Stream output)
+        async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
             using (var stream = file.Open(FileMode.Open))
             {
-                await stream.CopyToAsync(output).ConfigureAwait(false);
+                await stream.CopyToAsync(output, 1024, token).ConfigureAwait(false);
             }
         }
 
-        async ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)
+        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             using (var stream = file.Open(FileMode.Open))
@@ -46,9 +46,9 @@ namespace DotNext.Net.Cluster.Messaging
             }
         }
 
-        long? IMessage.Length => file.Length;
+        long? IDataTransferObject.Length => file.Length;
 
-        bool IMessage.IsReusable => false;
+        bool IDataTransferObject.IsReusable => false;
 
         public string Name { get; }
 

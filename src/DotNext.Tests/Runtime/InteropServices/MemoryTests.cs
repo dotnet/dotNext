@@ -128,5 +128,34 @@ namespace DotNext.Runtime.InteropServices
                 Equal(42L, Memory.ReadUnaligned<long>(ref ptr));
             }
         }
+
+        [Fact]
+        public static void CopyBlock()
+        {
+            char[] chars1 = new[] {'a', 'b', 'c'};
+            var chars2 = new char[2];
+            Memory.Copy(ref chars1[1], ref chars2[0], 2);
+            Equal('b', chars2[0]);
+            Equal('c', chars2[1]);
+        }
+
+        [Fact]
+        public static unsafe void CopyValue()
+        {
+            int a = 42, b = 0;
+            Memory.Copy(&a, &b);
+            Equal(a, b);
+            Equal(42, b);
+        }
+
+        [Theory]
+        [InlineData(-3893957)]
+        [InlineData(int.MaxValue)]
+        [InlineData(int.MinValue)]
+        public unsafe static void PointerConversion(int value)
+        {
+            var ptr = new IntPtr(value).ToPointer<byte>();
+            Equal(new IntPtr(value), new IntPtr(ptr));
+        }
     }
 }

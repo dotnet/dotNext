@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Represents cluster member that supports messaging.
     /// </summary>
-    public interface IAddressee : IClusterMember
+    public interface ISubscriber : IClusterMember
     {
         /// <summary>
         /// Sends a message to the cluster member.

@@ -8,42 +8,61 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
+using DateTimeStyles = System.Globalization.DateTimeStyles;
+using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class AppendEntriesMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
+        private static readonly ValueParser<DateTimeOffset> DateTimeParser = (string str, out DateTimeOffset value) => DateTimeOffset.TryParse(str, InvariantCulture, DateTimeStyles.AssumeUniversal, out value);
+
         private const int EntryBufferSize = 1024;
         private const string MimeSubType = "mixed";
         internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
         private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
+        private const string SnapshotRecordHeader = "X-Raft-Record-Snapshot";
         private const string CommitIndexHeader = "X-Raft-Commit-Index";
 
-        private sealed class LogEntryContent : OutboundMessageContent
+        private sealed class LogEntryContent : OutboundTransferObject
         {
-            internal LogEntryContent(ILogEntry entry)
+            internal static readonly MediaTypeHeaderValue ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Octet);
+
+            internal LogEntryContent(IRaftLogEntry entry)
                 : base(entry)
             {
+                Headers.ContentType = ContentType;
                 Headers.Add(RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
+                Headers.Add(SnapshotRecordHeader, entry.IsSnapshot.ToString(InvariantCulture));
+                Headers.Add(HeaderNames.LastModified, entry.Timestamp.ToString(InvariantCulture));
             }
         }
 
-        private sealed class ReceivedLogEntry : InboundMessageContent, ILogEntry
+        private sealed class ReceivedLogEntry : StreamTransferObject, IRaftLogEntry
         {
             internal ReceivedLogEntry(MultipartSection section)
-                : base(section)
+                : base(section.Body, true)
             {
-                Term = ParseHeader<StringValues, long>(RequestVoteMessage.RecordTermHeader, section.Headers.TryGetValue, Int64Parser);
+                HeadersReader<StringValues> headers = section.Headers.TryGetValue;
+                Term = ParseHeader(RequestVoteMessage.RecordTermHeader, headers, Int64Parser);
+                IsSnapshot = ParseHeader(SnapshotRecordHeader, headers, BooleanParser);
+                Timestamp = ParseHeader(HeaderNames.LastModified, headers, DateTimeParser);
             }
 
             public long Term { get; }
+
+            public bool IsSnapshot { get; }
+
+            public DateTimeOffset Timestamp { get; }
         }
 
-        private IReadOnlyList<ILogEntry> entries;
+        private IReadOnlyList<IRaftLogEntry> entries;
         internal readonly long PrevLogIndex;
         internal readonly long PrevLogTerm;
         internal readonly long CommitIndex;
@@ -69,9 +88,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
-        internal IReadOnlyList<ILogEntry> Entries
+        internal IReadOnlyList<IRaftLogEntry> Entries
         {
-            get => entries ?? Array.Empty<ILogEntry>();
+            get => entries ?? Array.Empty<IRaftLogEntry>();
             set => entries = value;
         }
 
@@ -79,11 +98,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var boundary = request.GetMultipartBoundary();
             if (string.IsNullOrEmpty(boundary))
-                this.entries = Array.Empty<ILogEntry>();
+                this.entries = Array.Empty<IRaftLogEntry>();
             else
             {
                 var reader = new MultipartReader(boundary, request.Body);
-                var entries = new List<ILogEntry>(10);
+                var entries = new List<IRaftLogEntry>(10);
                 while (true)
                 {
                     var section = await reader.ReadNextSectionAsync(token).ConfigureAwait(false);
@@ -117,8 +136,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response) => ParseBoolResponse(response);
+        Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response);
 
-        public new Task SaveResponse(HttpResponse response, Result<bool> result) => RaftHttpMessage.SaveResponse(response, result);
+        public new Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
     }
 }

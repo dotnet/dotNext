@@ -21,11 +21,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal readonly IRaftClusterMember Voter;
             internal readonly Task<Result<VotingResult>> Task;
 
-            private static async Task<Result<VotingResult>> VoteAsync(IRaftClusterMember voter, long term, IAuditTrail<ILogEntry> auditTrail, CancellationToken token)
+            private static async Task<Result<VotingResult>> VoteAsync(IRaftClusterMember voter, long term, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
             {
                 var lastIndex = auditTrail.GetLastIndex(false);
-                var lastTerm = (await auditTrail.GetEntryAsync(lastIndex).ConfigureAwait(false) ?? auditTrail.First)
-                    .Term;
+                var lastTerm = await auditTrail.GetTermAsync(lastIndex, token).ConfigureAwait(false);
                 VotingResult result;
                 try
                 {
@@ -44,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return new Result<VotingResult>(term, result);
             }
 
-            internal VotingState(IRaftClusterMember voter, long term, IAuditTrail<ILogEntry> auditTrail, CancellationToken token)
+            internal VotingState(IRaftClusterMember voter, long term, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
             {
                 Voter = voter;
                 Task = VoteAsync(voter, term, auditTrail, token);
@@ -113,7 +112,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="timeout">Candidate state timeout.</param>
         /// <param name="auditTrail">The local transaction log.</param>
-        internal CandidateState StartVoting(int timeout, IAuditTrail<ILogEntry> auditTrail)
+        internal CandidateState StartVoting(int timeout, IAuditTrail<IRaftLogEntry> auditTrail)
         {
             stateMachine.Logger.VotingStarted(timeout);
             ICollection<VotingState> voters = new LinkedList<VotingState>();

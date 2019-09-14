@@ -3,3 +3,5 @@ ReplicationRejected=Cluster member rejects replication
 CannotRemoveLocalNode=Local node cannot be removed
 EntrySetIsEmpty=Unable to append empty set of entries
 LocalNodeNotLeader=The local cluster member is not a leader
+InvalidEntryIndex=Log entry with index {0} doesn't exist in the audit trail
+InvalidAppendIndex=Committed log entry cannot be overwritten

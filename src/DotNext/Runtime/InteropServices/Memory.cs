@@ -38,10 +38,19 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
-        /// Represents null pointer.
+        /// Converts the value of this instance to a pointer of the specified type.
         /// </summary>
+        /// <param name="source">The value to be converted into pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The typed pointer.</returns>
         [CLSCompliant(false)]
-        public static readonly void* NullPtr = IntPtr.Zero.ToPointer();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T* ToPointer<T>(this IntPtr source) 
+            where T : unmanaged
+        {
+            Push(source);
+            return ReturnPointer<T>();
+        }
 
         /// <summary>
         /// Converts the value of this instance to a pointer of the specified type.
@@ -51,9 +60,12 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The typed pointer.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T* ToPointer<T>(this IntPtr source)
+        public static T* ToPointer<T>(this UIntPtr source)
             where T : unmanaged
-            => (T*)source.ToPointer();
+        {
+            Push(source);
+            return ReturnPointer<T>();
+        }
 
         /// <summary>
         /// Reads a value of type <typeparamref name="T"/> from the given location
@@ -110,6 +122,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Vector<byte> ReadVector(ref IntPtr source)
         {
+            //TODO: The method can be removed in .NET Standard 2.0
             var result = Unsafe.Read<Vector<byte>>(source.ToPointer());
             source += Vector<byte>.Count;
             return result;
@@ -165,7 +178,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
-        /// Copies specified number of bytes from one address in memory to another.
+        /// Copies the specified number of bytes from one address in memory to another.
         /// </summary>
         /// <param name="source">The address of the bytes to copy.</param>
         /// <param name="destination">The target address.</param>
@@ -176,13 +189,34 @@ namespace DotNext.Runtime.InteropServices
             => Buffer.MemoryCopy(source, destination, length, length);
 
         /// <summary>
-        /// Copies specified number of bytes from one address in memory to another.
+        /// Copies the specified number of bytes from one address in memory to another.
         /// </summary>
         /// <param name="source">The address of the bytes to copy.</param>
         /// <param name="destination">The target address.</param>
         /// <param name="length">The number of bytes to copy from source address to destination.</param>
 		public static void Copy(IntPtr source, IntPtr destination, long length)
             => Copy(source.ToPointer(), destination.ToPointer(), length);
+
+        /// <summary>
+        /// Copies the specified number of elements from source address to the destination address.
+        /// </summary>
+        /// <param name="source">The address of the bytes to copy.</param>
+        /// <param name="destination">The target address.</param>
+        /// <param name="count">The number of elements to copy.</param>
+        /// <typeparam name="T">The type of the element.</typeparam>
+        [CLSCompliant(false)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Copy<T>(ref T source, ref T destination, uint count)
+            where T : unmanaged
+        {
+            Push(ref destination);
+            Push(ref source);
+            Push(count);
+            Sizeof(typeof(T));
+            Mul_Ovf_Un();
+            Cpblk();
+            Ret();
+        }
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -780,11 +814,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Swap<T>(T* first, T* second)
             where T : unmanaged
-        {
-            var tmp = *first;
-            *first = *second;
-            *second = tmp;
-        }
+            => Swap(ref first[0], ref second[0]);
 
         /// <summary>
         /// Converts typed reference into managed pointer.
@@ -849,6 +879,18 @@ namespace DotNext.Runtime.InteropServices
             Ret();
             throw Unreachable();    //need here because output var should be assigned
         }
+
+        /// <summary>
+        /// Copies one value into another.
+        /// </summary>
+        /// <typeparam name="T">The value type to copy.</typeparam>
+        /// <param name="input">The reference to the source location.</param>
+        /// <param name="output">The reference to the destination location.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static void Copy<T>(T* input, T* output)
+            where T : unmanaged
+            => Copy<T>(in input[0], out output[0]);
 
         /// <summary>
         /// Determines whether the specified managed pointer is <see langword="null"/>.

@@ -38,15 +38,9 @@ namespace DotNext.Threading
         public bool Set(bool autoReset)
         {
             ThrowIfDisposed();
-            if (node is null)    //already in signaled state
-                return false;
-            else if (node.TrySetResult(true))
-            {
-                node = autoReset ? new WaitNode() : null;
-                return true;
-            }
-            else
-                return false;
+            var result = node?.TrySetResult(true) ?? false;
+            node = autoReset ? new WaitNode() : null;
+            return result;
         }
 
         /// <summary>

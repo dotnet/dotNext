@@ -32,10 +32,10 @@ namespace RaftNode
             }
         }
 
-        private ValueTask<IReadOnlyList<ILogEntry>> WriteMessage(string content)
+        private ValueTask<IReadOnlyList<IRaftLogEntry>> WriteMessage(string content)
         {
             var entry = new TextMessageFromFile(content) { Term = cluster.Term };
-            return new ValueTask<IReadOnlyList<ILogEntry>>(Singleton(entry));
+            return new ValueTask<IReadOnlyList<IRaftLogEntry>>(Singleton(entry));
         }
 
         private async void OnChanged(object sender, FileSystemEventArgs e)

@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Threading;
     using Timestamp = Diagnostics.Timestamp;
 
-    internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, IAddressee
+    internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, ISubscriber
     {
         private const string UserAgent = "Raft.NET";
 
@@ -70,7 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
                     .ConfigureAwait(false)).EnsureSuccessStatusCode();
                 ChangeStatus(AvailableStatus);
-                return await message.ParseResponse(response).ConfigureAwait(false);
+                return await message.ParseResponse(response, token).ConfigureAwait(false);
             }
             catch (HttpRequestException e)
             {
@@ -106,7 +106,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         Task<bool> IClusterMember.ResignAsync(CancellationToken token)
             => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalEndpoint), token);
 
-        Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync(long term, IReadOnlyList<ILogEntry> entries,
+        Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync(long term, IReadOnlyList<IRaftLogEntry> entries,
             long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             => Endpoint.Equals(context.LocalEndpoint)
                 ? Task.FromResult(new Result<bool>(term, true))
@@ -137,14 +137,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
             => SendAsync<TResponse, CustomMessage<TResponse>>(new CustomMessage<TResponse>(context.LocalEndpoint, message, responseReader) { RespectLeadership = respectLeadership }, token);
 
-        Task<TResponse> IAddressee.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
+        Task<TResponse> ISubscriber.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
             => SendMessageAsync(message, responseReader, false, token);
 
         internal Task SendSignalAsync(CustomMessage message, CancellationToken token) =>
             SendAsync<IMessage, CustomMessage>(message, token);
 
 
-        Task IAddressee.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
+        Task ISubscriber.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
         {
             var request = new CustomMessage(context.LocalEndpoint, message, requiresConfirmation);
             return SendSignalAsync(request, token);

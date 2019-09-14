@@ -1,8 +1,13 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Net.Mime;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 
@@ -13,6 +18,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage>
     {
+        //request - represents custom message name
+        private const string MessageNameHeader = "X-Raft-Message-Name";
         private static readonly ValueParser<DeliveryMode> DeliveryModeParser = Enum.TryParse;
 
         internal enum DeliveryMode
@@ -20,6 +27,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             OneWayNoAck,
             OneWay,
             RequestReply
+        }
+
+        private sealed class OutboundMessageContent : OutboundTransferObject
+        {
+            internal OutboundMessageContent(IMessage message)
+                : base(message)
+            {
+                Headers.ContentType = MediaTypeHeaderValue.Parse(message.Type.ToString());
+                Headers.Add(MessageNameHeader, message.Name);
+            }
+        }
+
+        private sealed class InboundMessageContent : StreamMessage
+        {
+            internal InboundMessageContent(Stream content, bool leaveOpen, string name, ContentType type)
+                : base(content, leaveOpen, name, type)
+            {
+            }
+
+            internal InboundMessageContent(HttpRequest request)
+                : this(request.Body, true, ParseHeader<StringValues>(MessageNameHeader, request.Headers.TryGetValue),
+                    new ContentType(request.ContentType))
+            {
+            }
         }
 
         internal new const string MessageType = "CustomMessage";
@@ -65,14 +96,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Content = new OutboundMessageContent(Message);
         }
 
-        public Task SaveResponse(HttpResponse response, IMessage message)
+        public Task SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
-            return OutboundMessageContent.WriteTo(message, response);
+            response.ContentType = message.Type.ToString();
+            response.ContentLength = message.Length;
+            response.Headers.Add(MessageNameHeader, message.Name);
+            return message.CopyToAsync(response.Body, token);
         }
 
         //do not parse response because this is one-way message
-        Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response) => NullMessage.Task;
+        Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response, CancellationToken token) => NullMessage.Task;
+
+        private protected static async Task<T> ParseResponse<T>(HttpResponseMessage response, MessageReader<T> reader, CancellationToken token)
+        {
+            var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
+            var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
+            using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+            using (var message = new InboundMessageContent(content, true, name, contentType))
+                return await reader(message, token).ConfigureAwait(false);
+        }
     }
 
     internal sealed class CustomMessage<T> : CustomMessage, IHttpMessageReader<T>
@@ -81,7 +124,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal CustomMessage(IPEndPoint sender, IMessage message, MessageReader<T> reader) : base(sender, message, DeliveryMode.RequestReply) => this.reader = reader;
 
-        Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response)
-            => InboundMessageContent.FromResponseAsync(response, reader);
+        Task<T> IHttpMessageReader<T>.ParseResponse(HttpResponseMessage response, CancellationToken token)
+            => ParseResponse<T>(response, reader, token);
     }
 }
