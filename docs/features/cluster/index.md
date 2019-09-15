@@ -25,7 +25,7 @@ There are two types of messages:
 1.1. With confirmation, when sender waiting for acknowledge from receiver side. As a result, it is possible to ensure that message is processed by receiver.
 1.1. Without confirmation, when sender doesn't wait for acknowledge. Such kind of delivery is not reliable but very performant.
 
-The message can be transferred to the particular member using [IAddressee](../../api/DotNext.Net.Cluster.Messaging.IAddressee.yml) interface which is extension of `IClusterMember` interface.
+The message can be transferred to the particular member using [ISubscriber](../../api/DotNext.Net.Cluster.Messaging.ISubscriber.yml) interface which is the extension of `IClusterMember` interface.
 
 Usually, you don't to implement `IMessage` interface directly due to existence of ready-to-use realizations:
 1. [BinaryMessage](../../api/DotNext.Net.Cluster.Messaging.BinaryMessage.yml) for raw binary content

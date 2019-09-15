@@ -209,7 +209,7 @@ Note that `BecomeClusterMember` declared in [DotNext.Net.Cluster.Consensus.Raft.
 `UseConsensusProtocolHandler` method should be called before registration of any authentication/authorization middleware.
 
 # Redirection to Leader
-Now cluster of ASP.NET Core applications can receive requests from outside. Some of these requests may be handled by leader node only. .NEXT cluster programming model provides a way to automatically redirect request to leader node if it was originally received by follower node. The redirection is organized with help of _301 Moved Permanently_ status code. Every follower node knows the actual address of the leader node. If cluster or its partition doesn't have leader then node returns _503 Service Unavailable_. 
+Now cluster of ASP.NET Core applications can receive requests from outside. Some of these requests may be handled by leader node only. .NEXT cluster programming model provides a way to automatically redirect request to leader node if it was originally received by follower node. The redirection is organized with help of _307 Temporary Redirect_ status code. Every follower node knows the actual address of the leader node. If cluster or its partition doesn't have leader then node returns _503 Service Unavailable_. 
 
 Automatic redirection is provided by [LeaderRouter](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.yml) class. You can specify endpoint that should be handled by leader node with `RedirectToLeader` method.
 
@@ -283,7 +283,76 @@ Messaging inside of cluster supports redirection to the leader as well as for ex
 * `SendSignalToLeaderAsync` to send _One Way_ message to the leader
 
 # Replication
-Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface. By default, it is implemented as in-memory storage which is suitable only for applications that doesn't have replicated state. If your application has it then implement this interface manually and use reliable storage such as disk and inject this implementation through `AuditTrail` property in [IRaftCluster](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.yml) interface. This injection should be done in user-defined implementation of [IRaftClusterConfigurator](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.yml) interface registered as a singleton service in ASP.NET Core application.
+Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface. By default, it is implemented as in-memory storage which is suitable only for applications that doesn't have replicated state. If your application has it then use [PersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.yml) class or implement this interface manually and use reliable storage such as disk. The implementation can be injected explicitly via `AuditTrail` property of [IRaftCluster](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.yml) interface or implicitly via Dependency Injection. The explicit should be done inside of the user-defined implementation of [IRaftClusterConfigurator](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.yml) interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of singleton service which implements [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface.
+
+## Reliable persistent state
+Starting with .NEXT 1.0.0 the library shipped with the general-purpose high-performance [persistent Write Ahead Log](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.yml)(WAL) providing the following features:
+* Log compaction based on snapshotting
+* File-based persistent storage for the log entries
+* Caching
+* Fast writes and reads
+* Automatic replays
+
+However, it is not used as default audit trail by Raft implementation. You need to register it as described above.
+
+Typically, `PersistentState` class is not used directly because it is not aware how to interpret commands contained in the log entries. This is the responsibility of the data state machine. It can be defined through overriding of the two methods:
+1. `ValueTask ApplyAsync(LogEntry entry)` method is responsible for interpreting committed log entries and applying them to the underlying persistent data storage.
+1. `SnapshotBuilder CreateSnapshotBuilder(byte[] buffer)` method is required if you want to enable log compaction. The returned builder squashed the series of log entries into the single log entry called **snapshot**. Then the snapshot can be persisted by the infrastructure automatically. By default, this method always returns **null** which means that compaction is not supported.
+
+> [!NOTE]
+> .NEXT library doesn't provide default implementation of the database or persistent data storage based on Raft replication
+
+Internally, persistent WAL uses files to store the state of cluster member and log entries. The journal with log entries is not continuous. Each file represents the partition of the entire journal. Each partition is a chunk of sequential log entries. The maximum number of log entries per partition file depends on the settings.
+
+The constructor of [PersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.yml) supports the following parameters:
+* `recordsPerPartition` allows to define maximum number of log entries that can be stored in contiguous manner in the single partition. Log compaction algorithm depends on this value directly. When all records from the partition are committed and applied to the underlying state machine the infrastructure calls the snapshot builder and squashed all the entries in such partition. After that, it records the snapshot into the separated file and removes the partition file from the file system. The log compaction is expensive operation. So if you want to reduce the number of compactions then you need to increase the maximum number of log entries per partition. However, the partition file will take more disk space.
+* `bufferSize` is the numbers of bytes that is allocated by persistent WAL in the memory to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.
+* `initialPartitionSize` represents the initial pre-allocated size, in bytes, of the empty partition file. This parameter allows to avoid fragmentation of the partition file at file-system level.
+* `useCaching` is a `bool` flag that allows to enable or disable in-memory caching of log entries metadata. `true` value allows to improve the performance or read/write operations by the cost of additional heap memory. `false` reduces the memory footprint by the cost of the read/write performance.
+
+Choose `recordsPerPartition` value with care because it cannot be changed for the existing persistent WAL.
+
+Let's write a simple custom audit trail based on the `PersistentState`. Our state machine stores only the single **long** value as the only possible persistent state.
+```csharp
+using DotNext.Net.Cluster.Consensus.Raft;
+using System.Threading.Tasks;
+using static System.Buffers.Binary.BinaryPrimitives;
+
+sealed class SimpleAuditTrail : PersistentState
+{
+	internal long Value;	//the current int64 value synchronized across all cluster nodes
+
+	//snapshot builder
+	private sealed class SimpleSnapshotBuilder : SnapshotBuilder
+	{
+		private long currentValue;
+		private readonly byte[] sharedBuffer;
+
+		internal SimpleSnapshotBuilder(byte[] buffer) => sharedBuffer = buffer;
+
+		public override Task CopyToAsync(Stream output, CancellationToken token)
+		{
+			WriteInt64LittleEndian(sharedBuffer, currentValue);
+			return output.WriteAsync(sharedBuffer, 0, sizeof(long), token);
+		}
+
+		public override async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
+		{
+			WriteInt64LittleEndian(sharedBuffer, currentValue);
+			await output.WriteAsync(new ReadOnlyMemory<byte>(sharedBuffer, 0, sizeof(long)), token);
+		}
+
+		protected override async ValueTask ApplyAsync(LogEntry entry) => currentValue = await Decode(entry);
+	}
+	
+	//converts log entry into int64 value
+	private static async Task<long> Decode(LogEntry entry) => ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
+
+    protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await Decode(entry);
+
+    protected override SnapshotBuilder CreateSnapshotBuilder(byte[] buffer) => new SimpleSnapshotBuilder(buffer);
+}
+```
 
 # Metrics
 It is possible to measure runtime metrics of Raft node internals using [HttpMetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html) class. The reporting mechanism is agnostic  to the underlying metrics delivery library such as [AppMetrics](https://github.com/AppMetrics/AppMetrics).

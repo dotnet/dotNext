@@ -5,9 +5,6 @@
 
 This chapter gives quick overview of these libraries. Read [articles](./features/core/index.md) for closer look at all available features.
 
-> [!IMPORTANT]
-> DotNext is in early stage of development. Backward compatibility of API is not guaranteed before 1.0 version.
-
 Prerequisites:
 * Runtime: any .NET implementation compatible with .NET Standard 2.0
 * OS: Linux, Windows, macOS
