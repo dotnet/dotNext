@@ -103,10 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await output.WriteAsync(new ReadOnlyMemory<byte>(sharedBuffer, 0, sizeof(long)), token);
                 }
 
-                protected override async ValueTask ApplyAsync(LogEntry entry)
-                {
-                    currentValue = ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
-                }
+                protected override async ValueTask ApplyAsync(LogEntry entry) => currentValue = await Decode(entry);
             }
 
             internal TestAuditTrail(string path, bool useCaching)
