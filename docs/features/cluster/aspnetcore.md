@@ -312,7 +312,7 @@ The constructor of [PersistentState](../../api/DotNext.Net.Cluster.Consensus.Raf
 
 Choose `recordsPerPartition` value with care because it cannot be changed for the existing persistent WAL.
 
-Let's write a simple custom audit trail based on the `PersistentState`. Our state machine stores only the single **long** value as the only possible persistent state.
+Let's write a simple custom audit trail based on the `PersistentState` to demonstrate basics of Write Ahead Log. Our state machine stores only the single **long** value as the only possible persistent state.
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft;
 using System.Threading.Tasks;
@@ -330,29 +330,37 @@ sealed class SimpleAuditTrail : PersistentState
 
 		internal SimpleSnapshotBuilder(byte[] buffer) => sharedBuffer = buffer;
 
+		//2.1
 		public override Task CopyToAsync(Stream output, CancellationToken token)
 		{
 			WriteInt64LittleEndian(sharedBuffer, currentValue);
 			return output.WriteAsync(sharedBuffer, 0, sizeof(long), token);
 		}
 
+		//2.2
 		public override async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
 		{
 			WriteInt64LittleEndian(sharedBuffer, currentValue);
 			await output.WriteAsync(new ReadOnlyMemory<byte>(sharedBuffer, 0, sizeof(long)), token);
 		}
 
+		//1
 		protected override async ValueTask ApplyAsync(LogEntry entry) => currentValue = await Decode(entry);
 	}
 	
-	//converts log entry into int64 value
+	//3
 	private static async Task<long> Decode(LogEntry entry) => ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
-
+	
+	//4
     protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await Decode(entry);
-
+	
+	//5
     protected override SnapshotBuilder CreateSnapshotBuilder(byte[] buffer) => new SimpleSnapshotBuilder(buffer);
 }
 ```
+1)Aggregates the commited entry with the existing state; 2)called by infrastructure to save the aggregated state as a snapshot; 3)Decodes the command from the log entry; 4) Applies the log entry to the state machine; 5)Creates snapshot builder
+
+In reality, the state machine should persist its state in reliable way, e.g. disk. The example above ignores this requirement for simplicity and maintain its state in the form of the field of type `long`.
 
 # Metrics
 It is possible to measure runtime metrics of Raft node internals using [HttpMetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html) class. The reporting mechanism is agnostic  to the underlying metrics delivery library such as [AppMetrics](https://github.com/AppMetrics/AppMetrics).
