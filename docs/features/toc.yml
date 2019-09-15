@@ -89,6 +89,8 @@
       href: unsafe/unstruct.md
     - name: Calling Function by Pointer
       href: unsafe/funcptr.md
+    - name: Memory-Mapped File
+      href: unsafe/mmfile.md
 - name: Cluster and Distributed Consensus
   href: cluster/index.md
   items:
