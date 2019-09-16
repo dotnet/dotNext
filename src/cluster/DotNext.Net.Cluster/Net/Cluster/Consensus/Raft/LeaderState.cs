@@ -170,9 +170,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="transactionLog">Transaction log.</param>
         internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog)
         {
-            if (transactionLog != null)
-                foreach (var member in stateMachine.Members)
-                    member.NextIndex = transactionLog.GetLastIndex(false) + 1;
+            foreach (var member in stateMachine.Members)
+                member.NextIndex = transactionLog.GetLastIndex(false) + 1;
             heartbeatTask = DoHeartbeats(period, transactionLog);
             return this;
         }
