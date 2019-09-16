@@ -40,6 +40,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
         /// <exception cref="NotSupportedException">The specified level of acknowledgment is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="TimeoutException">The timeout is occurred.</exception>
         Task WriteAsync(IReadOnlyList<LogEntry> entries, WriteConcern concern, TimeSpan timeout);
     }
 }

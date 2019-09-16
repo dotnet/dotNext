@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.IO.Pipelines;
@@ -209,7 +210,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 lookupCache = useLookupCache ? new LogEntryMetadata[recordsPerPartition] : null;
             }
 
-            internal void Allocate(long initialSize) => SetLength(Math.Max(initialSize, payloadOffset));
+            internal void Allocate(long initialSize) => SetLength(initialSize + payloadOffset);
 
             internal void PopulateCache()
             {
@@ -563,7 +564,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly AsyncExclusiveLock syncRoot;
         private readonly ILogEntryList<IRaftLogEntry> emptyLog;
         private readonly ILogEntryList<IRaftLogEntry> initialLog;
-        private readonly byte[] sharedBuffer;
+        /// <summary>
+        /// Represents shared buffer that can be used for I/O operations.
+        /// </summary>
+        [SuppressMessage("Design", "CA1051", Justification = "It is protected field")]
+        protected readonly byte[] sharedBuffer;
         private readonly bool useLookupCache;
         private readonly long initialSize;
 
@@ -619,6 +624,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             : this(new DirectoryInfo(path), recordsPerPartition, bufferSize, initialPartitionSize, useCaching)
         {
         }
+
+        /// <summary>
+        /// Gets the lock that can be used to synchronize access to this object.
+        /// </summary>
+        protected AsyncLock SyncRoot => AsyncLock.Exclusive(syncRoot);
 
         /// <summary>
         /// Gets index of the committed or last log entry.

@@ -22,7 +22,7 @@ namespace RaftNode
             }
         }
 
-        private static void StartNode(int port, string messageFile = null)
+        private static void StartNode(int port, string persistentStorage = null)
         {
             var configuration = new Dictionary<string, string>
             {
@@ -36,8 +36,8 @@ namespace RaftNode
                 {"requestJournal:memoryLimit", "5" },
                 {"requestJournal:expiration", "00:01:00" }
             };
-            if (!string.IsNullOrEmpty(messageFile))
-                configuration[FileListener.MessageFile] = messageFile;
+            if (!string.IsNullOrEmpty(persistentStorage))
+                configuration[SimplePersistentState.LogLocation] = persistentStorage;
             new WebHostBuilder()
                 .UseKestrel(options =>
                 {

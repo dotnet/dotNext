@@ -2,8 +2,10 @@
 using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Net.Http;
 
 namespace RaftNode
@@ -16,15 +18,25 @@ namespace RaftNode
 
         public override void Configure(IApplicationBuilder app)
         {
-            app.UseConsensusProtocolHandler().ApplicationServices.GetService<FileListener>();
+            app.UseConsensusProtocolHandler();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IRaftClusterConfigurator, ClusterConfigurator>()
-                .AddSingleton<FileListener>()
                 .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
-                .AddOptions().BecomeClusterMember(configuration);
+                .AddOptions()
+                .BecomeClusterMember(configuration);
+            var path = configuration[SimplePersistentState.LogLocation];
+            if (!string.IsNullOrWhiteSpace(path))
+            {
+                Func<IServiceProvider, SimplePersistentState> serviceCast = ServiceProviderServiceExtensions.GetRequiredService<SimplePersistentState>;
+                services
+                    .AddSingleton<SimplePersistentState>()
+                    .AddSingleton<IPersistentState>(serviceCast)
+                    .AddSingleton<IValueProvider>(serviceCast)
+                    .AddSingleton<IHostedService, DataModifier>();
+            }
         }
     }
 }
