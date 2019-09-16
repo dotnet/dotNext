@@ -13,14 +13,14 @@ using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
-using DateTimeStyles = System.Globalization.DateTimeStyles;
 using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
+using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class AppendEntriesMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
-        private static readonly ValueParser<DateTimeOffset> DateTimeParser = (string str, out DateTimeOffset value) => DateTimeOffset.TryParse(str, InvariantCulture, DateTimeStyles.AssumeUniversal, out value);
+        private static readonly ValueParser<DateTimeOffset> DateTimeParser = (string str, out DateTimeOffset value) => HeaderUtils.TryParseDate(str, out value);
 
         private const int EntryBufferSize = 1024;
         private const string MimeSubType = "mixed";
@@ -40,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 Headers.ContentType = ContentType;
                 Headers.Add(RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
                 Headers.Add(SnapshotRecordHeader, entry.IsSnapshot.ToString(InvariantCulture));
-                Headers.Add(HeaderNames.LastModified, entry.Timestamp.ToString(InvariantCulture));
+                Headers.LastModified = entry.Timestamp;
             }
         }
 
