@@ -899,6 +899,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     state.CommitIndex = startIndex + count - 1;
                     await ApplyAsync(token).ConfigureAwait(false);
                     await ForceCompaction(token).ConfigureAwait(false);
+                    commitEvent.Set(true);
                 }
             }
             return Math.Max(count, 0L);
