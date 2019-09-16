@@ -794,12 +794,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="entries">The entries to be added into this log.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
-        /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
         public async Task AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
         {
             if (entries.Count == 0)
-                throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
+                return;
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
                 await AddEntriesAsync(entries, startIndex).ConfigureAwait(false);
         }

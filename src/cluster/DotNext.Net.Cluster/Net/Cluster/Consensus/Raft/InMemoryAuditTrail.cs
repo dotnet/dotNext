@@ -219,7 +219,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async Task IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
         {
             if (entries.Count == 0)
-                throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
+                return;
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
                 await AppendAsync(entries, startIndex).ConfigureAwait(false);
         }
