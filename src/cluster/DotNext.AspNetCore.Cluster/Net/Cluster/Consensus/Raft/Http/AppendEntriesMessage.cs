@@ -22,7 +22,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private static readonly ValueParser<DateTimeOffset> DateTimeParser = (string str, out DateTimeOffset value) => HeaderUtils.TryParseDate(str, out value);
 
-        private const int EntryBufferSize = 1024;
         private const string MimeSubType = "mixed";
         internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
@@ -62,7 +61,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             public DateTimeOffset Timestamp { get; }
         }
 
-        private IReadOnlyList<IRaftLogEntry> entries;
+        private sealed class ReceivedLogEntryReader : MultipartReader
+        {
+            internal ReceivedLogEntryReader(string boundary, Stream body)
+                : base(boundary, body)
+            {
+            }
+
+            internal async ValueTask<IRaftLogEntry> ParseEntryAsync()
+            {
+                var section = await ReadNextSectionAsync().ConfigureAwait(false);
+                return section is null ? null : new ReceivedLogEntry(section);
+            }
+        }
+
+        private static ValueTask<IRaftLogEntry> EmptyEnumerator() => new ValueTask<IRaftLogEntry>(default(IRaftLogEntry));
+
+        internal Func<ValueTask<IRaftLogEntry>> EntryReader;    //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
         internal readonly long PrevLogIndex;
         internal readonly long PrevLogTerm;
         internal readonly long CommitIndex;
@@ -86,54 +101,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal AppendEntriesMessage(HttpRequest request)
             : this(request.Headers.TryGetValue)
         {
-        }
-
-        internal IReadOnlyList<IRaftLogEntry> Entries
-        {
-            get => entries ?? Array.Empty<IRaftLogEntry>();
-            set => entries = value;
-        }
-
-        internal async Task ParseEntriesAsync(HttpRequest request, CancellationToken token)
-        {
             var boundary = request.GetMultipartBoundary();
-            if (string.IsNullOrEmpty(boundary))
-                this.entries = Array.Empty<IRaftLogEntry>();
-            else
-            {
-                var reader = new MultipartReader(boundary, request.Body);
-                var entries = new List<IRaftLogEntry>(10);
-                while (true)
-                {
-                    var section = await reader.ReadNextSectionAsync(token).ConfigureAwait(false);
-                    if (section is null)
-                        break;
-                    //assume that entry can be allocated in memory and doesn't require persistent buffer such as disk
-                    var buffer = new MemoryStream(EntryBufferSize);
-                    await section.Body.CopyToAsync(buffer).ConfigureAwait(false);
-                    buffer.Seek(0, SeekOrigin.Begin);
-                    section.Body = buffer;
-                    entries.Add(new ReceivedLogEntry(section));
-                }
-
-                this.entries = entries;
-            }
+            EntryReader = string.IsNullOrEmpty(boundary) ? new Func<ValueTask<IRaftLogEntry>>(EmptyEnumerator) : new ReceivedLogEntryReader(boundary, request.Body).ParseEntryAsync;
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Content of the log entry will be disposed automatically by ASP.NET infrastructure")]
-        private protected override void FillRequest(HttpRequestMessage request)
+        internal override async ValueTask FillRequestAsync(HttpRequestMessage request)
         {
-            base.FillRequest(request);
             request.Headers.Add(PrecedingRecordIndexHeader, PrevLogIndex.ToString(InvariantCulture));
             request.Headers.Add(PrecedingRecordTermHeader, PrevLogTerm.ToString(InvariantCulture));
             request.Headers.Add(CommitIndexHeader, CommitIndex.ToString(InvariantCulture));
-            if (Entries.Count > 0)
+
+            if (EntryReader != null)
             {
                 var content = new MultipartContent(MimeSubType);
-                foreach (var entry in Entries)
+                IRaftLogEntry entry;
+                while ((entry = await EntryReader().ConfigureAwait(false)) != null)
                     content.Add(new LogEntryContent(entry));
                 request.Content = content;
             }
+            await base.FillRequestAsync(request).ConfigureAwait(false);
         }
 
         Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response);

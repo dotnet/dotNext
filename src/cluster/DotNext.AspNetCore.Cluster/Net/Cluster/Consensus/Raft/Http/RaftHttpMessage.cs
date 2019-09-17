@@ -26,10 +26,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             ConsensusTerm = ParseHeader(TermHeader, headers, Int64Parser);
         }
 
-        private protected override void FillRequest(HttpRequestMessage request)
+        internal override ValueTask FillRequestAsync(HttpRequestMessage request)
         {
             request.Headers.Add(TermHeader, ConsensusTerm.ToString(InvariantCulture));
-            base.FillRequest(request);
+            return base.FillRequestAsync(request);
         }
 
         private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response)

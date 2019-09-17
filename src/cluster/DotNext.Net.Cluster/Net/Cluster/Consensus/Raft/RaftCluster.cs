@@ -343,12 +343,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="sender">The sender of the replica message.</param>
         /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
-        /// <param name="entries">The entries to be committed locally.</param>
+        /// <param name="entries">The stateful function that provides entries to be committed locally.</param>
         /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
         /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, IReadOnlyList<IRaftLogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
+        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, Func<ValueTask<IRaftLogEntry>> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
                 if (auditTrail.Term <= senderTerm &&
@@ -357,8 +357,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
 
-                    if (entries.Count > 0L)
-                        await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
+                    await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
                     var result = commitIndex <= auditTrail.GetLastIndex(true) ||
                                  await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
                     return new Result<bool>(auditTrail.Term, result);
