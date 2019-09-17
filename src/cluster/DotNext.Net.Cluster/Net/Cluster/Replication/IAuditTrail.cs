@@ -128,9 +128,9 @@ namespace DotNext.Net.Cluster.Replication
         /// Adds uncommitted log entries into this log.
         /// </summary>
         /// <remarks>
-        /// The supplying function must return <see langword="null"/> if it cannot return more log entries.
+        /// The supplying function must return <see langword="null"/> if it cannot provide more log entries.
         /// </remarks>
-        /// <param name="supplier">The function that is responsible for supplying log entries.</param>
+        /// <param name="supplier">Stateful function that is responsible for supplying log entries.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
