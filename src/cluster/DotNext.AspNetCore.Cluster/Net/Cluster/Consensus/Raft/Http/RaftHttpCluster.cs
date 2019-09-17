@@ -228,12 +228,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (sender is null)
                 response.StatusCode = StatusCodes.Status404NotFound;
             else
-            {
                 await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
                     message.EntryReader, message.PrevLogIndex,
                     message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false), Token).ConfigureAwait(false);
-                message.EntryReader = null; //help GC
-            }
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
