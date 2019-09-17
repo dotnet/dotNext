@@ -40,7 +40,7 @@ namespace RaftNode
                         Console.WriteLine("Unexpected error {0}", e);
                     }
                 }
-                
+
             }
         }
     }

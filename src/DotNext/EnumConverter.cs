@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using static System.Globalization.CultureInfo;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
+using static System.Globalization.CultureInfo;
 using CallSiteDescr = InlineIL.StandAloneMethodSig;
 
 namespace DotNext

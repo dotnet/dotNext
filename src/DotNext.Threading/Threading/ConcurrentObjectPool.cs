@@ -174,7 +174,7 @@ namespace DotNext.Threading
                 resource = null;
             }
         }
-        
+
         private readonly ValueFunc<T> factory;
         private AtomicReference<Rental> last, current;
         [SuppressMessage("Design", "IDE0032", Justification = "Volatile operations are applied directly to this field")]

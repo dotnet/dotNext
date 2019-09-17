@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private Task tracker;
         internal IFollowerStateMetrics Metrics;
 
-        internal FollowerState(IRaftStateMachine stateMachine) 
+        internal FollowerState(IRaftStateMachine stateMachine)
             : base(stateMachine)
         {
             refreshEvent = new AsyncAutoResetEvent(false);
@@ -23,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private static async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, Action candidateState, CancellationToken token)
         {
             //spin loop to wait for the timeout
-            while(await refreshEvent.Wait(timeout, token).ConfigureAwait(false)) { }
+            while (await refreshEvent.Wait(timeout, token).ConfigureAwait(false)) { }
             //timeout happened, move to candidate state
             candidateState();
         }

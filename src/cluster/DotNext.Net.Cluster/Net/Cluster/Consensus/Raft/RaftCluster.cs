@@ -235,8 +235,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Establishes metrics collector.
         /// </summary>
-        public MetricsCollector Metrics 
-        { 
+        public MetricsCollector Metrics
+        {
             protected get;
             set;
         }
@@ -385,7 +385,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Leader = null;
                     await StepDown(senderTerm).ConfigureAwait(false);
                 }
-                else if(state is FollowerState follower)
+                else if (state is FollowerState follower)
                     follower.Refresh();
                 else
                     goto reject;
@@ -480,7 +480,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async Task WriteAsync(IReadOnlyList<IRaftLogEntry> entries, bool waitForCommit, TimeSpan timeout)
         {
             var index = await auditTrail.AppendAsync(entries).ConfigureAwait(false);
-            if(!(state is LeaderState leaderState))
+            if (!(state is LeaderState leaderState))
                 throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
             if (waitForCommit)
                 await auditTrail.WaitForCommitAsync(index + entries.Count - 1L, timeout, leaderState.Token).ConfigureAwait(false);

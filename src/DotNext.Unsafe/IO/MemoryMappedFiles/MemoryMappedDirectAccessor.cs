@@ -10,7 +10,7 @@ namespace DotNext.IO.MemoryMappedFiles
     /// Provides direct access to the memory-mapped file content through pointer
     /// to its virtual memory.
     /// </summary>
-    public unsafe readonly struct MemoryMappedDirectAccessor : IUnmanagedMemory
+    public readonly unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory
     {
         private readonly MemoryMappedViewAccessor accessor;
         private readonly byte* ptr;
@@ -31,10 +31,10 @@ namespace DotNext.IO.MemoryMappedFiles
         /// <value>The stream representing virtual memory of the memory-mapped file.</value>
         public Stream AsStream()
         {
-            if(accessor is null)
+            if (accessor is null)
                 return Stream.Null;
             FileAccess access;
-            switch(accessor.CanRead.ToInt32() + accessor.CanWrite.ToInt32() << 1)
+            switch (accessor.CanRead.ToInt32() + accessor.CanWrite.ToInt32() << 1)
             {
                 default:
                     access = default;
@@ -85,7 +85,7 @@ namespace DotNext.IO.MemoryMappedFiles
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public void Clear()
         {
-            if(ptr == default)
+            if (ptr == default)
                 throw new ObjectDisposedException(GetType().Name);
             Memory.ClearBits(new IntPtr(ptr), Size);
         }

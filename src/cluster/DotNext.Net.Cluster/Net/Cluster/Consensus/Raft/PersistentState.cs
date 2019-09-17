@@ -63,9 +63,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-         /// <summary>
-         /// Represents persistent log entry.
-         /// </summary>
+        /// <summary>
+        /// Represents persistent log entry.
+        /// </summary>
         protected sealed class LogEntry : IRaftLogEntry
         {
             private readonly StreamSegment content;
@@ -214,12 +214,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal void PopulateCache()
             {
-                if(lookupCache != null)
-                    for(int index = 0, count; index < lookupCache.Length; index += count)
+                if (lookupCache != null)
+                    for (int index = 0, count; index < lookupCache.Length; index += count)
                     {
                         count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
                         var maxBytes = count * LogEntryMetadata.Size;
-                        if(Read(buffer, 0, maxBytes) < maxBytes)
+                        if (Read(buffer, 0, maxBytes) < maxBytes)
                             throw new EndOfStreamException();
                         var source = new Span<byte>(buffer, 0, maxBytes);
                         var destination = MemoryMarshal.AsBytes(new Span<LogEntryMetadata>(lookupCache).Slice(index));
@@ -497,7 +497,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents snapshot builder.
         /// </summary>
-        protected abstract class SnapshotBuilder: Disposable, IRaftLogEntry
+        protected abstract class SnapshotBuilder : Disposable, IRaftLogEntry
         {
             private readonly DateTimeOffset timestamp;
             private long term;
@@ -664,7 +664,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 readLock.Dispose();
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
             }
-            if(endIndex > state.LastIndex)
+            if (endIndex > state.LastIndex)
             {
                 readLock.Dispose();
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
@@ -757,7 +757,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             long partitionLow = 0, partitionHigh = 0;
             IRaftLogEntry entry;
-            while((entry = await supplier().ConfigureAwait(false)) != null)
+            while ((entry = await supplier().ConfigureAwait(false)) != null)
             {
                 await GetOrCreatePartition(startIndex, out var partitionNumber).WriteAsync(entry, startIndex).ConfigureAwait(false);
                 state.LastIndex = startIndex;
@@ -917,7 +917,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return Math.Max(count, 0L);
         }
 
-         /// <summary>
+        /// <summary>
         /// Commits log entries into the underlying storage and marks these entries as committed.
         /// </summary>
         /// <remarks>

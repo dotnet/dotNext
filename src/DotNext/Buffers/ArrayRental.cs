@@ -1,6 +1,6 @@
 using System;
-using System.ComponentModel;
 using System.Buffers;
+using System.ComponentModel;
 
 namespace DotNext.Buffers
 {

@@ -246,7 +246,7 @@ namespace DotNext.Collections.Generic
         /// <returns>The optional value associated with the key.</returns>
         public static Optional<V> TryGetValue<K, V>(this IDictionary<K, V> dictionary, K key)
             => dictionary.TryGetValue(key, out var value) ? new Optional<V>(value) : Optional<V>.Empty;
-        
+
         /// <summary>
         /// Removes the value with the specified key and return the removed value.
         /// </summary>

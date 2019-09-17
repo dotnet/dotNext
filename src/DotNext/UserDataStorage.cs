@@ -133,7 +133,7 @@ namespace DotNext
                 lockState.Acquire();
                 try
                 {
-                    if(slot.GetUserData(this, out userData))
+                    if (slot.GetUserData(this, out userData))
                     {
                         slot.RemoveUserData(this);
                         return true;
@@ -155,7 +155,7 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal UserDataStorage(object owner)
             => this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
-        
+
         private static BackingStorage CreateStorage(object key) => new BackingStorage();
 
         private BackingStorage GetStorage(bool createIfNeeded)

@@ -3,8 +3,8 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 using static System.Runtime.CompilerServices.Unsafe;
+using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO
 {
@@ -41,18 +41,18 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding.</exception>
         public static void WriteString(this Stream stream, string value, EncodingContext context, byte[] buffer)
         {
-            if(value.Length == 0)
+            if (value.Length == 0)
                 return;
             //TODO: Should be rewritten for .NET Standard 2.1
-            if(context.Encoding.GetByteCount(value) <= buffer.Length)
+            if (context.Encoding.GetByteCount(value) <= buffer.Length)
                 stream.Write(buffer, 0, context.Encoding.GetBytes(value, 0, value.Length, buffer, 0));
             else
             {
                 var maxChars = buffer.Length / context.Encoding.GetMaxByteCount(1);
-                if(maxChars == 0)
+                if (maxChars == 0)
                     throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
                 var encoder = context.GetEncoder();
-                for(int charStart = 0, numLeft = value.Length, charsRead; numLeft > 0; charStart += charsRead, numLeft -= charsRead)
+                for (int charStart = 0, numLeft = value.Length, charsRead; numLeft > 0; charStart += charsRead, numLeft -= charsRead)
                 {
                     charsRead = Math.Min(numLeft, maxChars);
                     stream.Write(buffer, 0, encoder.GetBytes(value, charStart, charsRead, buffer, charsRead == numLeft));
@@ -75,18 +75,18 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding.</exception>
         public static async Task WriteStringAsync(this Stream stream, string value, EncodingContext context, byte[] buffer, CancellationToken token = default)
         {
-            if(value.Length == 0)
+            if (value.Length == 0)
                 return;
             //TODO: Should be rewritten for .NET Standard 2.1
-            if(context.Encoding.GetByteCount(value) <= buffer.Length)
+            if (context.Encoding.GetByteCount(value) <= buffer.Length)
                 await stream.WriteAsync(buffer, 0, context.Encoding.GetBytes(value, 0, value.Length, buffer, 0), token).ConfigureAwait(false);
             else
             {
                 var maxChars = buffer.Length / context.Encoding.GetMaxByteCount(1);
-                if(maxChars == 0)
+                if (maxChars == 0)
                     throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
                 var encoder = context.GetEncoder();
-                for(int charStart = 0, numLeft = value.Length, charsRead; numLeft > 0; charStart += charsRead, numLeft -= charsRead)
+                for (int charStart = 0, numLeft = value.Length, charsRead; numLeft > 0; charStart += charsRead, numLeft -= charsRead)
                 {
                     charsRead = Math.Min(numLeft, maxChars);
                     await stream.WriteAsync(buffer, 0, encoder.GetBytes(value, charStart, charsRead, buffer, charsRead == numLeft), token).ConfigureAwait(false);
@@ -106,7 +106,7 @@ namespace DotNext.IO
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
-            if(maxChars == 0)
+            if (maxChars == 0)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
             var decoder = context.GetDecoder();
             var charBuffer = new ArrayRental<char>(maxChars);
@@ -151,7 +151,7 @@ namespace DotNext.IO
         {
             //TODO: Should be rewritten for .NET Standard 2.1
             var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
-            if(maxChars == 0)
+            if (maxChars == 0)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
             var decoder = context.GetDecoder();
             var charBuffer = new ArrayRental<char>(maxChars);
@@ -220,10 +220,10 @@ namespace DotNext.IO
         /// <typeparam name="T">The value type to be deserialized.</typeparam>
         /// <returns>The value deserialized from the stream.</returns>
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
-        public unsafe static T Read<T>(this Stream stream, byte[] buffer)
+        public static unsafe T Read<T>(this Stream stream, byte[] buffer)
             where T : unmanaged
             => MemoryMarshal.Read<T>(ReadBytes(stream, sizeof(T), buffer));
-        
+
         /// <summary>
         /// Asynchronously deserializes the value type from the stream.
         /// </summary>
@@ -236,7 +236,7 @@ namespace DotNext.IO
         public static async Task<T> ReadAsync<T>(this Stream stream, byte[] buffer, CancellationToken token = default)
             where T : unmanaged
             => MemoryMarshal.Read<T>((await ReadBytesAsync(stream, SizeOf<T>(), buffer, token).ConfigureAwait(false)).Span);
-        
+
         /// <summary>
         /// Serializes value to the stream.
         /// </summary>
@@ -244,7 +244,7 @@ namespace DotNext.IO
         /// <param name="value">The value to be written into the stream.</param>
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
-        public unsafe static void Write<T>(this Stream stream, ref T value, byte[] buffer)
+        public static unsafe void Write<T>(this Stream stream, ref T value, byte[] buffer)
             where T : unmanaged
         {
             MemoryMarshal.Write(buffer, ref value);

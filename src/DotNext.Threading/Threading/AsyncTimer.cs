@@ -19,7 +19,7 @@ namespace DotNext.Threading
         {
             private readonly CancellationTokenSource cancellation;
 
-            internal TimerCompletionSource(CancellationToken token) 
+            internal TimerCompletionSource(CancellationToken token)
                 => cancellation = CancellationTokenSource.CreateLinkedTokenSource(token);
 
             internal void RequestCancellation() => cancellation.Cancel();
@@ -29,15 +29,15 @@ namespace DotNext.Threading
                 try
                 {
                     await System.Threading.Tasks.Task.Delay(dueTime, cancellation.Token).ConfigureAwait(false);
-                    while(await callback.Invoke(cancellation.Token).ConfigureAwait(false))
+                    while (await callback.Invoke(cancellation.Token).ConfigureAwait(false))
                         await System.Threading.Tasks.Task.Delay(period, cancellation.Token).ConfigureAwait(false);
                     TrySetResult(true);
                 }
-                catch(OperationCanceledException)
+                catch (OperationCanceledException)
                 {
                     TrySetResult(false);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     TrySetException(e);
                 }
@@ -99,7 +99,7 @@ namespace DotNext.Threading
         public bool Start(TimeSpan dueTime, TimeSpan period, CancellationToken token = default)
         {
             token.ThrowIfCancellationRequested();
-            if(timerTask is null || timerTask.Task.IsCompleted)
+            if (timerTask is null || timerTask.Task.IsCompleted)
             {
                 var source = new TimerCompletionSource(token);
                 source.Execute(dueTime, period, callback);
@@ -126,7 +126,7 @@ namespace DotNext.Threading
         public Task<bool> StopAsync()
         {
             var result = timerTask;
-            if(result is null)
+            if (result is null)
                 return FalseTask.Task;
             result.RequestCancellation();
             return result.Task;

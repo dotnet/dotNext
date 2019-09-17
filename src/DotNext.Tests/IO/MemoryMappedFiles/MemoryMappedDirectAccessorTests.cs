@@ -10,8 +10,8 @@ namespace DotNext.IO.MemoryMappedFiles
         public static void AccessByPointer()
         {
             var tempFile = Path.GetTempFileName();
-            using(var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.OpenOrCreate, null, 1024, MemoryMappedFileAccess.ReadWrite))
-            using(var da = mappedFile.CreateDirectAccessor(10L, 4L))
+            using (var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.OpenOrCreate, null, 1024, MemoryMappedFileAccess.ReadWrite))
+            using (var da = mappedFile.CreateDirectAccessor(10L, 4L))
             {
                 Equal(4L, da.Size);
                 var ptr = da.Pointer;
@@ -24,7 +24,7 @@ namespace DotNext.IO.MemoryMappedFiles
                 ptr.Value = 5;
                 da.Flush();
             }
-            using(var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Read))
             {
                 fs.Position = 10;
                 var data = new byte[4];
@@ -40,8 +40,8 @@ namespace DotNext.IO.MemoryMappedFiles
         public static void AccessBySpan()
         {
             var tempFile = Path.GetTempFileName();
-            using(var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.OpenOrCreate, null, 1024, MemoryMappedFileAccess.ReadWrite))
-            using(var da = mappedFile.CreateDirectAccessor(10L, 4L))
+            using (var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.OpenOrCreate, null, 1024, MemoryMappedFileAccess.ReadWrite))
+            using (var da = mappedFile.CreateDirectAccessor(10L, 4L))
             {
                 Equal(4L, da.Size);
                 var span = da.Bytes;
@@ -52,7 +52,7 @@ namespace DotNext.IO.MemoryMappedFiles
                 span[3] = 18;
                 da.Flush();
             }
-            using(var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Read))
+            using (var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Read))
             {
                 fs.Position = 10;
                 var data = new byte[4];

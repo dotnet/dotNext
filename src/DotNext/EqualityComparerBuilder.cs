@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -75,7 +74,7 @@ namespace DotNext
         {
             var method = typeof(BitwiseComparer<>)
                 .MakeGenericType(expr.Type)
-                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[]{ expr.Type, typeof(bool) });
+                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { expr.Type, typeof(bool) });
             return Expression.Call(method, expr, salted);
         }
 
@@ -85,7 +84,7 @@ namespace DotNext
                         .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, null)
                         .MakeGenericMethod(itemType)
                 : new Func<IEnumerable<object>, IEnumerable<object>, bool>(Sequence.SequenceEqual).Method;
-        
+
         private static MethodCallExpression EqualsMethodForArrayElementType(MemberExpression fieldX, MemberExpression fieldY)
         {
             var method = EqualsMethodForArrayElementType(fieldX.Type.GetElementType());

@@ -1,12 +1,11 @@
 ﻿using DotNext.Net.Cluster.Consensus.Raft;
-using DotNext.Threading;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Buffers.Binary;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Buffers.Binary;
 
 namespace RaftNode
 {
@@ -19,7 +18,7 @@ namespace RaftNode
         {
             private readonly byte[] value;
 
-            internal SimpleSnapshotBuilder() => value = new byte[sizeof(long)]; 
+            internal SimpleSnapshotBuilder() => value = new byte[sizeof(long)];
 
             public override Task CopyToAsync(Stream output, CancellationToken token) => output.WriteAsync(value, 0, value.Length);
 

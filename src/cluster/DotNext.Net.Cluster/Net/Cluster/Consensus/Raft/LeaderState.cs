@@ -9,8 +9,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Replication;
     using Threading;
-    using Timestamp = Diagnostics.Timestamp;
     using static Threading.Tasks.Continuation;
+    using Timestamp = Diagnostics.Timestamp;
 
     internal sealed class LeaderState : RaftState
     {
@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ReplicatedWithCurrentTerm,  //means that node accepts the entries with the current term
             Canceled
         }
-        
+
         private static readonly ValueFunc<long, long> IndexDecrement = new ValueFunc<long, long>(DecrementIndex);
         private Task heartbeatTask;
         private readonly long currentTerm;
@@ -96,7 +96,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ICollection<Task<Result<MemberHealthStatus>>> tasks = new LinkedList<Task<Result<MemberHealthStatus>>>();
             //send heartbeat in parallel
             var commitIndex = transactionLog.GetLastIndex(true);
-            Func<Task<Result<bool>>, Result<MemberHealthStatus>> continuation = HealthStatusContinuation; 
+            Func<Task<Result<bool>>, Result<MemberHealthStatus>> continuation = HealthStatusContinuation;
             foreach (var member in stateMachine.Members)
                 if (member.IsRemote)
                     tasks.Add(AppendEntriesAsync(member, commitIndex, currentTerm, transactionLog, stateMachine.Logger, timerCancellation.Token)
@@ -153,10 +153,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail)
         {
-            while(await DoHeartbeats(auditTrail).ConfigureAwait(false))
+            while (await DoHeartbeats(auditTrail).ConfigureAwait(false))
             {
                 var task = await forcedReplication.Wait(period, timerCancellation.Token).OnCompleted().ConfigureAwait(false);
-                if(task.IsCanceled)
+                if (task.IsCanceled)
                     break;
             }
         }

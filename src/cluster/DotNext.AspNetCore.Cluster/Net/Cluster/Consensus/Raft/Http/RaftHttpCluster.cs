@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         [SuppressMessage("Usage", "CA2213", Justification = "This object is disposed via RaftCluster.members collection")]
         private RaftClusterMember localMember;
-        
+
         private readonly IHttpMessageHandlerFactory httpHandlerFactory;
         private protected readonly TimeSpan RequestTimeout;
         private readonly DuplicateRequestDetector duplicationDetector;
@@ -314,7 +314,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal Task ProcessRequest(HttpContext context)
         {
             //this check allows to prevent situation when request comes earlier than initialization 
-            if(localMember is null)
+            if (localMember is null)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 return context.Response.WriteAsync(ExceptionMessages.UnresolvedLocalMember, Token);

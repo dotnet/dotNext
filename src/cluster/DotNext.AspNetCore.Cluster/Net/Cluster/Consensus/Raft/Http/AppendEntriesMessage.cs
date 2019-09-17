@@ -20,6 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     internal sealed class AppendEntriesMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
         private static readonly ValueParser<DateTimeOffset> DateTimeParser = (string str, out DateTimeOffset value) => HeaderUtils.TryParseDate(str, out value);
+        private static readonly Func<ValueTask<IRaftLogEntry>> EmptyEnumerator = () => new ValueTask<IRaftLogEntry>(default(IRaftLogEntry));
 
         private const string MimeSubType = "mixed";
         internal new const string MessageType = "AppendEntries";
@@ -74,8 +75,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private static ValueTask<IRaftLogEntry> EmptyEnumerator() => new ValueTask<IRaftLogEntry>(default(IRaftLogEntry));
-
         internal Func<ValueTask<IRaftLogEntry>> EntryReader;    //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
         internal readonly long PrevLogIndex;
         internal readonly long PrevLogTerm;
@@ -101,7 +100,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             : this(request.Headers.TryGetValue)
         {
             var boundary = request.GetMultipartBoundary();
-            EntryReader = string.IsNullOrEmpty(boundary) ? new Func<ValueTask<IRaftLogEntry>>(EmptyEnumerator) : new ReceivedLogEntryReader(boundary, request.Body).ParseEntryAsync;
+            EntryReader = string.IsNullOrEmpty(boundary) ? EmptyEnumerator : new ReceivedLogEntryReader(boundary, request.Body).ParseEntryAsync;
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Content of the log entry will be disposed automatically by ASP.NET infrastructure")]
@@ -110,15 +109,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Headers.Add(PrecedingRecordIndexHeader, PrevLogIndex.ToString(InvariantCulture));
             request.Headers.Add(PrecedingRecordTermHeader, PrevLogTerm.ToString(InvariantCulture));
             request.Headers.Add(CommitIndexHeader, CommitIndex.ToString(InvariantCulture));
-
-            if (EntryReader != null)
+            var isEmpty = true;
+            var reader = EntryReader;
+            if (reader is null)
+                reader = EmptyEnumerator;
+            var content = new MultipartContent(MimeSubType);
+            IRaftLogEntry entry;
+            while ((entry = await reader.Invoke().ConfigureAwait(false)) != null)
             {
-                var content = new MultipartContent(MimeSubType);
-                IRaftLogEntry entry;
-                while ((entry = await EntryReader().ConfigureAwait(false)) != null)
-                    content.Add(new LogEntryContent(entry));
-                request.Content = content;
+                content.Add(new LogEntryContent(entry));
+                isEmpty = false;
             }
+            request.Content = isEmpty ? null : content;
             await base.FillRequestAsync(request).ConfigureAwait(false);
         }
 

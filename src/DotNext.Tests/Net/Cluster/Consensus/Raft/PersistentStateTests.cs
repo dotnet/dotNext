@@ -58,7 +58,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public override string ToString() => Endpoint.ToString();
         }
 
-        private sealed class Int64LogEntry: BinaryTransferObject, IRaftLogEntry
+        private sealed class Int64LogEntry : BinaryTransferObject, IRaftLogEntry
         {
             internal Int64LogEntry(long value)
                 : base(ToMemory(value))
@@ -190,7 +190,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
 
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            using(var state = new PersistentState(dir, RecordsPerPartition))
+            using (var state = new PersistentState(dir, RecordsPerPartition))
             {
                 Equal(1L, await state.AppendAsync(new[] { entry2, entry3, entry4, entry5 }));
                 Equal(4L, state.GetLastIndex(false));
@@ -201,7 +201,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read again
-            using(var state = new PersistentState(dir, RecordsPerPartition))
+            using (var state = new PersistentState(dir, RecordsPerPartition))
             {
                 Equal(1L, state.GetLastIndex(false));
                 Equal(0L, state.GetLastIndex(true));
@@ -222,7 +222,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
             var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
-            
+
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             IPersistentState state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching, initialPartitionSize: 1024 * 1024);
             try
@@ -300,9 +300,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
             var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
-            
+
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            using(var state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching))
+            using (var state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching))
             {
                 Equal(1L, await state.AppendAsync(new[] { entry1 }));
                 Equal(2L, await state.AppendAsync(new[] { entry2, entry3, entry4, entry5 }));
@@ -317,7 +317,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read again
-            using(var state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching))
+            using (var state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching))
             {
                 Equal(3L, state.GetLastIndex(true));
                 Equal(5L, state.GetLastIndex(false));
@@ -332,7 +332,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            using(var state = new TestAuditTrail(dir, useCaching))
+            using (var state = new TestAuditTrail(dir, useCaching))
             {
                 await state.AppendAsync(entries);
                 await state.CommitAsync(CancellationToken.None);
@@ -349,7 +349,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read agian
-            using(var state = new TestAuditTrail(dir, useCaching))
+            using (var state = new TestAuditTrail(dir, useCaching))
             {
                 var readResult = await state.GetEntriesAsync(1, 6, CancellationToken.None);
                 Equal(1, readResult.Count);

@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using System.Collections;
     using Replication;
+    using System.Collections;
     using Threading;
 
     /// <summary>
@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private sealed class BufferedLogEntry : BinaryTransferObject, IRaftLogEntry
         {
-            private BufferedLogEntry(ReadOnlyMemory<byte> content, long term, DateTimeOffset timestamp) 
+            private BufferedLogEntry(ReadOnlyMemory<byte> content, long term, DateTimeOffset timestamp)
                 : base(content)
             {
                 Term = term;
@@ -229,7 +229,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private void Append(IRaftLogEntry[] entries, long startIndex)
         {
-            if(startIndex < log.LongLength)
+            if (startIndex < log.LongLength)
                 log = log.RemoveLast(log.LongLength - startIndex);
             var newLog = new IRaftLogEntry[entries.Length + log.LongLength];
             Array.Copy(log, newLog, log.LongLength);
@@ -263,7 +263,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
                 await AppendAsync(new ListSource(entries), startIndex).ConfigureAwait(false);
         }
-        
+
         async Task<long> IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries)
         {
             if (entries.Count == 0)
@@ -291,7 +291,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         Task<long> IAuditTrail.CommitAsync(long endIndex, CancellationToken token)
             => CommitAsync(endIndex, token);
-        
+
         Task<long> IAuditTrail.CommitAsync(CancellationToken token)
             => CommitAsync(null, token);
 
@@ -303,7 +303,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task ApplyAsync(CancellationToken token)
         {
-            for(var i = lastApplied.VolatileRead() + 1L; i <= commitIndex.VolatileRead(); token.ThrowIfCancellationRequested(), i++)
+            for (var i = lastApplied.VolatileRead() + 1L; i <= commitIndex.VolatileRead(); token.ThrowIfCancellationRequested(), i++)
             {
                 await ApplyAsync(log[i]).ConfigureAwait(false);
                 lastApplied.VolatileWrite(i);
@@ -312,7 +312,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async Task IAuditTrail.EnsureConsistencyAsync(CancellationToken token)
         {
-            using(await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
+            using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
                 await ApplyAsync(token).ConfigureAwait(false);
         }
 

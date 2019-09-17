@@ -1,6 +1,6 @@
-﻿using System;
-using DotNext.Net.Cluster.Consensus.Raft;
+﻿using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Messaging;
+using System;
 
 namespace RaftNode
 {

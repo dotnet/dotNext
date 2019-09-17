@@ -36,8 +36,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 
         private protected override RaftClusterMember CreateMember(Uri address)
         {
-            var member = new RaftClusterMember(this, address, Root) 
-            { 
+            var member = new RaftClusterMember(this, address, Root)
+            {
                 Timeout = RequestTimeout,
                 Metrics = Metrics as HttpMetricsCollector
             };

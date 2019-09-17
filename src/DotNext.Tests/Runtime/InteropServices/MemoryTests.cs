@@ -116,7 +116,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void ReadWriteString()
         {
-            using(var memory = new UnmanagedMemory(1024))
+            using (var memory = new UnmanagedMemory(1024))
             {
                 IntPtr ptr = memory.Pointer;
                 Memory.WriteString(ref ptr, "string1");
@@ -132,7 +132,7 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void CopyBlock()
         {
-            char[] chars1 = new[] {'a', 'b', 'c'};
+            char[] chars1 = new[] { 'a', 'b', 'c' };
             var chars2 = new char[2];
             Memory.Copy(ref chars1[1], ref chars2[0], 2);
             Equal('b', chars2[0]);
@@ -152,7 +152,7 @@ namespace DotNext.Runtime.InteropServices
         [InlineData(-3893957)]
         [InlineData(int.MaxValue)]
         [InlineData(int.MinValue)]
-        public unsafe static void PointerConversion(int value)
+        public static unsafe void PointerConversion(int value)
         {
             var ptr = new IntPtr(value).ToPointer<byte>();
             Equal(new IntPtr(value), new IntPtr(ptr));
