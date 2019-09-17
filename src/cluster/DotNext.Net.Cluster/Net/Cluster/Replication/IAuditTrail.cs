@@ -66,16 +66,16 @@ namespace DotNext.Net.Cluster.Replication
     }
 
     /// <summary>
-    /// Represents log entry reader.
+    /// Represents a read-only portion of audit trail.
     /// </summary>
     /// <remarks>
-    /// The log entry is valid only during the iteration of the reader. The call of <see cref="System.Collections.IEnumerator.MoveNext()"/> invalidates the current log entry.
+    /// The log entries are valid during lifetime of the segment. If segment is disposed then all entries
+    /// obtained from it are in undefined state.
     /// </remarks>
     /// <typeparam name="LogEntry">The type of the log entry maintained by the audit trail.</typeparam>
-    public interface ILogEntryList<out LogEntry> : IReadOnlyList<LogEntry>, IDisposable
+    public interface IAuditTrailSegment<out LogEntry> : IReadOnlyList<LogEntry>, IDisposable
         where LogEntry : class, ILogEntry
     {
-        //TODO: This interface should implement IAsyncEnumerable interface starting from .NET Standard 2.1
     }
 
     /// <summary>
@@ -100,7 +100,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        Task<ILogEntryList<LogEntry>> GetEntriesAsync(long startIndex, long endIndex, CancellationToken token);
+        Task<IAuditTrailSegment<LogEntry>> GetEntriesAsync(long startIndex, long endIndex, CancellationToken token);
 
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
@@ -110,7 +110,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        Task<ILogEntryList<LogEntry>> GetEntriesAsync(long startIndex, CancellationToken token);
+        Task<IAuditTrailSegment<LogEntry>> GetEntriesAsync(long startIndex, CancellationToken token);
 
         /// <summary>
         /// Adds uncommitted log entries into this log.
@@ -123,6 +123,18 @@ namespace DotNext.Net.Cluster.Replication
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
         Task AppendAsync(IReadOnlyList<LogEntry> entries, long startIndex);
+
+        /// <summary>
+        /// Adds uncommitted log entries into this log.
+        /// </summary>
+        /// <remarks>
+        /// The supplying function must return <see langword="null"/> if it cannot return more log entries.
+        /// </remarks>
+        /// <param name="supplier">The function that is responsible for supplying log entries.</param>
+        /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
+        /// <returns>The task representing asynchronous state of the method.</returns>
+        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
+        Task AppendAsync(Func<ValueTask<LogEntry>> supplier, long startIndex);  //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
 
         /// <summary>
         /// Adds uncommitted log entries to the end of this log.

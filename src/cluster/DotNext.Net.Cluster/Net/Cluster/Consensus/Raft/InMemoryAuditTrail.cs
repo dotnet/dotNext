@@ -51,6 +51,47 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public DateTimeOffset Timestamp { get; }
         }
 
+        private interface ILogEntrySource
+        {
+            ValueTask<IRaftLogEntry[]> ReadAllAsync();
+        }
+
+        private readonly struct ListSource : ILogEntrySource
+        {
+            private readonly IReadOnlyList<IRaftLogEntry> entries;
+
+            internal ListSource(IReadOnlyList<IRaftLogEntry> entries) => this.entries = entries;
+
+            async ValueTask<IRaftLogEntry[]> ILogEntrySource.ReadAllAsync()
+            {
+                var bufferedEntries = new IRaftLogEntry[entries.Count];
+                for (var i = 0; i < entries.Count; i++)
+                {
+                    var entry = entries[i];
+                    bufferedEntries[i] = entry.IsReusable
+                        ? entry
+                        : await BufferedLogEntry.CreateBufferedEntryAsync(entry).ConfigureAwait(false);
+                }
+                return bufferedEntries;
+            }
+        }
+
+        private readonly struct EnumeratorSource : ILogEntrySource
+        {
+            private readonly Func<ValueTask<IRaftLogEntry>> enumerator;
+
+            internal EnumeratorSource(Func<ValueTask<IRaftLogEntry>> enumerator) => this.enumerator = enumerator;
+
+            async ValueTask<IRaftLogEntry[]> ILogEntrySource.ReadAllAsync()
+            {
+                var bufferedEntries = new List<IRaftLogEntry>();
+                IRaftLogEntry entry;
+                while ((entry = await enumerator().ConfigureAwait(false)) != null)
+                    bufferedEntries.Add(entry.IsReusable ? entry : await BufferedLogEntry.CreateBufferedEntryAsync(entry).ConfigureAwait(false));
+                return bufferedEntries.ToArray();
+            }
+        }
+
         private sealed class InitialLogEntry : IRaftLogEntry
         {
             long? IDataTransferObject.Length => 0L;
@@ -67,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             DateTimeOffset ILogEntry.Timestamp => default;
         }
 
-        private sealed class LogEntryList : ILogEntryList<IRaftLogEntry>
+        private sealed class LogEntryList : IAuditTrailSegment<IRaftLogEntry>
         {
             private readonly long startIndex;
             private readonly long endIndex;
@@ -113,7 +154,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private long term;
         private volatile IRaftClusterMember votedFor;
         private readonly AsyncManualResetEvent commitEvent;
-        private readonly ILogEntryList<BufferedLogEntry> emptyLog;
+        private readonly IAuditTrailSegment<BufferedLogEntry> emptyLog;
         /// <summary>
         /// Represents reader/writer lock used for synchronized access to this method.
         /// </summary>
@@ -161,7 +202,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public long GetLastIndex(bool committed)
             => committed ? commitIndex.VolatileRead() : Math.Max(0, log.LongLength - 1L);
 
-        async Task<ILogEntryList<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, CancellationToken token)
+        async Task<IAuditTrailSegment<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -169,7 +210,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return new LogEntryList(log, startIndex, GetLastIndex(false), readLock);
         }
 
-        async Task<ILogEntryList<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, long endIndex, CancellationToken token)
+        async Task<IAuditTrailSegment<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -196,24 +237,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             log = newLog;
         }
 
-        private async Task<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long? startIndex)
+        private async ValueTask<long> AppendAsync<TSource>(TSource entries, long? startIndex)
+            where TSource : struct, ILogEntrySource
         {
-            if(startIndex is null)
+            if (startIndex is null)
                 startIndex = log.LongLength;
-            else if(startIndex <= GetLastIndex(true))
+            else if (startIndex <= GetLastIndex(true))
                 throw new InvalidOperationException();
-            else if(startIndex > log.LongLength)
+            else if (startIndex > log.LongLength)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            var bufferedEntries = new IRaftLogEntry[entries.Count];
-            for (var i = 0; i < entries.Count; i++)
-            {
-                var entry = entries[i];
-                bufferedEntries[i] = entry.IsReusable
-                    ? entry
-                    : await BufferedLogEntry.CreateBufferedEntryAsync(entry).ConfigureAwait(false);
-            }
-            Append(bufferedEntries, startIndex.Value);
+            Append(await entries.ReadAllAsync().ConfigureAwait(false), startIndex.Value);
             return startIndex.Value;
+        }
+
+        async Task IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex)
+        {
+            using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
+                await AppendAsync(new EnumeratorSource(supplier), startIndex);
         }
 
         async Task IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
@@ -221,7 +261,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entries.Count == 0)
                 return;
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(entries, startIndex).ConfigureAwait(false);
+                await AppendAsync(new ListSource(entries), startIndex).ConfigureAwait(false);
         }
         
         async Task<long> IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries)
@@ -229,7 +269,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                return await AppendAsync(entries, null).ConfigureAwait(false);
+                return await AppendAsync(new ListSource(entries), null).ConfigureAwait(false);
         }
 
         private async Task<long> CommitAsync(long? endIndex, CancellationToken token)

@@ -472,7 +472,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private sealed class LogEntryList : List<IRaftLogEntry>, ILogEntryList<IRaftLogEntry>
+        private sealed class LogEntryList : List<IRaftLogEntry>, IAuditTrailSegment<IRaftLogEntry>
         {
             private AsyncLock.Holder readLock;
 
@@ -562,8 +562,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly DirectoryInfo location;
         private readonly AsyncManualResetEvent commitEvent;
         private readonly AsyncExclusiveLock syncRoot;
-        private readonly ILogEntryList<IRaftLogEntry> emptyLog;
-        private readonly ILogEntryList<IRaftLogEntry> initialLog;
+        private readonly IAuditTrailSegment<IRaftLogEntry> emptyLog;
+        private readonly IAuditTrailSegment<IRaftLogEntry> initialLog;
         /// <summary>
         /// Represents shared buffer that can be used for I/O operations.
         /// </summary>
@@ -657,7 +657,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return partition;
         }
 
-        private async Task<ILogEntryList<IRaftLogEntry>> GetEntries(long startIndex, long endIndex, AsyncLock.Holder readLock, CancellationToken token)
+        private async Task<IAuditTrailSegment<IRaftLogEntry>> GetEntries(long startIndex, long endIndex, AsyncLock.Holder readLock, CancellationToken token)
         {
             if (startIndex > state.LastIndex)
             {
@@ -669,7 +669,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 readLock.Dispose();
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
             }
-            ILogEntryList<IRaftLogEntry> result;
+            IAuditTrailSegment<IRaftLogEntry> result;
             if (partitionTable.Count > 0)
                 try
                 {
@@ -721,7 +721,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
-        public async Task<ILogEntryList<IRaftLogEntry>> GetEntriesAsync(long startIndex, long endIndex, CancellationToken token)
+        public async Task<IAuditTrailSegment<IRaftLogEntry>> GetEntriesAsync(long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -740,7 +740,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
-        public async Task<ILogEntryList<IRaftLogEntry>> GetEntriesAsync(long startIndex, CancellationToken token)
+        public async Task<IAuditTrailSegment<IRaftLogEntry>> GetEntriesAsync(long startIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -748,20 +748,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return await GetEntries(startIndex, state.LastIndex, readLock, token).ConfigureAwait(false);
         }
 
-        private async Task<long> AddEntriesAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
+        //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
+        private async Task AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex)
         {
             if (startIndex <= state.CommitIndex)
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             long partitionLow = 0, partitionHigh = 0;
-            for (var i = 0; i < entries.Count; i++)
+            IRaftLogEntry entry;
+            while((entry = await supplier().ConfigureAwait(false)) != null)
             {
-                var insertionIndex = startIndex + i;
-                await GetOrCreatePartition(insertionIndex, out var partitionNumber).WriteAsync(entries[i], insertionIndex).ConfigureAwait(false);
-                state.LastIndex = insertionIndex;
+                await GetOrCreatePartition(startIndex, out var partitionNumber).WriteAsync(entry, startIndex).ConfigureAwait(false);
+                state.LastIndex = startIndex;
                 partitionLow = Math.Min(partitionLow, partitionNumber);
                 partitionHigh = Math.Max(partitionHigh, partitionNumber);
+                startIndex++;
             }
             //flush all touched partitions
             state.Flush();
@@ -782,10 +784,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     break;
             }
             await flushTask.ConfigureAwait(false);
-            return startIndex;
         }
 
-         /// <summary>
+        async Task IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex)
+        {
+            using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
+                await AppendAsync(supplier, startIndex).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Adds uncommitted log entries into this log.
         /// </summary>
         /// <remarks>
@@ -800,10 +807,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entries.Count == 0)
                 return;
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AddEntriesAsync(entries, startIndex).ConfigureAwait(false);
+            using (var enumerator = entries.GetEnumerator())
+                await AppendAsync(enumerator.Advance, startIndex).ConfigureAwait(false);
         }
 
-         /// <summary>
+        /// <summary>
         /// Adds uncommitted log entries to the end of this log.
         /// </summary>
         /// <remarks>
@@ -817,7 +825,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
-                return await AddEntriesAsync(entries, state.LastIndex + 1L).ConfigureAwait(false);
+            {
+                var startIndex = state.LastIndex + 1L;
+                using (var enumerator = entries.GetEnumerator())
+                    await AppendAsync(enumerator.Advance, startIndex).ConfigureAwait(false);
+                return startIndex;
+            }
         }
 
         /// <summary>
