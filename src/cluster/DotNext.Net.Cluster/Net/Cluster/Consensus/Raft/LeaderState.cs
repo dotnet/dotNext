@@ -164,11 +164,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail)
         {
             while (await DoHeartbeats(auditTrail).ConfigureAwait(false))
-            {
-                var task = await forcedReplication.Wait(period, timerCancellation.Token).OnCompleted().ConfigureAwait(false);
-                if (task.IsCanceled)
-                    break;
-            }
+                await forcedReplication.Wait(period, timerCancellation.Token).ConfigureAwait(false);
         }
 
         internal void ForceReplication() => forcedReplication.Set(true);
@@ -192,7 +188,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal override Task StopAsync()
         {
             timerCancellation.Cancel(false);
-            return heartbeatTask;
+            return heartbeatTask.OnCompleted();
         }
 
         protected override void Dispose(bool disposing)

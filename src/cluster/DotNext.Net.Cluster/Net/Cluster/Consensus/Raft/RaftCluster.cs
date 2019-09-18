@@ -292,7 +292,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.Acquire(token).ConfigureAwait(false))
             {
                 var currentState = Interlocked.Exchange(ref state, null);
-                await currentState.StopAsync().OnCompleted().ConfigureAwait(false);
+                await currentState.StopAsync().ConfigureAwait(false);
                 currentState.Dispose();
             }
         }
