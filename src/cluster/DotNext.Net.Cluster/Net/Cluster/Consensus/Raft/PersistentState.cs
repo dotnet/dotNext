@@ -854,6 +854,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await ApplyAsync(await this.snapshot.ReadAsync(CancellationToken.None).ConfigureAwait(false));
             state.LastApplied = snapshotIndex;
             state.Flush();
+            commitEvent.Set(true);
         }
 
         //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
