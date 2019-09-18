@@ -16,8 +16,6 @@ namespace RaftNode
 
         public long Term { get; set; }
 
-        bool ILogEntry.IsSnapshot => false;
-
         public DateTimeOffset Timestamp { get; }
 
         private static ReadOnlyMemory<byte> ToMemory(long value)

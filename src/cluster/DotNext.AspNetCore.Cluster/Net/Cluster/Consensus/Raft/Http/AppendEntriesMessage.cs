@@ -26,7 +26,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
         private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
-        private const string SnapshotRecordHeader = "X-Raft-Record-Snapshot";
         private const string CommitIndexHeader = "X-Raft-Commit-Index";
 
         private sealed class LogEntryContent : OutboundTransferObject
@@ -38,7 +37,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 Headers.ContentType = ContentType;
                 Headers.Add(RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
-                Headers.Add(SnapshotRecordHeader, entry.IsSnapshot.ToString(InvariantCulture));
                 Headers.LastModified = entry.Timestamp;
             }
         }
@@ -50,7 +48,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 HeadersReader<StringValues> headers = section.Headers.TryGetValue;
                 Term = ParseHeader(RequestVoteMessage.RecordTermHeader, headers, Int64Parser);
-                IsSnapshot = ParseHeader(SnapshotRecordHeader, headers, BooleanParser);
                 Timestamp = ParseHeader(HeaderNames.LastModified, headers, DateTimeParser);
             }
 

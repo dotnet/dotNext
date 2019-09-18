@@ -63,6 +63,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        internal readonly struct SnapshotMetadata
+        {
+            internal readonly long Index;
+            internal readonly LogEntryMetadata RecordMetadata;
+
+            internal SnapshotMetadata(IRaftLogEntry snapshot, long index, long length)
+            {
+                Index = index;
+                RecordMetadata = new LogEntryMetadata(snapshot, Size, length);
+            }
+
+            internal static unsafe int Size
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => sizeof(SnapshotMetadata);
+            }
+        }
+
         /// <summary>
         /// Represents persistent log entry.
         /// </summary>
@@ -72,23 +90,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly LogEntryMetadata metadata;
             private readonly byte[] buffer;
 
-            internal LogEntry(StreamSegment cachedContent, byte[] sharedBuffer, in LogEntryMetadata metadata, bool snapshot = false)
+            internal LogEntry(StreamSegment cachedContent, byte[] sharedBuffer, in LogEntryMetadata metadata)
             {
                 this.metadata = metadata;
                 content = cachedContent;
                 buffer = sharedBuffer;
-                IsSnapshot = snapshot;
             }
+
+            internal LogEntry(StreamSegment cachedContent, byte[] sharedBuffer, in SnapshotMetadata metadata)
+                : this(cachedContent, sharedBuffer, metadata.RecordMetadata)
+            {
+                SnapshotIndex = metadata.Index;
+            }
+
+            internal long? SnapshotIndex { get; }
 
             /// <summary>
             /// Gets length of the log entry content, in bytes.
             /// </summary>
             public long Length => metadata.Length;
-
-            /// <summary>
-            /// Gets a value indicating that this entry is a snapshot entry.
-            /// </summary>
-            public bool IsSnapshot { get; }
 
             internal LogEntry AdjustPosition()
             {
@@ -193,7 +213,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private sealed class Partition : FileStream
         {
             private readonly long payloadOffset;
-            internal readonly long IndexOffset;
+            internal readonly long FirstIndex;
             internal readonly long Capacity;    //max number of entries
             private readonly byte[] buffer;
             private readonly StreamSegment segment;
@@ -206,9 +226,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Capacity = recordsPerPartition;
                 buffer = sharedBuffer;
                 segment = new StreamSegment(this);
-                IndexOffset = partitionNumber * recordsPerPartition;
+                FirstIndex = partitionNumber * recordsPerPartition;
                 lookupCache = useLookupCache ? new LogEntryMetadata[recordsPerPartition] : null;
             }
+
+            internal long LastIndex => FirstIndex + Capacity - 1;
 
             internal void Allocate(long initialSize) => SetLength(initialSize + payloadOffset);
 
@@ -231,8 +253,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 //calculate relative index
                 if (absoluteIndex)
-                    index -= IndexOffset;
-                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {IndexOffset}");
+                    index -= FirstIndex;
+                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
                 //find pointer to the content
                 LogEntryMetadata metadata;
                 if (lookupCache is null)
@@ -248,12 +270,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal async Task WriteAsync(IRaftLogEntry entry, long index)
             {
                 //calculate relative index
-                index -= IndexOffset;
-                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {IndexOffset}");
+                index -= FirstIndex;
+                Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
                 //calculate offset of the previous entry
                 long offset;
                 LogEntryMetadata metadata;
-                if (index == 0L || index == 1L && IndexOffset == 0L)
+                if (index == 0L || index == 1L && FirstIndex == 0L)
                     offset = payloadOffset;
                 else if (lookupCache is null)
                 {
@@ -291,7 +313,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         /*
          * Binary format:
-         * [struct LogEntryMetadata] X 1
+         * [struct SnapshotMetadata] X 1
          * [octet string] X 1
          */
         private sealed class Snapshot : FileStream
@@ -307,11 +329,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 segment = new StreamSegment(this);
             }
 
-            internal async Task SaveAsync(IRaftLogEntry entry, CancellationToken token)
+            internal async Task SaveAsync(IRaftLogEntry entry, long index, CancellationToken token)
             {
-                Position = LogEntryMetadata.Size;
+                Position = SnapshotMetadata.Size;
                 await entry.CopyToAsync(this, token).ConfigureAwait(false);
-                var metadata = new LogEntryMetadata(entry, LogEntryMetadata.Size, Length - LogEntryMetadata.Size);
+                var metadata = new SnapshotMetadata(entry, index, Length - SnapshotMetadata.Size);
                 Position = 0;
                 await this.WriteAsync(ref metadata, buffer, token).ConfigureAwait(false);
             }
@@ -319,7 +341,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal async Task<LogEntry> LoadAsync(CancellationToken token)
             {
                 Position = 0;
-                return new LogEntry(segment, buffer, await this.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false), true);
+                return new LogEntry(segment, buffer, await this.ReadAsync<SnapshotMetadata>(buffer, token).ConfigureAwait(false));
             }
 
             protected override void Dispose(bool disposing)
@@ -478,6 +500,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal LogEntryList(int capacity, AsyncLock.Holder readLock) : base(capacity) => this.readLock = readLock;
 
+            long? IAuditTrailSegment<IRaftLogEntry>.SnapshotIndex => (base[0] as LogEntry)?.SnapshotIndex;
+
             private void Dispose(bool disposing)
             {
                 if (disposing)
@@ -529,8 +553,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             long IRaftLogEntry.Term => term;
 
             DateTimeOffset ILogEntry.Timestamp => timestamp;
-
-            bool ILogEntry.IsSnapshot => true;
 
             bool IDataTransferObject.IsReusable => false;
 
@@ -859,16 +881,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             foreach (var (partNumber, partition) in partitionTable)
             {
                 token.ThrowIfCancellationRequested();
-                if (partition.IndexOffset + partition.Capacity <= commitIndex)
+                if (partition.FirstIndex + partition.Capacity <= commitIndex)
                     compactionScope.Add(partNumber, partition);
             }
+            Debug.Assert(compactionScope.Count > 0);
             //2. Do compaction
+            var snapshotIndex = 0L;
             foreach (var partition in compactionScope.Values)
+            {
                 for (var i = 0L; i < partition.Capacity; i++)
-                    if (partition.IndexOffset > 0L || i > 0L) //ignore the ephemeral entry
+                    if (partition.FirstIndex > 0L || i > 0L) //ignore the ephemeral entry
                         await builder.ApplyCoreAsync((await partition.ReadAsync(i, false, token).ConfigureAwait(false)).AdjustPosition()).ConfigureAwait(false);
+                snapshotIndex = partition.LastIndex;
+            }
             //3. Persist snapshot
-            await snapshot.SaveAsync(builder, token).ConfigureAwait(false);
+            await snapshot.SaveAsync(builder, snapshotIndex, token).ConfigureAwait(false);
             //4. Remove snapshotted partitions
             foreach (var (partNumber, partition) in compactionScope)
             {

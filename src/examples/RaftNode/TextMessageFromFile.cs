@@ -14,8 +14,6 @@ namespace RaftNode
             Timestamp = DateTimeOffset.UtcNow;
         }
 
-        bool DotNext.Net.Cluster.Replication.ILogEntry.IsSnapshot => false;
-
         public long Term { get; set; }
 
         public DateTimeOffset Timestamp { get; }

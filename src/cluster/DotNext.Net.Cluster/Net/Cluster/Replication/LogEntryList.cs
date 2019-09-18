@@ -18,6 +18,8 @@ namespace DotNext.Net.Cluster.Replication
         {
         }
 
+        long? IAuditTrailSegment<LogEntry>.SnapshotIndex => null;
+
         void IDisposable.Dispose() { }
     }
 

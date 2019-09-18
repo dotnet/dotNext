@@ -68,8 +68,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             public long Term { get; set; }
 
-            bool ILogEntry.IsSnapshot => false;
-
             public DateTimeOffset Timestamp { get; }
 
             private static ReadOnlyMemory<byte> ToMemory(long value)
@@ -162,12 +160,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
+                Null(entries.SnapshotIndex);
                 Equal(1L, entries.Count);
                 Equal(state.First, entries[0]);
                 entries.Dispose();
 
                 Equal(1L, await state.AppendAsync(new[] { entry }));
                 entries = await state.GetEntriesAsync(0L, CancellationToken.None);
+                Null(entries.SnapshotIndex);
                 Equal(2, entries.Count);
                 Equal(state.First, entries[0]);
                 Equal(42L, entries[1].Term);
@@ -206,6 +206,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(1L, state.GetLastIndex(false));
                 Equal(0L, state.GetLastIndex(true));
                 var entries = await state.GetEntriesAsync(1L, CancellationToken.None);
+                Null(entries.SnapshotIndex);
                 Equal(1, entries.Count);
                 Equal(entry1.Content, await entries[0].ReadAsTextAsync(Encoding.UTF8));
                 entries.Dispose();
@@ -228,6 +229,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
+                Null(entries.SnapshotIndex);
                 Equal(1L, entries.Count);
                 Equal(state.First, entries[0]);
                 entries.Dispose();
@@ -236,6 +238,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(2L, await state.AppendAsync(new[] { entry2, entry3, entry4, entry5 }));
 
                 entries = await state.GetEntriesAsync(0L, CancellationToken.None);
+                Null(entries.SnapshotIndex);
                 Equal(6, entries.Count);
                 Equal(state.First, entries[0]);
                 Equal(42L, entries[1].Term);
@@ -265,6 +268,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
+                Null(entries.SnapshotIndex);
                 Equal(6, entries.Count);
                 Equal(state.First, entries[0]);
                 Equal(42L, entries[1].Term);
@@ -338,13 +342,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await state.CommitAsync(CancellationToken.None);
                 var readResult = await state.GetEntriesAsync(1, 6, CancellationToken.None);
                 Equal(1, readResult.Count);
-                True(readResult[0].IsSnapshot);
+                NotNull(readResult.SnapshotIndex);
                 readResult.Dispose();
                 readResult = await state.GetEntriesAsync(1, CancellationToken.None);
                 Equal(3, readResult.Count);
-                True(readResult[0].IsSnapshot);
-                False(readResult[1].IsSnapshot);
-                False(readResult[2].IsSnapshot);
+                NotNull(readResult.SnapshotIndex);
                 readResult.Dispose();
             }
 
@@ -353,13 +355,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 var readResult = await state.GetEntriesAsync(1, 6, CancellationToken.None);
                 Equal(1, readResult.Count);
-                True(readResult[0].IsSnapshot);
+                NotNull(readResult.SnapshotIndex);
                 readResult.Dispose();
                 readResult = await state.GetEntriesAsync(1, CancellationToken.None);
                 Equal(3, readResult.Count);
-                True(readResult[0].IsSnapshot);
-                False(readResult[1].IsSnapshot);
-                False(readResult[2].IsSnapshot);
+                NotNull(readResult.SnapshotIndex);
                 readResult.Dispose();
             }
         }

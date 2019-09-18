@@ -16,7 +16,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public DateTimeOffset Timestamp { get; }
 
         public long Term { get; set; }
-
-        bool ILogEntry.IsSnapshot => false;
     }
 }

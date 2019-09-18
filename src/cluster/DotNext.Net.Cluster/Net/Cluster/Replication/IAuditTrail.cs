@@ -76,6 +76,11 @@ namespace DotNext.Net.Cluster.Replication
     public interface IAuditTrailSegment<out LogEntry> : IReadOnlyList<LogEntry>, IDisposable
         where LogEntry : class, ILogEntry
     {
+        /// <summary>
+        /// Returns non-<see langword="null"/> value if the first log entry in this list is a snapshot entry
+        /// that has the specific index.
+        /// </summary>
+        long? SnapshotIndex { get; }
     }
 
     /// <summary>
