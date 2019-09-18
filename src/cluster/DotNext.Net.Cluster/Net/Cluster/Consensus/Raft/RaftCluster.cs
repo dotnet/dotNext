@@ -373,6 +373,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, Func<ValueTask<IRaftLogEntry>> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+            {
+                var result = false;
                 if (auditTrail.Term <= senderTerm &&
                     await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, transitionCancellation.Token).ConfigureAwait(false))
                 {
@@ -380,19 +382,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Leader = sender;
                     prevLogIndex += 1L;
                     var localCommitIndex = auditTrail.GetLastIndex(true);
-                    bool result;
+                    
                     if(prevLogIndex > localCommitIndex)
                     {
                         await auditTrail.AppendAsync(entries, prevLogIndex).ConfigureAwait(false);
                         result = commitIndex <= localCommitIndex ||
                                  await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
                     }
-                    else
-                        result = false;
-                    return new Result<bool>(auditTrail.Term, result);
                 }
-                else
-                    return new Result<bool>(auditTrail.Term, false);
+                return new Result<bool>(auditTrail.Term, result);
+            }
         }
 
         /// <summary>
