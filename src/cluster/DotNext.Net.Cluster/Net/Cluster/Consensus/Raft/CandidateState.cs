@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using static Threading.Tasks.Continuation;
+
     internal sealed class CandidateState : RaftState
     {
         private enum VotingResult : byte
@@ -130,7 +132,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal override Task StopAsync()
         {
             votingCancellation.Cancel();
-            return votingTask ?? Task.CompletedTask;
+            return votingTask.OnCompleted() ?? Task.CompletedTask;
         }
 
         protected override void Dispose(bool disposing)
