@@ -378,10 +378,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
-
-                    await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
-                    var result = commitIndex <= auditTrail.GetLastIndex(true) ||
+                    prevLogIndex += 1L;
+                    var localCommitIndex = auditTrail.GetLastIndex(true);
+                    bool result;
+                    if(prevLogIndex > localCommitIndex)
+                    {
+                        await auditTrail.AppendAsync(entries, prevLogIndex).ConfigureAwait(false);
+                        result = commitIndex <= localCommitIndex ||
                                  await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
+                    }
+                    else
+                        result = false;
                     return new Result<bool>(auditTrail.Term, result);
                 }
                 else
