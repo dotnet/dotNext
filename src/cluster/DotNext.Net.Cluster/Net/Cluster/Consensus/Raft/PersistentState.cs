@@ -802,6 +802,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             //2. Delete existing snapshot file
             this.snapshot.Dispose();
+            /*
+             * Swapping snapshot file is unsafe operation because of potential disk I/O failures.
+             * However, event if swapping will fail then it can be recovered manually just by renaming 'snapshot.new' file
+             * into 'snapshot'. Both versions of snapshot files stay consistent. That's why stream copying is not an option.
+             */
             try
             {
                 File.Delete(snapshotFile);
