@@ -342,11 +342,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await state.CommitAsync(CancellationToken.None);
                 var readResult = await state.GetEntriesAsync(1, 6, CancellationToken.None);
                 Equal(1, readResult.Count);
-                NotNull(readResult.SnapshotIndex);
+                Equal(7, readResult.SnapshotIndex);
                 readResult.Dispose();
                 readResult = await state.GetEntriesAsync(1, CancellationToken.None);
                 Equal(3, readResult.Count);
-                NotNull(readResult.SnapshotIndex);
+                Equal(7, readResult.SnapshotIndex);
                 readResult.Dispose();
             }
 
@@ -359,7 +359,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 readResult.Dispose();
                 readResult = await state.GetEntriesAsync(1, CancellationToken.None);
                 Equal(3, readResult.Count);
-                NotNull(readResult.SnapshotIndex);
+                Equal(7, readResult.SnapshotIndex);
                 readResult.Dispose();
             }
         }
