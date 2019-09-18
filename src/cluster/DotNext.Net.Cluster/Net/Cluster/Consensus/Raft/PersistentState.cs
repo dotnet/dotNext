@@ -213,7 +213,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
          */
         private sealed class Partition : FileStream
         {
-            private readonly long payloadOffset;
             internal readonly long FirstIndex;
             internal readonly long Capacity;    //max number of entries
             private readonly byte[] buffer;
@@ -223,7 +222,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber, bool useLookupCache)
                 : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
-                payloadOffset = LogEntryMetadata.Size * recordsPerPartition;
                 Capacity = recordsPerPartition;
                 buffer = sharedBuffer;
                 segment = new StreamSegment(this);
@@ -231,9 +229,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 lookupCache = useLookupCache ? new LogEntryMetadata[recordsPerPartition] : null;
             }
 
+            private long PayloadOffset => LogEntryMetadata.Size * Capacity;
+
             internal long LastIndex => FirstIndex + Capacity - 1;
 
-            internal void Allocate(long initialSize) => SetLength(initialSize + payloadOffset);
+            internal void Allocate(long initialSize) => SetLength(initialSize + PayloadOffset);
 
             internal void PopulateCache()
             {
@@ -277,7 +277,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 long offset;
                 LogEntryMetadata metadata;
                 if (index == 0L || index == 1L && FirstIndex == 0L)
-                    offset = payloadOffset;
+                    offset = PayloadOffset;
                 else if (lookupCache is null)
                 {
                     //read content offset and the length of the previous entry
