@@ -22,7 +22,7 @@ namespace RaftNode
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.Delay(2000, stoppingToken).ConfigureAwait(false);
+                await Task.Delay(1000, stoppingToken).ConfigureAwait(false);
                 if (!(cluster.Leader?.IsRemote ?? true))
                 {
                     var newValue = await valueProvider.GetValueAsync().ConfigureAwait(false) + 500L;
