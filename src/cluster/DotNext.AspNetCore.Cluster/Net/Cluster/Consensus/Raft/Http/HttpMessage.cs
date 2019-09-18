@@ -84,7 +84,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Headers.Add(MessageTypeHeader, MessageType);
             request.Headers.Add(RequestIdHeader, Id);
             request.Method = HttpMethod.Post;
-            return new ValueTask(Task.CompletedTask);
+            return new ValueTask();
         }
 
         private protected static async Task<bool> ParseBoolResponse(HttpResponseMessage response)

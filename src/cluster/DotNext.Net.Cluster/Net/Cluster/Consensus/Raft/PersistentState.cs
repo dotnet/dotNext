@@ -1069,7 +1069,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// The base method does nothing so you don't need to call base implementation.
         /// </remarks>
         /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected virtual ValueTask ApplyAsync(LogEntry entry) => new ValueTask(Task.CompletedTask);
+        protected virtual ValueTask ApplyAsync(LogEntry entry) => new ValueTask();
 
         private async ValueTask ApplyAsync(CancellationToken token)
         {

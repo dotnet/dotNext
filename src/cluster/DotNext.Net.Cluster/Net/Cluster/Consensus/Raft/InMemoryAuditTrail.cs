@@ -318,7 +318,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Applies the command represented by the log entry to the underlying database engine.
         /// </summary>
         /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected virtual ValueTask ApplyAsync(IRaftLogEntry entry) => new ValueTask(Task.CompletedTask);
+        protected virtual ValueTask ApplyAsync(IRaftLogEntry entry) => new ValueTask();
 
         private async ValueTask ApplyAsync(CancellationToken token)
         {
