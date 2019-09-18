@@ -268,7 +268,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return metadata.Offset > 0 ? new LogEntry(segment, buffer, metadata) : null;
             }
 
-            internal async Task WriteAsync(IRaftLogEntry entry, long index)
+            internal async ValueTask WriteAsync(IRaftLogEntry entry, long index)
             {
                 //calculate relative index
                 index -= FirstIndex;
@@ -333,7 +333,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal void PopulateCache() => Index = Length > 0L ? this.Read<SnapshotMetadata>(buffer).Index : 0L;
 
-            internal async Task WriteAsync(IRaftLogEntry entry, long index, CancellationToken token)
+            internal async ValueTask WriteAsync(IRaftLogEntry entry, long index, CancellationToken token)
             {
                 Index = index;
                 Position = SnapshotMetadata.Size;
@@ -343,7 +343,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await this.WriteAsync(ref metadata, buffer, token).ConfigureAwait(false);
             }
 
-            internal async Task<LogEntry> ReadAsync(CancellationToken token)
+            internal async ValueTask<LogEntry> ReadAsync(CancellationToken token)
             {
                 Position = 0;
                 return new LogEntry(segment, buffer, await this.ReadAsync<SnapshotMetadata>(buffer, token).ConfigureAwait(false));
@@ -695,7 +695,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return partition;
         }
 
-        private async Task<IAuditTrailSegment<IRaftLogEntry>> GetEntries(long startIndex, long endIndex, AsyncLock.Holder readLock, CancellationToken token)
+        private async ValueTask<IAuditTrailSegment<IRaftLogEntry>> GetEntries(long startIndex, long endIndex, AsyncLock.Holder readLock, CancellationToken token)
         {
             if (startIndex > state.LastIndex)
             {
@@ -769,7 +769,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
-        public async Task<IAuditTrailSegment<IRaftLogEntry>> GetEntriesAsync(long startIndex, long endIndex, CancellationToken token)
+        public async ValueTask<IAuditTrailSegment<IRaftLogEntry>> GetEntriesAsync(long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -788,7 +788,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
-        public async Task<IAuditTrailSegment<IRaftLogEntry>> GetEntriesAsync(long startIndex, CancellationToken token)
+        public async ValueTask<IAuditTrailSegment<IRaftLogEntry>> GetEntriesAsync(long startIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -807,7 +807,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private async Task InstallSnapshot(IRaftLogEntry snapshot, long snapshotIndex)
+        private async ValueTask InstallSnapshot(IRaftLogEntry snapshot, long snapshotIndex)
         {
             //0. The snapshot can be installed only if the partitions were squashed on the sender side
             //therefore, snapshotIndex should be a factor of recordsPerPartition
@@ -858,7 +858,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
-        private async Task AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex)
+        private async ValueTask AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex)
         {
             if (startIndex <= state.CommitIndex)
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
@@ -873,7 +873,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             state.Flush();
         }
 
-        async Task IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex)
         {
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
                 await AppendAsync(supplier, startIndex).ConfigureAwait(false);
@@ -893,7 +893,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="entry"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
-        public async Task AppendAsync(IRaftLogEntry entry, long startIndex)
+        public async ValueTask AppendAsync(IRaftLogEntry entry, long startIndex)
         {
             if (entry is null)
                 throw new ArgumentNullException(nameof(entry));
@@ -925,7 +925,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
-        public async Task AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
+        public async ValueTask AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
         {
             if (entries.Count == 0)
                 return;
@@ -943,7 +943,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="entries">The entries to be added into this log.</param>
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
-        public async Task<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries)
+        public async ValueTask<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries)
         {
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
@@ -974,7 +974,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The snapshot builder; or <see langword="null"/> if snapshotting is not supported.</returns>
         protected virtual SnapshotBuilder CreateSnapshotBuilder() => null;
 
-        private async Task ForceCompaction(SnapshotBuilder builder, CancellationToken token)
+        private async ValueTask ForceCompaction(SnapshotBuilder builder, CancellationToken token)
         {
             //1. Find the partitions that can be compacted
             var compactionScope = new SortedDictionary<long, Partition>();
@@ -1003,7 +1003,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             compactionScope.Clear();
         }
 
-        private Task ForceCompaction(CancellationToken token)
+        private ValueTask ForceCompaction(CancellationToken token)
         {
             SnapshotBuilder builder;
             if(state.CommitIndex - snapshot.Index > recordsPerPartition && (builder = CreateSnapshotBuilder()) != null)
@@ -1016,10 +1016,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     builder.Dispose();
                 }
             else
-                return Task.CompletedTask;
+                return default;
         }
 
-        private async Task<long> CommitAsync(long? endIndex, CancellationToken token)
+        private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
         {
             long count;
             using (await syncRoot.AcquireLockAsync(token).ConfigureAwait(false))
@@ -1048,7 +1048,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of committed entries.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        public Task<long> CommitAsync(long endIndex, CancellationToken token) => CommitAsync(new long?(endIndex), token);
+        public ValueTask<long> CommitAsync(long endIndex, CancellationToken token) => CommitAsync(new long?(endIndex), token);
 
         /// <summary>
         /// Commits log entries into the underlying storage and marks these entries as committed.
@@ -1060,7 +1060,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of committed entries.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        public Task<long> CommitAsync(CancellationToken token) => CommitAsync(null, token);
+        public ValueTask<long> CommitAsync(CancellationToken token) => CommitAsync(null, token);
 
         /// <summary>
         /// Applies the command represented by the log entry to the underlying database engine.
@@ -1071,7 +1071,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected virtual ValueTask ApplyAsync(LogEntry entry) => new ValueTask(Task.CompletedTask);
 
-        private async Task ApplyAsync(CancellationToken token)
+        private async ValueTask ApplyAsync(CancellationToken token)
         {
             for (var i = state.LastApplied + 1L; i <= state.CommitIndex; state.LastApplied = i++)
                 if (TryGetPartition(i, out var partition))
@@ -1087,7 +1087,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        public async Task EnsureConsistencyAsync(CancellationToken token)
+        public async ValueTask EnsureConsistencyAsync(CancellationToken token)
         {
             using (await syncRoot.AcquireLockAsync(token).ConfigureAwait(false))
                 await ApplyAsync(token).ConfigureAwait(false);

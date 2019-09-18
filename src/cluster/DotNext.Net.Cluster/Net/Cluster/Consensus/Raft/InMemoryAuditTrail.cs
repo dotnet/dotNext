@@ -213,7 +213,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public long GetLastIndex(bool committed)
             => committed ? commitIndex.VolatileRead() : Math.Max(0, log.LongLength - 1L);
 
-        async Task<IAuditTrailSegment<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, CancellationToken token)
+        async ValueTask<IAuditTrailSegment<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -221,7 +221,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return new LogEntryList(log, startIndex, GetLastIndex(false), readLock);
         }
 
-        async Task<IAuditTrailSegment<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, long endIndex, CancellationToken token)
+        async ValueTask<IAuditTrailSegment<IRaftLogEntry>> IAuditTrail<IRaftLogEntry>.GetEntriesAsync(long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -261,13 +261,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return startIndex.Value;
         }
 
-        async Task IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex)
         {
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
                 await AppendAsync(new EnumeratorSource(supplier), startIndex);
         }
 
-        async Task IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
         {
             if (entries.Count == 0)
                 return;
@@ -275,7 +275,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await AppendAsync(new ListSource(entries), startIndex).ConfigureAwait(false);
         }
 
-        async Task<long> IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries)
+        async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries)
         {
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
@@ -283,7 +283,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return await AppendAsync(new ListSource(entries), null).ConfigureAwait(false);
         }
 
-        async Task IAuditTrail<IRaftLogEntry>.AppendAsync(IRaftLogEntry entry, long startIndex)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(IRaftLogEntry entry, long startIndex)
         {
             if (entry is null)
                 throw new ArgumentNullException(nameof(entry));
@@ -291,7 +291,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await AppendAsync(new SingleEntrySource(entry), null).ConfigureAwait(false);
         }
 
-        private async Task<long> CommitAsync(long? endIndex, CancellationToken token)
+        private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
         {
             long count;
             using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
@@ -308,10 +308,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return Math.Max(count, 0L);
         }
 
-        Task<long> IAuditTrail.CommitAsync(long endIndex, CancellationToken token)
+        ValueTask<long> IAuditTrail.CommitAsync(long endIndex, CancellationToken token)
             => CommitAsync(endIndex, token);
 
-        Task<long> IAuditTrail.CommitAsync(CancellationToken token)
+        ValueTask<long> IAuditTrail.CommitAsync(CancellationToken token)
             => CommitAsync(null, token);
 
         /// <summary>
@@ -320,7 +320,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected virtual ValueTask ApplyAsync(IRaftLogEntry entry) => new ValueTask(Task.CompletedTask);
 
-        private async Task ApplyAsync(CancellationToken token)
+        private async ValueTask ApplyAsync(CancellationToken token)
         {
             for (var i = lastApplied.VolatileRead() + 1L; i <= commitIndex.VolatileRead(); token.ThrowIfCancellationRequested(), i++)
             {
@@ -329,7 +329,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        async Task IAuditTrail.EnsureConsistencyAsync(CancellationToken token)
+        async ValueTask IAuditTrail.EnsureConsistencyAsync(CancellationToken token)
         {
             using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
                 await ApplyAsync(token).ConfigureAwait(false);

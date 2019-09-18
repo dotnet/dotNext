@@ -327,7 +327,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(3L, state.GetLastIndex(true));
                 Equal(5L, state.GetLastIndex(false));
 
-                await ThrowsAsync<InvalidOperationException>(() => state.AppendAsync(new[] { entry1 }, 1L));
+                await ThrowsAsync<InvalidOperationException>(() => state.AppendAsync(new[] { entry1 }, 1L).AsTask());
             }
 
             //read again

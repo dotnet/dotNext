@@ -42,7 +42,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of committed entries.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        Task<long> CommitAsync(long endIndex, CancellationToken token);
+        ValueTask<long> CommitAsync(long endIndex, CancellationToken token);
 
         /// <summary>
         /// Commits log entries into the underlying storage and marks these entries as committed.
@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of committed entries.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        Task<long> CommitAsync(CancellationToken token);
+        ValueTask<long> CommitAsync(CancellationToken token);
 
         /// <summary>
         /// Ensures that all committed entries are applied to the underlying data state machine known as database engine.
@@ -62,7 +62,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        Task EnsureConsistencyAsync(CancellationToken token = default);
+        ValueTask EnsureConsistencyAsync(CancellationToken token = default);
     }
 
     /// <summary>
@@ -105,7 +105,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        Task<IAuditTrailSegment<LogEntry>> GetEntriesAsync(long startIndex, long endIndex, CancellationToken token);
+        ValueTask<IAuditTrailSegment<LogEntry>> GetEntriesAsync(long startIndex, long endIndex, CancellationToken token);
 
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
@@ -115,7 +115,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        Task<IAuditTrailSegment<LogEntry>> GetEntriesAsync(long startIndex, CancellationToken token);
+        ValueTask<IAuditTrailSegment<LogEntry>> GetEntriesAsync(long startIndex, CancellationToken token);
 
         /// <summary>
         /// Adds uncommitted log entries into this log.
@@ -127,7 +127,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
-        Task AppendAsync(IReadOnlyList<LogEntry> entries, long startIndex);
+        ValueTask AppendAsync(IReadOnlyList<LogEntry> entries, long startIndex);
 
         /// <summary>
         /// Adds uncommitted log entries into this log.
@@ -139,7 +139,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry; or the collection of entries contains the snapshot entry.</exception>
-        Task AppendAsync(Func<ValueTask<LogEntry>> supplier, long startIndex);  //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
+        ValueTask AppendAsync(Func<ValueTask<LogEntry>> supplier, long startIndex);  //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
 
         /// <summary>
         /// Adds uncommitted log entries to the end of this log.
@@ -151,7 +151,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
         /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
-        Task<long> AppendAsync(IReadOnlyList<LogEntry> entries);
+        ValueTask<long> AppendAsync(IReadOnlyList<LogEntry> entries);
 
         /// <summary>
         /// Adds uncommitted log entry to the end of this log.
@@ -167,7 +167,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="entry"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
-        Task AppendAsync(LogEntry entry, long startIndex);
+        ValueTask AppendAsync(LogEntry entry, long startIndex);
 
         /// <summary>
         /// Gets the first ephemeral log entry that is present in the empty log.
