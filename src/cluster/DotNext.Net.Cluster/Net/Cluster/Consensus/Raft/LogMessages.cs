@@ -68,5 +68,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static void InstallingSnapshot(this ILogger logger, long snapshotIndex)
             => logger.LogDebug(Resources.GetString("InstallingSnapshot"), snapshotIndex);
+
+        internal static string SnapshotInstallationFailed => Resources.GetString("SnapshotInstallationFailed");
     }
 }

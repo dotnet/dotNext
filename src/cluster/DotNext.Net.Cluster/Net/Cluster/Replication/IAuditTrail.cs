@@ -138,7 +138,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="supplier">Stateful function that is responsible for supplying log entries.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
-        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry; or the collection of entries contains the snapshot entry.</exception>
         Task AppendAsync(Func<ValueTask<LogEntry>> supplier, long startIndex);  //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
 
         /// <summary>
@@ -150,7 +150,24 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="entries">The entries to be added into this log.</param>
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
+        /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
         Task<long> AppendAsync(IReadOnlyList<LogEntry> entries);
+
+        /// <summary>
+        /// Adds uncommitted log entry to the end of this log.
+        /// </summary>
+        /// <remarks>
+        /// This is the only method that can be used for snapshot installation.
+        /// The behavior of the method depends on the <see cref="ILogEntry.IsSnapshot"/> property.
+        /// If log entry is a snapshot then the method erases all committed log entries prior to <paramref name="startIndex"/>.
+        /// If it is not, the method behaves in the same way as <see cref="AppendAsync(IReadOnlyList{LogEntry}, long)"/>.
+        /// </remarks>
+        /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
+        /// <param name="startIndex">The index of the </param>
+        /// <returns>The task representing asynchronous state of the method.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="entry"/> is <see langword="null"/>.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
+        Task AppendAsync(LogEntry entry, long startIndex);
 
         /// <summary>
         /// Gets the first ephemeral log entry that is present in the empty log.

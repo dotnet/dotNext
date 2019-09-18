@@ -76,6 +76,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        private readonly struct SingleEntrySource : ILogEntrySource
+        {
+            private readonly IRaftLogEntry entry;
+
+            internal SingleEntrySource(IRaftLogEntry entry) => this.entry = entry;
+
+            ValueTask<IRaftLogEntry[]> ILogEntrySource.ReadAllAsync() => new ValueTask<IRaftLogEntry[]>(new[] { entry });
+        }
+
         private readonly struct EnumeratorSource : ILogEntrySource
         {
             private readonly Func<ValueTask<IRaftLogEntry>> enumerator;
@@ -272,6 +281,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
                 return await AppendAsync(new ListSource(entries), null).ConfigureAwait(false);
+        }
+
+        async Task IAuditTrail<IRaftLogEntry>.AppendAsync(IRaftLogEntry entry, long startIndex)
+        {
+            if (entry is null)
+                throw new ArgumentNullException(nameof(entry));
+            using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
+                await AppendAsync(new SingleEntrySource(entry), null).ConfigureAwait(false);
         }
 
         private async Task<long> CommitAsync(long? endIndex, CancellationToken token)
