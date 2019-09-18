@@ -311,6 +311,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return task;
         }
 
+        private async Task InstallSnapshot(InstallSnapshotMessage message, HttpResponse response)
+        {
+            var sender = FindMember(message.Sender.Represents);
+            if (sender is null)
+                response.StatusCode = StatusCodes.Status404NotFound;
+            else
+                await message.SaveResponse(response, await ReceiveSnapshot(sender, message.ConsensusTerm, message.Snapshot, message.Index).ConfigureAwait(false), Token).ConfigureAwait(false);
+        }
+
         internal Task ProcessRequest(HttpContext context)
         {
             //this check allows to prevent situation when request comes earlier than initialization 
@@ -340,6 +349,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     return ReceiveEntries(context.Request, context.Response);
                 case CustomMessage.MessageType:
                     return ReceiveMessage(new CustomMessage(context.Request), context.Response);
+                case InstallSnapshotMessage.MessageType:
+                    return InstallSnapshot(new InstallSnapshotMessage(context.Request), context.Response);
                 default:
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     return Task.CompletedTask;

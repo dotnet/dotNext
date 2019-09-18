@@ -339,6 +339,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => members.FirstOrDefault(matcher.AsFunc());
 
         /// <summary>
+        /// Handles InstallSnapshot message received from remote cluster member.
+        /// </summary>
+        /// <param name="sender">The sender of the snapshot message.</param>
+        /// <param name="senderTerm">Term value provided by InstallSnapshot message sender.</param>
+        /// <param name="snapshot">The snapshot to be installed into local audit trail.</param>
+        /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
+        /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
+        protected async Task<Result<bool>> ReceiveSnapshot(TMember sender, long senderTerm, IRaftLogEntry snapshot, long snapshotIndex)
+        {
+            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+                if (snapshot.IsSnapshot && senderTerm >= auditTrail.Term  && snapshotIndex > auditTrail.GetLastIndex(true))
+                {
+                    await StepDown(senderTerm).ConfigureAwait(false);
+                    Leader = sender;
+                    await auditTrail.AppendAsync(snapshot, snapshotIndex).ConfigureAwait(false);
+                    return new Result<bool>(auditTrail.Term, true);
+                }
+                else
+                    return new Result<bool>(auditTrail.Term, false);
+        }
+
+        /// <summary>
         /// Handles AppendEntries message received from remote cluster member.
         /// </summary>
         /// <param name="sender">The sender of the replica message.</param>

@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
-        internal new const string MessageType = "AppendEntries";
+        internal new const string MessageType = "InstallSnapshot";
         private const string SnapshotIndexHeader = "X-Raft-Snapshot-Index";
         private const string SnapshotTermHeader = "X-Raft-Snapshot-Term";
 
