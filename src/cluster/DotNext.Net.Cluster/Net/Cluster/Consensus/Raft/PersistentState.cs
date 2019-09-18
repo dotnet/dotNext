@@ -1087,7 +1087,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        public async ValueTask EnsureConsistencyAsync(CancellationToken token)
+        public async Task EnsureConsistencyAsync(CancellationToken token)
         {
             using (await syncRoot.AcquireLockAsync(token).ConfigureAwait(false))
                 await ApplyAsync(token).ConfigureAwait(false);

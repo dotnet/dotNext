@@ -329,7 +329,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        async ValueTask IAuditTrail.EnsureConsistencyAsync(CancellationToken token)
+        async Task IAuditTrail.EnsureConsistencyAsync(CancellationToken token)
         {
             using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
                 await ApplyAsync(token).ConfigureAwait(false);

@@ -62,7 +62,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        ValueTask EnsureConsistencyAsync(CancellationToken token = default);
+        Task EnsureConsistencyAsync(CancellationToken token = default);
     }
 
     /// <summary>
