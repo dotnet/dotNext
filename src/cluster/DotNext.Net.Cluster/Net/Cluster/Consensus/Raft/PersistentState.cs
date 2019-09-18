@@ -105,6 +105,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal long? SnapshotIndex { get; }
 
+            bool ILogEntry.IsSnapshot => SnapshotIndex.HasValue;
+
             /// <summary>
             /// Gets length of the log entry content, in bytes.
             /// </summary>
@@ -555,6 +557,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             DateTimeOffset ILogEntry.Timestamp => timestamp;
 
             bool IDataTransferObject.IsReusable => false;
+
+            bool ILogEntry.IsSnapshot => true;
 
             /// <summary>
             /// Copies the reduced command into the specified stream.

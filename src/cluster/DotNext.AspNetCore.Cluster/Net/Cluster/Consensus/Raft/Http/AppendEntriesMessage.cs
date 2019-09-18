@@ -53,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             public long Term { get; }
 
-            public bool IsSnapshot { get; }
+            bool Replication.ILogEntry.IsSnapshot => false;
 
             public DateTimeOffset Timestamp { get; }
         }

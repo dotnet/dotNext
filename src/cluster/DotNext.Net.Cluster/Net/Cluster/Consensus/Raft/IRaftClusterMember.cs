@@ -33,6 +33,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<Result<bool>> AppendEntriesAsync(long term, IReadOnlyList<IRaftLogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token);
 
         /// <summary>
+        /// Installs the snapshot of the log to this cluster member.
+        /// </summary>
+        /// <param name="term">Leader's term.</param>
+        /// <param name="snapshot">The log entry representing the snapshot.</param>
+        /// <param name="snapshotIndex">The index of the last included log entry in the snapshot.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns><see langword="true"/> if snapshot is installed successfully; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="MemberUnavailableException">The member is unreachable through network.</exception>
+        Task<Result<bool>> InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token);
+
+        /// <summary>
         /// Index of next log entry to send to this node.
         /// </summary>
         /// <value></value>

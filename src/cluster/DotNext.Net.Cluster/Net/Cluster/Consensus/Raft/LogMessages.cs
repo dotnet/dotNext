@@ -65,5 +65,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static void CommitSuccessful(this ILogger logger, long index, long count)
             => logger.LogDebug(Resources.GetString("CommitSuccessful"), index, count);
+
+        internal static void InstallingSnapshot(this ILogger logger, long snapshotIndex)
+            => logger.LogDebug(Resources.GetString("InstallingSnapshot"), snapshotIndex);
     }
 }

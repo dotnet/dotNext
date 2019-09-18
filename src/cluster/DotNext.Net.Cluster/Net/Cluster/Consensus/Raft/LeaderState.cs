@@ -65,10 +65,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Result<bool> result;
             using (var entries = currentIndex >= member.NextIndex ? await transactionLog.GetEntriesAsync(member.NextIndex, token).ConfigureAwait(false) : new LogEntryList<IRaftLogEntry>())
             {
-                logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
-                //trying to replicate
-                result = await member.AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false);
-
+                if (entries.SnapshotIndex is long snapshotIndex)
+                {
+                    logger.InstallingSnapshot(snapshotIndex);
+                    //install snapshot
+                    result = await member.InstallSnapshotAsync(term, entries[0], snapshotIndex, token).ConfigureAwait(false);
+                    currentIndex = snapshotIndex;
+                }
+                else
+                {
+                    logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
+                    //trying to replicate
+                    result = await member.AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false);
+                }
+                //analyze result and decrease node index when it is out-of-sync with the current node
                 if (result.Value)
                 {
                     logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);

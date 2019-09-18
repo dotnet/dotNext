@@ -26,6 +26,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync(long term, IReadOnlyList<IRaftLogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
                 => throw new NotImplementedException();
 
+            Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+                => throw new NotImplementedException();
+
             ref long IRaftClusterMember.NextIndex => throw new NotImplementedException();
 
             void IRaftClusterMember.CancelPendingRequests() => throw new NotImplementedException();
@@ -69,6 +72,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public long Term { get; set; }
 
             public DateTimeOffset Timestamp { get; }
+
+            bool ILogEntry.IsSnapshot => false;
 
             private static ReadOnlyMemory<byte> ToMemory(long value)
             {
@@ -208,6 +213,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var entries = await state.GetEntriesAsync(1L, CancellationToken.None);
                 Null(entries.SnapshotIndex);
                 Equal(1, entries.Count);
+                False(entries[0].IsSnapshot);
                 Equal(entry1.Content, await entries[0].ReadAsTextAsync(Encoding.UTF8));
                 entries.Dispose();
             }
@@ -232,6 +238,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Null(entries.SnapshotIndex);
                 Equal(1L, entries.Count);
                 Equal(state.First, entries[0]);
+                False(entries[0].IsSnapshot);
                 entries.Dispose();
 
                 Equal(1L, await state.AppendAsync(new[] { entry1 }));
@@ -240,6 +247,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 entries = await state.GetEntriesAsync(0L, CancellationToken.None);
                 Null(entries.SnapshotIndex);
                 Equal(6, entries.Count);
+                False(entries[0].IsSnapshot);
                 Equal(state.First, entries[0]);
                 Equal(42L, entries[1].Term);
                 Equal(entry1.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
@@ -269,6 +277,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
                 Null(entries.SnapshotIndex);
+                False(entries[0].IsSnapshot);
                 Equal(6, entries.Count);
                 Equal(state.First, entries[0]);
                 Equal(42L, entries[1].Term);
@@ -343,10 +352,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var readResult = await state.GetEntriesAsync(1, 6, CancellationToken.None);
                 Equal(1, readResult.Count);
                 Equal(7, readResult.SnapshotIndex);
+                True(readResult[0].IsSnapshot);
                 readResult.Dispose();
                 readResult = await state.GetEntriesAsync(1, CancellationToken.None);
                 Equal(3, readResult.Count);
                 Equal(7, readResult.SnapshotIndex);
+                True(readResult[0].IsSnapshot);
+                False(readResult[1].IsSnapshot);
+                False(readResult[2].IsSnapshot);
                 readResult.Dispose();
             }
 
@@ -360,6 +373,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 readResult = await state.GetEntriesAsync(1, CancellationToken.None);
                 Equal(3, readResult.Count);
                 Equal(7, readResult.SnapshotIndex);
+                True(readResult[0].IsSnapshot);
+                False(readResult[1].IsSnapshot);
+                False(readResult[2].IsSnapshot);
                 readResult.Dispose();
             }
         }

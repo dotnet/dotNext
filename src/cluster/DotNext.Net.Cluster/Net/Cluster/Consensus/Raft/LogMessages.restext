@@ -17,3 +17,4 @@ ReplicationSuccessful=Member {Member} is replicated successfully starting from e
 ReplicationFailed=Replication of {Member} is failed. Retry replication from entry {EntryIndex}
 CommitFailed=Unable to commit local changes. Quorum is {Quorum}, last committed entry is {CommitIndex}
 CommitSuccessful=All changes started from {EntryIndex} are committed. Number of committed changes is {ChangeCount}
+InstallingSnapshot=Installing snapshot with {0} index of the last included log entry

@@ -44,6 +44,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return new BufferedLogEntry(content, entry.Term, entry.Timestamp.ToUniversalTime());
             }
 
+            bool ILogEntry.IsSnapshot => false;
+
             public long Term { get; }
 
             public DateTimeOffset Timestamp { get; }
@@ -102,6 +104,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bool IDataTransferObject.IsReusable => true;
 
             DateTimeOffset ILogEntry.Timestamp => default;
+
+            bool ILogEntry.IsSnapshot => false;
         }
 
         private sealed class LogEntryList : IAuditTrailSegment<IRaftLogEntry>
