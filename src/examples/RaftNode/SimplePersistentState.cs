@@ -6,6 +6,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using static DotNext.IO.StreamExtensions;
 
 namespace RaftNode
 {
@@ -45,7 +46,7 @@ namespace RaftNode
             using (await SyncRoot.Acquire(CancellationToken.None).ConfigureAwait(false))
             {
                 content.Position = 0;
-                return content.Length >= sizeof(long) ? await content.ReadAsync(sharedBuffer, 0, sizeof(long)).ConfigureAwait(false) : 0L;
+                return content.Length >= sizeof(long) ? await content.ReadAsync<long>(sharedBuffer).ConfigureAwait(false) : 0L;
             }
         }
 
@@ -57,7 +58,7 @@ namespace RaftNode
             await content.WriteAsync(value).ConfigureAwait(false);
         }
 
-        protected override SnapshotBuilder CreateSnapshotBuilder(byte[] buffer)
+        protected override SnapshotBuilder CreateSnapshotBuilder()
         {
             Console.WriteLine("Building snapshot");
             return new SimpleSnapshotBuilder();

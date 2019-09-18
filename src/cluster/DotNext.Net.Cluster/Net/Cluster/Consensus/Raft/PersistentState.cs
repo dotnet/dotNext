@@ -331,8 +331,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 segment = new StreamSegment(this);
             }
 
+            internal void PopulateCache() => Index = Length > 0L ? this.Read<SnapshotMetadata>(buffer).Index : 0L;
+
             internal async Task WriteAsync(IRaftLogEntry entry, long index, CancellationToken token)
             {
+                Index = index;
                 Position = SnapshotMetadata.Size;
                 await entry.CopyToAsync(this, token).ConfigureAwait(false);
                 var metadata = new SnapshotMetadata(entry, index, Length - SnapshotMetadata.Size);
@@ -344,6 +347,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Position = 0;
                 return new LogEntry(segment, buffer, await this.ReadAsync<SnapshotMetadata>(buffer, token).ConfigureAwait(false));
+            }
+
+            //cached index of the snapshotted entry
+            internal long Index
+            {
+                get;
+                private set;
             }
 
             protected override void Dispose(bool disposing)
@@ -636,6 +646,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
             snapshot = new Snapshot(path, sharedBuffer);
+            snapshot.PopulateCache();
         }
 
         /// <summary>
@@ -816,6 +827,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Environment.FailFast(LogMessages.SnapshotInstallationFailed, e);
             }
             this.snapshot = new Snapshot(location, sharedBuffer);
+            this.snapshot.PopulateCache();
             //3. Identify all partitions to be replaced by snapshot
             var compactionScope = new Dictionary<long, Partition>();
             foreach (var (partitionNumber, partition) in partitionTable)
@@ -858,7 +870,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             switch (partitionHigh - partitionLow)
             {
                 case 0:
-                    flushTask = partitionTable[partitionLow].FlushAsync();
+                    flushTask = partitionTable.TryGetValue(partitionLow, out var partition) ? partition.FlushAsync() : Task.CompletedTask;
                     break;
                 case 1:
                     flushTask = Task.WhenAll(partitionTable[partitionLow].FlushAsync(), partitionTable[partitionHigh].FlushAsync());
@@ -974,18 +986,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Creates a new snapshot builder.
         /// </summary>
-        /// <param name="buffer">Preallocated buffer that can be used to perform I/O operations.</param>
         /// <returns>The snapshot builder; or <see langword="null"/> if snapshotting is not supported.</returns>
-        protected virtual SnapshotBuilder CreateSnapshotBuilder(byte[] buffer) => null;
+        protected virtual SnapshotBuilder CreateSnapshotBuilder() => null;
 
-        private async Task ForceCompaction(SnapshotBuilder builder, long commitIndex, CancellationToken token)
+        private async Task ForceCompaction(SnapshotBuilder builder, CancellationToken token)
         {
             //1. Find the partitions that can be compacted
             var compactionScope = new SortedDictionary<long, Partition>();
             foreach (var (partNumber, partition) in partitionTable)
             {
                 token.ThrowIfCancellationRequested();
-                if (partition.LastIndex <= commitIndex)
+                if (partition.LastIndex <= state.CommitIndex)
                     compactionScope.Add(partNumber, partition);
                 else
                     break;  //enumeration is sorted by partition number so we don't need to enumerate over all partitions
@@ -1009,21 +1020,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private Task ForceCompaction(CancellationToken token)
         {
-            var builder = CreateSnapshotBuilder(sharedBuffer);
-            if (builder is null)
-                return Task.CompletedTask;
-            else
-            {
-                var commitIndex = state.CommitIndex;
+            SnapshotBuilder builder;
+            if(state.CommitIndex - snapshot.Index >= recordsPerPartition && (builder = CreateSnapshotBuilder()) != null)
                 try
                 {
-                    return commitIndex >= recordsPerPartition ? ForceCompaction(builder, commitIndex, token) : Task.CompletedTask;
+                    return ForceCompaction(builder, token);
                 }
                 finally
                 {
                     builder.Dispose();
                 }
-            }
+            else
+                return Task.CompletedTask;
         }
 
         private async Task<long> CommitAsync(long? endIndex, CancellationToken token)
@@ -1128,7 +1136,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 emptyLog.Dispose();
                 initialLog.Dispose();
                 syncRoot.Dispose();
-                snapshot.Dispose();
+                snapshot?.Dispose();
                 snapshot = null;
             }
             base.Dispose(disposing);
