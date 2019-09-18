@@ -737,6 +737,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     readLock.Dispose();
                     throw;
                 }
+            else if(snapshot.Length > 0)
+                try
+                {
+                    result = new LogEntryList(1, readLock) { await snapshot.ReadAsync(token).ConfigureAwait(false) };
+                }
+                catch
+                {
+                    readLock.Dispose();
+                    throw;
+                }
             else
             {
                 result = startIndex == 0L ? initialLog : emptyLog;

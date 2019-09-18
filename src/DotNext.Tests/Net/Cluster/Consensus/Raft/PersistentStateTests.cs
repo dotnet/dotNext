@@ -371,6 +371,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 False(readResult[1].IsSnapshot);
                 False(readResult[2].IsSnapshot);
                 readResult.Dispose();
+                await state.AppendAsync(new Int64LogEntry(90L, true), 11);
+                readResult = await state.GetEntriesAsync(6, 9, CancellationToken.None).ConfigureAwait(false);
+                Equal(1, readResult.Count);
+                Equal(11, readResult.SnapshotIndex);
+                True(readResult[0].IsSnapshot);
+                readResult.Dispose();
             }
         }
 
