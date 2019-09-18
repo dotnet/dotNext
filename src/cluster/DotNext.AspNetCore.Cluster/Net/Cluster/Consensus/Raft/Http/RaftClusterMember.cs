@@ -117,6 +117,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return SendAsync<Result<bool>, AppendEntriesMessage>(new AppendEntriesMessage(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex) { EntryReader = enumerator.Advance }, enumerator.Dispose, token);
         }
 
+        Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+            => SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalEndpoint, term, snapshotIndex, snapshot), null, token);
+
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh,
             CancellationToken token)
         {

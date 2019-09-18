@@ -14,6 +14,8 @@ namespace RaftNode
             Timestamp = DateTimeOffset.UtcNow;
         }
 
+        bool ILogEntry.IsSnapshot => false;
+
         public long Term { get; set; }
 
         public DateTimeOffset Timestamp { get; }

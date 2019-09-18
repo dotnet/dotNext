@@ -13,13 +13,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
-using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class AppendEntriesMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
-        private static readonly ValueParser<DateTimeOffset> DateTimeParser = (string str, out DateTimeOffset value) => HeaderUtils.TryParseDate(str, out value);
         private static readonly Func<ValueTask<IRaftLogEntry>> EmptyEnumerator = () => new ValueTask<IRaftLogEntry>(default(IRaftLogEntry));
 
         private const string MimeSubType = "mixed";
