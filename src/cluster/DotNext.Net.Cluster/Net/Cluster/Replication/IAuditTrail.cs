@@ -70,7 +70,7 @@ namespace DotNext.Net.Cluster.Replication
     /// </summary>
     /// <remarks>
     /// The log entries are valid during lifetime of the segment. If segment is disposed then all entries
-    /// obtained from it are in undefined state.
+    /// obtained from it have undefined state.
     /// </remarks>
     /// <typeparam name="LogEntry">The type of the log entry maintained by the audit trail.</typeparam>
     public interface IAuditTrailSegment<out LogEntry> : IReadOnlyList<LogEntry>, IDisposable
