@@ -683,9 +683,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private bool TryGetPartition(long recordIndex, out Partition partition)
             => partitionTable.TryGetValue(PartitionOf(recordIndex), out partition);
 
-        private Partition GetOrCreatePartition(long recordIndex, out long partitionNumber)
+        private Partition GetOrCreatePartition(long recordIndex)
         {
-            partitionNumber = PartitionOf(recordIndex);
+            var partitionNumber = PartitionOf(recordIndex);
             if (!partitionTable.TryGetValue(partitionNumber, out var partition))
             {
                 partition = new Partition(location, sharedBuffer, recordsPerPartition, partitionNumber, useLookupCache);
@@ -853,37 +853,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            long partitionLow = 0, partitionHigh = 0;
-            IRaftLogEntry entry;
-            while ((entry = await supplier().ConfigureAwait(false)) != null)
+            for(var entry = await supplier().ConfigureAwait(false); entry != null; state.LastIndex = startIndex++, entry = await supplier().ConfigureAwait(false))
                 if (entry.IsSnapshot)
                     throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
                 else
-                {
-                    await GetOrCreatePartition(startIndex, out var partitionNumber).WriteAsync(entry, startIndex).ConfigureAwait(false);
-                    state.LastIndex = startIndex;
-                    partitionLow = Math.Min(partitionLow, partitionNumber);
-                    partitionHigh = Math.Max(partitionHigh, partitionNumber);
-                    startIndex++;
-                }
-            Task flushTask;
-            switch (partitionHigh - partitionLow)
-            {
-                case 0:
-                    flushTask = partitionTable.TryGetValue(partitionLow, out var partition) ? partition.FlushAsync() : Task.CompletedTask;
-                    break;
-                case 1:
-                    flushTask = Task.WhenAll(partitionTable[partitionLow].FlushAsync(), partitionTable[partitionHigh].FlushAsync());
-                    break;
-                default:
-                    ICollection<Task> flushTasks = new LinkedList<Task>();
-                    while (partitionLow <= partitionHigh)
-                        flushTasks.Add(partitionTable[partitionLow++].FlushAsync());
-                    flushTask = Task.WhenAll(flushTasks);
-                    break;
-            }
-            await flushTask.ConfigureAwait(false);
-            //flush all touched partitions
+                    await GetOrCreatePartition(startIndex).WriteAsync(entry, startIndex).ConfigureAwait(false);
+            //flush updated state
             state.Flush();
         }
 
@@ -922,10 +897,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     throw new ArgumentOutOfRangeException(nameof(startIndex));
                 else
                 {
-                    var partition = GetOrCreatePartition(startIndex, out _);
+                    var partition = GetOrCreatePartition(startIndex);
                     await partition.WriteAsync(entry, startIndex).ConfigureAwait(false);
                     state.LastIndex = startIndex;
-                    await partition.FlushAsync().ConfigureAwait(false);
                     state.Flush();
                 }
         }
