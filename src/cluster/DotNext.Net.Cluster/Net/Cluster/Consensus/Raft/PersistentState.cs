@@ -612,7 +612,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (bufferSize < MinBufferSize)
                 throw new ArgumentOutOfRangeException(nameof(bufferSize));
-            if (recordsPerPartition < 1L)
+            if (recordsPerPartition < 2L)
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
@@ -788,6 +788,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task InstallSnapshot(IRaftLogEntry snapshot, long snapshotIndex)
         {
+            //0. The snapshot can be installed only if the partitions were squashed on the sender side
+            //therefore, snapshotIndex should be a factor of recordsPerPartition
+            if ((snapshotIndex + 1) % recordsPerPartition != 0)
+                throw new ArgumentOutOfRangeException(nameof(snapshotIndex));
             //1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.Name;
             using (var tempSnapshot = new Snapshot(location, sharedBuffer, true))
@@ -817,6 +821,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             compactionScope.Clear();
             //5. Apply snapshot to the underlying state machine
             state.CommitIndex = snapshotIndex;
+            state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
             await ApplyAsync(await this.snapshot.ReadAsync(CancellationToken.None).ConfigureAwait(false));
             state.LastApplied = snapshotIndex;
             state.Flush();
