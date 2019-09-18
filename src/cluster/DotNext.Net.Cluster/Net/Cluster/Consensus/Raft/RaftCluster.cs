@@ -375,20 +375,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
             {
                 var result = false;
-                if (auditTrail.Term <= senderTerm &&
-                    await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, transitionCancellation.Token).ConfigureAwait(false))
+                if (auditTrail.Term <= senderTerm && await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, transitionCancellation.Token).ConfigureAwait(false))
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
-                    prevLogIndex += 1L;
-                    var localCommitIndex = auditTrail.GetLastIndex(true);
-                    
-                    if(prevLogIndex > localCommitIndex)
-                    {
-                        await auditTrail.AppendAsync(entries, prevLogIndex).ConfigureAwait(false);
-                        result = commitIndex <= localCommitIndex ||
-                                 await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
-                    }
+                    await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
+                    result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
                 }
                 return new Result<bool>(auditTrail.Term, result);
             }
