@@ -89,6 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly StreamSegment content;
             private readonly LogEntryMetadata metadata;
             private readonly byte[] buffer;
+            internal long? SnapshotIndex;
 
             internal LogEntry(StreamSegment cachedContent, byte[] sharedBuffer, in LogEntryMetadata metadata)
             {
@@ -102,8 +103,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 SnapshotIndex = metadata.Index;
             }
-
-            internal long? SnapshotIndex { get; }
 
             bool ILogEntry.IsSnapshot => SnapshotIndex.HasValue;
 
