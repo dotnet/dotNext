@@ -813,7 +813,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             this.snapshot = new Snapshot(location, sharedBuffer);
             //3. Identify all partitions to be replaced by snapshot
-            var compactionScope = new SortedDictionary<long, Partition>();
+            var compactionScope = new Dictionary<long, Partition>();
             foreach (var (partitionNumber, partition) in partitionTable)
                 if (partition.LastIndex <= snapshotIndex)
                     compactionScope.Add(partitionNumber, partition);
