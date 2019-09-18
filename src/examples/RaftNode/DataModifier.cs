@@ -20,7 +20,7 @@ namespace RaftNode
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (true)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(2000, stoppingToken).ConfigureAwait(false);
                 if (!(cluster.Leader?.IsRemote ?? true))
