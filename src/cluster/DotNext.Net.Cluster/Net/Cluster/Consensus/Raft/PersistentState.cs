@@ -583,7 +583,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private const long DefaultPartitionSize = 0;
         private readonly long recordsPerPartition;
         //key is the number of partition
-        private readonly Dictionary<long, Partition> partitionTable;
+        private readonly IDictionary<long, Partition> partitionTable;
         private readonly NodeState state;
         private Snapshot snapshot;
         private readonly DirectoryInfo location;
@@ -623,7 +623,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             initialSize = initialPartitionSize;
             commitEvent = new AsyncManualResetEvent(false);
             syncRoot = new AsyncExclusiveLock();
-            partitionTable = new Dictionary<long, Partition>();
+            //sorted dictionary to improve performance of log compaction and snapshot installation procedures
+            partitionTable = new SortedDictionary<long, Partition>();
             emptyLog = new LogEntryList<LogEntry>();
             initialLog = new LogEntryList<IRaftLogEntry>(InMemoryAuditTrail.InitialLog);
             //load all partitions from file system
@@ -812,10 +813,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             this.snapshot = new Snapshot(location, sharedBuffer);
             //3. Identify all partitions to be replaced by snapshot
-            var compactionScope = new Dictionary<long, Partition>();
+            var compactionScope = new SortedDictionary<long, Partition>();
             foreach (var (partitionNumber, partition) in partitionTable)
                 if (partition.LastIndex <= snapshotIndex)
                     compactionScope.Add(partitionNumber, partition);
+                else
+                    break;  //enumeration is sorted by partition number so we don't need to enumerate over all partitions
             //4. Delete these partitions
             RemovePartitions(compactionScope);
             compactionScope.Clear();
@@ -978,8 +981,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             foreach (var (partNumber, partition) in partitionTable)
             {
                 token.ThrowIfCancellationRequested();
-                if (partition.FirstIndex + partition.Capacity <= commitIndex)
+                if (partition.LastIndex <= commitIndex)
                     compactionScope.Add(partNumber, partition);
+                else
+                    break;  //enumeration is sorted by partition number so we don't need to enumerate over all partitions
             }
             Debug.Assert(compactionScope.Count > 0);
             //2. Do compaction
