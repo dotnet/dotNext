@@ -514,20 +514,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             long? IAuditTrailSegment<IRaftLogEntry>.SnapshotIndex => (base[0] as LogEntry)?.SnapshotIndex;
 
-            private void Dispose(bool disposing)
-            {
-                if (disposing)
-                    Clear();
-                readLock.Dispose();
-            }
-
             void IDisposable.Dispose()
             {
-                Dispose(true);
-                GC.SuppressFinalize(this);
+                readLock.Dispose();
+                Clear();
             }
-
-            ~LogEntryList() => Dispose(false);
         }
 
         /// <summary>

@@ -144,17 +144,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             long? IAuditTrailSegment<IRaftLogEntry>.SnapshotIndex => null;
 
-            private void Dispose() => readLock.Dispose();
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
             void IDisposable.Dispose()
             {
-                Dispose();
-                GC.SuppressFinalize(this);
+                readLock.Dispose();
+                Array.Clear(entries, 0, entries.Length);
             }
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-            ~LogEntryList() => Dispose();
         }
 
         internal static readonly IRaftLogEntry[] InitialLog = { new InitialLogEntry() };
