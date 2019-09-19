@@ -379,7 +379,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
-                    await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
+                    /*
+                     * AppendAsync is called with skipCommitted=true because HTTP response from the previous
+                     * replication might fail but the log entry was committed by the local node.
+                     * In this case the leader repeat its replication from the same prevLogIndex which is already committed locally.
+                     * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
+                     * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
+                     */
+                    await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true).ConfigureAwait(false);
                     result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
                 }
                 return new Result<bool>(auditTrail.Term, result);

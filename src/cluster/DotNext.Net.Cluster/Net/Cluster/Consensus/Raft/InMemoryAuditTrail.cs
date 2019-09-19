@@ -248,31 +248,41 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             log = newLog;
         }
 
-        private async ValueTask<long> AppendAsync<TSource>(TSource entries, long? startIndex)
+        private async ValueTask<long> AppendAsync<TSource>(TSource entries, long? startIndex, bool skipCommitted)
             where TSource : struct, ILogEntrySource
         {
             if (startIndex is null)
                 startIndex = log.LongLength;
-            else if (startIndex <= GetLastIndex(true))
-                throw new InvalidOperationException();
             else if (startIndex > log.LongLength)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            Append(await entries.ReadAllAsync().ConfigureAwait(false), startIndex.Value);
+            IRaftLogEntry[] appendingScope;
+            if (skipCommitted)
+            {
+                appendingScope = await entries.ReadAllAsync().ConfigureAwait(false);
+                var skipNum = Math.Max(0, GetLastIndex(true) - startIndex.Value + 1L);
+                appendingScope = appendingScope.RemoveFirst(skipNum);
+                startIndex += skipNum;
+            }
+            else if (startIndex <= GetLastIndex(true))
+                throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+            else
+                appendingScope = await entries.ReadAllAsync().ConfigureAwait(false);
+            Append(appendingScope, startIndex.Value);
             return startIndex.Value;
         }
 
-        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex, bool skipCommitted)
         {
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(new EnumeratorSource(supplier), startIndex);
+                await AppendAsync(new EnumeratorSource(supplier), startIndex, skipCommitted);
         }
 
-        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex, bool skipCommitted)
         {
             if (entries.Count == 0)
                 return;
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(new ListSource(entries), startIndex).ConfigureAwait(false);
+                await AppendAsync(new ListSource(entries), startIndex, skipCommitted).ConfigureAwait(false);
         }
 
         async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync(IReadOnlyList<IRaftLogEntry> entries)
@@ -280,7 +290,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                return await AppendAsync(new ListSource(entries), null).ConfigureAwait(false);
+                return await AppendAsync(new ListSource(entries), null, false).ConfigureAwait(false);
         }
 
         async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(IRaftLogEntry entry, long startIndex)
@@ -288,7 +298,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entry is null)
                 throw new ArgumentNullException(nameof(entry));
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(new SingleEntrySource(entry), null).ConfigureAwait(false);
+                await AppendAsync(new SingleEntrySource(entry), null, false).ConfigureAwait(false);
         }
 
         private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)

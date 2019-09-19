@@ -125,9 +125,10 @@ namespace DotNext.Net.Cluster.Replication
         /// </remarks>
         /// <param name="entries">The entries to be added into this log.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
+        /// <param name="skipCommitted"><see langword="true"/> to skip committed entries from <paramref name="entries"/> instead of throwing exception.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
-        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
-        ValueTask AppendAsync(IReadOnlyList<LogEntry> entries, long startIndex);
+        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>.</exception>
+        ValueTask AppendAsync(IReadOnlyList<LogEntry> entries, long startIndex, bool skipCommitted = false);
 
         /// <summary>
         /// Adds uncommitted log entries into this log.
@@ -137,9 +138,10 @@ namespace DotNext.Net.Cluster.Replication
         /// </remarks>
         /// <param name="supplier">Stateful function that is responsible for supplying log entries.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
+        /// <param name="skipCommitted"><see langword="true"/> to skip committed entries from <paramref name="supplier"/> instead of throwing exception.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
-        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry; or the collection of entries contains the snapshot entry.</exception>
-        ValueTask AppendAsync(Func<ValueTask<LogEntry>> supplier, long startIndex);  //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
+        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>; or the collection of entries contains the snapshot entry.</exception>
+        ValueTask AppendAsync(Func<ValueTask<LogEntry>> supplier, long startIndex, bool skipCommitted = false);  //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
 
         /// <summary>
         /// Adds uncommitted log entries to the end of this log.
@@ -160,7 +162,7 @@ namespace DotNext.Net.Cluster.Replication
         /// This is the only method that can be used for snapshot installation.
         /// The behavior of the method depends on the <see cref="ILogEntry.IsSnapshot"/> property.
         /// If log entry is a snapshot then the method erases all committed log entries prior to <paramref name="startIndex"/>.
-        /// If it is not, the method behaves in the same way as <see cref="AppendAsync(IReadOnlyList{LogEntry}, long)"/>.
+        /// If it is not, the method behaves in the same way as <see cref="AppendAsync(IReadOnlyList{LogEntry}, long, bool)"/>.
         /// </remarks>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
         /// <param name="startIndex">The index of the </param>

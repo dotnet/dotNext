@@ -53,6 +53,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(2, await auditTrail.CommitAsync(CancellationToken.None));
             await auditTrail.WaitForCommitAsync(2, TimeSpan.Zero);
             Equal(2, auditTrail.GetLastIndex(true));
+            //check overlapping with committed entries
+            await ThrowsAsync<InvalidOperationException>(() => auditTrail.AppendAsync(new[] { entry1, entry2 }, 2).AsTask());
+            await auditTrail.AppendAsync(new[] { entry1, entry2 }, 2, true);
+            Equal(3, auditTrail.GetLastIndex(false));
+            Equal(2, auditTrail.GetLastIndex(true));
         }
     }
 }
