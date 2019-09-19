@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Replication
 {
-    internal class LogEntryList<LogEntry> : ReadOnlyCollection<LogEntry>, IAuditTrailSegment<LogEntry>
+    internal sealed class LogEntryList<LogEntry> : ReadOnlyCollection<LogEntry>, IAuditTrailSegment<LogEntry>
         where LogEntry : class, ILogEntry
     {
         internal LogEntryList(IList<LogEntry> entries)
