@@ -325,7 +325,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly StreamSegment segment;
 
             internal Snapshot(DirectoryInfo location, byte[] sharedBuffer, bool tempSnapshot = false)
-                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.WriteThrough)
+                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough)
             {
                 buffer = sharedBuffer;
                 segment = new StreamSegment(this);
@@ -946,7 +946,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
-        public async ValueTask<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, CancellationToken token)
+        public async ValueTask<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, CancellationToken token = default)
         {
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
