@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -521,6 +522,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        private sealed class SingletonEntryList : IAuditTrailSegment<LogEntry>
+        {
+            private readonly LogEntry entry;
+            private AsyncLock.Holder readLock;
+
+            internal SingletonEntryList(LogEntry entry, AsyncLock.Holder readLock)
+            {
+                this.entry = entry;
+                this.readLock = readLock;
+            }
+
+            long? IAuditTrailSegment<LogEntry>.SnapshotIndex => entry.SnapshotIndex;
+
+            int IReadOnlyCollection<LogEntry>.Count => 1;
+
+            LogEntry IReadOnlyList<LogEntry>.this[int index] => index == 0 ? entry : throw new IndexOutOfRangeException();
+
+            public IEnumerator<LogEntry> GetEnumerator()
+            {
+                yield return entry;
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+            void IDisposable.Dispose() => readLock.Dispose();
+        }
+
         /// <summary>
         /// Represents snapshot builder.
         /// </summary>
@@ -731,7 +759,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else if(snapshot.Length > 0)
                 try
                 {
-                    result = new LogEntryList(1, readLock) { await snapshot.ReadAsync(token).ConfigureAwait(false) };
+                    result = new SingletonEntryList(await snapshot.ReadAsync(token).ConfigureAwait(false), readLock);
                 }
                 catch
                 {
