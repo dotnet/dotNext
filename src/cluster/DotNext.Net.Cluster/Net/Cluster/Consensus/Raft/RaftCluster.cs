@@ -386,7 +386,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                      * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
                      * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
                      */
-                    await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true).ConfigureAwait(false);
+                    await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, transitionCancellation.Token).ConfigureAwait(false);
                     result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
                 }
                 return new Result<bool>(auditTrail.Term, result);
@@ -506,7 +506,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task WriteAsync(IReadOnlyList<IRaftLogEntry> entries, bool waitForCommit, TimeSpan timeout)
         {
-            var index = await auditTrail.AppendAsync(entries).ConfigureAwait(false);
+            var index = await auditTrail.AppendAsync(entries, transitionCancellation.Token).ConfigureAwait(false);
             if (!(state is LeaderState leaderState))
                 throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
             if (waitForCommit)

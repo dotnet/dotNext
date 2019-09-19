@@ -858,11 +858,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
-        private async ValueTask AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex, bool skipCommitted)
+        private async ValueTask AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex, bool skipCommitted, CancellationToken token)
         {
             if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            for (var entry = await supplier().ConfigureAwait(false); entry != null; state.LastIndex = startIndex++, entry = await supplier().ConfigureAwait(false))
+            for (var entry = await supplier().ConfigureAwait(false); entry != null; state.LastIndex = startIndex++, token.ThrowIfCancellationRequested(), entry = await supplier().ConfigureAwait(false))
                 if (entry.IsSnapshot)
                     throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
                 else if (startIndex > state.CommitIndex)
@@ -873,10 +873,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             state.Flush();
         }
 
-        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex, bool skipCommitted)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex, bool skipCommitted, CancellationToken token)
         {
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(supplier, startIndex, skipCommitted).ConfigureAwait(false);
+                await AppendAsync(supplier, startIndex, skipCommitted, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -886,7 +886,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// This is the only method that can be used for snapshot installation.
         /// The behavior of the method depends on the <see cref="ILogEntry.IsSnapshot"/> property.
         /// If log entry is a snapshot then the method erases all committed log entries prior to <paramref name="startIndex"/>.
-        /// If it is not, the method behaves in the same way as <see cref="AppendAsync(IReadOnlyList{IRaftLogEntry}, long, bool)"/>.
+        /// If it is not, the method behaves in the same way as <see cref="AppendAsync(IReadOnlyList{IRaftLogEntry}, long, bool, CancellationToken)"/>.
         /// </remarks>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
         /// <param name="startIndex">The index of the </param>
@@ -924,15 +924,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="entries">The entries to be added into this log.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
         /// <param name="skipCommitted"><see langword="true"/> to skip committed entries from <paramref name="entries"/> instead of throwing exception.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
-        public async ValueTask AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex, bool skipCommitted = false)
+        public async ValueTask AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex, bool skipCommitted = false, CancellationToken token = default)
         {
             if (entries.Count == 0)
                 return;
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
             using (var enumerator = entries.GetEnumerator())
-                await AppendAsync(enumerator.Advance, startIndex, skipCommitted).ConfigureAwait(false);
+                await AppendAsync(enumerator.Advance, startIndex, skipCommitted, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -942,9 +943,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
         /// </remarks>
         /// <param name="entries">The entries to be added into this log.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
-        public async ValueTask<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries)
+        public async ValueTask<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, CancellationToken token)
         {
             if (entries.Count == 0)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
@@ -952,7 +954,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 var startIndex = state.LastIndex + 1L;
                 using (var enumerator = entries.GetEnumerator())
-                    await AppendAsync(enumerator.Advance, startIndex, false).ConfigureAwait(false);
+                    await AppendAsync(enumerator.Advance, startIndex, false, token).ConfigureAwait(false);
                 return startIndex;
             }
         }
