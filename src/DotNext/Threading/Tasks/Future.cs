@@ -2,6 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using M = InlineIL.MethodRef;
 
 namespace DotNext.Threading.Tasks
 {
@@ -58,8 +61,6 @@ namespace DotNext.Threading.Tasks
 
         private sealed class Continuation
         {
-            private static readonly Func<Action, Action> ContinuationWithoutContextFactory = DelegateHelpers.CreateClosedDelegateFactory<Action>(() => QueueContinuation(null));
-
             private readonly Action callback;
             private readonly SynchronizationContext context;
 
@@ -76,10 +77,18 @@ namespace DotNext.Threading.Tasks
 
             private void Invoke() => context.Post(Invoke, callback);
 
+            private static Action CreateContinuationWithoutContext(Action callback)
+            {
+                Push(callback);
+                Ldftn(new M(typeof(Continuation), nameof(QueueContinuation), typeof(Action)));
+                Newobj(M.Constructor(typeof(Action), typeof(object), typeof(IntPtr)));
+                return Return<Action>();
+            }
+
             internal static Action Create(Action callback)
             {
                 var context = SynchronizationContext.Current?.CreateCopy();
-                return context is null ? ContinuationWithoutContextFactory(callback) : new Continuation(callback, context).Invoke;
+                return context is null ? CreateContinuationWithoutContext(callback) : new Continuation(callback, context).Invoke;
             }
         }
 
