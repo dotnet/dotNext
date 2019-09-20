@@ -43,7 +43,8 @@ Web application component can request the following service from ASP.NET Core DI
 * [IRaftCluster](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.yml) represents Raft-specific version of `ICluster` interface
 * [IMessageBus](../../api/DotNext.Net.Cluster.Messaging.IMessageBus.yml) for point-to-point messaging between nodes
 * [IExpandableCluster](../../api/DotNext.Net.Cluster.ICluster.yml) for tracking changes in cluster membership
-* [IReplicationCluster&lt;ILogEntry&gt;](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.yml) to work with audit trail used for replication. [ILogEntry](../../api/DotNext.Net.Cluster.Consensus.Raft.ILogEntry.yml) is Raft-specific representation of the record in the audit trail.
+* [IReplicationCluster&lt;IRaftLogEntry&gt;](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.yml) to work with audit trail used for replication. [IRaftLogEntry](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.yml) is Raft-specific representation of the record in the audit trail
+* [IReplicationCluster](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster.yml) to work with audit trail in simplified manner 
 
 # Configuration
 The application should be configured properly to work as a cluster node. The following JSON represents example of configuration:
@@ -297,7 +298,7 @@ However, it is not used as default audit trail by Raft implementation. You need 
 
 Typically, `PersistentState` class is not used directly because it is not aware how to interpret commands contained in the log entries. This is the responsibility of the data state machine. It can be defined through overriding of the two methods:
 1. `ValueTask ApplyAsync(LogEntry entry)` method is responsible for interpreting committed log entries and applying them to the underlying persistent data storage.
-1. `SnapshotBuilder CreateSnapshotBuilder(byte[] buffer)` method is required if you want to enable log compaction. The returned builder squashed the series of log entries into the single log entry called **snapshot**. Then the snapshot can be persisted by the infrastructure automatically. By default, this method always returns **null** which means that compaction is not supported.
+1. `SnapshotBuilder CreateSnapshotBuilder()` method is required if you want to enable log compaction. The returned builder squashes the series of log entries into the single log entry called **snapshot**. Then the snapshot can be persisted by the infrastructure automatically. By default, this method always returns **null** which means that compaction is not supported.
 
 > [!NOTE]
 > .NEXT library doesn't provide default implementation of the database or persistent data storage based on Raft replication
@@ -349,13 +350,13 @@ sealed class SimpleAuditTrail : PersistentState
 	}
 	
 	//3
-	private static async Task<long> Decode(LogEntry entry) => ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
+	private static async Task<long> Decode(LogEntry entry) => ReadInt64LittleEndian((await entry.ReadBytesAsync(sizeof(long))).Span);
 	
 	//4
     protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await Decode(entry);
 	
 	//5
-    protected override SnapshotBuilder CreateSnapshotBuilder(byte[] buffer) => new SimpleSnapshotBuilder(buffer);
+    protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder(sharedBuffer);
 }
 ```
 1)Aggregates the commited entry with the existing state; 2)called by infrastructure to save the aggregated state as a snapshot; 3)Decodes the command from the log entry; 4) Applies the log entry to the state machine; 5)Creates snapshot builder
@@ -416,19 +417,21 @@ It is possible to derive directly from [MetricsCollector](https://sakno.github.i
 Implementation of reporting method should fast as possible or asynchronous. If reporting causes I/O operations synchronously then it affects the overall performance of Cluster library internals such as communication with other cluster members which is time-critical.
 
 # Example
-There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. Before starting instances you need to build application. All nodes can be started using the following script:
+There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. All nodes can be started using the following script:
 ```bash
-dotnet RaftNode.dll 3262
-dotnet RaftNode.dll 3263
-dotnet RaftNode.dll 3264
+cd <dotnext>/src/examples/RaftNode
+dotnet run -- 3262
+dotnet run -- 3263
+dotnet run -- 3264
 ```
 
 Every instance should be launched in separated Terminal session. After that, you will see diagnostics messages in `stdout` about election process. Press _Ctrl+C_ in the window related to the leader node and ensure that new leader will be elected.
 
-Optionally, you can test replication and [WriteConcern](../../api/DotNext.Net.Cluster.Replication.WriteConcern.yml). To do that, you need to created a separate folder and place empty file into. The file changes are tracked by leader node and distributed across nodes. It should be specified as the second command-line argument:
+Optionally, you can test replication powered by persistent WAL and [WriteConcern](../../api/DotNext.Net.Cluster.Replication.WriteConcern.yml). To do that, you need to specify the name of folder which is used to store Write Ahead Log files
 ```bash
-dotnet RaftNode.dll 3262 ./folder/content.txt
-dotnet RaftNode.dll 3263 ./folder/content.txt
-dotnet RaftNode.dll 3264 ./folder/content.txt
+cd <dotnext>/src/examples/RaftNode
+dotnet run -- 3262 node1
+dotnet run -- 3263 node2
+dotnet run -- 3264 node3
 ```
-When consensus is reached, you can open the file and change its content. You will see the message in Console window owned by leader node that the content is added into replication log. A few moments later you will that the uncomitted record is added by every cluster node, then the record will be committed by the leader node. 
+Now you can see replication messages in each Terminal window. The replicated state stored in the `node1`, `node2` and `node3` folders. You can restart one of the nodes and make sure that its state is recovered correctly.
