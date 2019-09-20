@@ -359,7 +359,7 @@ sealed class SimpleAuditTrail : PersistentState
     protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder(sharedBuffer);
 }
 ```
-1)Aggregates the commited entry with the existing state; 2)called by infrastructure to save the aggregated state as a snapshot; 3)Decodes the command from the log entry; 4) Applies the log entry to the state machine; 5)Creates snapshot builder
+1)Aggregates the commited entry with the existing state; 2)called by infrastructure to serialize the aggregated state into stream; 3)Decodes the command from the log entry; 4) Applies the log entry to the state machine; 5)Creates snapshot builder
 
 In reality, the state machine should persist its state in reliable way, e.g. disk. The example above ignores this requirement for simplicity and maintain its state in the form of the field of type `long`.
 
