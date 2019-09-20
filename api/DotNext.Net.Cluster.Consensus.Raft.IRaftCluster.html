@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface IRaftCluster
    | .NEXT ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -79,7 +79,7 @@
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster-1.html#DotNext_Net_Cluster_Replication_IReplicationCluster_1_WriteAsync__1_DotNext_Net_Cluster_Replication_DataHandler___0__0____0_DotNext_Net_Cluster_Replication_WriteConcern_">IReplicationCluster&lt;ILogEntry&gt;.WriteAsync&lt;T&gt;(DataHandler&lt;T, ILogEntry&gt;, T, WriteConcern)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster-1.html#DotNext_Net_Cluster_Replication_IReplicationCluster_1_WriteAsync_System_Collections_Generic_IReadOnlyList__0__DotNext_Net_Cluster_Replication_WriteConcern_System_TimeSpan_">IReplicationCluster&lt;IRaftLogEntry&gt;.WriteAsync(IReadOnlyList&lt;IRaftLogEntry&gt;, WriteConcern, TimeSpan)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.ICluster.html#DotNext_Net_Cluster_ICluster_Leader">ICluster.Leader</a>
@@ -98,7 +98,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_IRaftCluster_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IRaftCluster : IReplicationCluster&lt;ILogEntry&gt;, ICluster</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IRaftCluster : IReplicationCluster&lt;IRaftLogEntry&gt;, IReplicationCluster, ICluster</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>

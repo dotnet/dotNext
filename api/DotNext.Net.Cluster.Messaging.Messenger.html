@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Messenger
    | .NEXT ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -116,19 +116,19 @@ through network.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Messenger_ReadAsTextAsync_DotNext_Net_Cluster_Messaging_IMessage_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Messenger.ReadAsTextAsync(DotNext.Net.Cluster.Messaging.IMessage)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Messenger_ReadAsTextAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Messenger.ReadAsTextAsync(DotNext.Net.Cluster.Messaging.IMessage%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Messenger.cs/#L71">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Messenger.cs/#L63">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_Messenger_ReadAsTextAsync_" data-uid="DotNext.Net.Cluster.Messaging.Messenger.ReadAsTextAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_Messenger_ReadAsTextAsync_DotNext_Net_Cluster_Messaging_IMessage_" data-uid="DotNext.Net.Cluster.Messaging.Messenger.ReadAsTextAsync(DotNext.Net.Cluster.Messaging.IMessage)">ReadAsTextAsync(IMessage)</h4>
+  <h4 id="DotNext_Net_Cluster_Messaging_Messenger_ReadAsTextAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.Messenger.ReadAsTextAsync(DotNext.Net.Cluster.Messaging.IMessage,System.Threading.CancellationToken)">ReadAsTextAsync(IMessage, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Converts message content into string.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;string&gt; ReadAsTextAsync(this IMessage message)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task&lt;string&gt; ReadAsTextAsync(this IMessage message, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -144,6 +144,12 @@ through network.</p>
         <td><a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a></td>
         <td><span class="parametername">message</span></td>
         <td><p>The message to read.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel asynchronous operation.</p>
 </td>
       </tr>
     </tbody>
@@ -169,7 +175,7 @@ through network.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Messenger_SendBroadcastSignalAsync_DotNext_Net_Cluster_Messaging_IMessageBus_DotNext_Net_Cluster_Messaging_IMessage_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Messenger.SendBroadcastSignalAsync(DotNext.Net.Cluster.Messaging.IMessageBus%2CDotNext.Net.Cluster.Messaging.IMessage%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Messenger.cs/#L24">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Messenger.cs/#L21">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_Messenger_SendBroadcastSignalAsync_" data-uid="DotNext.Net.Cluster.Messaging.Messenger.SendBroadcastSignalAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_Messenger_SendBroadcastSignalAsync_DotNext_Net_Cluster_Messaging_IMessageBus_DotNext_Net_Cluster_Messaging_IMessage_System_Boolean_" data-uid="DotNext.Net.Cluster.Messaging.Messenger.SendBroadcastSignalAsync(DotNext.Net.Cluster.Messaging.IMessageBus,DotNext.Net.Cluster.Messaging.IMessage,System.Boolean)">SendBroadcastSignalAsync(IMessageBus, IMessage, Boolean)</h4>
@@ -228,19 +234,19 @@ through network.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Messenger_SendTextMessageAsync__1_DotNext_Net_Cluster_Messaging_IAddressee_DotNext_Net_Cluster_Messaging_MessageReader___0__System_String_System_String_System_String_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Messenger.SendTextMessageAsync%60%601(DotNext.Net.Cluster.Messaging.IAddressee%2CDotNext.Net.Cluster.Messaging.MessageReader%7B%60%600%7D%2CSystem.String%2CSystem.String%2CSystem.String%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Messenger_SendTextMessageAsync__1_DotNext_Net_Cluster_Messaging_ISubscriber_DotNext_Net_Cluster_Messaging_MessageReader___0__System_String_System_String_System_String_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Messenger.SendTextMessageAsync%60%601(DotNext.Net.Cluster.Messaging.ISubscriber%2CDotNext.Net.Cluster.Messaging.MessageReader%7B%60%600%7D%2CSystem.String%2CSystem.String%2CSystem.String%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Messenger.cs/#L44">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Messenger.cs/#L41">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_Messenger_SendTextMessageAsync_" data-uid="DotNext.Net.Cluster.Messaging.Messenger.SendTextMessageAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_Messenger_SendTextMessageAsync__1_DotNext_Net_Cluster_Messaging_IAddressee_DotNext_Net_Cluster_Messaging_MessageReader___0__System_String_System_String_System_String_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.Messenger.SendTextMessageAsync``1(DotNext.Net.Cluster.Messaging.IAddressee,DotNext.Net.Cluster.Messaging.MessageReader{``0},System.String,System.String,System.String,System.Threading.CancellationToken)">SendTextMessageAsync&lt;TResponse&gt;(IAddressee, MessageReader&lt;TResponse&gt;, String, String, String, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Messaging_Messenger_SendTextMessageAsync__1_DotNext_Net_Cluster_Messaging_ISubscriber_DotNext_Net_Cluster_Messaging_MessageReader___0__System_String_System_String_System_String_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.Messenger.SendTextMessageAsync``1(DotNext.Net.Cluster.Messaging.ISubscriber,DotNext.Net.Cluster.Messaging.MessageReader{``0},System.String,System.String,System.String,System.Threading.CancellationToken)">SendTextMessageAsync&lt;TResponse&gt;(ISubscriber, MessageReader&lt;TResponse&gt;, String, String, String, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Send synchronous text message.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;TResponse&gt; SendTextMessageAsync&lt;TResponse&gt;(this IAddressee messenger, MessageReader&lt;TResponse&gt; responseReader, string messageName, string text, string mediaType = null, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task&lt;TResponse&gt; SendTextMessageAsync&lt;TResponse&gt;(this ISubscriber messenger, MessageReader&lt;TResponse&gt; responseReader, string messageName, string text, string mediaType = null, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -253,7 +259,7 @@ through network.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.IAddressee.html">IAddressee</a></td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.ISubscriber.html">ISubscriber</a></td>
         <td><span class="parametername">messenger</span></td>
         <td><p>The receiver of the message.</p>
 </td>
@@ -324,19 +330,19 @@ through network.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Messenger_SendTextSignalAsync_DotNext_Net_Cluster_Messaging_IAddressee_System_String_System_String_System_Boolean_System_String_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Messenger.SendTextSignalAsync(DotNext.Net.Cluster.Messaging.IAddressee%2CSystem.String%2CSystem.String%2CSystem.Boolean%2CSystem.String%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Messenger_SendTextSignalAsync_DotNext_Net_Cluster_Messaging_ISubscriber_System_String_System_String_System_Boolean_System_String_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Messenger.SendTextSignalAsync(DotNext.Net.Cluster.Messaging.ISubscriber%2CSystem.String%2CSystem.String%2CSystem.Boolean%2CSystem.String%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Messenger.cs/#L57">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Messenger.cs/#L54">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_Messenger_SendTextSignalAsync_" data-uid="DotNext.Net.Cluster.Messaging.Messenger.SendTextSignalAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_Messenger_SendTextSignalAsync_DotNext_Net_Cluster_Messaging_IAddressee_System_String_System_String_System_Boolean_System_String_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.Messenger.SendTextSignalAsync(DotNext.Net.Cluster.Messaging.IAddressee,System.String,System.String,System.Boolean,System.String,System.Threading.CancellationToken)">SendTextSignalAsync(IAddressee, String, String, Boolean, String, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Messaging_Messenger_SendTextSignalAsync_DotNext_Net_Cluster_Messaging_ISubscriber_System_String_System_String_System_Boolean_System_String_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.Messenger.SendTextSignalAsync(DotNext.Net.Cluster.Messaging.ISubscriber,System.String,System.String,System.Boolean,System.String,System.Threading.CancellationToken)">SendTextSignalAsync(ISubscriber, String, String, Boolean, String, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Send one-way text message.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task SendTextSignalAsync(this IAddressee messenger, string messageName, string text, bool requiresConfirmation = true, string mediaType = null, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task SendTextSignalAsync(this ISubscriber messenger, string messageName, string text, bool requiresConfirmation = true, string mediaType = null, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -349,7 +355,7 @@ through network.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.IAddressee.html">IAddressee</a></td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.ISubscriber.html">ISubscriber</a></td>
         <td><span class="parametername">messenger</span></td>
         <td><p>The receiver of the message.</p>
 </td>
@@ -413,7 +419,7 @@ through network.</p>
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_Messenger.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.Messenger%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Messenger.cs/#L15" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/Messenger.cs/#L12" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

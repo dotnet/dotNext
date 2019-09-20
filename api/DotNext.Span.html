@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Span
    | .NEXT ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -1395,6 +1395,282 @@
       <tr>
         <td><span class="parametername">T</span></td>
         <td><p>The type of elements in the span.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_ForEach__1_System_Span___0__DotNext_RefAction___0_System_Int32__.md&amp;value=---%0Auid%3A%20DotNext.Span.ForEach%60%601(System.Span%7B%60%600%7D%2CDotNext.RefAction%7B%60%600%2CSystem.Int32%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L374">View Source</a>
+  </span>
+  <a id="DotNext_Span_ForEach_" data-uid="DotNext.Span.ForEach*"></a>
+  <h4 id="DotNext_Span_ForEach__1_System_Span___0__DotNext_RefAction___0_System_Int32__" data-uid="DotNext.Span.ForEach``1(System.Span{``0},DotNext.RefAction{``0,System.Int32})">ForEach&lt;T&gt;(Span&lt;T&gt;, RefAction&lt;T, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Iterates over elements of the span.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void ForEach&lt;T&gt;(this Span&lt;T&gt; span, RefAction&lt;T, int&gt; action)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td><span class="parametername">span</span></td>
+        <td><p>The span to iterate.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.RefAction-2.html">RefAction</a>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be applied for each element of the span.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_ForEach__1_System_Span___0__DotNext_ValueRefAction___0_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.Span.ForEach%60%601(System.Span%7B%60%600%7D%2CDotNext.ValueRefAction%7B%60%600%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L356">View Source</a>
+  </span>
+  <a id="DotNext_Span_ForEach_" data-uid="DotNext.Span.ForEach*"></a>
+  <h4 id="DotNext_Span_ForEach__1_System_Span___0__DotNext_ValueRefAction___0_System_Int32___" data-uid="DotNext.Span.ForEach``1(System.Span{``0},DotNext.ValueRefAction{``0,System.Int32}@)">ForEach&lt;T&gt;(Span&lt;T&gt;, ValueRefAction&lt;T, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Iterates over elements of the span.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void ForEach&lt;T&gt;(this Span&lt;T&gt; span, in ValueRefAction&lt;T, int&gt; action)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td><span class="parametername">span</span></td>
+        <td><p>The span to iterate.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueRefAction-2.html">ValueRefAction</a>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">action</span></td>
+        <td><p>The action to be applied for each element of the span.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the elements.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_IndexOf__1_System_ReadOnlySpan___0____0_System_Int32_DotNext_ValueFunc___0___0_System_Boolean___.md&amp;value=---%0Auid%3A%20DotNext.Span.IndexOf%60%601(System.ReadOnlySpan%7B%60%600%7D%2C%60%600%2CSystem.Int32%2CDotNext.ValueFunc%7B%60%600%2C%60%600%2CSystem.Boolean%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L326">View Source</a>
+  </span>
+  <a id="DotNext_Span_IndexOf_" data-uid="DotNext.Span.IndexOf*"></a>
+  <h4 id="DotNext_Span_IndexOf__1_System_ReadOnlySpan___0____0_System_Int32_DotNext_ValueFunc___0___0_System_Boolean___" data-uid="DotNext.Span.IndexOf``1(System.ReadOnlySpan{``0},``0,System.Int32,DotNext.ValueFunc{``0,``0,System.Boolean}@)">IndexOf&lt;T&gt;(ReadOnlySpan&lt;T&gt;, T, Int32, ValueFunc&lt;T, T, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Returns the zero-based index of the first occurrence of the specified value in the <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span&lt;T&gt;</a>. The search starts at a specified position.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int IndexOf&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, T value, int startIndex, in ValueFunc&lt;T, T, bool&gt; comparer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><span class="parametername">span</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">startIndex</span></td>
+        <td><p>The search starting position.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;T, T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">comparer</span></td>
+        <td><p>The comparer used to compare the expected value and the actual value from the span.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The zero-based index position of <code data-dev-comment-type="paramref" class="paramref">value</code> from the start of the given span if that value is found, or -1 if it is not.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The of the elements in the span.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Span_IndexOf__1_System_ReadOnlySpan___0____0_System_Int32_System_Func___0___0_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Span.IndexOf%60%601(System.ReadOnlySpan%7B%60%600%7D%2C%60%600%2CSystem.Int32%2CSystem.Func%7B%60%600%2C%60%600%2CSystem.Boolean%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Span.cs/#L348">View Source</a>
+  </span>
+  <a id="DotNext_Span_IndexOf_" data-uid="DotNext.Span.IndexOf*"></a>
+  <h4 id="DotNext_Span_IndexOf__1_System_ReadOnlySpan___0____0_System_Int32_System_Func___0___0_System_Boolean__" data-uid="DotNext.Span.IndexOf``1(System.ReadOnlySpan{``0},``0,System.Int32,System.Func{``0,``0,System.Boolean})">IndexOf&lt;T&gt;(ReadOnlySpan&lt;T&gt;, T, Int32, Func&lt;T, T, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Returns the zero-based index of the first occurrence of the specified value in the <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span&lt;T&gt;</a>. The search starts at a specified position.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int IndexOf&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, T value, int startIndex, Func&lt;T, T, bool&gt; comparer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;T&gt;</td>
+        <td><span class="parametername">span</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">startIndex</span></td>
+        <td><p>The search starting position.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T, T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="parametername">comparer</span></td>
+        <td><p>The comparer used to compare the expected value and the actual value from the span.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The zero-based index position of <code data-dev-comment-type="paramref" class="paramref">value</code> from the start of the given span if that value is found, or -1 if it is not.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The of the elements in the span.</p>
 </td>
       </tr>
     </tbody>

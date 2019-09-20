@@ -8,7 +8,7 @@
     <title>Clustered ASP.NET Core Microservices | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Clustered ASP.NET Core Microservices | .NEXT ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -112,7 +112,8 @@ sealed class Startup : StartupBase
 <li><a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a> represents Raft-specific version of <code>ICluster</code> interface</li>
 <li><a href="../../api/DotNext.Net.Cluster.Messaging.IMessageBus.html">IMessageBus</a> for point-to-point messaging between nodes</li>
 <li><a href="../../api/DotNext.Net.Cluster.ICluster.html">IExpandableCluster</a> for tracking changes in cluster membership</li>
-<li><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster&lt;ILogEntry&gt;</a> to work with audit trail used for replication. <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.ILogEntry.html">ILogEntry</a> is Raft-specific representation of the record in the audit trail.</li>
+<li><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster&lt;IRaftLogEntry&gt;</a> to work with audit trail used for replication. <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a> is Raft-specific representation of the record in the audit trail</li>
+<li><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster.html">IReplicationCluster</a> to work with audit trail in simplified manner</li>
 </ul>
 <h1 id="configuration">Configuration</h1>
 <p>The application should be configured properly to work as a cluster node. The following JSON represents example of configuration:</p>
@@ -337,7 +338,7 @@ sealed class Startup : StartupBase
 <p>Note that <code>BecomeClusterMember</code> declared in <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.html">DotNext.Net.Cluster.Consensus.Raft.Http.Embedding</a> namespace.</p>
 <p><code>UseConsensusProtocolHandler</code> method should be called before registration of any authentication/authorization middleware.</p>
 <h1 id="redirection-to-leader">Redirection to Leader</h1>
-<p>Now cluster of ASP.NET Core applications can receive requests from outside. Some of these requests may be handled by leader node only. .NEXT cluster programming model provides a way to automatically redirect request to leader node if it was originally received by follower node. The redirection is organized with help of <em>301 Moved Permanently</em> status code. Every follower node knows the actual address of the leader node. If cluster or its partition doesn't have leader then node returns <em>503 Service Unavailable</em>.</p>
+<p>Now cluster of ASP.NET Core applications can receive requests from outside. Some of these requests may be handled by leader node only. .NEXT cluster programming model provides a way to automatically redirect request to leader node if it was originally received by follower node. The redirection is organized with help of <em>307 Temporary Redirect</em> status code. Every follower node knows the actual address of the leader node. If cluster or its partition doesn't have leader then node returns <em>503 Service Unavailable</em>.</p>
 <p>Automatic redirection is provided by <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.html">LeaderRouter</a> class. You can specify endpoint that should be handled by leader node with <code>RedirectToLeader</code> method.</p>
 <pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft.Http;
 using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
@@ -398,7 +399,82 @@ public override void Configure(IApplicationBuilder app)
 <li><code>SendSignalToLeaderAsync</code> to send <em>One Way</em> message to the leader</li>
 </ul>
 <h1 id="replication">Replication</h1>
-<p>Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> interface. By default, it is implemented as in-memory storage which is suitable only for applications that doesn't have replicated state. If your application has it then implement this interface manually and use reliable storage such as disk and inject this implementation through <code>AuditTrail</code> property in <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a> interface. This injection should be done in user-defined implementation of <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html">IRaftClusterConfigurator</a> interface registered as a singleton service in ASP.NET Core application.</p>
+<p>Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> interface. By default, it is implemented as in-memory storage which is suitable only for applications that doesn't have replicated state. If your application has it then use <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> class or implement this interface manually and use reliable storage such as disk. The implementation can be injected explicitly via <code>AuditTrail</code> property of <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a> interface or implicitly via Dependency Injection. The explicit should be done inside of the user-defined implementation of <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html">IRaftClusterConfigurator</a> interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of singleton service which implements <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> interface.</p>
+<h2 id="reliable-persistent-state">Reliable persistent state</h2>
+<p>Starting with .NEXT 1.0.0 the library shipped with the general-purpose high-performance <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">persistent Write Ahead Log</a>(WAL) providing the following features:</p>
+<ul>
+<li>Log compaction based on snapshotting</li>
+<li>File-based persistent storage for the log entries</li>
+<li>Caching</li>
+<li>Fast writes and reads</li>
+<li>Automatic replays</li>
+</ul>
+<p>However, it is not used as default audit trail by Raft implementation. You need to register it as described above.</p>
+<p>Typically, <code>PersistentState</code> class is not used directly because it is not aware how to interpret commands contained in the log entries. This is the responsibility of the data state machine. It can be defined through overriding of the two methods:</p>
+<ol>
+<li><code>ValueTask ApplyAsync(LogEntry entry)</code> method is responsible for interpreting committed log entries and applying them to the underlying persistent data storage.</li>
+<li><code>SnapshotBuilder CreateSnapshotBuilder()</code> method is required if you want to enable log compaction. The returned builder squashes the series of log entries into the single log entry called <strong>snapshot</strong>. Then the snapshot can be persisted by the infrastructure automatically. By default, this method always returns <strong>null</strong> which means that compaction is not supported.</li>
+</ol>
+<div class="NOTE">
+<h5>Note</h5>
+<p>.NEXT library doesn't provide default implementation of the database or persistent data storage based on Raft replication</p>
+</div>
+<p>Internally, persistent WAL uses files to store the state of cluster member and log entries. The journal with log entries is not continuous. Each file represents the partition of the entire journal. Each partition is a chunk of sequential log entries. The maximum number of log entries per partition file depends on the settings.</p>
+<p>The constructor of <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> supports the following parameters:</p>
+<ul>
+<li><code>recordsPerPartition</code> allows to define maximum number of log entries that can be stored in contiguous manner in the single partition. Log compaction algorithm depends on this value directly. When all records from the partition are committed and applied to the underlying state machine the infrastructure calls the snapshot builder and squashed all the entries in such partition. After that, it records the snapshot into the separated file and removes the partition file from the file system. The log compaction is expensive operation. So if you want to reduce the number of compactions then you need to increase the maximum number of log entries per partition. However, the partition file will take more disk space.</li>
+<li><code>bufferSize</code> is the numbers of bytes that is allocated by persistent WAL in the memory to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.</li>
+<li><code>initialPartitionSize</code> represents the initial pre-allocated size, in bytes, of the empty partition file. This parameter allows to avoid fragmentation of the partition file at file-system level.</li>
+<li><code>useCaching</code> is a <code>bool</code> flag that allows to enable or disable in-memory caching of log entries metadata. <code>true</code> value allows to improve the performance or read/write operations by the cost of additional heap memory. <code>false</code> reduces the memory footprint by the cost of the read/write performance.</li>
+</ul>
+<p>Choose <code>recordsPerPartition</code> value with care because it cannot be changed for the existing persistent WAL.</p>
+<p>Let's write a simple custom audit trail based on the <code>PersistentState</code> to demonstrate basics of Write Ahead Log. Our state machine stores only the single <strong>long</strong> value as the only possible persistent state.</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
+using System.Threading.Tasks;
+using static System.Buffers.Binary.BinaryPrimitives;
+
+sealed class SimpleAuditTrail : PersistentState
+{
+	internal long Value;	//the current int64 value synchronized across all cluster nodes
+
+	//snapshot builder
+	private sealed class SimpleSnapshotBuilder : SnapshotBuilder
+	{
+		private long currentValue;
+		private readonly byte[] sharedBuffer;
+
+		internal SimpleSnapshotBuilder(byte[] buffer) =&gt; sharedBuffer = buffer;
+
+		//2.1
+		public override Task CopyToAsync(Stream output, CancellationToken token)
+		{
+			WriteInt64LittleEndian(sharedBuffer, currentValue);
+			return output.WriteAsync(sharedBuffer, 0, sizeof(long), token);
+		}
+
+		//2.2
+		public override async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
+		{
+			WriteInt64LittleEndian(sharedBuffer, currentValue);
+			await output.WriteAsync(new ReadOnlyMemory&lt;byte&gt;(sharedBuffer, 0, sizeof(long)), token);
+		}
+
+		//1
+		protected override async ValueTask ApplyAsync(LogEntry entry) =&gt; currentValue = await Decode(entry);
+	}
+	
+	//3
+	private static async Task&lt;long&gt; Decode(LogEntry entry) =&gt; ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
+	
+	//4
+    protected override async ValueTask ApplyAsync(LogEntry entry) =&gt; Value = await Decode(entry);
+	
+	//5
+    protected override SnapshotBuilder CreateSnapshotBuilder() =&gt; new SimpleSnapshotBuilder(sharedBuffer);
+}
+</code></pre>
+<p>1)Aggregates the commited entry with the existing state; 2)called by infrastructure to save the aggregated state as a snapshot; 3)Decodes the command from the log entry; 4) Applies the log entry to the state machine; 5)Creates snapshot builder</p>
+<p>In reality, the state machine should persist its state in reliable way, e.g. disk. The example above ignores this requirement for simplicity and maintain its state in the form of the field of type <code>long</code>.</p>
 <h1 id="metrics">Metrics</h1>
 <p>It is possible to measure runtime metrics of Raft node internals using <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html">HttpMetricsCollector</a> class. The reporting mechanism is agnostic  to the underlying metrics delivery library such as <a href="https://github.com/AppMetrics/AppMetrics">AppMetrics</a>.</p>
 <p>The class contains methods that are called automatically. You can override them and implement necessary reporting logic. By default, these methods do nothing.</p>
@@ -446,18 +522,20 @@ sealed class Startup : StartupBase
 <p>It is possible to derive directly from <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.MetricsCollector.html">MetricsCollector</a> if you don't need to receive metrics related to HTTP-specific implementation of Raft algorithm.</p>
 <p>Implementation of reporting method should fast as possible or asynchronous. If reporting causes I/O operations synchronously then it affects the overall performance of Cluster library internals such as communication with other cluster members which is time-critical.</p>
 <h1 id="example">Example</h1>
-<p>There is Raft playground represented by RaftNode application. You can find this app <a href="https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode">here</a>. This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. Before starting instances you need to build application. All nodes can be started using the following script:</p>
-<pre><code class="lang-bash">dotnet RaftNode.dll 3262
-dotnet RaftNode.dll 3263
-dotnet RaftNode.dll 3264
+<p>There is Raft playground represented by RaftNode application. You can find this app <a href="https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode">here</a>. This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. All nodes can be started using the following script:</p>
+<pre><code class="lang-bash">cd &lt;dotnext&gt;/src/examples/RaftNode
+dotnet run -- 3262
+dotnet run -- 3263
+dotnet run -- 3264
 </code></pre>
 <p>Every instance should be launched in separated Terminal session. After that, you will see diagnostics messages in <code>stdout</code> about election process. Press <em>Ctrl+C</em> in the window related to the leader node and ensure that new leader will be elected.</p>
-<p>Optionally, you can test replication and <a href="../../api/DotNext.Net.Cluster.Replication.WriteConcern.html">WriteConcern</a>. To do that, you need to created a separate folder and place empty file into. The file changes are tracked by leader node and distributed across nodes. It should be specified as the second command-line argument:</p>
-<pre><code class="lang-bash">dotnet RaftNode.dll 3262 ./folder/content.txt
-dotnet RaftNode.dll 3263 ./folder/content.txt
-dotnet RaftNode.dll 3264 ./folder/content.txt
+<p>Optionally, you can test replication powered by persistent WAL and <a href="../../api/DotNext.Net.Cluster.Replication.WriteConcern.html">WriteConcern</a>. To do that, you need to specify the name of folder which is used to store Write Ahead Log files</p>
+<pre><code class="lang-bash">cd &lt;dotnext&gt;/src/examples/RaftNode
+dotnet run -- 3262 node1
+dotnet run -- 3263 node2
+dotnet run -- 3264 node3
 </code></pre>
-<p>When consensus is reached, you can open the file and change its content. You will see the message in Console window owned by leader node that the content is added into replication log. A few moments later you will that the uncomitted record is added by every cluster node, then the record will be committed by the leader node.</p>
+<p>Now you can see replication messages in each Terminal window. The replicated state stored in the <code>node1</code>, <code>node2</code> and <code>node3</code> folders. You can restart one of the nodes and make sure that its state is recovered correctly.</p>
 </article>
           </div>
           

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface IDisposableMessage
    | .NEXT ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -82,19 +82,19 @@
       <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html#DotNext_Net_Cluster_Messaging_IMessage_Name">IMessage.Name</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html#DotNext_Net_Cluster_Messaging_IMessage_IsReusable">IMessage.IsReusable</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html#DotNext_Net_Cluster_Messaging_IMessage_Length">IMessage.Length</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html#DotNext_Net_Cluster_Messaging_IMessage_CopyToAsync_System_IO_Stream_">IMessage.CopyToAsync(Stream)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html#DotNext_Net_Cluster_Messaging_IMessage_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_">IMessage.CopyToAsync(PipeWriter, CancellationToken)</a>
-    </div>
-    <div>
       <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html#DotNext_Net_Cluster_Messaging_IMessage_Type">IMessage.Type</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IDataTransferObject.html#DotNext_IDataTransferObject_IsReusable">IDataTransferObject.IsReusable</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IDataTransferObject.html#DotNext_IDataTransferObject_Length">IDataTransferObject.Length</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IDataTransferObject.html#DotNext_IDataTransferObject_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_">IDataTransferObject.CopyToAsync(Stream, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.IDataTransferObject.html#DotNext_IDataTransferObject_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_">IDataTransferObject.CopyToAsync(PipeWriter, CancellationToken)</a>
     </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable.dispose#System_IDisposable_Dispose">IDisposable.Dispose()</a>
@@ -104,7 +104,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Messaging_IDisposableMessage_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IDisposableMessage : IMessage, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IDisposableMessage : IMessage, IDataTransferObject, IDisposable</code></pre>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -147,7 +147,10 @@
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Net.Cluster.Messaging.Messenger.html#DotNext_Net_Cluster_Messaging_Messenger_ReadAsTextAsync_DotNext_Net_Cluster_Messaging_IMessage_">Messenger.ReadAsTextAsync(IMessage)</a>
+      <a class="xref" href="DotNext.DataTransferObject.html#DotNext_DataTransferObject_ReadAsTextAsync_DotNext_IDataTransferObject_System_Text_Encoding_System_Threading_CancellationToken_">DataTransferObject.ReadAsTextAsync(IDataTransferObject, Encoding, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Net.Cluster.Messaging.Messenger.html#DotNext_Net_Cluster_Messaging_Messenger_ReadAsTextAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken_">Messenger.ReadAsTextAsync(IMessage, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>

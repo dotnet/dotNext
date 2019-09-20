@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class UnmanagedMemoryHandle
    | .NEXT ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -87,9 +87,10 @@
   </div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.icloneable">ICloneable</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html">UnmanagedMemoryHandle</a>&gt;</div>
+    <div><a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -140,7 +141,7 @@
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class UnmanagedMemoryHandle : SafeHandle, IDisposable, ICloneable, IEquatable&lt;UnmanagedMemoryHandle&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class UnmanagedMemoryHandle : SafeHandle, ICloneable, IEquatable&lt;UnmanagedMemoryHandle&gt;, IUnmanagedMemory, IDisposable</code></pre>
   </div>
   <h5 id="DotNext_Runtime_InteropServices_UnmanagedMemoryHandle_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The allocated unmanaged memory is not controlled by GC. However, the unmanaged memory
@@ -1334,13 +1335,16 @@ unmanaged memory.</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
-  </div>
-  <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.icloneable">System.ICloneable</a>
   </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

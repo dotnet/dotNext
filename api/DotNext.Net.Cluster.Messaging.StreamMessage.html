@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class StreamMessage
    | .NEXT ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -79,19 +79,39 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">StreamMessage</span></div>
+    <div class="level1"><a class="xref" href="DotNext.StreamTransferObject.html">StreamTransferObject</a></div>
+    <div class="level2"><span class="xref">StreamMessage</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Net.Cluster.Messaging.IDisposableMessage.html">IDisposableMessage</a></div>
     <div><a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a></div>
+    <div><a class="xref" href="DotNext.IDataTransferObject.html">IDataTransferObject</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.StreamTransferObject.html#DotNext_StreamTransferObject_IsReusable">StreamTransferObject.IsReusable</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.StreamTransferObject.html#DotNext_StreamTransferObject_DotNext_IDataTransferObject_Length">StreamTransferObject.IDataTransferObject.Length</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.StreamTransferObject.html#DotNext_StreamTransferObject_DotNext_IDataTransferObject_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_">StreamTransferObject.IDataTransferObject.CopyToAsync(Stream, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.StreamTransferObject.html#DotNext_StreamTransferObject_DotNext_IDataTransferObject_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_">StreamTransferObject.IDataTransferObject.CopyToAsync(PipeWriter, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.StreamTransferObject.html#DotNext_StreamTransferObject_Dispose_System_Boolean_">StreamTransferObject.Dispose(Boolean)</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Messaging.html">DotNext.Net.Cluster.Messaging</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Messaging_StreamMessage_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class StreamMessage : Disposable, IDisposableMessage, IMessage, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public class StreamMessage : StreamTransferObject, IDisposableMessage, IMessage, IDataTransferObject, IDisposable</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -100,7 +120,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_StreamMessage__ctor_System_IO_Stream_System_Boolean_System_String_System_Net_Mime_ContentType_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.StreamMessage.%23ctor(System.IO.Stream%2CSystem.Boolean%2CSystem.String%2CSystem.Net.Mime.ContentType)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L26">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L20">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_StreamMessage__ctor_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_StreamMessage__ctor_System_IO_Stream_System_Boolean_System_String_System_Net_Mime_ContentType_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.#ctor(System.IO.Stream,System.Boolean,System.String,System.Net.Mime.ContentType)">StreamMessage(Stream, Boolean, String, ContentType)</h4>
@@ -151,41 +171,10 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_StreamMessage_IsReusable.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.StreamMessage.IsReusable%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L60">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Messaging_StreamMessage_IsReusable_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.IsReusable*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_StreamMessage_IsReusable" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.IsReusable">IsReusable</h4>
-  <div class="markdown level1 summary"><p>Indicates that the content of this message can be copied to the output stream or pipe multiple times.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool IsReusable { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_StreamMessage_Name.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.StreamMessage.Name%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L50">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L44">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_StreamMessage_Name_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.Name*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_StreamMessage_Name" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.Name">Name</h4>
@@ -216,7 +205,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_StreamMessage_Type.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.StreamMessage.Type%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L55">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_StreamMessage_Type_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.Type*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_StreamMessage_Type" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.Type">Type</h4>
@@ -246,19 +235,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_StreamMessage_CreateBufferedMessageAsync_DotNext_Net_Cluster_Messaging_IMessage_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.StreamMessage.CreateBufferedMessageAsync(DotNext.Net.Cluster.Messaging.IMessage)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_StreamMessage_CreateBufferedMessageAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.StreamMessage.CreateBufferedMessageAsync(DotNext.Net.Cluster.Messaging.IMessage%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L39">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L33">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_StreamMessage_CreateBufferedMessageAsync_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.CreateBufferedMessageAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_StreamMessage_CreateBufferedMessageAsync_DotNext_Net_Cluster_Messaging_IMessage_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.CreateBufferedMessageAsync(DotNext.Net.Cluster.Messaging.IMessage)">CreateBufferedMessageAsync(IMessage)</h4>
+  <h4 id="DotNext_Net_Cluster_Messaging_StreamMessage_CreateBufferedMessageAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.CreateBufferedMessageAsync(DotNext.Net.Cluster.Messaging.IMessage,System.Threading.CancellationToken)">CreateBufferedMessageAsync(IMessage, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Creates copy of the original message stored in the managed heap.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;StreamMessage&gt; CreateBufferedMessageAsync(IMessage message)</code></pre>
+    <pre><code class="lang-csharp hljs">public static Task&lt;StreamMessage&gt; CreateBufferedMessageAsync(IMessage message, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -274,6 +263,12 @@
         <td><a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a></td>
         <td><span class="parametername">message</span></td>
         <td><p>The origin message.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel asynchronous operation.</p>
 </td>
       </tr>
     </tbody>
@@ -294,177 +289,15 @@
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_StreamMessage_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.StreamMessage.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L103">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Messaging_StreamMessage_Dispose_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.Dispose*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_StreamMessage_Dispose_System_Boolean_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.Dispose(System.Boolean)">Dispose(Boolean)</h4>
-  <div class="markdown level1 summary"><p>Releases resources associated with this message.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">disposing</span></td>
-        <td><p><span class="xref">true</span> if called from <see cref="!:Disposable.Dispose()"></see>; <span class="xref">false</span> if called from finalizer <see cref="!:Disposable.Finalize()"></see>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="eii">Explicit Interface Implementations
-  </h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_StreamMessage_DotNext_Net_Cluster_Messaging_IMessage_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.StreamMessage.DotNext%23Net%23Cluster%23Messaging%23IMessage%23CopyToAsync(System.IO.Pipelines.PipeWriter%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L73">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Messaging_StreamMessage_DotNext_Net_Cluster_Messaging_IMessage_CopyToAsync_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.DotNext#Net#Cluster#Messaging#IMessage#CopyToAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_StreamMessage_DotNext_Net_Cluster_Messaging_IMessage_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.DotNext#Net#Cluster#Messaging#IMessage#CopyToAsync(System.IO.Pipelines.PipeWriter,System.Threading.CancellationToken)">IMessage.CopyToAsync(PipeWriter, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask IMessage.CopyToAsync(PipeWriter output, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
-        <td><span class="parametername">output</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_StreamMessage_DotNext_Net_Cluster_Messaging_IMessage_CopyToAsync_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.StreamMessage.DotNext%23Net%23Cluster%23Messaging%23IMessage%23CopyToAsync(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L70">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Messaging_StreamMessage_DotNext_Net_Cluster_Messaging_IMessage_CopyToAsync_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.DotNext#Net#Cluster#Messaging#IMessage#CopyToAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_StreamMessage_DotNext_Net_Cluster_Messaging_IMessage_CopyToAsync_System_IO_Stream_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.DotNext#Net#Cluster#Messaging#IMessage#CopyToAsync(System.IO.Stream)">IMessage.CopyToAsync(Stream)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task IMessage.CopyToAsync(Stream output)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">output</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_StreamMessage_DotNext_Net_Cluster_Messaging_IMessage_Length.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.StreamMessage.DotNext%23Net%23Cluster%23Messaging%23IMessage%23Length%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L62">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Messaging_StreamMessage_DotNext_Net_Cluster_Messaging_IMessage_Length_" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.DotNext#Net#Cluster#Messaging#IMessage#Length*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_StreamMessage_DotNext_Net_Cluster_Messaging_IMessage_Length" data-uid="DotNext.Net.Cluster.Messaging.StreamMessage.DotNext#Net#Cluster#Messaging#IMessage#Length">IMessage.Length</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">long? IMessage.Length { get; }</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.Net.Cluster.Messaging.IDisposableMessage.html">IDisposableMessage</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IDataTransferObject.html">IDataTransferObject</a>
   </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
@@ -510,7 +343,10 @@
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Net.Cluster.Messaging.Messenger.html#DotNext_Net_Cluster_Messaging_Messenger_ReadAsTextAsync_DotNext_Net_Cluster_Messaging_IMessage_">Messenger.ReadAsTextAsync(IMessage)</a>
+      <a class="xref" href="DotNext.DataTransferObject.html#DotNext_DataTransferObject_ReadAsTextAsync_DotNext_IDataTransferObject_System_Text_Encoding_System_Threading_CancellationToken_">DataTransferObject.ReadAsTextAsync(IDataTransferObject, Encoding, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Net.Cluster.Messaging.Messenger.html#DotNext_Net_Cluster_Messaging_Messenger_ReadAsTextAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken_">Messenger.ReadAsTextAsync(IMessage, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
@@ -550,7 +386,7 @@
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_StreamMessage.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.StreamMessage%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/StreamMessage.cs/#L11" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

@@ -8,7 +8,7 @@
     <title>Cluster and Distributed Consensus | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Cluster and Distributed Consensus | .NEXT ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -94,7 +94,7 @@
 1.1. With confirmation, when sender waiting for acknowledge from receiver side. As a result, it is possible to ensure that message is processed by receiver.
 1.1. Without confirmation, when sender doesn't wait for acknowledge. Such kind of delivery is not reliable but very performant.</li>
 </ol>
-<p>The message can be transferred to the particular member using <a href="../../api/DotNext.Net.Cluster.Messaging.IAddressee.html">IAddressee</a> interface which is extension of <code>IClusterMember</code> interface.</p>
+<p>The message can be transferred to the particular member using <a href="../../api/DotNext.Net.Cluster.Messaging.ISubscriber.html">ISubscriber</a> interface which is the extension of <code>IClusterMember</code> interface.</p>
 <p>Usually, you don't to implement <code>IMessage</code> interface directly due to existence of ready-to-use realizations:</p>
 <ol>
 <li><a href="../../api/DotNext.Net.Cluster.Messaging.BinaryMessage.html">BinaryMessage</a> for raw binary content</li>

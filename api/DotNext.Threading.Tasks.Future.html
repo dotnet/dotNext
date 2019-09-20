@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Future
    | .NEXT ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -125,20 +125,38 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Future__ctor.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Future.%23ctor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Future__ctor_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Future.%23ctor(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Future.cs/#L91">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Future.cs/#L86">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Future__ctor_" data-uid="DotNext.Threading.Tasks.Future.#ctor*"></a>
-  <h4 id="DotNext_Threading_Tasks_Future__ctor" data-uid="DotNext.Threading.Tasks.Future.#ctor">Future()</h4>
+  <h4 id="DotNext_Threading_Tasks_Future__ctor_System_Boolean_" data-uid="DotNext.Threading.Tasks.Future.#ctor(System.Boolean)">Future(Boolean)</h4>
   <div class="markdown level1 summary"><p>Initializes a new Future.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected Future()</code></pre>
+    <pre><code class="lang-csharp hljs">protected Future(bool runContinuationsAsynchronously = true)</code></pre>
   </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">runContinuationsAsynchronously</span></td>
+        <td><p><span class="xref">true</span> to force continuations to run asynchronously; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
@@ -146,7 +164,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Future_IsCompleted.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Future.IsCompleted%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Future.cs/#L96">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Future.cs/#L91">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Future_IsCompleted_" data-uid="DotNext.Threading.Tasks.Future.IsCompleted*"></a>
   <h4 id="DotNext_Threading_Tasks_Future_IsCompleted" data-uid="DotNext.Threading.Tasks.Future.IsCompleted">IsCompleted</h4>
@@ -179,7 +197,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Future_Complete.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Future.Complete%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Future.cs/#L101">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Future.cs/#L96">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Future_Complete_" data-uid="DotNext.Threading.Tasks.Future.Complete*"></a>
   <h4 id="DotNext_Threading_Tasks_Future_Complete" data-uid="DotNext.Threading.Tasks.Future.Complete">Complete()</h4>
@@ -195,7 +213,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Future_OnCompleted_System_Action_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Future.OnCompleted(System.Action)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Future.cs/#L114">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Future.cs/#L109">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Future_OnCompleted_" data-uid="DotNext.Threading.Tasks.Future.OnCompleted*"></a>
   <h4 id="DotNext_Threading_Tasks_Future_OnCompleted_System_Action_" data-uid="DotNext.Threading.Tasks.Future.OnCompleted(System.Action)">OnCompleted(Action)</h4>
