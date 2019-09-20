@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace DotNext
 {
@@ -432,5 +433,12 @@ namespace DotNext
         public static Action<G, T1, T2, T3, T4, T5> Unbind<G, T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action)
             where G : class
             => action.UnsafeUnbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
+
+        private static void Invoke(object continuation) => (continuation as Action)?.Invoke();
+
+        internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(Invoke, action);
+
+        //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
+        internal static void InvokeInThreadPool(this Action action) => ThreadPool.QueueUserWorkItem(Invoke, action);
     }
 }

@@ -2,9 +2,6 @@
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using M = InlineIL.MethodRef;
 
 namespace DotNext.Threading.Tasks
 {
@@ -70,25 +67,12 @@ namespace DotNext.Threading.Tasks
                 this.context = context;
             }
 
-            private static void Invoke(object continuation) => (continuation as Action)?.Invoke();
-
-            //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
-            private static void QueueContinuation(Action callback) => ThreadPool.QueueUserWorkItem(Invoke, callback);
-
-            private void Invoke() => context.Post(Invoke, callback);
-
-            private static Action CreateContinuationWithoutContext(Action callback)
-            {
-                Push(callback);
-                Ldftn(new M(typeof(Continuation), nameof(QueueContinuation), typeof(Action)));
-                Newobj(M.Constructor(typeof(Action), typeof(object), typeof(IntPtr)));
-                return Return<Action>();
-            }
+            private void Invoke() => callback.InvokeInContext(context);
 
             internal static Action Create(Action callback)
             {
                 var context = SynchronizationContext.Current?.CreateCopy();
-                return context is null ? CreateContinuationWithoutContext(callback) : new Continuation(callback, context).Invoke;
+                return context is null ? new Action(callback.InvokeInThreadPool) : new Continuation(callback, context).Invoke;
             }
         }
 
