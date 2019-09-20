@@ -350,7 +350,7 @@ sealed class SimpleAuditTrail : PersistentState
 	}
 	
 	//3
-	private static async Task<long> Decode(LogEntry entry) => ReadInt64LittleEndian((await entry.ReadBytesAsync(sizeof(long))).Span);
+	private static async Task<long> Decode(LogEntry entry) => ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
 	
 	//4
     protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await Decode(entry);
