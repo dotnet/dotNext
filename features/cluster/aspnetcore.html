@@ -473,7 +473,7 @@ sealed class SimpleAuditTrail : PersistentState
     protected override SnapshotBuilder CreateSnapshotBuilder() =&gt; new SimpleSnapshotBuilder(sharedBuffer);
 }
 </code></pre>
-<p>1)Aggregates the commited entry with the existing state; 2)called by infrastructure to save the aggregated state as a snapshot; 3)Decodes the command from the log entry; 4) Applies the log entry to the state machine; 5)Creates snapshot builder</p>
+<p>1)Aggregates the commited entry with the existing state; 2)called by infrastructure to serialize the aggregated state into stream; 3)Decodes the command from the log entry; 4) Applies the log entry to the state machine; 5)Creates snapshot builder</p>
 <p>In reality, the state machine should persist its state in reliable way, e.g. disk. The example above ignores this requirement for simplicity and maintain its state in the form of the field of type <code>long</code>.</p>
 <h1 id="metrics">Metrics</h1>
 <p>It is possible to measure runtime metrics of Raft node internals using <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html">HttpMetricsCollector</a> class. The reporting mechanism is agnostic  to the underlying metrics delivery library such as <a href="https://github.com/AppMetrics/AppMetrics">AppMetrics</a>.</p>
