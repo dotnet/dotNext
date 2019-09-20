@@ -164,7 +164,7 @@ namespace DotNext.IO
         public override long Seek(long offset, SeekOrigin origin)
         {
             var newPosition = position;
-            switch(origin)
+            switch (origin)
             {
                 case SeekOrigin.Begin:
                     newPosition = offset;

@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
 {
-    using static Runtime.Intrinsics;
     using Generic;
+    using static Runtime.Intrinsics;
 
     internal static class Continuation<T, C>
         where C : Constant<T>, new()

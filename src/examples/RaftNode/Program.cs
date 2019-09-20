@@ -2,9 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
 namespace RaftNode
@@ -22,22 +22,21 @@ namespace RaftNode
             }
         }
 
-        private static void StartNode(int port, string messageFile = null)
+        private static void StartNode(int port, string persistentStorage = null)
         {
             var configuration = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
                 {"lowerElectionTimeout", "150" },
                 {"upperElectionTimeout", "300" },
-                {"heartbeatThreshold", "0"},
                 {"members:0", "https://localhost:3262"},
                 {"members:1", "https://localhost:3263"},
                 {"members:2", "https://localhost:3264"},
                 {"requestJournal:memoryLimit", "5" },
                 {"requestJournal:expiration", "00:01:00" }
             };
-            if (!string.IsNullOrEmpty(messageFile))
-                configuration[FileListener.MessageFile] = messageFile;
+            if (!string.IsNullOrEmpty(persistentStorage))
+                configuration[SimplePersistentState.LogLocation] = persistentStorage;
             new WebHostBuilder()
                 .UseKestrel(options =>
                 {

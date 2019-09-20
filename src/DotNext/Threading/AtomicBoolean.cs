@@ -236,10 +236,10 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         public bool GetAndUpdate(in ValueFunc<bool, bool> updater)
             => Update(updater).OldValue;
-        
+
         internal void Acquire()
         {
-            for(SpinWait spinner; CompareExchange(false, true); spinner.SpinOnce()) {}
+            for (SpinWait spinner; CompareExchange(false, true); spinner.SpinOnce()) { }
         }
 
         internal void Release() => Value = false;

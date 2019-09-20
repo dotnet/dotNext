@@ -58,8 +58,6 @@ namespace DotNext.Threading.Tasks
 
         private sealed class Continuation
         {
-            private static readonly Func<Action, Action> ContinuationWithoutContextFactory = DelegateHelpers.CreateClosedDelegateFactory<Action>(() => QueueContinuation(null));
-
             private readonly Action callback;
             private readonly SynchronizationContext context;
 
@@ -69,26 +67,23 @@ namespace DotNext.Threading.Tasks
                 this.context = context;
             }
 
-            private static void Invoke(object continuation) => (continuation as Action)?.Invoke();
-
-            //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
-            private static void QueueContinuation(Action callback) => ThreadPool.QueueUserWorkItem(Invoke, callback);
-
-            private void Invoke() => context.Post(Invoke, callback);
+            private void Invoke() => callback.InvokeInContext(context);
 
             internal static Action Create(Action callback)
             {
                 var context = SynchronizationContext.Current?.CreateCopy();
-                return context is null ? ContinuationWithoutContextFactory(callback) : new Continuation(callback, context).Invoke;
+                return context is null ? new Action(callback.InvokeInThreadPool) : new Continuation(callback, context).Invoke;
             }
         }
 
         private Action continuation;
+        private readonly bool runContinuationsAsynchronously;
 
         /// <summary>
         /// Initializes a new Future.
         /// </summary>
-        protected Future() { }
+        /// <param name="runContinuationsAsynchronously"><see langword="true"/> to force continuations to run asynchronously; otherwise, <see langword="false"/>.</param>
+        protected Future(bool runContinuationsAsynchronously = true) => this.runContinuationsAsynchronously = runContinuationsAsynchronously;
 
         /// <summary>
         /// Determines whether asynchronous operation referenced by this object is already completed.
@@ -117,7 +112,7 @@ namespace DotNext.Threading.Tasks
             if (IsCompleted)
                 callback();
             else
-                continuation += Continuation.Create(callback);
+                continuation += runContinuationsAsynchronously ? Continuation.Create(callback) : callback;
         }
     }
 
@@ -128,6 +123,15 @@ namespace DotNext.Threading.Tasks
     public abstract class Future<T> : Future
         where T : Task
     {
+        /// <summary>
+        /// Initializes a new Future.
+        /// </summary>
+        /// <param name="runContinuationsAsynchronously"><see langword="true"/> to force continuations to run asynchronously; otherwise, <see langword="false"/>.</param>
+        protected Future(bool runContinuationsAsynchronously = true)
+            : base(runContinuationsAsynchronously)
+        {
+        }
+
         /// <summary>
         /// Converts this awaitable object into task of type <typeparamref name="T"/>.
         /// </summary>

@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         [SuppressMessage("Usage", "CA2213", Justification = "This object is disposed via RaftCluster.members collection")]
         private RaftClusterMember localMember;
-        
+
         private readonly IHttpMessageHandlerFactory httpHandlerFactory;
         private protected readonly TimeSpan RequestTimeout;
         private readonly DuplicateRequestDetector duplicationDetector;
@@ -228,24 +228,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (sender is null)
                 response.StatusCode = StatusCodes.Status404NotFound;
             else
-            {
-                await message.ParseEntriesAsync(request, Token).ConfigureAwait(false);
                 await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
-                    message.Entries, message.PrevLogIndex,
+                    message.EntryReader, message.PrevLogIndex,
                     message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false), Token).ConfigureAwait(false);
-            }
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
         private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IMessageHandler handler, HttpResponse response, CancellationToken token)
         {
-            const long maxSize = 30720;   //30 KB
+            const long maxSize = 10 * 1024;   //10 KB
             var length = message.Length;
             IDisposableMessage buffered;
             if (length.HasValue && length.Value < maxSize)
                 buffered = await StreamMessage.CreateBufferedMessageAsync(message, token).ConfigureAwait(false);
             else
-                buffered = await FileMessage.CreateAsync(message, token).ConfigureAwait(false);
+            {
+                var file = new FileMessage(message.Name, message.Type);
+                await message.CopyToAsync(file, token).ConfigureAwait(false);
+                file.Position = 0;
+                buffered = file;
+            }
             response.OnCompleted(async delegate ()
             {
                 using (buffered)
@@ -309,10 +311,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return task;
         }
 
+        private async Task InstallSnapshot(InstallSnapshotMessage message, HttpResponse response)
+        {
+            var sender = FindMember(message.Sender.Represents);
+            if (sender is null)
+                response.StatusCode = StatusCodes.Status404NotFound;
+            else
+                await message.SaveResponse(response, await ReceiveSnapshot(sender, message.ConsensusTerm, message.Snapshot, message.Index).ConfigureAwait(false), Token).ConfigureAwait(false);
+        }
+
         internal Task ProcessRequest(HttpContext context)
         {
             //this check allows to prevent situation when request comes earlier than initialization 
-            if(localMember is null)
+            if (localMember is null)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                 return context.Response.WriteAsync(ExceptionMessages.UnresolvedLocalMember, Token);
@@ -338,6 +349,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     return ReceiveEntries(context.Request, context.Response);
                 case CustomMessage.MessageType:
                     return ReceiveMessage(new CustomMessage(context.Request), context.Response);
+                case InstallSnapshotMessage.MessageType:
+                    return InstallSnapshot(new InstallSnapshotMessage(context.Request), context.Response);
                 default:
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     return Task.CompletedTask;

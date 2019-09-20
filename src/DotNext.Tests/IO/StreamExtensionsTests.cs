@@ -10,7 +10,7 @@ namespace DotNext.IO
         private static void ReadStringUsingEncoding(Encoding encoding, int bufferSize)
         {
             const string helloWorld = "Hello, world! &$@&@()&$YHWORww!";
-            using(var ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 ms.Write(encoding.GetBytes(helloWorld));
                 ms.Position = 0;
@@ -35,7 +35,7 @@ namespace DotNext.IO
         private static async Task ReadStringUsingEncodingAsync(Encoding encoding, int bufferSize)
         {
             const string helloWorld = "Hello, world! $(@$)Hjdqgd!";
-            using(var ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 await ms.WriteAsync(encoding.GetBytes(helloWorld));
                 ms.Position = 0;
@@ -61,7 +61,7 @@ namespace DotNext.IO
         private static void ReadWriteStringUsingEncoding(Encoding encoding, int bufferSize)
         {
             const string helloWorld = "Hello, world!&*(@&*(fghjwgfwffgw";
-            using(var ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 var buffer = new byte[bufferSize];
                 ms.WriteString(helloWorld, encoding, buffer);
@@ -86,7 +86,7 @@ namespace DotNext.IO
         private static async Task ReadWriteStringUsingEncodingAsync(Encoding encoding, int bufferSize)
         {
             const string helloWorld = "Hello, world!&*(@&*(fghjwgfwffgw";
-            using(var ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 var buffer = new byte[bufferSize];
                 await ms.WriteStringAsync(helloWorld, encoding, buffer);

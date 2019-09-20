@@ -45,7 +45,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The typed pointer.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T* ToPointer<T>(this IntPtr source) 
+        public static T* ToPointer<T>(this IntPtr source)
             where T : unmanaged
         {
             Push(source);

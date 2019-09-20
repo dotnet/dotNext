@@ -11,6 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using Threading;
+    using static Replication.LogEntryEnumerator;
     using Timestamp = Diagnostics.Timestamp;
 
     internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, ISubscriber
@@ -56,12 +57,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal void Touch() => ChangeStatus(AvailableStatus);
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Response is disposed in finally block")]
-        private async Task<R> SendAsync<R, M>(M message, CancellationToken token)
+        private async Task<R> SendAsync<R, M>(M message, Action postCall, CancellationToken token)
             where M : HttpMessage, IHttpMessageReader<R>
         {
             context.Logger.SendingRequestToMember(Endpoint, message.MessageType);
-            var request = (HttpRequestMessage)message;
-            request.RequestUri = resourcePath;
+            var request = new HttpRequestMessage { RequestUri = resourcePath };
+            await message.FillRequestAsync(request).ConfigureAwait(false);
 
             var response = default(HttpResponseMessage);
             var timeStamp = Timestamp.Current;
@@ -91,6 +92,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             finally
             {
+                postCall?.Invoke();
                 Disposable.Dispose(response, response?.Content, request);
                 Metrics?.ReportResponseTime(timeStamp.Elapsed);
             }
@@ -101,18 +103,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             => Endpoint.Equals(context.LocalEndpoint)
                 ? Task.FromResult(new Result<bool>(term, true))
-                : SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalEndpoint, term, lastLogIndex, lastLogTerm), token);
+                : SendAsync<Result<bool>, RequestVoteMessage>(new RequestVoteMessage(context.LocalEndpoint, term, lastLogIndex, lastLogTerm), null, token);
 
         Task<bool> IClusterMember.ResignAsync(CancellationToken token)
-            => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalEndpoint), token);
+            => SendAsync<bool, ResignMessage>(new ResignMessage(context.LocalEndpoint), null, token);
 
         Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync(long term, IReadOnlyList<IRaftLogEntry> entries,
             long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-            => Endpoint.Equals(context.LocalEndpoint)
-                ? Task.FromResult(new Result<bool>(term, true))
-                : SendAsync<Result<bool>, AppendEntriesMessage>(
-                    new AppendEntriesMessage(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex)
-                    { Entries = entries }, token);
+        {
+            if (Endpoint.Equals(context.LocalEndpoint))
+                return Task.FromResult(new Result<bool>(term, true));
+            var enumerator = entries.GetEnumerator();
+            return SendAsync<Result<bool>, AppendEntriesMessage>(new AppendEntriesMessage(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex) { EntryReader = enumerator.Advance }, enumerator.Dispose, token);
+        }
+
+        Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+            => SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalEndpoint, term, snapshotIndex, snapshot), null, token);
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh,
             CancellationToken token)
@@ -120,7 +126,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (Endpoint.Equals(context.LocalEndpoint))
                 return context.Metadata;
             if (metadata is null || refresh)
-                metadata = await SendAsync<MemberMetadata, MetadataMessage>(new MetadataMessage(context.LocalEndpoint), token).ConfigureAwait(false);
+                metadata = await SendAsync<MemberMetadata, MetadataMessage>(new MetadataMessage(context.LocalEndpoint), null, token).ConfigureAwait(false);
             return metadata;
         }
 
@@ -135,13 +141,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         bool IEquatable<IClusterMember>.Equals(IClusterMember other) => Endpoint.Equals(other?.Endpoint);
 
         internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
-            => SendAsync<TResponse, CustomMessage<TResponse>>(new CustomMessage<TResponse>(context.LocalEndpoint, message, responseReader) { RespectLeadership = respectLeadership }, token);
+            => SendAsync<TResponse, CustomMessage<TResponse>>(new CustomMessage<TResponse>(context.LocalEndpoint, message, responseReader) { RespectLeadership = respectLeadership }, null, token);
 
         Task<TResponse> ISubscriber.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
             => SendMessageAsync(message, responseReader, false, token);
 
         internal Task SendSignalAsync(CustomMessage message, CancellationToken token) =>
-            SendAsync<IMessage, CustomMessage>(message, token);
+            SendAsync<IMessage, CustomMessage>(message, null, token);
 
 
         Task ISubscriber.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)

@@ -235,8 +235,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Establishes metrics collector.
         /// </summary>
-        public MetricsCollector Metrics 
-        { 
+        public MetricsCollector Metrics
+        {
             protected get;
             set;
         }
@@ -292,7 +292,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.Acquire(token).ConfigureAwait(false))
             {
                 var currentState = Interlocked.Exchange(ref state, null);
-                await currentState.StopAsync().OnCompleted().ConfigureAwait(false);
+                await currentState.StopAsync().ConfigureAwait(false);
                 currentState.Dispose();
             }
         }
@@ -339,32 +339,58 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => members.FirstOrDefault(matcher.AsFunc());
 
         /// <summary>
+        /// Handles InstallSnapshot message received from remote cluster member.
+        /// </summary>
+        /// <param name="sender">The sender of the snapshot message.</param>
+        /// <param name="senderTerm">Term value provided by InstallSnapshot message sender.</param>
+        /// <param name="snapshot">The snapshot to be installed into local audit trail.</param>
+        /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
+        /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
+        protected async Task<Result<bool>> ReceiveSnapshot(TMember sender, long senderTerm, IRaftLogEntry snapshot, long snapshotIndex)
+        {
+            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+                if (snapshot.IsSnapshot && senderTerm >= auditTrail.Term  && snapshotIndex > auditTrail.GetLastIndex(true))
+                {
+                    await StepDown(senderTerm).ConfigureAwait(false);
+                    Leader = sender;
+                    await auditTrail.AppendAsync(snapshot, snapshotIndex).ConfigureAwait(false);
+                    return new Result<bool>(auditTrail.Term, true);
+                }
+                else
+                    return new Result<bool>(auditTrail.Term, false);
+        }
+
+        /// <summary>
         /// Handles AppendEntries message received from remote cluster member.
         /// </summary>
         /// <param name="sender">The sender of the replica message.</param>
         /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
-        /// <param name="entries">The entries to be committed locally.</param>
+        /// <param name="entries">The stateful function that provides entries to be committed locally.</param>
         /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
         /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, IReadOnlyList<IRaftLogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
+        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, Func<ValueTask<IRaftLogEntry>> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-                if (auditTrail.Term <= senderTerm &&
-                    await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, transitionCancellation.Token).ConfigureAwait(false))
+            {
+                var result = false;
+                if (auditTrail.Term <= senderTerm && await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, transitionCancellation.Token).ConfigureAwait(false))
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
-
-                    if (entries.Count > 0L)
-                        await auditTrail.AppendAsync(entries, prevLogIndex + 1L).ConfigureAwait(false);
-                    var result = commitIndex <= auditTrail.GetLastIndex(true) ||
-                                 await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
-                    return new Result<bool>(auditTrail.Term, result);
+                    /*
+                     * AppendAsync is called with skipCommitted=true because HTTP response from the previous
+                     * replication might fail but the log entry was committed by the local node.
+                     * In this case the leader repeat its replication from the same prevLogIndex which is already committed locally.
+                     * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
+                     * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
+                     */
+                    await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, transitionCancellation.Token).ConfigureAwait(false);
+                    result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
                 }
-                else
-                    return new Result<bool>(auditTrail.Term, false);
+                return new Result<bool>(auditTrail.Term, result);
+            }
         }
 
         /// <summary>
@@ -386,7 +412,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Leader = null;
                     await StepDown(senderTerm).ConfigureAwait(false);
                 }
-                else if(state is FollowerState follower)
+                else if (state is FollowerState follower)
                     follower.Refresh();
                 else
                     goto reject;
@@ -480,8 +506,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task WriteAsync(IReadOnlyList<IRaftLogEntry> entries, bool waitForCommit, TimeSpan timeout)
         {
-            var index = await auditTrail.AppendAsync(entries).ConfigureAwait(false);
-            if(!(state is LeaderState leaderState))
+            var index = await auditTrail.AppendAsync(entries, transitionCancellation.Token).ConfigureAwait(false);
+            if (!(state is LeaderState leaderState))
                 throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
             if (waitForCommit)
                 await auditTrail.WaitForCommitAsync(index + entries.Count - 1L, timeout, leaderState.Token).ConfigureAwait(false);

@@ -59,7 +59,7 @@ namespace DotNext.Reflection
                 {
                     method = typeof(BitwiseComparer<>)
                                 .MakeGenericType(RuntimeType)
-                                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new []{ RuntimeType, typeof(bool) });
+                                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { RuntimeType, typeof(bool) });
                     Debug.Assert(!(method is null));
                     GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
                 }

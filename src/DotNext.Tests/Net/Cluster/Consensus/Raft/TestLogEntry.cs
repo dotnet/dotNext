@@ -2,8 +2,8 @@ using System;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using TextMessage = Messaging.TextMessage;
     using ILogEntry = Replication.ILogEntry;
+    using TextMessage = Messaging.TextMessage;
 
     internal sealed class TestLogEntry : TextMessage, IRaftLogEntry
     {

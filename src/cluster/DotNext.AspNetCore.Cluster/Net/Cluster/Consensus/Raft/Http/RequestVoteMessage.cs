@@ -36,11 +36,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
         }
 
-        private protected override void FillRequest(HttpRequestMessage request)
+        internal override ValueTask FillRequestAsync(HttpRequestMessage request)
         {
-            base.FillRequest(request);
             request.Headers.Add(RecordIndexHeader, LastLogIndex.ToString(InvariantCulture));
             request.Headers.Add(RecordTermHeader, LastLogTerm.ToString(InvariantCulture));
+            return base.FillRequestAsync(request);
         }
 
         Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response);

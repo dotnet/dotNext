@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.IO.Pipelines;
 using System.Net.Mime;
@@ -7,53 +6,34 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
-    internal sealed class FileMessage : IDisposableMessage
+    internal sealed class FileMessage : FileStream, IDisposableMessage
     {
-        private readonly FileInfo file;
+        private readonly string messageName;
 
-        private FileMessage(string name, ContentType type)
+        internal FileMessage(string name, ContentType type)
+            : base(Path.GetTempFileName(), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, 1024, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.DeleteOnClose)
         {
-            Name = name;
+            messageName = name;
             Type = type;
-            file = new FileInfo(Path.GetTempFileName());
         }
 
-        internal static async Task<FileMessage> CreateAsync(IMessage source, CancellationToken token)
-        {
-            var result = new FileMessage(source.Name, source.Type);
-            using (var stream = result.file.Create())
-            {
-                await source.CopyToAsync(stream, token).ConfigureAwait(false);
-            }
-            return result;
-        }
-
-        async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
-        {
-            using (var stream = file.Open(FileMode.Open))
-            {
-                await stream.CopyToAsync(output, 1024, token).ConfigureAwait(false);
-            }
-        }
+        Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => CopyToAsync(output);
 
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             //TODO: Should be rewritten for .NET Standard 2.1
-            using (var stream = file.Open(FileMode.Open))
-            using (var message = new StreamMessage(stream, true, Name, Type))
+            using (var message = new StreamMessage(this, true, messageName, Type))
             {
                 await ((IMessage)message).CopyToAsync(output, token).ConfigureAwait(false);
             }
         }
 
-        long? IDataTransferObject.Length => file.Length;
+        long? IDataTransferObject.Length => Length;
 
         bool IDataTransferObject.IsReusable => false;
 
-        public string Name { get; }
+        string IMessage.Name => messageName;
 
         public ContentType Type { get; }
-
-        void IDisposable.Dispose() => file.Delete();
     }
 }

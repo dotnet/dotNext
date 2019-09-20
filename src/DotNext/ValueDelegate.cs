@@ -11,8 +11,8 @@ using TR = InlineIL.TypeRef;
 
 namespace DotNext
 {
-    using Intrinsics = Runtime.Intrinsics;
     using Runtime.CompilerServices;
+    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Represents a pointer to parameterless method with <see cref="void"/> return type.

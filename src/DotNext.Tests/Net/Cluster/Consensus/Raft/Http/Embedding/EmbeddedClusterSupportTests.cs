@@ -264,15 +264,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                         throw new Exception();
                 }
                 //check metrics
-                var numberOfRequests = 
+                var numberOfRequests =
                     (host1.Services.GetService<MetricsCollector>() as TestMetricsCollector).RequestCount +
                     (host2.Services.GetService<MetricsCollector>() as TestMetricsCollector).RequestCount +
                     (host3.Services.GetService<MetricsCollector>() as TestMetricsCollector).RequestCount;
-                
+
                 var hasLeader = (host1.Services.GetService<MetricsCollector>() as TestMetricsCollector).LeaderStateIndicator |
                     (host2.Services.GetService<MetricsCollector>() as TestMetricsCollector).LeaderStateIndicator |
                     (host3.Services.GetService<MetricsCollector>() as TestMetricsCollector).LeaderStateIndicator;
-                
+
                 var heartbeats = (host1.Services.GetService<MetricsCollector>() as TestMetricsCollector).HeartbeatCount +
                     (host2.Services.GetService<MetricsCollector>() as TestMetricsCollector).HeartbeatCount +
                     (host3.Services.GetService<MetricsCollector>() as TestMetricsCollector).HeartbeatCount;
@@ -347,8 +347,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 object service = host.Services.GetService<ICluster>();
                 NotNull(service);
                 var count = 0;
-                foreach(var member in host.Services.GetService<ICluster>().Members)
-                    if(!member.IsRemote)
+                foreach (var member in host.Services.GetService<ICluster>().Members)
+                    if (!member.IsRemote)
                         count += 1;
                 Equal(1, count);
                 service = host.Services.GetService<IExpandableCluster>();

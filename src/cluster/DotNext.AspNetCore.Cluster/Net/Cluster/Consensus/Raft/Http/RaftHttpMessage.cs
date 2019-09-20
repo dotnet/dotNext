@@ -1,16 +1,19 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
+using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal abstract class RaftHttpMessage : HttpMessage
     {
+        private protected static readonly ValueParser<DateTimeOffset> DateTimeParser = (string str, out DateTimeOffset value) => HeaderUtils.TryParseDate(str, out value);
 
         //request - represents Term value according with Raft protocol
         //response - represents Term value of the reply node
@@ -26,10 +29,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             ConsensusTerm = ParseHeader(TermHeader, headers, Int64Parser);
         }
 
-        private protected override void FillRequest(HttpRequestMessage request)
+        internal override ValueTask FillRequestAsync(HttpRequestMessage request)
         {
             request.Headers.Add(TermHeader, ConsensusTerm.ToString(InvariantCulture));
-            base.FillRequest(request);
+            return base.FillRequestAsync(request);
         }
 
         private protected static new async Task<Result<bool>> ParseBoolResponse(HttpResponseMessage response)

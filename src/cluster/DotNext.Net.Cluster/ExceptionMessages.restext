@@ -5,3 +5,4 @@ EntrySetIsEmpty=Unable to append empty set of entries
 LocalNodeNotLeader=The local cluster member is not a leader
 InvalidEntryIndex=Log entry with index {0} doesn't exist in the audit trail
 InvalidAppendIndex=Committed log entry cannot be overwritten
+SnapshotDetected=The method cannot be used for snapshot installation

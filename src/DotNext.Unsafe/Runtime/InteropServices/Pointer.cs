@@ -89,7 +89,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Size of type <typeparamref name="T"/>, in bytes.
         /// </summary>
-        public unsafe static int Size => sizeof(T);
+        public static unsafe int Size => sizeof(T);
 
         private readonly unsafe T* value;
 
@@ -471,7 +471,7 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe Stream AsStream(long count, FileAccess access = FileAccess.ReadWrite)
         {
-            if(IsNull)
+            if (IsNull)
                 return Stream.Null;
             count = count * Size;
             return new UnmanagedMemoryStream(As<byte>().value, count, count, access);

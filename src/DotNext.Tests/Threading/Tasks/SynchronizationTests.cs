@@ -19,9 +19,11 @@ namespace DotNext.Threading.Tasks
         [Fact]
         public static async Task WaitAsyncWithToken()
         {
-            var source = new CancellationTokenSource(100);
-            var task = Task.Delay(500);
-            await ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(InfiniteTimeSpan, source.Token));
+            using (var source = new CancellationTokenSource(100))
+            {
+                var task = Task.Delay(500);
+                await ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(InfiniteTimeSpan, source.Token));
+            }
         }
     }
 }

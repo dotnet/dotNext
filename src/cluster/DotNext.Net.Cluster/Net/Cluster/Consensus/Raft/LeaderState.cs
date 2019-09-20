@@ -9,8 +9,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Replication;
     using Threading;
-    using Timestamp = Diagnostics.Timestamp;
     using static Threading.Tasks.Continuation;
+    using Timestamp = Diagnostics.Timestamp;
 
     internal sealed class LeaderState : RaftState
     {
@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ReplicatedWithCurrentTerm,  //means that node accepts the entries with the current term
             Canceled
         }
-        
+
         private static readonly ValueFunc<long, long> IndexDecrement = new ValueFunc<long, long>(DecrementIndex);
         private Task heartbeatTask;
         private readonly long currentTerm;
@@ -65,10 +65,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Result<bool> result;
             using (var entries = currentIndex >= member.NextIndex ? await transactionLog.GetEntriesAsync(member.NextIndex, token).ConfigureAwait(false) : new LogEntryList<IRaftLogEntry>())
             {
-                logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
-                //trying to replicate
-                result = await member.AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false);
-
+                if (entries.SnapshotIndex is long snapshotIndex)
+                {
+                    logger.InstallingSnapshot(snapshotIndex);
+                    //install snapshot
+                    result = await member.InstallSnapshotAsync(term, entries[0], snapshotIndex, token).ConfigureAwait(false);
+                    currentIndex = snapshotIndex;
+                }
+                else
+                {
+                    logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
+                    //trying to replicate
+                    result = await member.AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false);
+                }
+                //analyze result and decrease node index when it is out-of-sync with the current node
                 if (result.Value)
                 {
                     logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
@@ -96,7 +106,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             ICollection<Task<Result<MemberHealthStatus>>> tasks = new LinkedList<Task<Result<MemberHealthStatus>>>();
             //send heartbeat in parallel
             var commitIndex = transactionLog.GetLastIndex(true);
-            Func<Task<Result<bool>>, Result<MemberHealthStatus>> continuation = HealthStatusContinuation; 
+            Func<Task<Result<bool>>, Result<MemberHealthStatus>> continuation = HealthStatusContinuation;
             foreach (var member in stateMachine.Members)
                 if (member.IsRemote)
                     tasks.Add(AppendEntriesAsync(member, commitIndex, currentTerm, transactionLog, stateMachine.Logger, timerCancellation.Token)
@@ -153,12 +163,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail)
         {
-            while(await DoHeartbeats(auditTrail).ConfigureAwait(false))
-            {
-                var task = await forcedReplication.Wait(period, timerCancellation.Token).OnCompleted().ConfigureAwait(false);
-                if(task.IsCanceled)
-                    break;
-            }
+            while (await DoHeartbeats(auditTrail).ConfigureAwait(false))
+                await forcedReplication.Wait(period, timerCancellation.Token).ConfigureAwait(false);
         }
 
         internal void ForceReplication() => forcedReplication.Set(true);
@@ -170,9 +176,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="transactionLog">Transaction log.</param>
         internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog)
         {
-            if (transactionLog != null)
-                foreach (var member in stateMachine.Members)
-                    member.NextIndex = transactionLog.GetLastIndex(false) + 1;
+            foreach (var member in stateMachine.Members)
+                member.NextIndex = transactionLog.GetLastIndex(false) + 1;
             heartbeatTask = DoHeartbeats(period, transactionLog);
             return this;
         }
@@ -183,7 +188,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal override Task StopAsync()
         {
             timerCancellation.Cancel(false);
-            return heartbeatTask;
+            return heartbeatTask.OnCompleted();
         }
 
         protected override void Dispose(bool disposing)

@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Mime;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
@@ -88,12 +88,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Message = new InboundMessageContent(request);
         }
 
-        private protected sealed override void FillRequest(HttpRequestMessage request)
+        internal sealed override ValueTask FillRequestAsync(HttpRequestMessage request)
         {
-            base.FillRequest(request);
             request.Headers.Add(DeliveryModeHeader, Mode.ToString());
             request.Headers.Add(RespectLeadershipHeader, RespectLeadership.ToString(InvariantCulture));
             request.Content = new OutboundMessageContent(Message);
+            return base.FillRequestAsync(request);
         }
 
         public Task SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
