@@ -129,7 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents mutator of collection of members.
         /// </summary>
         /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
-        protected delegate void MemberCollectionMutator(in MutableMemberCollection members);
+        protected delegate void MemberCollectionMutator(MutableMemberCollection members);
 
 
         private volatile ICollection<TMember> members;
@@ -205,7 +205,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private void ChangeMembers(MemberCollectionMutator mutator)
         {
             var members = new MutableMemberCollection(this.members);
-            mutator(in members);
+            mutator(members);
             this.members = members.AsLinkedList();
         }
 
