@@ -180,22 +180,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected bool IsLeaderLocal => state is LeaderState;
 
         IAuditTrail<IRaftLogEntry> IReplicationCluster<IRaftLogEntry>.AuditTrail => auditTrail;
+        IAuditTrail IReplicationCluster.AuditTrail => auditTrail;
 
         /// <summary>
         /// Associates audit trail with the current instance.
         /// </summary>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public IPersistentState AuditTrail
         {
-            set
-            {
-                if (auditTrail is InMemoryAuditTrail && value is null)
-                    return;
-                auditTrail = value;
-            }
+            set => auditTrail = value ?? throw new ArgumentNullException(nameof(value));
             get => auditTrail;
         }
-
-        IAuditTrail IReplicationCluster.AuditTrail => auditTrail;
 
         /// <summary>
         /// Gets token that can be used for all internal asynchronous operations.
