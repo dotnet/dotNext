@@ -756,7 +756,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     readLock.Dispose();
                     throw;
                 }
-            else if(snapshot.Length > 0)
+            else if (snapshot.Length > 0)
                 try
                 {
                     result = new SingletonEntryList(await snapshot.ReadAsync(token).ConfigureAwait(false), readLock);
@@ -1028,7 +1028,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private ValueTask ForceCompaction(CancellationToken token)
         {
             SnapshotBuilder builder;
-            if(state.CommitIndex - snapshot.Index > recordsPerPartition && (builder = CreateSnapshotBuilder()) != null)
+            if (state.CommitIndex - snapshot.Index > recordsPerPartition && (builder = CreateSnapshotBuilder()) != null)
                 try
                 {
                     return ForceCompaction(builder, token);

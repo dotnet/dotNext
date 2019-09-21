@@ -348,7 +348,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async Task<Result<bool>> ReceiveSnapshot(TMember sender, long senderTerm, IRaftLogEntry snapshot, long snapshotIndex)
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
-                if (snapshot.IsSnapshot && senderTerm >= auditTrail.Term  && snapshotIndex > auditTrail.GetLastIndex(true))
+                if (snapshot.IsSnapshot && senderTerm >= auditTrail.Term && snapshotIndex > auditTrail.GetLastIndex(true))
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
