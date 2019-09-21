@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipelines;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -10,9 +11,7 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using System.IO.Pipelines;
     using static Messaging.Messenger;
-    using ILogEntry = Replication.ILogEntry;
 
     public sealed class PersistentStateTests : Assert
     {

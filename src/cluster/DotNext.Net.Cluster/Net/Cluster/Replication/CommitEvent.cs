@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Replication
 {
-    using  Threading;
+    using Threading;
 
     internal static class CommitEvent
     {

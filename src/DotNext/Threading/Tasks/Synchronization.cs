@@ -140,7 +140,7 @@ namespace DotNext.Threading.Tasks
                 return CompletedTask<bool, BooleanConst.True>.Task;
             if (timeout == TimeSpan.Zero)
                 return CompletedTask<bool, BooleanConst.False>.Task;    //if timeout is zero fail fast
-            if(timeout > InfiniteTimeSpan)
+            if (timeout > InfiniteTimeSpan)
                 return WaitAsyncImpl(task, timeout, token);
             return !token.CanBeCanceled && task is Task<bool> boolTask ? boolTask : task.ContinueWith<bool>(TrueContinuation, token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
         }
