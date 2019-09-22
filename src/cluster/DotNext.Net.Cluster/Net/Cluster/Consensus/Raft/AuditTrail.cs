@@ -16,8 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static async Task<bool> IsUpToDateAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
         {
             var localIndex = auditTrail.GetLastIndex(false);
-            long localTerm = await auditTrail.GetTermAsync(localIndex, token).ConfigureAwait(false);
-            return index >= localIndex && term >= localTerm;
+            return index >= localIndex && term >= await auditTrail.GetTermAsync(localIndex, token).ConfigureAwait(false);
         }
 
         internal static async Task<bool> ContainsAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
