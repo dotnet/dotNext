@@ -22,6 +22,63 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Canceled
         }
 
+        private readonly struct Replicator : ILogEntryReader<IRaftLogEntry, Result<bool>>
+        {
+            private readonly IRaftClusterMember member;
+            private readonly long commitIndex;
+            private readonly long term;
+            private readonly long precedingIndex;
+            private readonly long precedingTerm;
+            private readonly long currentIndex;
+            private readonly ILogger logger;
+
+            internal Replicator(IRaftClusterMember member,
+                long currentIndex,
+                long commitIndex,
+                long term,
+                long precedingIndex,
+                long precedingTerm,
+                ILogger logger)
+            {
+                this.currentIndex = currentIndex;
+                this.member = member;
+                this.term = term;
+                this.precedingIndex = precedingIndex;
+                this.precedingTerm = precedingTerm;
+                this.commitIndex = commitIndex;
+                this.logger = logger;
+            }
+
+            async ValueTask<Result<bool>> ILogEntryReader<IRaftLogEntry, Result<bool>>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
+            {
+                logger.ReplicationStarted(member.Endpoint, currentIndex);
+                Result<bool> result;
+                if (snapshotIndex.HasValue)
+                {
+                    logger.InstallingSnapshot(snapshotIndex.Value);
+                    //install snapshot
+                    result = await member.InstallSnapshotAsync(term, entries[0], snapshotIndex.Value, token).ConfigureAwait(false);
+                }
+                else
+                {
+                    logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
+                    //trying to replicate
+                    result = await member.AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false);
+                }
+                //analyze result and decrease node index when it is out-of-sync with the current node
+                if (result.Value)
+                {
+                    logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
+                    member.NextIndex.VolatileWrite(currentIndex + 1);
+                    //checks whether the at least one entry from current term is stored on this node
+                    result = result.SetValue(entries.ContainsTerm<TEntryImpl, TList>(term));
+                }
+                else
+                    logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
+                return result;
+            }
+        }
+
         private static readonly ValueFunc<long, long> IndexDecrement = new ValueFunc<long, long>(DecrementIndex);
         private Task heartbeatTask;
         private readonly long currentTerm;
@@ -53,45 +110,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         }
 
-        //true if at least one entry from current term is stored on this node; otherwise, false
-        private static async Task<Result<bool>> AppendEntriesAsync(IRaftClusterMember member, long commitIndex,
-            long term,
-            IAuditTrail<IRaftLogEntry> transactionLog, ILogger logger, CancellationToken token)
-        {
-            var currentIndex = transactionLog.GetLastIndex(false);
-            logger.ReplicationStarted(member.Endpoint, currentIndex);
-            var precedingIndex = Math.Max(0, member.NextIndex - 1);
-            var precedingTerm = await transactionLog.GetTermAsync(precedingIndex, token).ConfigureAwait(false);
-            Result<bool> result;
-            using (var entries = currentIndex >= member.NextIndex ? await transactionLog.GetEntriesAsync(member.NextIndex, token).ConfigureAwait(false) : new LogEntryList<IRaftLogEntry>())
-            {
-                if (entries.SnapshotIndex is long snapshotIndex)
-                {
-                    logger.InstallingSnapshot(snapshotIndex);
-                    //install snapshot
-                    result = await member.InstallSnapshotAsync(term, entries[0], snapshotIndex, token).ConfigureAwait(false);
-                    currentIndex = snapshotIndex;
-                }
-                else
-                {
-                    logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
-                    //trying to replicate
-                    result = await member.AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false);
-                }
-                //analyze result and decrease node index when it is out-of-sync with the current node
-                if (result.Value)
-                {
-                    logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
-                    member.NextIndex.VolatileWrite(currentIndex + 1);
-                    //checks whether the at least one entry from current term is stored on this node
-                    result = result.SetValue(entries.Any(entry => entry.Term == term));
-                }
-                else
-                    logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
-            }
-            return result;
-        }
-
         private bool CheckTerm(long term)
         {
             if (term <= currentTerm)
@@ -103,45 +121,45 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> transactionLog)
         {
             var timeStamp = Timestamp.Current;
-            ICollection<Task<Result<MemberHealthStatus>>> tasks = new LinkedList<Task<Result<MemberHealthStatus>>>();
+            ICollection<Task<Result<bool>>> tasks = new LinkedList<Task<Result<bool>>>();
             //send heartbeat in parallel
             var commitIndex = transactionLog.GetLastIndex(true);
-            Func<Task<Result<bool>>, Result<MemberHealthStatus>> continuation = HealthStatusContinuation;
+            var term = currentTerm;
             foreach (var member in stateMachine.Members)
                 if (member.IsRemote)
-                    tasks.Add(AppendEntriesAsync(member, commitIndex, currentTerm, transactionLog, stateMachine.Logger, timerCancellation.Token)
-                        .ContinueWith(continuation, default, TaskContinuationOptions.ExecuteSynchronously,
-                            TaskScheduler.Current));
+                {
+                    long currentIndex = transactionLog.GetLastIndex(false),
+                        precedingIndex = Math.Max(0, member.NextIndex - 1),
+                        precedingTerm = await transactionLog.GetTermAsync(precedingIndex, timerCancellation.Token).ConfigureAwait(false);
+                    tasks.Add(transactionLog.ReadEntriesAsync<Replicator, Result<bool>>(new Replicator(member, currentIndex, commitIndex, term, precedingIndex, precedingTerm, stateMachine.Logger), member.NextIndex, timerCancellation.Token).AsTask());
+                }
             var quorum = 1;  //because we know that the entry is replicated in this node
             var commitQuorum = 1;
-            var term = currentTerm;
             foreach (var task in tasks)
-            {
-                var result = await task.ConfigureAwait(false);
-                term = Math.Max(term, result.Term);
-                switch (result.Value)
+                try
                 {
-                    case MemberHealthStatus.Canceled: //leading was canceled
-                        //ensure that all requests are canceled
-                        await Task.WhenAll(tasks).ConfigureAwait(false);
-                        Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
-                        return false;
-                    case MemberHealthStatus.Replicated:
-                        quorum += 1;
-                        commitQuorum -= 1;
-                        break;
-                    case MemberHealthStatus.ReplicatedWithCurrentTerm:
-                        quorum += 1;
-                        commitQuorum += 1;
-                        break;
-                    case MemberHealthStatus.Unavailable:
-                        quorum -= 1;
-                        commitQuorum -= 1;
-                        break;
+                    var result = await task.ConfigureAwait(false);
+                    term = Math.Max(term, result.Term);
+                    quorum += 1;
+                    commitQuorum += result.Value ? 1 : -1;
                 }
-
-                task.Dispose();
-            }
+                catch (MemberUnavailableException e)
+                {
+                    quorum -= 1;
+                    commitQuorum -= 1;
+                }
+                catch (OperationCanceledException e)
+                {
+                    //leading was canceled
+                    //ensure that all requests are canceled
+                    await Task.WhenAll(tasks).ConfigureAwait(false);
+                    Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
+                    return false;
+                }
+                finally
+                {
+                    task.Dispose();
+                }
 
             Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
             tasks.Clear();

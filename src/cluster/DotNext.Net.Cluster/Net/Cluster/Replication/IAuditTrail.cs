@@ -66,29 +66,11 @@ namespace DotNext.Net.Cluster.Replication
     }
 
     /// <summary>
-    /// Represents a read-only portion of audit trail.
-    /// </summary>
-    /// <remarks>
-    /// The log entries are valid during lifetime of the segment. If segment is disposed then all entries
-    /// obtained from it have undefined state.
-    /// </remarks>
-    /// <typeparam name="LogEntry">The type of the log entry maintained by the audit trail.</typeparam>
-    public interface IAuditTrailSegment<out LogEntry> : IReadOnlyList<LogEntry>, IDisposable
-        where LogEntry : class, ILogEntry
-    {
-        /// <summary>
-        /// Returns non-<see langword="null"/> value if the first log entry in this list is a snapshot entry
-        /// that has the specific index.
-        /// </summary>
-        long? SnapshotIndex { get; }
-    }
-
-    /// <summary>
     /// Represents audit trail responsible for maintaining log entries.
     /// </summary>
-    /// <typeparam name="LogEntry">The type of the log entry maintained by the audit trail.</typeparam>
-    public interface IAuditTrail<LogEntry> : IAuditTrail
-        where LogEntry : class, ILogEntry
+    /// <typeparam name="TEntry">The interface type of the log entry maintained by the audit trail.</typeparam>
+    public interface IAuditTrail<TEntry> : IAuditTrail
+        where TEntry : class, ILogEntry
     {
         /// <summary>
         /// Gets log entries in the specified range.
@@ -98,6 +80,9 @@ namespace DotNext.Net.Cluster.Replication
         /// In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="IDisposable.Dispose"/> to release resources associated
         /// with the audit trail segment with entries.
         /// </remarks>
+        /// <typeparam name="TReader">The type of the reader.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="reader">The reader of the log entries.</param>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
         /// <param name="endIndex">The index of the last requested log entry, inclusively.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
@@ -105,17 +90,22 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        ValueTask<IAuditTrailSegment<LogEntry>> GetEntriesAsync(long startIndex, long endIndex, CancellationToken token = default);
+        ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token = default)
+            where TReader : struct, ILogEntryReader<TEntry, TResult>;
 
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
         /// </summary>
+        /// <typeparam name="TReader">The type of the reader.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="reader">The reader of the log entries.</param>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        ValueTask<IAuditTrailSegment<LogEntry>> GetEntriesAsync(long startIndex, CancellationToken token = default);
+        ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default)
+            where TReader : struct, ILogEntryReader<TEntry, TResult>;
 
         /// <summary>
         /// Adds uncommitted log entries into this log.
@@ -129,7 +119,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>.</exception>
-        ValueTask AppendAsync(IReadOnlyList<LogEntry> entries, long startIndex, bool skipCommitted = false, CancellationToken token = default);
+        ValueTask AppendAsync(IReadOnlyList<TEntry> entries, long startIndex, bool skipCommitted = false, CancellationToken token = default);
 
         /// <summary>
         /// Adds uncommitted log entries into this log.
@@ -143,7 +133,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>; or the collection of entries contains the snapshot entry.</exception>
-        ValueTask AppendAsync(Func<ValueTask<LogEntry>> supplier, long startIndex, bool skipCommitted = false, CancellationToken token = default);  //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
+        ValueTask AppendAsync(Func<ValueTask<TEntry>> supplier, long startIndex, bool skipCommitted = false, CancellationToken token = default);  //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
 
         /// <summary>
         /// Adds uncommitted log entries to the end of this log.
@@ -156,7 +146,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
         /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
-        ValueTask<long> AppendAsync(IReadOnlyList<LogEntry> entries, CancellationToken token = default);
+        ValueTask<long> AppendAsync(IReadOnlyList<TEntry> entries, CancellationToken token = default);
 
         /// <summary>
         /// Adds uncommitted log entry to the end of this log.
@@ -165,14 +155,14 @@ namespace DotNext.Net.Cluster.Replication
         /// This is the only method that can be used for snapshot installation.
         /// The behavior of the method depends on the <see cref="ILogEntry.IsSnapshot"/> property.
         /// If log entry is a snapshot then the method erases all committed log entries prior to <paramref name="startIndex"/>.
-        /// If it is not, the method behaves in the same way as <see cref="AppendAsync(IReadOnlyList{LogEntry}, long, bool, CancellationToken)"/>.
+        /// If it is not, the method behaves in the same way as <see cref="AppendAsync(IReadOnlyList{TEntry}, long, bool, CancellationToken)"/>.
         /// </remarks>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
         /// <param name="startIndex">The index of the </param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="entry"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
-        ValueTask AppendAsync(LogEntry entry, long startIndex);
+        ValueTask AppendAsync(TEntry entry, long startIndex);
 
         /// <summary>
         /// Gets the first ephemeral log entry that is present in the empty log.
@@ -181,6 +171,6 @@ namespace DotNext.Net.Cluster.Replication
         /// The first log entry always represents NOP database command and is already committed.
         /// Index of such entry is always 0.
         /// </remarks>
-        ref readonly LogEntry First { get; }
+        ref readonly TEntry First { get; }
     }
 }
