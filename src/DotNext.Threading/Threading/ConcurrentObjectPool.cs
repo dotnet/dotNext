@@ -319,6 +319,12 @@ namespace DotNext.Threading
         }
 
         /// <summary>
+        /// Rents the object from this pool.
+        /// </summary>
+        /// <returns>The object allows to control lifetime of the rent.</returns>
+        public IRental Rent() => Rent(CancellationToken.None);
+
+        /// <summary>
         /// Releases all resources associated with this object pool.
         /// </summary>
         /// <remarks>
