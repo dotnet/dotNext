@@ -299,14 +299,17 @@ namespace DotNext.Threading
         /// <summary>
         /// Rents the object from this pool.
         /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The object allows to control lifetime of the rent.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [RuntimeFeatures(Augmentation = true)]
-        public IRental Rent()
+        public IRental Rent(CancellationToken token)
         {
             waitCount.IncrementAndGet();
-            for (var spinner = new SpinWait(); ; spinner.SpinOnce())
+            var nextRental = new ValueFunc<Rental, Rental>(SelectNextRental);
+            for (var spinner = new SpinWait(); ; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
             {
-                var rental = current.UpdateAndGet(new ValueFunc<Rental, Rental>(SelectNextRental));
+                var rental = current.UpdateAndGet(in nextRental);
                 if (!rental.TryAcquire()) continue;
                 waitCount.DecrementAndGet();
                 if (!factory.IsEmpty)
