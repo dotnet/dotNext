@@ -108,8 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (snapshotIndex.HasValue)
                 {
-                    currentIndex = snapshotIndex.Value;
-                    logger.InstallingSnapshot(snapshotIndex.Value);
+                    logger.InstallingSnapshot(currentIndex = snapshotIndex.Value);
                     replicationAwaiter = member.InstallSnapshotAsync(term, entries[0], currentIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
                 else
