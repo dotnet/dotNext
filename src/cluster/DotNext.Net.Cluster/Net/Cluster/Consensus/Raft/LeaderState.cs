@@ -117,8 +117,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     replicationAwaiter = member.AppendEntriesAsync<TEntryImpl, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
                 replicatedWithCurrentTerm = ContainsTerm<TEntryImpl, TList>(entries, term);
-
-                replicationAwaiter.OnCompleted(Complete);
+                if(replicationAwaiter.IsCompleted)
+                    Complete();
+                else
+                    replicationAwaiter.OnCompleted(Complete);
                 return new ValueTask<Result<ReplicationStatus>>(Task);
             }
         }
