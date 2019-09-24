@@ -56,10 +56,60 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal Task<Result<ReplicationStatus>> Start(IAuditTrail<IRaftLogEntry> transactionLog)
             {
-                currentIndex = transactionLog.GetLastIndex(false);
-                logger.ReplicationStarted(member.Endpoint, currentIndex);
-                transactionLog.ReadEntriesAsync<Replicator, Result<ReplicationStatus>>(this, member.NextIndex, token);
+                logger.ReplicationStarted(member.Endpoint, currentIndex = transactionLog.GetLastIndex(false));
+                try
+                {
+                    transactionLog.ReadEntriesAsync<Replicator, Result<ReplicationStatus>>(this, member.NextIndex, token);
+                }
+                catch (OperationCanceledException)
+                {
+                    SetResult(new Result<ReplicationStatus>(term, ReplicationStatus.Canceled));
+                }
+                catch (MemberUnavailableException)
+                {
+                    SetResult(new Result<ReplicationStatus>(term, ReplicationStatus.Unavailable));
+                }
+                catch (Exception e)
+                {
+                    SetException(e);
+                }
                 return Task;
+            }
+
+            private void Run(bool initialState)
+            {
+                try
+                {
+                    if(initialState)
+                    {
+                        
+                    }
+                    var result = replicationAwaiter.GetResult();
+                    replicationAwaiter = default;
+                    var status = ReplicationStatus.Replicated;
+                    //analyze result and decrease node index when it is out-of-sync with the current node
+                    if (result.Value)
+                    {
+                        logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
+                        member.NextIndex.VolatileWrite(currentIndex + 1);
+                        status += replicatedWithCurrentTerm.ToInt32();
+                    }
+                    else
+                        logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
+                    SetResult(result.SetValue(status));
+                }
+                catch (OperationCanceledException)
+                {
+                    SetResult(new Result<ReplicationStatus>(term, ReplicationStatus.Canceled));
+                }
+                catch (MemberUnavailableException)
+                {
+                    SetResult(new Result<ReplicationStatus>(term, ReplicationStatus.Unavailable));
+                }
+                catch (Exception e)
+                {
+                    SetException(e);
+                }
             }
 
             private void Complete()
