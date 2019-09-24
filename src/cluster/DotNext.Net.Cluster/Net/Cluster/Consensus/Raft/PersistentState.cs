@@ -274,7 +274,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return metadata.Offset > 0 ? new LogEntry(segment, buffer, metadata) : new LogEntry?();
             }
 
-            internal async ValueTask WriteAsync(IRaftLogEntry entry, long index)
+            internal async ValueTask WriteAsync<TEntry>(TEntry entry, long index)
+                where TEntry : IRaftLogEntry
             {
                 //calculate relative index
                 index -= FirstIndex;
@@ -700,7 +701,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private LogEntry First => new LogEntry(nullSegment, sharedBuffer, new LogEntryMetadata());
 
         private async ValueTask<TResult> ReadEntriesImplAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
-            where TReader : ILogEntryReader<IRaftLogEntry, TResult>
+            where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex > state.LastIndex)
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
@@ -759,7 +760,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         public async ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
-            where TReader : ILogEntryReader<IRaftLogEntry, TResult>
+            where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -782,7 +783,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         public async ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
-            where TReader : ILogEntryReader<IRaftLogEntry, TResult>
+            where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -864,48 +865,53 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return result;
         }
 
-        //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
-        private async ValueTask AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex, bool skipCommitted, CancellationToken token)
+        private async ValueTask AppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
+            where TEntry : IRaftLogEntry
         {
             if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            Partition partition = null;
-            for (var entry = await supplier().ConfigureAwait(false); entry != null; state.LastIndex = startIndex++, token.ThrowIfCancellationRequested(), entry = await supplier().ConfigureAwait(false))
-                if (entry.IsSnapshot)
+            Partition partition;
+            for(partition = null; !token.IsCancellationRequested && await supplier.MoveNextAsync().ConfigureAwait(false); state.LastIndex = startIndex++)
+                if (supplier.Current.IsSnapshot)
                     throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
                 else if (startIndex > state.CommitIndex)
                 {
                     await FlushIfNeeded(ref partition, GetOrCreatePartition(startIndex)).ConfigureAwait(false);
-                    await partition.WriteAsync(entry, startIndex).ConfigureAwait(false);
+                    await partition.WriteAsync(supplier.Current, startIndex).ConfigureAwait(false);
                 }
                 else if (!skipCommitted)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             await FlushIfNeeded(ref partition, null).ConfigureAwait(false);
             //flush updated state
             state.Flush();
+            token.ThrowIfCancellationRequested();
         }
 
-        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex, bool skipCommitted, CancellationToken token)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
         {
+            if(entries.RemainingCount == 0L)
+                return;
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(supplier, startIndex, skipCommitted, token).ConfigureAwait(false);
+                await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
         }
 
-        /// <summary>
+       /// <summary>
         /// Adds uncommitted log entry to the end of this log.
         /// </summary>
         /// <remarks>
         /// This is the only method that can be used for snapshot installation.
         /// The behavior of the method depends on the <see cref="ILogEntry.IsSnapshot"/> property.
         /// If log entry is a snapshot then the method erases all committed log entries prior to <paramref name="startIndex"/>.
-        /// If it is not, the method behaves in the same way as <see cref="AppendAsync(IReadOnlyList{IRaftLogEntry}, long, bool, CancellationToken)"/>.
+        /// If it is not, the method behaves in the same way as <see cref="AppendAsync{TEntryImpl}(ILogEntryProducer{TEntryImpl}, long, bool, CancellationToken)"/>.
         /// </remarks>
+        /// <typeparam name="TEntry">The actual type of the supplied log entry.</typeparam>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
-        /// <param name="startIndex">The index of the </param>
+        /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with the new entry.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="entry"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
-        public async ValueTask AppendAsync(IRaftLogEntry entry, long startIndex)
+        public async ValueTask AppendAsync<TEntry>(TEntry entry, long startIndex)
+            where TEntry : IRaftLogEntry
         {
             if (entry is null)
                 throw new ArgumentNullException(nameof(entry));
@@ -929,45 +935,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Adds uncommitted log entries into this log.
-        /// </summary>
-        /// <remarks>
-        /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
-        /// </remarks>
-        /// <param name="entries">The entries to be added into this log.</param>
-        /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
-        /// <param name="skipCommitted"><see langword="true"/> to skip committed entries from <paramref name="entries"/> instead of throwing exception.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous state of the method.</returns>
-        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
-        public async ValueTask AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex, bool skipCommitted = false, CancellationToken token = default)
-        {
-            if (entries.Count == 0)
-                return;
-            using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
-            using (var enumerator = entries.GetEnumerator())
-                await AppendAsync(enumerator.Advance, startIndex, skipCommitted, token).ConfigureAwait(false);
-        }
-
-        /// <summary>
         /// Adds uncommitted log entries to the end of this log.
         /// </summary>
         /// <remarks>
         /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
         /// </remarks>
+        /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
         /// <param name="entries">The entries to be added into this log.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
-        public async ValueTask<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, CancellationToken token = default)
+        /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
+        public async ValueTask<long> AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token = default)
+            where TEntry : IRaftLogEntry
         {
-            if (entries.Count == 0)
-                throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
+            if(entries.RemainingCount == 0L)
+                throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
             {
                 var startIndex = state.LastIndex + 1L;
-                using (var enumerator = entries.GetEnumerator())
-                    await AppendAsync(enumerator.Advance, startIndex, false, token).ConfigureAwait(false);
+                await AppendAsync(entries, startIndex, false, token).ConfigureAwait(false);
                 return startIndex;
             }
         }

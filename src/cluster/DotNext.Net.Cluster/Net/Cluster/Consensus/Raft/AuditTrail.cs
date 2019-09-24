@@ -8,9 +8,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     internal static class AuditTrail
     {
-        private readonly struct TermReader : ILogEntryReader<IRaftLogEntry, long>
+        private readonly struct TermReader : ILogEntryConsumer<IRaftLogEntry, long>
         {
-            ValueTask<long> ILogEntryReader<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
+            ValueTask<long> ILogEntryConsumer<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
                 => new ValueTask<long>(entries[0].Term);
         }
 

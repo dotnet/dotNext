@@ -91,7 +91,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token = default)
-            where TReader : ILogEntryReader<TEntry, TResult>;
+            where TReader : ILogEntryConsumer<TEntry, TResult>;
 
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
@@ -105,21 +105,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default)
-            where TReader : ILogEntryReader<TEntry, TResult>;
-
-        /// <summary>
-        /// Adds uncommitted log entries into this log.
-        /// </summary>
-        /// <remarks>
-        /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
-        /// </remarks>
-        /// <param name="entries">The entries to be added into this log.</param>
-        /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
-        /// <param name="skipCommitted"><see langword="true"/> to skip committed entries from <paramref name="entries"/> instead of throwing exception.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous state of the method.</returns>
-        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>.</exception>
-        ValueTask AppendAsync(IReadOnlyList<TEntry> entries, long startIndex, bool skipCommitted = false, CancellationToken token = default);
+            where TReader : ILogEntryConsumer<TEntry, TResult>;
 
         /// <summary>
         /// Adds uncommitted log entries into this log.
@@ -127,13 +113,15 @@ namespace DotNext.Net.Cluster.Replication
         /// <remarks>
         /// The supplying function must return <see langword="null"/> if it cannot provide more log entries.
         /// </remarks>
-        /// <param name="supplier">Stateful function that is responsible for supplying log entries.</param>
+        /// <typeparam name="TEntryImpl">The actual type of the log entry returned by the supplier.</typeparam>
+        /// <param name="entries">Stateful object that is responsible for supplying log entries.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
-        /// <param name="skipCommitted"><see langword="true"/> to skip committed entries from <paramref name="supplier"/> instead of throwing exception.</param>
+        /// <param name="skipCommitted"><see langword="true"/> to skip committed entries from <paramref name="entries"/> instead of throwing exception.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>; or the collection of entries contains the snapshot entry.</exception>
-        ValueTask AppendAsync(Func<ValueTask<TEntry>> supplier, long startIndex, bool skipCommitted = false, CancellationToken token = default);  //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
+        ValueTask AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long startIndex, bool skipCommitted = false, CancellationToken token = default)
+            where TEntryImpl : TEntry;
 
         /// <summary>
         /// Adds uncommitted log entries to the end of this log.
@@ -141,12 +129,14 @@ namespace DotNext.Net.Cluster.Replication
         /// <remarks>
         /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
         /// </remarks>
+        /// <typeparam name="TEntryImpl">The actual type of the log entry returned by the supplier.</typeparam>
         /// <param name="entries">The entries to be added into this log.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
         /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
-        ValueTask<long> AppendAsync(IReadOnlyList<TEntry> entries, CancellationToken token = default);
+        ValueTask<long> AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, CancellationToken token = default)
+            where TEntryImpl : TEntry;
 
         /// <summary>
         /// Adds uncommitted log entry to the end of this log.
@@ -155,14 +145,15 @@ namespace DotNext.Net.Cluster.Replication
         /// This is the only method that can be used for snapshot installation.
         /// The behavior of the method depends on the <see cref="ILogEntry.IsSnapshot"/> property.
         /// If log entry is a snapshot then the method erases all committed log entries prior to <paramref name="startIndex"/>.
-        /// If it is not, the method behaves in the same way as <see cref="AppendAsync(IReadOnlyList{TEntry}, long, bool, CancellationToken)"/>.
+        /// If it is not, the method behaves in the same way as <see cref="AppendAsync{TEntryImpl}(ILogEntryProducer{TEntryImpl}, long, bool, CancellationToken)"/>.
         /// </remarks>
+        /// <typeparam name="TEntryImpl">The actual type of the supplied log entry.</typeparam>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
-        /// <param name="startIndex">The index of the </param>
+        /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with the new entry.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="entry"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
-        ValueTask AppendAsync(TEntry entry, long startIndex);
+        ValueTask AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex) where TEntryImpl : TEntry;
 
         /// <summary>
         /// Gets the first ephemeral log entry that is present in the empty log.

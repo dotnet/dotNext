@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Canceled
         }
 
-        private sealed class Replicator : TaskCompletionSource<Result<ReplicationStatus>>, ILogEntryReader<IRaftLogEntry, Result<ReplicationStatus>>
+        private sealed class Replicator : TaskCompletionSource<Result<ReplicationStatus>>, ILogEntryConsumer<IRaftLogEntry, Result<ReplicationStatus>>
         {
             private static readonly ValueFunc<long, long> IndexDecrement = new ValueFunc<long, long>(DecrementIndex);
 
@@ -104,7 +104,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return false;
             }
 
-            ValueTask<Result<ReplicationStatus>> ILogEntryReader<IRaftLogEntry, Result<ReplicationStatus>>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
+            ValueTask<Result<ReplicationStatus>> ILogEntryConsumer<IRaftLogEntry, Result<ReplicationStatus>>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
             {
                 if (snapshotIndex.HasValue)
                 {

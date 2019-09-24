@@ -357,6 +357,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Handles AppendEntries message received from remote cluster member.
         /// </summary>
+        /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
         /// <param name="sender">The sender of the replica message.</param>
         /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
         /// <param name="entries">The stateful function that provides entries to be committed locally.</param>
@@ -364,7 +365,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> ReceiveEntries(TMember sender, long senderTerm, Func<ValueTask<IRaftLogEntry>> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
+        protected async Task<Result<bool>> ReceiveEntries<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
+            where TEntry : IRaftLogEntry
         {
             using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
             {
@@ -498,18 +500,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
         }
 
-        private async Task WriteAsync(IReadOnlyList<IRaftLogEntry> entries, bool waitForCommit, TimeSpan timeout)
+        private async Task WriteAsync<TEntry>(ILogEntryProducer<TEntry> entries, bool waitForCommit, TimeSpan timeout)
+            where TEntry : IRaftLogEntry
         {
+            var count = entries.RemainingCount;
+            if(count == 0L)
+                return;
             var index = await auditTrail.AppendAsync(entries, transitionCancellation.Token).ConfigureAwait(false);
             if (!(state is LeaderState leaderState))
                 throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
             if (waitForCommit)
-                await auditTrail.WaitForCommitAsync(index + entries.Count - 1L, timeout, leaderState.Token).ConfigureAwait(false);
+                await auditTrail.WaitForCommitAsync(index + count - 1L, timeout, leaderState.Token).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Writes message into the cluster according with the specified concern.
         /// </summary>
+        /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
         /// <param name="entries">The number of commands to be committed into the audit trail.</param>
         /// <param name="concern">The value describing level of acknowledgment from cluster.</param>
         /// <param name="timeout">The timeout of the asynchronous operation.</param>
@@ -517,10 +524,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
         /// <exception cref="NotSupportedException">The specified level of acknowledgment is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task WriteAsync(IReadOnlyList<IRaftLogEntry> entries, WriteConcern concern, TimeSpan timeout)
+        public Task WriteAsync<TEntry>(ILogEntryProducer<TEntry> entries, WriteConcern concern, TimeSpan timeout)
+            where TEntry : IRaftLogEntry
         {
-            if (entries.Count == 0)
-                return Task.CompletedTask;
             switch (concern)
             {
                 case WriteConcern.None:

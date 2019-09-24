@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Replication
     /// </remarks>
     /// <typeparam name="TEntry">The interface type of the log entries supported by audit trail.</typeparam>
     /// <typeparam name="TResult">The type of the result produced by the reader.</typeparam>
-    public interface ILogEntryReader<TEntry, TResult>
+    public interface ILogEntryConsumer<TEntry, TResult>
         where TEntry : class, ILogEntry
     {
         /// <summary>
