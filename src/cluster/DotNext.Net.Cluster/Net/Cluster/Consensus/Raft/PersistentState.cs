@@ -710,6 +710,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (length > int.MaxValue)
                 throw new InternalBufferOverflowException(ExceptionMessages.RangeTooBig);
             LogEntry entry;
+            ValueTask<TResult> result;
             if (partitionTable.Count > 0)
                 using (var list = new ArrayRental<LogEntry>(entryPool, (int)length))
                 {
@@ -717,7 +718,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     for (listIndex = 0; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                         if (startIndex == 0L)   //handle ephemeral entity
                             entry = First;
-                        else if (TryGetPartition(startIndex, out var partition)) //handle regular record
+                        else if (TryGetPartition(startIndex, out Partition partition)) //handle regular record
                             entry = (await partition.ReadAsync(startIndex, true, token).ConfigureAwait(false)).Value;
                         else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)    //probably the record is snapshotted
                         {
@@ -728,15 +729,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         else
                             break;
 
-                    return await reader.ReadAsync<LogEntry, ArraySegment<LogEntry>>(new ArraySegment<LogEntry>(list, 0, listIndex), list[0].SnapshotIndex, token);
+                    result = reader.ReadAsync<LogEntry, ArraySegment<LogEntry>>(new ArraySegment<LogEntry>(list, 0, listIndex), list[0].SnapshotIndex, token);
                 }
             else if (snapshot.Length > 0)
             {
                 entry = await snapshot.ReadAsync(token).ConfigureAwait(false);
-                return await reader.ReadAsync<LogEntry, SingletonEntryList>(new SingletonEntryList(entry), entry.SnapshotIndex, token);
+                result = reader.ReadAsync<LogEntry, SingletonEntryList>(new SingletonEntryList(entry), entry.SnapshotIndex, token);
             }
             else
-                return await (startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList>(new SingletonEntryList(First), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token)).ConfigureAwait(false);
+                result = startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList>(new SingletonEntryList(First), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            return await result.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -849,16 +851,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commitEvent.Set(true);
         }
 
+        private static ValueTask FlushIfNeeded(ref Partition lastPartition, Partition newPartition)
+        {
+            ValueTask result;
+            if (ReferenceEquals(lastPartition, newPartition))
+                result = new ValueTask();
+            else
+            {
+                result = new ValueTask(lastPartition?.FlushAsync() ?? Task.CompletedTask);
+                lastPartition = newPartition;
+            }
+            return result;
+        }
+
         //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
         private async ValueTask AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex, bool skipCommitted, CancellationToken token)
         {
             if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
+            Partition partition = null;
             for (var entry = await supplier().ConfigureAwait(false); entry != null; state.LastIndex = startIndex++, token.ThrowIfCancellationRequested(), entry = await supplier().ConfigureAwait(false))
                 if (entry.IsSnapshot)
                     throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
                 else if (startIndex > state.CommitIndex)
-                    await GetOrCreatePartition(startIndex).WriteAsync(entry, startIndex).ConfigureAwait(false);
+                {
+                    await FlushIfNeeded(ref partition, GetOrCreatePartition(startIndex)).ConfigureAwait(false);
+                    await partition.WriteAsync(entry, startIndex).ConfigureAwait(false);
+                }
                 else if (!skipCommitted)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             //flush updated state
@@ -902,6 +921,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     var partition = GetOrCreatePartition(startIndex);
                     await partition.WriteAsync(entry, startIndex).ConfigureAwait(false);
+                    await partition.FlushAsync().ConfigureAwait(false);
                     state.LastIndex = startIndex;
                     state.Flush();
                 }
@@ -997,6 +1017,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             //3. Persist snapshot
             await snapshot.WriteAsync(builder, snapshotIndex, token).ConfigureAwait(false);
+            await snapshot.FlushAsync().ConfigureAwait(false);
             //4. Remove snapshotted partitions
             RemovePartitions(compactionScope);
             compactionScope.Clear();
