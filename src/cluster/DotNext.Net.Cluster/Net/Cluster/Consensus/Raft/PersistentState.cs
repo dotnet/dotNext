@@ -880,6 +880,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else if (!skipCommitted)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+            await FlushIfNeeded(ref partition, null).ConfigureAwait(false);
             //flush updated state
             state.Flush();
         }
