@@ -229,7 +229,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 response.StatusCode = StatusCodes.Status404NotFound;
             else
                 await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
-                    message.EntryReader, message.PrevLogIndex,
+                    message.Entries, message.PrevLogIndex,
                     message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false), Token).ConfigureAwait(false);
         }
 

@@ -16,6 +16,8 @@ using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Replication;
+
     internal sealed class AppendEntriesMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
         private static readonly Func<ValueTask<IRaftLogEntry>> EmptyEnumerator = () => new ValueTask<IRaftLogEntry>(default(IRaftLogEntry));
@@ -25,6 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
         private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
         private const string CommitIndexHeader = "X-Raft-Commit-Index";
+        private const string CountHeader = "X-Raft-Entries-Count";
 
         private sealed class LogEntryContent : OutboundTransferObject
         {
@@ -56,21 +59,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             public DateTimeOffset Timestamp { get; }
         }
 
-        private sealed class ReceivedLogEntryReader : MultipartReader
+        private sealed class ReceivedLogEntryReader : MultipartReader, ILogEntryProducer<ReceivedLogEntry>
         {
-            internal ReceivedLogEntryReader(string boundary, Stream body)
-                : base(boundary, body)
+            private long count;
+
+            internal ReceivedLogEntryReader(string boundary, Stream body, long count) : base(boundary, body) => this.count = count;
+
+            long ILogEntryProducer<ReceivedLogEntry>.RemainingCount => count;
+
+            public ReceivedLogEntry Current
             {
+                get;
+                private set;
             }
 
-            internal async ValueTask<IRaftLogEntry> ParseEntryAsync()
+            async ValueTask<bool> ILogEntryProducer<ReceivedLogEntry>.MoveNextAsync()
             {
                 var section = await ReadNextSectionAsync().ConfigureAwait(false);
-                return section is null ? null : new ReceivedLogEntry(section);
+                if(section is null)
+                    return false;
+                Current = new ReceivedLogEntry(section);
+                count -= 1L;
+                return true;
             }
         }
 
-        internal Func<ValueTask<IRaftLogEntry>> EntryReader;    //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
+        internal ILogEntryProducer<IRaftLogEntry> Entries;   
         internal readonly long PrevLogIndex;
         internal readonly long PrevLogTerm;
         internal readonly long CommitIndex;
@@ -83,19 +97,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             CommitIndex = commitIndex;
         }
 
-        private AppendEntriesMessage(HeadersReader<StringValues> headers)
+        private AppendEntriesMessage(HeadersReader<StringValues> headers, out long count)
             : base(headers)
         {
             PrevLogIndex = ParseHeader(PrecedingRecordIndexHeader, headers, Int64Parser);
             PrevLogTerm = ParseHeader(PrecedingRecordTermHeader, headers, Int64Parser);
             CommitIndex = ParseHeader(CommitIndexHeader, headers, Int64Parser);
+            count = ParseHeader(CountHeader, headers, Int64Parser);
         }
 
         internal AppendEntriesMessage(HttpRequest request)
-            : this(request.Headers.TryGetValue)
+            : this(request.Headers.TryGetValue, out var count)
         {
             var boundary = request.GetMultipartBoundary();
-            EntryReader = string.IsNullOrEmpty(boundary) ? EmptyEnumerator : new ReceivedLogEntryReader(boundary, request.Body).ParseEntryAsync;
+            if(string.IsNullOrEmpty(boundary) || count == 0L)
+                Entries = new LogEntryProducer<ReceivedLogEntry>();
+            else
+                Entries = new ReceivedLogEntryReader(boundary, request.Body, count);
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Content of the log entry will be disposed automatically by ASP.NET infrastructure")]
@@ -104,18 +122,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Headers.Add(PrecedingRecordIndexHeader, PrevLogIndex.ToString(InvariantCulture));
             request.Headers.Add(PrecedingRecordTermHeader, PrevLogTerm.ToString(InvariantCulture));
             request.Headers.Add(CommitIndexHeader, CommitIndex.ToString(InvariantCulture));
-            var isEmpty = true;
-            var reader = EntryReader;
-            if (reader is null)
-                reader = EmptyEnumerator;
-            var content = new MultipartContent(MimeSubType);
-            IRaftLogEntry entry;
-            while ((entry = await reader.Invoke().ConfigureAwait(false)) != null)
+            request.Headers.Add(CountHeader, Entries.RemainingCount.ToString(InvariantCulture));
+            if(Entries.RemainingCount > 0L)
             {
-                content.Add(new LogEntryContent(entry));
-                isEmpty = false;
+                var content = new MultipartContent(MimeSubType);
+                while(await Entries.MoveNextAsync().ConfigureAwait(false))
+                    content.Add(new LogEntryContent(Entries.Current));
+                request.Content = content;
             }
-            request.Content = isEmpty ? null : content;
             await base.FillRequestAsync(request).ConfigureAwait(false);
         }
 

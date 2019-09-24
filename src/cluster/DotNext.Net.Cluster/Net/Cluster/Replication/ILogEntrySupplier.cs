@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Replication
     /// Represents supplier of log entries.
     /// </summary>
     /// <typeparam name="TEntry">The type of the supplied log entries.</typeparam>
-    public interface ILogEntryProducer<TEntry>  //TODO: Should be inherited from IAsyncEnumerator in .NET Standard 2.1
+    public interface ILogEntryProducer<out TEntry>  //TODO: Should be inherited from IAsyncEnumerator in .NET Standard 2.1
         where TEntry : ILogEntry
     {
         /// <summary>
@@ -28,13 +28,6 @@ namespace DotNext.Net.Cluster.Replication
         /// </summary>
         /// <returns><see langword="true"/> if the enumerator advances to the next log entry; <see langword="false"/> if the enumerator reaches the end of the collection.</returns>
         ValueTask<bool> MoveNextAsync();
-
-        /// <summary>
-        /// Provides batch read of the log entries.
-        /// </summary>
-        /// <param name="entries">The memory used to store the log entries.</param>
-        /// <returns>The actual number of copied log entries.</returns>
-        ValueTask<long> ReadAsync(Memory<TEntry> entries);  //TODO: Should have default implementation in C# 8
     }
 
     /// <summary>
@@ -86,13 +79,5 @@ namespace DotNext.Net.Cluster.Replication
         /// Resets the position of the producer.
         /// </summary>
         public void Reset() => currentIndex = InitialPosition;
-
-        ValueTask<long> ILogEntryProducer<TEntry>.ReadAsync(Memory<TEntry> entries)
-        {
-            int offset;
-            for(offset = 0; offset < entries.Length && ++currentIndex < source.Count; offset++)
-                entries.Span[offset] = source[currentIndex];
-            return new ValueTask<long>(offset);
-        }
     }
 }
