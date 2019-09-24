@@ -80,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             metadata = new MemberMetadata(configuration.Metadata);
             allowedNetworks = configuration.AllowedNetworks;
-            await ChangeMembersAsync((in MutableMemberCollection members) =>
+            await ChangeMembersAsync(members =>
             {
                 var existingMembers = new HashSet<Uri>();
                 //remove members

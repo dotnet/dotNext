@@ -59,17 +59,6 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public static void UnboxRef()
-        {
-            object obj = new Point();
-            Equal(Point.Empty, obj);
-            ref var boxed = ref Memory.GetBoxedValue<Point>(obj);
-            boxed.X = 10;
-            NotEqual(Point.Empty, obj);
-            Equal(10, ((Point)obj).X);
-        }
-
-        [Fact]
         public static unsafe void BitwiseEqualityForByte()
         {
             byte value1 = 10;

@@ -834,24 +834,6 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
-        /// Gets managed pointer to the boxed value.
-        /// </summary>
-        /// <param name="box">The boxed value.</param>
-        /// <typeparam name="T">The value type.</typeparam>
-        /// <returns>The managed pointer to the boxed value.</returns>
-        /// <exception cref="NullReferenceException"><paramref name="box"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidCastException"><paramref name="box"/> is not a boxed value type.</exception>
-        /// <seealso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">III.1.8.1.2.2 ("Controlled-muttability managed pointers")</seealso>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref T GetBoxedValue<T>(object box)
-            where T : struct
-        {
-            Push(box);
-            Unbox(typeof(T));
-            return ref ReturnRef<T>();
-        }
-
-        /// <summary>
         /// Converts contiguous memory identified by the specified pointer
         /// into <see cref="Span{T}"/>.
         /// </summary>
