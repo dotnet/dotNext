@@ -700,7 +700,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private LogEntry First => new LogEntry(nullSegment, sharedBuffer, new LogEntryMetadata());
 
         private async ValueTask<TResult> ReadEntriesImplAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
-            where TReader : struct, ILogEntryReader<IRaftLogEntry, TResult>
+            where TReader : ILogEntryReader<IRaftLogEntry, TResult>
         {
             if (startIndex > state.LastIndex)
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
@@ -757,7 +757,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         public async ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
-            where TReader : struct, ILogEntryReader<IRaftLogEntry, TResult>
+            where TReader : ILogEntryReader<IRaftLogEntry, TResult>
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -780,7 +780,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         public async ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
-            where TReader : struct, ILogEntryReader<IRaftLogEntry, TResult>
+            where TReader : ILogEntryReader<IRaftLogEntry, TResult>
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));

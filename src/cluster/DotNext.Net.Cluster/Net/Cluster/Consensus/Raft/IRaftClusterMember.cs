@@ -22,6 +22,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Transfers transaction log entry to the member.
         /// </summary>
+        /// <typeparam name="TEntry">The type of the log entry.</typeparam>
+        /// <typeparam name="TList">The type of the log entries list.</typeparam>
         /// <param name="term">Term value maintained by local cluster member.</param>
         /// <param name="entries">A set of entries to be replicated with this node.</param>
         /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
@@ -30,7 +32,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns><see langword="true"/> if message is handled successfully by this member; <see langword="false"/> if message is rejected due to invalid Term/Index number.</returns>
         /// <exception cref="MemberUnavailableException">The member is unreachable through network.</exception>
-        Task<Result<bool>> AppendEntriesAsync(long term, IReadOnlyList<IRaftLogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token);
+        Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+            where TEntry : IRaftLogEntry
+            where TList : IReadOnlyList<TEntry>;
 
         /// <summary>
         /// Installs the snapshot of the log to this cluster member.

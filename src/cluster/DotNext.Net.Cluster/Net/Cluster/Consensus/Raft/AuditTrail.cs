@@ -25,15 +25,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static async Task<bool> ContainsAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
             => index <= auditTrail.GetLastIndex(false) && term == await auditTrail.GetTermAsync(index, token).ConfigureAwait(false);
-
-        internal static bool ContainsTerm<TEntry, TList>(this TList list, long term)
-            where TEntry : IRaftLogEntry
-            where TList : IReadOnlyList<TEntry>
-        {
-            for (var i = 0; i < list.Count; i++)
-                if (list[i].Term == term)
-                    return true;
-            return false;
-        }
     }
 }

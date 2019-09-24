@@ -91,7 +91,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token = default)
-            where TReader : struct, ILogEntryReader<TEntry, TResult>;
+            where TReader : ILogEntryReader<TEntry, TResult>;
 
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
@@ -105,7 +105,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default)
-            where TReader : struct, ILogEntryReader<TEntry, TResult>;
+            where TReader : ILogEntryReader<TEntry, TResult>;
 
         /// <summary>
         /// Adds uncommitted log entries into this log.

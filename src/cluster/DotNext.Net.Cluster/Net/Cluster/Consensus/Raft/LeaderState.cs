@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     internal sealed class LeaderState : RaftState
     {
-        private enum MemberHealthStatus
+        private enum ReplicationStatus
         {
             Unavailable = 0,
             Replicated, //means that node accepts the entries but not for the current term
@@ -22,64 +22,135 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Canceled
         }
 
-        private readonly struct Replicator : ILogEntryReader<IRaftLogEntry, Result<bool>>
+        private sealed class Replicator : TaskCompletionSource<Result<ReplicationStatus>>, ILogEntryReader<IRaftLogEntry, Result<ReplicationStatus>>
         {
-            private readonly IRaftClusterMember member;
-            private readonly long commitIndex;
-            private readonly long term;
-            private readonly long precedingIndex;
-            private readonly long precedingTerm;
-            private readonly long currentIndex;
-            private readonly ILogger logger;
+            private static readonly ValueFunc<long, long> IndexDecrement = new ValueFunc<long, long>(DecrementIndex);
 
-            internal Replicator(IRaftClusterMember member,
-                long currentIndex,
-                long commitIndex,
-                long term,
-                long precedingIndex,
-                long precedingTerm,
-                ILogger logger)
+            private enum State
             {
-                this.currentIndex = currentIndex;
-                this.member = member;
-                this.term = term;
-                this.precedingIndex = precedingIndex;
-                this.precedingTerm = precedingTerm;
-                this.commitIndex = commitIndex;
-                this.logger = logger;
+                Initial = 0,
+                PrecedingTermInitialization,
+                LogReplication
             }
 
-            async ValueTask<Result<bool>> ILogEntryReader<IRaftLogEntry, Result<bool>>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
+            private readonly IRaftClusterMember member;
+            private readonly long commitIndex;
+            private readonly long precedingIndex;
+            private readonly long term;
+            private readonly ILogger logger;
+            private readonly IAuditTrail<IRaftLogEntry> transactionLog;
+            private readonly Action continuation;
+            private readonly CancellationToken token;
+            //state
+            private long currentIndex;
+            private State state;
+            private long precedingTerm;
+            private bool replicatedWithCurrentTerm;
+            private ConfiguredValueTaskAwaitable<long>.ConfiguredValueTaskAwaiter precedingTermAwaiter;
+            private ConfiguredTaskAwaitable<Result<bool>>.ConfiguredTaskAwaiter replicationAwaiter;
+
+            internal Replicator(IRaftClusterMember member, long commitIndex, long term, IAuditTrail<IRaftLogEntry> transactionLog, ILogger logger, CancellationToken token)
             {
-                logger.ReplicationStarted(member.Endpoint, currentIndex);
-                Result<bool> result;
+                this.member = member;
+                currentIndex = transactionLog.GetLastIndex(false);
+                precedingIndex = Math.Max(0, member.NextIndex - 1);
+                this.commitIndex = commitIndex;
+                this.term = term;
+                this.logger = logger;
+                this.transactionLog = transactionLog;
+                continuation = MoveNext;
+                this.token = token;
+            }
+
+            private static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
+
+            private void MoveNext()
+            {
+                try
+                {
+                    switch (state)
+                    {
+                        case State.Initial:
+                            state = State.PrecedingTermInitialization;
+                            precedingTermAwaiter = transactionLog.GetTermAsync(precedingIndex, token).ConfigureAwait(false).GetAwaiter();
+                            if (precedingTermAwaiter.IsCompleted)
+                                goto case State.PrecedingTermInitialization;
+                            precedingTermAwaiter.OnCompleted(continuation);
+                            break;
+                        case State.PrecedingTermInitialization:
+                            precedingTerm = precedingTermAwaiter.GetResult();
+                            precedingTermAwaiter = default;
+                            state = State.LogReplication;
+                            transactionLog.ReadEntriesAsync<Replicator, Result<ReplicationStatus>>(this, member.NextIndex, token);
+                            break;
+                        case State.LogReplication:
+                            var result = replicationAwaiter.GetResult();
+                            replicationAwaiter = default;
+                            //analyze result and decrease node index when it is out-of-sync with the current node
+                            if (result.Value)
+                            {
+                                logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
+                                member.NextIndex.VolatileWrite(currentIndex + 1);
+                            }
+                            else
+                                logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
+                            SetResult(result.SetValue(result.Value && replicatedWithCurrentTerm ? ReplicationStatus.ReplicatedWithCurrentTerm : ReplicationStatus.Replicated));
+                            break;
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    SetResult(new Result<ReplicationStatus>(term, ReplicationStatus.Canceled));
+                }
+                catch (MemberUnavailableException)
+                {
+                    SetResult(new Result<ReplicationStatus>(term, ReplicationStatus.Unavailable));
+                }
+                catch (Exception e)
+                {
+                    SetException(e);
+                }
+            }
+
+            internal Task<Result<ReplicationStatus>> Start()
+            {
+                state = State.Initial;
+                MoveNext();
+                return Task;
+            }
+
+            private static bool ContainsTerm<TEntry, TList>(TList list, long term)
+                where TEntry : IRaftLogEntry
+                where TList : IReadOnlyList<TEntry>
+            {
+                for (var i = 0; i < list.Count; i++)
+                    if (list[i].Term == term)
+                        return true;
+                return false;
+            }
+
+            ValueTask<Result<ReplicationStatus>> ILogEntryReader<IRaftLogEntry, Result<ReplicationStatus>>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
+            {
+                ref var replicationAwaiter = ref this.replicationAwaiter;
                 if (snapshotIndex.HasValue)
                 {
+                    currentIndex = snapshotIndex.Value;
                     logger.InstallingSnapshot(snapshotIndex.Value);
-                    //install snapshot
-                    result = await member.InstallSnapshotAsync(term, entries[0], snapshotIndex.Value, token).ConfigureAwait(false);
+                    replicationAwaiter = member.InstallSnapshotAsync(term, entries[0], currentIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
                 else
                 {
                     logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
-                    //trying to replicate
-                    result = await member.AppendEntriesAsync(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false);
+                    replicationAwaiter = member.AppendEntriesAsync<TEntryImpl, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
-                //analyze result and decrease node index when it is out-of-sync with the current node
-                if (result.Value)
-                {
-                    logger.ReplicationSuccessful(member.Endpoint, member.NextIndex);
-                    member.NextIndex.VolatileWrite(currentIndex + 1);
-                    //checks whether the at least one entry from current term is stored on this node
-                    result = result.SetValue(entries.ContainsTerm<TEntryImpl, TList>(term));
-                }
-                else
-                    logger.ReplicationFailed(member.Endpoint, member.NextIndex.UpdateAndGet(in IndexDecrement));
-                return result;
+                replicatedWithCurrentTerm = ContainsTerm<TEntryImpl, TList>(entries, term);
+
+                replicationAwaiter.OnCompleted(continuation);
+                return new ValueTask<Result<ReplicationStatus>>(Task);
             }
         }
 
-        private static readonly ValueFunc<long, long> IndexDecrement = new ValueFunc<long, long>(DecrementIndex);
+        
         private Task heartbeatTask;
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
@@ -96,17 +167,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             forcedReplication = new AsyncManualResetEvent(false);
         }
 
-        private static long DecrementIndex(long index) => index > 0L ? index - 1L : index;
-
-        private static Result<MemberHealthStatus> HealthStatusContinuation(Task<Result<bool>> task)
+        private static Result<ReplicationStatus> HealthStatusContinuation(Task<Result<bool>> task)
         {
-            Result<MemberHealthStatus> result;
+            Result<ReplicationStatus> result;
             if (task.IsCanceled)
-                result = new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Canceled);
+                result = new Result<ReplicationStatus>(long.MinValue, ReplicationStatus.Canceled);
             else if (task.IsFaulted)
-                result = new Result<MemberHealthStatus>(long.MinValue, MemberHealthStatus.Unavailable);
+                result = new Result<ReplicationStatus>(long.MinValue, ReplicationStatus.Unavailable);
             else
-                result = new Result<MemberHealthStatus>(task.Result.Term, task.Result.Value ? MemberHealthStatus.ReplicatedWithCurrentTerm : MemberHealthStatus.Replicated);
+                result = new Result<ReplicationStatus>(task.Result.Term, task.Result.Value ? ReplicationStatus.ReplicatedWithCurrentTerm : ReplicationStatus.Replicated);
             return result;
         }
 
@@ -121,45 +190,40 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> transactionLog)
         {
             var timeStamp = Timestamp.Current;
-            ICollection<Task<Result<bool>>> tasks = new LinkedList<Task<Result<bool>>>();
+            ICollection<Task<Result<ReplicationStatus>>> tasks = new LinkedList<Task<Result<ReplicationStatus>>>();
             //send heartbeat in parallel
             var commitIndex = transactionLog.GetLastIndex(true);
             var term = currentTerm;
             foreach (var member in stateMachine.Members)
                 if (member.IsRemote)
-                {
-                    long currentIndex = transactionLog.GetLastIndex(false),
-                        precedingIndex = Math.Max(0, member.NextIndex - 1),
-                        precedingTerm = await transactionLog.GetTermAsync(precedingIndex, timerCancellation.Token).ConfigureAwait(false);
-                    tasks.Add(transactionLog.ReadEntriesAsync<Replicator, Result<bool>>(new Replicator(member, currentIndex, commitIndex, term, precedingIndex, precedingTerm, stateMachine.Logger), member.NextIndex, timerCancellation.Token).AsTask());
-                }
+                    tasks.Add(new Replicator(member, commitIndex, term, transactionLog, stateMachine.Logger, timerCancellation.Token).Start());
             var quorum = 1;  //because we know that the entry is replicated in this node
             var commitQuorum = 1;
             foreach (var task in tasks)
-                try
+            {
+                var result = await task.ConfigureAwait(false);
+                term = Math.Max(term, result.Term);
+                switch (result.Value)
                 {
-                    var result = await task.ConfigureAwait(false);
-                    term = Math.Max(term, result.Term);
-                    quorum += 1;
-                    commitQuorum += result.Value ? 1 : -1;
+                    case ReplicationStatus.Canceled: //leading was canceled
+                        //ensure that all requests are canceled
+                        await Task.WhenAll(tasks).ConfigureAwait(false);
+                        Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
+                        return false;
+                    case ReplicationStatus.Replicated:
+                        quorum += 1;
+                        commitQuorum -= 1;
+                        break;
+                    case ReplicationStatus.ReplicatedWithCurrentTerm:
+                        quorum += 1;
+                        commitQuorum += 1;
+                        break;
+                    case ReplicationStatus.Unavailable:
+                        quorum -= 1;
+                        commitQuorum -= 1;
+                        break;
                 }
-                catch (MemberUnavailableException e)
-                {
-                    quorum -= 1;
-                    commitQuorum -= 1;
-                }
-                catch (OperationCanceledException e)
-                {
-                    //leading was canceled
-                    //ensure that all requests are canceled
-                    await Task.WhenAll(tasks).ConfigureAwait(false);
-                    Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
-                    return false;
-                }
-                finally
-                {
-                    task.Dispose();
-                }
+            }
 
             Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
             tasks.Clear();
