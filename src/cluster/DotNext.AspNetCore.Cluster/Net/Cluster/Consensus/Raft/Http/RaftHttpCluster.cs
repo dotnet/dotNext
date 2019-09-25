@@ -52,7 +52,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             configurator = dependencies.GetService<IRaftClusterConfigurator>();
             messageHandler = dependencies.GetService<IMessageHandler>();
-            AuditTrail = dependencies.GetService<IPersistentState>();
+            AuditTrail = dependencies.GetService<IPersistentState>() ?? new InMemoryAuditTrail();
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             var loggerFactory = dependencies.GetRequiredService<ILoggerFactory>();
             Logger = loggerFactory.CreateLogger(GetType());
