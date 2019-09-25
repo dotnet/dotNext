@@ -62,7 +62,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             context.Logger.SendingRequestToMember(Endpoint, message.MessageType);
             var request = new HttpRequestMessage { RequestUri = resourcePath };
-            await message.FillRequestAsync(request).ConfigureAwait(false);
+            message.PrepareRequest(request);
 
             var response = default(HttpResponseMessage);
             var timeStamp = Timestamp.Current;
@@ -112,7 +112,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if (Endpoint.Equals(context.LocalEndpoint))
                 return Task.FromResult(new Result<bool>(term, true));
-            return SendAsync<Result<bool>, AppendEntriesMessage>(new AppendEntriesMessage(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex) { Entries = new Log }, token);
+            return SendAsync<Result<bool>, AppendEntriesMessage<TEntry, TList>>(new AppendEntriesMessage<TEntry, TList>(context.LocalEndpoint, term, prevLogIndex, prevLogTerm, commitIndex, entries), token);
         }
 
         Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)

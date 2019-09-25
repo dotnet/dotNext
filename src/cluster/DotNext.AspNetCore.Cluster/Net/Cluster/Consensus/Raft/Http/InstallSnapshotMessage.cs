@@ -57,13 +57,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Snapshot = new ReceivedSnapshot(request.Body, snapshotTerm, timestamp);
         }
 
-        internal override ValueTask FillRequestAsync(HttpRequestMessage request)
+        internal override void PrepareRequest(HttpRequestMessage request)
         {
             request.Headers.Add(SnapshotIndexHeader, Index.ToString(InvariantCulture));
             request.Headers.Add(SnapshotTermHeader, Snapshot.Term.ToString(InvariantCulture));
             request.Content = new OutboundTransferObject(Snapshot);
             request.Content.Headers.LastModified = Snapshot.Timestamp;
-            return base.FillRequestAsync(request);
+            base.PrepareRequest(request);
         }
 
         Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response);

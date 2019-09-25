@@ -77,14 +77,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal static string GetMessageType(HttpRequest request) => GetMessageType(request.Headers.TryGetValue);
 
-        internal virtual ValueTask FillRequestAsync(HttpRequestMessage request)
+        internal virtual void PrepareRequest(HttpRequestMessage request)
         {
             request.Headers.Add(NodeIpHeader, Sender.Address.ToString());
             request.Headers.Add(NodePortHeader, Sender.Port.ToString(InvariantCulture));
             request.Headers.Add(MessageTypeHeader, MessageType);
             request.Headers.Add(RequestIdHeader, Id);
             request.Method = HttpMethod.Post;
-            return new ValueTask();
         }
 
         private protected static async Task<bool> ParseBoolResponse(HttpResponseMessage response)

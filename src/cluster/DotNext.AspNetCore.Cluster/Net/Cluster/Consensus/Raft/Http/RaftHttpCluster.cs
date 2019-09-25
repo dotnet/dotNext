@@ -223,13 +223,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task ReceiveEntries(HttpRequest request, HttpResponse response)
         {
-            var message = new AppendEntriesMessage(request);
+            var message = new AppendEntriesMessage(request, out var entries);
             var sender = FindMember(message.Sender.Represents);
             if (sender is null)
                 response.StatusCode = StatusCodes.Status404NotFound;
             else
                 await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
-                    message.Entries, message.PrevLogIndex,
+                    entries, message.PrevLogIndex,
                     message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false), Token).ConfigureAwait(false);
         }
 

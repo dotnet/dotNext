@@ -3,44 +3,30 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Mime;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
+using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Buffers;
     using Replication;
 
-    internal sealed class AppendEntriesMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
+    internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result<bool>>
     {
-        private static readonly Func<ValueTask<IRaftLogEntry>> EmptyEnumerator = () => new ValueTask<IRaftLogEntry>(default(IRaftLogEntry));
-
-        private const string MimeSubType = "mixed";
         internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
         private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
         private const string CommitIndexHeader = "X-Raft-Commit-Index";
-        private const string CountHeader = "X-Raft-Entries-Count";
-
-        private sealed class LogEntryContent : OutboundTransferObject
-        {
-            internal static readonly MediaTypeHeaderValue ContentType = MediaTypeHeaderValue.Parse(MediaTypeNames.Application.Octet);
-
-            internal LogEntryContent(IRaftLogEntry entry)
-                : base(entry)
-            {
-                Headers.ContentType = ContentType;
-                Headers.Add(RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
-                Headers.LastModified = entry.Timestamp;
-            }
-        }
+        private protected const string CountHeader = "X-Raft-Entries-Count";
 
         private sealed class ReceivedLogEntry : StreamTransferObject, IRaftLogEntry
         {
@@ -54,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             public long Term { get; }
 
-            bool Replication.ILogEntry.IsSnapshot => false;
+            bool ILogEntry.IsSnapshot => false;
 
             public DateTimeOffset Timestamp { get; }
         }
@@ -83,13 +69,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 return true;
             }
         }
-
-        internal ILogEntryProducer<IRaftLogEntry> Entries;   
+ 
         internal readonly long PrevLogIndex;
         internal readonly long PrevLogTerm;
         internal readonly long CommitIndex;
 
-        internal AppendEntriesMessage(IPEndPoint sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex)
+        private protected AppendEntriesMessage(IPEndPoint sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex)
             : base(MessageType, sender, term)
         {
             PrevLogIndex = prevLogIndex;
@@ -106,35 +91,112 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             count = ParseHeader(CountHeader, headers, Int64Parser);
         }
 
-        internal AppendEntriesMessage(HttpRequest request)
+        internal AppendEntriesMessage(HttpRequest request, out ILogEntryProducer<IRaftLogEntry> entries)
             : this(request.Headers.TryGetValue, out var count)
         {
             var boundary = request.GetMultipartBoundary();
-            if(string.IsNullOrEmpty(boundary) || count == 0L)
-                Entries = new LogEntryProducer<ReceivedLogEntry>();
+            if (string.IsNullOrEmpty(boundary) || count == 0L)
+                entries = new LogEntryProducer<ReceivedLogEntry>();
             else
-                Entries = new ReceivedLogEntryReader(boundary, request.Body, count);
+                entries = new ReceivedLogEntryReader(boundary, request.Body, count);
         }
 
-        [SuppressMessage("Reliability", "CA2000", Justification = "Content of the log entry will be disposed automatically by ASP.NET infrastructure")]
-        internal override async ValueTask FillRequestAsync(HttpRequestMessage request)
+        internal override void PrepareRequest(HttpRequestMessage request)
         {
             request.Headers.Add(PrecedingRecordIndexHeader, PrevLogIndex.ToString(InvariantCulture));
             request.Headers.Add(PrecedingRecordTermHeader, PrevLogTerm.ToString(InvariantCulture));
             request.Headers.Add(CommitIndexHeader, CommitIndex.ToString(InvariantCulture));
-            request.Headers.Add(CountHeader, Entries.RemainingCount.ToString(InvariantCulture));
-            if(Entries.RemainingCount > 0L)
+            base.PrepareRequest(request);
+        }
+
+        public new Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
+    }
+
+    internal sealed class AppendEntriesMessage<TEntry, TList> : AppendEntriesMessage, IHttpMessageReader<Result<bool>>
+        where TEntry : IRaftLogEntry
+        where TList : IReadOnlyList<TEntry>
+    {
+        private static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
+
+        private sealed class LogEntriesContent : HttpContent
+        {
+            private const string CrLf = "\r\n";
+            private const string DoubleDash = "--";
+            private const char Quote = '\"';
+            private readonly TList entries;
+            private readonly string boundary;
+
+            internal LogEntriesContent(TList entries)
             {
-                var content = new MultipartContent(MimeSubType);
-                while(await Entries.MoveNextAsync().ConfigureAwait(false))
-                    content.Add(new LogEntryContent(Entries.Current));
-                request.Content = content;
+                boundary = Guid.NewGuid().ToString();
+                this.entries = entries;
+                var contentType = new MediaTypeHeaderValue("multipart/mixed");
+                contentType.Parameters.Add(new NameValueHeaderValue(nameof(boundary), Quote + boundary + Quote));
+                Headers.ContentType = contentType;
             }
-            await base.FillRequestAsync(request).ConfigureAwait(false);
+
+            internal int Count => entries.Count;
+
+            //TODO: Should be rewritten for .NET Standard 2.1
+            private static async Task EncodeStringToStreamAsync(Stream output, string input)
+            {
+                using (var buffer = new ArrayRental<byte>(DefaultHttpEncoding.GetByteCount(input)))
+                    await output.WriteAsync(buffer, 0, DefaultHttpEncoding.GetBytes(input, 0, input.Length, buffer, 0)).ConfigureAwait(false);
+            }
+
+            private static void WriteHeader(StringBuilder builder, string headerName, string headerValue)
+                => builder.Append(headerName).Append(": ").Append(headerValue).Append(CrLf);
+
+            private static Task EncodeHeadersToStreamAsync(Stream output, StringBuilder builder, TEntry entry, bool writeDivider, string boundary)
+            {
+                builder.Clear();
+                if (writeDivider)
+                    builder.Append(CrLf + DoubleDash).Append(boundary).Append(CrLf);
+                //write headers
+                WriteHeader(builder, RequestVoteMessage.RecordTermHeader, entry.Term.ToString(InvariantCulture));
+                WriteHeader(builder, HeaderNames.LastModified, HeaderUtils.FormatDate(entry.Timestamp));
+                // Extra CRLF to end headers (even if there are no headers)
+                builder.Append(CrLf);
+                return EncodeStringToStreamAsync(output, builder.ToString());
+            }
+
+            protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
+            {
+                //write start boundary
+                await EncodeStringToStreamAsync(stream, DoubleDash + boundary + CrLf).ConfigureAwait(false);
+                var builder = new StringBuilder(128);
+                //write each nested content
+                var writeDivider = false;
+                foreach (var entry in entries)
+                {
+                    await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary).ConfigureAwait(false);
+                    writeDivider = true;
+                    await entry.CopyToAsync(stream).ConfigureAwait(false);
+                }
+                //write footer
+                await EncodeStringToStreamAsync(stream, CrLf + DoubleDash + boundary + DoubleDash + CrLf).ConfigureAwait(false);
+            }
+
+            protected override bool TryComputeLength(out long length)
+            {
+                length = 0L;
+                return false;
+            }
+        }
+
+        private readonly TList entries;
+
+        internal AppendEntriesMessage(IPEndPoint sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries)
+            : base(sender, term, prevLogIndex, prevLogTerm, commitIndex)
+            => this.entries = entries;
+
+        internal override void PrepareRequest(HttpRequestMessage request)
+        {
+            request.Headers.Add(CountHeader, entries.Count.ToString(InvariantCulture));
+            request.Content = new LogEntriesContent(entries);
+            base.PrepareRequest(request);
         }
 
         Task<Result<bool>> IHttpMessageReader<Result<bool>>.ParseResponse(HttpResponseMessage response, CancellationToken token) => ParseBoolResponse(response);
-
-        public new Task SaveResponse(HttpResponse response, Result<bool> result, CancellationToken token) => RaftHttpMessage.SaveResponse(response, result, token);
     }
 }

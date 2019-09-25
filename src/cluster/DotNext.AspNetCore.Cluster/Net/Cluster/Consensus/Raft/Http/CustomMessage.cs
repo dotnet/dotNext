@@ -88,12 +88,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Message = new InboundMessageContent(request);
         }
 
-        internal sealed override ValueTask FillRequestAsync(HttpRequestMessage request)
+        internal sealed override void PrepareRequest(HttpRequestMessage request)
         {
             request.Headers.Add(DeliveryModeHeader, Mode.ToString());
             request.Headers.Add(RespectLeadershipHeader, RespectLeadership.ToString(InvariantCulture));
             request.Content = new OutboundMessageContent(Message);
-            return base.FillRequestAsync(request);
+            base.PrepareRequest(request);
         }
 
         public Task SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
