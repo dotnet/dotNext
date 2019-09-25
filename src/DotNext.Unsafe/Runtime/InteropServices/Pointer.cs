@@ -55,7 +55,7 @@ namespace DotNext.Runtime.InteropServices
             public T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => *(ptr + index);
+                get => ptr[index];
             }
 
             /// <summary>
