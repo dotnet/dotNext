@@ -193,7 +193,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal override void PrepareRequest(HttpRequestMessage request)
         {
             request.Headers.Add(CountHeader, entries.Count.ToString(InvariantCulture));
-            request.Content = new LogEntriesContent(entries);
+            if (entries.Count > 0)
+                request.Content = new LogEntriesContent(entries);
             base.PrepareRequest(request);
         }
 
