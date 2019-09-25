@@ -45,8 +45,10 @@ namespace DotNext
 
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
-            using (var buffer = new ArrayRental<byte>(DefaultBufferSize))
-                await content.CopyToAsync(output, true, buffer, token).ConfigureAwait(false);
+            using var stream = output.AsStream(true);
+            await content.CopyToAsync(stream, DefaultBufferSize, token);
+            if(content.CanSeek)
+                content.Seek(0, SeekOrigin.Begin);
         }
 
         /// <summary>

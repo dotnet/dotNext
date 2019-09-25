@@ -178,7 +178,7 @@ namespace DotNext
             this.value = value;
             IsPresent = type switch
             {
-                ReferenceType => !(value is null),
+                ReferenceType => value != null,
                 ValueType => true,
                 NullableType => !value.Equals(null),
                 _ => false,

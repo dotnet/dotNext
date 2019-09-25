@@ -22,8 +22,8 @@ namespace DotNext.Net.Cluster.Messaging
 
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
-            using (var message = output.AsStream(true))
-                await CopyToAsync(message, BufferSize, token).ConfigureAwait(false);
+            using var message = output.AsStream(true);
+            await CopyToAsync(message, BufferSize, token).ConfigureAwait(false);
         }
 
         long? IDataTransferObject.Length => Length;
