@@ -7,3 +7,4 @@ InvalidEntryIndex=Log entry with index {0} doesn't exist in the audit trail
 InvalidAppendIndex=Committed log entry cannot be overwritten
 SnapshotDetected=The method cannot be used for snapshot installation
 RangeTooBig=The requested range is too big
+UnexpectedError=The unexpected exception occurred

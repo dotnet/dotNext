@@ -27,5 +27,7 @@ namespace DotNext
         internal static string SnapshotDetected => Resources.GetString("SnapshotDetected");
 
         internal static string RangeTooBig => Resources.GetString("RangeTooBig");
+
+        internal static string UnexpectedError => Resources.GetString("UnexpectedError");
     }
 }
