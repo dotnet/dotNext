@@ -151,7 +151,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
             var quorum = 1;  //because we know that the entry is replicated in this node
             var commitQuorum = 1;
-            for(var task = tasks.First; task != null; task = task.Next)
+            for(var task = tasks.First; task != null; task.Value = default, task = task.Next)
                 try
                 {
                     var result = await task.Value.ConfigureAwait(false);

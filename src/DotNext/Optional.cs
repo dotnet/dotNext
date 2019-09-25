@@ -176,13 +176,21 @@ namespace DotNext
         public Optional(T value)
         {
             this.value = value;
-            IsPresent = type switch
+            switch (type)
             {
-                ReferenceType => value != null,
-                ValueType => true,
-                NullableType => !value.Equals(null),
-                _ => false,
-            };
+                default:
+                    IsPresent = false;
+                    break;
+                case ReferenceType:
+                    IsPresent = value != null;
+                    break;
+                case ValueType:
+                    IsPresent = true;
+                    break;
+                case NullableType:
+                    IsPresent = !value.Equals(null);
+                    break;
+            }
         }
 
         [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
@@ -370,13 +378,20 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other container to compare.</param>
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other switch
+        public override bool Equals(object other)
         {
-            null => IsPresent == false,
-            Optional<T> optional => Equals(optional),
-            T value => Equals(value),
-            _ => false,
-        };
+            switch (other)
+            {
+                case null:
+                    return IsPresent == false;
+                case Optional<T> optional:
+                    return Equals(optional);
+                case T value:
+                    return Equals(value);
+                default:
+                    return false;
+            }
+        }
 
         /// <summary>
         /// Performs equality check between stored value
