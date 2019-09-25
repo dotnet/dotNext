@@ -118,6 +118,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private static readonly Encoding DefaultHttpEncoding = Encoding.GetEncoding("iso-8859-1");
 
+        /*
+         * MultipartContent is not an option for this situation
+         * Each log entry should not be boxed for allocated temporarily in the heap whenever possible
+         * That's why stream-like writer of multipart content is here
+         */
         private sealed class LogEntriesContent : HttpContent
         {
             private const string CrLf = "\r\n";
