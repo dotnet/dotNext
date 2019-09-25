@@ -141,18 +141,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             forcedReplication = new AsyncManualResetEvent(false);
         }
 
-        private static Result<ReplicationStatus> HealthStatusContinuation(Task<Result<bool>> task)
-        {
-            Result<ReplicationStatus> result;
-            if (task.IsCanceled)
-                result = new Result<ReplicationStatus>(long.MinValue, ReplicationStatus.Canceled);
-            else if (task.IsFaulted)
-                result = new Result<ReplicationStatus>(long.MinValue, ReplicationStatus.Unavailable);
-            else
-                result = new Result<ReplicationStatus>(task.Result.Term, task.Result.Value ? ReplicationStatus.ReplicatedWithCurrentTerm : ReplicationStatus.Replicated);
-            return result;
-        }
-
         private bool CheckTerm(long term)
         {
             if (term <= currentTerm)

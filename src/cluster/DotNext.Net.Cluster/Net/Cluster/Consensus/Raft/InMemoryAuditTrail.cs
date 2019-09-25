@@ -230,7 +230,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, long startIndex)
         {
-            if (entry == null)
+            if (entry is null)
                 throw new ArgumentNullException(nameof(entry));
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
                 await AppendAsync(new LogEntryProducer<TEntry>(entry), startIndex, false, default).ConfigureAwait(false);

@@ -913,7 +913,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public async ValueTask AppendAsync<TEntry>(TEntry entry, long startIndex)
             where TEntry : IRaftLogEntry
         {
-            if (entry == null)
+            if (entry is null)
                 throw new ArgumentNullException(nameof(entry));
             using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
                 if (startIndex <= state.CommitIndex)
