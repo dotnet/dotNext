@@ -56,8 +56,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal Task<Result<ReplicationStatus>> Start(IAuditTrail<IRaftLogEntry> transactionLog)
             {
-                logger.ReplicationStarted(member.Endpoint, currentIndex = transactionLog.GetLastIndex(false));
-                return transactionLog.ReadEntriesAsync<Replicator, Result<ReplicationStatus>>(this, member.NextIndex, token).AsTask();
+                var currentIndex = this.currentIndex = transactionLog.GetLastIndex(false);
+                logger.ReplicationStarted(member.Endpoint, currentIndex);
+                var result = currentIndex >= member.NextIndex ?
+                    transactionLog.ReadEntriesAsync<Replicator, Result<ReplicationStatus>>(this, member.NextIndex, token) :
+                    ReadAsync<IRaftLogEntry, IRaftLogEntry[]>(Array.Empty<IRaftLogEntry>(), null, token);
+                return result.AsTask();
             }
 
             private void Complete()
@@ -102,7 +106,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return false;
             }
 
-            ValueTask<Result<ReplicationStatus>> ILogEntryConsumer<IRaftLogEntry, Result<ReplicationStatus>>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
+            public ValueTask<Result<ReplicationStatus>> ReadAsync<TEntry, TList>(TList entries, long? snapshotIndex, CancellationToken token)
+                where TEntry : IRaftLogEntry
+                where TList : IReadOnlyList<TEntry>
             {
                 if (snapshotIndex.HasValue)
                 {
@@ -112,9 +118,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                 {
                     logger.ReplicaSize(member.Endpoint, entries.Count, precedingIndex, precedingTerm);
-                    replicationAwaiter = member.AppendEntriesAsync<TEntryImpl, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false).GetAwaiter();
+                    replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
-                replicatedWithCurrentTerm = ContainsTerm<TEntryImpl, TList>(entries, term);
+                replicatedWithCurrentTerm = ContainsTerm<TEntry, TList>(entries, term);
                 if(replicationAwaiter.IsCompleted)
                     Complete();
                 else
