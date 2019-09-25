@@ -57,8 +57,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal Task<Result<ReplicationStatus>> Start(IAuditTrail<IRaftLogEntry> transactionLog)
             {
                 logger.ReplicationStarted(member.Endpoint, currentIndex = transactionLog.GetLastIndex(false));
-                transactionLog.ReadEntriesAsync<Replicator, Result<ReplicationStatus>>(this, member.NextIndex, token);
-                return Task;
+                return transactionLog.ReadEntriesAsync<Replicator, Result<ReplicationStatus>>(this, member.NextIndex, token).AsTask();
             }
 
             private void Complete()
