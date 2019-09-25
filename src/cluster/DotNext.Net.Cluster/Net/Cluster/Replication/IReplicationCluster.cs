@@ -18,14 +18,14 @@ namespace DotNext.Net.Cluster.Replication
     /// <summary>
     /// Represents replication cluster.
     /// </summary>
-    /// <typeparam name="LogEntry">The type of the log entry in the transaction log.</typeparam>
-    public interface IReplicationCluster<LogEntry> : IReplicationCluster
-        where LogEntry : class, ILogEntry
+    /// <typeparam name="TEntry">The type of the log entry in the transaction log.</typeparam>
+    public interface IReplicationCluster<TEntry> : IReplicationCluster
+        where TEntry : class, ILogEntry
     {
         /// <summary>
         /// Gets transaction log used for replication.
         /// </summary>
-        new IAuditTrail<LogEntry> AuditTrail { get; }
+        new IAuditTrail<TEntry> AuditTrail { get; }
 
         /// <summary>
         /// Writes message into the cluster according with the specified concern.
@@ -33,6 +33,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <remarks>
         /// Data isolation level should be implemented by the caller code.
         /// </remarks>
+        /// <typeparam name="TEntryImpl">The actual type of the log entry returned by the supplier.</typeparam>
         /// <param name="entries">The number of commands to be committed into the audit trail.</param>
         /// <param name="concern">The value describing level of acknowledgment from cluster.</param>
         /// <param name="timeout">The timeout of the asynchronous operation.</param>
@@ -41,6 +42,7 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="NotSupportedException">The specified level of acknowledgment is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="TimeoutException">The timeout is occurred.</exception>
-        Task WriteAsync(IReadOnlyList<LogEntry> entries, WriteConcern concern, TimeSpan timeout);
+        Task WriteAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, WriteConcern concern, TimeSpan timeout)
+            where TEntryImpl : TEntry;
     }
 }

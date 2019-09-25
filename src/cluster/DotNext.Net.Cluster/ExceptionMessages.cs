@@ -25,5 +25,7 @@ namespace DotNext
         internal static string InvalidAppendIndex => Resources.GetString("InvalidAppendIndex");
 
         internal static string SnapshotDetected => Resources.GetString("SnapshotDetected");
+
+        internal static string RangeTooBig => Resources.GetString("RangeTooBig");
     }
 }

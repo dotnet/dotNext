@@ -11,6 +11,7 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using LogEntryList = Replication.LogEntryProducer<IRaftLogEntry>;
     using static Messaging.Messenger;
 
     public sealed class PersistentStateTests : Assert
@@ -22,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
                 => throw new NotImplementedException();
 
-            Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync(long term, IReadOnlyList<IRaftLogEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+            Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
                 => throw new NotImplementedException();
 
             Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
@@ -161,23 +162,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var entry = new TestLogEntry("SET X = 0") { Term = 42L };
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker;
             IPersistentState state = new PersistentState(dir, RecordsPerPartition);
             try
             {
-                var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
-                Null(entries.SnapshotIndex);
-                Equal(1L, entries.Count);
-                Equal(state.First, entries[0]);
-                entries.Dispose();
+                checker = (entries, snapshotIndex) =>
+                {
+                    Null(snapshotIndex);
+                    Equal(1L, entries.Count);
+                    Equal(state.First, entries[0]);
+                    return default;
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
 
-                Equal(1L, await state.AppendAsync(new[] { entry }));
-                entries = await state.GetEntriesAsync(0L, CancellationToken.None);
-                Null(entries.SnapshotIndex);
-                Equal(2, entries.Count);
-                Equal(state.First, entries[0]);
-                Equal(42L, entries[1].Term);
-                Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
-                entries.Dispose();
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
+                checker = async (entries, snapshotIndex) =>
+                {
+                    Null(snapshotIndex);
+                    Equal(2, entries.Count);
+                    Equal(state.First, entries[0]);
+                    Equal(42L, entries[1].Term);
+                    Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
             }
             finally
             {
@@ -193,14 +200,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
             var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
-
+            Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker;
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             using (var state = new PersistentState(dir, RecordsPerPartition))
             {
-                Equal(1L, await state.AppendAsync(new[] { entry2, entry3, entry4, entry5 }));
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
                 Equal(4L, state.GetLastIndex(false));
                 Equal(0L, state.GetLastIndex(true));
-                await state.AppendAsync(new[] { entry1 }, 1L);
+                await state.AppendAsync(entry1, 1L);
                 Equal(1L, state.GetLastIndex(false));
                 Equal(0L, state.GetLastIndex(true));
             }
@@ -210,12 +217,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Equal(1L, state.GetLastIndex(false));
                 Equal(0L, state.GetLastIndex(true));
-                var entries = await state.GetEntriesAsync(1L, CancellationToken.None);
-                Null(entries.SnapshotIndex);
-                Equal(1, entries.Count);
-                False(entries[0].IsSnapshot);
-                Equal(entry1.Content, await entries[0].ReadAsTextAsync(Encoding.UTF8));
-                entries.Dispose();
+                checker = async (entries, snapshotIndex) =>
+                {
+                    Null(snapshotIndex);
+                    Equal(1, entries.Count);
+                    False(entries[0].IsSnapshot);
+                    Equal(entry1.Content, await entries[0].ReadAsTextAsync(Encoding.UTF8));
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 1L, CancellationToken.None);
             }
         }
 
@@ -229,42 +238,47 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
             var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
-
+            Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker;
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             IPersistentState state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching, initialPartitionSize: 1024 * 1024);
             try
             {
-                var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
-                Null(entries.SnapshotIndex);
-                Equal(1L, entries.Count);
-                Equal(state.First, entries[0]);
-                False(entries[0].IsSnapshot);
-                entries.Dispose();
+                checker = (entries, snapshotIndex) =>
+                {
+                    Null(snapshotIndex);
+                    Equal(1L, entries.Count);
+                    Equal(state.First, entries[0]);
+                    False(entries[0].IsSnapshot);
+                    return default;
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
 
-                Equal(1L, await state.AppendAsync(new[] { entry1 }));
-                Equal(2L, await state.AppendAsync(new[] { entry2, entry3, entry4, entry5 }));
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry1)));
+                Equal(2L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
 
-                entries = await state.GetEntriesAsync(0L, CancellationToken.None);
-                Null(entries.SnapshotIndex);
-                Equal(6, entries.Count);
-                False(entries[0].IsSnapshot);
-                Equal(state.First, entries[0]);
-                Equal(42L, entries[1].Term);
-                Equal(entry1.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
-                Equal(entry1.Timestamp, entries[1].Timestamp);
-                Equal(43L, entries[2].Term);
-                Equal(entry2.Content, await entries[2].ReadAsTextAsync(Encoding.UTF8));
-                Equal(entry2.Timestamp, entries[2].Timestamp);
-                Equal(44L, entries[3].Term);
-                Equal(entry3.Content, await entries[3].ReadAsTextAsync(Encoding.UTF8));
-                Equal(entry3.Timestamp, entries[3].Timestamp);
-                Equal(45L, entries[4].Term);
-                Equal(entry4.Content, await entries[4].ReadAsTextAsync(Encoding.UTF8));
-                Equal(entry4.Timestamp, entries[4].Timestamp);
-                Equal(46L, entries[5].Term);
-                Equal(entry5.Content, await entries[5].ReadAsTextAsync(Encoding.UTF8));
-                Equal(entry5.Timestamp, entries[5].Timestamp);
-                entries.Dispose();
+                checker = async (entries, snapshotIndex) =>
+                {
+                    Null(snapshotIndex);
+                    Equal(6, entries.Count);
+                    False(entries[0].IsSnapshot);
+                    Equal(state.First, entries[0]);
+                    Equal(42L, entries[1].Term);
+                    Equal(entry1.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry1.Timestamp, entries[1].Timestamp);
+                    Equal(43L, entries[2].Term);
+                    Equal(entry2.Content, await entries[2].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry2.Timestamp, entries[2].Timestamp);
+                    Equal(44L, entries[3].Term);
+                    Equal(entry3.Content, await entries[3].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry3.Timestamp, entries[3].Timestamp);
+                    Equal(45L, entries[4].Term);
+                    Equal(entry4.Content, await entries[4].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry4.Timestamp, entries[4].Timestamp);
+                    Equal(46L, entries[5].Term);
+                    Equal(entry5.Content, await entries[5].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry5.Timestamp, entries[5].Timestamp);
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
             }
             finally
             {
@@ -275,27 +289,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching, initialPartitionSize: 1024 * 1024);
             try
             {
-                var entries = await state.GetEntriesAsync(0L, CancellationToken.None);
-                Null(entries.SnapshotIndex);
-                False(entries[0].IsSnapshot);
-                Equal(6, entries.Count);
-                Equal(state.First, entries[0]);
-                Equal(42L, entries[1].Term);
-                Equal(entry1.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
-                Equal(entry1.Timestamp, entries[1].Timestamp);
-                Equal(43L, entries[2].Term);
-                Equal(entry2.Content, await entries[2].ReadAsTextAsync(Encoding.UTF8));
-                Equal(entry2.Timestamp, entries[2].Timestamp);
-                Equal(44L, entries[3].Term);
-                Equal(entry3.Content, await entries[3].ReadAsTextAsync(Encoding.UTF8));
-                Equal(entry3.Timestamp, entries[3].Timestamp);
-                Equal(45L, entries[4].Term);
-                Equal(entry4.Content, await entries[4].ReadAsTextAsync(Encoding.UTF8));
-                Equal(entry4.Timestamp, entries[4].Timestamp);
-                Equal(46L, entries[5].Term);
-                Equal(entry5.Content, await entries[5].ReadAsTextAsync(Encoding.UTF8));
-                Equal(entry5.Timestamp, entries[5].Timestamp);
-                entries.Dispose();
+                checker = async (entries, snapshotIndex) =>
+                {
+                    Null(snapshotIndex);
+                    False(entries[0].IsSnapshot);
+                    Equal(6, entries.Count);
+                    Equal(state.First, entries[0]);
+                    Equal(42L, entries[1].Term);
+                    Equal(entry1.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry1.Timestamp, entries[1].Timestamp);
+                    Equal(43L, entries[2].Term);
+                    Equal(entry2.Content, await entries[2].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry2.Timestamp, entries[2].Timestamp);
+                    Equal(44L, entries[3].Term);
+                    Equal(entry3.Content, await entries[3].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry3.Timestamp, entries[3].Timestamp);
+                    Equal(45L, entries[4].Term);
+                    Equal(entry4.Content, await entries[4].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry4.Timestamp, entries[4].Timestamp);
+                    Equal(46L, entries[5].Term);
+                    Equal(entry5.Content, await entries[5].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry5.Timestamp, entries[5].Timestamp);
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
             }
             finally
             {
@@ -317,8 +333,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             using (var state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching))
             {
-                Equal(1L, await state.AppendAsync(new[] { entry1 }));
-                Equal(2L, await state.AppendAsync(new[] { entry2, entry3, entry4, entry5 }));
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry1)));
+                Equal(2L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
 
                 Equal(1L, await state.CommitAsync(1L, CancellationToken.None));
                 Equal(2L, await state.CommitAsync(3L, CancellationToken.None));
@@ -326,7 +342,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal(3L, state.GetLastIndex(true));
                 Equal(5L, state.GetLastIndex(false));
 
-                await ThrowsAsync<InvalidOperationException>(() => state.AppendAsync(new[] { entry1 }, 1L).AsTask());
+                await ThrowsAsync<InvalidOperationException>(() => state.AppendAsync(entry1, 1L).AsTask());
             }
 
             //read again
@@ -345,37 +361,47 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker;
             using (var state = new TestAuditTrail(dir, useCaching))
             {
-                await state.AppendAsync(entries);
+                await state.AppendAsync(new LogEntryList(entries));
                 Equal(3, await state.CommitAsync(3, CancellationToken.None));
                 //install snapshot and erase all existing entries up to 7th (inclusive)
                 await state.AppendAsync(new Int64LogEntry(100500L, true), 7);
-                var readResult = await state.GetEntriesAsync(6, 9, CancellationToken.None).ConfigureAwait(false);
-                Equal(3, readResult.Count);
-                Equal(7, readResult.SnapshotIndex);
-                True(readResult[0].IsSnapshot);
-                False(readResult[1].IsSnapshot);
-                False(readResult[2].IsSnapshot);
-                readResult.Dispose();
+                checker = (readResult, snapshotIndex) =>
+                {
+                    Equal(3, readResult.Count);
+                    Equal(7, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    False(readResult[1].IsSnapshot);
+                    False(readResult[2].IsSnapshot);
+                    return default;
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
             }
 
             //read again
             using (var state = new TestAuditTrail(dir, useCaching))
             {
-                var readResult = await state.GetEntriesAsync(6, 9, CancellationToken.None).ConfigureAwait(false);
-                Equal(3, readResult.Count);
-                Equal(7, readResult.SnapshotIndex);
-                True(readResult[0].IsSnapshot);
-                False(readResult[1].IsSnapshot);
-                False(readResult[2].IsSnapshot);
-                readResult.Dispose();
+                checker = (readResult, snapshotIndex) =>
+                {
+                    Equal(3, readResult.Count);
+                    Equal(7, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    False(readResult[1].IsSnapshot);
+                    False(readResult[2].IsSnapshot);
+                    return default;
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
                 await state.AppendAsync(new Int64LogEntry(90L, true), 11);
-                readResult = await state.GetEntriesAsync(6, 9, CancellationToken.None).ConfigureAwait(false);
-                Equal(1, readResult.Count);
-                Equal(11, readResult.SnapshotIndex);
-                True(readResult[0].IsSnapshot);
-                readResult.Dispose();
+                checker = (readResult, snapshotIndex) =>
+                {
+                    Equal(1, readResult.Count);
+                    Equal(11, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    return default;
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
             }
         }
 
@@ -387,38 +413,52 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
             entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker;
             using (var state = new TestAuditTrail(dir, useCaching))
             {
-                await state.AppendAsync(entries);
+                await state.AppendAsync(new LogEntryList(entries));
                 await state.CommitAsync(CancellationToken.None);
-                var readResult = await state.GetEntriesAsync(1, 6, CancellationToken.None);
-                Equal(1, readResult.Count);
-                Equal(7, readResult.SnapshotIndex);
-                True(readResult[0].IsSnapshot);
-                readResult.Dispose();
-                readResult = await state.GetEntriesAsync(1, CancellationToken.None);
-                Equal(3, readResult.Count);
-                Equal(7, readResult.SnapshotIndex);
-                True(readResult[0].IsSnapshot);
-                False(readResult[1].IsSnapshot);
-                False(readResult[2].IsSnapshot);
-                readResult.Dispose();
+                checker = (readResult, snapshotIndex) =>
+                {
+                    Equal(1, readResult.Count);
+                    Equal(7, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    return default;
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 1, 6, CancellationToken.None);
+                checker = (readResult, snapshotIndex) =>
+                {
+                    Equal(3, readResult.Count);
+                    Equal(7, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    False(readResult[1].IsSnapshot);
+                    False(readResult[2].IsSnapshot);
+                    return default;
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 1, CancellationToken.None);
             }
 
             //read agian
             using (var state = new TestAuditTrail(dir, useCaching))
             {
-                var readResult = await state.GetEntriesAsync(1, 6, CancellationToken.None);
-                Equal(1, readResult.Count);
-                NotNull(readResult.SnapshotIndex);
-                readResult.Dispose();
-                readResult = await state.GetEntriesAsync(1, CancellationToken.None);
-                Equal(3, readResult.Count);
-                Equal(7, readResult.SnapshotIndex);
-                True(readResult[0].IsSnapshot);
-                False(readResult[1].IsSnapshot);
-                False(readResult[2].IsSnapshot);
-                readResult.Dispose();
+                checker = (readResult, snapshotIndex) =>
+                {
+                    Equal(1, readResult.Count);
+                    NotNull(snapshotIndex);
+                    return default;
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 1, 6, CancellationToken.None);
+
+                checker = (readResult, snapshotIndex) =>
+                {
+                    Equal(3, readResult.Count);
+                    Equal(7, snapshotIndex);
+                    True(readResult[0].IsSnapshot);
+                    False(readResult[1].IsSnapshot);
+                    False(readResult[2].IsSnapshot);
+                    return default;
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 1, CancellationToken.None);
             }
         }
     }

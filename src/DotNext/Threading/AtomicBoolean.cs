@@ -263,18 +263,12 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object other) => other switch
         {
-            switch (other)
-            {
-                case bool b:
-                    return Equals(b);
-                case AtomicBoolean b:
-                    return b.value.VolatileRead() == value.VolatileRead();
-                default:
-                    return false;
-            }
-        }
+            bool b => Equals(b),
+            AtomicBoolean b => b.value.VolatileRead() == value.VolatileRead(),
+            _ => false,
+        };
 
         /// <summary>
         /// Returns stored boolean value in the form of <see cref="string"/>.
