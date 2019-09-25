@@ -93,9 +93,8 @@ struct Complex
 
 using(var memory = new UnmanagedMemory<Complex>(1))
 {
-    ref var ptr = ref memory.Pointer.Ref;
-    ptr.Image = 20;
-    ptr.Real = 30;
+    memory.Pointer.Image = 20;
+    memory.Pointer.Real = 30;
 }
 ```
 
@@ -124,8 +123,7 @@ struct Complex
 
 using(var c = UnmanagedMemory<Complex>.Box(new Complex { Image = 20, Real = 30 }))
 {
-    Pointer<Complex> ptr = c;
-    Pointer<double> pImage = c.As<double>();
+    Pointer<double> pImage = c.Pointer.As<double>();
     Pointer<double> pReal = pImage + 1;
     pImage.Value = 1;
     pReal.Value = 2;
