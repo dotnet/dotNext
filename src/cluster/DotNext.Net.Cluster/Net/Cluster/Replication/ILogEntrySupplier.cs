@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Replication
         public LogEntryProducer(IList<TEntry> entries)
         {
             currentIndex = InitialPosition;
-            this.source = entries;
+            source = entries;
         }
 
         /// <summary>
@@ -71,9 +71,9 @@ namespace DotNext.Net.Cluster.Replication
 
         TEntry ILogEntryProducer<TEntry>.Current => source[currentIndex];
 
-        long ILogEntryProducer<TEntry>.RemainingCount => source.Count - currentIndex + 1;
+        long ILogEntryProducer<TEntry>.RemainingCount => source.Count - currentIndex - 1;
 
-        ValueTask<bool> ILogEntryProducer<TEntry>.MoveNextAsync() => new ValueTask<bool>(currentIndex++ < source.Count);
+        ValueTask<bool> ILogEntryProducer<TEntry>.MoveNextAsync() => new ValueTask<bool>(++currentIndex < source.Count);
 
         /// <summary>
         /// Resets the position of the producer.

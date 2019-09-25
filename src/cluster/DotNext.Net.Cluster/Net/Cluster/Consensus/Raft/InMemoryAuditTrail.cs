@@ -233,7 +233,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(new LogEntryProducer<TEntry>(entry), null, false, default).ConfigureAwait(false);
+                await AppendAsync(new LogEntryProducer<TEntry>(entry), startIndex, false, default).ConfigureAwait(false);
         }
 
         private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
