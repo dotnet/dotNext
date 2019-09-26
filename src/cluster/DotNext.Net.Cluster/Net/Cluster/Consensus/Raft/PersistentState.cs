@@ -213,7 +213,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             long? IDataTransferObject.Length => Length;
-            bool IDataTransferObject.IsReusable => true;
+            bool IDataTransferObject.IsReusable => false;
 
             /// <summary>
             /// Gets Raft term of this log entry.
