@@ -4,7 +4,7 @@ using Xunit;
 
 namespace DotNext.Diagnostics
 {
-    public sealed class TimestampTests : Assert
+    public sealed class TimestampTests : Xunit.Assert
     {
         [Fact]
         public static void MeasurementTest()

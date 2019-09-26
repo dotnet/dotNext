@@ -25,6 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using Text;
     using Threading;
     using static Collections.Generic.Dictionary;
+    using Assert = Diagnostics.Assert;
 
     /// <summary>
     /// Represents general purpose persistent audit trail compatible with Raft algorithm.
@@ -245,9 +246,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly StreamSegment[] readers;
 
             private protected ConcurrentStorageAccess(string fileName, byte[] sharedBuffer, int readersCount, FileOptions options)
-                : base(fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read, sharedBuffer.Length, options)
+                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, options)
             {
                 readers = new StreamSegment[readersCount];
+                buffer = sharedBuffer;
                 for (var i = 0L; i < readers.LongLength; i++)
                     readers[i] = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
             }
@@ -866,14 +868,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return await reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token).ConfigureAwait(false);
             //obtain weak lock as read lock
             await syncRoot.Acquire(false, token).ConfigureAwait(false);
+            Assert.True(readSessions.TryTake(out ReadSessionToken session));
             try
             {
-                return readSessions.TryTake(out var session) ? 
-                    await ReadEntriesImplAsync<TReader, TResult>(reader, session, startIndex, endIndex, token).ConfigureAwait(false) :
-                    throw new InternalBufferOverflowException();    //never happens
+                return await ReadEntriesImplAsync<TReader, TResult>(reader, session, startIndex, endIndex, token).ConfigureAwait(false);
             }
             finally
             {
+                readSessions.Add(session);  //return session back to the pool
                 syncRoot.Release();
             }
         }
@@ -894,14 +896,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             await syncRoot.Acquire(false, token).ConfigureAwait(false);
+            Assert.True(readSessions.TryTake(out ReadSessionToken session));
             try
             {
-                return readSessions.TryTake(out var session) ? 
-                    await ReadEntriesImplAsync<TReader, TResult>(reader, session, startIndex, state.LastIndex, token).ConfigureAwait(false) :
-                    throw new InternalBufferOverflowException();
+                return await ReadEntriesImplAsync<TReader, TResult>(reader, session, startIndex, state.LastIndex, token).ConfigureAwait(false);
             }
             finally
             {
+                readSessions.Add(session);
                 syncRoot.Release();
             }
         }

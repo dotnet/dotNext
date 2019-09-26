@@ -30,7 +30,7 @@ namespace DotNext.Threading
             internal readonly long ConcurrencyLevel;
             internal long RemainingLocks;   //-1 means that the lock is acquired in exclusive mode
 
-            internal State(long concurrencyLevel) => ConcurrencyLevel = concurrencyLevel;
+            internal State(long concurrencyLevel) => ConcurrencyLevel = RemainingLocks = concurrencyLevel;
 
             internal long IncrementLocks() => RemainingLocks = RemainingLocks == ExclusiveMode ? ConcurrencyLevel : RemainingLocks + 1L;
 
