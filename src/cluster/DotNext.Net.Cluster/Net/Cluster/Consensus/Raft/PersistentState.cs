@@ -243,15 +243,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private abstract class ConcurrentStorageAccess : FileStream
         {
             private protected readonly byte[] buffer;
-            private readonly StreamSegment[] readers;
+            private readonly StreamSegment[] readers;   //a pool of read-only streams that can be shared between multiple readers in parallel
 
             private protected ConcurrentStorageAccess(string fileName, byte[] sharedBuffer, int readersCount, FileOptions options)
                 : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, options)
             {
                 readers = new StreamSegment[readersCount];
                 buffer = sharedBuffer;
-                for (var i = 0L; i < readers.LongLength; i++)
-                    readers[i] = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
+                foreach(ref var reader in readers.AsSpan())
+                    reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -260,10 +260,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             protected override void Dispose(bool disposing)
             {
                 if (disposing)
-                {
-                    Disposable.Dispose(readers);
-                    Array.Clear(readers, 0, readers.Length);
-                }
+                    foreach(ref var reader in readers.AsSpan())
+                    {
+                        reader.Dispose();
+                        reader = null;
+                    }
                 base.Dispose(disposing);
             }
         }
