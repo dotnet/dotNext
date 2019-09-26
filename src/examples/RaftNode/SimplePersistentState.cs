@@ -31,7 +31,7 @@ namespace RaftNode
         private readonly FileStream content;
 
         private SimplePersistentState(string path)
-            : base(path, 50, initialPartitionSize: 50 * 8)
+            : base(path, 50, new Options { InitialPartitionSize = 50 * 8 })
         {
             content = new FileStream(Path.Combine(path, ContentFile), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, 1024, true);
         }

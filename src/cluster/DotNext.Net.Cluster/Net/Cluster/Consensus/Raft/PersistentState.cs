@@ -600,9 +600,40 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public abstract ValueTask CopyToAsync(PipeWriter output, CancellationToken token);
         }
 
-        private const int DefaultBufferSize = 2048;
+        /// <summary>
+        /// Represents configuration options of the persistent audit trail.
+        /// </summary>
+        public class Options
+        {
+            internal const int DefaultBufferSize = 2048;
+            internal const long DefaultPartitionSize = 0;
+            internal const bool DefaultUseCaching = true;
+            internal const bool DefaultUseSharedPool = true;
+
+            /// <summary>
+            /// Gets size of in-memory buffer for I/O operations.
+            /// </summary>
+            public int BufferSize { get; set; } = DefaultBufferSize;
+
+            /// <summary>
+            /// Gets or sets the initial size of the file that holds the partition with log entries.
+            /// </summary>
+            public long InitialPartitionSize { get; set; } = DefaultPartitionSize;
+
+            /// <summary>
+            /// Enables or disables in-memory cache.
+            /// </summary>
+            /// <value><see langword="true"/> to in-memory cache for faster read/write of log entries; <see langword="false"/> to reduce the memory by the cost of the performance.</value>
+            public bool UseCaching { get; set; } = DefaultUseCaching;
+
+            /// <summary>
+            /// Gets or sets value indicating usage policy of array pools.
+            /// </summary>
+            /// <value><see langword="true"/> to use <see cref="ArrayPool{T}.Shared"/> pool for internal purposes; <see langword="false"/> to use dedicated pool of arrays.</value>
+            public bool UseSharedPool { get; set; } = DefaultUseSharedPool;
+        }
+
         private const int MinBufferSize = 128;
-        private const long DefaultPartitionSize = 0;
         private readonly long recordsPerPartition;
         //key is the number of partition
         private readonly IDictionary<long, Partition> partitionTable;
@@ -627,27 +658,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
-        /// <param name="bufferSize">Optional size of in-memory buffer for I/O operations.</param>
-        /// <param name="initialPartitionSize">The initial size of the file that holds the partition with log entries.</param>
-        /// <param name="useCaching"><see langword="true"/> to in-memory cache for faster read/write of log entries; <see langword="false"/> to reduce the memory by the cost of the performance.</param>
-        /// <param name="useSharedPool"><see langword="true"/> to use <see cref="ArrayPool{T}.Shared"/> pool for internal purposes; <see langword="false"/> to use dedicated pool of arrays.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1; or <paramref name="bufferSize"/> is too small.</exception>
-        public PersistentState(DirectoryInfo path, long recordsPerPartition, int bufferSize = DefaultBufferSize, long initialPartitionSize = DefaultPartitionSize, bool useCaching = true, bool useSharedPool = true)
+        /// <param name="configuration">The configuration of the persistent audit trail.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2; or <see cref="Options.BufferSize"/> is too small.</exception>
+        public PersistentState(DirectoryInfo path, long recordsPerPartition, Options configuration = null)
         {
-            if (bufferSize < MinBufferSize)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            if (configuration is null)
+                configuration = new Options();
+            if (configuration.BufferSize < MinBufferSize)
+                throw new ArgumentOutOfRangeException(nameof(configuration));
             if (recordsPerPartition < 2L)
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
-            sharedBuffer = new byte[bufferSize];
+            sharedBuffer = new byte[configuration.BufferSize];
             location = path;
-            useLookupCache = useCaching;
+            useLookupCache = configuration.UseCaching;
             this.recordsPerPartition = recordsPerPartition;
-            initialSize = initialPartitionSize;
+            initialSize = configuration.InitialPartitionSize;
             commitEvent = new AsyncManualResetEvent(false);
             syncRoot = new AsyncExclusiveLock();
-            entryPool = useSharedPool ? ArrayPool<LogEntry>.Shared : ArrayPool<LogEntry>.Create();
+            entryPool = configuration.UseSharedPool ? ArrayPool<LogEntry>.Shared : ArrayPool<LogEntry>.Create();
             nullSegment = new StreamSegment(Stream.Null);
             initialEntry = new LogEntry(nullSegment, sharedBuffer, new LogEntryMetadata());
             //sorted dictionary to improve performance of log compaction and snapshot installation procedures
@@ -656,7 +686,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             foreach (var file in path.EnumerateFiles())
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
-                    var partition = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber, useCaching);
+                    var partition = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber, configuration.UseCaching);
                     partition.PopulateCache();
                     partitionTable[partitionNumber] = partition;
                 }
@@ -670,12 +700,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
-        /// <param name="bufferSize">Optional size of in-memory buffer for I/O operations.</param>
-        /// <param name="initialPartitionSize">The initial size of the file that holds the partition with log entries.</param>
-        /// <param name="useCaching"><see langword="true"/> to in-memory cache for faster read/write of log entries; <see langword="false"/> to reduce the memory by the cost of the performance.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1.</exception>
-        public PersistentState(string path, long recordsPerPartition, int bufferSize = DefaultBufferSize, long initialPartitionSize = DefaultPartitionSize, bool useCaching = true)
-            : this(new DirectoryInfo(path), recordsPerPartition, bufferSize, initialPartitionSize, useCaching)
+        /// <param name="configuration">The configuration of the persistent audit trail.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
+        public PersistentState(string path, long recordsPerPartition, Options configuration = null)
+            : this(new DirectoryInfo(path), recordsPerPartition, configuration)
         {
         }
 

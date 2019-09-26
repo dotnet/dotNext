@@ -111,7 +111,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal TestAuditTrail(string path, bool useCaching)
-                : base(path, RecordsPerPartition, useCaching: useCaching)
+                : base(path, RecordsPerPartition, new Options { UseCaching = useCaching })
             {
             }
 
@@ -240,7 +240,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
             Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker;
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            IPersistentState state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching, initialPartitionSize: 1024 * 1024);
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching, InitialPartitionSize = 1024 * 1024 });
             try
             {
                 checker = (entries, snapshotIndex) =>
@@ -286,7 +286,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read again
-            state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching, initialPartitionSize: 1024 * 1024);
+            state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching, InitialPartitionSize = 1024 * 1024 });
             try
             {
                 checker = async (entries, snapshotIndex) =>
@@ -331,7 +331,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
 
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            using (var state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching))
+            using (var state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching }))
             {
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry1)));
                 Equal(2L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
@@ -346,7 +346,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             //read again
-            using (var state = new PersistentState(dir, RecordsPerPartition, useCaching: useCaching))
+            using (var state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching }))
             {
                 Equal(3L, state.GetLastIndex(true));
                 Equal(5L, state.GetLastIndex(false));
