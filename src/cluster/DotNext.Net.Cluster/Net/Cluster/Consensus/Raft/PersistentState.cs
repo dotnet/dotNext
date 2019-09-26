@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -222,6 +223,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public DateTimeOffset Timestamp => new DateTimeOffset(metadata.Timestamp, TimeSpan.Zero);
         }
 
+        private abstract class ConcurrentStorageAccess : FileStream
+        {
+            private protected readonly byte[] buffer;
+            private readonly ConcurrentBag<StreamSegment> readers;
+
+            private protected ConcurrentStorageAccess(string fileName, byte[] sharedBuffer, int readersCount, FileOptions options)
+                : base(fileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read, sharedBuffer.Length, options)
+            {
+                var readers = new StreamSegment[readersCount];
+                for (var i = 0L; i < readers.LongLength; i++)
+                    readers[i] = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
+                this.readers = new ConcurrentBag<StreamSegment>(readers);
+            }
+
+            internal StreamSegment Rent() => readers.TryTake(out var result) ? result : throw new InternalBufferOverflowException();
+
+            internal void Return(StreamSegment reader) => readers.Add(reader);
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                    Disposable.Dispose(readers);
+                base.Dispose(disposing);
+            }
+        }
+
         /*
             Partition file format:
             FileName - number of partition
@@ -230,20 +257,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Payload:
             [octet string] X number of entries
          */
-        private sealed class Partition : FileStream
+        private sealed class Partition : ConcurrentStorageAccess
         {
             internal readonly long FirstIndex;
             internal readonly long Capacity;    //max number of entries
-            private readonly byte[] buffer;
-            private readonly StreamSegment segment;
             private readonly LogEntryMetadata[] lookupCache;
 
-            internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber, bool useLookupCache)
-                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
+            internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber, bool useLookupCache, int readersCount)
+                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), sharedBuffer, readersCount, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
                 Capacity = recordsPerPartition;
-                buffer = sharedBuffer;
-                segment = new StreamSegment(this);
                 FirstIndex = partitionNumber * recordsPerPartition;
                 lookupCache = useLookupCache ? new LogEntryMetadata[recordsPerPartition] : null;
             }
@@ -280,11 +303,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (lookupCache is null)
                 {
                     Position = index * LogEntryMetadata.Size;
-                    metadata = await this.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
+                    metadata = await reader.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
                 }
                 else
                     metadata = lookupCache[index];
-                return metadata.Offset > 0 ? new LogEntry(segment, buffer, metadata) : new LogEntry?();
+                return metadata.Offset > 0 ? new LogEntry(reader, buffer, metadata) : new LogEntry?();
             }
 
             internal async ValueTask WriteAsync<TEntry>(TEntry entry, long index)
@@ -323,13 +346,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (!(lookupCache is null))
                     lookupCache[index] = metadata;
             }
-
-            protected override void Dispose(bool disposing)
-            {
-                if (disposing)
-                    segment.Dispose();
-                base.Dispose(disposing);
-            }
         }
 
         /*
@@ -337,18 +353,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
          * [struct SnapshotMetadata] X 1
          * [octet string] X 1
          */
-        private sealed class Snapshot : FileStream
+        private sealed class Snapshot : ConcurrentStorageAccess
         {
             private const string FileName = "snapshot";
             private const string TempFileName = "snapshot.new";
-            private readonly byte[] buffer;
-            private readonly StreamSegment segment;
 
-            internal Snapshot(DirectoryInfo location, byte[] sharedBuffer, bool tempSnapshot = false)
-                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough)
+            internal Snapshot(DirectoryInfo location, byte[] sharedBuffer, int readersCount, bool tempSnapshot = false)
+                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), sharedBuffer, readersCount, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough)
             {
-                buffer = sharedBuffer;
-                segment = new StreamSegment(this);
             }
 
             internal void PopulateCache() => Index = Length > 0L ? this.Read<SnapshotMetadata>(buffer).Index : 0L;
@@ -374,13 +386,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 get;
                 private set;
-            }
-
-            protected override void Dispose(bool disposing)
-            {
-                if (disposing)
-                    segment.Dispose();
-                base.Dispose(disposing);
             }
         }
 
