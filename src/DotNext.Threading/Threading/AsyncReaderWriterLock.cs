@@ -14,24 +14,38 @@ namespace DotNext.Threading
     /// </remarks>
     public class AsyncReaderWriterLock : QueuedSynchronizer
     {
+        //describes internal state of reader/writer lock
+        private sealed class State
+        {
+            internal long ReadLocks;
+            /*
+             * writeLock = false, upgradeable = false: regular read lock
+             * writeLock = true,  upgradeable = true : regular write lock
+             * writeLock = false, upgradeable = true : upgradeable read lock
+             * writeLock = true,  upgradeable = true : upgraded write lock
+             */
+            internal volatile bool WriteLock;
+            internal volatile bool Upgradeable;
+        }
+
         private sealed class WriteLockNode : WaitNode
         {
             internal readonly struct LockManager : ILockManager<WriteLockNode>
             {
-                private readonly AsyncReaderWriterLock state;
+                private readonly State state;
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                internal LockManager(AsyncReaderWriterLock state) => this.state = state;
+                internal LockManager(State state) => this.state = state;
 
                 WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
 
                 bool ILockManager<WriteLockNode>.TryAcquire()
                 {
-                    if (state.isWriteLockHeld || state.readLocks > 1L)
+                    if (state.WriteLock || state.ReadLocks > 1L)
                         return false;
-                    else if (state.readLocks == 0L || state.readLocks == 1L && state.isUpgraded)    //no readers or single upgradeable read lock
+                    else if (state.ReadLocks == 0L || state.ReadLocks == 1L && state.Upgradeable)    //no readers or single upgradeable read lock
                     {
-                        state.isWriteLockHeld = true;
+                        state.WriteLock = true;
                         return true;
                     }
                     else
@@ -47,20 +61,20 @@ namespace DotNext.Threading
         {
             internal readonly struct LockManager : ILockManager<ReadLockNode>
             {
-                private readonly AsyncReaderWriterLock state;
+                private readonly State state;
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                internal LockManager(AsyncReaderWriterLock state) => this.state = state;
+                internal LockManager(State state) => this.state = state;
 
                 ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode node) => node is null ? new ReadLockNode(false) : new ReadLockNode(node, false);
 
                 bool ILockManager<ReadLockNode>.TryAcquire()
                 {
-                    if (state.isWriteLockHeld)
+                    if (state.WriteLock)
                         return false;
                     else
                     {
-                        state.readLocks++;
+                        state.ReadLocks++;
                         return true;
                     }
                 }
@@ -68,21 +82,21 @@ namespace DotNext.Threading
 
             internal readonly struct UpgradeableLockManager : ILockManager<ReadLockNode>
             {
-                private readonly AsyncReaderWriterLock state;
+                private readonly State state;
 
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                internal UpgradeableLockManager(AsyncReaderWriterLock state) => this.state = state;
+                internal UpgradeableLockManager(State state) => this.state = state;
 
                 ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode node) => node is null ? new ReadLockNode(true) : new ReadLockNode(node, true);
 
                 bool ILockManager<ReadLockNode>.TryAcquire()
                 {
-                    if (state.isWriteLockHeld || state.isUpgraded)
+                    if (state.WriteLock || state.Upgradeable)
                         return false;
                     else
                     {
-                        state.readLocks++;
-                        state.isUpgraded = true;
+                        state.ReadLocks++;
+                        state.Upgradeable = true;
                         return true;
                     }
                 }
@@ -103,21 +117,26 @@ namespace DotNext.Threading
             }
         }
 
-        //describes internal state of reader/writer lock
-        private long readLocks;
-        /*
-         * writeLock = false, upgradeable = false: regular read lock
-         * writeLock = true,  upgradeable = false : regular write lock
-         * writeLock = false, upgradeable = true : upgradeable read lock
-         * writeLock = true,  upgradeable = true : upgraded write lock
-         */
-        private volatile bool isWriteLockHeld;
-        private volatile bool isUpgraded;
+        private readonly State state;
+        private ReadLockNode.LockManager readLock;
+        private ReadLockNode.UpgradeableLockManager upgradeableLock;
+        private WriteLockNode.LockManager writeLock;
+
+        /// <summary>
+        /// Initializes a new reader/writer lock.
+        /// </summary>
+        public AsyncReaderWriterLock()
+        {
+            state = new State();
+            readLock = new ReadLockNode.LockManager(state);
+            upgradeableLock = new ReadLockNode.UpgradeableLockManager(state);
+            writeLock = new WriteLockNode.LockManager(state);
+        }
 
         /// <summary>
         /// Gets the total number of unique readers.
         /// </summary>
-        public long CurrentReadCount => readLocks.VolatileRead();
+        public long CurrentReadCount => AtomicInt64.VolatileRead(ref state.ReadLocks);
 
         /// <summary>
         /// Gets a value that indicates whether the read lock taken.
@@ -127,12 +146,12 @@ namespace DotNext.Threading
         /// <summary>
         /// Gets a value that indicates whether the current upgradeable read lock taken.
         /// </summary>
-        public bool IsUpgradeableReadLockHeld => isUpgraded && !isWriteLockHeld;
+        public bool IsUpgradeableReadLockHeld => state.Upgradeable && !state.WriteLock;
 
         /// <summary>
         /// Gets a value that indicates whether the write lock taken.
         /// </summary>
-        public bool IsWriteLockHeld => isWriteLockHeld;
+        public bool IsWriteLockHeld => state.WriteLock;
 
         /// <summary>
         /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -143,10 +162,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryEnterReadLock(TimeSpan timeout, CancellationToken token)
-        {
-            var manager = new ReadLockNode.LockManager(this);
-            return Wait(ref manager, timeout, token);
-        }
+            => Wait(ref readLock, timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -185,10 +201,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryEnterWriteLock(TimeSpan timeout, CancellationToken token)
-        {
-            var manager = new WriteLockNode.LockManager(this);
-            return Wait(ref manager, timeout, token);
-        }
+            => Wait(ref writeLock, timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
@@ -227,10 +240,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryEnterUpgradeableReadLock(TimeSpan timeout, CancellationToken token)
-        {
-            var manager = new ReadLockNode.UpgradeableLockManager(this);
-            return Wait(ref manager, timeout, token);
-        }
+            => Wait(ref upgradeableLock, timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in upgradeable mode asynchronously, with an optional time-out.
@@ -268,13 +278,13 @@ namespace DotNext.Threading
                     next = readLock.Next;
                     //remove all read locks and leave upgradeable read locks until first write lock
                     if (readLock.Upgradeable)
-                        if (isUpgraded)    //already in upgradeable lock, leave the current node alive
+                        if (state.Upgradeable)    //already in upgradeable lock, leave the current node alive
                             continue;
                         else
-                            isUpgraded = true;    //enter upgradeable read lock
+                            state.Upgradeable = true;    //enter upgradeable read lock
                     RemoveNode(readLock);
                     readLock.Complete();
-                    readLocks += 1L;
+                    state.ReadLocks += 1L;
                 }
         }
 
@@ -291,14 +301,14 @@ namespace DotNext.Threading
         public void ExitUpgradeableReadLock()
         {
             ThrowIfDisposed();
-            if (isWriteLockHeld || !isUpgraded || readLocks == 0L)
+            if (state.WriteLock || !state.Upgradeable || state.ReadLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInUpgradeableReadLock);
-            isUpgraded = false;
-            if (--readLocks == 0L && head is WriteLockNode writeLock) //no more readers, write lock can be acquired
+            state.Upgradeable = false;
+            if (--state.ReadLocks == 0L && head is WriteLockNode writeLock) //no more readers, write lock can be acquired
             {
                 RemoveNode(writeLock);
                 writeLock.Complete();
-                isWriteLockHeld = true;
+                state.WriteLock = true;
             }
             else
                 ProcessReadLocks();
@@ -317,7 +327,7 @@ namespace DotNext.Threading
         public void ExitWriteLock()
         {
             ThrowIfDisposed();
-            if (!isWriteLockHeld)
+            if (!state.WriteLock)
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
             else if (head is WriteLockNode writeLock)
             {
@@ -325,7 +335,7 @@ namespace DotNext.Threading
                 writeLock.Complete();
                 return;
             }
-            isWriteLockHeld = false;
+            state.WriteLock = false;
             ProcessReadLocks();
         }
 
@@ -342,13 +352,13 @@ namespace DotNext.Threading
         public void ExitReadLock()
         {
             ThrowIfDisposed();
-            if (isWriteLockHeld || readLocks == 1L && isUpgraded || readLocks == 0L)
+            if (state.WriteLock || state.ReadLocks == 1L && state.Upgradeable || state.ReadLocks == 0L)
                 throw new SynchronizationLockException(ExceptionMessages.NotInReadLock);
-            else if (--readLocks == 0L && head is WriteLockNode writeLock)
+            else if (--state.ReadLocks == 0L && head is WriteLockNode writeLock)
             {
                 RemoveNode(writeLock);
                 writeLock.Complete();
-                isWriteLockHeld = true;
+                state.WriteLock = true;
             }
         }
     }
