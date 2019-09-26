@@ -630,6 +630,35 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public abstract ValueTask CopyToAsync(PipeWriter output, CancellationToken token);
         }
 
+        //provides fast navigation between partitions without lookup of the partition table when possible
+        private struct PartitionCursor
+        {
+            private Partition lastPartition;
+
+            internal bool TryGet(PersistentState state, long recordIndex, out Partition partition)
+            {
+                var result = lastPartition != null && recordIndex >= lastPartition.FirstIndex && recordIndex <= lastPartition.LastIndex || state.TryGetPartition(recordIndex, out lastPartition);
+                partition = lastPartition;
+                return result;
+            }
+
+            internal Task FlushAsync() => lastPartition?.FlushAsync() ?? Task.CompletedTask;
+
+            internal Partition GetOrCreate(PersistentState state, long recordIndex, out Task flushTask)
+            {
+                if(lastPartition is null || recordIndex < lastPartition.FirstIndex || recordIndex > lastPartition.LastIndex)
+                {
+                    flushTask = lastPartition?.FlushAsync() ?? Task.CompletedTask;
+                    lastPartition = state.GetOrCreatePartition(recordIndex);
+                }
+                else
+                    flushTask = Task.CompletedTask;
+                return lastPartition;
+            }
+
+            internal void Reset() => lastPartition = null;
+        }
+
         /// <summary>
         /// Represents configuration options of the persistent audit trail.
         /// </summary>
@@ -814,10 +843,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 using (var list = new ArrayRental<LogEntry>(entryPool, (int)length))
                 {
                     int listIndex;
+                    var cursor = new PartitionCursor();
                     for (listIndex = 0; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                         if (startIndex == 0L)   //handle ephemeral entity
                             entry = First;
-                        else if (TryGetPartition(startIndex, out Partition partition)) //handle regular record
+                        else if (cursor.TryGet(this, startIndex, out Partition partition)) //handle regular record
                             entry = (await partition.ReadAsync(session, startIndex, true, token).ConfigureAwait(false)).Value;
                         else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)    //probably the record is snapshotted
                         {
@@ -827,7 +857,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         }
                         else
                             break;
-
+                    cursor.Reset();
                     result = reader.ReadAsync<LogEntry, ArraySegment<LogEntry>>(new ArraySegment<LogEntry>(list, 0, listIndex), list[0].SnapshotIndex, token);
                 }
             else if (snapshot.Length > 0)
@@ -970,36 +1000,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commitEvent.Set(true);
         }
 
-        private static ValueTask FlushIfNeeded(ref Partition lastPartition, Partition newPartition)
-        {
-            ValueTask result;
-            if (ReferenceEquals(lastPartition, newPartition))
-                result = new ValueTask();
-            else
-            {
-                result = new ValueTask(lastPartition?.FlushAsync() ?? Task.CompletedTask);
-                lastPartition = newPartition;
-            }
-            return result;
-        }
-
         private async ValueTask AppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
             where TEntry : IRaftLogEntry
         {
             if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            Partition partition;
-            for(partition = null; !token.IsCancellationRequested && await supplier.MoveNextAsync().ConfigureAwait(false); state.LastIndex = startIndex++)
+            PartitionCursor cursor;
+            for(cursor = new PartitionCursor(); !token.IsCancellationRequested && await supplier.MoveNextAsync().ConfigureAwait(false); state.LastIndex = startIndex++)
                 if (supplier.Current.IsSnapshot)
                     throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
                 else if (startIndex > state.CommitIndex)
                 {
-                    await FlushIfNeeded(ref partition, GetOrCreatePartition(startIndex)).ConfigureAwait(false);
+                    var partition = cursor.GetOrCreate(this, startIndex, out var flushTask);
+                    await flushTask.ConfigureAwait(false);
                     await partition.WriteAsync(supplier.Current, startIndex).ConfigureAwait(false);
                 }
                 else if (!skipCommitted)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-            await FlushIfNeeded(ref partition, null).ConfigureAwait(false);
+            await cursor.FlushAsync().ConfigureAwait(false);
+            cursor.Reset();
             //flush updated state
             state.Flush();
             token.ThrowIfCancellationRequested();
@@ -1223,8 +1242,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async ValueTask ApplyAsync(CancellationToken token)
         {
+            var cursor = new PartitionCursor();
             for (var i = state.LastApplied + 1L; i <= state.CommitIndex; state.LastApplied = i++)
-                if (TryGetPartition(i, out var partition))
+                if (cursor.TryGet(this, i, out var partition))
                 {
                     var entry = (await partition.ReadAsync(SessionTokenPool.DefaultSession, i, true, token).ConfigureAwait(false)).Value;
                     entry.AdjustPosition();
@@ -1232,6 +1252,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                     Debug.Fail($"Log entry with index {i} doesn't have partition");
+            cursor.Reset();
             state.Flush();
         }
 
