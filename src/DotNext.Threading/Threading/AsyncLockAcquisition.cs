@@ -43,6 +43,9 @@ namespace DotNext.Threading
             {
                 case null:
                     throw new ArgumentNullException(nameof(obj));
+                case AsyncSharedLock shared:
+                    @lock = AsyncLock.Exclusive(shared);
+                    break;
                 case AsyncExclusiveLock exclusive:
                     @lock = AsyncLock.Exclusive(exclusive);
                     break;

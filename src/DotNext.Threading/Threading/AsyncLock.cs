@@ -158,14 +158,14 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="lock">The shared lock instance.</param>
         /// <returns>Exclusive lock.</returns>
-        public static AsyncLock StrongLock(AsyncSharedLock @lock) => new AsyncLock(@lock, Type.Strong, false);
+        public static AsyncLock Exclusive(AsyncSharedLock @lock) => new AsyncLock(@lock, Type.Strong, false);
 
         /// <summary>
         /// Creates weak lock but doesn't acquire it.
         /// </summary>
         /// <param name="lock">The shared lock instance.</param>
         /// <returns>Weak lock.</returns>
-        public static AsyncLock WeakLock(AsyncSharedLock @lock) => new AsyncLock(@lock, Type.Weak, false);
+        public static AsyncLock Weak(AsyncSharedLock @lock) => new AsyncLock(@lock, Type.Weak, false);
 
         /// <summary>
         /// Acquires the lock asynchronously.
