@@ -605,35 +605,58 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public class Options
         {
-            internal const int DefaultBufferSize = 2048;
-            internal const long DefaultPartitionSize = 0;
-            internal const bool DefaultUseCaching = true;
-            internal const bool DefaultUseSharedPool = true;
+            private const int MinBufferSize = 128;
+            private int bufferSize = 2048;
+            private int concurrencyLevel = 3;
 
             /// <summary>
             /// Gets size of in-memory buffer for I/O operations.
             /// </summary>
-            public int BufferSize { get; set; } = DefaultBufferSize;
+            /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is too small.</exception>
+            public int BufferSize 
+            {
+                get => bufferSize;
+                set
+                {
+                    if (value < MinBufferSize)
+                        throw new ArgumentOutOfRangeException(nameof(value));
+                    bufferSize = value;
+                }
+            }
 
             /// <summary>
             /// Gets or sets the initial size of the file that holds the partition with log entries.
             /// </summary>
-            public long InitialPartitionSize { get; set; } = DefaultPartitionSize;
+            public long InitialPartitionSize { get; set; } = 0;
 
             /// <summary>
             /// Enables or disables in-memory cache.
             /// </summary>
             /// <value><see langword="true"/> to in-memory cache for faster read/write of log entries; <see langword="false"/> to reduce the memory by the cost of the performance.</value>
-            public bool UseCaching { get; set; } = DefaultUseCaching;
+            public bool UseCaching { get; set; } = true;
 
             /// <summary>
             /// Gets or sets value indicating usage policy of array pools.
             /// </summary>
             /// <value><see langword="true"/> to use <see cref="ArrayPool{T}.Shared"/> pool for internal purposes; <see langword="false"/> to use dedicated pool of arrays.</value>
-            public bool UseSharedPool { get; set; } = DefaultUseSharedPool;
+            public bool UseSharedPool { get; set; } = true;
+
+            /// <summary>
+            /// Gets or sets the number of possible parallel reads.
+            /// </summary>
+            /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than 1.</exception>
+            public int ConcurrencyLevel
+            {
+                get => concurrencyLevel;
+                set
+                {
+                    if (concurrencyLevel < 1)
+                        throw new ArgumentOutOfRangeException(nameof(value));
+                    concurrencyLevel = value;
+                }
+            }
         }
 
-        private const int MinBufferSize = 128;
         private readonly long recordsPerPartition;
         //key is the number of partition
         private readonly IDictionary<long, Partition> partitionTable;
@@ -659,13 +682,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
         /// <param name="configuration">The configuration of the persistent audit trail.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2; or <see cref="Options.BufferSize"/> is too small.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
         public PersistentState(DirectoryInfo path, long recordsPerPartition, Options configuration = null)
         {
             if (configuration is null)
                 configuration = new Options();
-            if (configuration.BufferSize < MinBufferSize)
-                throw new ArgumentOutOfRangeException(nameof(configuration));
             if (recordsPerPartition < 2L)
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
