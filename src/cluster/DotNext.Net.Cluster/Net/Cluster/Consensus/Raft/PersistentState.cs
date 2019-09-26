@@ -251,7 +251,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 readers = new StreamSegment[readersCount];
                 buffer = sharedBuffer;
                 foreach(ref var reader in readers.AsSpan())
-                    reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
+                    reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.SequentialScan), false);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
