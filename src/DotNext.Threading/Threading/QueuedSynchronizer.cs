@@ -13,7 +13,7 @@ namespace DotNext.Threading
     /// Provides a framework for implementing asynchronous locks and related synchronization primitives that rely on first-in-first-out (FIFO) wait queues.
     /// </summary>
     /// <remarks>
-    /// Derived synchronization primitives less efficient in terms of memory pressure in comparison with <see cref="Synchronizer">non-queued synchronization primitives</see>.
+    /// Derived synchronization primitives less efficient in terms of memory pressure when compared with <see cref="Synchronizer">non-queued synchronization primitives</see>.
     /// It provides the individual instance of <see cref="Task{TResult}"/> under contention for each waiter in the queue.
     /// </remarks>
     public abstract class QueuedSynchronizer : Disposable, ISynchronizer

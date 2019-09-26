@@ -27,7 +27,9 @@ namespace DotNext.Threading
             ReadLock,
             UpgradeableReadLock,
             WriteLock,
-            Semaphore
+            Semaphore,
+            Weak,
+            Strong
         }
 
         /// <summary>
@@ -71,6 +73,10 @@ namespace DotNext.Threading
                         break;
                     case Type.Semaphore:
                         As<SemaphoreSlim>(lockedObject).Release(1);
+                        break;
+                    case Type.Strong:
+                    case Type.Weak:
+                        As<AsyncSharedLock>(lockedObject).Release();
                         break;
                 }
                 this = default;
@@ -148,6 +154,20 @@ namespace DotNext.Threading
             => new AsyncLock(rwLock ?? throw new ArgumentNullException(nameof(rwLock)), Type.WriteLock, false);
 
         /// <summary>
+        /// Creates strong (exclusive) lock but doesn't acquire it.
+        /// </summary>
+        /// <param name="lock">The shared lock instance.</param>
+        /// <returns>Exclusive lock.</returns>
+        public static AsyncLock StrongLock(AsyncSharedLock @lock) => new AsyncLock(@lock, Type.Strong, false);
+
+        /// <summary>
+        /// Creates weak lock but doesn't acquire it.
+        /// </summary>
+        /// <param name="lock">The shared lock instance.</param>
+        /// <returns>Weak lock.</returns>
+        public static AsyncLock WeakLock(AsyncSharedLock @lock) => new AsyncLock(@lock, Type.Weak, false);
+
+        /// <summary>
         /// Acquires the lock asynchronously.
         /// </summary>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
@@ -162,26 +182,34 @@ namespace DotNext.Threading
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
         public async Task<Holder> Acquire(TimeSpan timeout)
         {
+            Task task;
             switch (type)
             {
-                case Type.Exclusive:
-                    await As<AsyncExclusiveLock>(lockedObject).Acquire(timeout).ConfigureAwait(false);
-                    break;
-                case Type.ReadLock:
-                    await As<AsyncReaderWriterLock>(lockedObject).EnterReadLock(timeout).ConfigureAwait(false);
-                    break;
-                case Type.UpgradeableReadLock:
-                    await As<AsyncReaderWriterLock>(lockedObject).EnterUpgradeableReadLock(timeout).ConfigureAwait(false);
-                    break;
-                case Type.WriteLock:
-                    await As<AsyncReaderWriterLock>(lockedObject).EnterWriteLock(timeout).ConfigureAwait(false);
-                    break;
-                case Type.Semaphore:
-                    await As<SemaphoreSlim>(lockedObject).WaitAsync(timeout).CheckOnTimeout().ConfigureAwait(false);
-                    break;
                 default:
                     return default;
+                case Type.Exclusive:
+                    task = As<AsyncExclusiveLock>(lockedObject).Acquire(timeout);
+                    break;
+                case Type.ReadLock:
+                    task = As<AsyncReaderWriterLock>(lockedObject).EnterReadLock(timeout);
+                    break;
+                case Type.UpgradeableReadLock:
+                    task = As<AsyncReaderWriterLock>(lockedObject).EnterUpgradeableReadLock(timeout);
+                    break;
+                case Type.WriteLock:
+                    task = As<AsyncReaderWriterLock>(lockedObject).EnterWriteLock(timeout);
+                    break;
+                case Type.Semaphore:
+                    task = As<SemaphoreSlim>(lockedObject).WaitAsync(timeout).CheckOnTimeout();
+                    break;
+                case Type.Strong:
+                    task = As<AsyncSharedLock>(lockedObject).Acquire(true, timeout);
+                    break;
+                case Type.Weak:
+                    task = As<AsyncSharedLock>(lockedObject).Acquire(false, timeout);
+                    break;
             }
+            await task.ConfigureAwait(false);
             return new Holder(lockedObject, type);
         }
 
@@ -204,6 +232,9 @@ namespace DotNext.Threading
             Task<bool> task;
             switch (type)
             {
+                default:
+                    task = CompletedTask<bool, BooleanConst.False>.Task;
+                    break;
                 case Type.Exclusive:
                     task = As<AsyncExclusiveLock>(lockedObject).TryAcquire(timeout, token);
                     break;
@@ -219,8 +250,11 @@ namespace DotNext.Threading
                 case Type.Semaphore:
                     task = As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token);
                     break;
-                default:
-                    task = CompletedTask<bool, BooleanConst.False>.Task;
+                case Type.Strong:
+                    task = As<AsyncSharedLock>(lockedObject).TryAcquire(true, timeout, token);
+                    break;
+                case Type.Weak:
+                    task = As<AsyncSharedLock>(lockedObject).TryAcquire(false, timeout, token);
                     break;
             }
             if (suppressCancellation && token.CanBeCanceled)
