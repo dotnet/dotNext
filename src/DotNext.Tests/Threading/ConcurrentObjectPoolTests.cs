@@ -30,13 +30,16 @@ namespace DotNext.Threading
         {
             private int sequenceNumber;
 
-            internal string CreateString() => (sequenceNumber++) switch
+            internal string CreateString()
             {
-                0 => "One",
-                1 => "Two",
-                2 => "Three",
-                _ => throw new Exception(),
-            };
+                switch (sequenceNumber++)
+                {
+                    case 0: return "One";
+                    case 1: return "Two";
+                    case 2: return "Three";
+                    default: throw new Exception();
+                }
+            }
         }
 
         [Fact]
