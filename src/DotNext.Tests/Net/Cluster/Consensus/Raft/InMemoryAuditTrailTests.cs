@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using LogEntryList = Replication.LogEntryProducer<IRaftLogEntry>;
+
     public sealed class InMemoryAuditTrailTests : Assert
     {
         [Fact]
@@ -27,26 +30,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(0, auditTrail.GetLastIndex(true));
             var entry1 = new TestLogEntry("SET X=0") { Term = 1 };
             var entry2 = new TestLogEntry("SET Y=0") { Term = 2 };
-            Equal(1, await auditTrail.AppendAsync(new[] { entry1, entry2 }));
+            Equal(1, await auditTrail.AppendAsync(new LogEntryList(entry1, entry2)));
             Equal(0, auditTrail.GetLastIndex(true));
             Equal(2, auditTrail.GetLastIndex(false));
-            var entries = await auditTrail.GetEntriesAsync(1, 2, CancellationToken.None);
-            Equal(2, entries.Count);
-            entry1 = (TestLogEntry)entries[0];
-            entry2 = (TestLogEntry)entries[1];
-            Equal("SET X=0", entry1.Content);
-            Equal("SET Y=0", entry2.Content);
-            entries.Dispose();
+            Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker = (entries, snapshotIndex) =>
+            {
+                Equal(2, entries.Count);
+                var e1 = (TestLogEntry)entries[0];
+                var e2 = (TestLogEntry)entries[1];
+                Equal("SET X=0", e1.Content);
+                Equal("SET Y=0", e2.Content);
+                return default;
+            };
+            await auditTrail.ReadEntriesAsync<TestReader, DBNull>(checker, 1, 2, CancellationToken.None);
             //now replace entry at index 2 with new entry
             entry2 = new TestLogEntry("ADD") { Term = 3 };
-            await auditTrail.AppendAsync(new[] { entry2 }, 2);
-            entries = await auditTrail.GetEntriesAsync(1, 2, CancellationToken.None);
-            Equal(2, entries.Count);
-            entry1 = (TestLogEntry)entries[0];
-            entry2 = (TestLogEntry)entries[1];
-            Equal("SET X=0", entry1.Content);
-            Equal("ADD", entry2.Content);
-            entries.Dispose();
+            await auditTrail.AppendAsync(entry2, 2);
+            checker = (entries, snapshotIndex) =>
+            {
+                Equal(2, entries.Count);
+                var e1 = (TestLogEntry)entries[0];
+                var e2 = (TestLogEntry)entries[1];
+                Equal("SET X=0", e1.Content);
+                Equal("ADD", e2.Content);
+                return default;
+            };
+            await auditTrail.ReadEntriesAsync<TestReader, DBNull>(checker, 1, 2, CancellationToken.None);
             Equal(2, auditTrail.GetLastIndex(false));
             Equal(0, auditTrail.GetLastIndex(true));
             //commit all entries
@@ -54,8 +63,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await auditTrail.WaitForCommitAsync(2, TimeSpan.Zero);
             Equal(2, auditTrail.GetLastIndex(true));
             //check overlapping with committed entries
-            await ThrowsAsync<InvalidOperationException>(() => auditTrail.AppendAsync(new[] { entry1, entry2 }, 2).AsTask());
-            await auditTrail.AppendAsync(new[] { entry1, entry2 }, 2, true);
+            await ThrowsAsync<InvalidOperationException>(() => auditTrail.AppendAsync(new LogEntryList(entry1, entry2), 2).AsTask());
+            await auditTrail.AppendAsync(new LogEntryList(entry1, entry2), 2, true);
             Equal(3, auditTrail.GetLastIndex(false));
             Equal(2, auditTrail.GetLastIndex(true));
         }

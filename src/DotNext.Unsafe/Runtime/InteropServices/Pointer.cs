@@ -55,20 +55,14 @@ namespace DotNext.Runtime.InteropServices
             public T Current
             {
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => *(ptr + index);
+                get => ptr[index];
             }
 
             /// <summary>
             /// Adjust pointer.
             /// </summary>
             /// <returns><see langword="true"/>, if next element is available; <see langword="false"/>, if end of sequence reached.</returns>
-            public bool MoveNext()
-            {
-                if (ptr == default)
-                    return false;
-                index += 1L;
-                return index < count;
-            }
+            public bool MoveNext() => ptr != default && ++index < count;
 
             /// <summary>
             /// Sets the enumerator to its initial position.
@@ -524,11 +518,11 @@ namespace DotNext.Runtime.InteropServices
             => Size >= Pointer<U>.Size ? new Pointer<U>(Address) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize, nameof(U));
 
         /// <summary>
-        /// Converts unmanaged pointer into managed pointer.
+        /// Gets the value stored in the memory identified by this pointer.
         /// </summary>
-        /// <returns>Managed pointer.</returns>
-        /// <exception cref="NullPointerException">This pointer is null.</exception>
-        public unsafe ref T Ref
+        /// <value>The reference to the memory location.</value>
+        /// <exception cref="NullPointerException">The pointer is 0.</exception>
+        public unsafe ref T Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
@@ -541,22 +535,20 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
-        /// Gets or sets value stored in the memory identified by this pointer.
+        /// Gets the value stored in the memory identified by this pointer.
         /// </summary>
-        public unsafe T Value
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => IsNull ? throw new NullPointerException() : *value;
+        /// <returns>The value stored in the memory.</returns>
+        /// <exception cref="NullPointerException">The pointer is 0.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe T Get() => Value;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
-            {
-                if (IsNull)
-                    throw new NullPointerException();
-                else
-                    *this.value = value;
-            }
-        }
+        /// <summary>
+        /// Sets the value stored in the memory identified by this pointer.
+        /// </summary>
+        /// <param name="value">The value to be stored in the memory.</param>
+        /// <exception cref="NullPointerException">The pointer is 0.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe void Set(T value) => Value = value;
 
         /// <summary>
         /// Gets enumerator over raw memory.

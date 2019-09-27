@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
@@ -56,17 +55,6 @@ namespace DotNext.Runtime.InteropServices
         {
             var i = 20;
             True(Memory.AddressOf(i) != IntPtr.Zero);
-        }
-
-        [Fact]
-        public static void UnboxRef()
-        {
-            object obj = new Point();
-            Equal(Point.Empty, obj);
-            ref var boxed = ref Memory.GetBoxedValue<Point>(obj);
-            boxed.X = 10;
-            NotEqual(Point.Empty, obj);
-            Equal(10, ((Point)obj).X);
         }
 
         [Fact]

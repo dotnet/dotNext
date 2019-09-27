@@ -1,25 +1,30 @@
 ﻿using System;
-using System.Collections;
+using System.Buffers;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
+using ReadSessionToken = System.Int32;  //typedef
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using IO;
     using Replication;
     using Text;
     using Threading;
     using static Collections.Generic.Dictionary;
+    using Assert = Diagnostics.Assert;
 
     /// <summary>
     /// Represents general purpose persistent audit trail compatible with Raft algorithm.
@@ -85,23 +90,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents persistent log entry.
         /// </summary>
-        protected sealed class LogEntry : IRaftLogEntry
+        protected readonly struct LogEntry : IRaftLogEntry
         {
             private readonly StreamSegment content;
             private readonly LogEntryMetadata metadata;
             private readonly byte[] buffer;
-            internal long? SnapshotIndex;
+            internal readonly long? SnapshotIndex;
 
             internal LogEntry(StreamSegment cachedContent, byte[] sharedBuffer, in LogEntryMetadata metadata)
             {
                 this.metadata = metadata;
                 content = cachedContent;
                 buffer = sharedBuffer;
+                SnapshotIndex = null;
             }
 
             internal LogEntry(StreamSegment cachedContent, byte[] sharedBuffer, in SnapshotMetadata metadata)
-                : this(cachedContent, sharedBuffer, metadata.RecordMetadata)
             {
+                this.metadata = metadata.RecordMetadata;
+                content = cachedContent;
+                buffer = sharedBuffer;
                 SnapshotIndex = metadata.Index;
             }
 
@@ -112,10 +120,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public long Length => metadata.Length;
 
-            internal LogEntry AdjustPosition()
+            internal Stream AdjustPosition()
             {
                 content.Adjust(metadata.Offset, Length);
-                return this;
+                return content;
             }
 
             /// <summary>
@@ -173,14 +181,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
             /// <param name="output">The output stream receiving object content.</param>
-            public Task CopyToAsync(Stream output, CancellationToken token) => AdjustPosition().content.CopyToAsync(output, buffer, token);
+            public Task CopyToAsync(Stream output, CancellationToken token) => AdjustPosition().CopyToAsync(output, buffer, token);
 
             /// <summary>
             /// Copies the object content into the specified stream synchronously.
             /// </summary>
             /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
             /// <param name="output">The output stream receiving object content.</param>
-            public void CopyTo(Stream output, CancellationToken token) => AdjustPosition().content.CopyTo(output, buffer, token);
+            public void CopyTo(Stream output, CancellationToken token) => AdjustPosition().CopyTo(output, buffer, token);
 
             /// <summary>
             /// Copies the log entry content into the specified pipe writer.
@@ -188,10 +196,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="output">The writer.</param>
             /// <param name="token">The token that can be used to cancel operation.</param>
             /// <returns>The task representing asynchronous execution of this method.</returns>
-            public ValueTask CopyToAsync(PipeWriter output, CancellationToken token) => AdjustPosition().content.CopyToAsync(output, false, buffer, token);
+            public async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
+            {
+                //TODO: Should be rewritten for .NET Standard 2.1
+                var source = AdjustPosition();
+                int count;
+                while ((count = await source.ReadAsync(buffer, 0, buffer.Length, token).ConfigureAwait(false)) > 0)
+                {
+                    var result = await output.WriteAsync(new ReadOnlyMemory<byte>(buffer, 0, count), token).ConfigureAwait(false);
+                    if (result.IsCompleted)
+                        break;
+                    if (result.IsCanceled)
+                        throw new OperationCanceledException(token);
+                }
+            }
 
             long? IDataTransferObject.Length => Length;
-            bool IDataTransferObject.IsReusable => true;
+            bool IDataTransferObject.IsReusable => false;
 
             /// <summary>
             /// Gets Raft term of this log entry.
@@ -205,6 +226,50 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /*
+         * This class helps to organize thread-safe concurrent access to the multiple streams
+         * used for reading log entries. Such approach allows to use one-writer multiple-reader scenario
+         * which dramatically improves the performance
+         */
+        private sealed class SessionTokenPool : ConcurrentBag<ReadSessionToken>
+        {
+            internal const ReadSessionToken DefaultSession = default;
+
+            internal readonly int Capacity;//the initial number of possible read sessions
+
+            internal SessionTokenPool(int readersCount) : base(Enumerable.Range(0, readersCount)) => Capacity = readersCount;
+        }
+
+        private abstract class ConcurrentStorageAccess : FileStream
+        {
+            private protected readonly byte[] buffer;
+            private readonly StreamSegment[] readers;   //a pool of read-only streams that can be shared between multiple readers in parallel
+
+            [SuppressMessage("Reliability", "CA2000", Justification = "All streams are disposed in Dispose method")]
+            private protected ConcurrentStorageAccess(string fileName, byte[] sharedBuffer, int readersCount, FileOptions options)
+                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, options)
+            {
+                readers = new StreamSegment[readersCount];
+                buffer = sharedBuffer;
+                foreach (ref var reader in readers.AsSpan())
+                    reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            private protected StreamSegment GetReadOnlyStream(ReadSessionToken session) => readers[session];
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                    foreach (ref var reader in readers.AsSpan())
+                    {
+                        reader.Dispose();
+                        reader = null;
+                    }
+                base.Dispose(disposing);
+            }
+        }
+
+        /*
             Partition file format:
             FileName - number of partition
             Allocation table:
@@ -212,20 +277,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Payload:
             [octet string] X number of entries
          */
-        private sealed class Partition : FileStream
+        private sealed class Partition : ConcurrentStorageAccess
         {
             internal readonly long FirstIndex;
             internal readonly long Capacity;    //max number of entries
-            private readonly byte[] buffer;
-            private readonly StreamSegment segment;
             private readonly LogEntryMetadata[] lookupCache;
 
-            internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber, bool useLookupCache)
-                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
+            internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber, bool useLookupCache, int readersCount)
+                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), sharedBuffer, readersCount, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
                 Capacity = recordsPerPartition;
-                buffer = sharedBuffer;
-                segment = new StreamSegment(this);
                 FirstIndex = partitionNumber * recordsPerPartition;
                 lookupCache = useLookupCache ? new LogEntryMetadata[recordsPerPartition] : null;
             }
@@ -251,7 +312,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     }
             }
 
-            internal async ValueTask<LogEntry> ReadAsync(long index, bool absoluteIndex, CancellationToken token)
+            private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, long index, bool absoluteIndex, CancellationToken token)
             {
                 //calculate relative index
                 if (absoluteIndex)
@@ -261,15 +322,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 LogEntryMetadata metadata;
                 if (lookupCache is null)
                 {
-                    Position = index * LogEntryMetadata.Size;
-                    metadata = await this.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
+                    reader.BaseStream.Position = index * LogEntryMetadata.Size;
+                    metadata = await reader.BaseStream.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
                 }
                 else
                     metadata = lookupCache[index];
-                return metadata.Offset > 0 ? new LogEntry(segment, buffer, metadata) : null;
+                return metadata.Offset > 0 ? new LogEntry(reader, buffer, metadata) : new LogEntry?();
             }
 
-            internal async ValueTask WriteAsync(IRaftLogEntry entry, long index)
+            internal ValueTask<LogEntry?> ReadAsync(ReadSessionToken session, long index, bool absoluteIndex, CancellationToken token)
+                => ReadAsync(GetReadOnlyStream(session), index, absoluteIndex, token);
+
+            internal async ValueTask WriteAsync<TEntry>(TEntry entry, long index)
+                where TEntry : IRaftLogEntry
             {
                 //calculate relative index
                 index -= FirstIndex;
@@ -304,13 +369,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (!(lookupCache is null))
                     lookupCache[index] = metadata;
             }
-
-            protected override void Dispose(bool disposing)
-            {
-                if (disposing)
-                    segment.Dispose();
-                base.Dispose(disposing);
-            }
         }
 
         /*
@@ -318,18 +376,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
          * [struct SnapshotMetadata] X 1
          * [octet string] X 1
          */
-        private sealed class Snapshot : FileStream
+        private sealed class Snapshot : ConcurrentStorageAccess
         {
             private const string FileName = "snapshot";
             private const string TempFileName = "snapshot.new";
-            private readonly byte[] buffer;
-            private readonly StreamSegment segment;
 
-            internal Snapshot(DirectoryInfo location, byte[] sharedBuffer, bool tempSnapshot = false)
-                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough)
+            internal Snapshot(DirectoryInfo location, byte[] sharedBuffer, int readersCount, bool tempSnapshot = false)
+                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), sharedBuffer, readersCount, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough)
             {
-                buffer = sharedBuffer;
-                segment = new StreamSegment(this);
             }
 
             internal void PopulateCache() => Index = Length > 0L ? this.Read<SnapshotMetadata>(buffer).Index : 0L;
@@ -344,24 +398,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await this.WriteAsync(ref metadata, buffer, token).ConfigureAwait(false);
             }
 
-            internal async ValueTask<LogEntry> ReadAsync(CancellationToken token)
+            private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, CancellationToken token)
             {
-                Position = 0;
-                return new LogEntry(segment, buffer, await this.ReadAsync<SnapshotMetadata>(buffer, token).ConfigureAwait(false));
+                reader.BaseStream.Position = 0;
+                return new LogEntry(reader, buffer, await reader.BaseStream.ReadAsync<SnapshotMetadata>(buffer, token).ConfigureAwait(false));
             }
+
+            internal ValueTask<LogEntry> ReadAsync(ReadSessionToken session, CancellationToken token)
+                => ReadAsync(GetReadOnlyStream(session), token);
 
             //cached index of the snapshotted entry
             internal long Index
             {
                 get;
                 private set;
-            }
-
-            protected override void Dispose(bool disposing)
-            {
-                if (disposing)
-                    segment.Dispose();
-                base.Dispose(disposing);
             }
         }
 
@@ -507,48 +557,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private sealed class LogEntryList : List<IRaftLogEntry>, IAuditTrailSegment<IRaftLogEntry>
-        {
-            private AsyncLock.Holder readLock;
-
-            internal LogEntryList(int capacity, AsyncLock.Holder readLock) : base(capacity) => this.readLock = readLock;
-
-            long? IAuditTrailSegment<IRaftLogEntry>.SnapshotIndex => (base[0] as LogEntry)?.SnapshotIndex;
-
-            void IDisposable.Dispose()
-            {
-                readLock.Dispose();
-                Clear();
-            }
-        }
-
-        private sealed class SingletonEntryList : IAuditTrailSegment<LogEntry>
-        {
-            private readonly LogEntry entry;
-            private AsyncLock.Holder readLock;
-
-            internal SingletonEntryList(LogEntry entry, AsyncLock.Holder readLock)
-            {
-                this.entry = entry;
-                this.readLock = readLock;
-            }
-
-            long? IAuditTrailSegment<LogEntry>.SnapshotIndex => entry.SnapshotIndex;
-
-            int IReadOnlyCollection<LogEntry>.Count => 1;
-
-            LogEntry IReadOnlyList<LogEntry>.this[int index] => index == 0 ? entry : throw new IndexOutOfRangeException();
-
-            public IEnumerator<LogEntry> GetEnumerator()
-            {
-                yield return entry;
-            }
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-            void IDisposable.Dispose() => readLock.Dispose();
-        }
-
         /// <summary>
         /// Represents snapshot builder.
         /// </summary>
@@ -560,11 +568,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Initializes a new snapshot builder.
             /// </summary>
-            protected SnapshotBuilder()
-            {
-                timestamp = DateTimeOffset.UtcNow;
-                term = InMemoryAuditTrail.InitialLog[0].Term;
-            }
+            protected SnapshotBuilder() => timestamp = DateTimeOffset.UtcNow;
 
             /// <summary>
             /// Interprets the command specified by the log entry.
@@ -606,9 +610,92 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public abstract ValueTask CopyToAsync(PipeWriter output, CancellationToken token);
         }
 
-        private const int DefaultBufferSize = 2048;
-        private const int MinBufferSize = 128;
-        private const long DefaultPartitionSize = 0;
+        //provides fast navigation between partitions without lookup of the partition table when possible
+        private struct PartitionCursor
+        {
+            private Partition lastPartition;
+
+            internal bool TryGet(PersistentState state, long recordIndex, out Partition partition)
+            {
+                var result = lastPartition != null && recordIndex >= lastPartition.FirstIndex && recordIndex <= lastPartition.LastIndex || state.TryGetPartition(recordIndex, out lastPartition);
+                partition = lastPartition;
+                return result;
+            }
+
+            internal Task FlushAsync() => lastPartition?.FlushAsync() ?? Task.CompletedTask;
+
+            internal Partition GetOrCreate(PersistentState state, long recordIndex, out Task flushTask)
+            {
+                if (lastPartition is null || recordIndex < lastPartition.FirstIndex || recordIndex > lastPartition.LastIndex)
+                {
+                    flushTask = lastPartition?.FlushAsync() ?? Task.CompletedTask;
+                    lastPartition = state.GetOrCreatePartition(recordIndex);
+                }
+                else
+                    flushTask = Task.CompletedTask;
+                return lastPartition;
+            }
+
+            internal void Reset() => lastPartition = null;
+        }
+
+        /// <summary>
+        /// Represents configuration options of the persistent audit trail.
+        /// </summary>
+        public class Options
+        {
+            private const int MinBufferSize = 128;
+            private int bufferSize = 2048;
+            private int concurrencyLevel = 3;
+
+            /// <summary>
+            /// Gets size of in-memory buffer for I/O operations.
+            /// </summary>
+            /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is too small.</exception>
+            public int BufferSize
+            {
+                get => bufferSize;
+                set
+                {
+                    if (value < MinBufferSize)
+                        throw new ArgumentOutOfRangeException(nameof(value));
+                    bufferSize = value;
+                }
+            }
+
+            /// <summary>
+            /// Gets or sets the initial size of the file that holds the partition with log entries.
+            /// </summary>
+            public long InitialPartitionSize { get; set; } = 0;
+
+            /// <summary>
+            /// Enables or disables in-memory cache.
+            /// </summary>
+            /// <value><see langword="true"/> to in-memory cache for faster read/write of log entries; <see langword="false"/> to reduce the memory by the cost of the performance.</value>
+            public bool UseCaching { get; set; } = true;
+
+            /// <summary>
+            /// Gets or sets value indicating usage policy of array pools.
+            /// </summary>
+            /// <value><see langword="true"/> to use <see cref="ArrayPool{T}.Shared"/> pool for internal purposes; <see langword="false"/> to use dedicated pool of arrays.</value>
+            public bool UseSharedPool { get; set; } = true;
+
+            /// <summary>
+            /// Gets or sets the number of possible parallel reads.
+            /// </summary>
+            /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than 1.</exception>
+            public int MaxConcurrentReads
+            {
+                get => concurrencyLevel;
+                set
+                {
+                    if (concurrencyLevel < 1)
+                        throw new ArgumentOutOfRangeException(nameof(value));
+                    concurrencyLevel = value;
+                }
+            }
+        }
+
         private readonly long recordsPerPartition;
         //key is the number of partition
         private readonly IDictionary<long, Partition> partitionTable;
@@ -616,9 +703,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private Snapshot snapshot;
         private readonly DirectoryInfo location;
         private readonly AsyncManualResetEvent commitEvent;
-        private readonly AsyncExclusiveLock syncRoot;
-        private readonly IAuditTrailSegment<IRaftLogEntry> emptyLog;
-        private readonly IAuditTrailSegment<IRaftLogEntry> initialLog;
+        private readonly AsyncSharedLock syncRoot;
+        private readonly IRaftLogEntry initialEntry;
         /// <summary>
         /// Represents shared buffer that can be used for I/O operations.
         /// </summary>
@@ -626,45 +712,48 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected readonly byte[] sharedBuffer;
         private readonly bool useLookupCache;
         private readonly long initialSize;
+        private readonly ArrayPool<LogEntry> entryPool;
+        private readonly StreamSegment nullSegment;
+        private readonly SessionTokenPool readSessions;
 
         /// <summary>
         /// Initializes a new persistent audit trail.
         /// </summary>
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
-        /// <param name="bufferSize">Optional size of in-memory buffer for I/O operations.</param>
-        /// <param name="initialPartitionSize">The initial size of the file that holds the partition with log entries.</param>
-        /// <param name="useCaching"><see langword="true"/> to in-memory cache for faster read/write of log entries; <see langword="false"/> to reduce the memory by the cost of the performance.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1; or <paramref name="bufferSize"/> is too small.</exception>
-        public PersistentState(DirectoryInfo path, long recordsPerPartition, int bufferSize = DefaultBufferSize, long initialPartitionSize = DefaultPartitionSize, bool useCaching = true)
+        /// <param name="configuration">The configuration of the persistent audit trail.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
+        public PersistentState(DirectoryInfo path, long recordsPerPartition, Options configuration = null)
         {
-            if (bufferSize < MinBufferSize)
-                throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            if (configuration is null)
+                configuration = new Options();
             if (recordsPerPartition < 2L)
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
-            sharedBuffer = new byte[bufferSize];
+            sharedBuffer = new byte[configuration.BufferSize];
             location = path;
-            useLookupCache = useCaching;
+            useLookupCache = configuration.UseCaching;
             this.recordsPerPartition = recordsPerPartition;
-            initialSize = initialPartitionSize;
+            initialSize = configuration.InitialPartitionSize;
             commitEvent = new AsyncManualResetEvent(false);
-            syncRoot = new AsyncExclusiveLock();
+            syncRoot = new AsyncSharedLock(configuration.MaxConcurrentReads);
+            entryPool = configuration.UseSharedPool ? ArrayPool<LogEntry>.Shared : ArrayPool<LogEntry>.Create();
+            nullSegment = new StreamSegment(Stream.Null);
+            initialEntry = new LogEntry(nullSegment, sharedBuffer, new LogEntryMetadata());
+            readSessions = new SessionTokenPool(configuration.MaxConcurrentReads);
             //sorted dictionary to improve performance of log compaction and snapshot installation procedures
             partitionTable = new SortedDictionary<long, Partition>();
-            emptyLog = new LogEntryList<LogEntry>();
-            initialLog = new LogEntryList<IRaftLogEntry>(InMemoryAuditTrail.InitialLog);
             //load all partitions from file system
             foreach (var file in path.EnumerateFiles())
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
-                    var partition = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber, useCaching);
+                    var partition = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber, configuration.UseCaching, readSessions.Capacity);
                     partition.PopulateCache();
                     partitionTable[partitionNumber] = partition;
                 }
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
-            snapshot = new Snapshot(path, sharedBuffer);
+            snapshot = new Snapshot(path, sharedBuffer, readSessions.Capacity);
             snapshot.PopulateCache();
         }
 
@@ -673,12 +762,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="path">The path to the folder to be used by audit trail.</param>
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
-        /// <param name="bufferSize">Optional size of in-memory buffer for I/O operations.</param>
-        /// <param name="initialPartitionSize">The initial size of the file that holds the partition with log entries.</param>
-        /// <param name="useCaching"><see langword="true"/> to in-memory cache for faster read/write of log entries; <see langword="false"/> to reduce the memory by the cost of the performance.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 1.</exception>
-        public PersistentState(string path, long recordsPerPartition, int bufferSize = DefaultBufferSize, long initialPartitionSize = DefaultPartitionSize, bool useCaching = true)
-            : this(new DirectoryInfo(path), recordsPerPartition, bufferSize, initialPartitionSize, useCaching)
+        /// <param name="configuration">The configuration of the persistent audit trail.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
+        public PersistentState(string path, long recordsPerPartition, Options configuration = null)
+            : this(new DirectoryInfo(path), recordsPerPartition, configuration)
         {
         }
 
@@ -707,71 +794,60 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var partitionNumber = PartitionOf(recordIndex);
             if (!partitionTable.TryGetValue(partitionNumber, out var partition))
             {
-                partition = new Partition(location, sharedBuffer, recordsPerPartition, partitionNumber, useLookupCache);
+                partition = new Partition(location, sharedBuffer, recordsPerPartition, partitionNumber, useLookupCache, readSessions.Capacity);
                 partition.Allocate(initialSize);
                 partitionTable.Add(partitionNumber, partition);
             }
             return partition;
         }
 
-        private async ValueTask<IAuditTrailSegment<IRaftLogEntry>> GetEntries(long startIndex, long endIndex, AsyncLock.Holder readLock, CancellationToken token)
+        private LogEntry First
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => Unsafe.Unbox<LogEntry>(initialEntry);
+        }
+
+        private async ValueTask<TResult> ReadEntriesImplAsync<TReader, TResult>(TReader reader, ReadSessionToken session, long startIndex, long endIndex, CancellationToken token)
+            where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex > state.LastIndex)
-            {
-                readLock.Dispose();
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
-            }
             if (endIndex > state.LastIndex)
-            {
-                readLock.Dispose();
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
-            }
-            IAuditTrailSegment<IRaftLogEntry> result;
+            var length = endIndex - startIndex + 1L;
+            if (length > int.MaxValue)
+                throw new InternalBufferOverflowException(ExceptionMessages.RangeTooBig);
+            LogEntry entry;
+            ValueTask<TResult> result;
             if (partitionTable.Count > 0)
-                try
+                using (var list = new ArrayRental<LogEntry>(entryPool, (int)length))
                 {
-                    var list = new LogEntryList((int)Math.Min(int.MaxValue, endIndex - startIndex + 1L), readLock);
-                    for (; startIndex <= endIndex; startIndex++)
-                    {
-                        IRaftLogEntry entry;
+                    int listIndex;
+                    var cursor = new PartitionCursor();
+                    for (listIndex = 0; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                         if (startIndex == 0L)   //handle ephemeral entity
-                            entry = InMemoryAuditTrail.InitialLog[0];
-                        else if (TryGetPartition(startIndex, out var partition)) //handle regular record
-                            entry = await partition.ReadAsync(startIndex, true, token).ConfigureAwait(false);
+                            entry = First;
+                        else if (cursor.TryGet(this, startIndex, out Partition partition)) //handle regular record
+                            entry = (await partition.ReadAsync(session, startIndex, true, token).ConfigureAwait(false)).Value;
                         else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)    //probably the record is snapshotted
                         {
-                            entry = await snapshot.ReadAsync(token).ConfigureAwait(false);
+                            entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
                             //skip squashed log entries
                             startIndex = state.CommitIndex - (state.CommitIndex + 1) % recordsPerPartition;
                         }
                         else
                             break;
-                        Debug.Assert(entry != null);
-                        list.Add(entry);
-                    }
-                    result = list;
-                }
-                catch
-                {
-                    readLock.Dispose();
-                    throw;
+                    cursor.Reset();
+                    result = reader.ReadAsync<LogEntry, ArraySegment<LogEntry>>(new ArraySegment<LogEntry>(list, 0, listIndex), list[0].SnapshotIndex, token);
                 }
             else if (snapshot.Length > 0)
-                try
-                {
-                    result = new SingletonEntryList(await snapshot.ReadAsync(token).ConfigureAwait(false), readLock);
-                }
-                catch
-                {
-                    readLock.Dispose();
-                    throw;
-                }
-            else
             {
-                result = startIndex == 0L ? initialLog : emptyLog;
-                readLock.Dispose();
+                entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
+                result = reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(entry), entry.SnapshotIndex, token);
             }
-            return result;
+            else
+                result = startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(First), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            return await result.ConfigureAwait(false);
         }
 
         /// <summary>
@@ -782,37 +858,64 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="IDisposable.Dispose"/> to release resources associated
         /// with the audit trail segment with entries.
         /// </remarks>
+        /// <typeparam name="TReader">The type of the reader.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="reader">The reader of the log entries.</param>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
         /// <param name="endIndex">The index of the last requested log entry, inclusively.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
-        public async ValueTask<IAuditTrailSegment<IRaftLogEntry>> GetEntriesAsync(long startIndex, long endIndex, CancellationToken token)
+        public async ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
+            where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             if (endIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(endIndex));
             if (endIndex < startIndex)
-                return emptyLog;
-            var readLock = await syncRoot.AcquireLockAsync(token).ConfigureAwait(false);
-            return await GetEntries(startIndex, endIndex, readLock, token).ConfigureAwait(false);
+                return await reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token).ConfigureAwait(false);
+            //obtain weak lock as read lock
+            await syncRoot.Acquire(false, token).ConfigureAwait(false);
+            Assert.True(readSessions.TryTake(out ReadSessionToken session));
+            try
+            {
+                return await ReadEntriesImplAsync<TReader, TResult>(reader, session, startIndex, endIndex, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                readSessions.Add(session);  //return session back to the pool
+                syncRoot.Release();
+            }
         }
 
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
         /// </summary>
+        /// <typeparam name="TReader">The type of the reader.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="reader">The reader of the log entries.</param>
         /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
-        public async ValueTask<IAuditTrailSegment<IRaftLogEntry>> GetEntriesAsync(long startIndex, CancellationToken token)
+        public async ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
+            where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            var readLock = await syncRoot.AcquireLockAsync(token).ConfigureAwait(false);
-            return await GetEntries(startIndex, state.LastIndex, readLock, token).ConfigureAwait(false);
+            await syncRoot.Acquire(false, token).ConfigureAwait(false);
+            Assert.True(readSessions.TryTake(out ReadSessionToken session));
+            try
+            {
+                return await ReadEntriesImplAsync<TReader, TResult>(reader, session, startIndex, state.LastIndex, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                readSessions.Add(session);
+                syncRoot.Release();
+            }
         }
 
         private void RemovePartitions(IDictionary<long, Partition> partitions)
@@ -834,7 +937,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(snapshotIndex));
             //1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.Name;
-            using (var tempSnapshot = new Snapshot(location, sharedBuffer, true))
+            using (var tempSnapshot = new Snapshot(location, sharedBuffer, 0, true))
             {
                 tempSnapshotFile = tempSnapshot.Name;
                 await tempSnapshot.WriteAsync(snapshot, snapshotIndex, CancellationToken.None).ConfigureAwait(false);
@@ -855,7 +958,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Environment.FailFast(LogMessages.SnapshotInstallationFailed, e);
             }
-            this.snapshot = new Snapshot(location, sharedBuffer);
+            this.snapshot = new Snapshot(location, sharedBuffer, readSessions.Capacity);
             this.snapshot.PopulateCache();
             //3. Identify all partitions to be replaced by snapshot
             var compactionScope = new Dictionary<long, Partition>();
@@ -870,32 +973,50 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //5. Apply snapshot to the underlying state machine
             state.CommitIndex = snapshotIndex;
             state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
-            await ApplyAsync(await this.snapshot.ReadAsync(CancellationToken.None).ConfigureAwait(false));
+
+            await ApplyAsync(await this.snapshot.ReadAsync(SessionTokenPool.DefaultSession, CancellationToken.None).ConfigureAwait(false));
             state.LastApplied = snapshotIndex;
             state.Flush();
             commitEvent.Set(true);
         }
 
-        //TODO: Should be replaced with IAsyncEnumerator in .NET Standard 2.1
-        private async ValueTask AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex, bool skipCommitted, CancellationToken token)
+        private async ValueTask AppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
+            where TEntry : IRaftLogEntry
         {
             if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            for (var entry = await supplier().ConfigureAwait(false); entry != null; state.LastIndex = startIndex++, token.ThrowIfCancellationRequested(), entry = await supplier().ConfigureAwait(false))
-                if (entry.IsSnapshot)
+            PartitionCursor cursor;
+            for (cursor = new PartitionCursor(); !token.IsCancellationRequested && await supplier.MoveNextAsync().ConfigureAwait(false); state.LastIndex = startIndex++)
+                if (supplier.Current.IsSnapshot)
                     throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
                 else if (startIndex > state.CommitIndex)
-                    await GetOrCreatePartition(startIndex).WriteAsync(entry, startIndex).ConfigureAwait(false);
+                {
+                    var partition = cursor.GetOrCreate(this, startIndex, out var flushTask);
+                    await flushTask.ConfigureAwait(false);
+                    await partition.WriteAsync(supplier.Current, startIndex).ConfigureAwait(false);
+                }
                 else if (!skipCommitted)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+            await cursor.FlushAsync().ConfigureAwait(false);
+            cursor.Reset();
             //flush updated state
             state.Flush();
+            token.ThrowIfCancellationRequested();
         }
 
-        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync(Func<ValueTask<IRaftLogEntry>> supplier, long startIndex, bool skipCommitted, CancellationToken token)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
         {
-            using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(supplier, startIndex, skipCommitted, token).ConfigureAwait(false);
+            if (entries.RemainingCount == 0L)
+                return;
+            await syncRoot.Acquire(true, CancellationToken.None).ConfigureAwait(false);
+            try
+            {
+                await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                syncRoot.Release();
+            }
         }
 
         /// <summary>
@@ -905,18 +1026,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// This is the only method that can be used for snapshot installation.
         /// The behavior of the method depends on the <see cref="ILogEntry.IsSnapshot"/> property.
         /// If log entry is a snapshot then the method erases all committed log entries prior to <paramref name="startIndex"/>.
-        /// If it is not, the method behaves in the same way as <see cref="AppendAsync(IReadOnlyList{IRaftLogEntry}, long, bool, CancellationToken)"/>.
+        /// If it is not, the method behaves in the same way as <see cref="AppendAsync{TEntryImpl}(ILogEntryProducer{TEntryImpl}, long, bool, CancellationToken)"/>.
         /// </remarks>
+        /// <typeparam name="TEntry">The actual type of the supplied log entry.</typeparam>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
-        /// <param name="startIndex">The index of the </param>
+        /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with the new entry.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="entry"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
-        public async ValueTask AppendAsync(IRaftLogEntry entry, long startIndex)
+        public async ValueTask AppendAsync<TEntry>(TEntry entry, long startIndex)
+            where TEntry : IRaftLogEntry
         {
-            if (entry is null)
+            if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
-            using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
+            await syncRoot.Acquire(true, CancellationToken.None).ConfigureAwait(false);
+            try
+            {
                 if (startIndex <= state.CommitIndex)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 else if (entry.IsSnapshot)
@@ -929,30 +1054,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     var partition = GetOrCreatePartition(startIndex);
                     await partition.WriteAsync(entry, startIndex).ConfigureAwait(false);
+                    await partition.FlushAsync().ConfigureAwait(false);
                     state.LastIndex = startIndex;
                     state.Flush();
                 }
-        }
-
-        /// <summary>
-        /// Adds uncommitted log entries into this log.
-        /// </summary>
-        /// <remarks>
-        /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
-        /// </remarks>
-        /// <param name="entries">The entries to be added into this log.</param>
-        /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
-        /// <param name="skipCommitted"><see langword="true"/> to skip committed entries from <paramref name="entries"/> instead of throwing exception.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous state of the method.</returns>
-        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry.</exception>
-        public async ValueTask AppendAsync(IReadOnlyList<IRaftLogEntry> entries, long startIndex, bool skipCommitted = false, CancellationToken token = default)
-        {
-            if (entries.Count == 0)
-                return;
-            using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
-            using (var enumerator = entries.GetEnumerator())
-                await AppendAsync(enumerator.Advance, startIndex, skipCommitted, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                syncRoot.Release();
+            }
         }
 
         /// <summary>
@@ -961,21 +1071,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <remarks>
         /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
         /// </remarks>
+        /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
         /// <param name="entries">The entries to be added into this log.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
-        public async ValueTask<long> AppendAsync(IReadOnlyList<IRaftLogEntry> entries, CancellationToken token = default)
+        /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
+        public async ValueTask<long> AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token = default)
+            where TEntry : IRaftLogEntry
         {
-            if (entries.Count == 0)
-                throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty, nameof(entries));
-            using (await syncRoot.AcquireLockAsync(CancellationToken.None).ConfigureAwait(false))
+            if (entries.RemainingCount == 0L)
+                throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
+            await syncRoot.Acquire(true, token).ConfigureAwait(false);
+            var startIndex = state.LastIndex + 1L;
+            try
             {
-                var startIndex = state.LastIndex + 1L;
-                using (var enumerator = entries.GetEnumerator())
-                    await AppendAsync(enumerator.Advance, startIndex, false, token).ConfigureAwait(false);
-                return startIndex;
+                await AppendAsync(entries, startIndex, false, token).ConfigureAwait(false);
             }
+            finally
+            {
+                syncRoot.Release();
+            }
+            return startIndex;
         }
 
         /// <summary>
@@ -1015,11 +1132,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 for (var i = 0L; i < partition.Capacity; i++)
                     if (partition.FirstIndex > 0L || i > 0L) //ignore the ephemeral entry
-                        await builder.ApplyCoreAsync((await partition.ReadAsync(i, false, token).ConfigureAwait(false)).AdjustPosition()).ConfigureAwait(false);
+                    {
+                        var entry = (await partition.ReadAsync(SessionTokenPool.DefaultSession, i, false, token).ConfigureAwait(false)).Value;
+                        entry.AdjustPosition();
+                        await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
+                    }
                 snapshotIndex = partition.LastIndex;
             }
             //3. Persist snapshot
             await snapshot.WriteAsync(builder, snapshotIndex, token).ConfigureAwait(false);
+            await snapshot.FlushAsync().ConfigureAwait(false);
             //4. Remove snapshotted partitions
             RemovePartitions(compactionScope);
             compactionScope.Clear();
@@ -1044,9 +1166,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
         {
             long count;
-            using (await syncRoot.AcquireLockAsync(token).ConfigureAwait(false))
+            await syncRoot.Acquire(true, token).ConfigureAwait(false);
+            var startIndex = state.CommitIndex + 1L;
+            try
             {
-                var startIndex = state.CommitIndex + 1L;
                 count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;
                 if (count > 0)
                 {
@@ -1055,6 +1178,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await ForceCompaction(token).ConfigureAwait(false);
                     commitEvent.Set(true);
                 }
+            }
+            finally
+            {
+                syncRoot.Release();
             }
             return Math.Max(count, 0L);
         }
@@ -1095,11 +1222,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async ValueTask ApplyAsync(CancellationToken token)
         {
+            var cursor = new PartitionCursor();
             for (var i = state.LastApplied + 1L; i <= state.CommitIndex; state.LastApplied = i++)
-                if (TryGetPartition(i, out var partition))
-                    await ApplyAsync((await partition.ReadAsync(i, true, token).ConfigureAwait(false)).AdjustPosition()).ConfigureAwait(false);
+                if (cursor.TryGet(this, i, out var partition))
+                {
+                    var entry = (await partition.ReadAsync(SessionTokenPool.DefaultSession, i, true, token).ConfigureAwait(false)).Value;
+                    entry.AdjustPosition();
+                    await ApplyAsync(entry).ConfigureAwait(false);
+                }
                 else
                     Debug.Fail($"Log entry with index {i} doesn't have partition");
+            cursor.Reset();
             state.Flush();
         }
 
@@ -1111,11 +1244,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
         public async Task EnsureConsistencyAsync(CancellationToken token)
         {
-            using (await syncRoot.AcquireLockAsync(token).ConfigureAwait(false))
+            await syncRoot.Acquire(true, token).ConfigureAwait(false);
+            try
+            {
                 await ApplyAsync(token).ConfigureAwait(false);
+            }
+            finally
+            {
+                syncRoot.Release();
+            }
         }
 
-        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref InMemoryAuditTrail.InitialLog[0];
+        ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref initialEntry;
 
         bool IPersistentState.IsVotedFor(IRaftClusterMember member) => state.IsVotedFor(member?.Endpoint);
 
@@ -1140,10 +1280,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 partitionTable.Clear();
                 state.Dispose();
                 commitEvent.Dispose();
-                emptyLog.Dispose();
-                initialLog.Dispose();
                 syncRoot.Dispose();
                 snapshot?.Dispose();
+                nullSegment.Dispose();
                 snapshot = null;
             }
             base.Dispose(disposing);

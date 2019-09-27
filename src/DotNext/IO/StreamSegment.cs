@@ -13,18 +13,21 @@ namespace DotNext.IO
     /// </remarks>
     public sealed class StreamSegment : Stream
     {
+        private readonly bool leaveOpen;
         private long length, position;
 
         /// <summary>
         /// Initializes a new segment of the specified stream.
         /// </summary>
         /// <param name="stream">The underlying stream represented by the segment.</param>
+        /// <param name="leaveOpen"><see langword="true"/> to leave <paramref name="stream"/> open after the object is disposed; otherwise, <see langword="false"/>.</param>
         /// <exception cref="ArgumentNullException"><paramref name="stream"/> is <see langword="null"/>.</exception>
-        public StreamSegment(Stream stream)
+        public StreamSegment(Stream stream, bool leaveOpen = true)
         {
             BaseStream = stream ?? throw new ArgumentNullException(nameof(stream));
             length = stream.Length;
             position = 0L;
+            this.leaveOpen = leaveOpen;
         }
 
         /// <summary>
@@ -232,6 +235,17 @@ namespace DotNext.IO
         {
             get => BaseStream.WriteTimeout;
             set => BaseStream.WriteTimeout = value;
+        }
+
+        /// <summary>
+        ///  Releases the unmanaged resources used by this stream and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && !leaveOpen)
+                BaseStream.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

@@ -52,7 +52,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             configurator = dependencies.GetService<IRaftClusterConfigurator>();
             messageHandler = dependencies.GetService<IMessageHandler>();
-            AuditTrail = dependencies.GetService<IPersistentState>();
+            AuditTrail = dependencies.GetService<IPersistentState>() ?? new InMemoryAuditTrail();
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             var loggerFactory = dependencies.GetRequiredService<ILoggerFactory>();
             Logger = loggerFactory.CreateLogger(GetType());
@@ -80,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             metadata = new MemberMetadata(configuration.Metadata);
             allowedNetworks = configuration.AllowedNetworks;
-            await ChangeMembersAsync((in MutableMemberCollection members) =>
+            await ChangeMembersAsync(members =>
             {
                 var existingMembers = new HashSet<Uri>();
                 //remove members
@@ -223,13 +223,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private async Task ReceiveEntries(HttpRequest request, HttpResponse response)
         {
-            var message = new AppendEntriesMessage(request);
+            var message = new AppendEntriesMessage(request, out var entries);
             var sender = FindMember(message.Sender.Represents);
             if (sender is null)
                 response.StatusCode = StatusCodes.Status404NotFound;
             else
                 await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
-                    message.EntryReader, message.PrevLogIndex,
+                    entries, message.PrevLogIndex,
                     message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false), Token).ConfigureAwait(false);
         }
 

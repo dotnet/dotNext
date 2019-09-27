@@ -119,10 +119,10 @@ namespace DotNext.Runtime.InteropServices
             return str;
         }
 
+        //TODO: Should be removed in C# 8
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Vector<byte> ReadVector(ref IntPtr source)
         {
-            //TODO: The method can be removed in .NET Standard 2.0
             var result = Unsafe.Read<Vector<byte>>(source.ToPointer());
             source += Vector<byte>.Count;
             return result;
@@ -830,24 +830,6 @@ namespace DotNext.Runtime.InteropServices
         {
             Ldarg(nameof(reference));
             Refanyval(typeof(T));
-            return ref ReturnRef<T>();
-        }
-
-        /// <summary>
-        /// Gets managed pointer to the boxed value.
-        /// </summary>
-        /// <param name="box">The boxed value.</param>
-        /// <typeparam name="T">The value type.</typeparam>
-        /// <returns>The managed pointer to the boxed value.</returns>
-        /// <exception cref="NullReferenceException"><paramref name="box"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidCastException"><paramref name="box"/> is not a boxed value type.</exception>
-        /// <seealso href="https://www.ecma-international.org/publications/files/ECMA-ST/ECMA-335.pdf">III.1.8.1.2.2 ("Controlled-muttability managed pointers")</seealso>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref T GetBoxedValue<T>(object box)
-            where T : struct
-        {
-            Push(box);
-            Unbox(typeof(T));
             return ref ReturnRef<T>();
         }
 

@@ -162,7 +162,7 @@ namespace DotNext.Runtime.InteropServices
         public static UnmanagedMemory<T> Box(T value)
         {
             var memory = new UnmanagedMemory<T>(1, false);
-            memory.Pointer.Ref = value;
+            memory.Pointer.Value = value;
             return memory;
         }
 

@@ -117,7 +117,21 @@ namespace DotNext.Threading
             }
         }
 
-        private readonly State state = new State();
+        private readonly State state;
+        private ReadLockNode.LockManager readLock;
+        private ReadLockNode.UpgradeableLockManager upgradeableLock;
+        private WriteLockNode.LockManager writeLock;
+
+        /// <summary>
+        /// Initializes a new reader/writer lock.
+        /// </summary>
+        public AsyncReaderWriterLock()
+        {
+            state = new State();
+            readLock = new ReadLockNode.LockManager(state);
+            upgradeableLock = new ReadLockNode.UpgradeableLockManager(state);
+            writeLock = new WriteLockNode.LockManager(state);
+        }
 
         /// <summary>
         /// Gets the total number of unique readers.
@@ -148,10 +162,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryEnterReadLock(TimeSpan timeout, CancellationToken token)
-        {
-            var manager = new ReadLockNode.LockManager(state);
-            return Wait(ref manager, timeout, token);
-        }
+            => Wait(ref readLock, timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -190,10 +201,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryEnterWriteLock(TimeSpan timeout, CancellationToken token)
-        {
-            var manager = new WriteLockNode.LockManager(state);
-            return Wait(ref manager, timeout, token);
-        }
+            => Wait(ref writeLock, timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
@@ -232,10 +240,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryEnterUpgradeableReadLock(TimeSpan timeout, CancellationToken token)
-        {
-            var manager = new ReadLockNode.UpgradeableLockManager(state);
-            return Wait(ref manager, timeout, token);
-        }
+            => Wait(ref upgradeableLock, timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in upgradeable mode asynchronously, with an optional time-out.

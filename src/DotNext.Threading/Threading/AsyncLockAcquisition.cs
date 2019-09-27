@@ -23,6 +23,7 @@ namespace DotNext.Threading
                     throw new ArgumentNullException(nameof(obj));
                 case AsyncReaderWriterLock rwl:
                     return rwl;
+                case AsyncSharedLock _:
                 case ReaderWriterLockSlim _:
                 case AsyncExclusiveLock _:
                 case SemaphoreSlim _:
@@ -30,7 +31,7 @@ namespace DotNext.Threading
                 case ReaderWriterLock _:
                     throw new ArgumentException(ExceptionMessages.UnsupportedLockAcquisition, nameof(obj));
                 default:
-                    return obj.GetUserData().GetOrSet(ReaderWriterLock, () => new AsyncReaderWriterLock());
+                    return obj.GetUserData().GetOrSet(ReaderWriterLock);
             }
         }
 
@@ -43,6 +44,9 @@ namespace DotNext.Threading
             {
                 case null:
                     throw new ArgumentNullException(nameof(obj));
+                case AsyncSharedLock shared:
+                    @lock = AsyncLock.Exclusive(shared);
+                    break;
                 case AsyncExclusiveLock exclusive:
                     @lock = AsyncLock.Exclusive(exclusive);
                     break;
@@ -57,8 +61,7 @@ namespace DotNext.Threading
                 case ReaderWriterLock _:
                     throw new ArgumentException(ExceptionMessages.UnsupportedLockAcquisition, nameof(obj));
                 default:
-                    @lock = AsyncLock.Exclusive(obj.GetUserData()
-                        .GetOrSet(ExclusiveLock, () => new AsyncExclusiveLock()));
+                    @lock = AsyncLock.Exclusive(obj.GetUserData().GetOrSet(ExclusiveLock));
                     break;
             }
 

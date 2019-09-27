@@ -7,17 +7,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     internal static class AuditTrail
     {
-        internal static async Task<long> GetTermAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, CancellationToken token)
+        private readonly struct TermReader : ILogEntryConsumer<IRaftLogEntry, long>
         {
-            using (var entries = await auditTrail.GetEntriesAsync(index, index, token).ConfigureAwait(false))
-                return entries[0].Term;
+            ValueTask<long> ILogEntryConsumer<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
+                => new ValueTask<long>(entries[0].Term);
         }
+
+        internal static ValueTask<long> GetTermAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, CancellationToken token)
+            => auditTrail.ReadEntriesAsync<TermReader, long>(new TermReader(), index, index, token);
 
         internal static async Task<bool> IsUpToDateAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
         {
             var localIndex = auditTrail.GetLastIndex(false);
-            long localTerm = await auditTrail.GetTermAsync(localIndex, token).ConfigureAwait(false);
-            return index >= localIndex && term >= localTerm;
+            return index >= localIndex && term >= await auditTrail.GetTermAsync(localIndex, token).ConfigureAwait(false);
         }
 
         internal static async Task<bool> ContainsAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)

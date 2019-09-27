@@ -271,18 +271,9 @@ namespace DotNext
         /// </remarks>
         public static ValueFunc<R> Activator
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                const string HandleRefType = "refType";
-                Ldtoken(typeof(R));
-                Call(new M(typeof(Type), nameof(Type.GetTypeFromHandle)));
-                Call(M.PropertyGet(typeof(Type), nameof(Type.IsValueType)));
-                Brfalse(HandleRefType);
-
-                Call(M.PropertyGet(typeof(ValueFunc<R>), nameof(DefaultValueProvider)));
-                Ret();
-
-                MarkLabel(HandleRefType);
                 Ldftn(new M(typeof(Activator), nameof(System.Activator.CreateInstance), Array.Empty<TR>()).MakeGenericMethod(typeof(R)));
                 Newobj(M.Constructor(typeof(ValueFunc<R>), new TR(typeof(IntPtr)).WithRequiredModifier(typeof(ManagedMethodPointer))));
                 return Return<ValueFunc<R>>();
@@ -296,6 +287,7 @@ namespace DotNext
         /// <value></value>
         public static ValueFunc<R> DefaultValueProvider
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 Ldftn(new M(typeof(Intrinsics), nameof(Intrinsics.DefaultOf)).MakeGenericMethod(typeof(R)));

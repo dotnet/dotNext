@@ -53,7 +53,7 @@ namespace DotNext.Runtime.CompilerServices
 
         public sealed override bool IsCompleted => true;
 
-        private protected override void ThrowIfNeeded() => new OperationCanceledException(token);
+        private protected override void ThrowIfNeeded() => throw new OperationCanceledException(token);
     }
 
     internal abstract class AsyncDelegateFuture<D> : AsyncDelegateFuture
