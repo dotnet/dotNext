@@ -31,7 +31,7 @@ namespace DotNext.Threading
                 case ReaderWriterLock _:
                     throw new ArgumentException(ExceptionMessages.UnsupportedLockAcquisition, nameof(obj));
                 default:
-                    return obj.GetUserData().GetOrSet(ReaderWriterLock, () => new AsyncReaderWriterLock());
+                    return obj.GetUserData().GetOrSet(ReaderWriterLock, ValueFunc<AsyncReaderWriterLock>.Activator);
             }
         }
 
@@ -62,7 +62,7 @@ namespace DotNext.Threading
                     throw new ArgumentException(ExceptionMessages.UnsupportedLockAcquisition, nameof(obj));
                 default:
                     @lock = AsyncLock.Exclusive(obj.GetUserData()
-                        .GetOrSet(ExclusiveLock, () => new AsyncExclusiveLock()));
+                        .GetOrSet(ExclusiveLock, ValueFunc<AsyncExclusiveLock>.Activator));
                     break;
             }
 
