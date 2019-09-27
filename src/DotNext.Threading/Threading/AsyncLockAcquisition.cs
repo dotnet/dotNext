@@ -23,6 +23,7 @@ namespace DotNext.Threading
                     throw new ArgumentNullException(nameof(obj));
                 case AsyncReaderWriterLock rwl:
                     return rwl;
+                case AsyncSharedLock _:
                 case ReaderWriterLockSlim _:
                 case AsyncExclusiveLock _:
                 case SemaphoreSlim _:
