@@ -245,13 +245,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private protected readonly byte[] buffer;
             private readonly StreamSegment[] readers;   //a pool of read-only streams that can be shared between multiple readers in parallel
 
+            [SuppressMessage("Reliability", "CA2000", Justification = "All streams are disposed in Dispose method")]
             private protected ConcurrentStorageAccess(string fileName, byte[] sharedBuffer, int readersCount, FileOptions options)
                 : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, options)
             {
                 readers = new StreamSegment[readersCount];
                 buffer = sharedBuffer;
                 foreach(ref var reader in readers.AsSpan())
-                    reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
+                    reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
