@@ -193,6 +193,41 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Fact]
+        public static async Task ParallelReads()
+        {
+            var entry = new TestLogEntry("SET X = 0") { Term = 42L };
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            try
+            {
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
+                Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker2 = async (entries, snapshotIndex) =>
+                {
+                    Null(snapshotIndex);
+                    Equal(2, entries.Count);
+                    Equal(state.First, entries[0]);
+                    Equal(42L, entries[1].Term);
+                    Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                };
+                Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker1 = async (entries, snapshotIndex) =>
+                {
+                    Null(snapshotIndex);
+                    Equal(2, entries.Count);
+                    Equal(state.First, entries[0]);
+                    Equal(42L, entries[1].Term);
+                    Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    //execute reader inside of another reader which is not possible for InMemoryAuditTrail
+                    await state.ReadEntriesAsync<TestReader, DBNull>(checker2, 0L, CancellationToken.None);
+                };
+                await state.ReadEntriesAsync<TestReader, DBNull>(checker1, 0L, CancellationToken.None);
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
+            }
+        }
+
+        [Fact]
         public static async Task Overwrite()
         {
             var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
