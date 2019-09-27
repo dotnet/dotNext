@@ -271,6 +271,7 @@ namespace DotNext
         /// </remarks>
         public static ValueFunc<R> Activator
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 Ldftn(new M(typeof(Activator), nameof(System.Activator.CreateInstance), Array.Empty<TR>()).MakeGenericMethod(typeof(R)));
@@ -286,6 +287,7 @@ namespace DotNext
         /// <value></value>
         public static ValueFunc<R> DefaultValueProvider
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 Ldftn(new M(typeof(Intrinsics), nameof(Intrinsics.DefaultOf)).MakeGenericMethod(typeof(R)));
