@@ -291,7 +291,8 @@ Starting with .NEXT 1.0.0 the library shipped with the general-purpose high-perf
 * Log compaction based on snapshotting
 * File-based persistent storage for the log entries
 * Caching
-* Fast writes and reads
+* Fast writes
+* Parallel reads
 * Automatic replays
 
 However, it is not used as default audit trail by Raft implementation. You need to register it as described above.
@@ -305,11 +306,13 @@ Typically, `PersistentState` class is not used directly because it is not aware 
 
 Internally, persistent WAL uses files to store the state of cluster member and log entries. The journal with log entries is not continuous. Each file represents the partition of the entire journal. Each partition is a chunk of sequential log entries. The maximum number of log entries per partition file depends on the settings.
 
-The constructor of [PersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.yml) supports the following parameters:
+`PersistentState` has a rich set of tunable configuration parameters to achieve the best performance according with application needs:
 * `recordsPerPartition` allows to define maximum number of log entries that can be stored in contiguous manner in the single partition. Log compaction algorithm depends on this value directly. When all records from the partition are committed and applied to the underlying state machine the infrastructure calls the snapshot builder and squashed all the entries in such partition. After that, it records the snapshot into the separated file and removes the partition file from the file system. The log compaction is expensive operation. So if you want to reduce the number of compactions then you need to increase the maximum number of log entries per partition. However, the partition file will take more disk space.
-* `bufferSize` is the numbers of bytes that is allocated by persistent WAL in the memory to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.
-* `initialPartitionSize` represents the initial pre-allocated size, in bytes, of the empty partition file. This parameter allows to avoid fragmentation of the partition file at file-system level.
-* `useCaching` is a `bool` flag that allows to enable or disable in-memory caching of log entries metadata. `true` value allows to improve the performance or read/write operations by the cost of additional heap memory. `false` reduces the memory footprint by the cost of the read/write performance.
+* `BufferSize` is the numbers of bytes that is allocated by persistent WAL in the memory to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.
+* `InitialPartitionSize` represents the initial pre-allocated size, in bytes, of the empty partition file. This parameter allows to avoid fragmentation of the partition file at file-system level.
+* `UseCaching` is `bool` flag that allows to enable or disable in-memory caching of log entries metadata. `true` value allows to improve the performance or read/write operations by the cost of additional heap memory. `false` reduces the memory footprint by the cost of the read/write performance
+* `UseSharedPool` specifies whether the [shared array pool](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1.shared?view=netstandard-2.1#System_Buffers_ArrayPool_1_Shared) should be used for internal purposes. If the parameter is `false` then the log will use dedicated array pool instead of shared pool.
+* `MaxConcurrentReads` is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory. 
 
 Choose `recordsPerPartition` value with care because it cannot be changed for the existing persistent WAL.
 
