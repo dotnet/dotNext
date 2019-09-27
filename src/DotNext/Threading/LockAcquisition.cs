@@ -9,8 +9,7 @@ namespace DotNext.Threading
     /// </summary>
     public static class LockAcquisition
     {
-        private static readonly UserDataSlot<ReaderWriterLockSlimWithRecursion> ReaderWriterLock =
-            UserDataSlot<ReaderWriterLockSlimWithRecursion>.Allocate();
+        private static readonly UserDataSlot<ReaderWriterLockSlim> ReaderWriterLock = UserDataSlot<ReaderWriterLockSlim>.Allocate();
 
         private sealed class ReaderWriterLockSlimWithRecursion : ReaderWriterLockSlim
         {
@@ -35,7 +34,7 @@ namespace DotNext.Threading
                 case ReaderWriterLock _:
                     throw new ArgumentException(ExceptionMessages.UnsupportedLockAcquisition, nameof(obj));
                 default:
-                    return obj.GetUserData().GetOrSet(ReaderWriterLock, ValueFunc<ReaderWriterLockSlimWithRecursion>.Activator);
+                    return obj.GetUserData().GetOrSet<ReaderWriterLockSlim, ReaderWriterLockSlimWithRecursion>(ReaderWriterLock);
             }
         }
 
