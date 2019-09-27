@@ -233,7 +233,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
          */
         private sealed class SessionTokenPool : ConcurrentBag<ReadSessionToken>
         {
-            internal const ReadSessionToken DefaultSession = default(ReadSessionToken);
+            internal const ReadSessionToken DefaultSession = default;
 
             internal readonly int Capacity;//the initial number of possible read sessions
 
