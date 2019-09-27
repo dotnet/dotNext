@@ -684,7 +684,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets or sets the number of possible parallel reads.
             /// </summary>
             /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is less than 1.</exception>
-            public int ConcurrencyLevel
+            public int MaxConcurrentReads
             {
                 get => concurrencyLevel;
                 set
@@ -737,11 +737,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.recordsPerPartition = recordsPerPartition;
             initialSize = configuration.InitialPartitionSize;
             commitEvent = new AsyncManualResetEvent(false);
-            syncRoot = new AsyncSharedLock(configuration.ConcurrencyLevel);
+            syncRoot = new AsyncSharedLock(configuration.MaxConcurrentReads);
             entryPool = configuration.UseSharedPool ? ArrayPool<LogEntry>.Shared : ArrayPool<LogEntry>.Create();
             nullSegment = new StreamSegment(Stream.Null);
             initialEntry = new LogEntry(nullSegment, sharedBuffer, new LogEntryMetadata());
-            readSessions = new SessionTokenPool(configuration.ConcurrencyLevel);
+            readSessions = new SessionTokenPool(configuration.MaxConcurrentReads);
             //sorted dictionary to improve performance of log compaction and snapshot installation procedures
             partitionTable = new SortedDictionary<long, Partition>();
             //load all partitions from file system
