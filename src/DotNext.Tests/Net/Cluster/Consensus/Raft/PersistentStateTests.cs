@@ -11,8 +11,8 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using LogEntryList = Replication.LogEntryProducer<IRaftLogEntry>;
     using static Messaging.Messenger;
+    using LogEntryList = Replication.LogEntryProducer<IRaftLogEntry>;
 
     public sealed class PersistentStateTests : Assert
     {

@@ -146,7 +146,7 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task Acquire(bool strongLock, CancellationToken token) => TryAcquire(strongLock, InfiniteTimeSpan, token);
 
-        
+
 
         /// <summary>
         /// Release the acquired lock.
@@ -165,7 +165,7 @@ namespace DotNext.Threading
                 exclusiveNode.Complete();
                 state.RemainingLocks = ExclusiveMode;
             }
-            else 
+            else
                 for (WaitNode current = head, next; !(current is null || current is StrongLockNode) && state.RemainingLocks > 0L; state.RemainingLocks--, current = next)
                 {
                     next = current.Next;

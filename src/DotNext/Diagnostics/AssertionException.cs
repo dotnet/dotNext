@@ -10,6 +10,6 @@ namespace DotNext.Diagnostics
         internal AssertionException(string message)
             : base(message)
         {
-        }       
+        }
     }
 }

@@ -27,12 +27,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private bool replicatedWithCurrentTerm;
             private ConfiguredTaskAwaitable<Result<bool>>.ConfiguredTaskAwaiter replicationAwaiter;
 
-            internal Replicator(IRaftClusterMember member, 
-                long commitIndex, 
-                long term, 
+            internal Replicator(IRaftClusterMember member,
+                long commitIndex,
+                long term,
                 long precedingIndex,
                 long precedingTerm,
-                ILogger logger, 
+                ILogger logger,
                 CancellationToken token)
             {
                 this.member = member;
@@ -103,7 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     replicationAwaiter = member.AppendEntriesAsync<TEntry, TList>(term, entries, precedingIndex, precedingTerm, commitIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
                 replicatedWithCurrentTerm = ContainsTerm<TEntry, TList>(entries, term);
-                if(replicationAwaiter.IsCompleted)
+                if (replicationAwaiter.IsCompleted)
                     Complete();
                 else
                     replicationAwaiter.OnCompleted(Complete);
@@ -111,7 +111,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        
+
         private Task heartbeatTask;
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
@@ -147,11 +147,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (member.IsRemote)
                 {
                     long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token);
-                    tasks.AddLast(new Replicator(member, commitIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).Start(auditTrail));                
+                    tasks.AddLast(new Replicator(member, commitIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).Start(auditTrail));
                 }
             var quorum = 1;  //because we know that the entry is replicated in this node
             var commitQuorum = 1;
-            for(var task = tasks.First; task != null; task.Value = default, task = task.Next)
+            for (var task = tasks.First; task != null; task.Value = default, task = task.Next)
                 try
                 {
                     var result = await task.Value.ConfigureAwait(false);
@@ -159,16 +159,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     quorum += 1;
                     commitQuorum += result.Value ? 1 : -1;
                 }
-                catch(MemberUnavailableException)
+                catch (MemberUnavailableException)
                 {
                     quorum -= 1;
                     commitQuorum -= 1;
                 }
-                catch(OperationCanceledException)//leading was canceled
+                catch (OperationCanceledException)//leading was canceled
                 {
                     return false;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     stateMachine.Logger.LogError(e, ExceptionMessages.UnexpectedError);
                 }

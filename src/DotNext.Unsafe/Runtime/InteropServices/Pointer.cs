@@ -527,9 +527,9 @@ namespace DotNext.Runtime.InteropServices
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                if(IsNull)
+                if (IsNull)
                     throw new NullPointerException();
-                else 
+                else
                     return ref value[0];
             }
         }

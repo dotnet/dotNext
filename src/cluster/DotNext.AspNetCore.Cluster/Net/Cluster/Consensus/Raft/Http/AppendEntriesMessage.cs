@@ -62,14 +62,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             async ValueTask<bool> ILogEntryProducer<ReceivedLogEntry>.MoveNextAsync()
             {
                 var section = await ReadNextSectionAsync().ConfigureAwait(false);
-                if(section is null)
+                if (section is null)
                     return false;
                 Current = new ReceivedLogEntry(section);
                 count -= 1L;
                 return true;
             }
         }
- 
+
         internal readonly long PrevLogIndex;
         internal readonly long PrevLogTerm;
         internal readonly long CommitIndex;
@@ -145,7 +145,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             //TODO: Should be rewritten for .NET Standard 2.1
             private static async Task EncodeStringToStreamAsync(Stream output, string input)
             {
-                using(var buffer = new ArrayRental<byte>(DefaultHttpEncoding.GetByteCount(input)))
+                using (var buffer = new ArrayRental<byte>(DefaultHttpEncoding.GetByteCount(input)))
                     await output.WriteAsync(buffer, 0, DefaultHttpEncoding.GetBytes(input, 0, input.Length, buffer, 0)).ConfigureAwait(false);
             }
 

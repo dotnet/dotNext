@@ -182,7 +182,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TEntry : IRaftLogEntry
         {
             var bufferedEntries = new IRaftLogEntry[entries.RemainingCount];
-            for(var i = 0L; await entries.MoveNextAsync().ConfigureAwait(false); i++)
+            for (var i = 0L; await entries.MoveNextAsync().ConfigureAwait(false); i++)
                 bufferedEntries[i] = entries.Current.IsReusable ?
                     (IRaftLogEntry)entries.Current :
                     await BufferedLogEntry.CreateBufferedEntryAsync(entries.Current, token).ConfigureAwait(false);
@@ -214,7 +214,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
         {
-            if(entries.RemainingCount == 0L)
+            if (entries.RemainingCount == 0L)
                 return;
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
                 await AppendAsync(entries, startIndex, skipCommitted, token);
@@ -222,7 +222,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token)
         {
-            if(entries.RemainingCount == 0L)
+            if (entries.RemainingCount == 0L)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
                 return await AppendAsync(entries, null, false, token).ConfigureAwait(false);

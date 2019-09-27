@@ -31,7 +31,7 @@ namespace DotNext
         public virtual bool IsReusable => content.CanSeek;
 
         long? IDataTransferObject.Length => content.CanSeek ? content.Length : default(long?);
-        
+
 
         async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
@@ -42,9 +42,9 @@ namespace DotNext
 
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
-            using(var stream = output.AsStream(true))
+            using (var stream = output.AsStream(true))
                 await content.CopyToAsync(stream, DefaultBufferSize, token).ConfigureAwait(false);
-            if(content.CanSeek)
+            if (content.CanSeek)
                 content.Seek(0, SeekOrigin.Begin);
         }
 

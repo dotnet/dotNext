@@ -265,12 +265,12 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other)
         {
-            switch(other)
+            switch (other)
             {
                 case bool b:
                     return Equals(b);
                 case AtomicBoolean b:
-                     return b.value.VolatileRead() == value.VolatileRead();
+                    return b.value.VolatileRead() == value.VolatileRead();
                 default:
                     return false;
             }

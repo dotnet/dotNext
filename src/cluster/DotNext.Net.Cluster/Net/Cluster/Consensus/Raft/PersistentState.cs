@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -251,7 +250,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 readers = new StreamSegment[readersCount];
                 buffer = sharedBuffer;
-                foreach(ref var reader in readers.AsSpan())
+                foreach (ref var reader in readers.AsSpan())
                     reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
             }
 
@@ -261,7 +260,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             protected override void Dispose(bool disposing)
             {
                 if (disposing)
-                    foreach(ref var reader in readers.AsSpan())
+                    foreach (ref var reader in readers.AsSpan())
                     {
                         reader.Dispose();
                         reader = null;
@@ -558,27 +557,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private readonly struct SingletonEntryList : IReadOnlyList<LogEntry>
-        {
-            private readonly LogEntry entry;
-
-            internal SingletonEntryList(LogEntry entry)
-            {
-                this.entry = entry;
-            }
-
-            int IReadOnlyCollection<LogEntry>.Count => 1;
-
-            LogEntry IReadOnlyList<LogEntry>.this[int index] => index == 0 ? entry : throw new IndexOutOfRangeException();
-
-            public IEnumerator<LogEntry> GetEnumerator()
-            {
-                yield return entry;
-            }
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-        }
-
         /// <summary>
         /// Represents snapshot builder.
         /// </summary>
@@ -648,7 +626,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal Partition GetOrCreate(PersistentState state, long recordIndex, out Task flushTask)
             {
-                if(lastPartition is null || recordIndex < lastPartition.FirstIndex || recordIndex > lastPartition.LastIndex)
+                if (lastPartition is null || recordIndex < lastPartition.FirstIndex || recordIndex > lastPartition.LastIndex)
                 {
                     flushTask = lastPartition?.FlushAsync() ?? Task.CompletedTask;
                     lastPartition = state.GetOrCreatePartition(recordIndex);
@@ -674,7 +652,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets size of in-memory buffer for I/O operations.
             /// </summary>
             /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is too small.</exception>
-            public int BufferSize 
+            public int BufferSize
             {
                 get => bufferSize;
                 set
@@ -865,10 +843,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else if (snapshot.Length > 0)
             {
                 entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
-                result = reader.ReadAsync<LogEntry, SingletonEntryList>(new SingletonEntryList(entry), entry.SnapshotIndex, token);
+                result = reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(entry), entry.SnapshotIndex, token);
             }
             else
-                result = startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList>(new SingletonEntryList(First), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+                result = startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(First), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
             return await result.ConfigureAwait(false);
         }
 
@@ -995,7 +973,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //5. Apply snapshot to the underlying state machine
             state.CommitIndex = snapshotIndex;
             state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
-            
+
             await ApplyAsync(await this.snapshot.ReadAsync(SessionTokenPool.DefaultSession, CancellationToken.None).ConfigureAwait(false));
             state.LastApplied = snapshotIndex;
             state.Flush();
@@ -1008,7 +986,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             PartitionCursor cursor;
-            for(cursor = new PartitionCursor(); !token.IsCancellationRequested && await supplier.MoveNextAsync().ConfigureAwait(false); state.LastIndex = startIndex++)
+            for (cursor = new PartitionCursor(); !token.IsCancellationRequested && await supplier.MoveNextAsync().ConfigureAwait(false); state.LastIndex = startIndex++)
                 if (supplier.Current.IsSnapshot)
                     throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
                 else if (startIndex > state.CommitIndex)
@@ -1028,7 +1006,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
         {
-            if(entries.RemainingCount == 0L)
+            if (entries.RemainingCount == 0L)
                 return;
             await syncRoot.Acquire(true, CancellationToken.None).ConfigureAwait(false);
             try
@@ -1102,7 +1080,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public async ValueTask<long> AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token = default)
             where TEntry : IRaftLogEntry
         {
-            if(entries.RemainingCount == 0L)
+            if (entries.RemainingCount == 0L)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
             await syncRoot.Acquire(true, token).ConfigureAwait(false);
             var startIndex = state.LastIndex + 1L;

@@ -504,7 +504,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TEntry : IRaftLogEntry
         {
             var count = entries.RemainingCount;
-            if(count == 0L)
+            if (count == 0L)
                 return;
             var index = await auditTrail.AppendAsync(entries, transitionCancellation.Token).ConfigureAwait(false);
             if (!(state is LeaderState leaderState))

@@ -13,7 +13,7 @@ namespace DotNext.Diagnostics
         /// <exception cref="AssertionException">Check failed.</exception>
         public static void True(bool condition, string message = "")
         {
-            if(!condition)
+            if (!condition)
                 throw new AssertionException(message);
         }
 
@@ -25,7 +25,7 @@ namespace DotNext.Diagnostics
         /// <exception cref="AssertionException">Check failed.</exception>
         public static void False(bool condition, string message = "")
         {
-            if(condition)
+            if (condition)
                 throw new AssertionException(message);
         }
     }

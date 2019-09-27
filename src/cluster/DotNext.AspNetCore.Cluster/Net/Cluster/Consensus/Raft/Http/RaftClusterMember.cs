@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
-    using Replication;
     using Threading;
     using Timestamp = Diagnostics.Timestamp;
 

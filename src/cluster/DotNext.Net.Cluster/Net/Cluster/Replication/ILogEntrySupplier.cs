@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster.Replication
         /// </summary>
         /// <value>The log entry at the current position of the enumerator.</value>
         TEntry Current { get; }
-        
+
         /// <summary>
         /// Advances position of the enumerator to the next available log entry.
         /// </summary>
