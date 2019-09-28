@@ -36,9 +36,11 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 09-XX-2019
+Release Date: 09-28-2019
 
 This is the major release of all parts of .NEXT library. Now the version is 1.0.0 and backward compatibility is guaranteed across all 1.x releases. The main motivation of this release is to produce stable API because .NEXT library active using in production code, especially Raft implementation.
+
+.NEXT 1.x is based on .NET Standard 2.0 to keep compatibility with .NET Framework.
 
 <a href="https://www.nuget.org/packages/dotnext/1.0.0">DotNext 1.0.0</a>
 * Optimized some methods of [Memory](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Memory.html) class
@@ -58,7 +60,7 @@ This is the major release of all parts of .NEXT library. Now the version is 1.0.
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/1.0.0">DotNext.Net.Cluster 1.0.0</a>
 * Audit trail programming model is redesigned
-* Persistent and high-performance Write Ahead Log (WAL) is introduced
+* Persistent and high-performance Write Ahead Log (WAL) is introduced. Read more [here](https://sakno.github.io/dotNext/features/cluster/aspnetcore.html#replication)
 * Log compaction is supported
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.0.0">DotNext.AspNetCore.Cluster 1.0.0</a>
@@ -75,6 +77,15 @@ Changelog for previous versions located [here](./CHANGELOG.md).
 * API can be backward incompatible between 0.x versions
 * Version 0.x and 1.x relies on .NET Standard 2.0
 * Support of newer versions of .NET Standard is aligned with .NET Core LTS (Long-Term Support) release train. For example, support for .NET Standard 2.1 is scheduled no earlier than in November, 2019. Check [.NET Core Support Policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) for more information.
+
+# Support Policy
+| Version | .NET compatibility | Support Level |
+| ---- | ---- | ---- |
+| 0.x | .NET Standard 2.0 | Not Supported |
+| 1.x | .NET Standard 2.0 | Maintenance |
+| 2.x | .NET Standard 2.1 | Active Development |
+
+_Maintenance_ support level means that new releases will contain bug fixes only.
 
 # Development Process
 Philosophy of development process:
