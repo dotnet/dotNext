@@ -35,7 +35,7 @@ namespace DotNext.Net.Cluster.Replication
     /// of the log entries.
     /// </summary>
     /// <typeparam name="TEntry">The type of the entries supplied by this</typeparam>
-    public struct LogEntryProducer<TEntry> : ILogEntryProducer<TEntry>
+    public sealed class LogEntryProducer<TEntry> : ILogEntryProducer<TEntry>
         where TEntry : ILogEntry
     {
         private const int InitialPosition = -1;
@@ -61,11 +61,19 @@ namespace DotNext.Net.Cluster.Replication
         {
         }
 
+        /// <summary>
+        /// Initializes a new empty producer of the log entries.
+        /// </summary>
+        public LogEntryProducer()
+            : this(Array.Empty<TEntry>())
+        {
+        }
+
         TEntry ILogEntryProducer<TEntry>.Current => source[currentIndex];
 
-        long ILogEntryProducer<TEntry>.RemainingCount => source is null ? 0 : source.Count - currentIndex - 1;
+        long ILogEntryProducer<TEntry>.RemainingCount => source.Count - currentIndex - 1;
 
-        ValueTask<bool> ILogEntryProducer<TEntry>.MoveNextAsync() => source is null ? new ValueTask<bool>(false) : new ValueTask<bool>(++currentIndex < source.Count);
+        ValueTask<bool> ILogEntryProducer<TEntry>.MoveNextAsync() => new ValueTask<bool>(++currentIndex < source.Count);
 
         /// <summary>
         /// Resets the position of the producer.

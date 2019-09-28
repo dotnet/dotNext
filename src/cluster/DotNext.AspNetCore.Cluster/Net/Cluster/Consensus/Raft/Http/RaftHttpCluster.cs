@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
-    using ILogEntryProducer = Replication.ILogEntryProducer<IRaftLogEntry>;
 
     internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
@@ -229,7 +228,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (sender is null)
                 response.StatusCode = StatusCodes.Status404NotFound;
             else
-                await message.SaveResponse(response, await ReceiveEntries<IRaftLogEntry, ILogEntryProducer>(sender, message.ConsensusTerm,
+                await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
                     entries, message.PrevLogIndex,
                     message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false), Token).ConfigureAwait(false);
         }

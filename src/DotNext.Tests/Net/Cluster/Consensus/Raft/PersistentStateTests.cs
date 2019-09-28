@@ -175,7 +175,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 };
                 await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
 
-                Equal(1L, await state.AppendAsync<IRaftLogEntry, LogEntryList>(new LogEntryList(entry)));
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
                 checker = async (entries, snapshotIndex) =>
                 {
                     Null(snapshotIndex);
@@ -200,7 +200,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IPersistentState state = new PersistentState(dir, RecordsPerPartition);
             try
             {
-                Equal(1L, await state.AppendAsync<IRaftLogEntry, LogEntryList>(new LogEntryList(entry)));
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
                 Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker2 = async (entries, snapshotIndex) =>
                 {
                     Null(snapshotIndex);
@@ -239,7 +239,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             using (var state = new PersistentState(dir, RecordsPerPartition))
             {
-                Equal(1L, await state.AppendAsync<IRaftLogEntry, LogEntryList>(new LogEntryList(entry2, entry3, entry4, entry5)));
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
                 Equal(4L, state.GetLastIndex(false));
                 Equal(0L, state.GetLastIndex(true));
                 await state.AppendAsync(entry1, 1L);
@@ -288,8 +288,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 };
                 await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
 
-                Equal(1L, await state.AppendAsync<IRaftLogEntry, LogEntryList>(new LogEntryList(entry1)));
-                Equal(2L, await state.AppendAsync<IRaftLogEntry, LogEntryList>(new LogEntryList(entry2, entry3, entry4, entry5)));
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry1)));
+                Equal(2L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
 
                 checker = async (entries, snapshotIndex) =>
                 {
@@ -368,8 +368,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             using (var state = new PersistentState(dir, RecordsPerPartition, new PersistentState.Options { UseCaching = useCaching }))
             {
-                Equal(1L, await state.AppendAsync<IRaftLogEntry, LogEntryList>(new LogEntryList(entry1)));
-                Equal(2L, await state.AppendAsync<IRaftLogEntry, LogEntryList>(new LogEntryList(entry2, entry3, entry4, entry5)));
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry1)));
+                Equal(2L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
 
                 Equal(1L, await state.CommitAsync(1L, CancellationToken.None));
                 Equal(2L, await state.CommitAsync(3L, CancellationToken.None));
@@ -399,7 +399,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker;
             using (var state = new TestAuditTrail(dir, useCaching))
             {
-                await state.AppendAsync<IRaftLogEntry, LogEntryList>(new LogEntryList(entries));
+                await state.AppendAsync(new LogEntryList(entries));
                 Equal(3, await state.CommitAsync(3, CancellationToken.None));
                 //install snapshot and erase all existing entries up to 7th (inclusive)
                 await state.AppendAsync(new Int64LogEntry(100500L, true), 7);
@@ -451,7 +451,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker;
             using (var state = new TestAuditTrail(dir, useCaching))
             {
-                await state.AppendAsync<IRaftLogEntry, LogEntryList>(new LogEntryList(entries));
+                await state.AppendAsync(new LogEntryList(entries));
                 await state.CommitAsync(CancellationToken.None);
                 checker = (readResult, snapshotIndex) =>
                 {

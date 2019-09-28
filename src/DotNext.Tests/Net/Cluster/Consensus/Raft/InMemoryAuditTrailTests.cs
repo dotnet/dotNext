@@ -6,7 +6,7 @@ using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using LogEntryList = Replication.LogEntryProducer<TestLogEntry>;
+    using LogEntryList = Replication.LogEntryProducer<IRaftLogEntry>;
 
     public sealed class InMemoryAuditTrailTests : Assert
     {
@@ -30,7 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Equal(0, auditTrail.GetLastIndex(true));
             var entry1 = new TestLogEntry("SET X=0") { Term = 1 };
             var entry2 = new TestLogEntry("SET Y=0") { Term = 2 };
-            Equal(1, await auditTrail.AppendAsync<TestLogEntry, LogEntryList>(new LogEntryList(entry1, entry2)));
+            Equal(1, await auditTrail.AppendAsync(new LogEntryList(entry1, entry2)));
             Equal(0, auditTrail.GetLastIndex(true));
             Equal(2, auditTrail.GetLastIndex(false));
             Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker = (entries, snapshotIndex) =>
@@ -63,8 +63,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await auditTrail.WaitForCommitAsync(2, TimeSpan.Zero);
             Equal(2, auditTrail.GetLastIndex(true));
             //check overlapping with committed entries
-            await ThrowsAsync<InvalidOperationException>(() => auditTrail.AppendAsync<TestLogEntry, LogEntryList>(new LogEntryList(entry1, entry2), 2).AsTask());
-            await auditTrail.AppendAsync<TestLogEntry, LogEntryList>(new LogEntryList(entry1, entry2), 2, true);
+            await ThrowsAsync<InvalidOperationException>(() => auditTrail.AppendAsync(new LogEntryList(entry1, entry2), 2).AsTask());
+            await auditTrail.AppendAsync(new LogEntryList(entry1, entry2), 2, true);
             Equal(3, auditTrail.GetLastIndex(false));
             Equal(2, auditTrail.GetLastIndex(true));
         }

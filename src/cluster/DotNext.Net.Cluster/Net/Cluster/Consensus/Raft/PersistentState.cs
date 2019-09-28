@@ -980,9 +980,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commitEvent.Set(true);
         }
 
-        private async ValueTask AppendAsync<TEntry, TProducer>(TProducer supplier, long startIndex, bool skipCommitted, CancellationToken token)
+        private async ValueTask AppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
             where TEntry : IRaftLogEntry
-            where TProducer : ILogEntryProducer<TEntry>
         {
             if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -1005,14 +1004,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             token.ThrowIfCancellationRequested();
         }
 
-        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry, TProducer>(TProducer entries, long startIndex, bool skipCommitted, CancellationToken token)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
         {
             if (entries.RemainingCount == 0L)
                 return;
             await syncRoot.Acquire(true, CancellationToken.None).ConfigureAwait(false);
             try
             {
-                await AppendAsync<TEntry, TProducer>(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
+                await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
             }
             finally
             {
@@ -1027,7 +1026,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// This is the only method that can be used for snapshot installation.
         /// The behavior of the method depends on the <see cref="ILogEntry.IsSnapshot"/> property.
         /// If log entry is a snapshot then the method erases all committed log entries prior to <paramref name="startIndex"/>.
-        /// If it is not, the method behaves in the same way as <see cref="AppendAsync{TEntryImpl, TProducer}(TProducer, long, bool, CancellationToken)"/>.
+        /// If it is not, the method behaves in the same way as <see cref="AppendAsync{TEntryImpl}(ILogEntryProducer{TEntryImpl}, long, bool, CancellationToken)"/>.
         /// </remarks>
         /// <typeparam name="TEntry">The actual type of the supplied log entry.</typeparam>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
@@ -1072,16 +1071,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <remarks>
         /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
         /// </remarks>
-        /// <typeparam name="TProducer">The actual type of the supplier of log entries.</typeparam>
         /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
         /// <param name="entries">The entries to be added into this log.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
         /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
-        public async ValueTask<long> AppendAsync<TEntry, TProducer>(TProducer entries, CancellationToken token = default)
+        public async ValueTask<long> AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token = default)
             where TEntry : IRaftLogEntry
-            where TProducer : ILogEntryProducer<TEntry>
         {
             if (entries.RemainingCount == 0L)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
@@ -1089,7 +1086,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var startIndex = state.LastIndex + 1L;
             try
             {
-                await AppendAsync<TEntry, TProducer>(entries, startIndex, false, token).ConfigureAwait(false);
+                await AppendAsync(entries, startIndex, false, token).ConfigureAwait(false);
             }
             finally
             {

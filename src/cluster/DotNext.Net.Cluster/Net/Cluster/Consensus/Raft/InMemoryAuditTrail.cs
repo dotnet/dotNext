@@ -178,9 +178,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             log = newLog;
         }
 
-        private static async ValueTask<IRaftLogEntry[]> ReadAllAsync<TEntry, TProducer>(TProducer entries, CancellationToken token)
+        private static async ValueTask<IRaftLogEntry[]> ReadAllAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token)
             where TEntry : IRaftLogEntry
-            where TProducer : ILogEntryProducer<TEntry>
         {
             var bufferedEntries = new IRaftLogEntry[entries.RemainingCount];
             for (var i = 0L; await entries.MoveNextAsync().ConfigureAwait(false); i++)
@@ -190,9 +189,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return bufferedEntries;
         }
 
-        private async ValueTask<long> AppendAsync<TEntry, TProducer>(TProducer entries, long? startIndex, bool skipCommitted, CancellationToken token)
+        private async ValueTask<long> AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long? startIndex, bool skipCommitted, CancellationToken token)
             where TEntry : IRaftLogEntry
-            where TProducer : ILogEntryProducer<TEntry>
         {
             if (startIndex is null)
                 startIndex = log.LongLength;
@@ -201,7 +199,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IRaftLogEntry[] appendingScope;
             if (skipCommitted)
             {
-                appendingScope = await ReadAllAsync<TEntry, TProducer>(entries, token).ConfigureAwait(false);
+                appendingScope = await ReadAllAsync(entries, token).ConfigureAwait(false);
                 var skipNum = Math.Max(0, GetLastIndex(true) - startIndex.Value + 1L);
                 appendingScope = appendingScope.RemoveFirst(skipNum);
                 startIndex += skipNum;
@@ -209,25 +207,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             else if (startIndex <= GetLastIndex(true))
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             else
-                appendingScope = await ReadAllAsync<TEntry, TProducer>(entries, token).ConfigureAwait(false);
+                appendingScope = await ReadAllAsync(entries, token).ConfigureAwait(false);
             Append(appendingScope, startIndex.Value);
             return startIndex.Value;
         }
 
-        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry, TProducer>(TProducer entries, long startIndex, bool skipCommitted, CancellationToken token)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
         {
             if (entries.RemainingCount == 0L)
                 return;
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync<TEntry, TProducer>(entries, startIndex, skipCommitted, token);
+                await AppendAsync(entries, startIndex, skipCommitted, token);
         }
 
-        async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry, TProducer>(TProducer entries, CancellationToken token)
+        async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token)
         {
             if (entries.RemainingCount == 0L)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                return await AppendAsync<TEntry, TProducer>(entries, null, false, token).ConfigureAwait(false);
+                return await AppendAsync(entries, null, false, token).ConfigureAwait(false);
         }
 
         async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, long startIndex)
@@ -235,7 +233,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync<TEntry, LogEntryProducer<TEntry>>(new LogEntryProducer<TEntry>(entry), startIndex, false, default).ConfigureAwait(false);
+                await AppendAsync(new LogEntryProducer<TEntry>(entry), startIndex, false, default).ConfigureAwait(false);
         }
 
         private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
