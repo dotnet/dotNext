@@ -22,6 +22,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result<bool>>
     {
+        private static readonly ILogEntryProducer<IRaftLogEntry> EmptyProducer = new LogEntryProducer<IRaftLogEntry>();
+
         internal new const string MessageType = "AppendEntries";
         private const string PrecedingRecordIndexHeader = "X-Raft-Preceding-Record-Index";
         private const string PrecedingRecordTermHeader = "X-Raft-Preceding-Record-Term";
@@ -95,10 +97,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             : this(request.Headers.TryGetValue, out var count)
         {
             var boundary = request.GetMultipartBoundary();
-            if (string.IsNullOrEmpty(boundary) || count == 0L)
-                entries = new LogEntryProducer<ReceivedLogEntry>();
-            else
-                entries = new ReceivedLogEntryReader(boundary, request.Body, count);
+            entries = string.IsNullOrEmpty(boundary) || count == 0L ? EmptyProducer : new ReceivedLogEntryReader(boundary, request.Body, count);
         }
 
         internal override void PrepareRequest(HttpRequestMessage request)

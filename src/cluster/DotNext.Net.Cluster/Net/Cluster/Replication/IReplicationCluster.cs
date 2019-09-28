@@ -33,6 +33,7 @@ namespace DotNext.Net.Cluster.Replication
         /// Data isolation level should be implemented by the caller code.
         /// </remarks>
         /// <typeparam name="TEntryImpl">The actual type of the log entry returned by the supplier.</typeparam>
+        /// <typeparam name="TProducer">The actual type of the supplier of log entries.</typeparam>
         /// <param name="entries">The number of commands to be committed into the audit trail.</param>
         /// <param name="concern">The value describing level of acknowledgment from cluster.</param>
         /// <param name="timeout">The timeout of the asynchronous operation.</param>
@@ -41,7 +42,8 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="NotSupportedException">The specified level of acknowledgment is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="TimeoutException">The timeout is occurred.</exception>
-        Task WriteAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, WriteConcern concern, TimeSpan timeout)
-            where TEntryImpl : TEntry;
+        Task WriteAsync<TEntryImpl, TProducer>(TProducer entries, WriteConcern concern, TimeSpan timeout)
+            where TEntryImpl : TEntry
+            where TProducer : ILogEntryProducer<TEntryImpl>;
     }
 }

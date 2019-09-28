@@ -113,14 +113,16 @@ namespace DotNext.Net.Cluster.Replication
         /// The supplying function must return <see langword="null"/> if it cannot provide more log entries.
         /// </remarks>
         /// <typeparam name="TEntryImpl">The actual type of the log entry returned by the supplier.</typeparam>
+        /// <typeparam name="TProducer">The actual type of the supplier of log entries.</typeparam>
         /// <param name="entries">Stateful object that is responsible for supplying log entries.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with new entries.</param>
         /// <param name="skipCommitted"><see langword="true"/> to skip committed entries from <paramref name="entries"/> instead of throwing exception.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>; or the collection of entries contains the snapshot entry.</exception>
-        ValueTask AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long startIndex, bool skipCommitted = false, CancellationToken token = default)
-            where TEntryImpl : TEntry;
+        ValueTask AppendAsync<TEntryImpl, TProducer>(TProducer entries, long startIndex, bool skipCommitted = false, CancellationToken token = default)
+            where TEntryImpl : TEntry
+            where TProducer: ILogEntryProducer<TEntryImpl>;
 
         /// <summary>
         /// Adds uncommitted log entries to the end of this log.
@@ -129,13 +131,15 @@ namespace DotNext.Net.Cluster.Replication
         /// This method should updates cached value provided by method <see cref="IAuditTrail.GetLastIndex"/> called with argument of value <see langword="false"/>.
         /// </remarks>
         /// <typeparam name="TEntryImpl">The actual type of the log entry returned by the supplier.</typeparam>
+        /// <typeparam name="TProducer">The actual type of the supplier of log entries.</typeparam>
         /// <param name="entries">The entries to be added into this log.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>Index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
         /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
-        ValueTask<long> AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, CancellationToken token = default)
-            where TEntryImpl : TEntry;
+        ValueTask<long> AppendAsync<TEntryImpl, TProducer>(TProducer entries, CancellationToken token = default)
+            where TEntryImpl : TEntry
+            where TProducer : ILogEntryProducer<TEntryImpl>;
 
         /// <summary>
         /// Adds uncommitted log entry to the end of this log.
@@ -144,7 +148,7 @@ namespace DotNext.Net.Cluster.Replication
         /// This is the only method that can be used for snapshot installation.
         /// The behavior of the method depends on the <see cref="ILogEntry.IsSnapshot"/> property.
         /// If log entry is a snapshot then the method erases all committed log entries prior to <paramref name="startIndex"/>.
-        /// If it is not, the method behaves in the same way as <see cref="AppendAsync{TEntryImpl}(ILogEntryProducer{TEntryImpl}, long, bool, CancellationToken)"/>.
+        /// If it is not, the method behaves in the same way as <see cref="AppendAsync{TEntryImpl, TProducer}(TProducer, long, bool, CancellationToken)"/>.
         /// </remarks>
         /// <typeparam name="TEntryImpl">The actual type of the supplied log entry.</typeparam>
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
