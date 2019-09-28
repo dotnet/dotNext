@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -171,6 +172,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     foreach (var entry in entries)
                     {
                         await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingBuffer).ConfigureAwait(false);
+                        Debug.Assert(builder.Length <= MaxChars);
                         writeDivider = true;
                         await entry.CopyToAsync(stream).ConfigureAwait(false);
                     }
