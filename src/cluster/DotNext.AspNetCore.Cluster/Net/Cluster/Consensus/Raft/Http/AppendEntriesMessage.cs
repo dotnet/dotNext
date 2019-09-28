@@ -161,7 +161,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
             {
-                const int MaxChars = 100;   //it is empiric value measured using Console.WriteLine(builder.Length)
+                const int MaxChars = 128;   //it is empiric value measured using Console.WriteLine(builder.Length)
                 using(var encodingBuffer = new ArrayRental<byte>(DefaultHttpEncoding.GetMaxByteCount(MaxChars)))
                 {
                     //write start boundary
