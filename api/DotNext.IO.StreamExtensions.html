@@ -268,7 +268,6 @@ without instantiation of <a class="xref" href="https://docs.microsoft.com/dotnet
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(this Stream stream, byte[] buffer)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -358,7 +357,6 @@ without instantiation of <a class="xref" href="https://docs.microsoft.com/dotnet
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; ReadAsync&lt;T&gt;(this Stream stream, byte[] buffer, CancellationToken token = default(CancellationToken))
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -774,7 +772,6 @@ without instantiation of <a class="xref" href="https://docs.microsoft.com/dotnet
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this Stream stream, ref T value, byte[] buffer)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -838,7 +835,6 @@ without instantiation of <a class="xref" href="https://docs.microsoft.com/dotnet
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task WriteAsync&lt;T&gt;(this Stream stream, ref T value, byte[] buffer, CancellationToken token = default(CancellationToken))
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Interface IAddressee
+    <title>Class PersistentState.Options
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Interface IAddressee
+    <meta name="title" content="Class PersistentState.Options
    | .NEXT ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -68,96 +68,68 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Messaging.IAddressee">
+            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options">
   
   
-  <h1 id="DotNext_Net_Cluster_Messaging_IAddressee" data-uid="DotNext.Net.Cluster.Messaging.IAddressee" class="text-break">Interface IAddressee
+  <h1 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options" class="text-break">Class PersistentState.Options
   </h1>
-  <div class="markdown level0 summary"><p>Represents cluster member that supports messaging.</p>
+  <div class="markdown level0 summary"><p>Represents configuration options of the persistent audit trail.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">PersistentState.Options</span></div>
+  </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_Endpoint">IClusterMember.Endpoint</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_IsLeader">IClusterMember.IsLeader</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_IsRemote">IClusterMember.IsRemote</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_MemberStatusChanged">IClusterMember.MemberStatusChanged</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_Status">IClusterMember.Status</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_GetMetadata_System_Boolean_System_Threading_CancellationToken_">IClusterMember.GetMetadata(Boolean, CancellationToken)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_ResignAsync_System_Threading_CancellationToken_">IClusterMember.ResignAsync(CancellationToken)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1.equals#System_IEquatable_1_Equals__0_">IEquatable&lt;IClusterMember&gt;.Equals(IClusterMember)</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Messaging.html">DotNext.Net.Cluster.Messaging</a></h6>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">DotNext.Net.Cluster.Consensus.Raft</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
-  <h5 id="DotNext_Net_Cluster_Messaging_IAddressee_syntax">Syntax</h5>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IAddressee : IClusterMember, IEquatable&lt;IClusterMember&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public class Options</code></pre>
   </div>
-  <h3 id="methods">Methods
+  <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_IAddressee_SendMessageAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.IAddressee.SendMessageAsync%60%601(DotNext.Net.Cluster.Messaging.IMessage%2CDotNext.Net.Cluster.Messaging.MessageReader%7B%60%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BufferSize.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BufferSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/IAddressee.cs/#L25">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L655">View Source</a>
   </span>
-  <a id="DotNext_Net_Cluster_Messaging_IAddressee_SendMessageAsync_" data-uid="DotNext.Net.Cluster.Messaging.IAddressee.SendMessageAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_IAddressee_SendMessageAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.IAddressee.SendMessageAsync``1(DotNext.Net.Cluster.Messaging.IMessage,DotNext.Net.Cluster.Messaging.MessageReader{``0},System.Threading.CancellationToken)">SendMessageAsync&lt;TResponse&gt;(IMessage, MessageReader&lt;TResponse&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Sends a message to the cluster member.</p>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BufferSize_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BufferSize*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_BufferSize" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.BufferSize">BufferSize</h4>
+  <div class="markdown level1 summary"><p>Gets size of in-memory buffer for I/O operations.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;TResponse&gt; SendMessageAsync&lt;TResponse&gt;(IMessage message, MessageReader&lt;TResponse&gt; responseReader, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public int BufferSize { get; set; }</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a></td>
-        <td><span class="parametername">message</span></td>
-        <td><p>The message to be sent.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.MessageReader-1.html">MessageReader</a>&lt;TResponse&gt;</td>
-        <td><span class="parametername">responseReader</span></td>
-        <td><p>The response reader.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel asynchronous operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -167,32 +139,11 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TResponse&gt;</td>
-        <td><p>The message representing response; or <span class="xref">null</span> if request message in one-way.</p>
-</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TResponse</span></td>
-        <td><p>The type of the parsed response message.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Net_Cluster_Messaging_IAddressee_SendMessageAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The message content may be available inside of <code data-dev-comment-type="paramref" class="paramref">responseReader</code> only.
-Do not try to return <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a> itself from the delegate.</p>
-</div>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
@@ -203,59 +154,60 @@ Do not try to return <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessag
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Attempts to send message to local or unavailable member.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">value</code> is too small.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_IAddressee_SendSignalAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.IAddressee.SendSignalAsync(DotNext.Net.Cluster.Messaging.IMessage%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_InitialPartitionSize.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.InitialPartitionSize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/IAddressee.cs/#L35">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L669">View Source</a>
   </span>
-  <a id="DotNext_Net_Cluster_Messaging_IAddressee_SendSignalAsync_" data-uid="DotNext.Net.Cluster.Messaging.IAddressee.SendSignalAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_IAddressee_SendSignalAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.IAddressee.SendSignalAsync(DotNext.Net.Cluster.Messaging.IMessage,System.Boolean,System.Threading.CancellationToken)">SendSignalAsync(IMessage, Boolean, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Sends one-way message to the cluster member.</p>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_InitialPartitionSize_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.InitialPartitionSize*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_InitialPartitionSize" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.InitialPartitionSize">InitialPartitionSize</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the initial size of the file that holds the partition with log entries.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task SendSignalAsync(IMessage message, bool requiresConfirmation = true, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">public long InitialPartitionSize { get; set; }</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Name</th>
         <th>Description</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a></td>
-        <td><span class="parametername">message</span></td>
-        <td><p>The message to be sent.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">requiresConfirmation</span></td>
-        <td><p><span class="xref">true</span> to wait for confirmation of delivery from receiver; otherwise, <span class="xref">false</span>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel asynchronous operation.</p>
-</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 class="returns">Returns</h5>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MaxConcurrentReads.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxConcurrentReads%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L687">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MaxConcurrentReads_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxConcurrentReads*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_MaxConcurrentReads" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.MaxConcurrentReads">MaxConcurrentReads</h4>
+  <div class="markdown level1 summary"><p>Gets or sets the number of possible parallel reads.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int MaxConcurrentReads { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -265,9 +217,8 @@ Do not try to return <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessag
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing execution of this method.</p>
-</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -281,8 +232,72 @@ Do not try to return <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessag
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Attempts to send message to local or unavailable member.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">value</code> is less than 1.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_UseCaching.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseCaching%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L675">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_UseCaching_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseCaching*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_UseCaching" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseCaching">UseCaching</h4>
+  <div class="markdown level1 summary"><p>Enables or disables in-memory cache.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool UseCaching { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> to in-memory cache for faster read/write of log entries; <span class="xref">false</span> to reduce the memory by the cost of the performance.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_UseSharedPool.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseSharedPool%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L681">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_UseSharedPool_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseSharedPool*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_UseSharedPool" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseSharedPool">UseSharedPool</h4>
+  <div class="markdown level1 summary"><p>Gets or sets value indicating usage policy of array pools.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool UseSharedPool { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> to use <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1.shared#System_Buffers_ArrayPool_1_Shared">Shared</a> pool for internal purposes; <span class="xref">false</span> to use dedicated pool of arrays.</p>
 </td>
       </tr>
     </tbody>
@@ -328,12 +343,6 @@ Do not try to return <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessag
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Net.Cluster.Messaging.Messenger.html#DotNext_Net_Cluster_Messaging_Messenger_SendTextMessageAsync__1_DotNext_Net_Cluster_Messaging_IAddressee_DotNext_Net_Cluster_Messaging_MessageReader___0__System_String_System_String_System_String_System_Threading_CancellationToken_">Messenger.SendTextMessageAsync&lt;TResponse&gt;(IAddressee, MessageReader&lt;TResponse&gt;, String, String, String, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Net.Cluster.Messaging.Messenger.html#DotNext_Net_Cluster_Messaging_Messenger_SendTextSignalAsync_DotNext_Net_Cluster_Messaging_IAddressee_System_String_System_String_System_Boolean_System_String_System_Threading_CancellationToken_">Messenger.SendTextSignalAsync(IAddressee, String, String, Boolean, String, CancellationToken)</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
@@ -368,10 +377,10 @@ Do not try to return <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessag
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_IAddressee.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.IAddressee%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/IAddressee.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L645" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

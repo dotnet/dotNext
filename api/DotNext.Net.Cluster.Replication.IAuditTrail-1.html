@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Interface IAuditTrail&lt;LogEntry&gt;
+    <title>Interface IAuditTrail&lt;TEntry&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Interface IAuditTrail&lt;LogEntry&gt;
+    <meta name="title" content="Interface IAuditTrail&lt;TEntry&gt;
    | .NEXT ">
     <meta name="generator" content="docfx 2.45.1.0">
     
@@ -71,7 +71,7 @@
             <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1">
   
   
-  <h1 id="DotNext_Net_Cluster_Replication_IAuditTrail_1" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1" class="text-break">Interface IAuditTrail&lt;LogEntry&gt;
+  <h1 id="DotNext_Net_Cluster_Replication_IAuditTrail_1" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1" class="text-break">Interface IAuditTrail&lt;TEntry&gt;
   </h1>
   <div class="markdown level0 summary"><p>Represents audit trail responsible for maintaining log entries.</p>
 </div>
@@ -98,7 +98,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IAuditTrail&lt;LogEntry&gt; : IAuditTrail where LogEntry : class, ILogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IAuditTrail&lt;TEntry&gt; : IAuditTrail where TEntry : class, ILogEntry</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -110,8 +110,8 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">LogEntry</span></td>
-        <td><p>The type of the log entry maintained by the audit trail.</p>
+        <td><span class="parametername">TEntry</span></td>
+        <td><p>The interface type of the log entry maintained by the audit trail.</p>
 </td>
       </tr>
     </tbody>
@@ -123,7 +123,7 @@
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_First.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.First%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L184">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_First_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.First*"></a>
   <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_First" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.First">First</h4>
@@ -132,7 +132,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">LogEntry First { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">TEntry First { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -144,7 +144,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">LogEntry</span></td>
+        <td><span class="xref">TEntry</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -157,19 +157,20 @@ Index of such entry is always 0.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__0_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.AppendAsync(%600%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__1___0_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.AppendAsync%60%601(%60%600%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L175">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L155">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__0_System_Int64_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync(`0,System.Int64)">AppendAsync(LogEntry, Int64)</h4>
+  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__1___0_System_Int64_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync``1(``0,System.Int64)">AppendAsync&lt;TEntryImpl&gt;(TEntryImpl, Int64)</h4>
   <div class="markdown level1 summary"><p>Adds uncommitted log entry to the end of this log.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask AppendAsync(LogEntry entry, long startIndex)</code></pre>
+    <pre><code class="lang-csharp hljs">ValueTask AppendAsync&lt;TEntryImpl&gt;(TEntryImpl entry, long startIndex)
+    where TEntryImpl : TEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -182,7 +183,7 @@ Index of such entry is always 0.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">LogEntry</span></td>
+        <td><span class="xref">TEntryImpl</span></td>
         <td><span class="parametername">entry</span></td>
         <td><p>The uncommitted log entry to be added into this audit trail.</p>
 </td>
@@ -190,7 +191,7 @@ Index of such entry is always 0.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
-        <td><p>The index of the</p>
+        <td><p>The index from which all previous log entries should be dropped and replaced with the new entry.</p>
 </td>
       </tr>
     </tbody>
@@ -211,11 +212,27 @@ Index of such entry is always 0.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__0_System_Int64__remarks">Remarks</h5>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TEntryImpl</span></td>
+        <td><p>The actual type of the supplied log entry.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__1___0_System_Int64__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This is the only method that can be used for snapshot installation.
 The behavior of the method depends on the <a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntry.html#DotNext_Net_Cluster_Replication_ILogEntry_IsSnapshot">IsSnapshot</a> property.
 If log entry is a snapshot then the method erases all committed log entries prior to <code data-dev-comment-type="paramref" class="paramref">startIndex</code>.
-If it is not, the method behaves in the same way as <a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Collections_Generic_IReadOnlyList__0__System_Int64_System_Boolean_System_Threading_CancellationToken_">AppendAsync(IReadOnlyList&lt;LogEntry&gt;, Int64, Boolean, CancellationToken)</a>.</p>
+If it is not, the method behaves in the same way as <a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Int64_System_Boolean_System_Threading_CancellationToken_">AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt;, Int64, Boolean, CancellationToken)</a>.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -240,19 +257,20 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Collections_Generic_IReadOnlyList__0__System_Int64_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.AppendAsync(System.Collections.Generic.IReadOnlyList%7B%600%7D%2CSystem.Int64%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Int64_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.AppendAsync%60%601(DotNext.Net.Cluster.Replication.ILogEntryProducer%7B%60%600%7D%2CSystem.Int64%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L132">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L122">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Collections_Generic_IReadOnlyList__0__System_Int64_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync(System.Collections.Generic.IReadOnlyList{`0},System.Int64,System.Boolean,System.Threading.CancellationToken)">AppendAsync(IReadOnlyList&lt;LogEntry&gt;, Int64, Boolean, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Int64_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync``1(DotNext.Net.Cluster.Replication.ILogEntryProducer{``0},System.Int64,System.Boolean,System.Threading.CancellationToken)">AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt;, Int64, Boolean, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Adds uncommitted log entries into this log.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask AppendAsync(IReadOnlyList&lt;LogEntry&gt; entries, long startIndex, bool skipCommitted = false, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">ValueTask AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt; entries, long startIndex, bool skipCommitted = false, CancellationToken token = default(CancellationToken))
+    where TEntryImpl : TEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -265,9 +283,9 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;LogEntry&gt;</td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntryProducer-1.html">ILogEntryProducer</a>&lt;TEntryImpl&gt;</td>
         <td><span class="parametername">entries</span></td>
-        <td><p>The entries to be added into this log.</p>
+        <td><p>Stateful object that is responsible for supplying log entries.</p>
 </td>
       </tr>
       <tr>
@@ -306,8 +324,24 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Collections_Generic_IReadOnlyList__0__System_Int64_System_Boolean_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method should updates cached value provided by method <a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrail.html#DotNext_Net_Cluster_Replication_IAuditTrail_GetLastIndex_System_Boolean_">GetLastIndex(Boolean)</a> called with argument of value <span class="xref">false</span>.</p>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TEntryImpl</span></td>
+        <td><p>The actual type of the log entry returned by the supplier.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Int64_System_Boolean_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The supplying function must return <span class="xref">null</span> if it cannot provide more log entries.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -320,26 +354,27 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">startIndex</code> is less than the index of the last committed entry and <code data-dev-comment-type="paramref" class="paramref">skipCommitted</code> is <span class="xref">false</span>.</p>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">startIndex</code> is less than the index of the last committed entry and <code data-dev-comment-type="paramref" class="paramref">skipCommitted</code> is <span class="xref">false</span>; or the collection of entries contains the snapshot entry.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Collections_Generic_IReadOnlyList__0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.AppendAsync(System.Collections.Generic.IReadOnlyList%7B%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.AppendAsync%60%601(DotNext.Net.Cluster.Replication.ILogEntryProducer%7B%60%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L159">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L137">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Collections_Generic_IReadOnlyList__0__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync(System.Collections.Generic.IReadOnlyList{`0},System.Threading.CancellationToken)">AppendAsync(IReadOnlyList&lt;LogEntry&gt;, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync``1(DotNext.Net.Cluster.Replication.ILogEntryProducer{``0},System.Threading.CancellationToken)">AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt;, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Adds uncommitted log entries to the end of this log.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; AppendAsync(IReadOnlyList&lt;LogEntry&gt; entries, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt; entries, CancellationToken token = default(CancellationToken))
+    where TEntryImpl : TEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -352,7 +387,7 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;LogEntry&gt;</td>
+        <td><a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntryProducer-1.html">ILogEntryProducer</a>&lt;TEntryImpl&gt;</td>
         <td><span class="parametername">entries</span></td>
         <td><p>The entries to be added into this log.</p>
 </td>
@@ -381,7 +416,23 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Collections_Generic_IReadOnlyList__0__System_Threading_CancellationToken__remarks">Remarks</h5>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TEntryImpl</span></td>
+        <td><p>The actual type of the log entry returned by the supplier.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Threading_CancellationToken__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method should updates cached value provided by method <a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrail.html#DotNext_Net_Cluster_Replication_IAuditTrail_GetLastIndex_System_Boolean_">GetLastIndex(Boolean)</a> called with argument of value <span class="xref">false</span>.</p>
 </div>
   <h5 class="exceptions">Exceptions</h5>
@@ -407,106 +458,20 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Func_System_Threading_Tasks_ValueTask__0___System_Int64_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.AppendAsync(System.Func%7BSystem.Threading.Tasks.ValueTask%7B%600%7D%7D%2CSystem.Int64%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.ReadEntriesAsync%60%602(%60%600%2CSystem.Int64%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L146">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L92">View Source</a>
   </span>
-  <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Func_System_Threading_Tasks_ValueTask__0___System_Int64_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.AppendAsync(System.Func{System.Threading.Tasks.ValueTask{`0}},System.Int64,System.Boolean,System.Threading.CancellationToken)">AppendAsync(Func&lt;ValueTask&lt;LogEntry&gt;&gt;, Int64, Boolean, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Adds uncommitted log entries into this log.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask AppendAsync(Func&lt;ValueTask&lt;LogEntry&gt;&gt; supplier, long startIndex, bool skipCommitted = false, CancellationToken token = default(CancellationToken))</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;LogEntry&gt;&gt;</td>
-        <td><span class="parametername">supplier</span></td>
-        <td><p>Stateful function that is responsible for supplying log entries.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">startIndex</span></td>
-        <td><p>The index from which all previous log entries should be dropped and replaced with new entries.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">skipCommitted</span></td>
-        <td><p><span class="xref">true</span> to skip committed entries from <code data-dev-comment-type="paramref" class="paramref">supplier</code> instead of throwing exception.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel the operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td><p>The task representing asynchronous state of the method.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_AppendAsync_System_Func_System_Threading_Tasks_ValueTask__0___System_Int64_System_Boolean_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The supplying function must return <span class="xref">null</span> if it cannot provide more log entries.</p>
-</div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">startIndex</code> is less than the index of the last committed entry and <code data-dev-comment-type="paramref" class="paramref">skipCommitted</code> is <span class="xref">false</span>; or the collection of entries contains the snapshot entry.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_System_Int64_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.GetEntriesAsync(System.Int64%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L108">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.GetEntriesAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.GetEntriesAsync(System.Int64,System.Int64,System.Threading.CancellationToken)">GetEntriesAsync(Int64, Int64, CancellationToken)</h4>
+  <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadEntriesAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadEntriesAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)">ReadEntriesAsync&lt;TReader, TResult&gt;(TReader, Int64, Int64, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Gets log entries in the specified range.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;IAuditTrailSegment&lt;LogEntry&gt;&gt; GetEntriesAsync(long startIndex, long endIndex, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; ReadEntriesAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, long endIndex, CancellationToken token = default(CancellationToken))
+    where TReader : ILogEntryConsumer&lt;TEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -518,6 +483,12 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><span class="xref">TReader</span></td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The reader of the log entries.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
@@ -548,13 +519,34 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrailSegment-1.html">IAuditTrailSegment</a>&lt;LogEntry&gt;&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><p>The collection of log entries.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_System_Int64_System_Int64_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TReader</span></td>
+        <td><p>The type of the reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>The type of the result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method may return less entries than <code>endIndex - startIndex + 1</code>. It may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
 In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable.dispose#System_IDisposable_Dispose">Dispose()</a> to release resources associated
 with the audit trail segment with entries.</p>
@@ -580,25 +572,26 @@ with the audit trail segment with entries.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_System_Int64_System_Int64_System_Threading_CancellationToken__seealso">See Also</h5>
+  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken__seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntry.html#DotNext_Net_Cluster_Replication_ILogEntry_IsSnapshot">IsSnapshot</a></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.GetEntriesAsync(System.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync__2___0_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601.ReadEntriesAsync%60%602(%60%600%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L118">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L106">View Source</a>
   </span>
-  <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.GetEntriesAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.GetEntriesAsync(System.Int64,System.Threading.CancellationToken)">GetEntriesAsync(Int64, CancellationToken)</h4>
+  <a id="DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadEntriesAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync__2___0_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadEntriesAsync``2(``0,System.Int64,System.Threading.CancellationToken)">ReadEntriesAsync&lt;TReader, TResult&gt;(TReader, Int64, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Gets log entries starting from the specified index to the last log entry.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;IAuditTrailSegment&lt;LogEntry&gt;&gt; GetEntriesAsync(long startIndex, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; ReadEntriesAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, CancellationToken token = default(CancellationToken))
+    where TReader : ILogEntryConsumer&lt;TEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -610,6 +603,12 @@ with the audit trail segment with entries.</p>
       </tr>
     </thead>
     <tbody>
+      <tr>
+        <td><span class="xref">TReader</span></td>
+        <td><span class="parametername">reader</span></td>
+        <td><p>The reader of the log entries.</p>
+</td>
+      </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
         <td><span class="parametername">startIndex</span></td>
@@ -634,8 +633,29 @@ with the audit trail segment with entries.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrailSegment-1.html">IAuditTrailSegment</a>&lt;LogEntry&gt;&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
         <td><p>The collection of log entries.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TReader</span></td>
+        <td><p>The type of the reader.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>The type of the result.</p>
 </td>
       </tr>
     </tbody>
@@ -656,7 +676,7 @@ with the audit trail segment with entries.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_GetEntriesAsync_System_Int64_System_Threading_CancellationToken__seealso">See Also</h5>
+  <h5 id="DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync__2___0_System_Int64_System_Threading_CancellationToken__seealso">See Also</h5>
   <div class="seealso">
       <div><a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntry.html#DotNext_Net_Cluster_Replication_ILogEntry_IsSnapshot">IsSnapshot</a></div>
   </div>
@@ -738,7 +758,7 @@ with the audit trail segment with entries.</p>
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_IAuditTrail_1.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.IAuditTrail%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L90" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/IAuditTrail.cs/#L71" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

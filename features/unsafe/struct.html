@@ -146,9 +146,8 @@ struct Complex
 
 using(var memory = new UnmanagedMemory&lt;Complex&gt;(1))
 {
-    ref var ptr = ref memory.Pointer.Ref;
-    ptr.Image = 20;
-    ptr.Real = 30;
+    memory.Pointer.Image = 20;
+    memory.Pointer.Real = 30;
 }
 </code></pre>
 <p>Additionally, it is possible to box value type into unmanaged memory:</p>
@@ -173,8 +172,7 @@ struct Complex
 
 using(var c = UnmanagedMemory&lt;Complex&gt;.Box(new Complex { Image = 20, Real = 30 }))
 {
-    Pointer&lt;Complex&gt; ptr = c;
-    Pointer&lt;double&gt; pImage = c.As&lt;double&gt;();
+    Pointer&lt;double&gt; pImage = c.Pointer.As&lt;double&gt;();
     Pointer&lt;double&gt; pReal = pImage + 1;
     pImage.Value = 1;
     pReal.Value = 2;

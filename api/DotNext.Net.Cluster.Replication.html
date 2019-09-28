@@ -77,27 +77,31 @@
   <div class="markdown level0 remarks"></div>
     <h3 id="classes">Classes
   </h3>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Replication.LogEntryEnumerator.html">LogEntryEnumerator</a></h4>
-      <section><p>Represents internal API that is not intended for public usage.</p>
+      <h4><a class="xref" href="DotNext.Net.Cluster.Replication.LogEntryProducer-1.html">LogEntryProducer&lt;TEntry&gt;</a></h4>
+      <section><p>Represents default implementation of <a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntryProducer-1.html">ILogEntryProducer&lt;TEntry&gt;</a> backed by the list
+of the log entries.</p>
 </section>
     <h3 id="interfaces">Interfaces
   </h3>
       <h4><a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrail.html">IAuditTrail</a></h4>
       <section><p>Represents audit trail responsible for maintaining log entries.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrail-1.html">IAuditTrail&lt;LogEntry&gt;</a></h4>
+      <h4><a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrail-1.html">IAuditTrail&lt;TEntry&gt;</a></h4>
       <section><p>Represents audit trail responsible for maintaining log entries.</p>
-</section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrailSegment-1.html">IAuditTrailSegment&lt;LogEntry&gt;</a></h4>
-      <section><p>Represents a read-only portion of audit trail.</p>
 </section>
       <h4><a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntry.html">ILogEntry</a></h4>
       <section><p>Represents log entry in the audit trail.</p>
 </section>
+      <h4><a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntryConsumer-2.html">ILogEntryConsumer&lt;TEntry, TResult&gt;</a></h4>
+      <section><p>Represents reader of the log entries.</p>
+</section>
+      <h4><a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntryProducer-1.html">ILogEntryProducer&lt;TEntry&gt;</a></h4>
+      <section><p>Represents supplier of log entries.</p>
+</section>
       <h4><a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster.html">IReplicationCluster</a></h4>
       <section><p>Represents replication cluster.</p>
 </section>
-      <h4><a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster&lt;LogEntry&gt;</a></h4>
+      <h4><a class="xref" href="DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster&lt;TEntry&gt;</a></h4>
       <section><p>Represents replication cluster.</p>
 </section>
     <h3 id="enums">Enums

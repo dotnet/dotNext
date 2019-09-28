@@ -5,12 +5,12 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Delegate DataHandler&lt;T, LogEntry&gt;
+    <title>Interface ILogEntryConsumer&lt;TEntry, TResult&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Delegate DataHandler&lt;T, LogEntry&gt;
+    <meta name="title" content="Interface ILogEntryConsumer&lt;TEntry, TResult&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.45.0.0">
+    <meta name="generator" content="docfx 2.45.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -68,22 +68,64 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Replication.DataHandler`2">
+            <article class="content wrap" id="_content" data-uid="DotNext.Net.Cluster.Replication.ILogEntryConsumer`2">
   
   
-  <h1 id="DotNext_Net_Cluster_Replication_DataHandler_2" data-uid="DotNext.Net.Cluster.Replication.DataHandler`2" class="text-break">Delegate DataHandler&lt;T, LogEntry&gt;
+  <h1 id="DotNext_Net_Cluster_Replication_ILogEntryConsumer_2" data-uid="DotNext.Net.Cluster.Replication.ILogEntryConsumer`2" class="text-break">Interface ILogEntryConsumer&lt;TEntry, TResult&gt;
   </h1>
-  <div class="markdown level0 summary"><p>Represents data handler that performs data-centric operations
-and produce change set in the form of entries.</p>
+  <div class="markdown level0 summary"><p>Represents reader of the log entries.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Replication.html">DotNext.Net.Cluster.Replication</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
-  <h5 id="DotNext_Net_Cluster_Replication_DataHandler_2_syntax">Syntax</h5>
+  <h5 id="DotNext_Net_Cluster_Replication_ILogEntryConsumer_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public delegate ValueTask&lt;IReadOnlyList&lt;LogEntry&gt;&gt; DataHandler&lt;in T, LogEntry&gt;(T input)
-
-    where LogEntry : class, IMessage;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface ILogEntryConsumer&lt;TEntry, TResult&gt;
+    where TEntry : class, ILogEntry</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TEntry</span></td>
+        <td><p>The interface type of the log entries supported by audit trail.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>The type of the result produced by the reader.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Replication_ILogEntryConsumer_2_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This is an interface type instead of delegate type because it can be implemented by value type
+and avoid memory allocations.</p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_ILogEntryConsumer_2_ReadAsync__2___1_System_Nullable_System_Int64__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.ILogEntryConsumer%602.ReadAsync%60%602(%60%601%2CSystem.Nullable%7BSystem.Int64%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/ILogEntryConsumer.cs/#L34">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Replication_ILogEntryConsumer_2_ReadAsync_" data-uid="DotNext.Net.Cluster.Replication.ILogEntryConsumer`2.ReadAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Replication_ILogEntryConsumer_2_ReadAsync__2___1_System_Nullable_System_Int64__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Replication.ILogEntryConsumer`2.ReadAsync``2(``1,System.Nullable{System.Int64},System.Threading.CancellationToken)">ReadAsync&lt;TEntryImpl, TList&gt;(TList, Nullable&lt;Int64&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads log entries asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; ReadAsync&lt;TEntryImpl, TList&gt;(TList entries, long? snapshotIndex, CancellationToken token)
+    where TEntryImpl : TEntry where TList : IReadOnlyList&lt;TEntryImpl&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -96,9 +138,22 @@ and produce change set in the form of entries.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">input</span></td>
-        <td></td>
+        <td><span class="xref">TList</span></td>
+        <td><span class="parametername">entries</span></td>
+        <td><p>The list of the log entries.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><span class="parametername">snapshotIndex</span></td>
+        <td><p>Non-<span class="xref">null</span> if the first log entry in this list is a snapshot entry that has the specific index.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -112,8 +167,8 @@ and produce change set in the form of entries.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;LogEntry&gt;&gt;</td>
-        <td><p>The collection of log entries.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
+        <td><p>The result returned by the reader.</p>
 </td>
       </tr>
     </tbody>
@@ -128,21 +183,24 @@ and produce change set in the form of entries.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="parametername">T</span></td>
-        <td><p>The type of the handler parameter.</p>
+        <td><span class="parametername">TEntryImpl</span></td>
+        <td><p>The actual type of the log entries in the list.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="parametername">LogEntry</span></td>
-        <td><p>The type of the transaction log entry.</p>
+        <td><span class="parametername">TList</span></td>
+        <td><p>The type of the list containing log entries.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_Net_Cluster_Replication_ILogEntryConsumer_2_ReadAsync__2___1_System_Nullable_System_Int64__System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The actual generic types for <code data-dev-comment-type="typeparamref" class="typeparamref">TEntryImpl</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">TList</code>
+are supplied by the infrastructure automatically.
+Do not return <code data-dev-comment-type="typeparamref" class="typeparamref">TEntryImpl</code> as a part of <code data-dev-comment-type="typeparamref" class="typeparamref">TResult</code>
+because log entries are valid only during the call of this method.</p>
+</div>
   <h3 id="extensionmethods">Extension Methods</h3>
-  <div>
-      <a class="xref" href="DotNext.DelegateHelpers.html#DotNext_DelegateHelpers_ChangeType__1_System_Delegate_">DelegateHelpers.ChangeType&lt;D&gt;(Delegate)</a>
-  </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
   </div>
@@ -163,9 +221,6 @@ and produce change set in the form of entries.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.Threading.AsyncDelegate.html#DotNext_Threading_AsyncDelegate_InvokeAsync__1___0_System_Action___0__System_Threading_CancellationToken_">AsyncDelegate.InvokeAsync&lt;D&gt;(D, Action&lt;D&gt;, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
@@ -220,10 +275,10 @@ and produce change set in the form of entries.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_DataHandler_2.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.DataHandler%602%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Replication_ILogEntryConsumer_2.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Replication.ILogEntryConsumer%602%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/DataHandler.cs/#L15" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Replication/ILogEntryConsumer.cs/#L16" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
