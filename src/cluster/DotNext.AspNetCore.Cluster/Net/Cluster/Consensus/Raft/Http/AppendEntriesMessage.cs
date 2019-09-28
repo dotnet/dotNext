@@ -162,21 +162,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
             {
-                const int MaxChars = 128;   //it is empiric value measured using Console.WriteLine(builder.Length)
+                const int maxChars = 128;   //it is empiric value measured using Console.WriteLine(builder.Length)
                 EncodingContext encodingContext = DefaultHttpEncoding;
-                using(var encodingBuffer = new ArrayRental<byte>(DefaultHttpEncoding.GetMaxByteCount(MaxChars)))
+                using(var encodingBuffer = new ArrayRental<byte>(DefaultHttpEncoding.GetMaxByteCount(maxChars)))
                 {
                     //write start boundary
                     await stream.WriteStringAsync(DoubleDash + boundary + CrLf, encodingContext, encodingBuffer).ConfigureAwait(false);
                     encodingContext.Reset();
-                    var builder = new StringBuilder(MaxChars);
+                    var builder = new StringBuilder(maxChars);
                     //write each nested content
                     var writeDivider = false;
                     foreach (var entry in entries)
                     {
                         await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, encodingBuffer).ConfigureAwait(false);
                         encodingContext.Reset();
-                        Debug.Assert(builder.Length <= MaxChars);
+                        Debug.Assert(builder.Length <= maxChars);
                         writeDivider = true;
                         await entry.CopyToAsync(stream).ConfigureAwait(false);
                     }
