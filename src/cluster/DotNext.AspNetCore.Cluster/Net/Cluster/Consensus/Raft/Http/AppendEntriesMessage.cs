@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -18,7 +19,10 @@ using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Buffers;
+    using Collections.Generic;
     using Replication;
+    using static IO.StreamExtensions;
+    using EncodingContext = Text.EncodingContext;
 
     internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result<bool>>
     {
@@ -127,13 +131,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             private const string CrLf = "\r\n";
             private const string DoubleDash = "--";
             private const char Quote = '\"';
-            private readonly TList entries;
+            private readonly Enumerable<TEntry, TList> entries;
             private readonly string boundary;
 
             internal LogEntriesContent(TList entries)
             {
                 boundary = Guid.NewGuid().ToString();
-                this.entries = entries;
+                this.entries = new Enumerable<TEntry, TList>(entries);
                 var contentType = new MediaTypeHeaderValue("multipart/mixed");
                 contentType.Parameters.Add(new NameValueHeaderValue(nameof(boundary), Quote + boundary + Quote));
                 Headers.ContentType = contentType;
@@ -141,17 +145,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             internal int Count => entries.Count;
 
-            //TODO: Should be rewritten for .NET Standard 2.1
-            private static async Task EncodeStringToStreamAsync(Stream output, string input)
-            {
-                using (var buffer = new ArrayRental<byte>(DefaultHttpEncoding.GetByteCount(input)))
-                    await output.WriteAsync(buffer, 0, DefaultHttpEncoding.GetBytes(input, 0, input.Length, buffer, 0)).ConfigureAwait(false);
-            }
-
             private static void WriteHeader(StringBuilder builder, string headerName, string headerValue)
                 => builder.Append(headerName).Append(": ").Append(headerValue).Append(CrLf);
 
-            private static Task EncodeHeadersToStreamAsync(Stream output, StringBuilder builder, TEntry entry, bool writeDivider, string boundary)
+            private static Task EncodeHeadersToStreamAsync(Stream output, StringBuilder builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, byte[] buffer)
             {
                 builder.Clear();
                 if (writeDivider)
@@ -161,24 +158,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 WriteHeader(builder, HeaderNames.LastModified, HeaderUtils.FormatDate(entry.Timestamp));
                 // Extra CRLF to end headers (even if there are no headers)
                 builder.Append(CrLf);
-                return EncodeStringToStreamAsync(output, builder.ToString());
+                return output.WriteStringAsync(builder.ToString(), context, buffer);
             }
 
             protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
             {
-                //write start boundary
-                await EncodeStringToStreamAsync(stream, DoubleDash + boundary + CrLf).ConfigureAwait(false);
-                var builder = new StringBuilder(128);
-                //write each nested content
-                var writeDivider = false;
-                foreach (var entry in entries)
+                const int maxChars = 128;   //it is empiric value measured using Console.WriteLine(builder.Length)
+                EncodingContext encodingContext = DefaultHttpEncoding;
+                using(var encodingBuffer = new ArrayRental<byte>(DefaultHttpEncoding.GetMaxByteCount(maxChars)))
                 {
-                    await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary).ConfigureAwait(false);
-                    writeDivider = true;
-                    await entry.CopyToAsync(stream).ConfigureAwait(false);
+                    //write start boundary
+                    await stream.WriteStringAsync(DoubleDash + boundary + CrLf, encodingContext, encodingBuffer).ConfigureAwait(false);
+                    encodingContext.Reset();
+                    var builder = new StringBuilder(maxChars);
+                    //write each nested content
+                    var writeDivider = false;
+                    foreach(var entry in entries)
+                    {
+                        await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, encodingBuffer).ConfigureAwait(false);
+                        encodingContext.Reset();
+                        Debug.Assert(builder.Length <= maxChars);
+                        writeDivider = true;
+                        await entry.CopyToAsync(stream).ConfigureAwait(false);
+                    }
+                    //write footer
+                    await stream.WriteStringAsync(CrLf + DoubleDash + boundary + DoubleDash + CrLf, encodingContext, encodingBuffer).ConfigureAwait(false);
                 }
-                //write footer
-                await EncodeStringToStreamAsync(stream, CrLf + DoubleDash + boundary + DoubleDash + CrLf).ConfigureAwait(false);
+                encodingContext.Reset();
             }
 
             protected override bool TryComputeLength(out long length)
