@@ -19,6 +19,7 @@ using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Buffers;
+    using Collections.Generic;
     using Replication;
     using static IO.StreamExtensions;
     using EncodingContext = Text.EncodingContext;
@@ -130,13 +131,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             private const string CrLf = "\r\n";
             private const string DoubleDash = "--";
             private const char Quote = '\"';
-            private readonly TList entries;
+            private readonly Enumerable<TEntry, TList> entries;
             private readonly string boundary;
 
             internal LogEntriesContent(TList entries)
             {
                 boundary = Guid.NewGuid().ToString();
-                this.entries = entries;
+                this.entries = new Enumerable<TEntry, TList>(entries);
                 var contentType = new MediaTypeHeaderValue("multipart/mixed");
                 contentType.Parameters.Add(new NameValueHeaderValue(nameof(boundary), Quote + boundary + Quote));
                 Headers.ContentType = contentType;
@@ -172,7 +173,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     var builder = new StringBuilder(maxChars);
                     //write each nested content
                     var writeDivider = false;
-                    foreach (var entry in entries)
+                    foreach(var entry in entries)
                     {
                         await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, encodingBuffer).ConfigureAwait(false);
                         encodingContext.Reset();
