@@ -48,7 +48,7 @@ namespace RaftNode
             using (await SyncRoot.Acquire(CancellationToken.None).ConfigureAwait(false))
             {
                 content.Position = 0;
-                return await content.ReadAsync<long>(sharedBuffer).ConfigureAwait(false);
+                return await content.ReadAsync<long>(Buffer).ConfigureAwait(false);
             }
         }
 

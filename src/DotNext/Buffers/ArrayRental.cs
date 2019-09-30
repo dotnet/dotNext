@@ -41,7 +41,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets value indicating that this object is empty.
         /// </summary>
-        public bool IsEmpty => array is null;
+        public bool IsEmpty => array is null || pool is null;
 
         /// <summary>
         /// Gets memory associated with the rented array.

@@ -14,7 +14,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
 using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
-using ReadSessionToken = System.Int32;  //typedef
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -24,7 +23,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using Text;
     using Threading;
     using static Collections.Generic.Dictionary;
-    using Assert = Diagnostics.Assert;
 
     /// <summary>
     /// Represents general purpose persistent audit trail compatible with Raft algorithm.
@@ -225,40 +223,102 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public DateTimeOffset Timestamp => new DateTimeOffset(metadata.Timestamp, TimeSpan.Zero);
         }
 
+        private readonly struct DataAccessSession : IDisposable
+        {
+            internal readonly int SessionId;
+            private readonly ArrayPool<byte> bufferPool;
+            internal readonly byte[] Buffer;
+
+            //read session ctor
+            internal DataAccessSession(int sessionId, ArrayPool<byte> bufferPool, int bufferSize)
+            {
+                this.SessionId = sessionId;
+                Buffer = bufferPool.Rent(bufferSize);
+                this.bufferPool = bufferPool;
+            }
+
+            //write session ctor
+            internal DataAccessSession(byte[] buffer)
+            {
+                SessionId = 0;
+                Buffer = buffer;
+                bufferPool = null;
+            }
+
+            internal bool IsWriteSession => bufferPool is null;
+
+            public void Dispose() => bufferPool?.Return(Buffer);
+        }
+
         /*
          * This class helps to organize thread-safe concurrent access to the multiple streams
          * used for reading log entries. Such approach allows to use one-writer multiple-reader scenario
          * which dramatically improves the performance
          */
-        private sealed class SessionTokenPool : ConcurrentBag<ReadSessionToken>
+        private readonly struct ReadSessionManager : IDisposable
         {
-            internal const ReadSessionToken DefaultSession = default;
+            private readonly ConcurrentBag<int> tokens;
+            internal readonly int Capacity;
+            private readonly ArrayPool<byte> bufferPool;
+            internal readonly DataAccessSession WriteSession;
 
-            internal readonly int Capacity;//the initial number of possible read sessions
+            internal ReadSessionManager(int readersCount, bool useSharedPool, DataAccessSession writeSession)
+            {
+                Capacity = readersCount;
+                if(readersCount == 1)
+                {
+                    tokens = null;
+                    bufferPool = null;
+                }
+                else
+                {
+                    tokens = new ConcurrentBag<int>(Enumerable.Range(0, readersCount));
+                    bufferPool = useSharedPool ? ArrayPool<byte>.Shared : ArrayPool<byte>.Create();
+                }
+                WriteSession = writeSession;
+            }
 
-            internal SessionTokenPool(int readersCount) : base(Enumerable.Range(0, readersCount)) => Capacity = readersCount;
+            internal DataAccessSession OpenSession(int bufferSize)
+            {
+                if(tokens is null)
+                    return WriteSession;
+                if(tokens.TryTake(out var sessionId))
+                    return new DataAccessSession(sessionId, bufferPool, bufferSize);
+                //never happens
+                throw new InternalBufferOverflowException(ExceptionMessages.NoAvailableReadSessions);
+            }
+
+            internal void CloseSession(in DataAccessSession readSession)
+            {
+                if(tokens is null)
+                    return;
+                tokens.Add(readSession.SessionId);
+                readSession.Dispose();
+            }
+
+            public void Dispose() => WriteSession.Dispose();
         }
 
         private abstract class ConcurrentStorageAccess : FileStream
         {
-            private protected readonly byte[] buffer;
             private readonly StreamSegment[] readers;   //a pool of read-only streams that can be shared between multiple readers in parallel
 
             [SuppressMessage("Reliability", "CA2000", Justification = "All streams are disposed in Dispose method")]
-            private protected ConcurrentStorageAccess(string fileName, byte[] sharedBuffer, int readersCount, FileOptions options)
-                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, sharedBuffer.Length, options)
+            private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options)
+                : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options)
             {
                 readers = new StreamSegment[readersCount];
-                buffer = sharedBuffer;
                 if(readersCount == 1)
                     readers[0] = new StreamSegment(this, true);
                 else
                     foreach (ref var reader in readers.AsSpan())
-                        reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, sharedBuffer.Length, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
+                        reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private protected StreamSegment GetReadOnlyStream(ReadSessionToken session) => readers[session];
+            private protected StreamSegment GetReadSessionStream(in DataAccessSession session) => readers[session.SessionId];
+
+            internal abstract void PopulateCache(in DataAccessSession session);
 
             protected override void Dispose(bool disposing)
             {
@@ -284,14 +344,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             internal readonly long FirstIndex;
             internal readonly long Capacity;    //max number of entries
-            private readonly LogEntryMetadata[] lookupCache;
+            private readonly ArrayRental<LogEntryMetadata> lookupCache;
 
-            internal Partition(DirectoryInfo location, byte[] sharedBuffer, long recordsPerPartition, long partitionNumber, bool useLookupCache, int readersCount)
-                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), sharedBuffer, readersCount, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
+            internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, ArrayPool<LogEntryMetadata> cachePool, int readersCount)
+                : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
                 Capacity = recordsPerPartition;
                 FirstIndex = partitionNumber * recordsPerPartition;
-                lookupCache = useLookupCache ? new LogEntryMetadata[recordsPerPartition] : null;
+                lookupCache = cachePool is null ? default : new ArrayRental<LogEntryMetadata>(cachePool, recordsPerPartition);
             }
 
             private long PayloadOffset => LogEntryMetadata.Size * Capacity;
@@ -300,22 +360,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal void Allocate(long initialSize) => SetLength(initialSize + PayloadOffset);
 
-            internal void PopulateCache()
+            private void PopulateCache(byte[] buffer, LogEntryMetadata[] lookupCache)
             {
-                if (lookupCache != null)
-                    for (int index = 0, count; index < lookupCache.Length; index += count)
-                    {
-                        count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
-                        var maxBytes = count * LogEntryMetadata.Size;
-                        if (Read(buffer, 0, maxBytes) < maxBytes)
-                            throw new EndOfStreamException();
-                        var source = new Span<byte>(buffer, 0, maxBytes);
-                        var destination = MemoryMarshal.AsBytes(new Span<LogEntryMetadata>(lookupCache).Slice(index));
-                        source.CopyTo(destination);
-                    }
+                for (int index = 0, count; index < lookupCache.Length; index += count)
+                {
+                    count = Math.Min(buffer.Length / LogEntryMetadata.Size, lookupCache.Length - index);
+                    var maxBytes = count * LogEntryMetadata.Size;
+                    if (Read(buffer, 0, maxBytes) < maxBytes)
+                        throw new EndOfStreamException();
+                    var source = new Span<byte>(buffer, 0, maxBytes);
+                    var destination = MemoryMarshal.AsBytes(new Span<LogEntryMetadata>(lookupCache).Slice(index));
+                    source.CopyTo(destination);
+                }
             }
 
-            private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, long index, bool absoluteIndex, CancellationToken token)
+            internal override void PopulateCache(in DataAccessSession session)
+            {
+                if(!lookupCache.IsEmpty)
+                    PopulateCache(session.Buffer, lookupCache);
+            }
+
+            private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, byte[] buffer, long index, bool absoluteIndex, CancellationToken token)
             {
                 //calculate relative index
                 if (absoluteIndex)
@@ -323,7 +388,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
                 //find pointer to the content
                 LogEntryMetadata metadata;
-                if (lookupCache is null)
+                if (lookupCache.IsEmpty)
                 {
                     reader.BaseStream.Position = index * LogEntryMetadata.Size;
                     metadata = await reader.BaseStream.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
@@ -333,10 +398,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return metadata.Offset > 0 ? new LogEntry(reader, buffer, metadata) : new LogEntry?();
             }
 
-            internal ValueTask<LogEntry?> ReadAsync(ReadSessionToken session, long index, bool absoluteIndex, CancellationToken token)
-                => ReadAsync(GetReadOnlyStream(session), index, absoluteIndex, token);
+            internal ValueTask<LogEntry?> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, CancellationToken token)
+                => ReadAsync(GetReadSessionStream(session), session.Buffer, index, absoluteIndex, token);
 
-            internal async ValueTask WriteAsync<TEntry>(TEntry entry, long index)
+            private async ValueTask WriteAsync<TEntry>(TEntry entry, long index, byte[] buffer)
                 where TEntry : IRaftLogEntry
             {
                 //calculate relative index
@@ -347,7 +412,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 LogEntryMetadata metadata;
                 if (index == 0L || index == 1L && FirstIndex == 0L)
                     offset = PayloadOffset;
-                else if (lookupCache is null)
+                else if (lookupCache.IsEmpty)
                 {
                     //read content offset and the length of the previous entry
                     Position = (index - 1) * LogEntryMetadata.Size;
@@ -369,8 +434,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Position = index * LogEntryMetadata.Size;
                 await this.WriteAsync(ref metadata, buffer).ConfigureAwait(false);
                 //update cache
-                if (!(lookupCache is null))
+                if (!lookupCache.IsEmpty)
                     lookupCache[index] = metadata;
+            }
+
+            internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index)
+                where TEntry : IRaftLogEntry
+                => WriteAsync(entry, index, session.Buffer);
+
+            protected override void Dispose(bool disposing)
+            {
+                if(disposing)
+                    lookupCache.Dispose();
+                base.Dispose(disposing);
             }
         }
 
@@ -384,14 +460,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private const string FileName = "snapshot";
             private const string TempFileName = "snapshot.new";
 
-            internal Snapshot(DirectoryInfo location, byte[] sharedBuffer, int readersCount, bool tempSnapshot = false)
-                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), sharedBuffer, readersCount, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough)
+            internal Snapshot(DirectoryInfo location, int bufferSize, int readersCount, bool tempSnapshot = false)
+                : base(Path.Combine(location.FullName, tempSnapshot ? TempFileName : FileName), bufferSize, readersCount, FileOptions.Asynchronous | FileOptions.SequentialScan | FileOptions.RandomAccess | FileOptions.WriteThrough)
             {
             }
 
-            internal void PopulateCache() => Index = Length > 0L ? this.Read<SnapshotMetadata>(buffer).Index : 0L;
+            internal override void PopulateCache(in DataAccessSession session) 
+                => Index = Length > 0L ? this.Read<SnapshotMetadata>(session.Buffer).Index : 0L;
 
-            internal async ValueTask WriteAsync(IRaftLogEntry entry, long index, CancellationToken token)
+            private async ValueTask WriteAsync<TEntry>(TEntry entry, long index, byte[] buffer, CancellationToken token)
+                where TEntry : IRaftLogEntry
             {
                 Index = index;
                 Position = SnapshotMetadata.Size;
@@ -401,15 +479,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await this.WriteAsync(ref metadata, buffer, token).ConfigureAwait(false);
             }
 
-            private async ValueTask<LogEntry> ReadAsync(StreamSegment reader, CancellationToken token)
+            internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index, CancellationToken token)
+                where TEntry : IRaftLogEntry
+                => WriteAsync(entry, index, session.Buffer, token);
+
+            private static async ValueTask<LogEntry> ReadAsync(StreamSegment reader, byte[] buffer, CancellationToken token)
             {
                 reader.BaseStream.Position = 0;
                 return new LogEntry(reader, buffer, await reader.BaseStream.ReadAsync<SnapshotMetadata>(buffer, token).ConfigureAwait(false));
             }
 
-            internal ValueTask<LogEntry> ReadAsync(ReadSessionToken session, CancellationToken token)
-                => ReadAsync(GetReadOnlyStream(session), token);
-
+            internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, CancellationToken token)
+                => ReadAsync(GetReadSessionStream(session), session.Buffer, token);
+            
             //cached index of the snapshotted entry
             internal long Index
             {
@@ -699,7 +781,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private readonly long recordsPerPartition;
+        private readonly int recordsPerPartition;
         //key is the number of partition
         private readonly IDictionary<long, Partition> partitionTable;
         private readonly NodeState state;
@@ -708,16 +790,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly AsyncManualResetEvent commitEvent;
         private readonly AsyncSharedLock syncRoot;
         private readonly IRaftLogEntry initialEntry;
-        /// <summary>
-        /// Represents shared buffer that can be used for I/O operations.
-        /// </summary>
-        [SuppressMessage("Design", "CA1051", Justification = "It is protected field")]
-        protected readonly byte[] sharedBuffer;
-        private readonly bool useLookupCache;
         private readonly long initialSize;
         private readonly ArrayPool<LogEntry> entryPool;
+        private readonly ArrayPool<LogEntryMetadata> metadataPool;
         private readonly StreamSegment nullSegment;
-        private readonly SessionTokenPool readSessions;
+        //concurrent read sessions management
+        private readonly ReadSessionManager sessionManager;
+        private readonly int bufferSize;
 
         /// <summary>
         /// Initializes a new persistent audit trail.
@@ -726,7 +805,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
         /// <param name="configuration">The configuration of the persistent audit trail.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
-        public PersistentState(DirectoryInfo path, long recordsPerPartition, Options configuration = null)
+        public PersistentState(DirectoryInfo path, int recordsPerPartition, Options configuration = null)
         {
             if (configuration is null)
                 configuration = new Options();
@@ -734,30 +813,38 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
-            sharedBuffer = new byte[configuration.BufferSize];
+            bufferSize = configuration.BufferSize;
             location = path;
-            useLookupCache = configuration.UseCaching;
             this.recordsPerPartition = recordsPerPartition;
             initialSize = configuration.InitialPartitionSize;
             commitEvent = new AsyncManualResetEvent(false);
-            syncRoot = new AsyncSharedLock(configuration.MaxConcurrentReads);
-            entryPool = configuration.UseSharedPool ? ArrayPool<LogEntry>.Shared : ArrayPool<LogEntry>.Create();
+            sessionManager = new ReadSessionManager(configuration.MaxConcurrentReads, configuration.UseSharedPool, new DataAccessSession(new byte[bufferSize]));
+            syncRoot = new AsyncSharedLock(sessionManager.Capacity);
+            if(configuration.UseSharedPool)
+            {
+                entryPool = ArrayPool<LogEntry>.Shared;
+                metadataPool = configuration.UseCaching ? ArrayPool<LogEntryMetadata>.Shared : null;
+            }
+            else
+            {
+                entryPool = ArrayPool<LogEntry>.Create();
+                metadataPool = configuration.UseCaching ? ArrayPool<LogEntryMetadata>.Create() : null;
+            }
             nullSegment = new StreamSegment(Stream.Null);
-            initialEntry = new LogEntry(nullSegment, sharedBuffer, new LogEntryMetadata());
-            readSessions = new SessionTokenPool(configuration.MaxConcurrentReads);
+            initialEntry = new LogEntry(nullSegment, sessionManager.WriteSession.Buffer, new LogEntryMetadata());
             //sorted dictionary to improve performance of log compaction and snapshot installation procedures
             partitionTable = new SortedDictionary<long, Partition>();
             //load all partitions from file system
             foreach (var file in path.EnumerateFiles())
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
-                    var partition = new Partition(file.Directory, sharedBuffer, recordsPerPartition, partitionNumber, configuration.UseCaching, readSessions.Capacity);
-                    partition.PopulateCache();
+                    var partition = new Partition(file.Directory, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
+                    partition.PopulateCache(sessionManager.WriteSession);
                     partitionTable[partitionNumber] = partition;
                 }
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
-            snapshot = new Snapshot(path, sharedBuffer, readSessions.Capacity);
-            snapshot.PopulateCache();
+            snapshot = new Snapshot(path, bufferSize, sessionManager.Capacity);
+            snapshot.PopulateCache(sessionManager.WriteSession);
         }
 
         /// <summary>
@@ -767,7 +854,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
         /// <param name="configuration">The configuration of the persistent audit trail.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
-        public PersistentState(string path, long recordsPerPartition, Options configuration = null)
+        public PersistentState(string path, int recordsPerPartition, Options configuration = null)
             : this(new DirectoryInfo(path), recordsPerPartition, configuration)
         {
         }
@@ -787,6 +874,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The index of the log entry.</returns>
         public long GetLastIndex(bool committed) => committed ? state.CommitIndex : state.LastIndex;
 
+        /// <summary>
+        /// Gets the buffer that can be used to perform I/O operations.
+        /// </summary>
+        /// <remarks>
+        /// The buffer cannot be used concurrently.
+        /// </remarks>
+        [SuppressMessage("Performance", "CA1819", Justification = "Buffer is shared across write operations")]
+        protected byte[] Buffer => sessionManager.WriteSession.Buffer;
+
         private long PartitionOf(long recordIndex) => recordIndex / recordsPerPartition;
 
         private bool TryGetPartition(long recordIndex, out Partition partition)
@@ -797,7 +893,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var partitionNumber = PartitionOf(recordIndex);
             if (!partitionTable.TryGetValue(partitionNumber, out var partition))
             {
-                partition = new Partition(location, sharedBuffer, recordsPerPartition, partitionNumber, useLookupCache, readSessions.Capacity);
+                partition = new Partition(location, Buffer.Length, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
                 partition.Allocate(initialSize);
                 partitionTable.Add(partitionNumber, partition);
             }
@@ -810,7 +906,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             get => Unsafe.Unbox<LogEntry>(initialEntry);
         }
 
-        private async ValueTask<TResult> ReadEntriesImplAsync<TReader, TResult>(TReader reader, ReadSessionToken session, long startIndex, long endIndex, CancellationToken token)
+        private async ValueTask<TResult> ReadEntriesImplAsync<TReader, TResult>(TReader reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
             where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex > state.LastIndex)
@@ -881,14 +977,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return await reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token).ConfigureAwait(false);
             //obtain weak lock as read lock
             await syncRoot.Acquire(false, token).ConfigureAwait(false);
-            Assert.True(readSessions.TryTake(out ReadSessionToken session));
+            var session = sessionManager.OpenSession(bufferSize);
             try
             {
                 return await ReadEntriesImplAsync<TReader, TResult>(reader, session, startIndex, endIndex, token).ConfigureAwait(false);
             }
             finally
             {
-                readSessions.Add(session);  //return session back to the pool
+                sessionManager.CloseSession(session);  //return session back to the pool
                 syncRoot.Release();
             }
         }
@@ -909,14 +1005,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             await syncRoot.Acquire(false, token).ConfigureAwait(false);
-            Assert.True(readSessions.TryTake(out ReadSessionToken session));
+            var session = sessionManager.OpenSession(bufferSize);
             try
             {
                 return await ReadEntriesImplAsync<TReader, TResult>(reader, session, startIndex, state.LastIndex, token).ConfigureAwait(false);
             }
             finally
             {
-                readSessions.Add(session);
+                sessionManager.CloseSession(session);
                 syncRoot.Release();
             }
         }
@@ -932,7 +1028,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private async ValueTask InstallSnapshot(IRaftLogEntry snapshot, long snapshotIndex)
+        private async ValueTask InstallSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
+            where TSnapshot : IRaftLogEntry
         {
             //0. The snapshot can be installed only if the partitions were squashed on the sender side
             //therefore, snapshotIndex should be a factor of recordsPerPartition
@@ -940,10 +1037,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(snapshotIndex));
             //1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.Name;
-            using (var tempSnapshot = new Snapshot(location, sharedBuffer, 0, true))
+            using (var tempSnapshot = new Snapshot(location, Buffer.Length, 0, true))
             {
                 tempSnapshotFile = tempSnapshot.Name;
-                await tempSnapshot.WriteAsync(snapshot, snapshotIndex, CancellationToken.None).ConfigureAwait(false);
+                await tempSnapshot.WriteAsync(sessionManager.WriteSession, snapshot, snapshotIndex, CancellationToken.None).ConfigureAwait(false);
             }
             //2. Delete existing snapshot file
             this.snapshot.Dispose();
@@ -961,8 +1058,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Environment.FailFast(LogMessages.SnapshotInstallationFailed, e);
             }
-            this.snapshot = new Snapshot(location, sharedBuffer, readSessions.Capacity);
-            this.snapshot.PopulateCache();
+            this.snapshot = new Snapshot(location, Buffer.Length, sessionManager.Capacity);
+            this.snapshot.PopulateCache(sessionManager.WriteSession);
             //3. Identify all partitions to be replaced by snapshot
             var compactionScope = new Dictionary<long, Partition>();
             foreach (var (partitionNumber, partition) in partitionTable)
@@ -977,7 +1074,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             state.CommitIndex = snapshotIndex;
             state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
 
-            await ApplyAsync(await this.snapshot.ReadAsync(SessionTokenPool.DefaultSession, CancellationToken.None).ConfigureAwait(false));
+            await ApplyAsync(await this.snapshot.ReadAsync(sessionManager.WriteSession, CancellationToken.None).ConfigureAwait(false));
             state.LastApplied = snapshotIndex;
             state.Flush();
             await FlushAsync().ConfigureAwait(false);
@@ -997,7 +1094,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     var partition = cursor.GetOrCreate(this, startIndex, out var flushTask);
                     await flushTask.ConfigureAwait(false);
-                    await partition.WriteAsync(supplier.Current, startIndex).ConfigureAwait(false);
+                    await partition.WriteAsync(sessionManager.WriteSession, supplier.Current, startIndex).ConfigureAwait(false);
                 }
                 else if (!skipCommitted)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
@@ -1057,7 +1154,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                 {
                     var partition = GetOrCreatePartition(startIndex);
-                    await partition.WriteAsync(entry, startIndex).ConfigureAwait(false);
+                    await partition.WriteAsync(sessionManager.WriteSession, entry, startIndex).ConfigureAwait(false);
                     await partition.FlushAsync().ConfigureAwait(false);
                     state.LastIndex = startIndex;
                     state.Flush();
@@ -1137,14 +1234,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 for (var i = 0L; i < partition.Capacity; i++)
                     if (partition.FirstIndex > 0L || i > 0L) //ignore the ephemeral entry
                     {
-                        var entry = (await partition.ReadAsync(SessionTokenPool.DefaultSession, i, false, token).ConfigureAwait(false)).Value;
+                        var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, token).ConfigureAwait(false)).Value;
                         entry.AdjustPosition();
                         await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
                     }
                 snapshotIndex = partition.LastIndex;
             }
             //3. Persist snapshot
-            await snapshot.WriteAsync(builder, snapshotIndex, token).ConfigureAwait(false);
+            await snapshot.WriteAsync(sessionManager.WriteSession, builder, snapshotIndex, token).ConfigureAwait(false);
             await snapshot.FlushAsync().ConfigureAwait(false);
             //4. Remove snapshotted partitions
             RemovePartitions(compactionScope);
@@ -1236,7 +1333,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             for (var i = state.LastApplied + 1L; i <= state.CommitIndex; state.LastApplied = i++)
                 if (cursor.TryGet(this, i, out var partition))
                 {
-                    var entry = (await partition.ReadAsync(SessionTokenPool.DefaultSession, i, true, token).ConfigureAwait(false)).Value;
+                    var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, true, token).ConfigureAwait(false)).Value;
                     entry.AdjustPosition();
                     await ApplyAsync(entry).ConfigureAwait(false);
                 }
@@ -1288,6 +1385,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 foreach (var partition in partitionTable.Values)
                     partition.Dispose();
+                sessionManager.Dispose();
                 partitionTable.Clear();
                 state.Dispose();
                 commitEvent.Dispose();
