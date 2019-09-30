@@ -166,6 +166,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 catch (OperationCanceledException)//leading was canceled
                 {
+                    tasks.Clear();
+                    Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
                     return false;
                 }
                 catch (Exception e)
@@ -173,8 +175,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     stateMachine.Logger.LogError(e, ExceptionMessages.UnexpectedError);
                 }
 
-            Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
             tasks.Clear();
+            Metrics?.ReportBroadcastTime(timeStamp.Elapsed);
             //majority of nodes accept entries with a least one entry from current term
             if (commitQuorum > 0)
             {
