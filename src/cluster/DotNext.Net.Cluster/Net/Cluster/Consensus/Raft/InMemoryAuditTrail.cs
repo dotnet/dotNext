@@ -265,6 +265,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected virtual ValueTask ApplyAsync(IRaftLogEntry entry) => new ValueTask();
 
+        /// <summary>
+        /// Flushes the underlying data storage.
+        /// </summary>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        protected virtual ValueTask FlushAsync() => new ValueTask();
+
         private async ValueTask ApplyAsync(CancellationToken token)
         {
             for (var i = lastApplied.VolatileRead() + 1L; i <= commitIndex.VolatileRead(); token.ThrowIfCancellationRequested(), i++)
@@ -272,6 +278,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await ApplyAsync(log[i]).ConfigureAwait(false);
                 lastApplied.VolatileWrite(i);
             }
+            await FlushAsync().ConfigureAwait(false);
         }
 
         async Task IAuditTrail.EnsureConsistencyAsync(CancellationToken token)

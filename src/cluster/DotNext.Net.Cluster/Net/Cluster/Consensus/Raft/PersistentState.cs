@@ -980,6 +980,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await ApplyAsync(await this.snapshot.ReadAsync(SessionTokenPool.DefaultSession, CancellationToken.None).ConfigureAwait(false));
             state.LastApplied = snapshotIndex;
             state.Flush();
+            await FlushAsync().ConfigureAwait(false);
             commitEvent.Set(true);
         }
 
@@ -1223,6 +1224,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected virtual ValueTask ApplyAsync(LogEntry entry) => new ValueTask();
 
+        /// <summary>
+        /// Flushes the underlying data storage.
+        /// </summary>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        protected virtual ValueTask FlushAsync() => new ValueTask();
+
         private async ValueTask ApplyAsync(CancellationToken token)
         {
             var cursor = new PartitionCursor();
@@ -1237,6 +1244,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Debug.Fail($"Log entry with index {i} doesn't have partition");
             cursor.Reset();
             state.Flush();
+            await FlushAsync().ConfigureAwait(false);
         }
 
         /// <summary>
