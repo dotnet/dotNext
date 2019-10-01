@@ -1199,6 +1199,45 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
+        /// Dropes the uncommitted entries starting from the specified position to the end of the log.
+        /// </summary>
+        /// <param name="startIndex">The index of the first log entry to be dropped.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The actual number of dropped entries.</returns>
+        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
+        public async ValueTask<long> DropAsync(long startIndex, CancellationToken token)
+        {
+            long count;
+            await syncRoot.Acquire(true, token).ConfigureAwait(false);
+            try
+            {
+                if(startIndex <= state.CommitIndex)
+                    throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+                if(startIndex > state.LastIndex)
+                    return 0L;
+                count = state.LastIndex - startIndex + 1L;
+                state.LastIndex = startIndex - 1L;
+                state.Flush();
+                //find partitions to be deleted
+                var partitionNumber = Math.DivRem(startIndex, recordsPerPartition, out var remainder);
+                //take the next partition if startIndex is not a beginning of the calculated partition
+                partitionNumber += remainder & 1L;
+                for(Partition partition; partitionTable.TryGetValue(partitionNumber, out partition); partitionNumber++)
+                {
+                    var fileName = partition.Name;
+                    partitionTable.Remove(partitionNumber);
+                    partition.Dispose();
+                    File.Delete(fileName);
+                }
+            }
+            finally
+            {
+                syncRoot.Release();
+            }
+            return count;
+        }
+
+        /// <summary>
         /// Waits for the commit.
         /// </summary>
         /// <param name="index">The index of the log record to be committed.</param>

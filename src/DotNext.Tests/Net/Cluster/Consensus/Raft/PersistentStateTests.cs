@@ -228,6 +228,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Fact]
+        public static async Task DropRecords()
+        {
+            var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+            var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
+            var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
+            var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
+            var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
+
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            using (var state = new PersistentState(dir, RecordsPerPartition))
+            {
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
+                Equal(5L, state.GetLastIndex(false));
+                Equal(0L, state.GetLastIndex(true));
+                Equal(5L, await state.DropAsync(1L, CancellationToken.None));
+                Equal(0L, state.GetLastIndex(false));
+                Equal(0L, state.GetLastIndex(true));
+            }
+        }
+
+        [Fact]
         public static async Task Overwrite()
         {
             var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };

@@ -155,6 +155,15 @@ namespace DotNext.Net.Cluster.Replication
         ValueTask AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex) where TEntryImpl : TEntry;
 
         /// <summary>
+        /// Dropes the uncommitted entries starting from the specified position to the end of the log.
+        /// </summary>
+        /// <param name="startIndex">The index of the first log entry to be dropped.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The actual number of dropped entries.</returns>
+        /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
+        ValueTask<long> DropAsync(long startIndex, CancellationToken token);
+
+        /// <summary>
         /// Gets the first ephemeral log entry that is present in the empty log.
         /// </summary>
         /// <remarks>
