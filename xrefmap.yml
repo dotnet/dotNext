@@ -3090,44 +3090,6 @@ references:
   commentId: N:DotNext.Diagnostics
   fullName: DotNext.Diagnostics
   nameWithType: DotNext.Diagnostics
-- uid: DotNext.Diagnostics.Assert
-  name: Assert
-  href: api/DotNext.Diagnostics.Assert.html
-  commentId: T:DotNext.Diagnostics.Assert
-  fullName: DotNext.Diagnostics.Assert
-  nameWithType: Assert
-- uid: DotNext.Diagnostics.Assert.False(System.Boolean,System.String)
-  name: False(Boolean, String)
-  href: api/DotNext.Diagnostics.Assert.html#DotNext_Diagnostics_Assert_False_System_Boolean_System_String_
-  commentId: M:DotNext.Diagnostics.Assert.False(System.Boolean,System.String)
-  fullName: DotNext.Diagnostics.Assert.False(System.Boolean, System.String)
-  nameWithType: Assert.False(Boolean, String)
-- uid: DotNext.Diagnostics.Assert.False*
-  name: "False"
-  href: api/DotNext.Diagnostics.Assert.html#DotNext_Diagnostics_Assert_False_
-  commentId: Overload:DotNext.Diagnostics.Assert.False
-  isSpec: "True"
-  fullName: DotNext.Diagnostics.Assert.False
-  nameWithType: Assert.False
-- uid: DotNext.Diagnostics.Assert.True(System.Boolean,System.String)
-  name: True(Boolean, String)
-  href: api/DotNext.Diagnostics.Assert.html#DotNext_Diagnostics_Assert_True_System_Boolean_System_String_
-  commentId: M:DotNext.Diagnostics.Assert.True(System.Boolean,System.String)
-  fullName: DotNext.Diagnostics.Assert.True(System.Boolean, System.String)
-  nameWithType: Assert.True(Boolean, String)
-- uid: DotNext.Diagnostics.Assert.True*
-  name: "True"
-  href: api/DotNext.Diagnostics.Assert.html#DotNext_Diagnostics_Assert_True_
-  commentId: Overload:DotNext.Diagnostics.Assert.True
-  isSpec: "True"
-  fullName: DotNext.Diagnostics.Assert.True
-  nameWithType: Assert.True
-- uid: DotNext.Diagnostics.AssertionException
-  name: AssertionException
-  href: api/DotNext.Diagnostics.AssertionException.html
-  commentId: T:DotNext.Diagnostics.AssertionException
-  fullName: DotNext.Diagnostics.AssertionException
-  nameWithType: AssertionException
 - uid: DotNext.Diagnostics.Timestamp
   name: Timestamp
   href: api/DotNext.Diagnostics.Timestamp.html
@@ -12084,6 +12046,23 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.AppendAsync(Of TEntry)(DotNext.Net.Cluster.Replication.ILogEntryProducer(Of TEntry), System.Threading.CancellationToken)
   nameWithType: InMemoryAuditTrail.IAuditTrail<IRaftLogEntry>.AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl>, CancellationToken)
   nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.AppendAsync(Of TEntry)(ILogEntryProducer(Of TEntry), CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#DropAsync(System.Int64,System.Threading.CancellationToken)
+  name: IAuditTrail<IRaftLogEntry>.DropAsync(Int64, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__DropAsync_System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#DropAsync(System.Int64,System.Threading.CancellationToken)
+  name.vb: DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.DropAsync(Int64, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.DropAsync(System.Int64, System.Threading.CancellationToken)
+  nameWithType: InMemoryAuditTrail.IAuditTrail<IRaftLogEntry>.DropAsync(Int64, CancellationToken)
+  nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.DropAsync(Int64, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#DropAsync*
+  name: IAuditTrail<IRaftLogEntry>.DropAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__DropAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#DropAsync
+  isSpec: "True"
+  name.vb: DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.DropAsync
+  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.DropAsync
+  nameWithType: InMemoryAuditTrail.IAuditTrail<IRaftLogEntry>.DropAsync
+  nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.DropAsync
 - uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#First
   name: IAuditTrail<IRaftLogEntry>.First
   href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__First
@@ -12101,33 +12080,46 @@ references:
   fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.First
   nameWithType: InMemoryAuditTrail.IAuditTrail<IRaftLogEntry>.First
   nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.First
-- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadEntriesAsync*
-  name: IAuditTrail<IRaftLogEntry>.ReadEntriesAsync
-  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadEntriesAsync_
-  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadEntriesAsync
+- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync*
+  name: IAuditTrail<IRaftLogEntry>.ReadAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync
   isSpec: "True"
-  name.vb: DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadEntriesAsync
-  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadEntriesAsync
-  nameWithType: InMemoryAuditTrail.IAuditTrail<IRaftLogEntry>.ReadEntriesAsync
-  nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadEntriesAsync
-- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadEntriesAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name: IAuditTrail<IRaftLogEntry>.ReadEntriesAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadEntriesAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadEntriesAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name.vb: DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadEntriesAsync<TReader, TResult>(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadEntriesAsync(Of TReader, TResult)(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
-  nameWithType: InMemoryAuditTrail.IAuditTrail<IRaftLogEntry>.ReadEntriesAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
-  nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
-- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadEntriesAsync``2(``0,System.Int64,System.Threading.CancellationToken)
-  name: IAuditTrail<IRaftLogEntry>.ReadEntriesAsync<TReader, TResult>(TReader, Int64, CancellationToken)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadEntriesAsync__2___0_System_Int64_System_Threading_CancellationToken_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadEntriesAsync``2(``0,System.Int64,System.Threading.CancellationToken)
-  name.vb: DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadEntriesAsync<TReader, TResult>(TReader, System.Int64, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadEntriesAsync(Of TReader, TResult)(TReader, System.Int64, System.Threading.CancellationToken)
-  nameWithType: InMemoryAuditTrail.IAuditTrail<IRaftLogEntry>.ReadEntriesAsync<TReader, TResult>(TReader, Int64, CancellationToken)
-  nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
+  name.vb: DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadAsync
+  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadAsync
+  nameWithType: InMemoryAuditTrail.IAuditTrail<IRaftLogEntry>.ReadAsync
+  nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadAsync
+- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
+  name: IAuditTrail<IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
+  name.vb: DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadAsync(Of TReader, TResult)(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
+  nameWithType: InMemoryAuditTrail.IAuditTrail<IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
+  nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync``2(``0,System.Int64,System.Threading.CancellationToken)
+  name: IAuditTrail<IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader, Int64, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync__2___0_System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync``2(``0,System.Int64,System.Threading.CancellationToken)
+  name.vb: DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader, System.Int64, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadAsync(Of TReader, TResult)(TReader, System.Int64, System.Threading.CancellationToken)
+  nameWithType: InMemoryAuditTrail.IAuditTrail<IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader, Int64, CancellationToken)
+  nameWithType.vb: InMemoryAuditTrail.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.ReadAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.FlushAsync
+  name: FlushAsync()
+  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_FlushAsync
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.FlushAsync
+  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.FlushAsync()
+  nameWithType: InMemoryAuditTrail.FlushAsync()
+- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.FlushAsync*
+  name: FlushAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_FlushAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.FlushAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.FlushAsync
+  nameWithType: InMemoryAuditTrail.FlushAsync
 - uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.GetLastIndex(System.Boolean)
   name: GetLastIndex(Boolean)
   href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_GetLastIndex_System_Boolean_
@@ -12475,18 +12467,18 @@ references:
   commentId: T:DotNext.Net.Cluster.Consensus.Raft.PersistentState
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState
   nameWithType: PersistentState
-- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor(System.IO.DirectoryInfo,System.Int64,DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
-  name: PersistentState(DirectoryInfo, Int64, PersistentState.Options)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState__ctor_System_IO_DirectoryInfo_System_Int64_DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor(System.IO.DirectoryInfo,System.Int64,DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.PersistentState(System.IO.DirectoryInfo, System.Int64, DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
-  nameWithType: PersistentState.PersistentState(DirectoryInfo, Int64, PersistentState.Options)
-- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor(System.String,System.Int64,DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
-  name: PersistentState(String, Int64, PersistentState.Options)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState__ctor_System_String_System_Int64_DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor(System.String,System.Int64,DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.PersistentState(System.String, System.Int64, DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
-  nameWithType: PersistentState.PersistentState(String, Int64, PersistentState.Options)
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor(System.IO.DirectoryInfo,System.Int32,DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
+  name: PersistentState(DirectoryInfo, Int32, PersistentState.Options)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState__ctor_System_IO_DirectoryInfo_System_Int32_DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor(System.IO.DirectoryInfo,System.Int32,DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.PersistentState(System.IO.DirectoryInfo, System.Int32, DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
+  nameWithType: PersistentState.PersistentState(DirectoryInfo, Int32, PersistentState.Options)
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor(System.String,System.Int32,DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
+  name: PersistentState(String, Int32, PersistentState.Options)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState__ctor_System_String_System_Int32_DotNext_Net_Cluster_Consensus_Raft_PersistentState_Options_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor(System.String,System.Int32,DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.PersistentState(System.String, System.Int32, DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options)
+  nameWithType: PersistentState.PersistentState(String, Int32, PersistentState.Options)
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.#ctor*
   name: PersistentState
   href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState__ctor_
@@ -12532,6 +12524,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ApplyAsync
   nameWithType: PersistentState.ApplyAsync
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Buffer
+  name: Buffer
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Buffer
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.PersistentState.Buffer
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Buffer
+  nameWithType: PersistentState.Buffer
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Buffer*
+  name: Buffer
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_Buffer_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.PersistentState.Buffer
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Buffer
+  nameWithType: PersistentState.Buffer
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.CommitAsync(System.Int64,System.Threading.CancellationToken)
   name: CommitAsync(Int64, CancellationToken)
   href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_CommitAsync_System_Int64_System_Threading_CancellationToken_
@@ -12697,6 +12702,19 @@ references:
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.First
   nameWithType: PersistentState.IAuditTrail<IRaftLogEntry>.First
   nameWithType.vb: PersistentState.DotNext.Net.Cluster.Replication.IAuditTrail<DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry>.First
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.DropAsync(System.Int64,System.Threading.CancellationToken)
+  name: DropAsync(Int64, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DropAsync_System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.PersistentState.DropAsync(System.Int64,System.Threading.CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.DropAsync(System.Int64, System.Threading.CancellationToken)
+  nameWithType: PersistentState.DropAsync(Int64, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.DropAsync*
+  name: DropAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_DropAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.PersistentState.DropAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.DropAsync
+  nameWithType: PersistentState.DropAsync
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.EnsureConsistencyAsync(System.Threading.CancellationToken)
   name: EnsureConsistencyAsync(CancellationToken)
   href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_EnsureConsistencyAsync_System_Threading_CancellationToken_
@@ -12710,6 +12728,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.EnsureConsistencyAsync
   nameWithType: PersistentState.EnsureConsistencyAsync
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.FlushAsync
+  name: FlushAsync()
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_FlushAsync
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.PersistentState.FlushAsync
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.FlushAsync()
+  nameWithType: PersistentState.FlushAsync()
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.FlushAsync*
+  name: FlushAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_FlushAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.PersistentState.FlushAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.FlushAsync
+  nameWithType: PersistentState.FlushAsync
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.GetLastIndex(System.Boolean)
   name: GetLastIndex(Boolean)
   href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_GetLastIndex_System_Boolean_
@@ -12974,37 +13005,31 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.Options.UseSharedPool
   nameWithType: PersistentState.Options.UseSharedPool
-- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadEntriesAsync*
-  name: ReadEntriesAsync
-  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadEntriesAsync_
-  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadEntriesAsync
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync*
+  name: ReadAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync
   isSpec: "True"
-  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadEntriesAsync
-  nameWithType: PersistentState.ReadEntriesAsync
-- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadEntriesAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name: ReadEntriesAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadEntriesAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadEntriesAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name.vb: ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadEntriesAsync<TReader, TResult>(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadEntriesAsync(Of TReader, TResult)(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
-  nameWithType: PersistentState.ReadEntriesAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
-  nameWithType.vb: PersistentState.ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
-- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadEntriesAsync``2(``0,System.Int64,System.Threading.CancellationToken)
-  name: ReadEntriesAsync<TReader, TResult>(TReader, Int64, CancellationToken)
-  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadEntriesAsync__2___0_System_Int64_System_Threading_CancellationToken_
-  commentId: M:DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadEntriesAsync``2(``0,System.Int64,System.Threading.CancellationToken)
-  name.vb: ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
-  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadEntriesAsync<TReader, TResult>(TReader, System.Int64, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadEntriesAsync(Of TReader, TResult)(TReader, System.Int64, System.Threading.CancellationToken)
-  nameWithType: PersistentState.ReadEntriesAsync<TReader, TResult>(TReader, Int64, CancellationToken)
-  nameWithType.vb: PersistentState.ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
-- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.sharedBuffer
-  name: sharedBuffer
-  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_sharedBuffer
-  commentId: F:DotNext.Net.Cluster.Consensus.Raft.PersistentState.sharedBuffer
-  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.sharedBuffer
-  nameWithType: PersistentState.sharedBuffer
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync
+  nameWithType: PersistentState.ReadAsync
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
+  name: ReadAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
+  name.vb: ReadAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync<TReader, TResult>(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync(Of TReader, TResult)(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
+  nameWithType: PersistentState.ReadAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
+  nameWithType.vb: PersistentState.ReadAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync``2(``0,System.Int64,System.Threading.CancellationToken)
+  name: ReadAsync<TReader, TResult>(TReader, Int64, CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReadAsync__2___0_System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync``2(``0,System.Int64,System.Threading.CancellationToken)
+  name.vb: ReadAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync<TReader, TResult>(TReader, System.Int64, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync(Of TReader, TResult)(TReader, System.Int64, System.Threading.CancellationToken)
+  nameWithType: PersistentState.ReadAsync<TReader, TResult>(TReader, Int64, CancellationToken)
+  nameWithType.vb: PersistentState.ReadAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder
   name: PersistentState.SnapshotBuilder
   href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.html
@@ -14671,6 +14696,23 @@ references:
   fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of TEntry).AppendAsync(Of TEntryImpl)(DotNext.Net.Cluster.Replication.ILogEntryProducer(Of TEntryImpl), System.Threading.CancellationToken)
   nameWithType: IAuditTrail<TEntry>.AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl>, CancellationToken)
   nameWithType.vb: IAuditTrail(Of TEntry).AppendAsync(Of TEntryImpl)(ILogEntryProducer(Of TEntryImpl), CancellationToken)
+- uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.DropAsync(System.Int64,System.Threading.CancellationToken)
+  name: DropAsync(Int64, CancellationToken)
+  href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_DropAsync_System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Replication.IAuditTrail`1.DropAsync(System.Int64,System.Threading.CancellationToken)
+  fullName: DotNext.Net.Cluster.Replication.IAuditTrail<TEntry>.DropAsync(System.Int64, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of TEntry).DropAsync(System.Int64, System.Threading.CancellationToken)
+  nameWithType: IAuditTrail<TEntry>.DropAsync(Int64, CancellationToken)
+  nameWithType.vb: IAuditTrail(Of TEntry).DropAsync(Int64, CancellationToken)
+- uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.DropAsync*
+  name: DropAsync
+  href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_DropAsync_
+  commentId: Overload:DotNext.Net.Cluster.Replication.IAuditTrail`1.DropAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Replication.IAuditTrail<TEntry>.DropAsync
+  fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of TEntry).DropAsync
+  nameWithType: IAuditTrail<TEntry>.DropAsync
+  nameWithType.vb: IAuditTrail(Of TEntry).DropAsync
 - uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.First
   name: First
   href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_First
@@ -14688,33 +14730,33 @@ references:
   fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of TEntry).First
   nameWithType: IAuditTrail<TEntry>.First
   nameWithType.vb: IAuditTrail(Of TEntry).First
-- uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadEntriesAsync*
-  name: ReadEntriesAsync
-  href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync_
-  commentId: Overload:DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadEntriesAsync
+- uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadAsync*
+  name: ReadAsync
+  href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadAsync_
+  commentId: Overload:DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadAsync
   isSpec: "True"
-  fullName: DotNext.Net.Cluster.Replication.IAuditTrail<TEntry>.ReadEntriesAsync
-  fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of TEntry).ReadEntriesAsync
-  nameWithType: IAuditTrail<TEntry>.ReadEntriesAsync
-  nameWithType.vb: IAuditTrail(Of TEntry).ReadEntriesAsync
-- uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadEntriesAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name: ReadEntriesAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
-  href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken_
-  commentId: M:DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadEntriesAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
-  name.vb: ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
-  fullName: DotNext.Net.Cluster.Replication.IAuditTrail<TEntry>.ReadEntriesAsync<TReader, TResult>(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of TEntry).ReadEntriesAsync(Of TReader, TResult)(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
-  nameWithType: IAuditTrail<TEntry>.ReadEntriesAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
-  nameWithType.vb: IAuditTrail(Of TEntry).ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
-- uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadEntriesAsync``2(``0,System.Int64,System.Threading.CancellationToken)
-  name: ReadEntriesAsync<TReader, TResult>(TReader, Int64, CancellationToken)
-  href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadEntriesAsync__2___0_System_Int64_System_Threading_CancellationToken_
-  commentId: M:DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadEntriesAsync``2(``0,System.Int64,System.Threading.CancellationToken)
-  name.vb: ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
-  fullName: DotNext.Net.Cluster.Replication.IAuditTrail<TEntry>.ReadEntriesAsync<TReader, TResult>(TReader, System.Int64, System.Threading.CancellationToken)
-  fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of TEntry).ReadEntriesAsync(Of TReader, TResult)(TReader, System.Int64, System.Threading.CancellationToken)
-  nameWithType: IAuditTrail<TEntry>.ReadEntriesAsync<TReader, TResult>(TReader, Int64, CancellationToken)
-  nameWithType.vb: IAuditTrail(Of TEntry).ReadEntriesAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
+  fullName: DotNext.Net.Cluster.Replication.IAuditTrail<TEntry>.ReadAsync
+  fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of TEntry).ReadAsync
+  nameWithType: IAuditTrail<TEntry>.ReadAsync
+  nameWithType.vb: IAuditTrail(Of TEntry).ReadAsync
+- uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
+  name: ReadAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
+  href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)
+  name.vb: ReadAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
+  fullName: DotNext.Net.Cluster.Replication.IAuditTrail<TEntry>.ReadAsync<TReader, TResult>(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of TEntry).ReadAsync(Of TReader, TResult)(TReader, System.Int64, System.Int64, System.Threading.CancellationToken)
+  nameWithType: IAuditTrail<TEntry>.ReadAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
+  nameWithType.vb: IAuditTrail(Of TEntry).ReadAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
+- uid: DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadAsync``2(``0,System.Int64,System.Threading.CancellationToken)
+  name: ReadAsync<TReader, TResult>(TReader, Int64, CancellationToken)
+  href: api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html#DotNext_Net_Cluster_Replication_IAuditTrail_1_ReadAsync__2___0_System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Replication.IAuditTrail`1.ReadAsync``2(``0,System.Int64,System.Threading.CancellationToken)
+  name.vb: ReadAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
+  fullName: DotNext.Net.Cluster.Replication.IAuditTrail<TEntry>.ReadAsync<TReader, TResult>(TReader, System.Int64, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Net.Cluster.Replication.IAuditTrail(Of TEntry).ReadAsync(Of TReader, TResult)(TReader, System.Int64, System.Threading.CancellationToken)
+  nameWithType: IAuditTrail<TEntry>.ReadAsync<TReader, TResult>(TReader, Int64, CancellationToken)
+  nameWithType.vb: IAuditTrail(Of TEntry).ReadAsync(Of TReader, TResult)(TReader, Int64, CancellationToken)
 - uid: DotNext.Net.Cluster.Replication.ILogEntry
   name: ILogEntry
   href: api/DotNext.Net.Cluster.Replication.ILogEntry.html
