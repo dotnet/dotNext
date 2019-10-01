@@ -34,6 +34,8 @@ namespace RaftNode
             : base(path, 50, new Options { InitialPartitionSize = 50 * 8 })
         {
             content = new FileStream(Path.Combine(path, ContentFile), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, 1024, true);
+            //pre-allocate file for better performance
+            content.SetLength(sizeof(long));
         }
 
         public SimplePersistentState(IConfiguration configuration)
@@ -46,7 +48,7 @@ namespace RaftNode
             using (await SyncRoot.Acquire(CancellationToken.None).ConfigureAwait(false))
             {
                 content.Position = 0;
-                return content.Length >= sizeof(long) ? await content.ReadAsync<long>(sharedBuffer).ConfigureAwait(false) : 0L;
+                return await content.ReadAsync<long>(Buffer).ConfigureAwait(false);
             }
         }
 
@@ -58,10 +60,19 @@ namespace RaftNode
             await content.WriteAsync(value).ConfigureAwait(false);
         }
 
+        protected override ValueTask FlushAsync() => new ValueTask(content.FlushAsync());
+
         protected override SnapshotBuilder CreateSnapshotBuilder()
         {
             Console.WriteLine("Building snapshot");
             return new SimpleSnapshotBuilder();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+                content.Dispose();
+            base.Dispose(disposing);
         }
     }
 }

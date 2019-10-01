@@ -119,10 +119,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await Decode(entry);
 
-            protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder(sharedBuffer);
+            protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder(Buffer);
         }
 
-        private const long RecordsPerPartition = 4;
+        private const int RecordsPerPartition = 4;
 
         [Fact]
         public static async Task StateManipulations()

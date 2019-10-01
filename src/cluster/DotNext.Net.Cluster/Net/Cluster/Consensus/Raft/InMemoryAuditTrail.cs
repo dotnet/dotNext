@@ -262,8 +262,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Applies the command represented by the log entry to the underlying database engine.
         /// </summary>
+        /// <param name="entry">The entry to be applied to the state machine.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected virtual ValueTask ApplyAsync(IRaftLogEntry entry) => new ValueTask();
+
+        /// <summary>
+        /// Flushes the underlying data storage.
+        /// </summary>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        protected virtual ValueTask FlushAsync() => new ValueTask();
 
         private async ValueTask ApplyAsync(CancellationToken token)
         {
@@ -272,6 +279,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await ApplyAsync(log[i]).ConfigureAwait(false);
                 lastApplied.VolatileWrite(i);
             }
+            await FlushAsync().ConfigureAwait(false);
         }
 
         async Task IAuditTrail.EnsureConsistencyAsync(CancellationToken token)
