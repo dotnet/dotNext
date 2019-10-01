@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 09-28-2019
+# 10-02-2019
 This is the major release of all parts of .NEXT library. Now the version is 1.0.0 and backward compatibility is guaranteed across all 1.x releases. The main motivation of this release is to produce stable API because .NEXT library active using in production code, especially Raft implementation.
 
 .NEXT 1.x is based on .NET Standard 2.0 to keep compatibility with .NET Framework.
