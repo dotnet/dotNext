@@ -878,7 +878,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets the buffer that can be used to perform I/O operations.
         /// </summary>
         /// <remarks>
-        /// The buffer cannot be used concurrently.
+        /// The buffer cannot be used concurrently. Access to it should be synchronized
+        /// using <see cref="SyncRoot"/> property.
         /// </remarks>
         [SuppressMessage("Performance", "CA1819", Justification = "Buffer is shared across write operations")]
         protected byte[] Buffer => sessionManager.WriteSession.Buffer;
@@ -1315,6 +1316,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Applies the command represented by the log entry to the underlying database engine.
         /// </summary>
+        /// <param name="entry">The entry to be applied to the state machine.</param>
         /// <remarks>
         /// The base method does nothing so you don't need to call base implementation.
         /// </remarks>
