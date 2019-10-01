@@ -523,7 +523,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private const long AddressOffset = AddressLengthOffset + sizeof(int);
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor stateView;
-            private readonly AsyncLock syncRoot;
+            private AsyncLock syncRoot;
             private volatile IPEndPoint votedFor;
             private long term, commitIndex, lastIndex, lastApplied;  //volatile
 
@@ -636,6 +636,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     stateView.Dispose();
                     mappedFile.Dispose();
+                    syncRoot = default;
                     votedFor = null;
                 }
                 base.Dispose(disposing);
