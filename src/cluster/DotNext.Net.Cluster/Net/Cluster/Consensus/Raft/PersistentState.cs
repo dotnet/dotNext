@@ -908,7 +908,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             get => Unsafe.Unbox<LogEntry>(initialEntry);
         }
 
-        private async ValueTask<TResult> ReadEntriesImplAsync<TReader, TResult>(TReader reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
+        private async ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
             where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex > state.LastIndex)
@@ -968,7 +968,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
-        public async ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
+        public async ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
             where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex < 0L)
@@ -982,7 +982,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var session = sessionManager.OpenSession(bufferSize);
             try
             {
-                return await ReadEntriesImplAsync<TReader, TResult>(reader, session, startIndex, endIndex, token).ConfigureAwait(false);
+                return await ReadAsync<TReader, TResult>(reader, session, startIndex, endIndex, token).ConfigureAwait(false);
             }
             finally
             {
@@ -1001,7 +1001,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
-        public async ValueTask<TResult> ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
+        public async ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
             where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex < 0L)
@@ -1010,7 +1010,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var session = sessionManager.OpenSession(bufferSize);
             try
             {
-                return await ReadEntriesImplAsync<TReader, TResult>(reader, session, startIndex, state.LastIndex, token).ConfigureAwait(false);
+                return await ReadAsync<TReader, TResult>(reader, session, startIndex, state.LastIndex, token).ConfigureAwait(false);
             }
             finally
             {

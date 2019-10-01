@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         internal static ValueTask<long> GetTermAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, CancellationToken token)
-            => auditTrail.ReadEntriesAsync<TermReader, long>(new TermReader(), index, index, token);
+            => auditTrail.ReadAsync<TermReader, long>(new TermReader(), index, index, token);
 
         internal static async Task<bool> IsUpToDateAsync(this IAuditTrail<IRaftLogEntry> auditTrail, long index, long term, CancellationToken token)
         {

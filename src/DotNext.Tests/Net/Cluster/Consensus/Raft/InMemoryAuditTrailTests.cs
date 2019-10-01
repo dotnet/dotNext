@@ -42,7 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal("SET Y=0", e2.Content);
                 return default;
             };
-            await auditTrail.ReadEntriesAsync<TestReader, DBNull>(checker, 1, 2, CancellationToken.None);
+            await auditTrail.ReadAsync<TestReader, DBNull>(checker, 1, 2, CancellationToken.None);
             //now replace entry at index 2 with new entry
             entry2 = new TestLogEntry("ADD") { Term = 3 };
             await auditTrail.AppendAsync(entry2, 2);
@@ -55,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Equal("ADD", e2.Content);
                 return default;
             };
-            await auditTrail.ReadEntriesAsync<TestReader, DBNull>(checker, 1, 2, CancellationToken.None);
+            await auditTrail.ReadAsync<TestReader, DBNull>(checker, 1, 2, CancellationToken.None);
             Equal(2, auditTrail.GetLastIndex(false));
             Equal(0, auditTrail.GetLastIndex(true));
             //commit all entries
