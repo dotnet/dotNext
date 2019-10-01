@@ -43,7 +43,7 @@ This is the major release of all parts of .NEXT library. Now the version is 1.0.
 .NEXT 1.x is based on .NET Standard 2.0 to keep compatibility with .NET Framework.
 
 <a href="https://www.nuget.org/packages/dotnext/1.0.0">DotNext 1.0.0</a>
-* Optimized some methods of [Memory](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Memory.html) class
+* Optimized methods of [Memory](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Memory.html) class
 * Extension methods for I/O are introduced. Now you don't need to instantiate [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader) or [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter) for high-level parsing of stream content. Encoding and decoding of strings are fully supported. Moreover, these methods are asynchronous in contrast to methods of `BinaryReader` and `BinaryWriter`.
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/1.0.0">DotNext.Reflection 1.0.0</a>
