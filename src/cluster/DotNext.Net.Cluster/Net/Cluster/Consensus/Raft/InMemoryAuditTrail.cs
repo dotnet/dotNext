@@ -148,7 +148,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public long GetLastIndex(bool committed)
             => committed ? commitIndex.VolatileRead() : Math.Max(0, log.LongLength - 1L);
 
-        async ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
+        async ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -156,7 +156,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return await reader.ReadAsync<IRaftLogEntry, LogEntryList>(new LogEntryList(log, startIndex, GetLastIndex(false)), null, token).ConfigureAwait(false);
         }
 
-        async ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadEntriesAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
+        async ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));

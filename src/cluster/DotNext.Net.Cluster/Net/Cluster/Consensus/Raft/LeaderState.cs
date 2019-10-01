@@ -51,7 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var currentIndex = this.currentIndex = auditTrail.GetLastIndex(false);
                 logger.ReplicationStarted(member.Endpoint, currentIndex);
                 return currentIndex >= member.NextIndex ?
-                    auditTrail.ReadEntriesAsync<Replicator, Result<bool>>(this, member.NextIndex, token) :
+                    auditTrail.ReadAsync<Replicator, Result<bool>>(this, member.NextIndex, token) :
                     ReadAsync<IRaftLogEntry, IRaftLogEntry[]>(Array.Empty<IRaftLogEntry>(), null, token);
             }
 

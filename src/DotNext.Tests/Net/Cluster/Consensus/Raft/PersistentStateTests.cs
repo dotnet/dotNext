@@ -173,7 +173,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(state.First, entries[0]);
                     return default;
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
+                await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
 
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
                 checker = async (entries, snapshotIndex) =>
@@ -184,7 +184,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(42L, entries[1].Term);
                     Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
+                await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
             }
             finally
             {
@@ -217,9 +217,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(42L, entries[1].Term);
                     Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
                     //execute reader inside of another reader which is not possible for InMemoryAuditTrail
-                    await state.ReadEntriesAsync<TestReader, DBNull>(checker2, 0L, CancellationToken.None);
+                    await state.ReadAsync<TestReader, DBNull>(checker2, 0L, CancellationToken.None);
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker1, 0L, CancellationToken.None);
+                await state.ReadAsync<TestReader, DBNull>(checker1, 0L, CancellationToken.None);
             }
             finally
             {
@@ -259,7 +259,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     False(entries[0].IsSnapshot);
                     Equal(entry1.Content, await entries[0].ReadAsTextAsync(Encoding.UTF8));
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 1L, CancellationToken.None);
+                await state.ReadAsync<TestReader, DBNull>(checker, 1L, CancellationToken.None);
             }
         }
 
@@ -286,7 +286,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     False(entries[0].IsSnapshot);
                     return default;
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
+                await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
 
                 Equal(1L, await state.AppendAsync(new LogEntryList(entry1)));
                 Equal(2L, await state.AppendAsync(new LogEntryList(entry2, entry3, entry4, entry5)));
@@ -313,7 +313,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(entry5.Content, await entries[5].ReadAsTextAsync(Encoding.UTF8));
                     Equal(entry5.Timestamp, entries[5].Timestamp);
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
+                await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
             }
             finally
             {
@@ -346,7 +346,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(entry5.Content, await entries[5].ReadAsTextAsync(Encoding.UTF8));
                     Equal(entry5.Timestamp, entries[5].Timestamp);
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
+                await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
             }
             finally
             {
@@ -412,7 +412,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     False(readResult[2].IsSnapshot);
                     return default;
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
+                await state.ReadAsync<TestReader, DBNull>(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
             }
 
             //read again
@@ -427,7 +427,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     False(readResult[2].IsSnapshot);
                     return default;
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
+                await state.ReadAsync<TestReader, DBNull>(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
                 await state.AppendAsync(new Int64LogEntry(90L, true), 11);
                 checker = (readResult, snapshotIndex) =>
                 {
@@ -436,7 +436,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     True(readResult[0].IsSnapshot);
                     return default;
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
+                await state.ReadAsync<TestReader, DBNull>(checker, 6, 9, CancellationToken.None).ConfigureAwait(false);
             }
         }
 
@@ -460,7 +460,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     True(readResult[0].IsSnapshot);
                     return default;
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 1, 6, CancellationToken.None);
+                await state.ReadAsync<TestReader, DBNull>(checker, 1, 6, CancellationToken.None);
                 checker = (readResult, snapshotIndex) =>
                 {
                     Equal(3, readResult.Count);
@@ -470,7 +470,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     False(readResult[2].IsSnapshot);
                     return default;
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 1, CancellationToken.None);
+                await state.ReadAsync<TestReader, DBNull>(checker, 1, CancellationToken.None);
             }
 
             //read agian
@@ -482,7 +482,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     NotNull(snapshotIndex);
                     return default;
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 1, 6, CancellationToken.None);
+                await state.ReadAsync<TestReader, DBNull>(checker, 1, 6, CancellationToken.None);
 
                 checker = (readResult, snapshotIndex) =>
                 {
@@ -493,7 +493,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     False(readResult[2].IsSnapshot);
                     return default;
                 };
-                await state.ReadEntriesAsync<TestReader, DBNull>(checker, 1, CancellationToken.None);
+                await state.ReadAsync<TestReader, DBNull>(checker, 1, CancellationToken.None);
             }
         }
     }
