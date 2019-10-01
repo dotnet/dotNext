@@ -96,5 +96,7 @@
   items:
     - name: Clustered ASP.NET Core Microservices
       href: cluster/aspnetcore.md
+    - name: Persistent Log
+      href: cluster/wal.md
 - name: Augmented Compilation
   href: aug.md
