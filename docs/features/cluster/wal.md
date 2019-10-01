@@ -83,5 +83,10 @@ In the reality, the state machine should persist its state in reliable way, e.g.
 `PersistentState` can be used as general purpose Write Ahead Log. Any changes in the cluster node state can be represented as a series for log entries that can be appended to the log. Newly added entries are not committed. It means that there is no confirmation from other cluster nodes about consistent state of the log. When the consistency is reached across cluster then the all appended entries marked as committed and the commands contained in the committed log entries can be applied to the underlying database engine.
 
 The following methods allows to implement this scenario:
-* `AppendAsync` adds a series of log entries to the log. All appended entries are not in committed state. Additionally, it can be used 
-* 
+* `AppendAsync` adds a series of log entries to the log. All appended entries are in uncommitted state. Additionally, it can be used to replace entries with another entries
+* `DropAsync` removes the uncommitted entries from the log
+* `CommitAsync` marks appended entries as committed. Optionally, it can force log compaction
+* `EnsureConsistencyAsync` applies the committed entries to the underlying state machine or database engine. Usually, `CommitAsync` doing this automatically. This method can be called once at application startup to ensure that the database is up to date with latest committed changes
+* `WaitForCommitAsync` waits for the specific commit
+
+`ReadAsync` method can be used to obtain committed or uncommitted entries in stream-like manner.
