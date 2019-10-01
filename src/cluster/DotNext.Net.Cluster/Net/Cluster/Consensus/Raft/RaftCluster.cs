@@ -375,7 +375,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
-                    if(await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, transitionCancellation.Token).ConfigureAwait(false))
+                    if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, transitionCancellation.Token).ConfigureAwait(false))
                     {
                         /*
                         * AppendAsync is called with skipCommitted=true because HTTP response from the previous

@@ -265,7 +265,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal ReadSessionManager(int readersCount, bool useSharedPool, DataAccessSession writeSession)
             {
                 Capacity = readersCount;
-                if(readersCount == 1)
+                if (readersCount == 1)
                 {
                     tokens = null;
                     bufferPool = null;
@@ -280,9 +280,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal DataAccessSession OpenSession(int bufferSize)
             {
-                if(tokens is null)
+                if (tokens is null)
                     return WriteSession;
-                if(tokens.TryTake(out var sessionId))
+                if (tokens.TryTake(out var sessionId))
                     return new DataAccessSession(sessionId, bufferPool, bufferSize);
                 //never happens
                 throw new InternalBufferOverflowException(ExceptionMessages.NoAvailableReadSessions);
@@ -290,7 +290,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal void CloseSession(in DataAccessSession readSession)
             {
-                if(tokens is null)
+                if (tokens is null)
                     return;
                 tokens.Add(readSession.SessionId);
                 readSession.Dispose();
@@ -308,7 +308,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 : base(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, bufferSize, options)
             {
                 readers = new StreamSegment[readersCount];
-                if(readersCount == 1)
+                if (readersCount == 1)
                     readers[0] = new StreamSegment(this, true);
                 else
                     foreach (ref var reader in readers.AsSpan())
@@ -376,7 +376,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal override void PopulateCache(in DataAccessSession session)
             {
-                if(!lookupCache.IsEmpty)
+                if (!lookupCache.IsEmpty)
                     PopulateCache(session.Buffer, lookupCache);
             }
 
@@ -444,7 +444,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             protected override void Dispose(bool disposing)
             {
-                if(disposing)
+                if (disposing)
                     lookupCache.Dispose();
                 base.Dispose(disposing);
             }
@@ -465,7 +465,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
             }
 
-            internal override void PopulateCache(in DataAccessSession session) 
+            internal override void PopulateCache(in DataAccessSession session)
                 => Index = Length > 0L ? this.Read<SnapshotMetadata>(session.Buffer).Index : 0L;
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, long index, byte[] buffer, CancellationToken token)
@@ -491,7 +491,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, CancellationToken token)
                 => ReadAsync(GetReadSessionStream(session), session.Buffer, token);
-            
+
             //cached index of the snapshotted entry
             internal long Index
             {
@@ -820,7 +820,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commitEvent = new AsyncManualResetEvent(false);
             sessionManager = new ReadSessionManager(configuration.MaxConcurrentReads, configuration.UseSharedPool, new DataAccessSession(new byte[bufferSize]));
             syncRoot = new AsyncSharedLock(sessionManager.Capacity);
-            if(configuration.UseSharedPool)
+            if (configuration.UseSharedPool)
             {
                 entryPool = ArrayPool<LogEntry>.Shared;
                 metadataPool = configuration.UseCaching ? ArrayPool<LogEntryMetadata>.Shared : null;
