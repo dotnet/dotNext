@@ -343,7 +343,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private sealed class Partition : ConcurrentStorageAccess
         {
             internal readonly long FirstIndex;
-            internal readonly long Capacity;    //max number of entries
+            internal readonly int Capacity;    //max number of entries
             private readonly ArrayRental<LogEntryMetadata> lookupCache;
 
             internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, ArrayPool<LogEntryMetadata> cachePool, int readersCount)
@@ -354,13 +354,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 lookupCache = cachePool is null ? default : new ArrayRental<LogEntryMetadata>(cachePool, recordsPerPartition);
             }
 
-            private long PayloadOffset => LogEntryMetadata.Size * Capacity;
+            private long PayloadOffset => LogEntryMetadata.Size * (long)Capacity;
 
             internal long LastIndex => FirstIndex + Capacity - 1;
 
             internal void Allocate(long initialSize) => SetLength(initialSize + PayloadOffset);
 
-            private void PopulateCache(byte[] buffer, LogEntryMetadata[] lookupCache)
+            private void PopulateCache(byte[] buffer, Span<LogEntryMetadata> lookupCache)
             {
                 for (int index = 0, count; index < lookupCache.Length; index += count)
                 {
@@ -369,7 +369,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (Read(buffer, 0, maxBytes) < maxBytes)
                         throw new EndOfStreamException();
                     var source = new Span<byte>(buffer, 0, maxBytes);
-                    var destination = MemoryMarshal.AsBytes(new Span<LogEntryMetadata>(lookupCache).Slice(index));
+                    var destination = MemoryMarshal.AsBytes(lookupCache.Slice(index));
                     source.CopyTo(destination);
                 }
             }
@@ -377,7 +377,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal override void PopulateCache(in DataAccessSession session)
             {
                 if (!lookupCache.IsEmpty)
-                    PopulateCache(session.Buffer, lookupCache);
+                    PopulateCache(session.Buffer, lookupCache.Memory.Slice(0, Capacity).Span);
             }
 
             private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, byte[] buffer, long index, bool absoluteIndex, CancellationToken token)
@@ -1233,7 +1233,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var snapshotIndex = 0L;
             foreach (var partition in compactionScope.Values)
             {
-                for (var i = 0L; i < partition.Capacity; i++)
+                for (var i = 0; i < partition.Capacity; i++)
                     if (partition.FirstIndex > 0L || i > 0L) //ignore the ephemeral entry
                     {
                         var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, token).ConfigureAwait(false)).Value;
