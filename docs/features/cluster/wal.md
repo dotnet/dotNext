@@ -80,7 +80,8 @@ sealed class SimpleAuditTrail : PersistentState
 In the reality, the state machine should persist its state in reliable way, e.g. disk. The example above ignores this requirement for simplicity and maintain its state in the form of the field of type `long`.
 
 # API Surface
-`PersistentState` can be used as general purpose Write Ahead Log. Any changes in the cluster node state can be represented as a series for log entries which can be appended to the log. Newly added entries are not committed. It means that there is no confirmation from other cluster nodes about consistent state of the log. When the consistency is reached across cluster then the all appended entries marked as committed and the commands contained in the committed log entries can be applied to the underlying database engine.
+`PersistentState` can be used as general purpose Write Ahead Log. Any changes in the cluster node state can be represented as a series for log entries that can be appended to the log. Newly added entries are not committed. It means that there is no confirmation from other cluster nodes about consistent state of the log. When the consistency is reached across cluster then the all appended entries marked as committed and the commands contained in the committed log entries can be applied to the underlying database engine.
 
 The following methods allows to implement this scenario:
+* `AppendAsync` adds a series of log entries to the log. All appended entries are not in committed state. Additionally, it can be used 
 * 
