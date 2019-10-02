@@ -15,7 +15,7 @@ Prerequisites:
 This library is the core of .NEXT which extends .NET Standard API with
   * Value Delegates as allocation-free and lightweight alternative to regular .NET delegates
   * Enum API to work with arbitrary **enum** types
-  * Thread-safe advanced atomic operations to work with **int**, **long**, **bool**, **double**, **float**, **IntPtr*, arbitrary reference and value types
+  * Thread-safe advanced atomic operations to work with **int**, **long**, **bool**, **double**, **float**, **IntPtr**, arbitrary reference and value types
   * Unified representation of various synchronization primitives in the form of the lock
   * Generic specialization with constant values
   * Generation of random strings
@@ -62,6 +62,8 @@ But this is not all features of this library. Read more [here](./features/thread
 # DotNext.Net.Cluster
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?style=flat"></a><br/>
 Provides basic framework for building [clustered microservices](https://en.wikipedia.org/wiki/Computer_cluster) based on network consensus and distributed messaging. Additionally, the libarary provides transport-agnostic implementation of [Raft Consensus Algoritm](https://raft.github.io/) that can be adopted for any communication protocol.
+
+Additionally, the library contains high-performance Write Ahead Log used for log replication by Raft algorithm. However, it can be used as general-purpose log.
 
 # DotNext.AspNetCore.Cluster
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?style=flat"></a><br/>
