@@ -76,7 +76,7 @@ This library is the core of .NEXT which extends .NET Standard API with</p>
 <ul>
 <li>Value Delegates as allocation-free and lightweight alternative to regular .NET delegates</li>
 <li>Enum API to work with arbitrary <strong>enum</strong> types</li>
-<li>Thread-safe advanced atomic operations to work with <strong>int</strong>, <strong>long</strong>, <strong>bool</strong>, <strong>double</strong>, <strong>float</strong>, *<em>IntPtr</em>, arbitrary reference and value types</li>
+<li>Thread-safe advanced atomic operations to work with <strong>int</strong>, <strong>long</strong>, <strong>bool</strong>, <strong>double</strong>, <strong>float</strong>, <strong>IntPtr</strong>, arbitrary reference and value types</li>
 <li>Unified representation of various synchronization primitives in the form of the lock</li>
 <li>Generic specialization with constant values</li>
 <li>Generation of random strings</li>
@@ -140,6 +140,7 @@ The library allows you to reuse experience of blocking synchronization with help
 <h1 id="dotnextnetcluster">DotNext.Net.Cluster</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?style=flat"></a><br>
 Provides basic framework for building <a href="https://en.wikipedia.org/wiki/Computer_cluster">clustered microservices</a> based on network consensus and distributed messaging. Additionally, the libarary provides transport-agnostic implementation of <a href="https://raft.github.io/">Raft Consensus Algoritm</a> that can be adopted for any communication protocol.</p>
+<p>Additionally, the library contains high-performance Write Ahead Log used for log replication by Raft algorithm. However, it can be used as general-purpose log.</p>
 <h1 id="dotnextaspnetcorecluster">DotNext.AspNetCore.Cluster</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?style=flat"></a><br>
 Allows to build clustered microservices which rely on network consensus and distributed messaging with <a href="https://docs.microsoft.com/en-us/aspnet/core/">ASP.NET Core</a> framework. This library contains HTTP-based implementation of <a href="https://raft.github.io/">Raft</a> Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.</p>
