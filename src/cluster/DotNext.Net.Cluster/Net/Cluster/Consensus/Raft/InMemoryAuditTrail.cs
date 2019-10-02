@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -68,6 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bool ILogEntry.IsSnapshot => false;
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct LogEntryList : IReadOnlyList<IRaftLogEntry>
         {
             private readonly long startIndex;
@@ -256,12 +258,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async ValueTask<long> IAuditTrail<IRaftLogEntry>.DropAsync(long startIndex, CancellationToken token)
         {
             long count;
-            using(await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
+            using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
             {
-                if(startIndex <= commitIndex)
+                if (startIndex <= commitIndex)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 count = log.LongLength - startIndex;
-                if(count > 0L)
+                if (count > 0L)
                     log = log.RemoveLast(count);
             }
             return count;

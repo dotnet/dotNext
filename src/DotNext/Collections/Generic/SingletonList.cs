@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic
 {
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct SingletonList<T> : IReadOnlyList<T>
     {
         internal struct Enumerator : IEnumerator<T>

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace DotNext
 {
@@ -9,6 +10,7 @@ namespace DotNext
     /// </summary>
     /// <typeparam name="I">The type of items in the tuple.</typeparam>
     /// <typeparam name="T">The tuple type.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct EnumerableTuple<I, T> : IReadOnlyList<I>
         where T : IStructuralEquatable, IStructuralComparable
     {
@@ -19,6 +21,7 @@ namespace DotNext
         /// <summary>
         /// Represents enumerator over items in the tuple.
         /// </summary>
+        [StructLayout(LayoutKind.Auto)]
         public struct Enumerator : IEnumerator<I>
         {
             private readonly T tuple;

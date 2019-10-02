@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
 namespace DotNext
@@ -49,6 +50,7 @@ namespace DotNext
     /// Represents a result of operation which can be actual result or exception.
     /// </summary>
     [Serializable]
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Result<T> : ISerializable
     {
         private const string ExceptionSerData = "Exception";

@@ -2,6 +2,32 @@ Release Notes
 ====
 
 # 10-02-2019
+<a href="https://www.nuget.org/packages/dotnext/1.0.1">DotNext 1.0.1</a>
+* Minor performance optimizations
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.0.1">DotNext.Reflection 1.0.1</a>
+* Minor performance optimizations
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.0.1">DotNext.Metaprogramming 1.0.1</a>
+* Minor performance optimizations
+
+<a href="https://www.nuget.org/packages/dotnext.threading/1.0.1">DotNext.Threading 1.0.1</a>
+* Introduced [AsyncSharedLock](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncSharedLock.html) as combination of reader/write lock and semaphore
+* Minor performance optimizations
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.0.1">DotNext.Unsafe 1.0.1</a>
+* Minor performance optimizations
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.0.1">DotNext.Net.Cluster 1.0.1</a>
+* Minor performance optimizations
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.0.1">DotNext.AspNetCore.Cluster 1.0.1</a>
+* Minor performance optimizations
+
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.0.1">DotNext.Augmentation.Fody 1.0.0</a>
+* Code refactorings
+
+# 10-02-2019
 This is the major release of all parts of .NEXT library. Now the version is 1.0.0 and backward compatibility is guaranteed across all 1.x releases. The main motivation of this release is to produce stable API because .NEXT library active using in production code, especially Raft implementation.
 
 .NEXT 1.x is based on .NET Standard 2.0 to keep compatibility with .NET Framework.
@@ -92,7 +118,6 @@ This is the major release of all parts of .NEXT library. Now the version is 1.0.
 * Improved IPv6 support
 
 # 08-20-2019
-
 <a href="https://www.nuget.org/packages/dotnext/0.13.0">DotNext 0.13.0</a>
 * Fixed bug with equality comparison of **null** arrays inside of [EqualityComparerBuilder](https://sakno.github.io/dotNext/api/DotNext.EqualityComparerBuilder-1.html)
 * Improved debugging experience:

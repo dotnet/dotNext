@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Threading
 {
@@ -7,6 +8,7 @@ namespace DotNext.Threading
     /// <summary>
     /// Helps to compute timeout for asynchronous operations.
     /// </summary>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Timeout
     {
         private readonly Timestamp created;

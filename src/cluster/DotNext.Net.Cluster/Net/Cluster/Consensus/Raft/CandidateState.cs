@@ -1,6 +1,7 @@
 ﻿using DotNext.Net.Cluster.Replication;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,6 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             NotAvailable
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct VotingState
         {
             internal readonly IRaftClusterMember Voter;

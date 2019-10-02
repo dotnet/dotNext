@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
@@ -13,11 +14,13 @@ namespace DotNext.Buffers
     /// Represents sequence of memory chunks.
     /// </summary>
     /// <typeparam name="T">The type of elements stored in contiguous memory.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ChunkSequence<T> : IEnumerable<ReadOnlyMemory<T>>
     {
         /// <summary>
         /// Represents enumerator of memory chunks.
         /// </summary>
+        [StructLayout(LayoutKind.Auto)]
         public struct Enumerator : IEnumerator<ReadOnlyMemory<T>>
         {
             private readonly ReadOnlyMemory<T> source;

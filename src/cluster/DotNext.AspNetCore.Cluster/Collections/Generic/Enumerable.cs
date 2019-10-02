@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic
 {
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct Enumerable<T, TList>
         where TList : IReadOnlyList<T>
     {
+        [StructLayout(LayoutKind.Auto)]
         internal struct Enumerator
         {
             private const int InitialIndex = -1;

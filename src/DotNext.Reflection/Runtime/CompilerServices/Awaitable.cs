@@ -1,4 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
@@ -12,6 +13,7 @@ namespace DotNext.Runtime.CompilerServices
     /// <typeparam name="TAwaiter">The type constrained with concept <see cref="Awaiter{TAwaiter}"/>.</typeparam>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">TAP</seealso>
     [Concept]
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Awaitable<T, [Constraint(typeof(Awaiter<>))] TAwaiter>
         where TAwaiter : ICriticalNotifyCompletion
     {
@@ -56,6 +58,7 @@ namespace DotNext.Runtime.CompilerServices
     /// <typeparam name="R">The type of asynchronous result.</typeparam>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/asynchronous-programming-patterns/task-based-asynchronous-pattern-tap">TAP</seealso>
     [Concept]
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Awaitable<T, [Constraint(typeof(Awaiter<,>))] TAwaiter, R>
         where TAwaiter : ICriticalNotifyCompletion
     {

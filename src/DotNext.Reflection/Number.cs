@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace DotNext
 {
@@ -17,6 +18,7 @@ namespace DotNext
     [CLSCompliant(false)]
     [Concept]
     [BeforeFieldInit(false)]
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Number<T> : IEquatable<T>, IEquatable<Number<T>>, IComparable<T>
         where T : struct, IConvertible, IComparable<T>, IEquatable<T>, IFormattable
     {

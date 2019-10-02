@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using static System.Runtime.CompilerServices.Unsafe;
 
@@ -10,6 +11,7 @@ namespace DotNext.Threading
     /// <remarks>
     /// The lock acquisition may block the caller thread.
     /// </remarks>
+    [StructLayout(LayoutKind.Auto)]
     public struct Lock : IDisposable, IEquatable<Lock>
     {
         internal enum Type : byte

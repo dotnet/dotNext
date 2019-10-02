@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic
 {
@@ -11,6 +12,7 @@ namespace DotNext.Collections.Generic
     /// </summary>
     /// <typeparam name="I">Type of items in the source collection.</typeparam>
     /// <typeparam name="O">Type of items in the converted collection.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ReadOnlyCollectionView<I, O> : IReadOnlyCollection<O>, IEquatable<ReadOnlyCollectionView<I, O>>
     {
         private readonly IReadOnlyCollection<I> source;

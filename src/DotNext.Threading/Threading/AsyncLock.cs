@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Runtime.CompilerServices.Unsafe;
@@ -18,6 +19,7 @@ namespace DotNext.Threading
     /// prevent acquisition of asynchronous lock obtained in non-blocking manner.
     /// </remarks>
     /// <seealso cref="Lock"/>
+    [StructLayout(LayoutKind.Auto)]
     public struct AsyncLock : IDisposable, IEquatable<AsyncLock>
     {
         internal enum Type : byte

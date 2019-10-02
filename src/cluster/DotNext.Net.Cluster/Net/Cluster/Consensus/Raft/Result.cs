@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -6,6 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// Represents RPC response.
     /// </summary>
     [SuppressMessage("Design", "CA1051", Justification = "Structure represeting DTO-like object")]
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Result<T>
     {
         /// <summary>

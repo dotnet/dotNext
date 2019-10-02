@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace DotNext.Threading.Tasks
@@ -8,6 +9,7 @@ namespace DotNext.Threading.Tasks
     /// Represents <see cref="Task"/> or <see cref="ValueTask"/>
     /// completed synchronously.
     /// </summary>
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct CompletedTask
     {
         private readonly Exception failure;
@@ -45,6 +47,7 @@ namespace DotNext.Threading.Tasks
     /// completed synchronously.
     /// </summary>
     /// <typeparam name="T">The type of the result produced by the task.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct CompletedTask<T>
     {
         private readonly Exception failure;

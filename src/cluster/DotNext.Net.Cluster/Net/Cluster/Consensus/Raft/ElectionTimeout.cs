@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     /// <summary>
     /// Represents leader election timeout.
     /// </summary>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ElectionTimeout
     {
         private readonly Random random;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace DotNext.Runtime.InteropServices
@@ -19,6 +20,7 @@ namespace DotNext.Runtime.InteropServices
     /// Moreover, pointer type doesn't provide automatic memory management.
     /// Null-pointer is the only check performed by methods.
     /// </remarks>
+    [StructLayout(LayoutKind.Sequential)]
     public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox
         where T : unmanaged
     {
