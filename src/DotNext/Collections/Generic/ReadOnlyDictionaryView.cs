@@ -14,7 +14,7 @@ namespace DotNext.Collections.Generic
     /// <typeparam name="I">Type of values in the source dictionary.</typeparam>
     /// <typeparam name="O">Type of values in the converted dictionary.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-	public readonly struct ReadOnlyDictionaryView<K, I, O> : IReadOnlyDictionary<K, O>, IEquatable<ReadOnlyDictionaryView<K, I, O>>
+    public readonly struct ReadOnlyDictionaryView<K, I, O> : IReadOnlyDictionary<K, O>, IEquatable<ReadOnlyDictionaryView<K, I, O>>
     {
         private readonly IReadOnlyDictionary<K, I> source;
         private readonly ValueFunc<I, O> mapper;

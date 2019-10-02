@@ -258,12 +258,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async ValueTask<long> IAuditTrail<IRaftLogEntry>.DropAsync(long startIndex, CancellationToken token)
         {
             long count;
-            using(await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
+            using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
             {
-                if(startIndex <= commitIndex)
+                if (startIndex <= commitIndex)
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 count = log.LongLength - startIndex;
-                if(count > 0L)
+                if (count > 0L)
                     log = log.RemoveLast(count);
             }
             return count;

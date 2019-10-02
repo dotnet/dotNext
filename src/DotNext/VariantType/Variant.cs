@@ -390,7 +390,7 @@ namespace DotNext.VariantType
 	/// <typeparam name="T3">Third possible type.</typeparam>
     /// <typeparam name="T4">Fourth possible type.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-	public readonly struct Variant<T1, T2, T3, T4> : IVariant, IEquatable<Variant<T1, T2, T3, T4>>
+    public readonly struct Variant<T1, T2, T3, T4> : IVariant, IEquatable<Variant<T1, T2, T3, T4>>
         where T1 : class
         where T2 : class
         where T3 : class

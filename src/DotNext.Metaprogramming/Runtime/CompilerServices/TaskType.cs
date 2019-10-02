@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace DotNext.Runtime.CompilerServices
 {
     using Reflection;
-    
+
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct TaskType
     {
