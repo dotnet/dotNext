@@ -38,37 +38,30 @@ All these things are implemented in 100% managed code on top of existing .NET St
 # What's new
 Release Date: 10-02-2019
 
-This is the major release of all parts of .NEXT library. Now the version is 1.0.0 and backward compatibility is guaranteed across all 1.x releases. The main motivation of this release is to produce stable API because .NEXT library active using in production code, especially Raft implementation.
+<a href="https://www.nuget.org/packages/dotnext/1.0.1">DotNext 1.0.1</a>
+* Minor performance optimizations
 
-.NEXT 1.x is based on .NET Standard 2.0 to keep compatibility with .NET Framework.
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.0.1">DotNext.Reflection 1.0.1</a>
+* Minor performance optimizations
 
-<a href="https://www.nuget.org/packages/dotnext/1.0.0">DotNext 1.0.0</a>
-* Optimized methods of [Memory](https://sakno.github.io/dotNext/api/DotNext.Runtime.InteropServices.Memory.html) class
-* Extension methods for I/O are introduced. Now you don't need to instantiate [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader) or [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter) for high-level parsing of stream content. Encoding and decoding of strings are fully supported. Moreover, these methods are asynchronous in contrast to methods of `BinaryReader` and `BinaryWriter`.
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.0.1">DotNext.Metaprogramming 1.0.1</a>
+* Minor performance optimizations
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/1.0.0">DotNext.Reflection 1.0.0</a>
-* API is stabilized
+<a href="https://www.nuget.org/packages/dotnext.threading/1.0.1">DotNext.Threading 1.0.1</a>
+* Introduced [AsyncSharedLock](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncSharedLock.html) as combination of reader/write lock and semaphore
+* Minor performance optimizations
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.0.0">DotNext.Metaprogramming 1.0.0</a>
-* API is stabilized
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.0.1">DotNext.Unsafe 1.0.1</a>
+* Minor performance optimizations
 
-<a href="https://www.nuget.org/packages/dotnext.threading/1.0.0">DotNext.Threading 1.0.0</a>
-* [AsyncManualResetEvent](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncManualResetEvent.html) has auto-reset optional behavior which allows to repeatedly unblock many waiters
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.0.1">DotNext.Net.Cluster 1.0.1</a>
+* Minor performance optimizations
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/1.0.0">DotNext.Unsafe 1.0.0</a>
-* [MemoryMappedFileExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.html) allows to work with virtual memory associated with memory-mapped file using unsafe pointer or [Span&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) to achieve the best performance.
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.0.1">DotNext.AspNetCore.Cluster 1.0.1</a>
+* Minor performance optimizations
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.0.0">DotNext.Net.Cluster 1.0.0</a>
-* Audit trail programming model is redesigned
-* Persistent and high-performance Write Ahead Log (WAL) is introduced. Read more [here](https://sakno.github.io/dotNext/features/cluster/aspnetcore.html#replication)
-* Log compaction is supported
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.0.0">DotNext.AspNetCore.Cluster 1.0.0</a>
-* Redirection to leader now uses `307 Temporary Redirect` instead of `302 Moved Temporarily` by default
-* Compatibility with persistent WAL is provided
-
-<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.0.0">DotNext.Augmentation.Fody 1.0.0</a>
-* Behavior of augmented compilation is stabilized
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.0.1">DotNext.Augmentation.Fody 1.0.0</a>
+* Code refactorings
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
