@@ -78,9 +78,7 @@
     "dest": "../",
     "globalMetadataFiles": [],
     "fileMetadataFiles": [],
-    "template": [
-      "default"
-    ],
+    "template": ["default", "templates/darkfx"],
     "postProcessors": [],
     "markdownEngineName": "markdig",
     "noLangKeyword": false
