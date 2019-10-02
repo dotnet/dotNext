@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Replication
 {
@@ -8,6 +9,7 @@ namespace DotNext.Net.Cluster.Replication
     /// Represents a list with single log entry.
     /// </summary>
     /// <typeparam name="TEntry">The type of the log entry to be placed into the list.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct SingletonEntryList<TEntry> : IReadOnlyList<TEntry>
         where TEntry : ILogEntry
     {

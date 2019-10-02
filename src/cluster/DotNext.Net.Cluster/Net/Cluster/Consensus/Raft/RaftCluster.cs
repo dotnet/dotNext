@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents cluster member.
         /// </summary>
+        [StructLayout(LayoutKind.Auto)]
         protected readonly ref struct MemberHolder
         {
             private readonly LinkedListNode<TMember> node;
@@ -68,11 +70,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents collection of cluster members stored in the memory of the current process.
         /// </summary>
+        [StructLayout(LayoutKind.Auto)]
         protected readonly ref struct MutableMemberCollection
         {
             /// <summary>
             /// Represents enumerator over cluster members.
             /// </summary>
+            [StructLayout(LayoutKind.Auto)]
             public ref struct Enumerator
             {
                 private LinkedListNode<TMember> current;

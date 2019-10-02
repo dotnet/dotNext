@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
@@ -146,6 +147,7 @@ namespace DotNext
     /// </summary>
     /// <typeparam name="T">Type of value.</typeparam>
     [Serializable]
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Optional<T> : IEquatable<Optional<T>>, IEquatable<T>, IStructuralEquatable, ISerializable
     {
         private const string IsPresentSerData = "IsPresent";

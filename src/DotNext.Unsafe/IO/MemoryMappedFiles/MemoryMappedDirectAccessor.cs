@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Runtime.InteropServices;
 
 namespace DotNext.IO.MemoryMappedFiles
 {
@@ -10,6 +11,7 @@ namespace DotNext.IO.MemoryMappedFiles
     /// Provides direct access to the memory-mapped file content through pointer
     /// to its virtual memory.
     /// </summary>
+    [StructLayout(LayoutKind.Auto)]
     public readonly unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory
     {
         private readonly MemoryMappedViewAccessor accessor;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace DotNext.Reflection
@@ -64,6 +65,7 @@ namespace DotNext.Reflection
         }
     }
 
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct MemberKey : IEquatable<MemberKey>
     {
         internal readonly bool NonPublic;

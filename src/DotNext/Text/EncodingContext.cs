@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace DotNext.Text
@@ -9,6 +10,7 @@ namespace DotNext.Text
     /// <remarks>
     /// The context represents an encoding cache to avoid memory allocations for each round of string encoding caused by methods of <see cref="IO.StreamExtensions"/> class.
     /// </remarks>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct EncodingContext
     {
         private readonly Encoding encoding;

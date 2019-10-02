@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Metaprogramming
 {
@@ -22,6 +23,7 @@ namespace DotNext.Metaprogramming
         internal abstract class MatchStatement<D> : Statement, ILexicalScope<MatchBuilder, D>
             where D : MulticastDelegate
         {
+            [StructLayout(LayoutKind.Auto)]
             private protected readonly struct CaseStatementBuilder : ICaseStatementBuilder
             {
                 private readonly Action<ParameterExpression> scope;
@@ -65,6 +67,7 @@ namespace DotNext.Metaprogramming
 
         private sealed class MatchByMemberStatement : MatchStatement<Action<MemberExpression>>
         {
+            [StructLayout(LayoutKind.Auto)]
             private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
             {
                 private readonly string memberName;
@@ -104,6 +107,7 @@ namespace DotNext.Metaprogramming
 
         private sealed class MatchByTwoMembersStatement : MatchStatement<Action<MemberExpression, MemberExpression>>
         {
+            [StructLayout(LayoutKind.Auto)]
             private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
             {
                 private readonly string memberName1, memberName2;
@@ -146,6 +150,7 @@ namespace DotNext.Metaprogramming
 
         private sealed class MatchByThreeMembersStatement : MatchStatement<Action<MemberExpression, MemberExpression, MemberExpression>>
         {
+            [StructLayout(LayoutKind.Auto)]
             private new readonly struct CaseStatementBuilder : ICaseStatementBuilder
             {
                 private readonly string memberName1, memberName2, memberName3;
@@ -234,6 +239,7 @@ namespace DotNext.Metaprogramming
         /// <returns>The action to be executed if object matches to the pattern.</returns>
         public delegate Expression CaseStatement(ParameterExpression value);
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct CaseStatementBuilder : ICaseStatementBuilder
         {
             private readonly CaseStatement statement;

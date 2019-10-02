@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
 {
@@ -8,6 +9,7 @@ namespace DotNext.Buffers
     /// Represents array obtained from array pool.
     /// </summary>
     /// <typeparam name="T">Type of array elements.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct ArrayRental<T> : IDisposable
     {
         private readonly ArrayPool<T> pool;

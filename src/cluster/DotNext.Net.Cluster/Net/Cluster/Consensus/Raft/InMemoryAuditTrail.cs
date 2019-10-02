@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -68,6 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bool ILogEntry.IsSnapshot => false;
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct LogEntryList : IReadOnlyList<IRaftLogEntry>
         {
             private readonly long startIndex;

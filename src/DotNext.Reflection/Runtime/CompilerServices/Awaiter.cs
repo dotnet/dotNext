@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
@@ -15,6 +16,7 @@ namespace DotNext.Runtime.CompilerServices
     /// <seealso cref="Task{TResult}"/>
     /// <seealso cref="TaskAwaiter{TResult}"/>
     [Concept]
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Awaiter<[Constraint(typeof(NotifyCompletion<>))]TAwaiter, R> : INotifyCompletion
         where TAwaiter : INotifyCompletion
     {
@@ -70,6 +72,7 @@ namespace DotNext.Runtime.CompilerServices
     /// <seealso cref="TaskAwaiter"/>
     /// <seealso cref="Task"/>
     [Concept]
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Awaiter<[Constraint(typeof(NotifyCompletion<>))]TAwaiter> : INotifyCompletion
         where TAwaiter : INotifyCompletion
     {

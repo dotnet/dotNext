@@ -10,6 +10,7 @@ using System.IO.Pipelines;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Globalization.CultureInfo;
@@ -88,6 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents persistent log entry.
         /// </summary>
+        [StructLayout(LayoutKind.Auto)]
         protected readonly struct LogEntry : IRaftLogEntry
         {
             private readonly StreamSegment content;
@@ -223,6 +225,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public DateTimeOffset Timestamp => new DateTimeOffset(metadata.Timestamp, TimeSpan.Zero);
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct DataAccessSession : IDisposable
         {
             internal readonly int SessionId;
@@ -255,6 +258,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
          * used for reading log entries. Such approach allows to use one-writer multiple-reader scenario
          * which dramatically improves the performance
          */
+        [StructLayout(LayoutKind.Auto)] 
         private readonly struct ReadSessionManager : IDisposable
         {
             private readonly ConcurrentBag<int> tokens;
@@ -697,6 +701,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         //provides fast navigation between partitions without lookup of the partition table when possible
+        [StructLayout(LayoutKind.Auto)]
         private struct PartitionCursor
         {
             private Partition lastPartition;

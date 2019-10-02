@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
@@ -14,6 +15,7 @@ namespace DotNext.Runtime.CompilerServices
     /// and intended for expert-level developers.
     /// </remarks>
     /// <typeparam name="STATE">The local state of async function used to store computation state.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     internal struct AsyncStateMachine<STATE> : IAsyncStateMachine<STATE>
     {
         /// <summary>
@@ -208,6 +210,7 @@ namespace DotNext.Runtime.CompilerServices
     /// </remarks>
     /// <typeparam name="STATE">The local state of async function used to store computation state.</typeparam>
     /// <typeparam name="R">Result type of asynchronous function.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     internal struct AsyncStateMachine<STATE, R> : IAsyncStateMachine<STATE>
         where STATE : struct
     {

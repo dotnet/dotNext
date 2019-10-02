@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security;
 
 namespace DotNext.Reflection
@@ -43,6 +44,7 @@ namespace DotNext.Reflection
     /// </remarks>
     /// <typeparam name="T">Referenced type.</typeparam>
     [SecuritySafeCritical]
+    [StructLayout(LayoutKind.Auto)]
     public struct Ref<T> : IStrongBox, IEquatable<Ref<T>>
     {
         /// <summary>

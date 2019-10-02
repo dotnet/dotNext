@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -7,6 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     internal static class AuditTrail
     {
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct TermReader : ILogEntryConsumer<IRaftLogEntry, long>
         {
             ValueTask<long> ILogEntryConsumer<IRaftLogEntry, long>.ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)

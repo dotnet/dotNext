@@ -1,5 +1,6 @@
 using System;
 using System.Dynamic;
+using System.Runtime.InteropServices;
 using Expression = System.Linq.Expressions.Expression;
 
 namespace DotNext.VariantType
@@ -13,6 +14,7 @@ namespace DotNext.VariantType
     /// </remarks>
     /// <typeparam name="T1">First possible type.</typeparam>
     /// <typeparam name="T2">Second possible type.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Variant<T1, T2> : IEquatable<Variant<T1, T2>>, IVariant
         where T1 : class
         where T2 : class
@@ -207,6 +209,7 @@ namespace DotNext.VariantType
     /// <typeparam name="T1">First possible type.</typeparam>
     /// <typeparam name="T2">Second possible type.</typeparam>
     /// <typeparam name="T3">Third possible type.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
     public readonly struct Variant<T1, T2, T3> : IVariant, IEquatable<Variant<T1, T2, T3>>
         where T1 : class
         where T2 : class
@@ -386,6 +389,7 @@ namespace DotNext.VariantType
 	/// <typeparam name="T2">Second possible type.</typeparam>
 	/// <typeparam name="T3">Third possible type.</typeparam>
     /// <typeparam name="T4">Fourth possible type.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
 	public readonly struct Variant<T1, T2, T3, T4> : IVariant, IEquatable<Variant<T1, T2, T3, T4>>
         where T1 : class
         where T2 : class

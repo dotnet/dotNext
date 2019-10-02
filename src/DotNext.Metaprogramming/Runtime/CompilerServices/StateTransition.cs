@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices
 {
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct StateTransition : IEquatable<StateTransition>
     {
         internal readonly LabelTarget Successful;

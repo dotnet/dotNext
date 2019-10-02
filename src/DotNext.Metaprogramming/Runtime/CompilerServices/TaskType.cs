@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
 {
     using Reflection;
-
+    
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct TaskType
     {
         private readonly Type resultType;

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic
 {
@@ -12,6 +13,7 @@ namespace DotNext.Collections.Generic
     /// <typeparam name="K">Type of dictionary keys.</typeparam>
     /// <typeparam name="I">Type of values in the source dictionary.</typeparam>
     /// <typeparam name="O">Type of values in the converted dictionary.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
 	public readonly struct ReadOnlyDictionaryView<K, I, O> : IReadOnlyDictionary<K, O>, IEquatable<ReadOnlyDictionaryView<K, I, O>>
     {
         private readonly IReadOnlyDictionary<K, I> source;
