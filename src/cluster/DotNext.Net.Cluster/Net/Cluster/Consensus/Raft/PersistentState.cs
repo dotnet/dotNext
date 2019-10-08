@@ -875,7 +875,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => partition != null && recordIndex >= partition.FirstIndex && recordIndex <= partition.LastIndex || partitionTable.TryGetValue(PartitionOf(recordIndex), out partition);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Task FlushAsync(Partition partition) => partition?.FlushAsync() ?? Task.CompletedTask;
+        private static Task FlushAsync(Partition partition) => partition is null ? Task.CompletedTask : partition.FlushAsync();
 
         private void GetOrCreatePartition(long recordIndex, out Partition partition)
         {
