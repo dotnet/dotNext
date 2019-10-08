@@ -700,11 +700,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public abstract ValueTask CopyToAsync(PipeWriter output, CancellationToken token);
         }
 
-        private sealed class LazyPartition : TaskCompletionSource<Partition>
-        {
-            internal readonly long PartitionNumber;
-        }
-
         /// <summary>
         /// Represents configuration options of the persistent audit trail.
         /// </summary>
@@ -775,7 +770,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly ArrayPool<LogEntry> entryPool;
         private readonly ArrayPool<LogEntryMetadata> metadataPool;
         private readonly StreamSegment nullSegment;
-        private LazyPartition lazyPartition;
         //concurrent read sessions management
         private readonly ReadSessionManager sessionManager;
         private readonly int bufferSize;
@@ -890,8 +884,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 partitionTable.Add(partitionNumber, partition = CreatePartition(partitionNumber));
         }
 
-        private void GetOrCreatePartition(long recordIndex, ref Partition partition, out Task flushTask)
+        private Task GetOrCreatePartitionAsync(long recordIndex, ref Partition partition)
         {
+            Task flushTask;
             if (partition is null || recordIndex < partition.FirstIndex || recordIndex > partition.LastIndex)
             {
                 flushTask = FlushAsync(partition);
@@ -899,6 +894,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             else
                 flushTask = Task.CompletedTask;
+            return flushTask;
         }
 
         private LogEntry First
@@ -1091,8 +1087,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
                 else if (startIndex > state.CommitIndex)
                 {
-                    GetOrCreatePartition(startIndex, ref partition, out var flushTask);
-                    await flushTask.ConfigureAwait(false);
+                    await GetOrCreatePartitionAsync(startIndex, ref partition).ConfigureAwait(false);
                     await partition.WriteAsync(sessionManager.WriteSession, supplier.Current, startIndex).ConfigureAwait(false);
                 }
                 else if (!skipCommitted)
