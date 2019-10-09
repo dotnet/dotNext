@@ -235,7 +235,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //read session ctor
             internal DataAccessSession(int sessionId, ArrayPool<byte> bufferPool, int bufferSize)
             {
-                this.SessionId = sessionId;
+                SessionId = sessionId;
                 Buffer = bufferPool.Rent(bufferSize);
                 this.bufferPool = bufferPool;
             }
