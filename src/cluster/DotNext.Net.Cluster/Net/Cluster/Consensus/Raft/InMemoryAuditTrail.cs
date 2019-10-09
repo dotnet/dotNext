@@ -104,9 +104,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private long term;
         private volatile IRaftClusterMember votedFor;
         private readonly AsyncManualResetEvent commitEvent;
-        /// <summary>
-        /// Represents reader/writer lock used for synchronized access to this method.
-        /// </summary>
         private readonly AsyncReaderWriterLock syncRoot;
 
         /// <summary>
@@ -119,6 +116,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             commitEvent = new AsyncManualResetEvent(false);
             syncRoot = new AsyncReaderWriterLock();
         }
+
+        /// <summary>
+        /// Gets the lock that can be used to synchronize access to this object.
+        /// </summary>
+        protected AsyncLock SyncRoot => AsyncLock.WriteLock(syncRoot);
 
         long IPersistentState.Term => term.VolatileRead();
 
