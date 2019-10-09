@@ -863,13 +863,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private long PartitionOf(long recordIndex) => recordIndex / recordsPerPartition;
 
-        private Partition CreatePartition(long partitionNumber)
-        {
-            var partition = new Partition(location, Buffer.Length, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
-            partition.Allocate(initialSize);
-            return partition;
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TryGetPartition(long recordIndex, ref Partition partition)
             => partition != null && recordIndex >= partition.FirstIndex && recordIndex <= partition.LastIndex || partitionTable.TryGetValue(PartitionOf(recordIndex), out partition);
@@ -881,7 +874,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var partitionNumber = PartitionOf(recordIndex);
             if (!partitionTable.TryGetValue(partitionNumber, out partition))
-                partitionTable.Add(partitionNumber, partition = CreatePartition(partitionNumber));
+            {
+                partition = new Partition(location, Buffer.Length, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
+                partition.Allocate(initialSize);
+                partitionTable.Add(partitionNumber, partition);
+            }
         }
 
         private Task GetOrCreatePartitionAsync(long recordIndex, ref Partition partition)
