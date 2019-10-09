@@ -259,7 +259,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             response.StatusCode = StatusCodes.Status204NoContent;
             //drop duplicated request
-            if (response.HttpContext.Features.Get<DuplicateRequestDetector>().IsDuplicate(request))
+            if (response.HttpContext.Features.Get<DuplicateRequestDetector>().IsDuplicated(request))
                 return Task.CompletedTask;
             return reliable ? handler.ReceiveSignal(sender, request.Message, response.HttpContext) : ReceiveOneWayMessageFastAck(sender, request.Message, handler, response, token);
         }
