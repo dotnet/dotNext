@@ -859,7 +859,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </remarks>
         [SuppressMessage("Performance", "CA1819", Justification = "Buffer is shared across write operations")]
         protected byte[] Buffer => sessionManager.WriteSession.Buffer;
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private long PartitionOf(long recordIndex) => recordIndex / recordsPerPartition;
 
