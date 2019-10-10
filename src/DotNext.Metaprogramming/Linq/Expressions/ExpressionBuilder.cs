@@ -1212,5 +1212,23 @@ namespace DotNext.Linq.Expressions
         /// <returns>The expression representing safe navigation.</returns>
         public static NullSafetyExpression IfNotNull(this Expression target, Func<ParameterExpression, Expression> body)
             => NullSafetyExpression.Create(target, body);
+
+        /// <summary>
+        /// Creates a new expression that is equal to <c>refanyval</c> IL instruction.
+        /// </summary>
+        /// <param name="typedRef">The variable of type <see cref="TypedReference"/>.</param>
+        /// <param name="referenceType">The type of the managed reference.</param>
+        /// <returns>The expression representing statically typed referenced.</returns>
+        public static RefAnyValExpression RefAnyVal(this ParameterExpression typedRef, Type referenceType)
+            => new RefAnyValExpression(typedRef, referenceType);
+        
+        /// <summary>
+        /// Creates a new expression that is equal to <c>refanyval</c> IL instruction.
+        /// </summary>
+        /// <param name="typedRef">The variable of type <see cref="TypedReference"/>.</param>
+        /// <typeparam name="T">The type of the managed reference.</typeparam>
+        /// <returns>The expression representing statically typed referenced.</returns>
+        public static RefAnyValExpression RefAnyVal<T>(this ParameterExpression typedRef)
+            => RefAnyVal(typedRef, typeof(T));
     }
 }

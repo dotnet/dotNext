@@ -48,6 +48,7 @@ Release Date: 10-10-2019
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.0.2">DotNext.Metaprogramming 1.0.2</a>
 * Updated version of FxCop analyzer
+* `RefAnyValExpression` is added
 
 <a href="https://www.nuget.org/packages/dotnext.threading/1.0.2">DotNext.Threading 1.0.2</a>
 * Updated version of FxCop analyzer

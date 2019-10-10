@@ -104,5 +104,18 @@ namespace DotNext.Linq.Expressions
             NotNull(optionalHash(""));
             Null(optionalHash(Optional<string>.Empty));
         }
+
+        private delegate ref int RefIntDelegate(TypedReference typedref);
+
+        [Fact]
+        public static void RefAnyValExpression()
+        {
+            var param = Expression.Parameter(typeof(TypedReference));
+            var lambda = Expression.Lambda<RefIntDelegate>(param.RefAnyVal<int>(), param).Compile();
+            var i = 10;
+            Equal(10, lambda(__makeref(i)));
+            lambda(__makeref(i)) = 20;
+            Equal(20, i);
+        }
     }
 }
