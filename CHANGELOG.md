@@ -1,6 +1,30 @@
 Release Notes
 ====
 
+# 10-10-2019
+<a href="https://www.nuget.org/packages/dotnext/1.0.2">DotNext 1.0.2</a>
+* Reduced number of inline IL code
+* Updated version of FxCop analyzer
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.0.2">DotNext.Reflection 1.0.2</a>
+* Updated version of FxCop analyzer
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.0.2">DotNext.Metaprogramming 1.0.2</a>
+* Updated version of FxCop analyzer
+
+<a href="https://www.nuget.org/packages/dotnext.threading/1.0.2">DotNext.Threading 1.0.2</a>
+* Updated version of FxCop analyzer
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.0.2">DotNext.Unsafe 1.0.2</a>
+* Updated version of FxCop analyzer
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.0.2">DotNext.Net.Cluster 1.0.2</a>
+* Minor performance optimizations of persistent WAL
+* Updated version of FxCop analyzer
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.0.2">DotNext.AspNetCore.Cluster 1.0.2</a>
+* Updated version of FxCop analyzer
+
 # 10-02-2019
 <a href="https://www.nuget.org/packages/dotnext/1.0.1">DotNext 1.0.1</a>
 * Minor performance optimizations
@@ -24,7 +48,7 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.0.1">DotNext.AspNetCore.Cluster 1.0.1</a>
 * Minor performance optimizations
 
-<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.0.1">DotNext.Augmentation.Fody 1.0.0</a>
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.0.1">DotNext.Augmentation.Fody 1.0.1</a>
 * Code refactorings
 
 # 10-02-2019
