@@ -41,6 +41,7 @@ Release Date: 10-10-2019
 <a href="https://www.nuget.org/packages/dotnext/1.0.2">DotNext 1.0.2</a>
 * Reduced number of inline IL code
 * Updated version of FxCop analyzer
+* `Intrinsics.TypeOf` method is added 
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/1.0.2">DotNext.Reflection 1.0.2</a>
 * Updated version of FxCop analyzer
