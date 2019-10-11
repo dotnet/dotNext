@@ -17,7 +17,7 @@ namespace DotNext.Threading
         private const int WriteLockState = int.MinValue;
         private const int NoLockState = default;
 
-        private volatile int state;  //volatile
+        private volatile int state; 
 
         /// <summary>
         /// Gets a value that indicates whether the current thread has entered the lock in write mode.
