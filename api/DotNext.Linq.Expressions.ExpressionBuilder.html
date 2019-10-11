@@ -4831,6 +4831,128 @@ OR operation that evaluates the second operand only if the first operand evaluat
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_ExpressionBuilder_RefAnyVal_System_Linq_Expressions_ParameterExpression_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal(System.Linq.Expressions.ParameterExpression%2CSystem.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/ExpressionBuilder.cs/#L1222">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_ExpressionBuilder_RefAnyVal_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal*"></a>
+  <h4 id="DotNext_Linq_Expressions_ExpressionBuilder_RefAnyVal_System_Linq_Expressions_ParameterExpression_System_Type_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal(System.Linq.Expressions.ParameterExpression,System.Type)">RefAnyVal(ParameterExpression, Type)</h4>
+  <div class="markdown level1 summary"><p>Creates a new expression that is equal to <code>refanyval</code> IL instruction.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static RefAnyValExpression RefAnyVal(this ParameterExpression typedRef, Type referenceType)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
+        <td><span class="parametername">typedRef</span></td>
+        <td><p>The variable of type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.typedreference">TypedReference</a>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="parametername">referenceType</span></td>
+        <td><p>The type of the managed reference.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Linq.Expressions.RefAnyValExpression.html">RefAnyValExpression</a></td>
+        <td><p>The expression representing statically typed referenced.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_ExpressionBuilder_RefAnyVal__1_System_Linq_Expressions_ParameterExpression_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal%60%601(System.Linq.Expressions.ParameterExpression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Metaprogramming/Linq/Expressions/ExpressionBuilder.cs/#L1231">View Source</a>
+  </span>
+  <a id="DotNext_Linq_Expressions_ExpressionBuilder_RefAnyVal_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal*"></a>
+  <h4 id="DotNext_Linq_Expressions_ExpressionBuilder_RefAnyVal__1_System_Linq_Expressions_ParameterExpression_" data-uid="DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal``1(System.Linq.Expressions.ParameterExpression)">RefAnyVal&lt;T&gt;(ParameterExpression)</h4>
+  <div class="markdown level1 summary"><p>Creates a new expression that is equal to <code>refanyval</code> IL instruction.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static RefAnyValExpression RefAnyVal&lt;T&gt;(this ParameterExpression typedRef)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
+        <td><span class="parametername">typedRef</span></td>
+        <td><p>The variable of type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.typedreference">TypedReference</a>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Linq.Expressions.RefAnyValExpression.html">RefAnyValExpression</a></td>
+        <td><p>The expression representing statically typed referenced.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type of the managed reference.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Linq_Expressions_ExpressionBuilder_Return_System_Linq_Expressions_LabelTarget_.md&amp;value=---%0Auid%3A%20DotNext.Linq.Expressions.ExpressionBuilder.Return(System.Linq.Expressions.LabelTarget)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">

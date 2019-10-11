@@ -7283,6 +7283,28 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.Property
   nameWithType: ExpressionBuilder.Property
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal(System.Linq.Expressions.ParameterExpression,System.Type)
+  name: RefAnyVal(ParameterExpression, Type)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_RefAnyVal_System_Linq_Expressions_ParameterExpression_System_Type_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal(System.Linq.Expressions.ParameterExpression,System.Type)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal(System.Linq.Expressions.ParameterExpression, System.Type)
+  nameWithType: ExpressionBuilder.RefAnyVal(ParameterExpression, Type)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal*
+  name: RefAnyVal
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_RefAnyVal_
+  commentId: Overload:DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal
+  nameWithType: ExpressionBuilder.RefAnyVal
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal``1(System.Linq.Expressions.ParameterExpression)
+  name: RefAnyVal<T>(ParameterExpression)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_RefAnyVal__1_System_Linq_Expressions_ParameterExpression_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal``1(System.Linq.Expressions.ParameterExpression)
+  name.vb: RefAnyVal(Of T)(ParameterExpression)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal<T>(System.Linq.Expressions.ParameterExpression)
+  fullName.vb: DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal(Of T)(System.Linq.Expressions.ParameterExpression)
+  nameWithType: ExpressionBuilder.RefAnyVal<T>(ParameterExpression)
+  nameWithType.vb: ExpressionBuilder.RefAnyVal(Of T)(ParameterExpression)
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.Return(System.Linq.Expressions.LabelTarget)
   name: Return(LabelTarget)
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Return_System_Linq_Expressions_LabelTarget_
@@ -8168,6 +8190,103 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.NullSafetyExpression.Update
   nameWithType: NullSafetyExpression.Update
+- uid: DotNext.Linq.Expressions.RefAnyValExpression
+  name: RefAnyValExpression
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html
+  commentId: T:DotNext.Linq.Expressions.RefAnyValExpression
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression
+  nameWithType: RefAnyValExpression
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.#ctor(System.Linq.Expressions.ParameterExpression,System.Type)
+  name: RefAnyValExpression(ParameterExpression, Type)
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression__ctor_System_Linq_Expressions_ParameterExpression_System_Type_
+  commentId: M:DotNext.Linq.Expressions.RefAnyValExpression.#ctor(System.Linq.Expressions.ParameterExpression,System.Type)
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.RefAnyValExpression(System.Linq.Expressions.ParameterExpression, System.Type)
+  nameWithType: RefAnyValExpression.RefAnyValExpression(ParameterExpression, Type)
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.#ctor*
+  name: RefAnyValExpression
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression__ctor_
+  commentId: Overload:DotNext.Linq.Expressions.RefAnyValExpression.#ctor
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.RefAnyValExpression
+  nameWithType: RefAnyValExpression.RefAnyValExpression
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.CanReduce
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_CanReduce
+  commentId: P:DotNext.Linq.Expressions.RefAnyValExpression.CanReduce
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.CanReduce
+  nameWithType: RefAnyValExpression.CanReduce
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.CanReduce*
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_CanReduce_
+  commentId: Overload:DotNext.Linq.Expressions.RefAnyValExpression.CanReduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.CanReduce
+  nameWithType: RefAnyValExpression.CanReduce
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.NodeType
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_NodeType
+  commentId: P:DotNext.Linq.Expressions.RefAnyValExpression.NodeType
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.NodeType
+  nameWithType: RefAnyValExpression.NodeType
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.NodeType*
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_NodeType_
+  commentId: Overload:DotNext.Linq.Expressions.RefAnyValExpression.NodeType
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.NodeType
+  nameWithType: RefAnyValExpression.NodeType
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.Reduce
+  name: Reduce()
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_Reduce
+  commentId: M:DotNext.Linq.Expressions.RefAnyValExpression.Reduce
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.Reduce()
+  nameWithType: RefAnyValExpression.Reduce()
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.Reduce*
+  name: Reduce
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_Reduce_
+  commentId: Overload:DotNext.Linq.Expressions.RefAnyValExpression.Reduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.Reduce
+  nameWithType: RefAnyValExpression.Reduce
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.ReferenceType
+  name: ReferenceType
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_ReferenceType
+  commentId: P:DotNext.Linq.Expressions.RefAnyValExpression.ReferenceType
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.ReferenceType
+  nameWithType: RefAnyValExpression.ReferenceType
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.ReferenceType*
+  name: ReferenceType
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_ReferenceType_
+  commentId: Overload:DotNext.Linq.Expressions.RefAnyValExpression.ReferenceType
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.ReferenceType
+  nameWithType: RefAnyValExpression.ReferenceType
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.Type
+  name: Type
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_Type
+  commentId: P:DotNext.Linq.Expressions.RefAnyValExpression.Type
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.Type
+  nameWithType: RefAnyValExpression.Type
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.Type*
+  name: Type
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_Type_
+  commentId: Overload:DotNext.Linq.Expressions.RefAnyValExpression.Type
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.Type
+  nameWithType: RefAnyValExpression.Type
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.TypedReferenceVar
+  name: TypedReferenceVar
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_TypedReferenceVar
+  commentId: P:DotNext.Linq.Expressions.RefAnyValExpression.TypedReferenceVar
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.TypedReferenceVar
+  nameWithType: RefAnyValExpression.TypedReferenceVar
+- uid: DotNext.Linq.Expressions.RefAnyValExpression.TypedReferenceVar*
+  name: TypedReferenceVar
+  href: api/DotNext.Linq.Expressions.RefAnyValExpression.html#DotNext_Linq_Expressions_RefAnyValExpression_TypedReferenceVar_
+  commentId: Overload:DotNext.Linq.Expressions.RefAnyValExpression.TypedReferenceVar
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RefAnyValExpression.TypedReferenceVar
+  nameWithType: RefAnyValExpression.TypedReferenceVar
 - uid: DotNext.Linq.Expressions.UniversalExpression
   name: UniversalExpression
   href: api/DotNext.Linq.Expressions.UniversalExpression.html
@@ -12133,6 +12252,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.GetLastIndex
   nameWithType: InMemoryAuditTrail.GetLastIndex
+- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.SyncRoot
+  name: SyncRoot
+  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_SyncRoot
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.SyncRoot
+  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.SyncRoot
+  nameWithType: InMemoryAuditTrail.SyncRoot
+- uid: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.SyncRoot*
+  name: SyncRoot
+  href: api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html#DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_SyncRoot_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.SyncRoot
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.SyncRoot
+  nameWithType: InMemoryAuditTrail.SyncRoot
 - uid: DotNext.Net.Cluster.Consensus.Raft.IPersistentState
   name: IPersistentState
   href: api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html
@@ -30376,6 +30508,22 @@ references:
   fullName.vb: DotNext.Runtime.Intrinsics.IsNullable(Of T)()
   nameWithType: Intrinsics.IsNullable<T>()
   nameWithType.vb: Intrinsics.IsNullable(Of T)()
+- uid: DotNext.Runtime.Intrinsics.TypeOf*
+  name: TypeOf
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_TypeOf_
+  commentId: Overload:DotNext.Runtime.Intrinsics.TypeOf
+  isSpec: "True"
+  fullName: DotNext.Runtime.Intrinsics.TypeOf
+  nameWithType: Intrinsics.TypeOf
+- uid: DotNext.Runtime.Intrinsics.TypeOf``1
+  name: TypeOf<T>()
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_TypeOf__1
+  commentId: M:DotNext.Runtime.Intrinsics.TypeOf``1
+  name.vb: TypeOf(Of T)()
+  fullName: DotNext.Runtime.Intrinsics.TypeOf<T>()
+  fullName.vb: DotNext.Runtime.Intrinsics.TypeOf(Of T)()
+  nameWithType: Intrinsics.TypeOf<T>()
+  nameWithType.vb: Intrinsics.TypeOf(Of T)()
 - uid: DotNext.Sequence
   name: Sequence
   href: api/DotNext.Sequence.html
@@ -38019,6 +38167,129 @@ references:
   fullName: DotNext.Threading.QueuedSynchronizer.DotNext.Threading.ISynchronizer.HasWaiters
   nameWithType: QueuedSynchronizer.ISynchronizer.HasWaiters
   nameWithType.vb: QueuedSynchronizer.DotNext.Threading.ISynchronizer.HasWaiters
+- uid: DotNext.Threading.ReaderWriterSpinLock
+  name: ReaderWriterSpinLock
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html
+  commentId: T:DotNext.Threading.ReaderWriterSpinLock
+  fullName: DotNext.Threading.ReaderWriterSpinLock
+  nameWithType: ReaderWriterSpinLock
+- uid: DotNext.Threading.ReaderWriterSpinLock.CurrentReadCount
+  name: CurrentReadCount
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_CurrentReadCount
+  commentId: P:DotNext.Threading.ReaderWriterSpinLock.CurrentReadCount
+  fullName: DotNext.Threading.ReaderWriterSpinLock.CurrentReadCount
+  nameWithType: ReaderWriterSpinLock.CurrentReadCount
+- uid: DotNext.Threading.ReaderWriterSpinLock.CurrentReadCount*
+  name: CurrentReadCount
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_CurrentReadCount_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.CurrentReadCount
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.CurrentReadCount
+  nameWithType: ReaderWriterSpinLock.CurrentReadCount
+- uid: DotNext.Threading.ReaderWriterSpinLock.EnterReadLock
+  name: EnterReadLock()
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_EnterReadLock
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.EnterReadLock
+  fullName: DotNext.Threading.ReaderWriterSpinLock.EnterReadLock()
+  nameWithType: ReaderWriterSpinLock.EnterReadLock()
+- uid: DotNext.Threading.ReaderWriterSpinLock.EnterReadLock*
+  name: EnterReadLock
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_EnterReadLock_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.EnterReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.EnterReadLock
+  nameWithType: ReaderWriterSpinLock.EnterReadLock
+- uid: DotNext.Threading.ReaderWriterSpinLock.EnterWriteLock
+  name: EnterWriteLock()
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_EnterWriteLock
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.EnterWriteLock
+  fullName: DotNext.Threading.ReaderWriterSpinLock.EnterWriteLock()
+  nameWithType: ReaderWriterSpinLock.EnterWriteLock()
+- uid: DotNext.Threading.ReaderWriterSpinLock.EnterWriteLock*
+  name: EnterWriteLock
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_EnterWriteLock_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.EnterWriteLock
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.EnterWriteLock
+  nameWithType: ReaderWriterSpinLock.EnterWriteLock
+- uid: DotNext.Threading.ReaderWriterSpinLock.ExitReadLock
+  name: ExitReadLock()
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_ExitReadLock
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.ExitReadLock
+  fullName: DotNext.Threading.ReaderWriterSpinLock.ExitReadLock()
+  nameWithType: ReaderWriterSpinLock.ExitReadLock()
+- uid: DotNext.Threading.ReaderWriterSpinLock.ExitReadLock*
+  name: ExitReadLock
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_ExitReadLock_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.ExitReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.ExitReadLock
+  nameWithType: ReaderWriterSpinLock.ExitReadLock
+- uid: DotNext.Threading.ReaderWriterSpinLock.ExitWriteLock
+  name: ExitWriteLock()
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_ExitWriteLock
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.ExitWriteLock
+  fullName: DotNext.Threading.ReaderWriterSpinLock.ExitWriteLock()
+  nameWithType: ReaderWriterSpinLock.ExitWriteLock()
+- uid: DotNext.Threading.ReaderWriterSpinLock.ExitWriteLock*
+  name: ExitWriteLock
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_ExitWriteLock_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.ExitWriteLock
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.ExitWriteLock
+  nameWithType: ReaderWriterSpinLock.ExitWriteLock
+- uid: DotNext.Threading.ReaderWriterSpinLock.IsReadLockHeld
+  name: IsReadLockHeld
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_IsReadLockHeld
+  commentId: P:DotNext.Threading.ReaderWriterSpinLock.IsReadLockHeld
+  fullName: DotNext.Threading.ReaderWriterSpinLock.IsReadLockHeld
+  nameWithType: ReaderWriterSpinLock.IsReadLockHeld
+- uid: DotNext.Threading.ReaderWriterSpinLock.IsReadLockHeld*
+  name: IsReadLockHeld
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_IsReadLockHeld_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.IsReadLockHeld
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.IsReadLockHeld
+  nameWithType: ReaderWriterSpinLock.IsReadLockHeld
+- uid: DotNext.Threading.ReaderWriterSpinLock.IsWriteLockHeld
+  name: IsWriteLockHeld
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_IsWriteLockHeld
+  commentId: P:DotNext.Threading.ReaderWriterSpinLock.IsWriteLockHeld
+  fullName: DotNext.Threading.ReaderWriterSpinLock.IsWriteLockHeld
+  nameWithType: ReaderWriterSpinLock.IsWriteLockHeld
+- uid: DotNext.Threading.ReaderWriterSpinLock.IsWriteLockHeld*
+  name: IsWriteLockHeld
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_IsWriteLockHeld_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.IsWriteLockHeld
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.IsWriteLockHeld
+  nameWithType: ReaderWriterSpinLock.IsWriteLockHeld
+- uid: DotNext.Threading.ReaderWriterSpinLock.TryEnterReadLock(System.TimeSpan,System.Threading.CancellationToken)
+  name: TryEnterReadLock(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_TryEnterReadLock_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.TryEnterReadLock(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.ReaderWriterSpinLock.TryEnterReadLock(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: ReaderWriterSpinLock.TryEnterReadLock(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.ReaderWriterSpinLock.TryEnterReadLock*
+  name: TryEnterReadLock
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_TryEnterReadLock_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.TryEnterReadLock
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.TryEnterReadLock
+  nameWithType: ReaderWriterSpinLock.TryEnterReadLock
+- uid: DotNext.Threading.ReaderWriterSpinLock.TryEnterWriteLock(System.TimeSpan,System.Threading.CancellationToken)
+  name: TryEnterWriteLock(TimeSpan, CancellationToken)
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_TryEnterWriteLock_System_TimeSpan_System_Threading_CancellationToken_
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.TryEnterWriteLock(System.TimeSpan,System.Threading.CancellationToken)
+  fullName: DotNext.Threading.ReaderWriterSpinLock.TryEnterWriteLock(System.TimeSpan, System.Threading.CancellationToken)
+  nameWithType: ReaderWriterSpinLock.TryEnterWriteLock(TimeSpan, CancellationToken)
+- uid: DotNext.Threading.ReaderWriterSpinLock.TryEnterWriteLock*
+  name: TryEnterWriteLock
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_TryEnterWriteLock_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.TryEnterWriteLock
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.TryEnterWriteLock
+  nameWithType: ReaderWriterSpinLock.TryEnterWriteLock
 - uid: DotNext.Threading.Synchronizer
   name: Synchronizer
   href: api/DotNext.Threading.Synchronizer.html
