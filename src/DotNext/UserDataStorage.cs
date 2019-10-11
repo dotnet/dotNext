@@ -63,14 +63,9 @@ namespace DotNext
             internal V Get<V>(UserDataSlot<V> slot, V defaultValue)
             {
                 lockState.EnterReadLock();
-                try
-                {
-                    return slot.GetUserData(this, defaultValue);
-                }
-                finally
-                {
-                    lockState.ExitReadLock();
-                }
+                var result = slot.GetUserData(this, defaultValue);
+                lockState.ExitReadLock();
+                return result;
             }
 
             internal V GetOrSet<V, S>(UserDataSlot<V> slot, ref S valueFactory)
@@ -79,15 +74,13 @@ namespace DotNext
                 V userData;
                 //fast path - read lock is required
                 lockState.EnterReadLock();
-                try
-                {
-                    if(slot.GetUserData(this, out userData))
-                        goto exit;        
-                }
-                finally
+                if(slot.GetUserData(this, out userData))
                 {
                     lockState.ExitReadLock();
+                    goto exit;
                 }
+                else
+                    lockState.ExitReadLock();
                 //non-fast path: factory should be called
                 lockState.EnterWriteLock();
                 try
@@ -106,14 +99,9 @@ namespace DotNext
             internal bool Get<V>(UserDataSlot<V> slot, out V userData)
             {
                 lockState.EnterReadLock();
-                try
-                {
-                    return slot.GetUserData(this, out userData);
-                }
-                finally
-                {
-                    lockState.ExitReadLock();
-                }
+                var result = slot.GetUserData(this, out userData);
+                lockState.ExitReadLock();
+                return result;
             }
 
             internal void Set<V>(UserDataSlot<V> slot, V userData)
@@ -132,33 +120,17 @@ namespace DotNext
             internal bool Remove<V>(UserDataSlot<V> slot)
             {
                 lockState.EnterWriteLock();
-                try
-                {
-                    return slot.RemoveUserData(this);
-                }
-                finally
-                {
-                    lockState.ExitWriteLock();
-                }
+                var result = slot.RemoveUserData(this);
+                lockState.ExitWriteLock();
+                return result;
             }
 
             internal bool Remove<V>(UserDataSlot<V> slot, out V userData)
             {
-                //fast path if user data doesn't exist
                 lockState.EnterWriteLock();
-                try
-                {
-                    if (slot.GetUserData(this, out userData))
-                    {
-                        slot.RemoveUserData(this);
-                        return true;
-                    }
-                    return false;
-                }
-                finally
-                {
-                    lockState.ExitWriteLock();
-                }
+                var result = slot.GetUserData(this, out userData) && slot.RemoveUserData(this);
+                lockState.ExitWriteLock();
+                return result;
             }
         }
 
