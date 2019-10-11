@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 
@@ -40,6 +41,7 @@ namespace DotNext.Threading
     /// inside of value type then <see cref="Atomic{T}"/> is the best choice. Its performance is better
     /// than synchronized methods according with benchmarks.
     /// </remarks>
+    [StructLayout(LayoutKind.Auto)]
     public struct Atomic<T> : IStrongBox, ICloneable
         where T : struct
     {
@@ -71,7 +73,7 @@ namespace DotNext.Threading
         public void Clone(out Atomic<T> container)
         {
             lockState.Acquire();
-            Copy(this, out container);
+            container = new Atomic<T> { value = value };
             lockState.Release();
         }
 
