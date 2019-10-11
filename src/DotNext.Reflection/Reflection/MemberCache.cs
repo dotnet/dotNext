@@ -2,21 +2,21 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
 
 namespace DotNext.Reflection
 {
-    internal abstract class Cache<K, V> : Disposable
+    using ReaderWriterSpinLock = Threading.ReaderWriterSpinLock;
+
+    internal abstract class Cache<K, V>
         where V : class
     {
-        private readonly Dictionary<K, V> elements;
-        private readonly ReaderWriterLockSlim syncObject;
+        /*
+         * Can't use ConcurrentDictionary here because GetOrAdd method can call factory multiple times for the same key
+         */
+        private readonly IDictionary<K, V> elements;
+        private ReaderWriterSpinLock syncObject;
 
-        private protected Cache(IEqualityComparer<K> comparer)
-        {
-            elements = new Dictionary<K, V>(comparer);
-            syncObject = new ReaderWriterLockSlim(LockRecursionPolicy.NoRecursion);
-        }
+        private protected Cache(IEqualityComparer<K> comparer) => elements = new Dictionary<K, V>(comparer);
 
         private protected Cache()
             : this(EqualityComparer<K>.Default)
@@ -30,38 +30,23 @@ namespace DotNext.Reflection
             syncObject.EnterReadLock();
             var exists = elements.TryGetValue(cacheKey, out var item);
             syncObject.ExitReadLock();
-            if (exists) return item;
-            //non-fast path, discover item
-            syncObject.EnterUpgradeableReadLock();
-            exists = elements.TryGetValue(cacheKey, out item);
             if (exists)
-            {
-                syncObject.ExitUpgradeableReadLock();
-                return item;
-            }
+                goto exit;
+            //non-fast path, discover item
+            syncObject.EnterWriteLock();
+            if(elements.TryGetValue(cacheKey, out item))
+                syncObject.ExitWriteLock();
             else
-            {
-                syncObject.EnterWriteLock();
                 try
                 {
-                    return elements[cacheKey] = Create(cacheKey);
+                    elements.Add(cacheKey, item = Create(cacheKey));
                 }
                 finally
                 {
                     syncObject.ExitWriteLock();
-                    syncObject.ExitUpgradeableReadLock();
                 }
-            }
-        }
-
-        protected sealed override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                syncObject.Dispose();
-                elements.Clear();
-            }
-            base.Dispose(disposing);
+        exit:
+            return item;
         }
     }
 

@@ -139,5 +139,17 @@ namespace DotNext.Runtime
             }
             return Return<bool>();
         }
+
+        /// <summary>
+        /// Returns the runtime handle associated with type <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type which runtime handle should be obtained.</typeparam>
+        /// <returns>The runtime handle representing type <typeparamref name="T"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static RuntimeTypeHandle TypeOf<T>()
+        {
+            Ldtoken(typeof(T));
+            return Return<RuntimeTypeHandle>();
+        }
     }
 }

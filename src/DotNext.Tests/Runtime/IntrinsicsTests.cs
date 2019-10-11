@@ -59,5 +59,13 @@ namespace DotNext.Runtime
             Intrinsics.Bitcast(point, out Guid g);
             False(g == Guid.Empty);
         }
+
+        [Fact]
+        public static void LightweightTypeOf()
+        {
+            var handle = Intrinsics.TypeOf<string>();
+            Equal(typeof(string).TypeHandle, handle);
+            NotEqual(typeof(StringComparer).TypeHandle, handle);
+        }
     }
 }

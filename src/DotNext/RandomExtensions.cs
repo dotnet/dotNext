@@ -1,14 +1,8 @@
 using System;
 using System.Security.Cryptography;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using M = InlineIL.MethodRef;
-using TR = InlineIL.TypeRef;
 
 namespace DotNext
 {
-    using funcptr = Runtime.CompilerServices.ManagedMethodPointer;
-
     /// <summary>
     /// Provides random data generation.
     /// </summary>
@@ -16,28 +10,47 @@ namespace DotNext
     {
         internal static readonly int BitwiseHashSalt = new Random().Next();
 
-        private static void NextString(Random rnd, Span<char> buffer, ReadOnlySpan<char> allowedChars)
+        private interface IRandomStringGenerator
         {
-            foreach (ref var element in buffer)
-                element = allowedChars[rnd.Next(0, allowedChars.Length)];
+            void NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars);
         }
 
-        private static void NextString(RandomNumberGenerator rng, Span<char> buffer, ReadOnlySpan<char> allowedChars)
+        private readonly struct PseudoRandomStringGenerator : IRandomStringGenerator
         {
-            //TODO: byte array should be replaced with stack allocated Span in .NET Standard 2.1
-            var bytes = new byte[buffer.Length * sizeof(int)];
-            rng.GetBytes(bytes, 0, bytes.Length);
-            var offset = 0;
-            foreach (ref var element in buffer)
+            private readonly Random rng;
+
+            internal PseudoRandomStringGenerator(Random random) => rng = random;
+
+            void IRandomStringGenerator.NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars)
             {
-                var randomNumber = (BitConverter.ToInt32(bytes, offset) & int.MaxValue) % allowedChars.Length;
-                element = allowedChars[randomNumber];
-                offset += sizeof(int);
+                foreach (ref var element in buffer)
+                    element = allowedChars[rng.Next(0, allowedChars.Length)];
             }
         }
 
-        private static unsafe string NextString<TSource>(funcptr generator, TSource source, ReadOnlySpan<char> allowedChars, int length)
-            where TSource : class
+        private readonly struct RandomStringGenerator : IRandomStringGenerator
+        {
+            private readonly RandomNumberGenerator rng;
+
+            internal RandomStringGenerator(RandomNumberGenerator random) => rng = random;
+
+            void IRandomStringGenerator.NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars)
+            {
+                //TODO: byte array should be replaced with stack allocated Span in .NET Standard 2.1
+                var bytes = new byte[buffer.Length * sizeof(int)];
+                rng.GetBytes(bytes, 0, bytes.Length);
+                var offset = 0;
+                foreach (ref var element in buffer)
+                {
+                    var randomNumber = (BitConverter.ToInt32(bytes, offset) & int.MaxValue) % allowedChars.Length;
+                    element = allowedChars[randomNumber];
+                    offset += sizeof(int);
+                }
+            }
+        }
+
+        private static unsafe string NextString<TGenerator>(TGenerator generator, ReadOnlySpan<char> allowedChars, int length)
+            where TGenerator : struct, IRandomStringGenerator
         {
             //TODO: should be reviewed for .NET Standard 2.1
             if (length < 0)
@@ -47,7 +60,7 @@ namespace DotNext
             const short smallStringLength = 1024;
             //use stack allocation for small strings, which is 99% of all use cases
             Span<char> result = length <= smallStringLength ? stackalloc char[length] : new char[length];
-            generator.InvokeStaticVoid(source, result, allowedChars);
+            generator.NextString(result, allowedChars);
             fixed (char* ptr = result)
                 return new string(ptr, 0, length);
         }
@@ -61,15 +74,7 @@ namespace DotNext
         /// <returns>Randomly generated string.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this Random random, ReadOnlySpan<char> allowedChars, int length)
-        {
-            Ldftn(new M(typeof(RandomExtensions), nameof(NextString), typeof(Random), typeof(Span<char>), typeof(ReadOnlySpan<char>)));
-            Newobj(M.Constructor(typeof(funcptr), typeof(IntPtr)));
-            Push(random);
-            Ldarg(nameof(allowedChars));
-            Push(length);
-            Call(new M(typeof(RandomExtensions), nameof(NextString), typeof(funcptr), TR.MethodGenericParameters[0], typeof(ReadOnlySpan<char>), typeof(int)).MakeGenericMethod(typeof(Random)));
-            return Return<string>();
-        }
+            => NextString(new PseudoRandomStringGenerator(random), allowedChars, length);
 
         /// <summary>
         /// Generates random string of the given length.
@@ -102,15 +107,7 @@ namespace DotNext
         /// <returns>Randomly generated string.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than zero.</exception>
         public static string NextString(this RandomNumberGenerator random, ReadOnlySpan<char> allowedChars, int length)
-        {
-            Ldftn(new M(typeof(RandomExtensions), nameof(NextString), typeof(RandomNumberGenerator), typeof(Span<char>), typeof(ReadOnlySpan<char>)));
-            Newobj(M.Constructor(typeof(funcptr), typeof(IntPtr)));
-            Push(random);
-            Ldarg(nameof(allowedChars));
-            Push(length);
-            Call(new M(typeof(RandomExtensions), nameof(NextString), typeof(funcptr), TR.MethodGenericParameters[0], typeof(ReadOnlySpan<char>), typeof(int)).MakeGenericMethod(typeof(RandomNumberGenerator)));
-            return Return<string>();
-        }
+            => NextString(new RandomStringGenerator(random), allowedChars, length);
 
         /// <summary>
         /// Generates random string of the given length.

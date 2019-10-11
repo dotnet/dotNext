@@ -1,6 +1,36 @@
 Release Notes
 ====
 
+# 10-12-2019
+Release Date: 10-12-2019
+
+<a href="https://www.nuget.org/packages/dotnext/1.1.0">DotNext 1.1.0</a>
+* Reduced number of inline IL code
+* Updated version of FxCop analyzer
+* [ReaderWriterSpinLock](https://sakno.github.io/dotNext/api/DotNext.Threading.ReaderWriterSpinLock.html) type is introduced
+* Improved performance of [UserDataStorage](https://sakno.github.io/dotNext/api/DotNext.UserDataStorage.html)
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.1.0">DotNext.Reflection 1.1.0</a>
+* Updated version of FxCop analyzer
+* Improved performance of internal caches
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.1.0">DotNext.Metaprogramming 1.1.0</a>
+* Updated version of FxCop analyzer
+* `RefAnyValExpression` is added
+
+<a href="https://www.nuget.org/packages/dotnext.threading/1.1.0">DotNext.Threading 1.1.0</a>
+* Updated version of FxCop analyzer
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.1.0">DotNext.Unsafe 1.1.0</a>
+* Updated version of FxCop analyzer
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.1.0">DotNext.Net.Cluster 1.1.0</a>
+* Minor performance optimizations of persistent WAL
+* Updated version of FxCop analyzer
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.1.0">DotNext.AspNetCore.Cluster 1.1.0</a>
+* Updated version of FxCop analyzer
+
 # 10-02-2019
 <a href="https://www.nuget.org/packages/dotnext/1.0.1">DotNext 1.0.1</a>
 * Minor performance optimizations
@@ -24,7 +54,7 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.0.1">DotNext.AspNetCore.Cluster 1.0.1</a>
 * Minor performance optimizations
 
-<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.0.1">DotNext.Augmentation.Fody 1.0.0</a>
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.0.1">DotNext.Augmentation.Fody 1.0.1</a>
 * Code refactorings
 
 # 10-02-2019
