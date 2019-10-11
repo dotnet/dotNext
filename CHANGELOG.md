@@ -1,30 +1,34 @@
 Release Notes
 ====
 
-# 10-10-2019
-<a href="https://www.nuget.org/packages/dotnext/1.0.2">DotNext 1.0.2</a>
+# 10-12-2019
+Release Date: 10-12-2019
+
+<a href="https://www.nuget.org/packages/dotnext/1.1.0">DotNext 1.1.0</a>
 * Reduced number of inline IL code
 * Updated version of FxCop analyzer
-* `Intrinsics.TypeOf` method is added 
+* [ReaderWriterSpinLock](https://sakno.github.io/dotNext/api/DotNext.Threading.ReaderWriterSpinLock.html) type is introduced
+* Improved performance of [UserDataStorage](https://sakno.github.io/dotNext/api/DotNext.UserDataStorage.html)
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/1.0.2">DotNext.Reflection 1.0.2</a>
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.1.0">DotNext.Reflection 1.1.0</a>
 * Updated version of FxCop analyzer
+* Improved performance of internal caches
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.0.2">DotNext.Metaprogramming 1.0.2</a>
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.1.0">DotNext.Metaprogramming 1.1.0</a>
 * Updated version of FxCop analyzer
 * `RefAnyValExpression` is added
 
-<a href="https://www.nuget.org/packages/dotnext.threading/1.0.2">DotNext.Threading 1.0.2</a>
+<a href="https://www.nuget.org/packages/dotnext.threading/1.1.0">DotNext.Threading 1.1.0</a>
 * Updated version of FxCop analyzer
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/1.0.2">DotNext.Unsafe 1.0.2</a>
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.1.0">DotNext.Unsafe 1.1.0</a>
 * Updated version of FxCop analyzer
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.0.2">DotNext.Net.Cluster 1.0.2</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.1.0">DotNext.Net.Cluster 1.1.0</a>
 * Minor performance optimizations of persistent WAL
 * Updated version of FxCop analyzer
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.0.2">DotNext.AspNetCore.Cluster 1.0.2</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.1.0">DotNext.AspNetCore.Cluster 1.1.0</a>
 * Updated version of FxCop analyzer
 
 # 10-02-2019
