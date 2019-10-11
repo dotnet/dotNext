@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
-    using AtomicBoolean = Threading.AtomicBoolean;
+    using ReaderWriterSpinLock = Threading.ReaderWriterSpinLock;
 
     /// <summary>
     /// Provides access to user data associated with the object.
@@ -52,85 +52,100 @@ namespace DotNext
         {
 
             //ReaderWriterLockSlim is not used because it is heavyweight
-            //atomic-based lock is used instead because it is very low probability of concurrent
+            //spin-based lock is used instead because it is very low probability of concurrent
             //updates of the same backing storage.
 
-            private AtomicBoolean lockState;
+            private ReaderWriterSpinLock lockState;
 
-            internal BackingStorage() : base(3) => lockState = new AtomicBoolean(false);
+            //should be public because called through Activator by ConditionalWeakTable
+            public BackingStorage() : base(3) => lockState = new ReaderWriterSpinLock();
 
             internal V Get<V>(UserDataSlot<V> slot, V defaultValue)
             {
-                lockState.Acquire();
+                lockState.EnterReadLock();
                 try
                 {
                     return slot.GetUserData(this, defaultValue);
                 }
                 finally
                 {
-                    lockState.Release();
+                    lockState.ExitReadLock();
                 }
             }
 
             internal V GetOrSet<V, S>(UserDataSlot<V> slot, ref S valueFactory)
                 where S : struct, ISupplier<V>
             {
-                lockState.Acquire();
+                V userData;
+                //fast path - read lock is required
+                lockState.EnterReadLock();
                 try
                 {
-                    if (!slot.GetUserData(this, out var userData))
-                        slot.SetUserData(this, userData = valueFactory.Invoke());
-                    return userData;
+                    if(slot.GetUserData(this, out userData))
+                        goto exit;        
                 }
                 finally
                 {
-                    lockState.Release();
+                    lockState.ExitReadLock();
                 }
+                //non-fast path: factory should be called
+                lockState.EnterWriteLock();
+                try
+                {
+                    if (!slot.GetUserData(this, out userData))
+                        slot.SetUserData(this, userData = valueFactory.Invoke());
+                }
+                finally
+                {
+                    lockState.ExitWriteLock();
+                }
+            exit:
+                return userData;
             }
 
             internal bool Get<V>(UserDataSlot<V> slot, out V userData)
             {
-                lockState.Acquire();
+                lockState.EnterReadLock();
                 try
                 {
                     return slot.GetUserData(this, out userData);
                 }
                 finally
                 {
-                    lockState.Release();
+                    lockState.ExitReadLock();
                 }
             }
 
             internal void Set<V>(UserDataSlot<V> slot, V userData)
             {
-                lockState.Acquire();
+                lockState.EnterWriteLock();
                 try
                 {
                     slot.SetUserData(this, userData);
                 }
                 finally
                 {
-                    lockState.Release();
+                    lockState.ExitWriteLock();
                 }
             }
 
             internal bool Remove<V>(UserDataSlot<V> slot)
             {
-                lockState.Acquire();
+                lockState.EnterWriteLock();
                 try
                 {
                     return slot.RemoveUserData(this);
                 }
                 finally
                 {
-                    lockState.Release();
+                    lockState.ExitWriteLock();
                 }
             }
 
             internal bool Remove<V>(UserDataSlot<V> slot, out V userData)
             {
                 //fast path if user data doesn't exist
-                lockState.Acquire();
+                lockState.EnterWriteLock();
                 try
                 {
                     if (slot.GetUserData(this, out userData))
@@ -142,13 +157,12 @@ namespace DotNext
                 }
                 finally
                 {
-                    lockState.Release();
+                    lockState.ExitWriteLock();
                 }
             }
         }
 
         private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new ConditionalWeakTable<object, BackingStorage>();
-        private static readonly ConditionalWeakTable<object, BackingStorage>.CreateValueCallback Factory = CreateStorage;
 
         private readonly object owner;
 
@@ -156,12 +170,10 @@ namespace DotNext
         internal UserDataStorage(object owner)
             => this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
-        private static BackingStorage CreateStorage(object key) => new BackingStorage();
-
         private BackingStorage GetStorage(bool createIfNeeded)
         {
             if (createIfNeeded)
-                return UserData.GetValue(owner, Factory);
+                return UserData.GetOrCreateValue(owner);
             else if (UserData.TryGetValue(owner, out var storage))
                 return storage;
             else
