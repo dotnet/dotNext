@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>1.0.2</Version>
+    <Version>1.1.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Rich data types to work with unmanaged memory in CLS-compliant way</Description>
@@ -39,7 +39,7 @@
     <PackageReference Include="Fody" Version="6.0.0" PrivateAssets="all" />
     <PackageReference Include="InlineIL.Fody" Version="1.3.3" PrivateAssets="all" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="1.0.2" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="1.1.0" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
   <ItemGroup>
