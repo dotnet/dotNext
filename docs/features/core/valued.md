@@ -113,5 +113,5 @@ Now you see that `ValueFunc` constructor accepts instance of regular .NET delega
 
 This feature is optional and become available only if .NEXT Augmented Compilation enabled. However, the code above is correct even if augmentations are not enabled for building pipeline. In this case, heap allocation of regular delegate stays in compiled code.
 
-# Instance Methoods
+# Instance Methods
 Capturing of instance non-abstract methods are not supported in _normal_ mode. However, the early prototype had such support but later it was dropped. The main reason is IL limitation: it is not possible to express **this** argument in uniform way for value and reference type both. This magic is only allowed for virtual calls using `.constrained` prefix in conjunction with `callvirt` instruction but not for `calli` instruction. The second reason is C# compiler which allows to specify static method for open delegate or instance method for closed delegate. There is no syntax for open instance method. As a result, open delegates created for instance methods are used rarely.

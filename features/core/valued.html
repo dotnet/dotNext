@@ -172,7 +172,7 @@ sum.Invoke(2L, 3L);	//returns 5
 <p>Now you see that <code>ValueFunc</code> constructor accepts instance of regular .NET delegate which is allocated on the heap.</p>
 <p>.NEXT Augmented Compilation tells the compiler that this allocation is redundant and pointer to the static method can be passed into Value Delegate directly. The allocation of regular delegate is removed from IL code at compile-time by .NEXT code weaver.</p>
 <p>This feature is optional and become available only if .NEXT Augmented Compilation enabled. However, the code above is correct even if augmentations are not enabled for building pipeline. In this case, heap allocation of regular delegate stays in compiled code.</p>
-<h1 id="instance-methoods">Instance Methoods</h1>
+<h1 id="instance-methods">Instance Methods</h1>
 <p>Capturing of instance non-abstract methods are not supported in <em>normal</em> mode. However, the early prototype had such support but later it was dropped. The main reason is IL limitation: it is not possible to express <strong>this</strong> argument in uniform way for value and reference type both. This magic is only allowed for virtual calls using <code>.constrained</code> prefix in conjunction with <code>callvirt</code> instruction but not for <code>calli</code> instruction. The second reason is C# compiler which allows to specify static method for open delegate or instance method for closed delegate. There is no syntax for open instance method. As a result, open delegates created for instance methods are used rarely.</p>
 </article>
           </div>
