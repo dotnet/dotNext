@@ -56,6 +56,7 @@ The following code describes these alternative implementations of synchronizatio
 | [ManualResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.manualresetevent) | [AsyncManualResetEvent](api/DotNext.Threading.AsyncManualResetEvent.yml)
 | [AutoResetEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.autoresetevent) | [AsyncAutoResetEvent](api/DotNext.Threading.AsyncAutoResetEvent.yml)
 | [Barrier](https://docs.microsoft.com/en-us/dotnet/api/system.threading.barrier) | [AsyncBarrier](api/DotNext.Threading.AsyncBarrier.yml)
+| [CountdownEvent](https://docs.microsoft.com/en-us/dotnet/api/system.threading.countdownevent) | [AsyncCountdownEvent](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncCountdownEvent)
 
 But this is not all features of this library. Read more [here](./features/threading/index.md).
 
