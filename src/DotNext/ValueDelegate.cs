@@ -55,15 +55,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (!wrap && action.Method.IsStatic && action.Target is null)
-            {
-                this.action = null;
-                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if(wrap || DelegateHelpers.IsRegularDelegate(action))
             {
                 this.action = action;
                 methodPtr = default;
+            }
+            else
+            {
+                this.action = null;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -232,15 +232,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (!wrap && func.Method.IsStatic && func.Target is null)
-            {
-                this.func = null;
-                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(func))
             {
                 this.func = func;
                 methodPtr = default;
+            }
+            else
+            {
+                this.func = null;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -440,15 +440,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (!wrap && func.Method.IsStatic && func.Target is null)
-            {
-                this.func = null;
-                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(func))
             {
                 this.func = func;
                 methodPtr = default;
+            }
+            else
+            {
+                this.func = null;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -642,15 +642,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (!wrap && action.Method.IsStatic && action.Target is null)
-            {
-                this.action = null;
-                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(action))
             {
                 this.action = action;
                 methodPtr = default;
+            }
+            else
+            {
+                this.action = null;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -823,15 +823,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (!wrap && func.Method.IsStatic && func.Target is null)
-            {
-                this.func = null;
-                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(func))
             {
                 this.func = func;
                 methodPtr = default;
+            }
+            else
+            {
+                this.func = null;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -1003,15 +1003,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (!wrap && action.Method.IsStatic && action.Target is null)
-            {
-                this.action = null;
-                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(action))
             {
                 this.action = action;
                 methodPtr = default;
+            }
+            else
+            {
+                this.action = null;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -1188,15 +1188,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (!wrap && func.Method.IsStatic && func.Target is null)
-            {
-                this.func = null;
-                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(func))
             {
                 this.func = func;
                 methodPtr = default;
+            }
+            else
+            {
+                this.func = null;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -1372,15 +1372,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (!wrap && action.Method.IsStatic && action.Target is null)
-            {
-                this.action = null;
-                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(action))
             {
                 this.action = action;
                 methodPtr = default;
+            }
+            else
+            {
+                this.action = null;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -1561,15 +1561,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (!wrap && func.Method.IsStatic && func.Target is null)
-            {
-                this.func = null;
-                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(func))
             {
                 this.func = func;
                 methodPtr = default;
+            }
+            else
+            {
+                this.func = null;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -1749,15 +1749,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (!wrap && action.Method.IsStatic && action.Target is null)
-            {
-                this.action = null;
-                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(action))
             {
                 this.action = action;
                 methodPtr = default;
+            }
+            else
+            {
+                this.action = null;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -1938,15 +1938,15 @@ namespace DotNext
         {
             if (func is null)
                 throw new ArgumentNullException(nameof(func));
-            if (!wrap && func.Method.IsStatic && func.Target is null)
-            {
-                this.func = null;
-                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(func))
             {
                 this.func = func;
                 methodPtr = default;
+            }
+            else
+            {
+                this.func = null;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -2126,15 +2126,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (!wrap && action.Method.IsStatic && action.Target is null)
-            {
-                this.action = null;
-                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(action))
             {
                 this.action = action;
                 methodPtr = default;
+            }
+            else
+            {
+                this.action = null;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
             }
         }
 
@@ -2318,15 +2318,15 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if (!wrap && action.Method.IsStatic && action.Target is null)
-            {
-                this.action = null;
-                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
-            }
-            else
+            if (wrap || DelegateHelpers.IsRegularDelegate(action))
             {
                 this.action = action;
                 methodPtr = default;
+            }
+            else
+            {
+                this.action = null;
+                methodPtr = action.Method.MethodHandle.GetFunctionPointer();
             }
         }
 

@@ -11,6 +11,14 @@ namespace DotNext
     /// </summary>
     public static class DelegateHelpers
     {
+        private static readonly Predicate<Assembly> isCollectible;
+
+        static DelegateHelpers()
+        {
+            var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
+            isCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
+        }
+
         private static MethodInfo GetMethod<D>(Expression<D> expression)
             where D : Delegate
         {
@@ -440,5 +448,13 @@ namespace DotNext
 
         //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
         internal static void InvokeInThreadPool(this Action action) => ThreadPool.QueueUserWorkItem(Invoke, action);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool CanBeUnloaded(Assembly assembly)
+            => assembly.IsDynamic || assembly.ReflectionOnly || (isCollectible?.Invoke(assembly) ?? false);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsRegularDelegate(Delegate d)
+            => !d.Method.IsStatic || d.Target != null || CanBeUnloaded(d.Method.Module.Assembly);
     }
 }
