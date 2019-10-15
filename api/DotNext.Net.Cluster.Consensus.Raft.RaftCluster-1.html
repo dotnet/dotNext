@@ -570,7 +570,6 @@ protected virtual ILogger Logger { get; }</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">protected Task&lt;Result&lt;bool&gt;&gt; ReceiveEntries&lt;TEntry&gt;(TMember sender, long senderTerm, ILogEntryProducer&lt;TEntry&gt; entries, long prevLogIndex, long prevLogTerm, long commitIndex)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -936,7 +935,6 @@ protected virtual ILogger Logger { get; }</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task WriteAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; entries, WriteConcern concern, TimeSpan timeout)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

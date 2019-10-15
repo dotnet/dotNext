@@ -736,7 +736,6 @@ It is recommended to use this audit trail for testing purposes only.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask IAuditTrail&lt;IRaftLogEntry&gt;.AppendAsync&lt;TEntry&gt;(TEntry entry, long startIndex)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -805,7 +804,6 @@ It is recommended to use this audit trail for testing purposes only.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask IAuditTrail&lt;IRaftLogEntry&gt;.AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; entries, long startIndex, bool skipCommitted, CancellationToken token)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -884,7 +882,6 @@ It is recommended to use this audit trail for testing purposes only.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; IAuditTrail&lt;IRaftLogEntry&gt;.AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; entries, CancellationToken token)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1035,7 +1032,6 @@ It is recommended to use this audit trail for testing purposes only.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; IAuditTrail&lt;IRaftLogEntry&gt;.ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, long endIndex, CancellationToken token)
-
     where TReader : ILogEntryConsumer&lt;IRaftLogEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1118,7 +1114,6 @@ It is recommended to use this audit trail for testing purposes only.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; IAuditTrail&lt;IRaftLogEntry&gt;.ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, CancellationToken token)
-
     where TReader : ILogEntryConsumer&lt;IRaftLogEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
