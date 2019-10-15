@@ -29,6 +29,13 @@ namespace DotNext
             Equal(new IntPtr(-40), value.Negate());
         }
 
+        [Require64BitProcess]
+        public static void IntPtrArithmeticOverflow()
+        {
+            var value = new IntPtr(long.MaxValue);
+            Throws<OverflowException>(() => value.AddChecked(new IntPtr(1)));
+        }
+
         [Fact]
         public static void BoolToIntConversion()
         {
@@ -71,9 +78,9 @@ namespace DotNext
         {
             var value1 = (new Point { X = 10, Y = 20 }, new Point { X = 15, Y = 20 });
             var value2 = (new Point { X = 10, Y = 20 }, new Point { X = 15, Y = 30 });
-            False(BitwiseComparer<Point>.Equals(value1, value2));
+            False(BitwiseComparer<(Point, Point)>.Equals(value1, value2));
             value2.Item2.Y = 20;
-            True(BitwiseComparer<Point>.Equals(value1, value2));
+            True(BitwiseComparer<(Point, Point)>.Equals(value1, value2));
         }
 
         [Fact]
