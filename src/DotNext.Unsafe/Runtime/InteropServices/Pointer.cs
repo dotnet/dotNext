@@ -557,7 +557,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="length">A number of elements to iterate.</param>
         /// <returns>Iterator object.</returns>
-        public unsafe Enumerator GetEnumerator(long length) => new Enumerator(value, length);
+        public unsafe Enumerator GetEnumerator(long length) => IsNull ? default : new Enumerator(value, length);
 
         /// <summary>
         /// Computes bitwise equality between two blocks of memory.

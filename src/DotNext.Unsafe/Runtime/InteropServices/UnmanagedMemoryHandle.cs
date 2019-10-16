@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -33,6 +34,11 @@ namespace DotNext.Runtime.InteropServices
         private protected abstract UnmanagedMemoryHandle Clone();
 
         object ICloneable.Clone() => Clone();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal unsafe static long SizeOf<T>(int length)
+            where T : unmanaged
+            => Math.BigMul(length, sizeof(T));
 
         /// <summary>
         /// Gets size of allocated unmanaged memory, in bytes.
@@ -102,7 +108,6 @@ namespace DotNext.Runtime.InteropServices
         /// Represents unmanaged memory as stream.
         /// </summary>
         /// <returns>The stream of unmanaged memory.</returns>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public Stream AsStream() => Pointer.AsStream(Size);
 
         /// <summary>
