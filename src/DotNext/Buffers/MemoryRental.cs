@@ -38,8 +38,11 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="pool">The memory pool.</param>
         /// <param name="minBufferSize">The minimum size of the memory to rent.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="pool"/> is <see langword="null"/>.</exception>
         public MemoryRental(MemoryPool<T> pool, int minBufferSize)
         {
+            if (pool is null)
+                throw new ArgumentNullException(nameof(pool));
             owner = pool.Rent(minBufferSize);
             Span = owner.Memory.Span.Slice(0, minBufferSize);
         }

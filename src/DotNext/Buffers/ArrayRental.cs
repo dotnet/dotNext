@@ -22,9 +22,10 @@ namespace DotNext.Buffers
         /// <param name="pool">Array pool.</param>
         /// <param name="minimumLength">The minimum length of the array.</param>
         /// <param name="clearArray">Indicates whether the contents of the array should be cleared after calling of <see cref="Dispose()"/>.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="pool"/> is <see langword="null"/>.</exception>
         public ArrayRental(ArrayPool<T> pool, int minimumLength, bool clearArray = false)
         {
-            this.pool = pool;
+            this.pool = pool ?? throw new ArgumentNullException(nameof(pool));
             array = pool.Rent(minimumLength);
             this.clearArray = clearArray;
             Length = minimumLength;
