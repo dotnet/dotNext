@@ -107,7 +107,7 @@ namespace DotNext.Buffers
         public static implicit operator T[](in ArrayRental<T> rental) => rental.array;
 
         /// <summary>
-        /// Returns array to the pool.
+        /// Returns the array back to the pool.
         /// </summary>
         public void Dispose() => pool?.Return(array, clearArray);
     }

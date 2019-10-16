@@ -92,7 +92,7 @@ namespace DotNext.Buffers
         public ref T GetPinnableReference() => ref Span.GetPinnableReference();
 
         /// <summary>
-        /// Releases the rented memory.
+        /// Returns the memory back to the pool.
         /// </summary>
         public void Dispose() => owner?.Dispose();
     }
