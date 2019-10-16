@@ -1,7 +1,6 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace DotNext.Threading
 {
@@ -17,7 +16,7 @@ namespace DotNext.Threading
         private const int WriteLockState = int.MinValue;
         private const int NoLockState = default;
 
-        private volatile int state; 
+        private volatile int state;
 
         /// <summary>
         /// Gets a value that indicates whether the current thread has entered the lock in write mode.
@@ -90,7 +89,7 @@ namespace DotNext.Threading
         private bool TryEnterWriteLock(Timeout timeout, CancellationToken token)
         {
             for (SpinWait spinner; Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce(), token.ThrowIfCancellationRequested())
-                if(timeout.IsExpired)
+                if (timeout.IsExpired)
                     return false;
             return true;
         }

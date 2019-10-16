@@ -56,7 +56,7 @@ namespace DotNext
         internal static string CollectionImplementationExpected => Resources.GetString("CollectionImplementationExpected");
 
         internal static string UnsupportedSafeNavigationType(Type type) => string.Format(Resources.GetString("UnsupportedSafeNavigationType"), type);
-    
+
         internal static string TypedReferenceExpected => Resources.GetString("TypedReferenceExpected");
     }
 }

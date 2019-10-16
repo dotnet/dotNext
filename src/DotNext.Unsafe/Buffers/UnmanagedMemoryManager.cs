@@ -32,8 +32,6 @@ namespace DotNext.Buffers
                 Runtime.InteropServices.Memory.ClearBits(address, size);
         }
 
-        internal IntPtr Address => address;
-
         /// <summary>
         /// Gets length of the elements allocated in unmanaged memory.
         /// </summary>

@@ -55,7 +55,7 @@ namespace DotNext
         {
             if (action is null)
                 throw new ArgumentNullException(nameof(action));
-            if(wrap || DelegateHelpers.IsRegularDelegate(action))
+            if (wrap || DelegateHelpers.IsRegularDelegate(action))
             {
                 this.action = action;
                 methodPtr = default;

@@ -34,7 +34,7 @@ namespace DotNext.Reflection
                 goto exit;
             //non-fast path, discover item
             syncObject.EnterWriteLock();
-            if(elements.TryGetValue(cacheKey, out item))
+            if (elements.TryGetValue(cacheKey, out item))
                 syncObject.ExitWriteLock();
             else
                 try
@@ -45,7 +45,7 @@ namespace DotNext.Reflection
                 {
                     syncObject.ExitWriteLock();
                 }
-        exit:
+            exit:
             return item;
         }
     }
