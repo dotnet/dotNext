@@ -27,6 +27,7 @@ namespace DotNext.Buffers
             this.pool = pool;
             array = pool.Rent(minimumLength);
             this.clearArray = clearArray;
+            Length = minimumLength;
         }
 
         /// <summary>
@@ -41,17 +42,51 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Rents the array.  
+        /// </summary>
+        /// <param name="array">The array to rent.</param>
+        /// <param name="length">The length of the rented segment.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="array"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is greater than the length of <paramref name="array"/>.</exception>
+        public ArrayRental(T[] array, int length)
+        {
+            this.array = array ?? throw new ArgumentNullException(nameof(array));
+            Length = length <= array.Length ? length : throw new ArgumentOutOfRangeException(nameof(length));
+            clearArray = false;
+            pool = null;
+        }
+
+        /// <summary>
+        /// Rents the array.
+        /// </summary>
+        /// <param name="array">The array to rent.</param>
+        public ArrayRental(T[] array)
+            : this(array, array.Length)
+        {
+        }
+
+        /// <summary>
+        /// Gets length of the rented array.
+        /// </summary>
+        public int Length { get; }
+
+        /// <summary>
         /// Gets value indicating that this object is empty.
         /// </summary>
-        public bool IsEmpty => array is null || pool is null;
+        public bool IsEmpty => array is null || Length == 0;
 
         /// <summary>
-        /// Gets memory associated with the rented array.
+        /// Gets the memory associated with the rented array.
         /// </summary>
-        public Memory<T> Memory => array is null ? default : new Memory<T>(array);
+        public Memory<T> Memory => array is null ? default : new Memory<T>(array, 0, Length);
 
         /// <summary>
-        /// Gets array element by its index.
+        /// Gets the rented array.
+        /// </summary>
+        public ArraySegment<T> Array => array is null ? default : new ArraySegment<T>(array, 0, Length);
+
+        /// <summary>
+        /// Gets the array element by its index.
         /// </summary>
         /// <param name="index">The index of the array element.</param>
         /// <returns>The managed pointer to the array element.</returns>

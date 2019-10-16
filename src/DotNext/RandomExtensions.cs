@@ -3,6 +3,8 @@ using System.Security.Cryptography;
 
 namespace DotNext
 {
+    using CharBuffer = Buffers.MemoryRental<char>;
+
     /// <summary>
     /// Provides random data generation.
     /// </summary>
@@ -59,10 +61,17 @@ namespace DotNext
                 return string.Empty;
             const short smallStringLength = 1024;
             //use stack allocation for small strings, which is 99% of all use cases
-            Span<char> result = length <= smallStringLength ? stackalloc char[length] : new char[length];
-            generator.NextString(result, allowedChars);
-            fixed (char* ptr = result)
-                return new string(ptr, 0, length);
+            CharBuffer result = length <= smallStringLength ? stackalloc char[length] : new CharBuffer(length);
+            try
+            {
+                generator.NextString(result.Span, allowedChars);
+                fixed (char* ptr = result)
+                    return new string(ptr, 0, length);
+            }
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         /// <summary>
