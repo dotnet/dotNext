@@ -35,6 +35,7 @@ namespace DotNext.Buffers
             Equal(20, vector.Span[1]);
             Equal(30, vector.Span[2]);
             Equal(40, vector.Span[3]);
+            vector.Dispose();
         }
     }
 }
