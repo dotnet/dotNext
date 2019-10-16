@@ -27,6 +27,7 @@ namespace DotNext.Buffers
         /// Rents the memory referenced by the span.
         /// </summary>
         /// <param name="span">The span that references the memory to rent.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MemoryRental(Span<T> span)
         {
             Span = span;

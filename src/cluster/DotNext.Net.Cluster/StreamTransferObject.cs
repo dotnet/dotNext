@@ -42,6 +42,7 @@ namespace DotNext
 
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
+            //TODO: Should be rewritten for .NET Standard 2.1
             using (var stream = output.AsStream(true))
                 await content.CopyToAsync(stream, DefaultBufferSize, token).ConfigureAwait(false);
             if (content.CanSeek)
