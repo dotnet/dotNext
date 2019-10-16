@@ -76,8 +76,6 @@ namespace DotNext.Buffers
         /// </summary>
         public int Length => Span.Length;
 
-        internal void Reverse() => Span.Reverse();
-
         /// <summary>
         /// Gets the memory element by its index.
         /// </summary>
@@ -90,6 +88,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <returns>The managed pointer to the first element of the rented array.</returns>
         [EditorBrowsable(EditorBrowsableState.Never)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ref T GetPinnableReference() => ref Span.GetPinnableReference();
 
         /// <summary>

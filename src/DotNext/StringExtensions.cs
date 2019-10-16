@@ -44,7 +44,7 @@ namespace DotNext
             try
             {
                 str.AsSpan().CopyTo(result.Span);
-                result.Reverse();
+                result.Span.Reverse();
                 fixed (char* ptr = result)
                     return new string(ptr, 0, result.Length);
             }
