@@ -124,6 +124,7 @@ namespace DotNext.Buffers
                 OnDisposed?.Invoke(this);
             }
             address = default;
+            OnDisposed = null;
         }
     }
 }
