@@ -134,6 +134,7 @@ namespace DotNext.IO
             }
             finally
             {
+                charBuffer.Dispose();
                 result.Dispose();
             }
         }
@@ -179,6 +180,7 @@ namespace DotNext.IO
             }
             finally
             {
+                charBuffer.Dispose();
                 result.Dispose();
             }
         }
