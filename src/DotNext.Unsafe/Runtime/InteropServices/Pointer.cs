@@ -163,18 +163,15 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="index">Element index.</param>
 		/// <returns>Array element.</returns>
 		/// <exception cref="NullPointerException">This array is not allocated.</exception>
-        public unsafe T this[long index]
+        public unsafe ref T this[long index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => IsNull ? throw new NullPointerException() : *(value + index);
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
+            get
             {
                 if (IsNull)
                     throw new NullPointerException();
                 else
-                    *(this.value + index) = value;
+                    return ref value[index];
             }
         }
 
@@ -542,7 +539,16 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The value stored in the memory.</returns>
         /// <exception cref="NullPointerException">The pointer is 0.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe T Get() => Value;
+        public T Get() => Value;
+
+        /// <summary>
+        /// Gets the value stored in the memory at the specified position.
+        /// </summary>
+        /// <param name="index">The index of the element.</param>
+        /// <returns>The value stored in the memory at the specified position.</returns>
+        /// <exception cref="NullPointerException">The pointer is 0.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Get(long index) => this[index];
 
         /// <summary>
         /// Sets the value stored in the memory identified by this pointer.
@@ -550,7 +556,15 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="value">The value to be stored in the memory.</param>
         /// <exception cref="NullPointerException">The pointer is 0.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe void Set(T value) => Value = value;
+        public void Set(T value) => Value = value;
+
+        /// <summary>
+        /// Sets the value at the specified position in the memory.
+        /// </summary>
+        /// <param name="value">The value to be stored in the memory.</param>
+        /// <param name="index">The index of the element to modify.</param>
+        /// <exception cref="NullPointerException">The pointer is 0.</exception>
+        public void Set(T value, long index) => this[index] = value;
 
         /// <summary>
         /// Gets enumerator over raw memory.
