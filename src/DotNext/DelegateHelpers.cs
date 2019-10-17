@@ -26,7 +26,7 @@ namespace DotNext
             {
                 case MethodCallExpression expr:
                     return expr.Method;
-                case MemberExpression expr when (expr.Member is PropertyInfo property):
+                case MemberExpression expr when expr.Member is PropertyInfo property:
                     return property.GetMethod;
                 case BinaryExpression expr:
                     return expr.Method;
