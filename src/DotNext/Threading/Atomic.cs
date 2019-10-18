@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using static System.Threading.Interlocked;
 
 namespace DotNext.Threading
 {
@@ -24,17 +25,15 @@ namespace DotNext.Threading
         /// </summary>
         /// <remarks>The atomic update action should side-effect free.</remarks>
         /// <param name="current">The value to update.</param>
-        /// <param name="newValue">The updated value.</param>
-        public delegate void Updater(in T current, out T newValue);
+        public delegate void Updater(ref T current);
 
         /// <summary>
         /// Represents atomic accumulator.
         /// </summary>
         /// <remarks>The atomic accumulator should side-effect free.</remarks>
         /// <param name="current">The value to update.</param>
-        /// <param name="x">The supplied value to be combined with the </param>
-        /// <param name="newValue">The accumulated value.</param>
-        public delegate void Accumulator(in T current, in T x, out T newValue);
+        /// <param name="x">The value to be combined with <paramref name="current"/>.</param>
+        public delegate void Accumulator(ref T current, in T x);
 
         private T value;
 
@@ -87,9 +86,8 @@ namespace DotNext.Threading
         /// <param name="other">The container for the value.</param>
         public void Swap(ref Atomic<T> other)
         {
-#pragma warning disable CS0420 
-            lockState.Acquire(ref version);
-#pragma warning restore CS0420
+            lockState.Acquire();
+            Increment(ref version);
             Swap(ref other.value);
             lockState.Release();
         }
@@ -100,7 +98,8 @@ namespace DotNext.Threading
         /// <param name="other">The managed pointer to the value to swap.</param>
         public void Swap(ref T other)
         {
-            lockState.Acquire(ref version);
+            lockState.Acquire();
+            Increment(ref version);
             Runtime.InteropServices.Memory.Swap(ref value, ref other);
             lockState.Release();
         }
@@ -111,7 +110,8 @@ namespace DotNext.Threading
         /// <param name="newValue">The value to be stored into this container.</param>
         public void Write(in T newValue)
         {
-            lockState.Acquire(ref version);
+            lockState.Acquire();
+            Increment(ref version);
             Copy(in newValue, out value);
             lockState.Release();
         }
@@ -124,7 +124,8 @@ namespace DotNext.Threading
         /// <param name="result">The origin value stored in this container before modification.</param>
         public void CompareExchange(in T update, in T expected, out T result)
         {
-            lockState.Acquire(ref version);
+            lockState.Acquire();
+            Increment(ref version);
             var current = value;
             if (BitwiseComparer<T>.Equals(current, expected))
                 Copy(in update, out value);
@@ -140,7 +141,8 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         public bool CompareAndSet(in T expected, in T update)
         {
-            lockState.Acquire(ref version);
+            lockState.Acquire();
+            Increment(ref version);
             bool result;
             if (result = BitwiseComparer<T>.Equals(value, expected))
                 Copy(in update, out value);
@@ -155,22 +157,11 @@ namespace DotNext.Threading
         /// <param name="previous">The original stored value before modification.</param>
         public void Exchange(in T update, out T previous)
         {
-            lockState.Acquire(ref version);
+            lockState.Acquire();
+            Increment(ref version);
             Copy(in value, out previous);
             Copy(in update, out value);
             lockState.Release();
-        }
-
-        private void Update(Updater updater, out T result, bool newValueExpected)
-        {
-            T newValue, oldValue;
-            do
-            {
-                Read(out oldValue);
-                updater(oldValue, out newValue);
-            }
-            while (!CompareAndSet(in oldValue, in newValue));
-            result = newValueExpected ? newValue : oldValue;
         }
 
         /// <summary>
@@ -179,7 +170,13 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <param name="result">The updated value.</param>
         public void UpdateAndGet(Updater updater, out T result)
-            => Update(updater, out result, true);
+        {
+            lockState.Acquire();
+            Increment(ref version);
+            updater(ref value);
+            Copy(in value, out result);
+            lockState.Release();
+        }
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -188,18 +185,13 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <param name="result">The original value.</param>
         public void GetAndUpdate(Updater updater, out T result)
-            => Update(updater, out result, false);
-
-        private void Accumulate(in T x, Accumulator accumulator, out T result, bool newValueExpected)
         {
-            T oldValue, newValue;
-            do
-            {
-                Read(out oldValue);
-                accumulator(oldValue, x, out newValue);
-            }
-            while (!CompareAndSet(oldValue, newValue));
-            result = newValueExpected ? newValue : oldValue;
+            lockState.Acquire();
+            Increment(ref version);
+            var previous = value;
+            updater(ref value);
+            Copy(in previous, out result);
+            lockState.Release();
         }
 
         /// <summary>
@@ -213,7 +205,13 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <param name="result">The updated value.</param>
         public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
-            => Accumulate(x, accumulator, out result, true);
+        {
+            lockState.Acquire();
+            Increment(ref version);
+            accumulator(ref value, in x);
+            Copy(in value, out result);
+            lockState.Release();
+        }
 
         /// <summary>
         /// Atomically updates the stored value with the results of applying the given function 
@@ -226,7 +224,14 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <param name="result">The original value.</param>
         public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
-            => Accumulate(x, accumulator, out result, false);
+        {
+            lockState.Acquire();
+            Increment(ref version);
+            var previous = value;
+            accumulator(ref value, in x);
+            Copy(in previous, out result);
+            lockState.Release();
+        }
 
         /// <summary>
         /// Gets or sets value atomically.

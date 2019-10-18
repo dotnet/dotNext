@@ -237,10 +237,9 @@ namespace DotNext.Threading
         public bool GetAndUpdate(in ValueFunc<bool, bool> updater)
             => Update(updater).OldValue;
 
-        internal void Acquire(ref int version)
+        internal void Acquire()
         {
             for (SpinWait spinner; CompareExchange(false, true); spinner.SpinOnce()) { }
-            Interlocked.Add(ref version, 1);
         }
 
         internal void Release() => Value = false;
