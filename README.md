@@ -66,6 +66,7 @@ Release Date: 10-XX-2019
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.0">DotNext.Net.Cluster 1.2.0</a>
 * Updated version of `DotNext` dependency to fix potential memory leaks
 * Strict package versioning rules are added to avoid accidental upgrade to major version
+* Fixed incorrect computation of partition in `PersistentState.DropAsync` method
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.0">DotNext.AspNetCore.Cluster 1.2.0</a>
 * Performance optimizations caused by changes in `ArrayRental` type 
