@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 
 namespace DotNext.Threading
 {
@@ -32,7 +34,13 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float VolatileRead(ref this float value) => Atomic.Read(ref value);
+        public static float VolatileRead(ref this float value)
+        {
+            Push(ref value);
+            Volatile();
+            Ldind_R4();
+            return Return<float>();
+        }
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -47,7 +55,13 @@ namespace DotNext.Threading
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite(ref this float value, float newValue)
-            => Atomic.Write(ref value, newValue);
+        {
+            Push(ref value);
+            Push(newValue);
+            Volatile();
+            Stind_R4();
+            Ret();
+        }
 
         /// <summary>
 		/// Atomically increments by one referenced value.
@@ -75,6 +89,10 @@ namespace DotNext.Threading
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Add(ref this float value, float operand) => AccumulateAndGet(ref value, operand, Sum);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool Equals(float x, float y)
+            => x == y || float.IsNaN(x) && float.IsNaN(y);
+
         /// <summary>
         /// Atomically sets referenced value to the given updated value if the current value == the expected value.
         /// </summary>
@@ -84,7 +102,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(ref this float value, float expected, float update)
-            => Atomic<float>.Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
+            => Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
 
         /// <summary>
 		/// Modifies referenced value atomically.

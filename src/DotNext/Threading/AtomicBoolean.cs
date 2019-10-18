@@ -132,7 +132,7 @@ namespace DotNext.Threading
             bool oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = Atomic.Read(ref value).ToBoolean());
+                newValue = updater.Invoke(oldValue = AtomicInt32.VolatileRead(ref value).ToBoolean());
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
@@ -143,7 +143,7 @@ namespace DotNext.Threading
             bool oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = Atomic.Read(ref value).ToBoolean(), x);
+                newValue = accumulator.Invoke(oldValue = AtomicInt32.VolatileRead(ref value).ToBoolean(), x);
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
@@ -237,9 +237,10 @@ namespace DotNext.Threading
         public bool GetAndUpdate(in ValueFunc<bool, bool> updater)
             => Update(updater).OldValue;
 
-        internal void Acquire()
+        internal void Acquire(ref int version)
         {
             for (SpinWait spinner; CompareExchange(false, true); spinner.SpinOnce()) { }
+            Interlocked.Add(ref version, 1);
         }
 
         internal void Release() => Value = false;

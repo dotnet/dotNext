@@ -211,7 +211,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns>Equality check result.</returns>
-        public bool Equals(E other) => Atomic<E>.Equals(Value, other);
+        public bool Equals(E other) => BitwiseComparer<E>.Equals(Value, other);
 
         /// <summary>
         /// Determines whether two enum members are equal.

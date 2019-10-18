@@ -32,7 +32,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double VolatileRead(ref this double value) => Atomic.Read(ref value);
+        public static double VolatileRead(ref this double value) => Volatile.Read(ref value);
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -46,7 +46,7 @@ namespace DotNext.Threading
         /// all processors in the computer.
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite(ref this double value, double newValue) => Atomic.Write(ref value, newValue);
+        public static void VolatileWrite(ref this double value, double newValue) => Volatile.Write(ref value, newValue);
 
         /// <summary>
 		/// Atomically increments by one referenced value.
@@ -73,6 +73,10 @@ namespace DotNext.Threading
 		/// <returns>Result of sum operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Add(ref this double value, double operand) => AccumulateAndGet(ref value, operand, Sum);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool Equals(double x, double y)
+            => x == y || double.IsNaN(x) && double.IsNaN(y);
 
         /// <summary>
         /// Atomically sets referenced value to the given updated value if the current value == the expected value.
@@ -83,7 +87,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(ref this double value, double expected, double update)
-            => Atomic<double>.Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
+            => Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
 
         /// <summary>
 		/// Modifies referenced value atomically.

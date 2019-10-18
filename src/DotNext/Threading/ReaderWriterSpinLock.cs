@@ -24,11 +24,11 @@ namespace DotNext.Threading
 
             internal LockStamp(ref int version)
             {
-                this.version = Atomic.Read(ref version);
+                this.version = Volatile.Read(ref version);
                 valid = true;
             }
 
-            internal bool IsValid(ref int version) => valid && this.version == Atomic.Read(ref version);
+            internal bool IsValid(ref int version) => valid && this.version == Volatile.Read(ref version);
 
             /// <summary>
             /// Determines whether this stamp represents the same version of the lock state

@@ -30,7 +30,7 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr VolatileRead(ref this IntPtr value) => Atomic.Read(ref value);
+        public static IntPtr VolatileRead(ref this IntPtr value) => Volatile.Read(ref value);
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -44,7 +44,7 @@ namespace DotNext.Threading
         /// all processors in the computer.
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite(ref this IntPtr value, IntPtr newValue) => Atomic.Write(ref value, newValue);
+        public static void VolatileWrite(ref this IntPtr value, IntPtr newValue) => Volatile.Write(ref value, newValue);
 
         /// <summary>
         /// Atomically increments the referenced value by one.
@@ -83,7 +83,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet(ref this IntPtr value, IntPtr expected, IntPtr update)
-            => Atomic<IntPtr>.Equals(Interlocked.CompareExchange(ref value, update, expected), expected);
+            => Interlocked.CompareExchange(ref value, update, expected) == expected;
 
         /// <summary>
         /// Modifies the referenced value atomically.

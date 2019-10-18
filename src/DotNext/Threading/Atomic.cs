@@ -1,36 +1,10 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
 
 namespace DotNext.Threading
 {
     using static Runtime.InteropServices.Memory;
-
-    internal static class Atomic
-    {
-        //T should not be greater than maximum size of primitive type. For .NET Standard it is sizeof(long)
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static T Read<T>(ref T value)
-        {
-            Push(ref value);
-            Volatile();
-            Ldobj(typeof(T));
-            return Return<T>();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void Write<T>(ref T storage, T value)
-        {
-            Push(ref storage);
-            Push(value);
-            Volatile();
-            Stobj(typeof(T));
-            Ret();
-        }
-    }
 
     /// <summary>
     /// Provides atomic access to non-primitive data type.
@@ -65,6 +39,7 @@ namespace DotNext.Threading
         private T value;
 
         private AtomicBoolean lockState;
+        private volatile int version;    //used for optimistic lock
 
         /// <summary>
         /// Clones thic container atomically.
@@ -72,9 +47,14 @@ namespace DotNext.Threading
         /// <param name="container">The memory location used to store cloned container.</param>
         public void Clone(out Atomic<T> container)
         {
-            lockState.Acquire();
-            container = new Atomic<T> { value = value };
-            lockState.Release();
+            container = default;
+            int stamp;
+            do
+            {
+                stamp = version;
+                container.value = value;
+            }
+            while (lockState.Value || stamp != version);
         }
 
         object ICloneable.Clone()
@@ -89,9 +69,13 @@ namespace DotNext.Threading
         /// <param name="result">The result of atomic read.</param>
         public void Read(out T result)
         {
-            lockState.Acquire();
-            Copy(in value, out result);
-            lockState.Release();
+            int stamp;
+            do
+            {
+                stamp = version;
+                Copy(in value, out result);
+            }
+            while (lockState.Value || stamp != version);
         }
 
         /// <summary>
@@ -103,7 +87,9 @@ namespace DotNext.Threading
         /// <param name="other">The container for the value.</param>
         public void Swap(ref Atomic<T> other)
         {
-            lockState.Acquire();
+#pragma warning disable CS0420 
+            lockState.Acquire(ref version);
+#pragma warning restore CS0420
             Swap(ref other.value);
             lockState.Release();
         }
@@ -114,7 +100,7 @@ namespace DotNext.Threading
         /// <param name="other">The managed pointer to the value to swap.</param>
         public void Swap(ref T other)
         {
-            lockState.Acquire();
+            lockState.Acquire(ref version);
             Runtime.InteropServices.Memory.Swap(ref value, ref other);
             lockState.Release();
         }
@@ -125,7 +111,7 @@ namespace DotNext.Threading
         /// <param name="newValue">The value to be stored into this container.</param>
         public void Write(in T newValue)
         {
-            lockState.Acquire();
+            lockState.Acquire(ref version);
             Copy(in newValue, out value);
             lockState.Release();
         }
@@ -138,7 +124,7 @@ namespace DotNext.Threading
         /// <param name="result">The origin value stored in this container before modification.</param>
         public void CompareExchange(in T update, in T expected, out T result)
         {
-            lockState.Acquire();
+            lockState.Acquire(ref version);
             var current = value;
             if (BitwiseComparer<T>.Equals(current, expected))
                 Copy(in update, out value);
@@ -154,7 +140,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         public bool CompareAndSet(in T expected, in T update)
         {
-            lockState.Acquire();
+            lockState.Acquire(ref version);
             bool result;
             if (result = BitwiseComparer<T>.Equals(value, expected))
                 Copy(in update, out value);
@@ -169,7 +155,7 @@ namespace DotNext.Threading
         /// <param name="previous">The original stored value before modification.</param>
         public void Exchange(in T update, out T previous)
         {
-            lockState.Acquire();
+            lockState.Acquire(ref version);
             Copy(in value, out previous);
             Copy(in update, out value);
             lockState.Release();

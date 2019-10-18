@@ -31,7 +31,7 @@ namespace DotNext.Threading
             T oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = Atomic.Read(ref value));
+                newValue = updater.Invoke(oldValue = Volatile.Read(ref value));
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -43,7 +43,7 @@ namespace DotNext.Threading
             T oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = Atomic.Read(ref value), x);
+                newValue = accumulator.Invoke(oldValue = Volatile.Read(ref value), x);
             }
             while (!CompareAndSet(ref value, oldValue, newValue));
             return (oldValue, newValue);
@@ -178,7 +178,7 @@ namespace DotNext.Threading
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T VolatileRead<T>(this T[] array, long index)
             where T : class
-            => Atomic.Read(ref array[index]);
+            => Volatile.Read(ref array[index]);
 
         /// <summary>
         /// Performs volatile write to the array element.
@@ -189,7 +189,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite<T>(this T[] array, long index, T element)
             where T : class
-            => Atomic.Write(ref array[index], element);
+            => Volatile.Write(ref array[index], element);
 
         /// <summary>
 		/// Atomically sets array element to the given updated value if the array element == the expected value.
@@ -382,10 +382,7 @@ namespace DotNext.Threading
         /// for the reference type.
         /// </summary>
         /// <param name="value">Initial value to be placed into container.</param>
-		public AtomicReference(T value)
-        {
-            this.value = value;
-        }
+		public AtomicReference(T value) => this.value = value;
 
         [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private AtomicReference(SerializationInfo info, StreamingContext context)

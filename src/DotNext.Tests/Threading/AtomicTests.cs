@@ -174,5 +174,31 @@ namespace DotNext.Threading
             Equal(new IntPtr(42), i.GetAndUpdate(current => new IntPtr(52)));
             Equal(new IntPtr(52), i);
         }
+
+        private enum LongEnum : long
+        {
+            One = 0L,
+            Two = 1L
+        }
+
+        private enum ByteEnum : byte
+        {
+            One = 0,
+            Two = 1
+        }
+
+        [Fact]
+        public static void EnumVolatileReadWrite()
+        {
+            var be = ByteEnum.Two;
+            Equal(ByteEnum.Two, be.VolatileRead());
+            be.VolatileWrite(ByteEnum.One);
+            Equal(ByteEnum.One, be);
+
+            var le = LongEnum.Two;
+            Equal(LongEnum.Two, le.VolatileRead());
+            le.VolatileWrite(LongEnum.One);
+            Equal(LongEnum.One, le);
+        }
     }
 }
