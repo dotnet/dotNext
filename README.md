@@ -57,6 +57,7 @@ Release Date: 10-XX-2019
 <a href="https://www.nuget.org/packages/dotnext.threading/1.2.0">DotNext.Threading 1.2.0</a>
 * Updated version of `DotNext` dependency to fix potential memory leaks
 * Strict package versioning rules are added to avoid accidental upgrade to major version
+* [AsyncReaderWriterLock](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncReaderWriterLock.html) now supports optimistic reads
 
 <a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.0">DotNext.Unsafe 1.2.0</a>
 * [UnmanagedMemoryPool](https://sakno.github.io/dotNext/api/DotNext.Buffers.UnmanagedMemoryPool-1.html) is added
