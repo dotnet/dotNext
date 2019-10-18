@@ -111,20 +111,6 @@ namespace DotNext
             return Return<int>();
         }
 
-        //-1 if value < 0, +1 if value > 0, 0 if value == 0
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int CompareToZero(this int value)   
-        {
-            Push(value);
-            Ldc_I4_0();
-            Cgt();
-            Push(value);
-            Ldc_I4_0();
-            Clt();
-            Sub();
-            return Return<int>();
-        }
-
         /// <summary>
         /// Converts <see cref="int"/> into <see cref="bool"/>.
         /// </summary>

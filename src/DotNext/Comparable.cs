@@ -31,16 +31,16 @@ namespace DotNext
         public static bool Between<T>(this T value, T left, T right, BoundType boundType = BoundType.Open)
             where T : IComparable<T>
         {
-            switch (value.CompareTo(left).CompareToZero() + value.CompareTo(right).CompareToZero())
+            switch (Math.Sign(value.CompareTo(left)) + Math.Sign(value.CompareTo(right)))
             {
-                default:
-                    return false;
                 case 0:
                     return true;
                 case 1:
                     return (boundType & BoundType.RightClosed) != 0;
                 case -1:
                     return (boundType & BoundType.LeftClosed) != 0;
+                default:
+                    return false;
             }
         }
 
