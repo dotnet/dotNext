@@ -369,7 +369,7 @@ namespace DotNext
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(Optional<T> other)
         {
-            switch(ValueTypeExtensions.Add(IsPresent, other.IsPresent))
+            switch(IsPresent.Add(other.IsPresent))
             {
                 default:
                     return true;
@@ -442,7 +442,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both containers store the same value; otherwise, <see langword="false"/>.</returns>
         public static bool operator ==(in Optional<T> first, in Optional<T> second)
         {
-            switch (ValueTypeExtensions.Add(first.IsPresent, second.IsPresent))
+            switch (first.IsPresent.Add(second.IsPresent))
             {
                 default:
                     return true;
@@ -461,7 +461,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both containers store the different values; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in Optional<T> first, in Optional<T> second)
         {
-            switch (ValueTypeExtensions.Add(first.IsPresent, second.IsPresent))
+            switch (first.IsPresent.Add(second.IsPresent))
             {
                 default:
                     return false;

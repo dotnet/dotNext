@@ -94,7 +94,7 @@ namespace DotNext
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int Add(bool x, bool y)
+        internal static int Add(this bool x, bool y)
         {
             Push(x);
             Push(y);
