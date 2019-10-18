@@ -490,12 +490,15 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both containers are empty or have values; otherwise, <see langword="false"/>.</returns>
         public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second)
         {
-            if (first.IsPresent == second.IsPresent)
-                return Empty;
-            else if (first.IsPresent)
-                return first;
-            else
-                return second;
+            switch (first.IsPresent.Subtract(second.IsPresent))
+            {
+                default:
+                    return Empty;
+                case -1:
+                    return second;
+                case 1:
+                    return first;
+            }
         }
 
         /// <summary>
