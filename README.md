@@ -45,6 +45,9 @@ Release Date: 10-XX-2019
 * Value Delegates now are protected from _dangling pointer_ issue caused by dynamic assembly loading 
 * Reduced amount of memory utilized by random string generation methods
 * Strict package versioning rules are added to avoid accidental upgrade to major version
+* Improved performance of [AtomicEnum](https://sakno.github.io/dotNext/api/DotNext.Threading.AtomicEnum.html) methods
+* Improved performance of [Atomic&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.Atomic-1.html) using optimistic read locks
+* Fixed unnecessary boxing in atomic operations
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/1.2.0">DotNext.Reflection 1.2.0</a>
 * Updated version of `DotNext` dependency to fix potential memory leaks
