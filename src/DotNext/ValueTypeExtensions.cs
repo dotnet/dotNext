@@ -90,7 +90,15 @@ namespace DotNext
         public static int ToInt32(this bool value)
         {
             Push(value);
-            Conv_I4();
+            return Return<int>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static int Add(bool x, bool y)
+        {
+            Push(x);
+            Push(y);
+            Emit.Add();
             return Return<int>();
         }
 

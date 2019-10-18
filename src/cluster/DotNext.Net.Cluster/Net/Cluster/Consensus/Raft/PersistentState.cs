@@ -1209,7 +1209,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 //find partitions to be deleted
                 var partitionNumber = Math.DivRem(startIndex, recordsPerPartition, out var remainder);
                 //take the next partition if startIndex is not a beginning of the calculated partition
-                partitionNumber += remainder & 1L;
+                partitionNumber += (remainder > 0L).ToInt32();
                 for (Partition partition; partitionTable.TryGetValue(partitionNumber, out partition); partitionNumber++)
                 {
                     var fileName = partition.Name;

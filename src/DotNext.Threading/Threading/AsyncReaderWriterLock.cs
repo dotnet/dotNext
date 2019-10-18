@@ -94,8 +94,8 @@ namespace DotNext.Threading
             /// <param name="first">The first lock stamp to compare.</param>
             /// <param name="second">The second lock stamp to compare.</param>
             /// <returns><see langword="true"/> of <paramref name="first"/> stamp is equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static bool operator ==(in LockStamp first, in LockStamp second) => first.Equals(second);
+            public static bool operator ==(in LockStamp first, in LockStamp second)
+                => ReferenceEquals(first.state, second.state) && first.version == second.version;
 
             /// <summary>
             /// Determines whether the first stamp represents the different version of the lock state
@@ -104,8 +104,8 @@ namespace DotNext.Threading
             /// <param name="first">The first lock stamp to compare.</param>
             /// <param name="second">The second lock stamp to compare.</param>
             /// <returns><see langword="true"/> of <paramref name="first"/> stamp is not equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            public static bool operator !=(in LockStamp first, in LockStamp second) => !first.Equals(second);
+            public static bool operator !=(in LockStamp first, in LockStamp second)
+                => !ReferenceEquals(first.state, second.state) || first.version != second.version;
         }
 
         private sealed class WriteLockNode : WaitNode
@@ -235,12 +235,12 @@ namespace DotNext.Threading
         public bool IsWriteLockHeld => state.WriteLock;
 
         /// <summary>
-        /// Returns a stamp that can later be validated, or <see langword="null"/> if exclusively locked.
+        /// Returns a stamp that can be validated later.
         /// </summary>
-        /// <returns>A valid optimistic read stamp, or <see langword="null"/> if exclusively locked.</returns>
+        /// <returns>Optimistic read stamp. May be invalid.</returns>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public LockStamp? TryOptimisticRead()
-            => state.WriteLock ? null : new LockStamp?(new LockStamp(state));
+        public LockStamp TryOptimisticRead()
+            => state.WriteLock ? new LockStamp() : new LockStamp(state);
 
         /// <summary>
         /// Attempts to acquire write lock without blocking.

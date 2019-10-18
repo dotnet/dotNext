@@ -172,7 +172,7 @@ namespace DotNext
         /// Returns the value if present; otherwise return default value.
         /// </summary>
         /// <returns>The value, if present, otherwise <c>default</c>.</returns>
-        public T OrDefault() => Or(default);
+        public T OrDefault() => value;
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.

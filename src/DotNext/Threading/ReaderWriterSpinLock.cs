@@ -13,10 +13,88 @@ namespace DotNext.Threading
     [StructLayout(LayoutKind.Auto)]
     public struct ReaderWriterSpinLock
     {
+        /// <summary>
+        /// Represents lock stamp used for optimistic reading.
+        /// </summary>
+        [StructLayout(LayoutKind.Auto)]
+        public readonly struct LockStamp : IEquatable<LockStamp>
+        {
+            private readonly int version;
+            private readonly bool valid;
+
+            internal LockStamp(ref int version)
+            {
+                this.version = Atomic.Read(ref version);
+                valid = true;
+            }
+
+            internal bool IsValid(ref int version) => valid && this.version == Atomic.Read(ref version);
+
+            /// <summary>
+            /// Determines whether this stamp represents the same version of the lock state
+            /// as the given stamp.
+            /// </summary>
+            /// <param name="other">The lock stamp to compare.</param>
+            /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+            public bool Equals(LockStamp other) => version == other.version && valid == other.valid;
+
+            /// <summary>
+            /// Determines whether this stamp represents the same version of the lock state
+            /// as the given stamp.
+            /// </summary>
+            /// <param name="other">The lock stamp to compare.</param>
+            /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+            public override bool Equals(object other) => other is LockStamp stamp && Equals(stamp);
+
+            /// <summary>
+            /// Computes hash code for this stamp.
+            /// </summary>
+            /// <returns>The hash code of this stamp.</returns>
+            public override int GetHashCode() => version;
+
+            /// <summary>
+            /// Determines whether the first stamp represents the same version of the lock state
+            /// as the second stamp.
+            /// </summary>
+            /// <param name="first">The first lock stamp to compare.</param>
+            /// <param name="second">The second lock stamp to compare.</param>
+            /// <returns><see langword="true"/> of <paramref name="first"/> stamp is equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
+            public static bool operator ==(in LockStamp first, in LockStamp second)
+                => first.version == second.version && first.valid == second.valid;
+
+            /// <summary>
+            /// Determines whether the first stamp represents the different version of the lock state
+            /// as the second stamp.
+            /// </summary>
+            /// <param name="first">The first lock stamp to compare.</param>
+            /// <param name="second">The second lock stamp to compare.</param>
+            /// <returns><see langword="true"/> of <paramref name="first"/> stamp is not equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
+            public static bool operator !=(in LockStamp first, in LockStamp second)
+                => first.version != second.version || first.valid ^ second.valid;
+        }
+
         private const int WriteLockState = int.MinValue;
         private const int NoLockState = default;
 
         private volatile int state;
+        private int version;    //volatile
+
+        /// <summary>
+        /// Returns a stamp that can be validated later.
+        /// </summary>
+        /// <returns>Optimistic read stamp. May be invalid.</returns>
+        public LockStamp TryOptimisticRead()
+        {
+            var stamp = new LockStamp(ref version);
+            return state == WriteLockState ? new LockStamp() : stamp;
+        }
+
+        /// <summary>
+        /// Returns <see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp.
+        /// </summary>
+        /// <param name="stamp">A stamp to check.</param>
+        /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
+        public bool Validate(LockStamp stamp) => stamp.IsValid(ref version);
 
         /// <summary>
         /// Gets a value that indicates whether the current thread has entered the lock in write mode.
@@ -84,6 +162,7 @@ namespace DotNext.Threading
         public void EnterWriteLock()
         {
             for (SpinWait spinner; Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce()) { }
+            Interlocked.Increment(ref version);
         }
 
         private bool TryEnterWriteLock(Timeout timeout, CancellationToken token)
@@ -91,6 +170,7 @@ namespace DotNext.Threading
             for (SpinWait spinner; Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce(), token.ThrowIfCancellationRequested())
                 if (timeout.IsExpired)
                     return false;
+            Interlocked.Increment(ref version);
             return true;
         }
 

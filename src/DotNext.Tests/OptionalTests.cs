@@ -49,8 +49,8 @@ namespace DotNext
         [Fact]
         public static void ClassTest()
         {
-            True(new Optional<Optional<string>>((Optional<string>)"").IsPresent);
-            False(new Optional<Optional<string>>((Optional<string>)null).IsPresent);
+            True(new Optional<Optional<string>>("").IsPresent);
+            False(new Optional<Optional<string>>(null).IsPresent);
             False(new Optional<string>(default).IsPresent);
             True(new Optional<string>("").IsPresent);
             False(new Optional<Delegate>(default).IsPresent);
@@ -67,6 +67,18 @@ namespace DotNext
             result = Optional<int>.Empty || new Optional<int>(20);
             True(result.IsPresent);
             Equal(20, result.Value);
+        }
+
+        [Fact]
+        public static void EqualityComparison()
+        {
+            Optional<string> opt1 = "1";
+            Optional<string> opt2 = "1";
+            Equal(opt1, opt2);
+            opt1 = default;
+            NotEqual(opt1, opt2);
+            opt2 = default;
+            Equal(opt1, opt2);
         }
     }
 }
