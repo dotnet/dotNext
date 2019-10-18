@@ -106,7 +106,7 @@ namespace DotNext
         /// Converts <see cref="int"/> into <see cref="bool"/>.
         /// </summary>
         /// <param name="value">The value to convert.</param>
-        /// <returns><see langword="true"/> if value != 0</returns>
+        /// <returns><see langword="true"/> if <c>value != 0</c>; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ToBoolean(this int value) => value != 0;
 
