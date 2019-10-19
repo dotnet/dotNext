@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
-    using Buffers;
-    using IO;
     using static Mime.ContentTypeExtensions;
 
     /// <summary>

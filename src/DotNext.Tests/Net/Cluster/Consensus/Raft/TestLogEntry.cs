@@ -1,5 +1,3 @@
-using System;
-
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using ILogEntry = Replication.ILogEntry;

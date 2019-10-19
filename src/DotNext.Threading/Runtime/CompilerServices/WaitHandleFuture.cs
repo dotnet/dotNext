@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
 {
-    using Threading.Tasks;
     using False = Generic.BooleanConst.False;
     using True = Generic.BooleanConst.True;
 

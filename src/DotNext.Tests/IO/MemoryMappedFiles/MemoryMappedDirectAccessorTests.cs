@@ -1,7 +1,3 @@
-using System.IO;
-using System.IO.MemoryMappedFiles;
-using Xunit;
-
 namespace DotNext.IO.MemoryMappedFiles
 {
     public sealed class MemoryMappedDirectAccessorTests : Assert

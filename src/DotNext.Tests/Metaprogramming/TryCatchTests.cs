@@ -1,7 +1,3 @@
-using System;
-using System.Linq.Expressions;
-using Xunit;
-
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;

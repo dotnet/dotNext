@@ -1,6 +1,4 @@
-﻿using DotNext.Net.Cluster.Consensus.Raft;
-using DotNext.Net.Cluster.Replication;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
 using System.Threading.Tasks;

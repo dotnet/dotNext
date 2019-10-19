@@ -1,12 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
+﻿namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
     using Messaging;
 

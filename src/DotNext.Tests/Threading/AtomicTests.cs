@@ -1,7 +1,4 @@
-﻿using System;
-using Xunit;
-
-namespace DotNext.Threading
+﻿namespace DotNext.Threading
 {
     public sealed class AtomicTests : Assert
     {

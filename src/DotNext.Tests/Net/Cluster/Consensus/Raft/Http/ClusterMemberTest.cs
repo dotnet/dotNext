@@ -1,12 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using Xunit;
-
-namespace DotNext.Net.Cluster.Consensus.Raft.Http
+﻿namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     public abstract class ClusterMemberTest : Assert
     {

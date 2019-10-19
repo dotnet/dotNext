@@ -1,8 +1,4 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace DotNext.IO
+﻿namespace DotNext.IO
 {
     public sealed class StreamSegmentTests : Assert
     {

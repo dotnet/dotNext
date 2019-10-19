@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace DotNext.Net.Cluster.Consensus.Raft
+﻿namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using LogEntryList = Replication.LogEntryProducer<IRaftLogEntry>;
 

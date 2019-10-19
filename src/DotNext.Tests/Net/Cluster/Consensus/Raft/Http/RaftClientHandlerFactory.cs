@@ -1,7 +1,4 @@
-﻿using System;
-using System.Net.Http;
-
-namespace DotNext.Net.Cluster.Consensus.Raft.Http
+﻿namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class RaftClientHandlerFactory : IHttpMessageHandlerFactory
     {

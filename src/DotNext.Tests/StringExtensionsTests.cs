@@ -1,8 +1,4 @@
-﻿using System;
-using System.Security.Cryptography;
-using Xunit;
-
-namespace DotNext
+﻿namespace DotNext
 {
     public sealed class StringExtensionsTests : Assert
     {

@@ -4,9 +4,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Threading;
-    using static Threading.Tasks.Continuation;
-
     internal sealed class FollowerState : RaftState
     {
         private readonly IAsyncEvent refreshEvent;

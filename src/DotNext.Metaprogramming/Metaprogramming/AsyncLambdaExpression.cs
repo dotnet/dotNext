@@ -7,7 +7,6 @@ namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
     using Runtime.CompilerServices;
-    using static Reflection.DelegateType;
 
     internal sealed class AsyncLambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>
         where D : Delegate

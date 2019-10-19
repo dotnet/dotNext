@@ -1,6 +1,3 @@
-using System;
-using Xunit;
-
 namespace DotNext.Runtime.InteropServices
 {
     public sealed class MemoryTests : Assert

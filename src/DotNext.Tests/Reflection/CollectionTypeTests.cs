@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Xunit;
-
-namespace DotNext.Reflection
+﻿namespace DotNext.Reflection
 {
     public sealed class CollectionTypeTests : Assert
     {

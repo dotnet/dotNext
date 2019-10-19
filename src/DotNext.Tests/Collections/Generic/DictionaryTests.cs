@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using Xunit;
-
-namespace DotNext.Collections.Generic
+﻿namespace DotNext.Collections.Generic
 {
     public sealed class DictionaryTests : Assert
     {

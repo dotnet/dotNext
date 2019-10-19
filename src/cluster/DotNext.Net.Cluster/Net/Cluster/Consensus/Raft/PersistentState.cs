@@ -18,12 +18,7 @@ using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Buffers;
-    using IO;
     using Replication;
-    using Text;
-    using Threading;
-    using static Collections.Generic.Dictionary;
 
     /// <summary>
     /// Represents general purpose persistent audit trail compatible with Raft algorithm.

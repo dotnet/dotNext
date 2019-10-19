@@ -1,7 +1,4 @@
-﻿using System;
-using Xunit;
-
-namespace DotNext.Metaprogramming
+﻿namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
     using static CodeGenerator;

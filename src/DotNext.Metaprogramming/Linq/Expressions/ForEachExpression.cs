@@ -4,9 +4,6 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions
 {
-    using static Reflection.CollectionType;
-    using static Reflection.DisposableType;
-
     /// <summary>
     /// Represents iteration over collection elements as expression.
     /// </summary>

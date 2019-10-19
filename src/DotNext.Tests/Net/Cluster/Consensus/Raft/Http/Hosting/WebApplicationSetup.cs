@@ -1,9 +1,4 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
+﻿namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
     internal sealed class WebApplicationSetup : StartupBase
     {

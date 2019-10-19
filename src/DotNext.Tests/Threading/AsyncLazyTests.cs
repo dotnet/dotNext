@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using Xunit;
-
-namespace DotNext.Threading
+﻿namespace DotNext.Threading
 {
     public sealed class AsyncLazyTests : Assert
     {

@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using static Threading.Tasks.Continuation;
-
     internal sealed class CandidateState : RaftState
     {
         private enum VotingResult : byte

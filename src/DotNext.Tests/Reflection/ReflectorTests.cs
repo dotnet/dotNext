@@ -1,7 +1,3 @@
-using System;
-using System.Runtime.CompilerServices;
-using Xunit;
-
 namespace DotNext.Reflection
 {
     public sealed class ReflectorTests : Assert

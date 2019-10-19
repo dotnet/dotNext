@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-namespace DotNext
+﻿namespace DotNext
 {
     public sealed class ComparableTests : Assert
     {

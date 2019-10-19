@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace DotNext.Threading
+﻿namespace DotNext.Threading
 {
     public sealed class AsyncDelegateTests : Assert
     {

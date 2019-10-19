@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Messaging;
-    using Threading;
     using Timestamp = Diagnostics.Timestamp;
 
     internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, ISubscriber

@@ -1,7 +1,4 @@
-﻿using System;
-using Xunit;
-
-namespace DotNext.Runtime.CompilerServices
+﻿namespace DotNext.Runtime.CompilerServices
 {
     public sealed class ValueTupleBuilderTests : Assert
     {

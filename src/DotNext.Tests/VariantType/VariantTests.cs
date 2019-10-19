@@ -1,6 +1,3 @@
-using System;
-using Xunit;
-
 namespace DotNext.VariantType
 {
     public sealed class VariantTests : Assert

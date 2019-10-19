@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace DotNext.Reflection
 {
     public sealed class OperatorTests : Assert

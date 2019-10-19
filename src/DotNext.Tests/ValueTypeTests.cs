@@ -1,8 +1,4 @@
-﻿using System;
-using System.Drawing;
-using Xunit;
-
-namespace DotNext
+﻿namespace DotNext
 {
     public sealed class ValueTypeTests : Assert
     {

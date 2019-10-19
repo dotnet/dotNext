@@ -8,9 +8,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using Messaging;
-    using Replication;
-
     internal static class RaftHttpConfigurator
     {
         internal static IServiceCollection AddClusterAsSingleton<TCluster, TConfig>(this IServiceCollection services, IConfiguration memberConfig)

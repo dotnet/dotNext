@@ -1,7 +1,4 @@
-﻿using System;
-using Xunit;
-
-namespace DotNext
+﻿namespace DotNext
 {
     public sealed class OptionalTest : Assert
     {

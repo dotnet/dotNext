@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using Xunit;
-
-namespace DotNext.Linq.Expressions
+﻿namespace DotNext.Linq.Expressions
 {
 
 

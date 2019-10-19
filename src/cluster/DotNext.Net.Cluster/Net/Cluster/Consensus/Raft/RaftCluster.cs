@@ -11,9 +11,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Threading;
-    using static Threading.Tasks.ValueTaskSynchronization;
-
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
     /// </summary>

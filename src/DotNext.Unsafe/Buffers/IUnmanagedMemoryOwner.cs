@@ -1,6 +1,4 @@
-﻿using System.Buffers;
-
-namespace DotNext.Buffers
+﻿namespace DotNext.Buffers
 {
     using Runtime.InteropServices;
 

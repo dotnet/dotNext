@@ -1,9 +1,4 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Xunit;
-
-namespace DotNext.Threading
+﻿namespace DotNext.Threading
 {
     using TrueTask = Tasks.CompletedTask<bool, Generic.BooleanConst.True>;
 

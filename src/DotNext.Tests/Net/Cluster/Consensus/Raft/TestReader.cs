@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace DotNext.Net.Cluster.Consensus.Raft
+﻿namespace DotNext.Net.Cluster.Consensus.Raft
 {
     internal readonly struct TestReader : Replication.ILogEntryConsumer<IRaftLogEntry, DBNull>
     {
