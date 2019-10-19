@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
@@ -138,7 +139,7 @@ namespace DotNext.Threading
         /// <param name="update">The new value.</param>
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool CompareAndSet(E expected, E update) => BitwiseComparer<E>.Equals(CompareExchange(update, expected), expected);
+        public bool CompareAndSet(E expected, E update) => EqualityComparer<E>.Default.Equals(CompareExchange(update, expected), expected);
 
         /// <summary>
 		/// Modifies the current value atomically.
