@@ -1,4 +1,7 @@
-﻿namespace DotNext
+﻿using System;
+using Xunit;
+
+namespace DotNext
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public sealed class Require64BitProcessAttribute : FactAttribute

@@ -4,6 +4,8 @@ using System.Reflection;
 
 namespace DotNext.Linq.Expressions
 {
+    using static Reflection.DisposableType;
+
     /// <summary>
     /// Represents <c>using</c> expression.
     /// </summary>

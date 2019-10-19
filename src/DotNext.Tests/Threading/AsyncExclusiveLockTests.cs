@@ -1,4 +1,10 @@
-﻿namespace DotNext.Threading
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+using static System.Threading.Timeout;
+
+namespace DotNext.Threading
 {
     public sealed class AsyncExclusiveLockTests : Assert
     {

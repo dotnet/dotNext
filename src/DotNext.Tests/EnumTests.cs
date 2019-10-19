@@ -1,4 +1,7 @@
-﻿namespace DotNext
+﻿using System;
+using Xunit;
+
+namespace DotNext
 {
     public sealed class EnumTests : Assert
     {

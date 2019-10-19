@@ -1,4 +1,9 @@
-﻿namespace DotNext
+﻿using System;
+using System.Reflection;
+using System.Text;
+using Xunit;
+
+namespace DotNext
 {
     public sealed class MethodPointerTests : Assert
     {

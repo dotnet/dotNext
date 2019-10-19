@@ -1,4 +1,9 @@
-﻿namespace DotNext.Metaprogramming
+﻿using System;
+using System.Runtime.CompilerServices;
+using System.Text;
+using Xunit;
+
+namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
     using static CodeGenerator;

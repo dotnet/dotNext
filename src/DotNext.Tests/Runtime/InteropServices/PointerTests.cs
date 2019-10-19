@@ -1,4 +1,8 @@
-﻿namespace DotNext.Runtime.InteropServices
+﻿using System;
+using System.IO;
+using Xunit;
+
+namespace DotNext.Runtime.InteropServices
 {
     using Threading;
 

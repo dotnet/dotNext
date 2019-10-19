@@ -1,3 +1,7 @@
+using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Xunit;
+
 namespace DotNext.Runtime.CompilerServices
 {
     public sealed class AwaitableTests : Assert

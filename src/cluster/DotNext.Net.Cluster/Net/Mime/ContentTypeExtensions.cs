@@ -3,6 +3,8 @@ using System.Text;
 
 namespace DotNext.Net.Mime
 {
+    using static Text.EncodingExtensions;
+
     /// <summary>
     /// Represents extension methods for <see cref="ContentType"/> data type.
     /// </summary>

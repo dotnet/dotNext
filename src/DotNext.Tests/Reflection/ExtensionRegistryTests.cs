@@ -1,4 +1,7 @@
-﻿namespace DotNext.Reflection
+﻿using System;
+using Xunit;
+
+namespace DotNext.Reflection
 {
     public sealed class ExtensionRegistryTest : Assert
     {

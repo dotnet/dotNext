@@ -1,4 +1,8 @@
-﻿namespace DotNext.Diagnostics
+﻿using System;
+using System.Threading;
+using Xunit;
+
+namespace DotNext.Diagnostics
 {
     public sealed class TimestampTests : Xunit.Assert
     {

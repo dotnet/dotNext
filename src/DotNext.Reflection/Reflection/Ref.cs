@@ -7,6 +7,7 @@ using System.Security;
 
 namespace DotNext.Reflection
 {
+    using static Runtime.InteropServices.Memory;
     internal static class Ref
     {
         private static bool Is(Type type) => type.IsGenericInstanceOf(typeof(Ref<>));

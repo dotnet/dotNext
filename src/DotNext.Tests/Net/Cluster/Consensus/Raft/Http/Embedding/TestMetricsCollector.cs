@@ -1,3 +1,5 @@
+using System;
+
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
     using Threading;

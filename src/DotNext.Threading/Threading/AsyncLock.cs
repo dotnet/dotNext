@@ -7,6 +7,9 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    using Generic;
+    using Tasks;
+
     /// <summary>
     /// Unified representation of asynchronous exclusive lock, semaphore lock, read lock, write lock or upgradeable read lock.
     /// </summary>

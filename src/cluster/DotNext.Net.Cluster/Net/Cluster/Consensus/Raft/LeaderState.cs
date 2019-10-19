@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Replication;
+    using Threading;
+    using static Threading.Tasks.Continuation;
     using Timestamp = Diagnostics.Timestamp;
 
     internal sealed class LeaderState : RaftState

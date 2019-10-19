@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace DotNext.Runtime.InteropServices
 {
+    using Generic;
+    using Threading.Tasks;
+
     /// <summary>
     /// CLS-compliant typed pointer for .NET languages without direct support of pointer data type.
     /// </summary>

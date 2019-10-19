@@ -5,6 +5,8 @@ using System.Linq.Expressions;
 
 namespace DotNext.Metaprogramming
 {
+    using static Reflection.DelegateType;
+
     /// <summary>
     /// Represents lambda function builder.
     /// </summary>

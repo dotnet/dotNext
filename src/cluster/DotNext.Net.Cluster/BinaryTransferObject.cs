@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace DotNext
 {
+    using Buffers;
+
     /// <summary>
     /// Represents binary object.
     /// </summary>

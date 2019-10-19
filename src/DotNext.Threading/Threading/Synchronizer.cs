@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
+    using Generic;
+    using Tasks;
+
     /// <summary>
     /// Provides a framework for implementing asynchronous locks and related synchronization primitives that doesn't rely on first-in-first-out (FIFO) wait queues.
     /// </summary>

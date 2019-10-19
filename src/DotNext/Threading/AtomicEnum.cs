@@ -4,9 +4,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using static InlineIL.IL;
+using Var = InlineIL.LocalVar;
 using MR = InlineIL.MethodRef;
 using TR = InlineIL.TypeRef;
-using Var = InlineIL.LocalVar;
 
 namespace DotNext.Threading
 {

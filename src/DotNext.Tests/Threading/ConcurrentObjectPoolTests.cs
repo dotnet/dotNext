@@ -1,4 +1,8 @@
-﻿namespace DotNext.Threading
+﻿using System;
+using System.Threading;
+using Xunit;
+
+namespace DotNext.Threading
 {
     public sealed class ConcurrentObjectPoolTests : Assert
     {

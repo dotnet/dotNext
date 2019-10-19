@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Replication;
+    using Threading;
 
     /// <summary>
     /// Represents in-memory audit trail for Raft-based cluster node.

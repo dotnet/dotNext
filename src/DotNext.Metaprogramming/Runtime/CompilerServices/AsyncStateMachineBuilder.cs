@@ -6,6 +6,8 @@ using static System.Linq.Enumerable;
 namespace DotNext.Runtime.CompilerServices
 {
     using Linq.Expressions;
+    using Reflection;
+    using static Collections.Generic.Dictionary;
 
     /// <summary>
     /// Provides initial transformation of async method.

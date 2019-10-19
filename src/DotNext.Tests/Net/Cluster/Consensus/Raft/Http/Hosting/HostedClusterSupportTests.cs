@@ -1,4 +1,9 @@
-﻿namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
     public sealed class HostedClusterSupportTests : ClusterMemberTest
     {

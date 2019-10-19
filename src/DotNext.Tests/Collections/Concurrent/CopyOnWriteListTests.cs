@@ -1,4 +1,6 @@
-﻿namespace DotNext.Collections.Concurrent
+﻿using Xunit;
+
+namespace DotNext.Collections.Concurrent
 {
     public sealed class CopyOnWriteListTests : Assert
     {

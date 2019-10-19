@@ -1,4 +1,11 @@
-﻿namespace DotNext.Buffers
+﻿using System;
+using System.Buffers;
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace DotNext.Buffers
 {
     public sealed class ChunkSequenceTests : Assert
     {

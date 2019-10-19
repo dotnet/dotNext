@@ -1,4 +1,6 @@
-﻿namespace DotNext.Buffers
+﻿using Xunit;
+
+namespace DotNext.Buffers
 {
     public sealed class MemoryRentalTests : Assert
     {

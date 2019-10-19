@@ -18,7 +18,10 @@ using HeaderUtils = Microsoft.Net.Http.Headers.HeaderUtilities;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using Buffers;
     using Collections.Generic;
+    using Replication;
+    using static IO.StreamExtensions;
     using EncodingContext = Text.EncodingContext;
 
     internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result<bool>>

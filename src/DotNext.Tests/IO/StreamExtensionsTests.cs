@@ -1,3 +1,8 @@
+using System.IO;
+using System.Text;
+using System.Threading.Tasks;
+using Xunit;
+
 namespace DotNext.IO
 {
     public sealed class StreamExtensionsTests : Assert

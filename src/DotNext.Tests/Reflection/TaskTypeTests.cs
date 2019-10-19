@@ -1,4 +1,7 @@
-﻿namespace DotNext.Reflection
+﻿using System.Threading.Tasks;
+using Xunit;
+
+namespace DotNext.Reflection
 {
     public sealed class TaskTypeTests : Assert
     {

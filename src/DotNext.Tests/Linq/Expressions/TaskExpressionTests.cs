@@ -1,4 +1,8 @@
-﻿namespace DotNext.Linq.Expressions
+﻿using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace DotNext.Linq.Expressions
 {
     public sealed class TaskExpressionTests : Assert
     {

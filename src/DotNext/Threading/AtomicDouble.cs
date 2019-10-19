@@ -73,7 +73,7 @@ namespace DotNext.Threading
 		/// <returns>Result of sum operation.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Add(ref this double value, double operand) => AccumulateAndGet(ref value, operand, Sum);
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool Equals(double x, double y)
             => x == y || double.IsNaN(x) && double.IsNaN(y);

@@ -1,4 +1,8 @@
-﻿namespace DotNext.Linq.Expressions
+﻿using System;
+using System.Text;
+using Xunit;
+
+namespace DotNext.Linq.Expressions
 {
     public sealed class AsStringTests : Assert
     {

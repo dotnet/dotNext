@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using DotNext.Net.Cluster.Consensus.Raft;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Buffers.Binary;
 using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using static DotNext.IO.StreamExtensions;
 
 namespace RaftNode
 {

@@ -1,4 +1,7 @@
-﻿namespace DotNext.Runtime.InteropServices
+﻿using System;
+using Xunit;
+
+namespace DotNext.Runtime.InteropServices
 {
     public sealed class UnmanagedArrayTests : Assert
     {

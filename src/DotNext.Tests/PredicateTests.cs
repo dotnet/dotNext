@@ -1,4 +1,6 @@
-﻿namespace DotNext
+﻿using Xunit;
+
+namespace DotNext
 {
     public sealed class PredicateTests : Assert
     {

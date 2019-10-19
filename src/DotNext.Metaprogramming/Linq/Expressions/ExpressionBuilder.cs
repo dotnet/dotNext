@@ -8,6 +8,8 @@ using static System.Linq.Enumerable;
 
 namespace DotNext.Linq.Expressions
 {
+    using Reflection;
+
     /// <summary>
     /// Provides extension methods to simplify construction of complex expressions.
     /// </summary>

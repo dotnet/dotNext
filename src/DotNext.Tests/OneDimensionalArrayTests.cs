@@ -1,3 +1,7 @@
+using System;
+using System.Linq;
+using Xunit;
+
 namespace DotNext
 {
     public sealed class OneDimensionalArrayTests : Assert

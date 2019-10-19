@@ -1,3 +1,7 @@
+using System;
+using System.Drawing;
+using Xunit;
+
 namespace DotNext.Runtime
 {
     public class IntrinsicsTests : Assert

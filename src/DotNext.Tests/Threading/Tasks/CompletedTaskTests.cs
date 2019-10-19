@@ -1,4 +1,7 @@
-﻿namespace DotNext.Threading.Tasks
+﻿using System.Threading.Tasks;
+using Xunit;
+
+namespace DotNext.Threading.Tasks
 {
     using Generic;
 

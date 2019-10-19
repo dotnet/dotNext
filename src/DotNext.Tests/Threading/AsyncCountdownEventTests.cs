@@ -1,3 +1,7 @@
+using System;
+using System.Threading.Tasks;
+using Xunit;
+
 namespace DotNext.Threading
 {
     public sealed class AsyncCountdownEventTests : Assert

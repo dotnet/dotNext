@@ -1,3 +1,7 @@
+using System;
+using System.Linq.Expressions;
+using Xunit;
+
 namespace DotNext.Linq.Expressions
 {
     public sealed class ExpressionBuilderTests : Assert

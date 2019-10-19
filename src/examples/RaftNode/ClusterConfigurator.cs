@@ -1,4 +1,5 @@
-﻿using DotNext.Net.Cluster.Consensus.Raft;
+﻿using DotNext.Net.Cluster;
+using DotNext.Net.Cluster.Consensus.Raft;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

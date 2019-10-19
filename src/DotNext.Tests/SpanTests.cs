@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using Xunit;
+
 namespace DotNext
 {
     public sealed class SpanTests : Assert

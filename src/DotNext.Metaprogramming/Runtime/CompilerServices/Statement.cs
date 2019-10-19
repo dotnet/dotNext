@@ -5,6 +5,8 @@ using System.Linq.Expressions;
 
 namespace DotNext.Runtime.CompilerServices
 {
+    using VariantType;
+    using static Collections.Generic.Collection;
     using static Linq.Expressions.ExpressionBuilder;
 
     /// <summary>

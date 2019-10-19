@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DotNext.Metaprogramming
 {
+    using Linq.Expressions;
+    using static CodeGenerator;
+
     /// <summary>
     /// This benchmark aimed to compare overhead of in-memory compiled async lambda with
     /// async method in C#.
