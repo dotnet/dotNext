@@ -45,7 +45,7 @@ namespace DotNext.Threading
 
             StrongLockNode ILockManager<StrongLockNode>.CreateNode(WaitNode tail) => tail is null ? new StrongLockNode() : new StrongLockNode(tail);
 
-            bool ILockManager<StrongLockNode>.TryAcquire()
+            public bool TryAcquire()
             {
                 if (state.RemainingLocks < state.ConcurrencyLevel)
                     return false;
@@ -62,7 +62,7 @@ namespace DotNext.Threading
 
             WaitNode ILockManager<WaitNode>.CreateNode(WaitNode tail) => tail is null ? new WaitNode() : new WaitNode(tail);
 
-            bool ILockManager<WaitNode>.TryAcquire()
+            public bool TryAcquire()
             {
                 if (state.RemainingLocks <= 0L)
                     return false;
@@ -105,7 +105,16 @@ namespace DotNext.Threading
         public bool IsLockHeld => state.RemainingLocks < ConcurrencyLevel;
 
         /// <summary>
-        /// Tries to enter the lock asynchronously, with an optional time-out.
+        /// Attempts to obtain lock synchronously without blocking caller thread.
+        /// </summary>
+        /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
+        /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool TryAcquire(bool strongLock)
+            => strongLock ? this.strongLock.TryAcquire() : weakLock.TryAcquire();
+
+        /// <summary>
+        /// Attempts to enter the lock asynchronously, with an optional time-out.
         /// </summary>
         /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
         /// <param name="timeout">The interval to wait for the lock.</param>
@@ -117,7 +126,7 @@ namespace DotNext.Threading
             => strongLock ? Wait(ref this.strongLock, timeout, token) : Wait(ref weakLock, timeout, token);
 
         /// <summary>
-        /// Tries to enter the lock asynchronously, with an optional time-out.
+        /// Attempts to enter the lock asynchronously, with an optional time-out.
         /// </summary>
         /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
         /// <param name="timeout">The interval to wait for the lock.</param>
@@ -145,8 +154,6 @@ namespace DotNext.Threading
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task Acquire(bool strongLock, CancellationToken token) => TryAcquire(strongLock, InfiniteTimeSpan, token);
-
-
 
         /// <summary>
         /// Release the acquired lock.
