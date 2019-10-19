@@ -369,7 +369,7 @@ namespace DotNext
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(Optional<T> other)
         {
-            switch(IsPresent.Add(other.IsPresent))
+            switch (IsPresent.Add(other.IsPresent))
             {
                 default:
                     return true;

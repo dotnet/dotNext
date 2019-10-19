@@ -5,8 +5,6 @@ using System.Runtime.Serialization;
 
 namespace DotNext
 {
-    using Threading;
-
     /// <summary>
     /// Provides strongly typed way to reflect enum type.
     /// </summary>
