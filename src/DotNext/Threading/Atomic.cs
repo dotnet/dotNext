@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Threading.Interlocked;
+using SpinWait = System.Threading.SpinWait;
 
 namespace DotNext.Threading
 {
@@ -17,6 +19,7 @@ namespace DotNext.Threading
     /// than synchronized methods according with benchmarks.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
+    [SuppressMessage("Performance", "CA1815", Justification = "This type is a container for atomic access and cannot be compared with other containers due to race conditions")]
     public struct Atomic<T> : IStrongBox, ICloneable
         where T : struct
     {
@@ -41,26 +44,17 @@ namespace DotNext.Threading
         private volatile int version;    //used for optimistic lock
 
         /// <summary>
-        /// Clones thic container atomically.
+        /// Clones this container atomically.
         /// </summary>
-        /// <param name="container">The memory location used to store cloned container.</param>
-        public void Clone(out Atomic<T> container)
+        /// <returns>The cloned container.</returns>
+        public Atomic<T> Clone()
         {
-            container = default;
-            int stamp;
-            do
-            {
-                stamp = version;
-                container.value = value;
-            }
-            while (lockState.Value || stamp != version);
+            var result = new Atomic<T>();
+            Read(out result.value);
+            return result;
         }
 
-        object ICloneable.Clone()
-        {
-            Clone(out var container);
-            return container;
-        }
+        object ICloneable.Clone() => Clone();
 
         /// <summary>
         /// Performs atomic read.
@@ -69,12 +63,16 @@ namespace DotNext.Threading
         public void Read(out T result)
         {
             int stamp;
-            do
+            SpinWait spinner;
+            while (true)
             {
                 stamp = version;
                 Copy(in value, out result);
+                if (lockState.Value || stamp != version)
+                    spinner.SpinOnce();
+                else
+                    return;
             }
-            while (lockState.Value || stamp != version);
         }
 
         /// <summary>
@@ -169,8 +167,11 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <param name="result">The updated value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
         public void UpdateAndGet(Updater updater, out T result)
         {
+            if (updater is null)
+                throw new ArgumentNullException(nameof(updater));
             lockState.Acquire();
             Increment(ref version);
             updater(ref value);
@@ -184,8 +185,11 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <param name="result">The original value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
         public void GetAndUpdate(Updater updater, out T result)
         {
+            if (updater is null)
+                throw new ArgumentNullException(nameof(updater));
             lockState.Acquire();
             Increment(ref version);
             var previous = value;
@@ -204,8 +208,11 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <param name="result">The updated value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
         public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
         {
+            if (accumulator is null)
+                throw new ArgumentNullException(nameof(accumulator));
             lockState.Acquire();
             Increment(ref version);
             accumulator(ref value, in x);
@@ -223,8 +230,11 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <param name="result">The original value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
         public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
         {
+            if (accumulator is null)
+                throw new ArgumentNullException(nameof(accumulator));
             lockState.Acquire();
             Increment(ref version);
             var previous = value;
