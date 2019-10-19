@@ -66,7 +66,7 @@ namespace DotNext.Threading
         spin_loop:
             var stamp = version;
             Copy(in value, out result);
-            if (lockState.Value || stamp != version)
+            if (stamp != version || lockState.Value)
             {
                 spinner.SpinOnce();
                 goto spin_loop;
