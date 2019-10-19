@@ -83,5 +83,17 @@ namespace DotNext
             var span2 = new ReadOnlySpan<byte>(&empty, sizeof(LargeStruct));
             span1.SequenceEqual(span2);
         }
+
+        [Benchmark]
+        public void EnumEqualsUsingDefaultComparer()
+        {
+            System.Collections.Generic.EqualityComparer<EnvironmentVariableTarget>.Default.Equals(EnvironmentVariableTarget.Machine, EnvironmentVariableTarget.Process);
+        }
+
+        [Benchmark]
+        public void EnumEqualsUsingBitwiseComparer()
+        {
+            BitwiseComparer<EnvironmentVariableTarget>.Equals(EnvironmentVariableTarget.Machine, EnvironmentVariableTarget.Process);
+        }
     }
 }
