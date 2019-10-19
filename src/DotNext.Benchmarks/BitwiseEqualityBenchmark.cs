@@ -49,7 +49,7 @@ namespace DotNext
         [Benchmark]
         public void GuidBitwiseEqualsMethod()
         {
-            BitwiseComparer<Guid>.Equals(NonEmptyGuid, default);
+            BitwiseComparer<Guid>.Equals<Guid>(NonEmptyGuid, default);
         }
 
         [Benchmark]
@@ -71,7 +71,7 @@ namespace DotNext
         [Benchmark]
         public void LargeStructBitwiseEqualsMethod()
         {
-            BitwiseComparer<LargeStruct>.Equals(NonEmptyLargeStruct, default);
+            BitwiseComparer<LargeStruct>.Equals<LargeStruct>(NonEmptyLargeStruct, default);
         }
 
         [Benchmark]
