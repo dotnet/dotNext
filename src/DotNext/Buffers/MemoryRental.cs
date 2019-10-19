@@ -93,6 +93,12 @@ namespace DotNext.Buffers
         public ref T GetPinnableReference() => ref Span.GetPinnableReference();
 
         /// <summary>
+        /// Gets textual representation of the rented memory.
+        /// </summary>
+        /// <returns>The textual representation of the rented memory.</returns>
+        public override string ToString() => Span.ToString();
+
+        /// <summary>
         /// Returns the memory back to the pool.
         /// </summary>
         public void Dispose() => owner?.Dispose();

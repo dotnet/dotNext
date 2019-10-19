@@ -107,6 +107,12 @@ namespace DotNext.Buffers
         public static implicit operator T[](in ArrayRental<T> rental) => rental.array;
 
         /// <summary>
+        /// Gets textual representation of the rented memory.
+        /// </summary>
+        /// <returns>The textual representation of the rented memory.</returns>
+        public override string ToString() => Memory.ToString();
+
+        /// <summary>
         /// Returns the array back to the pool.
         /// </summary>
         public void Dispose() => pool?.Return(array, clearArray);
