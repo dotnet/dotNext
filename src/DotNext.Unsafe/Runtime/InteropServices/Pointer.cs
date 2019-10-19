@@ -82,11 +82,6 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         public static Pointer<T> Null => default;
 
-        /// <summary>
-        /// Size of type <typeparamref name="T"/>, in bytes.
-        /// </summary>
-        public static unsafe int Size => sizeof(T);
-
         private readonly unsafe T* value;
 
         /// <summary>
@@ -226,7 +221,7 @@ namespace DotNext.Runtime.InteropServices
             else if (destination.IsNull)
                 throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
             else
-                Memory.Copy(value, destination.value, count * Size);
+                Memory.Copy(value, destination.value, count * sizeof(T));
         }
 
         /// <summary>
@@ -250,7 +245,7 @@ namespace DotNext.Runtime.InteropServices
             else if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
                 return 0L;
             fixed (T* dest = &destination[offset])
-                Memory.Copy(value, dest, count * Size);
+                Memory.Copy(value, dest, count * sizeof(T));
             return count;
         }
 
@@ -276,7 +271,7 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
         /// <exception cref="ArgumentException">The stream is not writable.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
-        public void WriteTo(Stream destination, long count)
+        public unsafe void WriteTo(Stream destination, long count)
         {
             if (IsNull)
                 throw new NullPointerException();
@@ -287,7 +282,7 @@ namespace DotNext.Runtime.InteropServices
             else if (count == 0)
                 return;
             else
-                WriteToSteam(Address, count * Size, destination);
+                WriteToSteam(Address, count * sizeof(T), destination);
         }
 
         private static async Task WriteToSteamAsync(IntPtr source, long length, Stream destination)
@@ -314,7 +309,7 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
         /// <exception cref="ArgumentException">The stream is not writable.</exception>
-        public Task WriteToAsync(Stream destination, long count)
+        public unsafe Task WriteToAsync(Stream destination, long count)
         {
             if (IsNull)
                 throw new NullPointerException();
@@ -325,7 +320,7 @@ namespace DotNext.Runtime.InteropServices
             else if (count == 0)
                 return Task.CompletedTask;
             else
-                return WriteToSteamAsync(Address, count * Size, destination);
+                return WriteToSteamAsync(Address, count * sizeof(T), destination);
         }
 
         /// <summary>
@@ -349,7 +344,7 @@ namespace DotNext.Runtime.InteropServices
             else if (source.LongLength == 0L || (count + offset) > source.LongLength)
                 return 0L;
             fixed (T* src = &source[offset])
-                Memory.Copy(src, value, count * Size);
+                Memory.Copy(src, value, count * sizeof(T));
             return count;
         }
 
@@ -389,7 +384,7 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="NullPointerException">This pointer is zero.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
-        public long ReadFrom(Stream source, long count)
+        public unsafe long ReadFrom(Stream source, long count)
         {
             if (IsNull)
                 throw new NullPointerException();
@@ -400,7 +395,7 @@ namespace DotNext.Runtime.InteropServices
             else if (count == 0L)
                 return 0L;
             else
-                return ReadFromStream(source, Address, Size * count);
+                return ReadFromStream(source, Address, sizeof(T) * count);
         }
 
         private static async Task<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length)
@@ -438,7 +433,7 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="NullPointerException">This pointer is zero.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
-		public Task<long> ReadFromAsync(Stream source, long count)
+		public unsafe Task<long> ReadFromAsync(Stream source, long count)
         {
             if (IsNull)
                 throw new NullPointerException();
@@ -449,7 +444,7 @@ namespace DotNext.Runtime.InteropServices
             else if (count == 0L)
                 return CompletedTask<long, LongConst.Zero>.Task;
             else
-                return ReadFromStreamAsync(source, Address, Size * count);
+                return ReadFromStreamAsync(source, Address, sizeof(T) * count);
         }
 
         /// <summary>
@@ -466,7 +461,7 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 return Stream.Null;
-            count = count * Size;
+            count *= sizeof(T);
             return new UnmanagedMemoryStream(As<byte>().value, count, count, access);
         }
 
@@ -480,7 +475,7 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 return Array.Empty<byte>();
-            var result = new byte[Size * length];
+            var result = new byte[sizeof(T) * length];
             fixed (byte* destination = result)
                 Memory.Copy(value, destination, result.LongLength);
             return result;
@@ -514,7 +509,7 @@ namespace DotNext.Runtime.InteropServices
         [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         public unsafe Pointer<U> As<U>()
             where U : unmanaged
-            => Size >= Pointer<U>.Size ? new Pointer<U>(Address) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize, nameof(U));
+            => sizeof(T) >= sizeof(U) ? new Pointer<U>(Address) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize, nameof(U));
 
         /// <summary>
         /// Gets the value stored in the memory identified by this pointer.
@@ -586,7 +581,7 @@ namespace DotNext.Runtime.InteropServices
             else if (IsNull || other.IsNull)
                 return false;
             else
-                return Memory.Equals(value, other, count * Size);
+                return Memory.Equals(value, other, count * sizeof(T));
         }
 
         /// <summary>
@@ -596,7 +591,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe int BitwiseHashCode(long count, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode32(value, count * Size, salted);
+            => IsNull ? 0 : Memory.GetHashCode32(value, count * sizeof(T), salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -605,7 +600,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe long BitwiseHashCode64(long count, bool salted = true)
-            => IsNull ? 0L : Memory.GetHashCode64(value, count * Size, salted);
+            => IsNull ? 0L : Memory.GetHashCode64(value, count * sizeof(T), salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -627,7 +622,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe int BitwiseHashCode(long count, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode32(value, count * Size, hash, hashFunction, salted);
+            => IsNull ? 0 : Memory.GetHashCode32(value, count * sizeof(T), hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -638,7 +633,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe long BitwiseHashCode64(long count, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode64(value, count * Size, hash, hashFunction, salted);
+            => IsNull ? 0 : Memory.GetHashCode64(value, count * sizeof(T), hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -666,7 +661,7 @@ namespace DotNext.Runtime.InteropServices
             else if (other.IsNull)
                 throw new ArgumentNullException(nameof(other));
             else
-                return Memory.Compare(value, other, count * Size);
+                return Memory.Compare(value, other, count * sizeof(T));
         }
 
         /// <summary>
