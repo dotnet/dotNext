@@ -1,6 +1,8 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
 
 namespace DotNext.Threading
 {
@@ -30,7 +32,13 @@ namespace DotNext.Threading
         /// cache.
         /// </returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IntPtr VolatileRead(ref this IntPtr value) => Volatile.Read(ref value);
+        public static IntPtr VolatileRead(ref this IntPtr value)
+        {
+            Push(ref value);
+            Volatile();
+            Ldind_I();
+            return Return<IntPtr>();
+        }
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -44,7 +52,14 @@ namespace DotNext.Threading
         /// all processors in the computer.
         /// </param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void VolatileWrite(ref this IntPtr value, IntPtr newValue) => Volatile.Write(ref value, newValue);
+        public static void VolatileWrite(ref this IntPtr value, IntPtr newValue)
+        {
+            Push(ref value);
+            Push(newValue);
+            Volatile();
+            Stind_I();
+            Ret();
+        }
 
         /// <summary>
         /// Atomically increments the referenced value by one.
@@ -104,7 +119,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr SetAndGet(ref this IntPtr value, IntPtr update)
         {
-            Volatile.Write(ref value, update);
+            VolatileWrite(ref value, update);
             return update;
         }
 
