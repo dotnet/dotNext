@@ -62,16 +62,14 @@ namespace DotNext.Threading
         /// <param name="result">The result of atomic read.</param>
         public void Read(out T result)
         {
-            int stamp;
             SpinWait spinner;
-            while (true)
+        spin_loop:
+            var stamp = version;
+            Copy(in value, out result);
+            if (lockState.Value || stamp != version)
             {
-                stamp = version;
-                Copy(in value, out result);
-                if (lockState.Value || stamp != version)
-                    spinner.SpinOnce();
-                else
-                    return;
+                spinner.SpinOnce();
+                goto spin_loop;
             }
         }
 
