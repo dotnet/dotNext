@@ -5,11 +5,10 @@ using System.Runtime.Serialization;
 using System.Threading;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
+using F = InlineIL.FieldRef;
 
 namespace DotNext.Threading
 {
-    using F = InlineIL.FieldRef;
-
     /// <summary>
     /// Represents atomic boolean.
     /// </summary>
