@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Buffers;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -15,13 +14,8 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct MemoryRental<T>
     {
-        /// <summary>
-        /// The rented memory.
-        /// </summary>
-        [SuppressMessage("Design", "CA1051", Justification = "To avoid generation of temporary variables by the users of this type")]
-        public readonly Span<T> Span;
-
         private readonly IMemoryOwner<T> owner;
+        private readonly Span<T> memory;
 
         /// <summary>
         /// Rents the memory referenced by the span.
@@ -30,7 +24,7 @@ namespace DotNext.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public MemoryRental(Span<T> span)
         {
-            Span = span;
+            memory = span;
             owner = null;
         }
 
@@ -45,7 +39,7 @@ namespace DotNext.Buffers
             if (pool is null)
                 throw new ArgumentNullException(nameof(pool));
             owner = pool.Rent(minBufferSize);
-            Span = owner.Memory.Span.Slice(0, minBufferSize);
+            memory = owner.Memory.Span.Slice(0, minBufferSize);
         }
 
         /// <summary>
@@ -58,10 +52,15 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Gets the rented memory.
+        /// </summary>
+        public Span<T> Span => memory;
+
+        /// <summary>
         /// Gets a value indicating that this object
         /// doesn't reference rented memory.
         /// </summary>
-        public bool IsEmpty => Span.IsEmpty;
+        public bool IsEmpty => memory.IsEmpty;
 
         /// <summary>
         /// Converts the reference to the already allocated memory
@@ -75,14 +74,14 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets length of the rented memory.
         /// </summary>
-        public int Length => Span.Length;
+        public int Length => memory.Length;
 
         /// <summary>
         /// Gets the memory element by its index.
         /// </summary>
         /// <param name="index">The index of the memory element.</param>
         /// <returns>The managed pointer to the memory element.</returns>
-        public ref T this[int index] => ref Span[index];
+        public ref T this[int index] => ref memory[index];
 
         /// <summary>
         /// Obtains managed pointer to the first element of the rented array.
@@ -90,13 +89,13 @@ namespace DotNext.Buffers
         /// <returns>The managed pointer to the first element of the rented array.</returns>
         [EditorBrowsable(EditorBrowsableState.Never)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public ref T GetPinnableReference() => ref Span.GetPinnableReference();
+        public ref T GetPinnableReference() => ref memory.GetPinnableReference();
 
         /// <summary>
         /// Gets textual representation of the rented memory.
         /// </summary>
         /// <returns>The textual representation of the rented memory.</returns>
-        public override string ToString() => Span.ToString();
+        public override string ToString() => memory.ToString();
 
         /// <summary>
         /// Returns the memory back to the pool.

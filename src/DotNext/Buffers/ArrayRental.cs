@@ -122,8 +122,12 @@ namespace DotNext.Buffers
         /// <summary>
         /// Obtains rented array.
         /// </summary>
+        /// <remarks>
+        /// This operation is potentially unsafe because the length of
+        /// the returned array may differs from <see cref="Length"/>.
+        /// </remarks>
         /// <param name="rental">Array rental.</param>
-        public static implicit operator T[](in ArrayRental<T> rental) => rental.array;
+        public static explicit operator T[](in ArrayRental<T> rental) => rental.array;
 
         /// <summary>
         /// Gets textual representation of the rented memory.
