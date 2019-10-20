@@ -89,7 +89,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets the rented array.
         /// </summary>
-        public ArraySegment<T> Array => array is null ? default : new ArraySegment<T>(array, 0, Length);
+        public ArraySegment<T> Segment => array is null ? default : new ArraySegment<T>(array, 0, Length);
 
         /// <summary>
         /// Gets the array element by its index.
@@ -120,14 +120,11 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
-        /// Gets rented array in raw form.
+        /// Obtains rented array.
         /// </summary>
-        /// <remarks>
-        /// The length of the returned array may be greater than <see cref="Length"/>.
-        /// </remarks>
-        /// <returns>The rented array.</returns>
-        public T[] UnsafeGetArray() => array;   //TODO: Should be removed in .NEXT 2.x
-        
+        /// <param name="rental">Array rental.</param>
+        public static implicit operator T[](in ArrayRental<T> rental) => rental.array;
+
         /// <summary>
         /// Gets textual representation of the rented memory.
         /// </summary>
