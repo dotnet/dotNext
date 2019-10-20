@@ -94,7 +94,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="stamp">A stamp to check.</param>
         /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
-        public bool Validate(LockStamp stamp) => stamp.IsValid(ref version);
+        public bool Validate(in LockStamp stamp) => stamp.IsValid(ref version);
 
         /// <summary>
         /// Gets a value that indicates whether the current thread has entered the lock in write mode.
