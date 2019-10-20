@@ -113,11 +113,7 @@ namespace DotNext.Buffers
         /// <returns>The segment of the rented array.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than <see cref="Length"/>.</exception>
         public ArraySegment<T> Slice(int offset, int count)
-        {
-            if (count > Length)
-                throw new ArgumentOutOfRangeException(nameof(count));
-            return array is null ? default : new ArraySegment<T>(array, offset, count);
-        }
+            => count <= Length ? new ArraySegment<T>(array, offset, count) : throw new ArgumentOutOfRangeException(nameof(count));
 
         /// <summary>
         /// Obtains rented array.
