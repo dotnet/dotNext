@@ -24,7 +24,7 @@ namespace DotNext.Threading
             this.timeout = timeout;
         }
 
-        internal bool Zero => timeout == TimeSpan.Zero;
+        internal bool IsZero => timeout == TimeSpan.Zero;
 
         /// <summary>
         /// Indicates that timeout is reached.
