@@ -82,6 +82,11 @@ namespace DotNext.Buffers
         public Memory<T> Memory => array is null ? default : new Memory<T>(array, 0, Length);
 
         /// <summary>
+        /// Gets the span of array elements.
+        /// </summary>
+        public Span<T> Span => array is null ? default : new Span<T>(array, 0, Length);
+
+        /// <summary>
         /// Gets the rented array.
         /// </summary>
         public ArraySegment<T> Array => array is null ? default : new ArraySegment<T>(array, 0, Length);
@@ -101,11 +106,28 @@ namespace DotNext.Buffers
         public ref T GetPinnableReference() => ref array[0];
 
         /// <summary>
-        /// Obtains rented array.
+        /// Returns a slice of the rented array.
         /// </summary>
-        /// <param name="rental">Array rental.</param>
-        public static implicit operator T[](in ArrayRental<T> rental) => rental.array;
+        /// <param name="offset">The zero-based index of the first element in the array.</param>
+        /// <param name="count">The number of elements in the range.</param>
+        /// <returns>The segment of the rented array.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than <see cref="Length"/>.</exception>
+        public ArraySegment<T> Slice(int offset, int count)
+        {
+            if (count > Length)
+                throw new ArgumentOutOfRangeException(nameof(count));
+            return array is null ? default : new ArraySegment<T>(array, offset, count);
+        }
 
+        /// <summary>
+        /// Gets rented array in raw form.
+        /// </summary>
+        /// <remarks>
+        /// The length of the returned array may be greater than <see cref="Length"/>.
+        /// </remarks>
+        /// <returns>The rented array.</returns>
+        public T[] UnsafeGetArray() => array;   //TODO: Should be removed in .NEXT 2.x
+        
         /// <summary>
         /// Gets textual representation of the rented memory.
         /// </summary>
