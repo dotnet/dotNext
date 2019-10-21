@@ -14,8 +14,13 @@ jobs:
                 projects: $(TestProject)
                 arguments: --configuration Debug
                 nobuild: false
-                testRunTitle: debug-win
                 publishTestResults: true
+            - task: PublishTestResults@2
+              inputs:
+                testResultsFormat: 'VSTest'
+                testResultsFiles: '*.trx'
+                searchFolder: '$(Agent.TempDirectory)'
+                testRunTitle: 'Debug on Windows'
             
     - job: Linux
       pool:
