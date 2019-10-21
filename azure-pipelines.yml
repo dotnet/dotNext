@@ -6,27 +6,27 @@ jobs:
     - job: Windows
       pool:
         vmImage: windows-2019
-        steps:
-            - task: DotNetCoreCLI@2
-              displayName: Test Debug
-              inputs:
-                command: test
-                projects: $(TestProject)
-                arguments: --configuration Debug
-                nobuild: false
-                testRunTitle: 'Debug on Windows'
-                publishTestResults: true
+      steps:
+        - task: DotNetCoreCLI@2
+          displayName: Test Debug
+          inputs:
+            command: test
+            projects: $(TestProject)
+            arguments: --configuration Debug
+            nobuild: false
+            testRunTitle: 'Debug on Windows'
+            publishTestResults: true
             
     - job: Linux
       pool:
         vmImage: ubuntu-18.04
-        steps:
-            - task: DotNetCoreCLI@2
-              displayName: Test Debug
-              inputs:
-                command: test
-                projects: $(TestProject)
-                arguments: --configuration Debug
-                nobuild: false
-                testRunTitle: 'Debug on Linux'
-                publishTestResults: true
+      steps:
+        - task: DotNetCoreCLI@2
+          displayName: Test Debug
+          inputs:
+            command: test
+            projects: $(TestProject)
+            arguments: --configuration Debug
+            nobuild: false
+            testRunTitle: 'Debug on Linux'
+            publishTestResults: true
