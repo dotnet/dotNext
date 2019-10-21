@@ -1,6 +1,8 @@
-﻿Imports System
+﻿Imports System.Diagnostics.CodeAnalysis
 
 Namespace Reflection
+
+    <ExcludeFromCodeCoverage>
     Public NotInheritable Class TypeWithStaticIndexer
 
         Public Shared ReadOnly BackedArray As String() = New String(10) {}
