@@ -1,7 +1,7 @@
 variables:
     Solution: src/DotNext.sln
-    TestProject: src/DotNext.Tests/DotNext.Tests.csproj
-
+    TestFolder: src/DotNext.Tests
+    TestProject: $(TestFolder)/DotNext.Tests.csproj
 jobs:
     - job: Windows
       pool:
@@ -12,9 +12,10 @@ jobs:
               inputs:
                 command: test
                 projects: $(TestProject)
-                arguments: --configuration Debug --logger trx
+                arguments: --configuration Debug
                 nobuild: false
                 testRunTitle: debug-win
+            
     - job: Linux
       pool:
         vmImage: ubuntu-18.04
@@ -24,6 +25,6 @@ jobs:
               inputs:
                 command: test
                 projects: $(TestProject)
-                arguments: --configuration Debug --logger trx
+                arguments: --configuration Debug
                 nobuild: false
                 testRunTitle: debug-linux
