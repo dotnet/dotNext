@@ -27,5 +27,5 @@ jobs:
                 projects: $(TestProject)
                 arguments: --configuration Debug
                 nobuild: false
-                testRunTitle: debug-linux
+                testRunTitle: 'Debug on Linux'
                 publishTestResults: true
