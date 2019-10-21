@@ -26,4 +26,4 @@ jobs:
                 projects: $(TestProject)
                 arguments: --configuration Debug
                 nobuild: false
-                testRunTitle: debig-linux
+                testRunTitle: debug-linux
