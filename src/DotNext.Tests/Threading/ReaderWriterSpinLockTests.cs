@@ -25,5 +25,22 @@ namespace DotNext.Threading
             True(rwLock.IsWriteLockHeld);
             False(rwLock.IsReadLockHeld);
         }
+
+        [Fact]
+        public static void OptimisticRead()
+        {
+            var rwLock = new ReaderWriterSpinLock();
+            var stamp = rwLock.TryOptimisticRead();
+            True(rwLock.Validate(in stamp));
+            True(rwLock.TryEnterReadLock());
+            Equal(1, rwLock.CurrentReadCount);
+            True(rwLock.Validate(stamp));
+            rwLock.ExitReadLock();
+            Equal(stamp, rwLock.TryOptimisticRead());
+            True(rwLock.TryEnterWriteLock());
+            False(rwLock.IsReadLockHeld);
+            True(rwLock.IsWriteLockHeld);
+            False(rwLock.Validate(stamp));
+        }
     }
 }

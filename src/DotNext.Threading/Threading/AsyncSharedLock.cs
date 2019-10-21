@@ -155,6 +155,31 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task Acquire(bool strongLock, CancellationToken token) => TryAcquire(strongLock, InfiniteTimeSpan, token);
 
+        private void ReleasePendingWeakLocks()
+        {
+            for (WaitNode current = head, next; !(current is null || current is StrongLockNode) && state.RemainingLocks > 0L; state.RemainingLocks--, current = next)
+            {
+                next = current.Next;
+                RemoveNode(current);
+                current.Complete();
+            }
+        }
+
+        /// <summary>
+        /// Releases the acquired weak lock or downgrade exclusive lock to the weak lock.
+        /// </summary>
+        /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Downgrade()
+        {
+            ThrowIfDisposed();
+            if (state.IsEmpty)    //nothing to release
+                throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
+            state.RemainingLocks = ConcurrencyLevel - 1;
+            ReleasePendingWeakLocks();
+        }
+
         /// <summary>
         /// Release the acquired lock.
         /// </summary>
@@ -173,12 +198,7 @@ namespace DotNext.Threading
                 state.RemainingLocks = ExclusiveMode;
             }
             else
-                for (WaitNode current = head, next; !(current is null || current is StrongLockNode) && state.RemainingLocks > 0L; state.RemainingLocks--, current = next)
-                {
-                    next = current.Next;
-                    RemoveNode(current);
-                    current.Complete();
-                }
+                ReleasePendingWeakLocks();
         }
     }
 }

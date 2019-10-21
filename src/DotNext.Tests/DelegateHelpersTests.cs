@@ -52,5 +52,15 @@ namespace DotNext
             var d = DelegateHelpers.CreateOpenDelegate<Func<decimal, long>>(i => (long)i);
             Equal(42L, d(42M));
         }
+
+        private static int GetLength(string value) => value.Length;
+
+        [Fact]
+        public static void BindUnbind()
+        {
+            var func = new Func<string, int>(GetLength).Bind("abc");
+            Equal(3, func());
+            Equal(4, func.Unbind<string, int>().Invoke("abcd"));
+        }
     }
 }

@@ -12,6 +12,7 @@ namespace DotNext.Threading
         {
             using (var sharedLock = new AsyncSharedLock(3))
             {
+                Equal(3, sharedLock.ConcurrencyLevel);
                 True(await sharedLock.TryAcquire(false, TimeSpan.Zero));
                 True(await sharedLock.TryAcquire(false, TimeSpan.Zero));
                 Equal(1, sharedLock.RemainingCount);
@@ -80,6 +81,39 @@ namespace DotNext.Threading
                 sharedLock.Release();
                 True(await acquireEvent.Wait(TimeSpan.FromSeconds(1)));
                 Equal(1, sharedLock.RemainingCount);
+            }
+        }
+
+        [Fact]
+        public static void FailFastLock()
+        {
+            using(var sharedLock = new AsyncSharedLock(3))
+            {
+                True(sharedLock.TryAcquire(false));
+                True(sharedLock.TryAcquire(false));
+                True(sharedLock.TryAcquire(false));
+                False(sharedLock.TryAcquire(true));
+                False(sharedLock.TryAcquire(false));
+                sharedLock.Release();
+                sharedLock.Release();
+                sharedLock.Release();
+                True(sharedLock.TryAcquire(true));
+                False(sharedLock.TryAcquire(false));
+            }
+        }
+
+        [Fact]
+        public void DowngradeFromStrongToWeakLock()
+        {
+            using(var sharedLock = new AsyncSharedLock(3))
+            {
+                True(sharedLock.TryAcquire(true));
+                Equal(0, sharedLock.RemainingCount);
+                False(sharedLock.TryAcquire(false));
+                sharedLock.Downgrade();
+                Equal(2, sharedLock.RemainingCount);
+                sharedLock.Release();
+                Equal(3, sharedLock.RemainingCount);
             }
         }
     }

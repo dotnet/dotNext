@@ -207,5 +207,16 @@ namespace DotNext
             action.Invoke(ref i, 30L);
             Equal(42L, i.Value);
         }
+
+        [Fact]
+        public static void ComparisonDelegate()
+        {
+            Comparison<int> cmp = (x, y) => x.CompareTo(y);
+            var func = cmp.AsValueFunc(true);
+            True(func.Invoke(1, 2) < 0);
+            True(func.Invoke(2, 1) > 0);
+            False(func.Invoke(1, 2) >= 0);
+            False(func.Invoke(2, 1) <= 0);
+        }
     }
 }
