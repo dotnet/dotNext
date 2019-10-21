@@ -369,7 +369,7 @@ namespace DotNext
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(Optional<T> other)
         {
-            switch (IsPresent.Add(other.IsPresent))
+            switch (IsPresent.ToInt32() + other.IsPresent.ToInt32())
             {
                 default:
                     return true;
@@ -442,7 +442,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both containers store the same value; otherwise, <see langword="false"/>.</returns>
         public static bool operator ==(in Optional<T> first, in Optional<T> second)
         {
-            switch (first.IsPresent.Add(second.IsPresent))
+            switch (first.IsPresent.ToInt32() + second.IsPresent.ToInt32())
             {
                 default:
                     return true;
@@ -461,7 +461,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both containers store the different values; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in Optional<T> first, in Optional<T> second)
         {
-            switch (first.IsPresent.Add(second.IsPresent))
+            switch (first.IsPresent.ToInt32() + second.IsPresent.ToInt32())
             {
                 default:
                     return false;
@@ -490,7 +490,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both containers are empty or have values; otherwise, <see langword="false"/>.</returns>
         public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second)
         {
-            switch (first.IsPresent.Subtract(second.IsPresent))
+            switch (first.IsPresent.ToInt32() - second.IsPresent.ToInt32())
             {
                 default:
                     return Empty;

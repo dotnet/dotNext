@@ -45,7 +45,7 @@ namespace DotNext
                 using (var array = new ArrayRental<byte>(segment.Length))
                 {
                     segment.CopyTo(array.Memory);
-                    await output.WriteAsync(array, 0, segment.Length, token).ConfigureAwait(false);
+                    await output.WriteAsync((byte[])array, 0, segment.Length, token).ConfigureAwait(false);
                 }
         }
 

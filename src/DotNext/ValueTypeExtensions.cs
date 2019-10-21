@@ -93,24 +93,6 @@ namespace DotNext
             return Return<int>();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int Add(this bool x, bool y)
-        {
-            Push(x);
-            Push(y);
-            Emit.Add();
-            return Return<int>();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int Subtract(this bool x, bool y)
-        {
-            Push(x);
-            Push(y);
-            Sub();
-            return Return<int>();
-        }
-
         /// <summary>
         /// Converts <see cref="int"/> into <see cref="bool"/>.
         /// </summary>
