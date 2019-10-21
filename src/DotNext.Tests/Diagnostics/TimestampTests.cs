@@ -17,5 +17,20 @@ namespace DotNext.Diagnostics
             var other = ts;
             True(other == ts);
         }
+
+        [Fact]
+        public static void Operators()
+        {
+            var ts = Timestamp.Current;
+            var ts2 = ts;
+            Equal(ts, ts2);
+            False(ts < ts2);
+            False(ts > ts2);
+            Thread.Sleep(30);
+            ts2 = Timestamp.Current;
+            NotEqual(ts, ts2);
+            True(ts2 > ts);
+            False(ts2 < ts);
+        }
     }
 }

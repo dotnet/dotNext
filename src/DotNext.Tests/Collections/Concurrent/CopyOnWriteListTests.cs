@@ -31,6 +31,9 @@ namespace DotNext.Collections.Concurrent
             Equal("three", list[0]);
             True(list.Remove("three"));
             Empty(list);
+            list.Add("four");
+            list.Clear();
+            Empty(list);
         }
     }
 }

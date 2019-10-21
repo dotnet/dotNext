@@ -35,10 +35,14 @@ namespace DotNext.Runtime
         [Fact]
         public static void SmallStructDefault()
         {
-            var value = default(long);
-            True(Intrinsics.IsDefault(value));
-            value = 42L;
-            False(Intrinsics.IsDefault(value));
+            True(Intrinsics.IsDefault(default(long)));
+            False(Intrinsics.IsDefault(42L));
+            True(Intrinsics.IsDefault(default(int)));
+            False(Intrinsics.IsDefault(42));
+            True(Intrinsics.IsDefault(default(byte)));
+            False(Intrinsics.IsDefault((byte)42));
+            True(Intrinsics.IsDefault(default(short)));
+            False(Intrinsics.IsDefault((short)42));
         }
 
         [Fact]
@@ -46,10 +50,11 @@ namespace DotNext.Runtime
         {
             var point = new Point { X = 40, Y = 100 };
             Intrinsics.Bitcast(point, out decimal dec);
-            point = default;
             Intrinsics.Bitcast(dec, out point);
             Equal(40, point.X);
             Equal(100, point.Y);
+            Intrinsics.Bitcast<uint, int>(2U, out var i);
+            Equal(2, i);
         }
 
         [Fact]

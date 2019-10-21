@@ -107,5 +107,16 @@ namespace DotNext.IO
             await ReadWriteStringUsingEncodingAsync(Encoding.UTF32, bufferSize);
             await ReadWriteStringUsingEncodingAsync(Encoding.ASCII, bufferSize);
         }
+
+        [Fact]
+        public static void SynchronousCopying()
+        {
+            using (var source = new MemoryStream(new byte[] { 2, 4, 5 }))
+            using (var destination = new MemoryStream())
+            {
+                var buffer = new byte[2];
+                Equal(3L, source.CopyTo(destination, buffer));
+            }
+        }
     }
 }

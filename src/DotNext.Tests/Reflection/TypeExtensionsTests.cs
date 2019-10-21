@@ -90,5 +90,15 @@ namespace DotNext.Reflection
             False(typeof(Guid).IsImmutable());
             True(typeof(long).IsImmutable());
         }
+
+        [Fact]
+        public static void DynamicCast()
+        {
+            Equal(43, typeof(int).Cast(43));
+            Null(typeof(string).Cast(null));
+            Equal("abc", typeof(string).Cast("abc"));
+            Throws<InvalidCastException>(() => typeof(int).Cast(null));
+            Throws<InvalidCastException>(() => typeof(int).Cast("abc"));
+        }
     }
 }
