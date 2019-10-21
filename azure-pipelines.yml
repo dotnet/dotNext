@@ -12,7 +12,7 @@ jobs:
               inputs:
                 command: test
                 projects: $(TestProject)
-                arguments: --configuration Debug
+                arguments: --configuration Debug --logger trx
                 nobuild: false
                 testRunTitle: debug-win
     - job: Linux
@@ -24,6 +24,6 @@ jobs:
               inputs:
                 command: test
                 projects: $(TestProject)
-                arguments: --configuration Debug
+                arguments: --configuration Debug --logger trx
                 nobuild: false
                 testRunTitle: debug-linux
