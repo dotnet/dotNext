@@ -15,6 +15,7 @@ jobs:
                 arguments: --configuration Debug
                 nobuild: false
                 testRunTitle: 'Debug on Windows'
+                publishTestResults: true
             
     - job: Linux
       pool:
