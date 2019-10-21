@@ -59,13 +59,43 @@ namespace DotNext.VariantType
         /// <param name="mapper1">The converter for the first possible type.</param>
         /// <param name="mapper2">The converter for the second possible type.</param>
         /// <returns>Conversion result; or <see cref="Optional{T}.Empty"/> if stored value is <see langword="null"/>.</returns>
-        public Optional<R> Convert<R>(Converter<T1, R> mapper1, Converter<T2, R> mapper2)
+        public Optional<R> Convert<R>(in ValueFunc<T1, R> mapper1, in ValueFunc<T2, R> mapper2)
         {
             switch (value)
             {
-                case T1 first: return mapper1(first);
-                case T2 second: return mapper2(second);
+                case T1 first: return mapper1.Invoke(first);
+                case T2 second: return mapper2.Invoke(second);
                 default: return Optional<R>.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Converts the stored value.
+        /// </summary>
+        /// <typeparam name="R">The type of conversion result.</typeparam>
+        /// <param name="mapper1">The converter for the first possible type.</param>
+        /// <param name="mapper2">The converter for the second possible type.</param>
+        /// <returns>Conversion result; or <see cref="Optional{T}.Empty"/> if stored value is <see langword="null"/>.</returns>
+        public Optional<R> Convert<R>(Converter<T1, R> mapper1, Converter<T2, R> mapper2)
+            => Convert(mapper1.AsValueFunc(true), mapper2.AsValueFunc(true));
+
+        /// <summary>
+        /// Converts this variant value into another value.
+        /// </summary>
+        /// <typeparam name="U1">The first possible type of the conversion result.</typeparam>
+        /// <typeparam name="U2">The second possible type of the conversion result.</typeparam>
+        /// <param name="mapper1">The converter for the first possible type.</param>
+        /// <param name="mapper2">The converter for the second possible type.</param>
+        /// <returns>The variant value converted from this variant value.</returns>
+        public Variant<U1, U2> Convert<U1, U2>(in ValueFunc<T1, U1> mapper1, in ValueFunc<T2, U2> mapper2)
+            where U1 : class
+            where U2 : class
+        {
+            switch (value)
+            {
+                case T1 first: return new Variant<U1, U2>(mapper1.Invoke(first));
+                case T2 second: return new Variant<U1, U2>(mapper2.Invoke(second));
+                default: return default;
             }
         }
 
@@ -80,14 +110,7 @@ namespace DotNext.VariantType
         public Variant<U1, U2> Convert<U1, U2>(Converter<T1, U1> mapper1, Converter<T2, U2> mapper2)
             where U1 : class
             where U2 : class
-        {
-            switch (value)
-            {
-                case T1 first: return new Variant<U1, U2>(mapper1(first));
-                case T2 second: return new Variant<U1, U2>(mapper2(second));
-                default: return default;
-            }
-        }
+            => Convert(mapper1.AsValueFunc(true), mapper2.AsValueFunc(true));
 
         /// <summary>
         /// Change order of type parameters.
