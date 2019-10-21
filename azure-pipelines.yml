@@ -12,7 +12,7 @@ jobs:
           inputs:
             command: test
             projects: $(TestProject)
-            arguments: --configuration Debug
+            arguments: --configuration Debug --collect "Code coverage"
             nobuild: false
             testRunTitle: 'Debug on Windows'
             publishTestResults: true
@@ -26,7 +26,7 @@ jobs:
           inputs:
             command: test
             projects: $(TestProject)
-            arguments: --configuration Debug
+            arguments: --configuration Debug --collect "Code coverage"
             nobuild: false
             testRunTitle: 'Debug on Linux'
             publishTestResults: true
