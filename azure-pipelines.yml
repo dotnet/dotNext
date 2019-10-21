@@ -1,0 +1,31 @@
+variables:
+    Solution: src/DotNext.sln
+    TestProject: src/DotNext.Tests/DotNext.Tests.csproj
+
+jobs:
+    -job: Windows
+    pool:
+        vmImage: windows-2019
+    steps:
+        - task: MSBuild@1
+        displayName: NuGet Restore
+        inputs:
+            solution: $(Solution)
+            msbuildArguments: /v:m /t:Restore
+
+        - task: MSBuild@1
+        displayName: Build Debug
+        inputs:
+            solution: $(Solution)
+            msbuildArguments: /v:m /t:Build
+            configuration: Debug
+            maximumCpuCount: true
+
+        - task: DotNetCoreCLI@2
+        displayName: Test Debug
+        inputs:
+          command: test
+          projects: $(TestProject)
+          arguments: --configuration Debug
+          nobuild: true
+          testRunTitle: Debug
