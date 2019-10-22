@@ -636,5 +636,35 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static UIntPtr Decrement(this UIntPtr value) => Subtract(value, new UIntPtr(1));
+
+        /// <summary>
+        /// Throws <see cref="ArithmeticException"/> if the value
+        /// is "not a number" (NaN), positive or negative infinity.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        /// <returns>The value that is equal to <paramref name="value"/>.</returns>
+        /// <exception cref="ArithmeticException"><paramref name="value"/> is not a number.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float EnsureFinite(this float value)
+        {
+            Push(value);
+            Ckfinite();
+            return Return<float>();
+        }
+
+        /// <summary>
+        /// Throws <see cref="ArithmeticException"/> if the value
+        /// is "not a number" (NaN), positive or negative infinity.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        /// <returns>The value that is equal to <paramref name="value"/>.</returns>
+        /// <exception cref="ArithmeticException"><paramref name="value"/> is not a number.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double EnsureFinite(this double value)
+        {
+            Push(value);
+            Ckfinite();
+            return Return<double>();
+        }
     }
 }

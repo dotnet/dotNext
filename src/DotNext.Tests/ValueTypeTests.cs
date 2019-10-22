@@ -125,5 +125,35 @@ namespace DotNext
         {
             True(BitwiseComparer<int>.Compare(0, int.MinValue) < 0);
         }
+
+        [Fact]
+        public static void NormalNumberCheckForSingle()
+        {
+            var value = default(float);
+            Equal(default, value.EnsureFinite());
+            value = 42F;
+            Equal(42F, value.EnsureFinite());
+            value = float.NaN;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
+            value = float.PositiveInfinity;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
+            value = float.NegativeInfinity;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
+        }
+
+        [Fact]
+        public static void NormalNumberCheckForDouble()
+        {
+            var value = default(double);
+            Equal(default, value.EnsureFinite());
+            value = 42D;
+            Equal(42D, value.EnsureFinite());
+            value = double.NaN;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
+            value = double.PositiveInfinity;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
+            value = double.NegativeInfinity;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
+        }
     }
 }
