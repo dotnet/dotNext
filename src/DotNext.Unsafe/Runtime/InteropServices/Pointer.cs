@@ -6,9 +6,12 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using MemoryHandle = System.Buffers.MemoryHandle;
+using CancellationToken = System.Threading.CancellationToken;
 
 namespace DotNext.Runtime.InteropServices
 {
+    using Buffers;
     using Generic;
     using Threading.Tasks;
 
@@ -76,6 +79,8 @@ namespace DotNext.Runtime.InteropServices
             /// </summary>
             public void Dispose() => this = default;
         }
+
+        private const int BufferSize = 1024;
 
         /// <summary>
         /// Represents zero pointer.
@@ -249,18 +254,21 @@ namespace DotNext.Runtime.InteropServices
             return count;
         }
 
-        private static void WriteToSteam(IntPtr source, long length, Stream destination)
+        private unsafe static void WriteToSteam(byte* source, long length, Stream destination)
         {
-            for (var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-            {
-                Unsafe.As<byte, IntPtr>(ref buffer[0]) = Memory.ReadUnaligned<IntPtr>(ref source);
-                destination.Write(buffer, 0, buffer.Length);
-            }
-            while (length > 0)
-            {
-                destination.WriteByte(Memory.Read<byte>(ref source));
-                length -= sizeof(byte);
-            }
+            //TODO: Should be rewritten for .NET Standard 2.1
+            var offset = 0L;
+            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
+                while (length > 0L)
+                {
+                    //copy from memory to buffer
+                    var count = (int)Math.Min(length, buffer.Length);
+                    Unsafe.CopyBlockUnaligned(ref buffer[0], ref source[offset], (uint)count);
+                    //copy from buffer to stream
+                    destination.Write((byte[])buffer, 0, count);
+                    length -= count;
+                    offset += count;
+                }
         }
 
         /// <summary>
@@ -275,28 +283,32 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0)
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (!destination.CanWrite)
+            if (!destination.CanWrite)
                 throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
-            else if (count == 0)
-                return;
-            else
-                WriteToSteam(Address, count * sizeof(T), destination);
+            if (count > 0)
+                WriteToSteam((byte*)value, count * sizeof(T), destination);
         }
 
-        private static async Task WriteToSteamAsync(IntPtr source, long length, Stream destination)
+        private static async Task WriteToSteamAsync(IntPtr source, long length, Stream destination, CancellationToken token)
         {
-            for (var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-            {
-                Unsafe.As<byte, IntPtr>(ref buffer[0]) = Memory.ReadUnaligned<IntPtr>(ref source);
-                await destination.WriteAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
-            }
-            while (length > 0)
-            {
-                destination.WriteByte(Memory.Read<byte>(ref source));
-                length -= sizeof(byte);
-            }
+            //TODO: Should be rewritten for .NET Standard 2.1
+            var offset = 0L;
+            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
+                while (length > 0L)
+                {
+                    //copy from memory to buffer
+                    var count = (int)Math.Min(length, buffer.Length);
+                    unsafe
+                    {
+                        Unsafe.CopyBlockUnaligned(ref buffer[0], ref source.ToPointer<byte>()[offset], (uint)count);
+                    }
+                    //copy from buffer to stream
+                    await destination.WriteAsync((byte[])buffer, 0, count, token).ConfigureAwait(false);
+                    length -= count;
+                    offset += count;
+                }
         }
 
         /// <summary>
@@ -305,22 +317,23 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="destination">The destination stream.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task instance representing asynchronous state of the copying process.</returns>
         /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
         /// <exception cref="ArgumentException">The stream is not writable.</exception>
-        public unsafe Task WriteToAsync(Stream destination, long count)
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public unsafe Task WriteToAsync(Stream destination, long count, CancellationToken token = default)
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0)
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (!destination.CanWrite)
+            if (!destination.CanWrite)
                 throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
-            else if (count == 0)
+            if (count == 0)
                 return Task.CompletedTask;
-            else
-                return WriteToSteamAsync(Address, count * sizeof(T), destination);
+            return WriteToSteamAsync(Address, count * sizeof(T), destination, token);
         }
 
         /// <summary>
@@ -348,30 +361,22 @@ namespace DotNext.Runtime.InteropServices
             return count;
         }
 
-        private static long ReadFromStream(Stream source, IntPtr destination, long length)
+        private unsafe static long ReadFromStream(Stream source, byte* destination, long length)
         {
+            //TODO: Should be rewritten for .NET Standard 2.1
             var total = 0L;
-            for (var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-            {
-                var count = source.Read(buffer, 0, buffer.Length);
-                Memory.WriteUnaligned(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
-                total += count;
-                if (count < IntPtr.Size)
-                    return total;
-                buffer.Initialize();
-            }
-            while (length > 0)
-            {
-                var b = source.ReadByte();
-                if (b >= 0)
+            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
+                while (length > 0L)
                 {
-                    Memory.Write(ref destination, (byte)b);
-                    length -= sizeof(byte);
-                    total += sizeof(byte);
+                    //copy from stream to buffer
+                    var bytesRead = source.Read((byte[])buffer, 0, buffer.Length);
+                    if (bytesRead == 0)
+                        break;
+                    //copy from buffer to memory
+                    Unsafe.CopyBlockUnaligned(ref destination[total], ref buffer[0], (uint)bytesRead);
+                    length -= bytesRead;
+                    total += bytesRead;
                 }
-                else
-                    break;
-            }
             return total;
         }
 
@@ -388,40 +393,34 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0L)
+            if (count < 0L)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (!source.CanRead)
+            if (!source.CanRead)
                 throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
-            else if (count == 0L)
+            if (count == 0L)
                 return 0L;
-            else
-                return ReadFromStream(source, Address, sizeof(T) * count);
+            return ReadFromStream(source, (byte*)value, sizeof(T) * count);
         }
 
-        private static async Task<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length)
+        private static async Task<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length, CancellationToken token)
         {
+            //TODO: Should be rewritten for .NET Standard 2.1
             var total = 0L;
-            for (var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-            {
-                var count = await source.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
-                Memory.WriteUnaligned(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
-                total += count;
-                if (count < IntPtr.Size)
-                    return total;
-                buffer.Initialize();
-            }
-            while (length > 0)
-            {
-                var b = source.ReadByte();
-                if (b >= 0)
+            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
+                while (length > 0L)
                 {
-                    Memory.Write(ref destination, (byte)b);
-                    length -= sizeof(byte);
-                    total += sizeof(byte);
+                    //copy from stream to buffer
+                    var bytesRead = await source.ReadAsync((byte[])buffer, 0, buffer.Length, token).ConfigureAwait(false);
+                    if (bytesRead == 0)
+                        break;
+                    //copy from buffer to memory
+                    unsafe
+                    {
+                        Unsafe.CopyBlock(ref destination.ToPointer<byte>()[total], ref buffer[0], (uint)bytesRead);
+                    }
+                    length -= bytesRead;
+                    total += bytesRead;
                 }
-                else
-                    break;
-            }
             return total;
         }
 
@@ -430,21 +429,22 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="source">The source stream.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <exception cref="NullPointerException">This pointer is zero.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
-		public unsafe Task<long> ReadFromAsync(Stream source, long count)
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+		public unsafe Task<long> ReadFromAsync(Stream source, long count, CancellationToken token = default)
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0L)
+            if (count < 0L)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (!source.CanRead)
+            if (!source.CanRead)
                 throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
-            else if (count == 0L)
+            if (count == 0L)
                 return CompletedTask<long, LongConst.Zero>.Task;
-            else
-                return ReadFromStreamAsync(source, Address, sizeof(T) * count);
+            return ReadFromStreamAsync(source, Address, sizeof(T) * count, token);
         }
 
         /// <summary>
@@ -834,6 +834,13 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe implicit operator UIntPtr(Pointer<T> ptr) => new UIntPtr(ptr.value);
+
+        /// <summary>
+        /// Obtains pointer to the memory represented by given memory handle.
+        /// </summary>
+        /// <param name="handle">The memory handle.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static explicit operator Pointer<T>(in MemoryHandle handle) => new Pointer<T>(new IntPtr(handle.Pointer));
 
         /// <summary>
         /// Checks whether this pointer is not zero.
