@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System.Collections.Generic;
+using Xunit;
 
 namespace DotNext.Collections.Concurrent
 {
@@ -12,8 +13,22 @@ namespace DotNext.Collections.Concurrent
             Equal("one", list[0]);
             Equal("two", list[1]);
             //checks whether the enumeration doesn't throw exception if item is changed
-            foreach (var item in list)
+            foreach (ref readonly var item in list)
                 list[0] = "empty";
+            using(IEnumerator<string> enumerator = list.GetEnumerator())
+            {
+                True(enumerator.MoveNext());
+                Equal("empty", enumerator.Current);
+                True(enumerator.MoveNext());
+                Equal("two", enumerator.Current);
+                False(enumerator.MoveNext());
+                enumerator.Reset();
+                True(enumerator.MoveNext());
+                Equal("empty", enumerator.Current);
+                True(enumerator.MoveNext());
+                Equal("two", enumerator.Current);
+                False(enumerator.MoveNext());
+            }
         }
 
         [Fact]
