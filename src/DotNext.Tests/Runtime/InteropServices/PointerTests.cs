@@ -27,16 +27,24 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public static unsafe void StreamInterop()
+        public static void StreamInterop()
         {
-            var array = new ushort[] { 1, 2, 3 };
-            fixed (ushort* p = array)
+            var array = new ushort[] { 1, 2, 3 }.AsMemory();
+            using (var pinned = array.Pin())
+            using (var ms = new MemoryStream())
             {
-                var ptr = new Pointer<ushort>(p);
-                var ms = new MemoryStream();
-                ptr.WriteTo(ms, array.LongLength);
+                var ptr = (Pointer<ushort>)pinned;
+                ptr.WriteTo(ms, array.Length);
                 Equal(6L, ms.Length);
-                ms.Dispose();
+                True(ms.TryGetBuffer(out var buffer));
+                buffer.Array.ForEach((ref byte value, long index) =>
+                {
+                    if (value == 1)
+                        value = 20;
+                });
+                ms.Position = 0;
+                Equal(6, ptr.ReadFrom(ms, array.Length));
+                Equal(20, ptr[0]);
             }
         }
 

@@ -69,6 +69,29 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
+        public static void StreamInterop()
+        {
+            using (var memory = new UnmanagedMemory(3, false))
+            using (var ms = new MemoryStream())
+            {
+                memory.Bytes[0] = 1;
+                memory.Bytes[1] = 2;
+                memory.Bytes[2] = 3;
+                memory.WriteTo(ms);
+                Equal(3L, ms.Length);
+                True(ms.TryGetBuffer(out var buffer));
+                buffer.Array.ForEach((ref byte value, long index) =>
+                {
+                    if (value == 1)
+                        value = 20;
+                });
+                ms.Position = 0;
+                Equal(3, memory.ReadFrom(ms));
+                Equal(20, memory.Bytes[0]);
+            }
+        }
+
+        [Fact]
         public static unsafe void ToStreamConversion()
         {
             using (var memory = new UnmanagedMemory(3, false))
