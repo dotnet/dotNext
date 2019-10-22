@@ -2,6 +2,9 @@ variables:
     Solution: src/DotNext.sln
     TestFolder: src/DotNext.Tests
     TestProject: $(TestFolder)/DotNext.Tests.csproj
+trigger:
+    - master
+    - develop
 jobs:
     - job: Windows
       pool:
