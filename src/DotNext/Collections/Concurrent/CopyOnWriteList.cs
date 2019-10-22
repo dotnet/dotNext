@@ -36,13 +36,8 @@ namespace DotNext.Collections.Concurrent
         /// Creates copy of this list.
         /// </summary>
         /// <returns>The copy of this list.</returns>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public CopyOnWriteList<T> Clone()
-        {
-            var newStore = new T[backingStore.LongLength];
-            backingStore.CopyTo(newStore, 0L);
-            return new CopyOnWriteList<T>(newStore);
-        }
+            => new CopyOnWriteList<T>(Snapshot.ToArray());
 
         object ICloneable.Clone() => Clone();
 
@@ -78,7 +73,7 @@ namespace DotNext.Collections.Concurrent
             get => backingStore[index];
             set
             {
-                var newArray = (T[])backingStore.Clone();
+                var newArray = Snapshot.ToArray();
                 newArray[index] = value;
                 ReplaceStore(newArray);
             }
