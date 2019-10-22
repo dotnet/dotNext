@@ -152,7 +152,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Converts this pointer into span of bytes.
         /// </summary>
-        public unsafe Span<byte> Bytes => Memory.AsSpan(value);
+        public unsafe Span<byte> Bytes => IsNull ? default : Memory.AsSpan(value);
 
         /// <summary>
 		/// Gets or sets pointer value at the specified position in the memory.

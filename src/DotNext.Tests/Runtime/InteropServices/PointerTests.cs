@@ -109,8 +109,10 @@ namespace DotNext.Runtime.InteropServices
             Pointer<long> ptr = stackalloc long[3];
             ptr.VolatileWrite(1);
             Equal(1, ptr.Value);
+            Equal(1, ptr.Get());
             ptr.AddValue(10);
             Equal(11, ptr.Value);
+            Equal(11, ptr.Get());
             Equal(11, ptr.VolatileRead());
             ptr.DecrementValue();
             Equal(10, ptr.Value);
@@ -186,6 +188,31 @@ namespace DotNext.Runtime.InteropServices
                 Equal(20, bytes[1]);
                 Equal(30, bytes[2]);
             }
+        }
+
+        [Fact]
+        public static void NullPointer()
+        {
+            var ptr = default(Pointer<int>);
+            Throws<NullPointerException>(() => ptr[0] = 10);
+            Throws<NullPointerException>(() => ptr.Value = 10);
+            Throws<NullPointerException>(() => ptr.Set(10));
+            Throws<NullPointerException>(() => ptr.Set(10, 0));
+            Empty(ptr.ToByteArray(10));
+            True(ptr.Bytes.IsEmpty);
+            Equal(Pointer<int>.Null, ptr);
+        }
+
+        [Fact]
+        public static unsafe void ToArray()
+        {
+            Pointer<byte> ptr = stackalloc byte[] { 1, 2, 3 };
+            var array = ptr.ToByteArray(3);
+            Equal(3, array.Length);
+            Equal(1, array[0]);
+            Equal(2, array[1]);
+            Equal(3, array[2]);
+            NotEqual(Pointer<byte>.Null, ptr);
         }
     }
 }
