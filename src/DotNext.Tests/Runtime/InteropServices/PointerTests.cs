@@ -165,5 +165,19 @@ namespace DotNext.Runtime.InteropServices
             Equal(42, ptr[0]);
             Equal(42, ptr[9]);
         }
+
+        [Fact]
+        public static unsafe void ToStreamConversion()
+        {
+            Pointer<byte> ptr = stackalloc byte[] { 10, 20, 30 };
+            using(var stream = ptr.AsStream(3))
+            {
+                var bytes = new byte[3];
+                Equal(3, stream.Read(bytes, 0, 3));
+                Equal(10, bytes[0]);
+                Equal(20, bytes[1]);
+                Equal(30, bytes[2]);
+            }
+        }
     }
 }

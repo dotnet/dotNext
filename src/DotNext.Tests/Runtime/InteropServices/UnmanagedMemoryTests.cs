@@ -67,5 +67,22 @@ namespace DotNext.Runtime.InteropServices
                 Equal(20, memory.Bytes[0]);
             }
         }
+
+        [Fact]
+        public static unsafe void ToStreamConversion()
+        {
+            using (var memory = new UnmanagedMemory(3, false))
+            {
+                new byte[] { 10, 20, 30 }.AsSpan().CopyTo(memory.Bytes);
+                using (var stream = memory.AsStream())
+                {
+                    var bytes = new byte[3];
+                    Equal(3, stream.Read(bytes, 0, 3));
+                    Equal(10, bytes[0]);
+                    Equal(20, bytes[1]);
+                    Equal(30, bytes[2]);
+                }
+            }
+        }
     }
 }
