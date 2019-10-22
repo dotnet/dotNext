@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
@@ -145,6 +147,27 @@ namespace DotNext.Runtime.InteropServices
                         default:
                             throw new Exception();
                     }
+            }
+        }
+
+        [Fact]
+        public static async Task StreamInteropAsync()
+        {
+            using (var memory = new UnmanagedMemory<ushort>(3))
+            using (var ms = new MemoryStream())
+            {
+                new ushort[] { 1, 2, 3 }.AsSpan().CopyTo(memory.Span);
+                await memory.WriteToAsync(ms);
+                Equal(6L, ms.Length);
+                True(ms.TryGetBuffer(out var buffer));
+                buffer.Array.ForEach((ref byte value, long index) =>
+                {
+                    if (value == 1)
+                        value = 20;
+                });
+                ms.Position = 0;
+                Equal(6, await memory.ReadFromAsync(ms));
+                Equal(20, memory.Span[0]);
             }
         }
     }

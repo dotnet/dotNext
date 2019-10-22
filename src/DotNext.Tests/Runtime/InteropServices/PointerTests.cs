@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
@@ -9,7 +10,7 @@ namespace DotNext.Runtime.InteropServices
     public sealed class PointerTests : Assert
     {
         [Fact]
-        public static unsafe void BitwiseOperationsTest()
+        public static unsafe void BitwiseOperations()
         {
             var array1 = new ushort[] { 1, 2, 3 };
             var array2 = new ushort[] { 1, 2, 3 };
@@ -26,7 +27,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public static unsafe void StreamInteropTest()
+        public static unsafe void StreamInterop()
         {
             var array = new ushort[] { 1, 2, 3 };
             fixed (ushort* p = array)
@@ -40,7 +41,29 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public static unsafe void ArrayInteropTest()
+        public static async Task StreamInteropAsync()
+        {
+            var array = new ushort[] { 1, 2, 3 }.AsMemory();
+            using (var pinned = array.Pin())
+            using (var ms = new MemoryStream())
+            {
+                var ptr = (Pointer<ushort>)pinned;
+                await ptr.WriteToAsync(ms, array.Length);
+                Equal(6L, ms.Length);
+                True(ms.TryGetBuffer(out var buffer));
+                buffer.Array.ForEach((ref byte value, long index) =>
+                {
+                    if (value == 1)
+                        value = 20;
+                });
+                ms.Position = 0;
+                Equal(6, await ptr.ReadFromAsync(ms, array.Length));
+                Equal(20, ptr[0]);
+            }
+        }
+
+        [Fact]
+        public static unsafe void ArrayInterop()
         {
             var array = new ushort[] { 1, 2, 3 };
             fixed (ushort* p = array)
@@ -57,7 +80,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public static unsafe void SwapTest()
+        public static unsafe void Swap()
         {
             var array = new ushort[] { 1, 2 };
             fixed (ushort* p = array)
@@ -73,7 +96,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public static unsafe void VolatileReadWriteTest()
+        public static unsafe void VolatileReadWrite()
         {
             Pointer<long> ptr = stackalloc long[3];
             ptr.VolatileWrite(1);
@@ -91,7 +114,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public static unsafe void ReadWriteTest()
+        public static unsafe void ReadWrite()
         {
             var array = new ushort[] { 1, 2, 3 };
             fixed (ushort* p = array)
@@ -109,6 +132,26 @@ namespace DotNext.Runtime.InteropServices
                 ptr.Value = 42;
                 Equal(42, array[0]);
                 Equal(42, ptr.Value);
+            }
+        }
+
+        [Fact]
+        public static unsafe void ReadWrite2()
+        {
+            var array = new ushort[] { 1, 2, 3 };
+            fixed (ushort* p = array)
+            {
+                var ptr = new Pointer<ushort>(p);
+                Equal(new IntPtr(p), ptr.Address);
+                ptr.Set(20);
+                Equal(20, array[0]);
+                Equal(20, ptr.Get(0));
+                ptr.Set(30, 1L);
+                Equal(30, array[1]);
+                Equal(30, ptr.Get(1));
+                ptr.Set(42, 0);
+                Equal(42, array[0]);
+                Equal(42, ptr.Get(0));
             }
         }
 
