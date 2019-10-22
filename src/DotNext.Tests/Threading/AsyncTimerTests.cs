@@ -9,13 +9,19 @@ namespace DotNext.Threading
 
     public sealed class AsyncTimerTests : Assert
     {
-        private sealed class Counter
+        private sealed class Counter : EventWaitHandle
         {
             internal int Value;
+
+            internal Counter()
+                : base(false, EventResetMode.AutoReset)
+            {
+            }
 
             internal Task<bool> Run(CancellationToken token)
             {
                 Value.IncrementAndGet();
+                Set();
                 return TrueTask.Task;
             }
         }
@@ -23,11 +29,11 @@ namespace DotNext.Threading
         [Fact]
         public static async Task StartStopAsync()
         {
-            var counter = new Counter();
+            using (var counter = new Counter())
             using (var timer = new AsyncTimer(counter.Run))
             {
                 True(timer.Start(TimeSpan.FromMilliseconds(10)));
-                await Task.Delay(100);
+                counter.WaitOne(10_000);
                 True(timer.IsRunning);
                 False(await timer.StopAsync());
                 False(timer.IsRunning);
