@@ -65,5 +65,17 @@ namespace DotNext.Collections.Concurrent
             Equal("two", array[1]);
             Equal("three", array[2]);
         }
+
+        [Fact]
+        public static void ReadOnlySnapshot()
+        {
+            var list = new CopyOnWriteList<int>() { 1, 2 };
+            var view = list.Snapshot;
+            list[1] = 10;
+            Equal(1, list[0]);
+            Equal(10, list[1]);
+            Equal(1, view.Span[0]);
+            Equal(2, view.Span[1]);
+        }
     }
 }

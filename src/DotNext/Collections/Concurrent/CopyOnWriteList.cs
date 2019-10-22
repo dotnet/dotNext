@@ -63,6 +63,11 @@ namespace DotNext.Collections.Concurrent
         public long Count => backingStore.LongLength;
 
         /// <summary>
+        /// Gets the snapshot view of the current list.
+        /// </summary>
+        public ReadOnlyMemory<T> Snapshot => new ReadOnlyMemory<T>(backingStore);
+
+        /// <summary>
         /// Gets or sets list item.
         /// </summary>
         /// <param name="index">The index of the list item.</param>
@@ -71,8 +76,12 @@ namespace DotNext.Collections.Concurrent
         public T this[long index]
         {
             get => backingStore[index];
-            [MethodImpl(MethodImplOptions.Synchronized)]
-            set => backingStore[index] = value;
+            set
+            {
+                var newArray = (T[])backingStore.Clone();
+                newArray[index] = value;
+                ReplaceStore(newArray);
+            }
         }
 
         T IList<T>.this[int index]
