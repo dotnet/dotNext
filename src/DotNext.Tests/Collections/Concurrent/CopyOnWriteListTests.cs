@@ -22,6 +22,8 @@ namespace DotNext.Collections.Concurrent
             var list = new CopyOnWriteList<string>() { "one", "two" };
             Equal(2, list.Count);
             list.Add("three");
+            Contains("two", list);
+            DoesNotContain("four", list);
             Equal(3, list.Count);
             Equal("one", list[0]);
             Equal("two", list[1]);
@@ -34,6 +36,34 @@ namespace DotNext.Collections.Concurrent
             list.Add("four");
             list.Clear();
             Empty(list);
+        }
+
+        [Fact]
+        public static void SearchOperations()
+        {
+            var list = new CopyOnWriteList<string>() { "one", "two", "three", "one" };
+            Contains("two", list);
+            DoesNotContain("four", list);
+            True(list.Exists("two".Equals));
+            False(list.Exists("four".Equals));
+            NotNull(list.Find("one".Equals));
+            Null(list.Find("four".Equals));
+            Equal(0, list.FindIndex("one".Equals));
+            Equal(3, list.FindLastIndex("one".Equals));
+            Equal(1, list.IndexOf("two"));
+            Equal(0, list.IndexOf("one"));
+            Equal(3, list.LastIndexOf("one"));
+        }
+
+        [Fact]
+        public static void CopyElements()
+        {
+            var list = new CopyOnWriteList<string>() { "one", "two", "three" };
+            var array = new string[3];
+            list.CopyTo(array, 0);
+            Equal("one", array[0]);
+            Equal("two", array[1]);
+            Equal("three", array[2]);
         }
     }
 }
