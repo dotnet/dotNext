@@ -198,15 +198,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 
                 WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
 
-                var leader1 = host1.Services.GetRequiredService<ICluster>().Leader;
-                NotNull(leader1);
-                var leader2 = host2.Services.GetRequiredService<ICluster>().Leader;
-                NotNull(leader2);
-                var leader3 = host3.Services.GetRequiredService<ICluster>().Leader;
-                NotNull(leader3);
+                IClusterMember leader1, leader2, leader3;
 
-                CheckLeadership(leader1, leader2);
-                CheckLeadership(leader1, leader3);
+                //wait for stable election
+                for (var timer = Task.Delay(2000); ; await Task.Delay(100))
+                {
+                    if (timer.IsCompleted)
+                        throw new RaftProtocolException("Leader election failed");
+                    leader1 = host1.Services.GetRequiredService<ICluster>().Leader;
+                    leader2 = host2.Services.GetRequiredService<ICluster>().Leader;
+                    leader3 = host3.Services.GetRequiredService<ICluster>().Leader;
+                    if (leader1 is null || leader2 is null || leader3 is null)
+                        continue;
+                    if (leader1.Endpoint.Equals(leader2.Endpoint) && leader1.Endpoint.Equals(leader2.Endpoint))
+                        break;
+                }
 
                 listener1.Reset();
                 listener2.Reset();
