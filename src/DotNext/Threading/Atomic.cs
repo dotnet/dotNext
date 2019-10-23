@@ -172,9 +172,15 @@ namespace DotNext.Threading
                 throw new ArgumentNullException(nameof(updater));
             lockState.Acquire();
             Increment(ref version);
-            updater(ref value);
-            Copy(in value, out result);
-            lockState.Release();
+            try
+            {
+                updater(ref value);
+                Copy(in value, out result);
+            }
+            finally
+            {
+                lockState.Release();
+            }
         }
 
         /// <summary>
@@ -191,9 +197,15 @@ namespace DotNext.Threading
             lockState.Acquire();
             Increment(ref version);
             var previous = value;
-            updater(ref value);
-            Copy(in previous, out result);
-            lockState.Release();
+            try
+            {
+                updater(ref value);
+                Copy(in previous, out result);
+            }
+            finally
+            {
+                lockState.Release();
+            }
         }
 
         /// <summary>
@@ -213,9 +225,15 @@ namespace DotNext.Threading
                 throw new ArgumentNullException(nameof(accumulator));
             lockState.Acquire();
             Increment(ref version);
-            accumulator(ref value, in x);
-            Copy(in value, out result);
-            lockState.Release();
+            try
+            {
+                accumulator(ref value, in x);
+                Copy(in value, out result);
+            }
+            finally
+            {
+                lockState.Release();
+            }
         }
 
         /// <summary>
@@ -236,9 +254,15 @@ namespace DotNext.Threading
             lockState.Acquire();
             Increment(ref version);
             var previous = value;
-            accumulator(ref value, in x);
-            Copy(in previous, out result);
-            lockState.Release();
+            try
+            {
+                accumulator(ref value, in x);
+                Copy(in previous, out result);
+            }
+            finally
+            {
+                lockState.Release();
+            }
         }
 
         /// <summary>
