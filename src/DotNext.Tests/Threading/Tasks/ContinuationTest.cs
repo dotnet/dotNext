@@ -9,7 +9,7 @@ namespace DotNext.Threading.Tasks
         [Fact]
         public static async Task OnCompletedContinuation()
         {
-            var t = Task.Factory.StartNew(() => Thread.Sleep(50));
+            var t = Task.Delay(50);
             var t2 = await t.OnCompleted();
             Equal(t, t2);
             True(t.IsCompletedSuccessfully);
