@@ -41,6 +41,7 @@ namespace DotNext.Threading
             False(rwLock.IsReadLockHeld);
             True(rwLock.IsWriteLockHeld);
             False(rwLock.Validate(stamp));
+            False(rwLock.TryEnterReadLock(TimeSpan.Zero));
         }
     }
 }
