@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     else
                         options.ListenAnyIP(port);
                 })
-                .UseShutdownTimeout(TimeSpan.FromHours(1))
+                .UseShutdownTimeout(TimeSpan.FromMinutes(2))
                 .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                 .ConfigureServices(services =>
