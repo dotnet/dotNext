@@ -59,5 +59,24 @@ namespace DotNext.VariantType
             result = obj.Convert<string>(Func.Identity<string>().AsConverter(), value => value.ToString());
             False(result.IsPresent);
         }
+
+        [Fact]
+        public static void Deconstruction()
+        {
+            var (x, y) = new Variant<string, object>(new object());
+            Null(x);
+            NotNull(y);
+
+            var (x2, y2, z2) = new Variant<string, object, Uri>("Hello");
+            NotNull(x2);
+            IsType<string>(y2);
+            Null(z2);
+
+            var (x3, y3, z3, k3) = new Variant<string, object, Uri, OperatingSystem>(Environment.OSVersion);
+            Null(x3);
+            NotNull(y3);
+            Null(z3);
+            NotNull(k3);
+        }
     }
 }

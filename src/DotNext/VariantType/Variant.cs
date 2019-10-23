@@ -119,6 +119,21 @@ namespace DotNext.VariantType
         public Variant<T2, T1> Permute() => new Variant<T2, T1>(value);
 
         /// <summary>
+        /// Deconstructs this object.
+        /// </summary>
+        /// <remarks>
+        /// This method called implicitly by deconstruction expression
+        /// or positional pattern matching.
+        /// </remarks>
+        /// <param name="value1">The value of type <typeparamref name="T1"/>; or <see langword="null"/>.</param>
+        /// <param name="value2">The value of type <typeparamref name="T2"/>; or <see langword="null"/>.</param>
+        public void Deconstruct(out T1 value1, out T2 value2)
+        {
+            value1 = value as T1;
+            value2 = value as T2;
+        }
+
+        /// <summary>
         /// Converts value of type <typeparamref name="T1"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
@@ -274,6 +289,23 @@ namespace DotNext.VariantType
         /// </summary>
         /// <returns>A copy of variant value with changed order of type parameters.</returns>
         public Variant<T3, T1, T2> Permute() => new Variant<T3, T1, T2>(value);
+
+        /// <summary>
+        /// Deconstructs this object.
+        /// </summary>
+        /// <remarks>
+        /// This method called implicitly by deconstruction expression
+        /// or positional pattern matching.
+        /// </remarks>
+        /// <param name="value1">The value of type <typeparamref name="T1"/>; or <see langword="null"/>.</param>
+        /// <param name="value2">The value of type <typeparamref name="T2"/>; or <see langword="null"/>.</param>
+        /// <param name="value3">The value of type <typeparamref name="T3"/>; or <see langword="null"/>.</param>
+        public void Deconstruct(out T1 value1, out T2 value2, out T3 value3)
+        {
+            value1 = value as T1;
+            value2 = value as T2;
+            value3 = value as T3;
+        }
 
         object IVariant.Value => value;
 
@@ -461,6 +493,25 @@ namespace DotNext.VariantType
         /// </summary>
         /// <returns>A copy of variant value with changed order of type parameters.</returns>
         public Variant<T4, T1, T2, T3> Permute() => new Variant<T4, T1, T2, T3>(value);
+
+        /// <summary>
+        /// Deconstructs this object.
+        /// </summary>
+        /// <remarks>
+        /// This method called implicitly by deconstruction expression
+        /// or positional pattern matching.
+        /// </remarks>
+        /// <param name="value1">The value of type <typeparamref name="T1"/>; or <see langword="null"/>.</param>
+        /// <param name="value2">The value of type <typeparamref name="T2"/>; or <see langword="null"/>.</param>
+        /// <param name="value3">The value of type <typeparamref name="T3"/>; or <see langword="null"/>.</param>
+        /// <param name="value4">The value of type <typeparamref name="T4"/>; or <see langword="null"/>.</param>
+        public void Deconstruct(out T1 value1, out T2 value2, out T3 value3, out T4 value4)
+        {
+            value1 = value as T1;
+            value2 = value as T2;
+            value3 = value as T3;
+            value4 = value as T4;
+        }
 
         object IVariant.Value => value;
 
