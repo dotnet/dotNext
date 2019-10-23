@@ -64,8 +64,7 @@ namespace DotNext.Threading
         {
             if (disposing)
             {
-                node?.TrySetCanceled();
-                node = null;
+                Interlocked.Exchange(ref node, null)?.TrySetCanceled();
             }
             base.Dispose(disposing);
         }
