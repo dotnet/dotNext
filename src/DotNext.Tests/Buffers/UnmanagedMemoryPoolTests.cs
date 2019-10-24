@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Buffers
@@ -74,7 +72,7 @@ namespace DotNext.Buffers
         [Fact]
         public static unsafe void ZeroMem()
         {
-            using(var memory = UnmanagedMemoryPool<byte>.Allocate(3, false))
+            using (var memory = UnmanagedMemoryPool<byte>.Allocate(3, false))
             {
                 memory.Span[0] = 10;
                 memory.Span[1] = 20;

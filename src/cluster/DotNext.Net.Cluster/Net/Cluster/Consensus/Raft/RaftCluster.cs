@@ -139,7 +139,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile ICollection<TMember> members;
 
         private AsyncLock transitionSync;  //used to synchronize state transitions
-        
+
         [SuppressMessage("Usage", "CA2213", Justification = "It is disposed as a part of members collection")]
         private volatile RaftState state;
         private volatile TMember leader;

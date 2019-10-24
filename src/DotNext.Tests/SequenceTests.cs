@@ -100,7 +100,7 @@ namespace DotNext
         public static void Skip()
         {
             var range = Enumerable.Range(0, 10);
-            using(var enumerator = range.GetEnumerator())
+            using (var enumerator = range.GetEnumerator())
             {
                 True(enumerator.Skip(8));
                 True(enumerator.MoveNext());

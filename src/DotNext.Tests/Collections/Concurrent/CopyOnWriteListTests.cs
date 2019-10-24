@@ -15,7 +15,7 @@ namespace DotNext.Collections.Concurrent
             //checks whether the enumeration doesn't throw exception if item is changed
             foreach (ref readonly var item in list)
                 list[0] = "empty";
-            using(IEnumerator<string> enumerator = list.GetEnumerator())
+            using (IEnumerator<string> enumerator = list.GetEnumerator())
             {
                 True(enumerator.MoveNext());
                 Equal("empty", enumerator.Current);

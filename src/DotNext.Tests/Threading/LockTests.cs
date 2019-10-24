@@ -29,7 +29,7 @@ namespace DotNext.Threading
         public static void MonitorLock()
         {
             var syncRoot = new object();
-            using(var @lock = Lock.Monitor(syncRoot))
+            using (var @lock = Lock.Monitor(syncRoot))
             {
                 True(@lock.TryAcquire(out var holder));
                 True(Monitor.IsEntered(syncRoot));
@@ -46,8 +46,8 @@ namespace DotNext.Threading
         [Fact]
         public static void SemaphoreLock()
         {
-            using(var sem = new SemaphoreSlim(3))
-            using(var @lock = Lock.Semaphore(sem))
+            using (var sem = new SemaphoreSlim(3))
+            using (var @lock = Lock.Semaphore(sem))
             {
                 True(@lock.TryAcquire(out var holder));
                 Equal(2, sem.CurrentCount);

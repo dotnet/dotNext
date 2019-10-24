@@ -87,7 +87,7 @@ namespace DotNext.Threading
         [Fact]
         public static void FailFastLock()
         {
-            using(var sharedLock = new AsyncSharedLock(3))
+            using (var sharedLock = new AsyncSharedLock(3))
             {
                 True(sharedLock.TryAcquire(false));
                 True(sharedLock.TryAcquire(false));
@@ -105,7 +105,7 @@ namespace DotNext.Threading
         [Fact]
         public void DowngradeFromStrongToWeakLock()
         {
-            using(var sharedLock = new AsyncSharedLock(3))
+            using (var sharedLock = new AsyncSharedLock(3))
             {
                 True(sharedLock.TryAcquire(true));
                 Equal(0, sharedLock.RemainingCount);

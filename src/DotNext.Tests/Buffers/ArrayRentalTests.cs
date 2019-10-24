@@ -8,7 +8,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void RentFromPool()
         {
-            using(var rental = new ArrayRental<char>(4))
+            using (var rental = new ArrayRental<char>(4))
             {
                 Equal(4, rental.Length);
                 Equal(4, rental.Memory.Length);

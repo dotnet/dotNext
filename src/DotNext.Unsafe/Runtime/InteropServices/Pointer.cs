@@ -6,8 +6,8 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using MemoryHandle = System.Buffers.MemoryHandle;
 using CancellationToken = System.Threading.CancellationToken;
+using MemoryHandle = System.Buffers.MemoryHandle;
 
 namespace DotNext.Runtime.InteropServices
 {
