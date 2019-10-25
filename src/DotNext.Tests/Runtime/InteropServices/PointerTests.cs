@@ -160,6 +160,42 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
+        public static unsafe void VolatileReadWriteFloat32()
+        {
+            Pointer<float> ptr = stackalloc float[3];
+            ptr.VolatileWrite(1F);
+            Equal(1F, ptr.Value);
+            ptr.AddValue(10F);
+            Equal(11F, ptr.Value);
+            Equal(11F, ptr.VolatileRead());
+            ptr.DecrementValue();
+            Equal(10F, ptr.Value);
+            Equal(10F, ptr.VolatileRead());
+            True(ptr.CompareAndSetValue(10F, 12F));
+            Equal(12F, ptr.Value);
+            False(ptr.CompareAndSetValue(10F, 20F));
+            Equal(12F, ptr.Value);
+        }
+
+        [Fact]
+        public static unsafe void VolatileReadWriteFloat64()
+        {
+            Pointer<double> ptr = stackalloc double[3];
+            ptr.VolatileWrite(1D);
+            Equal(1D, ptr.Value);
+            ptr.AddValue(10F);
+            Equal(11D, ptr.Value);
+            Equal(11D, ptr.VolatileRead());
+            ptr.DecrementValue();
+            Equal(10D, ptr.Value);
+            Equal(10D, ptr.VolatileRead());
+            True(ptr.CompareAndSetValue(10D, 12D));
+            Equal(12D, ptr.Value);
+            False(ptr.CompareAndSetValue(10D, 20D));
+            Equal(12D, ptr.Value);
+        }
+
+        [Fact]
         public static unsafe void ReadWrite()
         {
             var array = new ushort[] { 1, 2, 3 };
