@@ -36,6 +36,11 @@ namespace DotNext.Threading.Tasks
             True(result.IsSuccessful);
             Equal(42, result.Value);
 
+            result = task.GetResult(CancellationToken.None);
+            Null(result.Error);
+            True(result.IsSuccessful);
+            Equal(42, result.Value);
+
             task = Task.FromCanceled<int>(new CancellationToken(true));
             result = task.GetResult(TimeSpan.Zero);
             NotNull(result.Error);
