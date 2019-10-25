@@ -11,9 +11,10 @@ namespace DotNext.Threading.Tasks
         [Fact]
         public static async Task WaitAsyncWithTimeout()
         {
-            var task = Task.Delay(500);
-            False(await task.WaitAsync(TimeSpan.FromMilliseconds(10)));
-            True(await task.WaitAsync(TimeSpan.FromMilliseconds(600)));
+            var source = new TaskCompletionSource<bool>();
+            False(await source.Task.WaitAsync(TimeSpan.FromMilliseconds(10)));
+            source.SetResult(true);
+            True(await source.Task.WaitAsync(TimeSpan.FromMilliseconds(600)));
         }
 
         [Fact]
