@@ -36,7 +36,7 @@ namespace DotNext.IO.MemoryMappedFiles
             if (accessor is null)
                 return Stream.Null;
             FileAccess access;
-            switch (accessor.CanRead.ToInt32() + accessor.CanWrite.ToInt32() << 1)
+            switch (accessor.CanRead.ToInt32() + (accessor.CanWrite.ToInt32() << 1))
             {
                 default:
                     access = default;

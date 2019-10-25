@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.IO.MemoryMappedFiles;
 using Xunit;
@@ -7,13 +8,28 @@ namespace DotNext.IO.MemoryMappedFiles
     public sealed class MemoryMappedDirectAccessorTests : Assert
     {
         [Fact]
+        public static void EmptyAccessor()
+        {
+            var da = default(MemoryMappedDirectAccessor);
+            True(da.IsEmpty);
+            Equal(0L, da.Offset);
+            True(da.Pointer.IsNull);
+            Equal(0L, da.Size);
+            da.Flush();
+            Throws<ObjectDisposedException>(da.Clear);
+            Equal(Stream.Null, da.AsStream());
+        }
+
+        [Fact]
         public static void AccessByPointer()
         {
             var tempFile = Path.GetTempFileName();
             using (var mappedFile = MemoryMappedFile.CreateFromFile(tempFile, FileMode.OpenOrCreate, null, 1024, MemoryMappedFileAccess.ReadWrite))
             using (var da = mappedFile.CreateDirectAccessor(10L, 4L))
             {
+                False(da.IsEmpty);
                 Equal(4L, da.Size);
+                Equal(10L, da.Offset);
                 var ptr = da.Pointer;
                 ptr.Value = 1;
                 ptr += 1;
@@ -23,6 +39,15 @@ namespace DotNext.IO.MemoryMappedFiles
                 ptr += 1;
                 ptr.Value = 5;
                 da.Flush();
+                using(var stream = da.AsStream())
+                {
+                    var data = new byte[4];
+                    Equal(4, stream.Read(data, 0, data.Length));
+                    Equal(1, data[0]);
+                    Equal(2, data[1]);
+                    Equal(3, data[2]);
+                    Equal(5, data[3]);
+                }
             }
             using (var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Read))
             {
