@@ -74,7 +74,8 @@ Release Date: 10-XX-2019
 * Fixed incorrect computation of partition in `PersistentState.DropAsync` method
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.0">DotNext.AspNetCore.Cluster 1.2.0</a>
-* Performance optimizations caused by changes in `ArrayRental` type 
+* HTTP/2 support
+* Performance optimizations caused by changes in `ArrayRental` type
 * Strict package versioning rules are added to avoid accidental upgrade to major version
 
 Changelog for previous versions located [here](./CHANGELOG.md).
