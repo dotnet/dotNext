@@ -21,6 +21,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private const int UnavailableStatus = (int)ClusterMemberStatus.Unavailable;
         private const int AvailableStatus = (int)ClusterMemberStatus.Available;
 
+        private static readonly Version Http1 = new Version(1, 1);
+        private static readonly Version Http2 = new Version(2, 0);
         private readonly Uri resourcePath;
         private int status;
         private readonly IHostingContext context;
@@ -65,10 +67,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             switch (ProtocolVersion)
             {
                 case HttpVersion.Http1:
-                    request.Version = new Version(1, 1);
+                    request.Version = Http1;
                     break;
                 case HttpVersion.Http2:
-                    request.Version = new Version(2, 0);
+                    request.Version = Http2;
                     break;
             }
             message.PrepareRequest(request);
