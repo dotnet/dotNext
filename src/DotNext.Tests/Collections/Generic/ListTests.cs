@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace DotNext.Collections.Generic
@@ -32,6 +33,20 @@ namespace DotNext.Collections.Generic
             list = new List<long> { 1L, 3L, 7L };
             Equal(2L, list.InsertOrdered(4L, comparer));
             list.RemoveRange(0, 0);
+        }
+
+        [Fact]
+        public static void ReadOnlyView()
+        {
+            var view = new ReadOnlyListView<string, int>(new[] { "1", "2", "3" }, new ValueFunc<string, int>(int.Parse));
+            Equal(3, view.Count);
+            Equal(1, view[0]);
+            Equal(2, view[1]);
+            Equal(3, view[2]);
+            NotEmpty(view);
+            foreach (var value in view)
+                if (!value.Between(0, 3, BoundType.Closed))
+                    throw new Exception();
         }
     }
 }

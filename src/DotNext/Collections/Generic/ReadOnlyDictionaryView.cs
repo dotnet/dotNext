@@ -67,10 +67,8 @@ namespace DotNext.Collections.Generic
         /// <returns>The enumerator over key/value pairs.</returns>
 		public IEnumerator<KeyValuePair<K, O>> GetEnumerator()
         {
-            var mapper = this.mapper;
-            return source
-                .Select(entry => new KeyValuePair<K, O>(entry.Key, mapper.Invoke(entry.Value)))
-                .GetEnumerator();
+            foreach (var (key, value) in source)
+                yield return new KeyValuePair<K, O>(key, mapper.Invoke(value));
         }
 
         /// <summary>
