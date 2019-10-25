@@ -128,17 +128,19 @@ namespace DotNext
         /// <returns>The conversion result.</returns>
         public Result<U> Convert<U>(in ValueFunc<T, U> converter)
         {
+            Result<U> result;
             if (exception is null)
                 try
                 {
-                    return converter.Invoke(value);
+                    result = converter.Invoke(value);
                 }
                 catch (Exception e)
                 {
-                    return new Result<U>(e);
+                    result = new Result<U>(e);
                 }
             else
-                return new Result<U>(exception);
+                result = new Result<U>(exception);
+            return result;
         }
 
         /// <summary>

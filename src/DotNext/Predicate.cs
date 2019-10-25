@@ -167,14 +167,16 @@ namespace DotNext
         /// <returns><see langword="true"/> if <paramref name="obj" /> meets the criteria defined within the method represented by this delegate; otherwise, <see langword="false" />.</returns>
         public static Result<bool> TryInvoke<T>(this Predicate<T> predicate, T obj)
         {
+            Result<bool> result;
             try
             {
-                return predicate(obj);
+                result = predicate(obj);
             }
             catch (Exception e)
             {
-                return new Result<bool>(e);
+                result = new Result<bool>(e);
             }
+            return result;
         }
 
         /// <summary>
