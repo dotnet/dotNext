@@ -104,7 +104,7 @@ namespace DotNext.Runtime.InteropServices
         }
 
         [Fact]
-        public static unsafe void VolatileReadWrite()
+        public static unsafe void VolatileReadWriteInt64()
         {
             Pointer<long> ptr = stackalloc long[3];
             ptr.VolatileWrite(1);
@@ -121,6 +121,42 @@ namespace DotNext.Runtime.InteropServices
             Equal(12, ptr.Value);
             False(ptr.CompareAndSetValue(10, 20));
             Equal(12, ptr.Value);
+        }
+
+        [Fact]
+        public static unsafe void VolatileReadWriteInt32()
+        {
+            Pointer<int> ptr = stackalloc int[3];
+            ptr.VolatileWrite(1);
+            Equal(1, ptr.Value);
+            ptr.AddValue(10);
+            Equal(11, ptr.Value);
+            Equal(11, ptr.VolatileRead());
+            ptr.DecrementValue();
+            Equal(10, ptr.Value);
+            Equal(10, ptr.VolatileRead());
+            True(ptr.CompareAndSetValue(10, 12));
+            Equal(12, ptr.Value);
+            False(ptr.CompareAndSetValue(10, 20));
+            Equal(12, ptr.Value);
+        }
+
+        [Fact]
+        public static unsafe void VolatileReadWriteIntPtr()
+        {
+            Pointer<IntPtr> ptr = stackalloc IntPtr[3];
+            ptr.VolatileWrite(new IntPtr(1));
+            Equal(new IntPtr(1), ptr.Value);
+            ptr.AddValue(new IntPtr(10));
+            Equal(new IntPtr(11), ptr.Value);
+            Equal(new IntPtr(11), ptr.VolatileRead());
+            ptr.DecrementValue();
+            Equal(new IntPtr(10), ptr.Value);
+            Equal(new IntPtr(10), ptr.VolatileRead());
+            True(ptr.CompareAndSetValue(new IntPtr(10), new IntPtr(12)));
+            Equal(new IntPtr(12), ptr.Value);
+            False(ptr.CompareAndSetValue(new IntPtr(10), new IntPtr(20)));
+            Equal(new IntPtr(12), ptr.Value);
         }
 
         [Fact]
