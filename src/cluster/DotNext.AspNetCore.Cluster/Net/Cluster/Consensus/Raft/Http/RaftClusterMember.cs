@@ -28,6 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private ClusterMemberStatusChanged memberStatusChanged;
         private long nextIndex;
         internal IHttpClientMetrics Metrics;
+        internal HttpVersion ProtocolVersion;
 
         internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
             : base(context.CreateHttpHandler(), true)
@@ -61,6 +62,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             context.Logger.SendingRequestToMember(Endpoint, message.MessageType);
             var request = new HttpRequestMessage { RequestUri = resourcePath };
+            switch (ProtocolVersion)
+            {
+                case HttpVersion.Http1:
+                    request.Version = new Version(1, 1);
+                    break;
+                case HttpVersion.Http2:
+                    request.Version = new Version(2, 0);
+                    break;
+            }
             message.PrepareRequest(request);
 
             var response = default(HttpResponseMessage);

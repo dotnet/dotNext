@@ -29,22 +29,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private RaftClusterMember localMember;
 
         private readonly IHttpMessageHandlerFactory httpHandlerFactory;
-        private protected readonly TimeSpan RequestTimeout;
+        private readonly TimeSpan requestTimeout;
         private readonly DuplicateRequestDetector duplicationDetector;
-        private protected readonly bool OpenConnectionForEachRequest;
+        private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
-
+        private readonly HttpVersion protocolVersion;
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
         private RaftHttpCluster(RaftClusterMemberConfiguration config, out MutableMemberCollection members)
             : base(config, out members)
         {
-            OpenConnectionForEachRequest = config.OpenConnectionForEachRequest;
+            openConnectionForEachRequest = config.OpenConnectionForEachRequest;
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
-            RequestTimeout = TimeSpan.FromMilliseconds(config.UpperElectionTimeout);
+            requestTimeout = TimeSpan.FromMilliseconds(config.UpperElectionTimeout);
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
+            protocolVersion = config.ProtocolVersion;
         }
 
         private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MutableMemberCollection members)
@@ -64,6 +65,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private protected RaftHttpCluster(IServiceProvider dependencies, out MutableMemberCollection members)
             : this(dependencies.GetRequiredService<IOptionsMonitor<RaftClusterMemberConfiguration>>(), dependencies, out members)
         {
+        }
+
+        private protected void ConfigureMember(RaftClusterMember member)
+        {
+            member.Timeout = requestTimeout;
+            member.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
+            member.Metrics = Metrics as IHttpClientMetrics;
+            member.ProtocolVersion = protocolVersion;
         }
 
         private protected abstract RaftClusterMember CreateMember(Uri address);
