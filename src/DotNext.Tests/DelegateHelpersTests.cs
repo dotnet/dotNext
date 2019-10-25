@@ -62,5 +62,20 @@ namespace DotNext
             Equal(3, func());
             Equal(4, func.Unbind<string, int>().Invoke("abcd"));
         }
+
+        [Fact]
+        public static void TryInvoke()
+        {
+            Func<string, int> parser = int.Parse;
+            var result = parser.TryInvoke("123");
+            True(result.IsSuccessful);
+            Null(result.Error);
+            Equal(123, result.Value);
+
+            result = parser.TryInvoke("abc");
+            False(result.IsSuccessful);
+            NotNull(result.Error);
+            Throws<FormatException>(() => result.Value);
+        }
     }
 }

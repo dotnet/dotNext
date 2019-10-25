@@ -26,5 +26,21 @@ namespace DotNext.Threading.Tasks
                 await ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(InfiniteTimeSpan, source.Token));
             }
         }
+
+        [Fact]
+        public static void GetResult()
+        {
+            var task = Task.FromResult(42);
+            var result = task.GetResult(TimeSpan.Zero);
+            Null(result.Error);
+            True(result.IsSuccessful);
+            Equal(42, result.Value);
+
+            task = Task.FromCanceled<int>(new CancellationToken(true));
+            result = task.GetResult(TimeSpan.Zero);
+            NotNull(result.Error);
+            False(result.IsSuccessful);
+            Throws<AggregateException>(() => result.Value);
+        }
     }
 }
