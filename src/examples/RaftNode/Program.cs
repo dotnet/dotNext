@@ -32,7 +32,6 @@ namespace RaftNode
                 {"members:0", "https://localhost:3262"},
                 {"members:1", "https://localhost:3263"},
                 {"members:2", "https://localhost:3264"},
-                {"protocolVersion", "http2" },
                 {"requestJournal:memoryLimit", "5" },
                 {"requestJournal:expiration", "00:01:00" }
             };
