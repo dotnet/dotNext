@@ -22,7 +22,7 @@ namespace DotNext.Threading.Tasks
         {
             using (var source = new CancellationTokenSource(100))
             {
-                var task = Task.Delay(500);
+                var task = new TaskCompletionSource<bool>().Task;
                 await ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(InfiniteTimeSpan, source.Token));
             }
         }
