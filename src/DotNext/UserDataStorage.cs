@@ -74,10 +74,9 @@ namespace DotNext
             internal V GetOrSet<V, S>(UserDataSlot<V> slot, ref S valueFactory)
                 where S : struct, ISupplier<V>
             {
-                V userData;
                 //fast path - read lock is required
                 lockState.EnterReadLock();
-                var exists = slot.GetUserData(this, out userData);
+                var exists = slot.GetUserData(this, out var userData);
                 lockState.ExitReadLock();
                 if (exists)
                     goto exit;
