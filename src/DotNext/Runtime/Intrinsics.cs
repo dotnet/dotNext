@@ -4,6 +4,7 @@ using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
 using Var = InlineIL.LocalVar;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Runtime
 {
@@ -154,6 +155,7 @@ namespace DotNext.Runtime
 
         internal static void UnsafeDispose(object disposable)
         {
+            Debug.Assert(disposable is IDisposable);
             Push(disposable);
             Callvirt(new M(typeof(IDisposable), nameof(IDisposable.Dispose)));
             Ret();
@@ -161,6 +163,7 @@ namespace DotNext.Runtime
 
         internal static void UnsafeInvoke(object action)
         {
+            Debug.Assert(action is Action);
             Push(action);
             Callvirt(new M(typeof(Action), nameof(Action.Invoke)));
             Ret();
