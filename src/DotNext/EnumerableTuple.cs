@@ -15,8 +15,6 @@ namespace DotNext
     public readonly struct EnumerableTuple<I, T> : IReadOnlyList<I>, ITuple
         where T : IStructuralEquatable, IStructuralComparable, ITuple
     {
-        //TODO: EnumerableTuple should implements ITuple, possible from .NET Standard 2.1
-
         internal delegate I ItemAccessor(in T tuple, int index);
 
         /// <summary>
