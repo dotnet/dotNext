@@ -151,5 +151,19 @@ namespace DotNext.Runtime
             Ldtoken(typeof(T));
             return Return<RuntimeTypeHandle>();
         }
+
+        internal static void UnsafeDispose(object disposable)
+        {
+            Push(disposable);
+            Callvirt(new M(typeof(IDisposable), nameof(IDisposable.Dispose)));
+            Ret();
+        }
+
+        internal static void UnsafeInvoke(object action)
+        {
+            Push(action);
+            Callvirt(new M(typeof(Action), nameof(Action.Invoke)));
+            Ret();
+        }
     }
 }

@@ -19,8 +19,8 @@ namespace DotNext
         {
             var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
             IsCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
-            ActionInvoker = InvokeAction;
-            ActionCallback = InvokeAction;
+            ActionInvoker = Runtime.Intrinsics.UnsafeInvoke;
+            ActionCallback = Runtime.Intrinsics.UnsafeInvoke;
         }
 
         private static MethodInfo GetMethod<D>(Expression<D> expression)
@@ -445,8 +445,6 @@ namespace DotNext
         public static Action<G, T1, T2, T3, T4, T5> Unbind<G, T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action)
             where G : class
             => action.UnsafeUnbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
-
-        private static void InvokeAction(object continuation) => Unsafe.As<Action>(continuation).Invoke();
 
         internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(ActionCallback, action);
 

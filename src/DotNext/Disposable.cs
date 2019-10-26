@@ -12,9 +12,7 @@ namespace DotNext
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
     public abstract class Disposable : IDisposable
     {
-        private static readonly WaitCallback DisposeCallback = InvokeDispose;
-
-        private static void InvokeDispose(object resource) => Unsafe.As<IDisposable>(resource).Dispose();
+        private static readonly WaitCallback DisposeCallback = Runtime.Intrinsics.UnsafeDispose;
 
         /// <summary>
         /// Indicates that this object is disposed.
