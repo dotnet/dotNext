@@ -19,8 +19,8 @@ namespace DotNext
         {
             var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
             isCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
-            ActionInvoker = Invoke;
-            ActionCallback = Invoke;
+            ActionInvoker = InvokeAction;
+            ActionCallback = InvokeAction;
         }
 
         private static MethodInfo GetMethod<D>(Expression<D> expression)
@@ -446,11 +446,10 @@ namespace DotNext
             where G : class
             => action.UnsafeUnbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
 
-        private static void Invoke(object continuation) => Unsafe.As<Action>(continuation).Invoke();
+        private static void InvokeAction(object continuation) => Unsafe.As<Action>(continuation).Invoke();
 
         internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(ActionCallback, action);
 
-        //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
         internal static void InvokeInThreadPool(this Action action) => ThreadPool.QueueUserWorkItem(ActionInvoker, action);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
