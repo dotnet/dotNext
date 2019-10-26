@@ -12,15 +12,15 @@ namespace DotNext
     public static class DelegateHelpers
     {
         private static readonly Predicate<Assembly> IsCollectible;
-        private static readonly Action<Action> ActionInvoker;
+        private static readonly WaitCallback ActionInvoker;
         private static readonly SendOrPostCallback ActionCallback;
 
         static DelegateHelpers()
         {
             var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
             IsCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
-            ActionInvoker = CreateOpenDelegate<Action<Action>>(a => a.Invoke());
-            ActionCallback = new SendOrPostCallback(Invoke);
+            ActionInvoker = InvokeAction;
+            ActionCallback = InvokeAction;
         }
 
         private static MethodInfo GetMethod<D>(Expression<D> expression)
@@ -446,11 +446,11 @@ namespace DotNext
             where G : class
             => action.UnsafeUnbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
 
-        private static void Invoke(object continuation) => (continuation as Action)?.Invoke();
+        private static void InvokeAction(object continuation) => Unsafe.As<Action>(continuation).Invoke();
 
         internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(ActionCallback, action);
 
-        internal static void InvokeInThreadPool(this Action action) => ThreadPool.QueueUserWorkItem(ActionInvoker, action, false);
+        internal static void InvokeInThreadPool(this Action action) => ThreadPool.QueueUserWorkItem(ActionInvoker, action);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CanBeUnloaded(Assembly assembly)

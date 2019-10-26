@@ -13,15 +13,9 @@ namespace DotNext
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
     public abstract class Disposable : IDisposable
     {
-        /// <summary>
-        /// Represents open delegate that can be used to call <see cref="IDisposable.Dispose"/> method.
-        /// </summary>
-        public static readonly Action<IDisposable> DisposeAction = DelegateHelpers.CreateOpenDelegate<Action<IDisposable>>(resource => resource.Dispose());
+        private static readonly WaitCallback DisposeCallback = InvokeDispose;
 
-        /// <summary>
-        /// Represents open delegate that can be used to call <see cref="IAsyncDisposable.DisposeAsync"/> method.
-        /// </summary>
-        public static readonly Func<IAsyncDisposable, ValueTask> DisposeFunc = DelegateHelpers.CreateOpenDelegate<Func<IAsyncDisposable, ValueTask>>(resource => resource.DisposeAsync());
+        private static void InvokeDispose(object resource) => Unsafe.As<IDisposable>(resource).Dispose();
 
         /// <summary>
         /// Indicates that this object is disposed.
@@ -63,7 +57,7 @@ namespace DotNext
         /// </summary>
         /// <param name="resource">The resource to be disposed.</param>
         protected static void QueueDispose(IDisposable resource) =>
-            ThreadPool.QueueUserWorkItem(DisposeAction, resource, false);
+            ThreadPool.QueueUserWorkItem(DisposeCallback, resource);
 
         /// <summary>
         /// Disposes many objects.
