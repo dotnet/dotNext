@@ -446,7 +446,7 @@ namespace DotNext
             where G : class
             => action.UnsafeUnbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
 
-        private static void Invoke(object continuation) => (continuation as Action)?.Invoke();
+        private static void Invoke(object continuation) => Unsafe.As<Action>(continuation).Invoke();
 
         internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(ActionCallback, action);
 
