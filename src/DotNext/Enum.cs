@@ -39,7 +39,7 @@ namespace DotNext
                 => Name is null ? other.Name is null && EqualityComparer<E>.Default.Equals(Value, other.Value) : Name == other.Name;
 
             public override bool Equals(object other) => other is Tuple t && Equals(t);
-            public override int GetHashCode() => Name is null ? Value.GetHashCode() : Name.GetHashCode();
+            public override int GetHashCode() => Name is null ? Value.GetHashCode() : Name.GetHashCode(StringComparison.Ordinal);
         }
 
         private sealed class Mapping : Dictionary<Tuple, long>
@@ -244,7 +244,7 @@ namespace DotNext
         {
             var hashCode = -1670801664;
             hashCode = hashCode * -1521134295 + Value.GetHashCode();
-            hashCode = hashCode * -1521134295 + Name.GetHashCode();
+            hashCode = hashCode * -1521134295 + Name.GetHashCode(StringComparison.Ordinal);
             return hashCode;
         }
 

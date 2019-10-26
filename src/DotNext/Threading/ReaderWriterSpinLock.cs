@@ -133,7 +133,7 @@ namespace DotNext.Threading
         /// </summary>
         public void EnterReadLock()
         {
-            for (SpinWait spinner; ;)
+            for (var spinner = new SpinWait(); ;)
             {
                 var currentState = state;
                 if (currentState == WriteLockState)
@@ -150,7 +150,7 @@ namespace DotNext.Threading
 
         private bool TryEnterReadLock(Timeout timeout, CancellationToken token)
         {
-            SpinWait spinner;
+            var spinner = new SpinWait();
             for (int currentState; !timeout.IsExpired; token.ThrowIfCancellationRequested())
                 if ((currentState = state) == WriteLockState)
                     spinner.SpinOnce();
@@ -174,7 +174,7 @@ namespace DotNext.Threading
         /// </summary>
         public void EnterWriteLock()
         {
-            for (SpinWait spinner; Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce()) { }
+            for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce()) { }
             Interlocked.Increment(ref version);
         }
 
@@ -192,7 +192,7 @@ namespace DotNext.Threading
 
         private bool TryEnterWriteLock(Timeout timeout, CancellationToken token)
         {
-            for (SpinWait spinner; Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce(), token.ThrowIfCancellationRequested())
+            for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce(), token.ThrowIfCancellationRequested())
                 if (timeout.IsExpired)
                     return false;
             Interlocked.Increment(ref version);
