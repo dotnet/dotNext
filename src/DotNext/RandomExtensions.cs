@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 namespace DotNext
 {
     using CharBuffer = Buffers.MemoryRental<char>;
+    using ByteBuffer = Buffers.MemoryRental<byte>;
 
     /// <summary>
     /// Provides random data generation.
@@ -38,40 +39,31 @@ namespace DotNext
 
             void IRandomStringGenerator.NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars)
             {
-                //TODO: byte array should be replaced with stack allocated Span in .NET Standard 2.1
-                var bytes = new byte[buffer.Length * sizeof(int)];
-                rng.GetBytes(bytes, 0, bytes.Length);
-                var offset = 0;
+                var offset = buffer.Length * sizeof(int);
+                using ByteBuffer bytes = offset <= 1024 ? stackalloc byte[offset] : new ByteBuffer(offset);
+                rng.GetBytes(bytes.Span);
+                offset = 0;
                 foreach (ref var element in buffer)
                 {
-                    var randomNumber = (BitConverter.ToInt32(bytes, offset) & int.MaxValue) % allowedChars.Length;
+                    var randomNumber = (BitConverter.ToInt32(bytes.Span.Slice(offset)) & int.MaxValue) % allowedChars.Length;
                     element = allowedChars[randomNumber];
                     offset += sizeof(int);
                 }
             }
         }
 
-        private static unsafe string NextString<TGenerator>(TGenerator generator, ReadOnlySpan<char> allowedChars, int length)
+        private static string NextString<TGenerator>(TGenerator generator, ReadOnlySpan<char> allowedChars, int length)
             where TGenerator : struct, IRandomStringGenerator
         {
-            //TODO: should be reviewed for .NET Standard 2.1
             if (length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
             if (length == 0)
                 return string.Empty;
             const short smallStringLength = 1024;
             //use stack allocation for small strings, which is 99% of all use cases
-            CharBuffer result = length <= smallStringLength ? stackalloc char[length] : new CharBuffer(length);
-            try
-            {
-                generator.NextString(result.Span, allowedChars);
-                fixed (char* ptr = result)
-                    return new string(ptr, 0, length);
-            }
-            finally
-            {
-                result.Dispose();
-            }
+            using CharBuffer result = length <= smallStringLength ? stackalloc char[length] : new CharBuffer(length);
+            generator.NextString(result.Span, allowedChars);
+            return new string(result.Span);
         }
 
         /// <summary>
