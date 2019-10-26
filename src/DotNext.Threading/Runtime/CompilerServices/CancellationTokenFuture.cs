@@ -23,7 +23,7 @@ namespace DotNext.Runtime.CompilerServices
             if (token.IsCancellationRequested)
                 state = CanceledToken;
             else
-                registration = token.Register(Complete, token); //TODO: CancellationTokenRegistration has Token property since .NET Standard 2.1
+                registration = token.Register(Complete);
         }
 
         private CancellationTokenFuture(bool throwIfCanceled)
@@ -33,11 +33,11 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void Complete(object token)
+        private new void Complete()
         {
-            state = token;
+            state = registration.Token;
             registration.Dispose();
-            Complete();
+            base.Complete();
         }
 
         /// <summary>
