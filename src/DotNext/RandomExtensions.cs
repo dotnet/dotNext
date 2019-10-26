@@ -149,12 +149,11 @@ namespace DotNext
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>].</returns>
-        public static int Next(this RandomNumberGenerator random)
+        public unsafe static int Next(this RandomNumberGenerator random)
         {
-            //TODO: GetBytes should work with ReadOnlySpan in .NET Standard 2.1
-            var buffer = new byte[sizeof(int)];
-            random.GetBytes(buffer, 0, buffer.Length);
-            return BitConverter.ToInt32(buffer, 0) & int.MaxValue;  //remove sign bit. Abs function may cause OverflowException
+            int buffer = 0;
+            random.GetBytes(new Span<byte>(&buffer, sizeof(int)));
+            return buffer & int.MaxValue;  //remove sign bit. Abs function may cause OverflowException
         }
 
         /// <summary>
@@ -174,7 +173,7 @@ namespace DotNext
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>Randomly generated floating-point number.</returns>
-        public static double NextDouble(this RandomNumberGenerator random)
+        public unsafe static double NextDouble(this RandomNumberGenerator random)
         {
             double result = random.Next();
             //normalize to range [0, 1)
