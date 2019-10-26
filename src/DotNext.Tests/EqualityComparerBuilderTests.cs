@@ -60,6 +60,9 @@ namespace DotNext
             var obj = new ComplexClass(null, new UnsafeStruct(new IntPtr(42L), "Hello, world!"), new UnsafeStruct(new IntPtr(43L), null));
             True(equality(obj, new ComplexClass(null, new UnsafeStruct(new IntPtr(42L), "Hello, world!"), new UnsafeStruct(new IntPtr(43L), null))));
             False(equality(obj, null));
+            var comparer = new EqualityComparerBuilder<ComplexClass>() { SaltedHashCode = true }.Build();
+            True(comparer.Equals(obj, new ComplexClass(null, new UnsafeStruct(new IntPtr(42L), "Hello, world!"), new UnsafeStruct(new IntPtr(43L), null))));
+            False(comparer.Equals(obj, null));
         }
 
         [Fact]
@@ -69,6 +72,9 @@ namespace DotNext
             var array = new[] { new UnsafeStruct(new IntPtr(42L), "Hello, world!"), new UnsafeStruct(new IntPtr(43L), null) };
             Equal(hashCode(array), hashCode(new[] { new UnsafeStruct(new IntPtr(42L), "Hello, world!"), new UnsafeStruct(new IntPtr(43L), null) }));
             True(equality(array, new[] { new UnsafeStruct(new IntPtr(42L), "Hello, world!"), new UnsafeStruct(new IntPtr(43L), null) }));
+            var comparer = new EqualityComparerBuilder<UnsafeStruct[]>().Build();
+            Equal(comparer.GetHashCode(array), comparer.GetHashCode(new[] { new UnsafeStruct(new IntPtr(42L), "Hello, world!"), new UnsafeStruct(new IntPtr(43L), null) }));
+            True(comparer.Equals(array, new[] { new UnsafeStruct(new IntPtr(42L), "Hello, world!"), new UnsafeStruct(new IntPtr(43L), null) }));
         }
 
         [Fact]
@@ -104,6 +110,15 @@ namespace DotNext
             var g = Guid.NewGuid();
             Equal(hashCode(g), hashCode(g));
             True(equality(g, g));
+        }
+
+        [Fact]
+        public static void PrimitiveTypes()
+        {
+            var comparer = new EqualityComparerBuilder<int>().Build();
+            True(comparer.Equals(10, 10));
+            False(comparer.Equals(10, 20));
+            Equal(10.GetHashCode(), comparer.GetHashCode(10));
         }
     }
 }
