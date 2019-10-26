@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext
@@ -11,8 +12,8 @@ namespace DotNext
     /// <typeparam name="I">The type of items in the tuple.</typeparam>
     /// <typeparam name="T">The tuple type.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct EnumerableTuple<I, T> : IReadOnlyList<I>
-        where T : IStructuralEquatable, IStructuralComparable
+    public readonly struct EnumerableTuple<I, T> : IReadOnlyList<I>, ITuple
+        where T : IStructuralEquatable, IStructuralComparable, ITuple
     {
         //TODO: EnumerableTuple should implements ITuple, possible from .NET Standard 2.1
 
@@ -26,24 +27,21 @@ namespace DotNext
         {
             private readonly T tuple;
             private readonly ItemAccessor accessor;
-            private readonly int count;
             private int currentIndex;
 
-            //TODO: in .NET Standard 2.1 parameter count can be replaced with ITuple.Length            
-            internal Enumerator(T tuple, ItemAccessor accessor, int count)
+            internal Enumerator(T tuple, ItemAccessor accessor)
             {
                 this.tuple = tuple;
                 currentIndex = -1;
                 this.accessor = accessor;
-                this.count = count;
             }
 
             /// <summary>
             /// Gets currently iterating item in the tuple.
             /// </summary>
-            public I Current => accessor(in tuple, currentIndex);
+            public readonly I Current => accessor(in tuple, currentIndex);
 
-            object IEnumerator.Current => Current;
+            readonly object IEnumerator.Current => Current;
 
             /// <summary>
             /// Advances position of this enumerator.
@@ -52,7 +50,7 @@ namespace DotNext
             public bool MoveNext()
             {
                 currentIndex += 1;
-                return currentIndex < count;
+                return currentIndex < tuple.Length;
             }
 
             /// <summary>
@@ -67,10 +65,9 @@ namespace DotNext
         private readonly T tuple;
         private readonly ItemAccessor accessor;
 
-        internal EnumerableTuple(T tuple, int count, ItemAccessor accessor)
+        internal EnumerableTuple(T tuple, ItemAccessor accessor)
         {
             this.tuple = tuple;
-            Count = count;
             this.accessor = accessor;
         }
 
@@ -85,13 +82,17 @@ namespace DotNext
         /// <summary>
         /// Gets number of items in the tuple.
         /// </summary>
-        public int Count { get; }
+        public int Count => tuple.Length;
+
+        int ITuple.Length => Count;
+
+        object ITuple.this[int index] => tuple[index];
 
         /// <summary>
         /// Gets enumerator over items in the tuple.
         /// </summary>
         /// <returns>The enumerator over items.</returns>
-        public Enumerator GetEnumerator() => new Enumerator(tuple, accessor, Count);
+        public Enumerator GetEnumerator() => new Enumerator(tuple, accessor);
 
         IEnumerator<I> IEnumerable<I>.GetEnumerator() => GetEnumerator();
 
@@ -112,174 +113,104 @@ namespace DotNext
             => index == 0 ? tuple.Item1 : throw new ArgumentOutOfRangeException(nameof(index));
 
         private static E GetItem<E>(in ValueTuple<E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         private static E GetItem<E>(in Tuple<E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         private static E GetItem<E>(in ValueTuple<E, E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                case 2:
-                    return tuple.Item3;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                2 => tuple.Item3,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         private static E GetItem<E>(in Tuple<E, E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                case 2:
-                    return tuple.Item3;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                2 => tuple.Item3,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         private static E GetItem<E>(in ValueTuple<E, E, E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                case 2:
-                    return tuple.Item3;
-                case 3:
-                    return tuple.Item4;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                2 => tuple.Item3,
+                3 => tuple.Item4,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         private static E GetItem<E>(in Tuple<E, E, E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                case 2:
-                    return tuple.Item3;
-                case 3:
-                    return tuple.Item4;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                2 => tuple.Item3,
+                3 => tuple.Item4,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         private static E GetItem<E>(in ValueTuple<E, E, E, E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                case 2:
-                    return tuple.Item3;
-                case 3:
-                    return tuple.Item4;
-                case 4:
-                    return tuple.Item5;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                2 => tuple.Item3,
+                3 => tuple.Item4,
+                4 => tuple.Item5,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         private static E GetItem<E>(in Tuple<E, E, E, E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                case 2:
-                    return tuple.Item3;
-                case 3:
-                    return tuple.Item4;
-                case 4:
-                    return tuple.Item5;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                2 => tuple.Item3,
+                3 => tuple.Item4,
+                4 => tuple.Item5,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         private static E GetItem<E>(in ValueTuple<E, E, E, E, E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                case 2:
-                    return tuple.Item3;
-                case 3:
-                    return tuple.Item4;
-                case 4:
-                    return tuple.Item5;
-                case 5:
-                    return tuple.Item6;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                2 => tuple.Item3,
+                3 => tuple.Item4,
+                4 => tuple.Item5,
+                5 => tuple.Item6,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         private static E GetItem<E>(in Tuple<E, E, E, E, E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                case 2:
-                    return tuple.Item3;
-                case 3:
-                    return tuple.Item4;
-                case 4:
-                    return tuple.Item5;
-                case 5:
-                    return tuple.Item6;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                2 => tuple.Item3,
+                3 => tuple.Item4,
+                4 => tuple.Item5,
+                5 => tuple.Item6,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         private static E GetItem<E>(in ValueTuple<E, E, E, E, E, E, E> tuple, int index)
         {
@@ -334,7 +265,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, ValueTuple<T>> AsEnumerable<T>(this ValueTuple<T> tuple)
-            => new EnumerableTuple<T, ValueTuple<T>>(tuple, 1, GetItem);
+            => new EnumerableTuple<T, ValueTuple<T>>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of single item.
@@ -343,7 +274,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T>> AsEnumerable<T>(this Tuple<T> tuple)
-            => tuple is null ? default : new EnumerableTuple<T, Tuple<T>>(tuple, 1, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T>>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of two items.
@@ -352,7 +283,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T)> AsEnumerable<T>(this (T, T) tuple)
-            => new EnumerableTuple<T, (T, T)>(tuple, 2, GetItem);
+            => new EnumerableTuple<T, (T, T)>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of two items.
@@ -361,7 +292,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T>> AsEnumerable<T>(this Tuple<T, T> tuple)
-            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T>>(tuple, 2, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T>>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of three items.
@@ -370,7 +301,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T, T)> AsEnumerable<T>(this (T, T, T) tuple)
-            => new EnumerableTuple<T, (T, T, T)>(tuple, 3, GetItem);
+            => new EnumerableTuple<T, (T, T, T)>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of three items.
@@ -379,7 +310,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T, T>> AsEnumerable<T>(this Tuple<T, T, T> tuple)
-            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T>>(tuple, 3, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T>>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of four items.
@@ -388,7 +319,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T, T, T)> AsEnumerable<T>(this (T, T, T, T) tuple)
-            => new EnumerableTuple<T, (T, T, T, T)>(tuple, 4, GetItem);
+            => new EnumerableTuple<T, (T, T, T, T)>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of four items.
@@ -397,7 +328,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T> tuple)
-            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T>>(tuple, 4, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T>>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of five items.
@@ -406,7 +337,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T, T, T, T)> AsEnumerable<T>(this (T, T, T, T, T) tuple)
-            => new EnumerableTuple<T, (T, T, T, T, T)>(tuple, 5, GetItem);
+            => new EnumerableTuple<T, (T, T, T, T, T)>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of five items.
@@ -415,7 +346,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T, T> tuple)
-            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T>>(tuple, 5, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T>>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of six items.
@@ -424,7 +355,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T, T, T, T, T)> AsEnumerable<T>(this (T, T, T, T, T, T) tuple)
-            => new EnumerableTuple<T, (T, T, T, T, T, T)>(tuple, 6, GetItem);
+            => new EnumerableTuple<T, (T, T, T, T, T, T)>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of six items.
@@ -433,7 +364,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T, T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T, T, T> tuple)
-            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T, T>>(tuple, 6, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T, T>>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of seven items.
@@ -442,7 +373,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T, T, T, T, T, T)> AsEnumerable<T>(this (T, T, T, T, T, T, T) tuple)
-            => new EnumerableTuple<T, (T, T, T, T, T, T, T)>(tuple, 7, GetItem);
+            => new EnumerableTuple<T, (T, T, T, T, T, T, T)>(tuple, GetItem);
 
         /// <summary>
         /// Converts tuple into enumerable collection of seven items.
@@ -451,6 +382,6 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, Tuple<T, T, T, T, T, T, T>> AsEnumerable<T>(this Tuple<T, T, T, T, T, T, T> tuple)
-            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T, T, T>>(tuple, 7, GetItem);
+            => tuple is null ? default : new EnumerableTuple<T, Tuple<T, T, T, T, T, T, T>>(tuple, GetItem);
     }
 }
