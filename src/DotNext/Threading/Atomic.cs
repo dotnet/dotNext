@@ -60,7 +60,7 @@ namespace DotNext.Threading
         /// Performs atomic read.
         /// </summary>
         /// <param name="result">The result of atomic read.</param>
-        public void Read(out T result)
+        public readonly void Read(out T result)
         {
             var spinner = new SpinWait();
         spin_loop:
@@ -274,7 +274,7 @@ namespace DotNext.Threading
         /// </remarks>
         public T Value
         {
-            get
+            readonly get
             {
                 Read(out var result);
                 return result;
@@ -284,7 +284,7 @@ namespace DotNext.Threading
 
         object IStrongBox.Value
         {
-            get => Value;
+            readonly get => Value;
             set => Value = (T)value;
         }
 
@@ -292,7 +292,7 @@ namespace DotNext.Threading
         /// Converts the stored value into string atomically.
         /// </summary>
         /// <returns>The string returned from <see cref="object.ToString"/> method called on the stored value.</returns>
-        public override string ToString()
+        public readonly override string ToString()
         {
             Read(out var result);
             return result.ToString();

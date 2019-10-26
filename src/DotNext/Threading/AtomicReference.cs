@@ -396,7 +396,7 @@ namespace DotNext.Threading
         public T Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => Volatile.Read(ref value);
+            readonly get => Volatile.Read(ref Unsafe.AsRef(in value));
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set => Volatile.Write(ref this.value, value);
         }
@@ -427,28 +427,28 @@ namespace DotNext.Threading
         /// Returns textual representation of the stored value.
         /// </summary>
         /// <returns>The textual representation of the stored value.</returns>
-		public override string ToString() => Value?.ToString() ?? "NULL";
+		public readonly override string ToString() => Value?.ToString() ?? "NULL";
 
         /// <summary>
         /// Checks whether the stored value is equal to the given value.
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if the stored value is equal to <paramref name="other"/> value.</returns>
-		public bool Equals(T other) => Equals(other, Value);
+		public readonly bool Equals(T other) => Equals(other, Value);
 
         /// <summary>
         /// Checks whether the stored value is equal to the given value.
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if the stored value is equal to <paramref name="other"/> value.</returns>
-        public override bool Equals(object other)
+        public readonly override bool Equals(object other)
             => other is AtomicReference<T> atomic ? Equals(atomic.Value) : Equals(other as T);
 
         /// <summary>
         /// Computes hash code for the stored value.
         /// </summary>
         /// <returns>The hash code of the stored value.</returns>
-		public override int GetHashCode()
+		public readonly override int GetHashCode()
         {
             var value = Value;
             return value is null ? 0 : value.GetHashCode();
@@ -597,7 +597,7 @@ namespace DotNext.Threading
                 return value;
         }
 
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        readonly void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
             => info.AddValue(ValueSerData, value, typeof(T));
     }
 }

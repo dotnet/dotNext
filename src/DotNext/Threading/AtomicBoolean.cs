@@ -38,7 +38,7 @@ namespace DotNext.Threading
         public bool Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get
+            readonly get
             {
                 Ldarg_0();
                 Volatile();
@@ -248,13 +248,13 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(bool other) => value.VolatileRead() == other.ToInt32();
+        public readonly bool Equals(bool other) => Unsafe.AsRef(in value).VolatileRead() == other.ToInt32();
 
         /// <summary>
         /// Computes hash code for the stored value.
         /// </summary>
         /// <returns>The hash code of the stored boolean value.</returns>
-        public override int GetHashCode() => value.VolatileRead();
+        public readonly override int GetHashCode() => Unsafe.AsRef(in value).VolatileRead();
 
         /// <summary>
         /// Determines whether stored value is equal to
@@ -262,26 +262,21 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
-        {
-            switch (other)
+        public readonly override bool Equals(object other)
+            => other switch
             {
-                case bool b:
-                    return Equals(b);
-                case AtomicBoolean b:
-                    return b.value.VolatileRead() == value.VolatileRead();
-                default:
-                    return false;
-            }
-        }
+                bool b => Equals(b),
+                AtomicBoolean b => Value == b.Value,
+                _ => false,
+            };
 
         /// <summary>
         /// Returns stored boolean value in the form of <see cref="string"/>.
         /// </summary>
         /// <returns>Textual representation of stored boolean value.</returns>
-        public override string ToString() => value.ToBoolean() ? bool.TrueString : bool.FalseString;
+        public readonly override string ToString() => value.ToBoolean() ? bool.TrueString : bool.FalseString;
 
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        readonly void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
             => info.AddValue(ValueSerData, value);
     }
 }

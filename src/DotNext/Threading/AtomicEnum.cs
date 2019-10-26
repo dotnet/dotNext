@@ -117,7 +117,7 @@ namespace DotNext.Threading
         public E Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => value.VolatileRead().ToEnum<E>();
+            readonly get => Unsafe.AsRef(in value).VolatileRead().ToEnum<E>();
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set => this.value.VolatileWrite(value.ToInt64());
         }
