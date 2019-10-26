@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 using Xunit;
 
 namespace DotNext
 {
+    [ExcludeFromCodeCoverage]
     public sealed class MethodPointerTests : Assert
     {
         private static object CreateObject() => new object();

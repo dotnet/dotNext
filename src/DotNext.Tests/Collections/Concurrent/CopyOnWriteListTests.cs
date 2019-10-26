@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Collections.Concurrent
 {
+    [ExcludeFromCodeCoverage]
     public sealed class CopyOnWriteListTests : Assert
     {
         [Fact]

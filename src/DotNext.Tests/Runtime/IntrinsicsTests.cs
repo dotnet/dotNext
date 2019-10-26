@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Xunit;
 
 namespace DotNext.Runtime
 {
+    [ExcludeFromCodeCoverage]
     public class IntrinsicsTests : Assert
     {
         [Fact]

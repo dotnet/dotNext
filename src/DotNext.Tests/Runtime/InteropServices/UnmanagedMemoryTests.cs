@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
+    [ExcludeFromCodeCoverage]
     public sealed class UnmanagedMemoryTests : Assert
     {
         private struct Data

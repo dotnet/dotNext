@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -8,9 +9,11 @@ using Xunit;
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
+    
     using static CodeGenerator;
     using U = Linq.Expressions.UniversalExpression;
 
+    [ExcludeFromCodeCoverage]
     public sealed class LambdaTests : Assert
     {
         private static long Fact(long value)

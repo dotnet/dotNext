@@ -1,7 +1,9 @@
-﻿using Xunit;
+﻿using System.Diagnostics.CodeAnalysis;
+using Xunit;
 
 namespace DotNext.Buffers
 {
+    [ExcludeFromCodeCoverage]
     public sealed class MemoryRentalTests : Assert
     {
         [Fact]

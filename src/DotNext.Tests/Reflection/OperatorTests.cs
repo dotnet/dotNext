@@ -1,7 +1,9 @@
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Reflection
 {
+    [ExcludeFromCodeCoverage]
     public sealed class OperatorTests : Assert
     {
         public class BaseClass

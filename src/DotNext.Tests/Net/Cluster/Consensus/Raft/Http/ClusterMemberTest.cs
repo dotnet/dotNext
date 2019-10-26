@@ -4,10 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    [ExcludeFromCodeCoverage]
     public abstract class ClusterMemberTest : Assert
     {
 

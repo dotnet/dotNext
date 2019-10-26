@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
     using Messaging;
 
+    [ExcludeFromCodeCoverage]
     public sealed class EmbeddedClusterSupportTests : ClusterMemberTest
     {
         private sealed class LeaderChangedEvent : EventWaitHandle, IRaftClusterConfigurator

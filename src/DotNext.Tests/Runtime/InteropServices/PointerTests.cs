@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -7,6 +8,7 @@ namespace DotNext.Runtime.InteropServices
 {
     using Threading;
 
+    [ExcludeFromCodeCoverage]
     public sealed class PointerTests : Assert
     {
         [Fact]

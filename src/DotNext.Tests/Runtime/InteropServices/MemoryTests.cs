@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
+    [ExcludeFromCodeCoverage]
     public sealed class MemoryTests : Assert
     {
         private Guid field;
