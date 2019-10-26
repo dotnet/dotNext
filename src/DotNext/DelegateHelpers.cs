@@ -11,12 +11,16 @@ namespace DotNext
     /// </summary>
     public static class DelegateHelpers
     {
-        private static readonly Predicate<Assembly> isCollectible;
+        private static readonly Predicate<Assembly> IsCollectible;
+        private static readonly Action<Action> ActionInvoker;
+        private static readonly SendOrPostCallback ActionCallback;
 
         static DelegateHelpers()
         {
             var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
-            isCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
+            IsCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
+            ActionInvoker = CreateOpenDelegate<Action<Action>>(a => a.Invoke());
+            ActionCallback = new SendOrPostCallback(Invoke);
         }
 
         private static MethodInfo GetMethod<D>(Expression<D> expression)
@@ -444,14 +448,13 @@ namespace DotNext
 
         private static void Invoke(object continuation) => (continuation as Action)?.Invoke();
 
-        internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(Invoke, action);
+        internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(ActionCallback, action);
 
-        //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
-        internal static void InvokeInThreadPool(this Action action) => ThreadPool.QueueUserWorkItem(Invoke, action);
+        internal static void InvokeInThreadPool(this Action action) => ThreadPool.QueueUserWorkItem(ActionInvoker, action, false);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CanBeUnloaded(Assembly assembly)
-            => assembly.IsDynamic || assembly.ReflectionOnly || (isCollectible?.Invoke(assembly) ?? false);
+            => assembly.IsDynamic || assembly.ReflectionOnly || (IsCollectible?.Invoke(assembly) ?? false);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsRegularDelegate(Delegate d)
