@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext
 {
@@ -12,8 +13,15 @@ namespace DotNext
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
     public abstract class Disposable : IDisposable
     {
-        //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
-        private static readonly WaitCallback DisposeResource = resource => ((IDisposable)resource).Dispose();
+        /// <summary>
+        /// Represents open delegate that can be used to call <see cref="IDisposable.Dispose"/> method.
+        /// </summary>
+        public static readonly Action<IDisposable> DisposeAction = DelegateHelpers.CreateOpenDelegate<Action<IDisposable>>(resource => resource.Dispose());
+
+        /// <summary>
+        /// Represents open delegate that can be used to call <see cref="IAsyncDisposable.DisposeAsync"/> method.
+        /// </summary>
+        public static readonly Func<IAsyncDisposable, ValueTask> DisposeFunc = DelegateHelpers.CreateOpenDelegate<Func<IAsyncDisposable, ValueTask>>(resource => resource.DisposeAsync());
 
         /// <summary>
         /// Indicates that this object is disposed.
@@ -55,7 +63,7 @@ namespace DotNext
         /// </summary>
         /// <param name="resource">The resource to be disposed.</param>
         protected static void QueueDispose(IDisposable resource) =>
-            ThreadPool.QueueUserWorkItem(DisposeResource, resource);
+            ThreadPool.QueueUserWorkItem(DisposeAction, resource, false);
 
         /// <summary>
         /// Disposes many objects.
@@ -68,11 +76,28 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Disposes many objects.
+        /// </summary>
+        /// <param name="objects">An array of objects to dispose.</param>
+        public static async ValueTask DisposeAsync(IEnumerable<IAsyncDisposable> objects)
+        {
+            foreach (var obj in objects)
+                await (obj?.DisposeAsync()).GetValueOrDefault();
+        }
+
+        /// <summary>
         /// Disposes many objects in safe manner.
         /// </summary>
         /// <param name="objects">An array of objects to dispose.</param>
         public static void Dispose(params IDisposable[] objects)
             => Dispose((IEnumerable<IDisposable>)objects);
+
+        /// <summary>
+        /// Disposes many objects in safe manner.
+        /// </summary>
+        /// <param name="objects">An array of objects to dispose.</param>
+        public static ValueTask DisposeAsync(params IAsyncDisposable[] objects)
+            => DisposeAsync((IEnumerable<IAsyncDisposable>)objects);
 
         /// <summary>
         /// Finalizes this object.
