@@ -3,7 +3,6 @@ using System.Text;
 
 namespace DotNext.Text
 {
-    //TODO: Should have additional overrides for .NET Standard 2.1
     internal sealed class EncodingWithoutPreamble : Encoding
     {
         private readonly Encoding encoding;
@@ -17,14 +16,28 @@ namespace DotNext.Text
         public override int GetByteCount(char[] chars, int index, int count)
             => encoding.GetByteCount(chars, index, count);
 
+        public override int GetByteCount(ReadOnlySpan<char> chars)
+            => encoding.GetByteCount(chars);
+
         public override int GetBytes(char[] chars, int charIndex, int charCount, byte[] bytes, int byteIndex)
             => encoding.GetBytes(chars, charIndex, charCount, bytes, byteIndex);
+
+        public override int GetBytes(ReadOnlySpan<char> chars, Span<byte> bytes)
+            => encoding.GetBytes(chars, bytes);
 
         public override int GetCharCount(byte[] bytes, int index, int count)
             => encoding.GetCharCount(bytes, index, count);
 
+        public override int GetCharCount(ReadOnlySpan<byte> bytes)
+            => encoding.GetCharCount(bytes);
+
         public override int GetChars(byte[] bytes, int byteIndex, int byteCount, char[] chars, int charIndex)
             => encoding.GetChars(bytes, byteIndex, byteCount, chars, charIndex);
+
+        public override int GetChars(ReadOnlySpan<byte> bytes, Span<char> chars)
+            => encoding.GetChars(bytes, chars);
+
+        public override ReadOnlySpan<byte> Preamble => default;
 
         public override int GetMaxByteCount(int charCount)
             => encoding.GetMaxByteCount(charCount);
@@ -108,6 +121,7 @@ namespace DotNext.Text
             => encoding.GetString(bytes, index, count);
 
         public override string ToString() => encoding.ToString();
+
 
         public override bool Equals(object other)
             => other is EncodingWithoutPreamble wrapper ? encoding.Equals(wrapper.encoding) : encoding.Equals(other);
