@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Reflection
 {
@@ -11,9 +11,7 @@ namespace DotNext.Reflection
     public static class TypeExtensions
     {
         private const string IsUnmanagedAttributeName = "System.Runtime.CompilerServices.IsUnmanagedAttribute";
-        //TODO: should be removed in .NET Standard 2.1
-        private const string IsReadOnlyAttributeName = "System.Runtime.CompilerServices.IsReadOnlyAttribute";
-
+        
         private static bool IsGenericParameter(Type type)
         {
             if (type.IsByRef || type.IsArray)
@@ -32,7 +30,7 @@ namespace DotNext.Reflection
                 return true;
             else if (type.IsValueType)
                 foreach (var attribute in type.GetCustomAttributesData())
-                    if (attribute.AttributeType.FullName == IsReadOnlyAttributeName)
+                    if (attribute.AttributeType == typeof(IsReadOnlyAttribute))
                         return true;
             return false;
         }

@@ -119,15 +119,6 @@ namespace DotNext.Runtime.InteropServices
             return str;
         }
 
-        //TODO: Should be removed in C# 8
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Vector<byte> ReadVector(ref IntPtr source)
-        {
-            var result = Unsafe.Read<Vector<byte>>(source.ToPointer());
-            source += Vector<byte>.Count;
-            return result;
-        }
-
         /// <summary>
         /// Reads a value of type <typeparamref name="T"/> from the given location
         /// without assuming architecture dependent alignment of the addresses;
@@ -712,8 +703,8 @@ namespace DotNext.Runtime.InteropServices
             var result = false;
             if (Vector.IsHardwareAccelerated)
                 while (length >= Vector<byte>.Count)
-                    if (ReadVector(ref address) == Vector<byte>.Zero)
-                        length -= Vector<byte>.Count;
+                    if (Read<Vector<byte>>(ref address) == Vector<byte>.Zero)
+                        length -= sizeof(Vector<byte>);
                     else
                         goto exit;
             while (length >= sizeof(UIntPtr))
@@ -736,8 +727,8 @@ namespace DotNext.Runtime.InteropServices
             var result = false;
             if (Vector.IsHardwareAccelerated)
                 while (length >= Vector<byte>.Count)
-                    if (ReadVector(ref first) == ReadVector(ref second))
-                        length -= Vector<byte>.Count;
+                    if (Read<Vector<byte>>(ref first) == Read<Vector<byte>>(ref second))
+                        length -= sizeof(Vector<byte>);
                     else
                         goto exit;
             while (length >= sizeof(UIntPtr))
