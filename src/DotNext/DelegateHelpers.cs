@@ -11,14 +11,14 @@ namespace DotNext
     /// </summary>
     public static class DelegateHelpers
     {
-        private static readonly Predicate<Assembly> isCollectible;
+        private static readonly Predicate<Assembly> IsCollectible;
         private static readonly WaitCallback ActionInvoker;
         private static readonly SendOrPostCallback ActionCallback;
 
         static DelegateHelpers()
         {
             var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
-            isCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
+            IsCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
             ActionInvoker = InvokeAction;
             ActionCallback = InvokeAction;
         }
@@ -454,7 +454,7 @@ namespace DotNext
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CanBeUnloaded(Assembly assembly)
-            => assembly.IsDynamic || assembly.ReflectionOnly || (isCollectible?.Invoke(assembly) ?? false);
+            => assembly.IsDynamic || assembly.ReflectionOnly || (IsCollectible?.Invoke(assembly) ?? false);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsRegularDelegate(Delegate d)

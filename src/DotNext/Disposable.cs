@@ -12,7 +12,7 @@ namespace DotNext
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/implementing-dispose">Implementing Dispose method</seealso>
     public abstract class Disposable : IDisposable
     {
-        private static readonly WaitCallback DisposeResource = InvokeDispose;
+        private static readonly WaitCallback DisposeCallback = InvokeDispose;
 
         private static void InvokeDispose(object resource) => Unsafe.As<IDisposable>(resource).Dispose();
 
@@ -56,7 +56,7 @@ namespace DotNext
         /// </summary>
         /// <param name="resource">The resource to be disposed.</param>
         protected static void QueueDispose(IDisposable resource) =>
-            ThreadPool.QueueUserWorkItem(DisposeResource, resource);
+            ThreadPool.QueueUserWorkItem(DisposeCallback, resource);
 
         /// <summary>
         /// Disposes many objects.
