@@ -29,6 +29,8 @@
       href: core/intrinsics.md
     - name: I/O Enhancements
       href: core/io.md
+    - name: Alloc vs Rental
+      href: core/rental.md
 - name: Threading
   href: threading/index.md
   items:
