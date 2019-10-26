@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 namespace DotNext
 {
     using CharBuffer = Buffers.MemoryRental<char>;
+    using BytesRental = Buffers.ArrayRental<byte>;
 
     /// <summary>
     /// Provides random data generation.
@@ -39,14 +40,16 @@ namespace DotNext
             void IRandomStringGenerator.NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars)
             {
                 //TODO: byte array should be replaced with stack allocated Span in .NET Standard 2.1
-                var bytes = new byte[buffer.Length * sizeof(int)];
-                rng.GetBytes(bytes, 0, bytes.Length);
-                var offset = 0;
-                foreach (ref var element in buffer)
+                using (var bytes = new BytesRental(buffer.Length * sizeof(int)))
                 {
-                    var randomNumber = (BitConverter.ToInt32(bytes, offset) & int.MaxValue) % allowedChars.Length;
-                    element = allowedChars[randomNumber];
-                    offset += sizeof(int);
+                    rng.GetBytes((byte[])bytes, 0, bytes.Length);
+                    var offset = 0;
+                    foreach (ref var element in buffer)
+                    {
+                        var randomNumber = (BitConverter.ToInt32((byte[])bytes, offset) & int.MaxValue) % allowedChars.Length;
+                        element = allowedChars[randomNumber];
+                        offset += sizeof(int);
+                    }
                 }
             }
         }
