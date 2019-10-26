@@ -12,7 +12,6 @@ namespace DotNext.Buffers
         private protected IntPtr address;
         private readonly bool owner;
 
-        //TODO: This ctor is reserved for future use by copying methods of Pointer<T> data type to convert raw pointer into Memory<T> type
         internal UnmanagedMemoryManager(IntPtr address, int length)
         {
             this.address = address;

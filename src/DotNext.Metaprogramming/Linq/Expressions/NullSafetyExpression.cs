@@ -14,8 +14,7 @@ namespace DotNext.Linq.Expressions
 
         internal NullSafetyExpression(Expression target)
         {
-            //TODO: expr.Type.IsByRefLike check should be there in .NET Standard 2.1
-            if (target.Type.IsPointer)
+            if (target.Type.IsPointer || target.Type.IsByRefLike)
                 throw new NotSupportedException(ExceptionMessages.UnsupportedSafeNavigationType(target.Type));
             alwaysNotNull = target.Type.IsValueType && Nullable.GetUnderlyingType(target.Type) is null && Optional.GetUnderlyingType(target.Type) is null;
             if (target is ParameterExpression variable)

@@ -256,19 +256,12 @@ namespace DotNext.Runtime.InteropServices
 
         private unsafe static void WriteToSteam(byte* source, long length, Stream destination)
         {
-            //TODO: Should be rewritten for .NET Standard 2.1
-            var offset = 0L;
-            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
-                while (length > 0L)
-                {
-                    //copy from memory to buffer
-                    var count = (int)Math.Min(length, buffer.Length);
-                    Unsafe.CopyBlockUnaligned(ref buffer[0], ref source[offset], (uint)count);
-                    //copy from buffer to stream
-                    destination.Write((byte[])buffer, 0, count);
-                    length -= count;
-                    offset += count;
-                }
+            while (length > 0L)
+            {
+                var bytes = new ReadOnlySpan<byte>(source, (int)Math.Min(int.MaxValue, length));
+                destination.Write(bytes);
+                length -= bytes.Length;
+            }
         }
 
         /// <summary>
@@ -291,23 +284,14 @@ namespace DotNext.Runtime.InteropServices
                 WriteToSteam((byte*)value, count * sizeof(T), destination);
         }
 
-        private static async Task WriteToSteamAsync(IntPtr source, long length, Stream destination, CancellationToken token)
+        private static async ValueTask WriteToSteamAsync(IntPtr source, long length, Stream destination, CancellationToken token)
         {
-            //TODO: Should be rewritten for .NET Standard 2.1
-            var offset = 0L;
-            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
-                while (length > 0L)
+            while (length > 0L)
+                using (var manager = new UnmanagedMemoryManager<byte>(source, (int)Math.Min(int.MaxValue, length)))
                 {
-                    //copy from memory to buffer
-                    var count = (int)Math.Min(length, buffer.Length);
-                    unsafe
-                    {
-                        Unsafe.CopyBlockUnaligned(ref buffer[0], ref source.ToPointer<byte>()[offset], (uint)count);
-                    }
-                    //copy from buffer to stream
-                    await destination.WriteAsync((byte[])buffer, 0, count, token).ConfigureAwait(false);
-                    length -= count;
-                    offset += count;
+                    await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
+                    length -= manager.Length;
+                    source += manager.Length;
                 }
         }
 
@@ -323,7 +307,7 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
         /// <exception cref="ArgumentException">The stream is not writable.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public unsafe Task WriteToAsync(Stream destination, long count, CancellationToken token = default)
+        public unsafe ValueTask WriteToAsync(Stream destination, long count, CancellationToken token = default)
         {
             if (IsNull)
                 throw new NullPointerException();
@@ -332,7 +316,7 @@ namespace DotNext.Runtime.InteropServices
             if (!destination.CanWrite)
                 throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
             if (count == 0)
-                return Task.CompletedTask;
+                return new ValueTask();
             return WriteToSteamAsync(Address, count * sizeof(T), destination, token);
         }
 
@@ -363,20 +347,15 @@ namespace DotNext.Runtime.InteropServices
 
         private unsafe static long ReadFromStream(Stream source, byte* destination, long length)
         {
-            //TODO: Should be rewritten for .NET Standard 2.1
             var total = 0L;
-            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
-                while (length > 0L)
-                {
-                    //copy from stream to buffer
-                    var bytesRead = source.Read((byte[])buffer, 0, buffer.Length);
-                    if (bytesRead == 0)
-                        break;
-                    //copy from buffer to memory
-                    Unsafe.CopyBlockUnaligned(ref destination[total], ref buffer[0], (uint)bytesRead);
-                    length -= bytesRead;
-                    total += bytesRead;
-                }
+            while (length > 0)
+            {
+                var bytesRead = source.Read(new Span<byte>(&destination[total], (int)Math.Min(int.MaxValue, length)));
+                if (bytesRead == 0)
+                    break;
+                total += bytesRead;
+                length -= bytesRead;
+            }
             return total;
         }
 
@@ -402,23 +381,17 @@ namespace DotNext.Runtime.InteropServices
             return ReadFromStream(source, (byte*)value, sizeof(T) * count);
         }
 
-        private static async Task<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length, CancellationToken token)
+        private static async ValueTask<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length, CancellationToken token)
         {
-            //TODO: Should be rewritten for .NET Standard 2.1
             var total = 0L;
-            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
-                while (length > 0L)
+            while (length > 0L)
+                using (var manager = new UnmanagedMemoryManager<byte>(destination, (int)Math.Min(int.MaxValue, length)))
                 {
-                    //copy from stream to buffer
-                    var bytesRead = await source.ReadAsync((byte[])buffer, 0, buffer.Length, token).ConfigureAwait(false);
+                    var bytesRead = await source.ReadAsync(manager.Memory, token).ConfigureAwait(false);
                     if (bytesRead == 0)
                         break;
-                    //copy from buffer to memory
-                    unsafe
-                    {
-                        Unsafe.CopyBlock(ref destination.ToPointer<byte>()[total], ref buffer[0], (uint)bytesRead);
-                    }
                     length -= bytesRead;
+                    destination += bytesRead;
                     total += bytesRead;
                 }
             return total;
@@ -434,7 +407,7 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-		public unsafe Task<long> ReadFromAsync(Stream source, long count, CancellationToken token = default)
+		public unsafe ValueTask<long> ReadFromAsync(Stream source, long count, CancellationToken token = default)
         {
             if (IsNull)
                 throw new NullPointerException();
@@ -443,7 +416,7 @@ namespace DotNext.Runtime.InteropServices
             if (!source.CanRead)
                 throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
             if (count == 0L)
-                return CompletedTask<long, LongConst.Zero>.Task;
+                return new ValueTask<long>(0L);
             return ReadFromStreamAsync(source, Address, sizeof(T) * count, token);
         }
 
