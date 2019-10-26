@@ -213,50 +213,30 @@ namespace DotNext
             };
 
         private static E GetItem<E>(in ValueTuple<E, E, E, E, E, E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                case 2:
-                    return tuple.Item3;
-                case 3:
-                    return tuple.Item4;
-                case 4:
-                    return tuple.Item5;
-                case 5:
-                    return tuple.Item6;
-                case 6:
-                    return tuple.Item7;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                2 => tuple.Item3,
+                3 => tuple.Item4,
+                4 => tuple.Item5,
+                5 => tuple.Item6,
+                6 => tuple.Item7,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         private static E GetItem<E>(in Tuple<E, E, E, E, E, E, E> tuple, int index)
-        {
-            switch (index)
+            => index switch
             {
-                case 0:
-                    return tuple.Item1;
-                case 1:
-                    return tuple.Item2;
-                case 2:
-                    return tuple.Item3;
-                case 3:
-                    return tuple.Item4;
-                case 4:
-                    return tuple.Item5;
-                case 5:
-                    return tuple.Item6;
-                case 6:
-                    return tuple.Item7;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(index));
-            }
-        }
+                0 => tuple.Item1,
+                1 => tuple.Item2,
+                2 => tuple.Item3,
+                3 => tuple.Item4,
+                4 => tuple.Item5,
+                5 => tuple.Item6,
+                6 => tuple.Item7,
+                _ => throw new ArgumentOutOfRangeException(nameof(index)),
+            };
 
         /// <summary>
         /// Converts tuple into enumerable collection of single item.
