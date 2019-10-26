@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 using Xunit;
 
 namespace DotNext
@@ -48,6 +49,34 @@ namespace DotNext
             var ms = new MemoryStream(new byte[] { 1, 2, 3 });
             Disposable<MemoryStream>.Dispose(ms);
             Throws<ObjectDisposedException>(() => ms.ReadByte());
+        }
+
+        private sealed class DisposeCallback : Disposable
+        {
+            private readonly ManualResetEventSlim disposeSignal;
+
+            internal DisposeCallback(ManualResetEventSlim signal)
+                => disposeSignal = signal;
+
+            internal void DisposeAsync() => QueueDispose(this);
+
+            protected override void Dispose(bool disposing)
+            {
+                if (disposing)
+                    disposeSignal.Set();
+                base.Dispose(disposing);
+            }
+        }
+
+        [Fact]
+        public static void QueueDispose()
+        {
+            using(var resetEvent = new ManualResetEventSlim(false))
+            {
+                var disposable = new DisposeCallback(resetEvent);
+                disposable.DisposeAsync();
+                True(resetEvent.Wait(TimeSpan.FromMinutes(2)));
+            }
         }
     }
 }
