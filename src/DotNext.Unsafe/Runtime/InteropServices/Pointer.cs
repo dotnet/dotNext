@@ -11,9 +11,7 @@ using MemoryHandle = System.Buffers.MemoryHandle;
 
 namespace DotNext.Runtime.InteropServices
 {
-    using Buffers;
-    using Generic;
-    using Threading.Tasks;
+    using MemorySource = Buffers.UnmanagedMemoryManager<byte>;
 
     /// <summary>
     /// CLS-compliant typed pointer for .NET languages without direct support of pointer data type.
@@ -287,7 +285,7 @@ namespace DotNext.Runtime.InteropServices
         private static async ValueTask WriteToSteamAsync(IntPtr source, long length, Stream destination, CancellationToken token)
         {
             while (length > 0L)
-                using (var manager = new UnmanagedMemoryManager<byte>(source, (int)Math.Min(int.MaxValue, length)))
+                using (var manager = new MemorySource(source, (int)Math.Min(int.MaxValue, length)))
                 {
                     await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
                     length -= manager.Length;
@@ -385,7 +383,7 @@ namespace DotNext.Runtime.InteropServices
         {
             var total = 0L;
             while (length > 0L)
-                using (var manager = new UnmanagedMemoryManager<byte>(destination, (int)Math.Min(int.MaxValue, length)))
+                using (var manager = new MemorySource(destination, (int)Math.Min(int.MaxValue, length)))
                 {
                     var bytesRead = await source.ReadAsync(manager.Memory, token).ConfigureAwait(false);
                     if (bytesRead == 0)
