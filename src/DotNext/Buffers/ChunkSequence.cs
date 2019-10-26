@@ -135,16 +135,13 @@ namespace DotNext.Buffers
         /// <param name="output">The output stream.</param>
         /// <param name="token">The token that can be used to cancel execution of this method.</param>
         /// <returns>The task representing asynchronouos execution of this method.</returns>
-        public static async Task CopyToAsync(this ChunkSequence<byte> sequence, Stream output, CancellationToken token = default)
+        public static async ValueTask CopyToAsync(this ChunkSequence<byte> sequence, Stream output, CancellationToken token = default)
         {
-            //TODO: Should be rewritten for .NET Standard 2.1
             foreach (var segment in sequence)
-                using (var array = new ArrayRental<byte>(segment.Length))
-                {
-                    token.ThrowIfCancellationRequested();
-                    segment.CopyTo(array.Memory);
-                    await output.WriteAsync((byte[])array, 0, segment.Length, token).ConfigureAwait(false);
-                }
+            {
+                token.ThrowIfCancellationRequested();
+                await output.WriteAsync(segment, token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -154,16 +151,13 @@ namespace DotNext.Buffers
         /// <param name="output">The text writer.</param>
         /// <param name="token">The token that can be used to cancel execution of this method.</param>
         /// <returns>The task representing asynchronouos execution of this method.</returns>
-        public static async Task CopyToAsync(this ChunkSequence<char> sequence, TextWriter output, CancellationToken token = default)
+        public static async ValueTask CopyToAsync(this ChunkSequence<char> sequence, TextWriter output, CancellationToken token = default)
         {
-            //TODO: Should be rewritten for .NET Standard 2.1
             foreach (var segment in sequence)
-                using (var array = new ArrayRental<char>(segment.Length))
-                {
-                    token.ThrowIfCancellationRequested();
-                    segment.CopyTo(array.Memory);
-                    await output.WriteAsync((char[])array, 0, segment.Length).ConfigureAwait(false);
-                }
+            {
+                token.ThrowIfCancellationRequested();
+                await output.WriteAsync(segment, token).ConfigureAwait(false);
+            }
         }
     }
 }
