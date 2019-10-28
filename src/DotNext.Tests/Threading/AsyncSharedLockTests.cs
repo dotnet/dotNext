@@ -50,7 +50,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static async Task WeakToStringLockTransition()
+        public static async Task WeakToStrongLockTransition()
         {
             using (var acquireEvent = new AsyncCountdownEvent(3L))
             using (var sharedLock = new AsyncSharedLock(3))
@@ -59,7 +59,7 @@ namespace DotNext.Threading
                 AcquireWeakLockAndRelease(sharedLock, acquireEvent);
                 AcquireWeakLockAndRelease(sharedLock, acquireEvent);
                 await acquireEvent.Wait();
-                await sharedLock.Acquire(true, TimeSpan.FromSeconds(1));
+                await sharedLock.Acquire(true, TimeSpan.FromMinutes(1));
 
                 Equal(0, sharedLock.RemainingCount);
             }
@@ -81,7 +81,7 @@ namespace DotNext.Threading
                 AcquireWeakLock(sharedLock, acquireEvent);
                 AcquireWeakLock(sharedLock, acquireEvent);
                 sharedLock.Release();
-                True(await acquireEvent.Wait(TimeSpan.FromSeconds(1)));
+                True(await acquireEvent.Wait(TimeSpan.FromMinutes(1)));
                 Equal(1, sharedLock.RemainingCount);
             }
         }
