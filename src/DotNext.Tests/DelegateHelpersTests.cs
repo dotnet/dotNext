@@ -1,5 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Threading;
 using Xunit;
 
 namespace DotNext
@@ -16,6 +18,18 @@ namespace DotNext
             NotNull(handler);
             handler -= dummy.Contravariant<object, string>();
             Null(handler);
+        }
+
+        [Fact]
+        public static void ChangeDelegateType()
+        {
+            WaitCallback callback = obj => { };
+            callback += obj => { };
+            var result = callback.ChangeType<SendOrPostCallback>();
+            NotNull(result);
+            var list1 = callback.GetInvocationList().Select(d => d.Method);
+            var list2 = result.GetInvocationList().Select(d => d.Method);
+            Equal(list1, list2);
         }
 
         [Fact]
