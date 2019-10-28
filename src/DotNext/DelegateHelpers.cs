@@ -456,6 +456,6 @@ namespace DotNext
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsRegularDelegate(Delegate d)
-            => !d.Method.IsStatic || d.Target != null || CanBeUnloaded(d.Method.Module.Assembly);
+            => (d.Method.Attributes & MethodAttributes.Static) == 0 || d.Target != null || CanBeUnloaded(d.Method.Module.Assembly);
     }
 }
