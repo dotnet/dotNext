@@ -6,6 +6,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext
 {
+    using static Runtime.Intrinsics;
+
     /// <summary>
     /// Represents tuple as enumerable collection.
     /// </summary>
@@ -106,15 +108,6 @@ namespace DotNext
     /// <see cref="ValueTuple"/>
     public static class EnumerableTuple
     {
-        private static E GetItem<T, E>(in T tuple, int index)
-            where T : struct, IStructuralEquatable, IStructuralComparable
-        {
-            var count = Unsafe.SizeOf<T>() / Unsafe.SizeOf<E>();
-            return index >= 0 && index < count ?
-                Unsafe.Add(ref Unsafe.As<T, E>(ref Unsafe.AsRef(in tuple)), index) :
-                throw new ArgumentOutOfRangeException(nameof(index));
-        }
-
         private static E GetItem<E>(in Tuple<E> tuple, int index)
             => index == 0 ? tuple.Item1 : throw new ArgumentOutOfRangeException(nameof(index));
 

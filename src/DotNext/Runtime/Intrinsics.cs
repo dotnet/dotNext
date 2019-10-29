@@ -5,6 +5,7 @@ using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
 using Var = InlineIL.LocalVar;
 using Debug = System.Diagnostics.Debug;
+using System.Collections;
 
 namespace DotNext.Runtime
 {
@@ -245,6 +246,26 @@ namespace DotNext.Runtime
             Conv_U8();
             Cgt_Un();
             return Return<bool>();
+        }
+
+        internal static E GetItem<T, E>(in T tuple, int index)
+            where T : struct, IStructuralEquatable, IStructuralComparable
+        {
+            //TODO: Should be rewritten with ITuple interface in .NET Standard 2.1
+            Sizeof(typeof(T));
+            Sizeof(typeof(E));
+            Div_Un();
+            Pop(out int count);
+            if (index < 0 || index >= count)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            Ldarg(nameof(tuple));
+            Sizeof(typeof(E));
+            Push(index);
+            Conv_U4();
+            Mul_Ovf_Un();
+            Add();
+            Ldobj(typeof(E));
+            return Return<E>();
         }
     }
 }
