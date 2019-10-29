@@ -222,7 +222,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, ValueTuple<T>> AsEnumerable<T>(this ValueTuple<T> tuple)
-            => new EnumerableTuple<T, ValueTuple<T>>(tuple, 1, GetItem<ValueTuple<T>, T>);
+            => new EnumerableTuple<T, ValueTuple<T>>(tuple, 1, GetTupleItem<ValueTuple<T>, T>);
 
         /// <summary>
         /// Converts tuple into enumerable collection of single item.
@@ -240,7 +240,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T)> AsEnumerable<T>(this (T, T) tuple)
-            => new EnumerableTuple<T, (T, T)>(tuple, 2, GetItem<(T, T), T>);
+            => new EnumerableTuple<T, (T, T)>(tuple, 2, GetTupleItem<(T, T), T>);
 
         /// <summary>
         /// Converts tuple into enumerable collection of two items.
@@ -258,7 +258,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T, T)> AsEnumerable<T>(this (T, T, T) tuple)
-            => new EnumerableTuple<T, (T, T, T)>(tuple, 3, GetItem<(T, T, T), T>);
+            => new EnumerableTuple<T, (T, T, T)>(tuple, 3, GetTupleItem<(T, T, T), T>);
 
         /// <summary>
         /// Converts tuple into enumerable collection of three items.
@@ -276,7 +276,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T, T, T)> AsEnumerable<T>(this (T, T, T, T) tuple)
-            => new EnumerableTuple<T, (T, T, T, T)>(tuple, 4, GetItem<(T, T, T, T), T>);
+            => new EnumerableTuple<T, (T, T, T, T)>(tuple, 4, GetTupleItem<(T, T, T, T), T>);
 
         /// <summary>
         /// Converts tuple into enumerable collection of four items.
@@ -294,7 +294,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T, T, T, T)> AsEnumerable<T>(this (T, T, T, T, T) tuple)
-            => new EnumerableTuple<T, (T, T, T, T, T)>(tuple, 5, GetItem<(T, T, T, T, T), T>);
+            => new EnumerableTuple<T, (T, T, T, T, T)>(tuple, 5, GetTupleItem<(T, T, T, T, T), T>);
 
         /// <summary>
         /// Converts tuple into enumerable collection of five items.
@@ -312,7 +312,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T, T, T, T, T)> AsEnumerable<T>(this (T, T, T, T, T, T) tuple)
-            => new EnumerableTuple<T, (T, T, T, T, T, T)>(tuple, 6, GetItem<(T, T, T, T, T, T), T>);
+            => new EnumerableTuple<T, (T, T, T, T, T, T)>(tuple, 6, GetTupleItem<(T, T, T, T, T, T), T>);
 
         /// <summary>
         /// Converts tuple into enumerable collection of six items.
@@ -330,7 +330,7 @@ namespace DotNext
         /// <param name="tuple">The tuple to be converted into enumerable collection.</param>
         /// <returns>The tuple in the form of enumerable collection.</returns>
         public static EnumerableTuple<T, (T, T, T, T, T, T, T)> AsEnumerable<T>(this (T, T, T, T, T, T, T) tuple)
-            => new EnumerableTuple<T, (T, T, T, T, T, T, T)>(tuple, 7, GetItem<(T, T, T, T, T, T, T), T>);
+            => new EnumerableTuple<T, (T, T, T, T, T, T, T)>(tuple, 7, GetTupleItem<(T, T, T, T, T, T, T), T>);
 
         /// <summary>
         /// Converts tuple into enumerable collection of seven items.

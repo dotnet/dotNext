@@ -248,7 +248,7 @@ namespace DotNext.Runtime
             return Return<bool>();
         }
 
-        internal static E GetItem<T, E>(in T tuple, int index)
+        internal static E GetTupleItem<T, E>(in T tuple, int index)
             where T : struct, IStructuralEquatable, IStructuralComparable
         {
             //TODO: Should be rewritten with ITuple interface in .NET Standard 2.1
