@@ -168,5 +168,83 @@ namespace DotNext.Runtime
             Callvirt(new M(typeof(Action), nameof(Action.Invoke)));
             Ret();
         }
+
+        /// <summary>
+        /// Determines whether one or more bit fields are set in the given value.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        /// <param name="flag">An enumeration value.</param>
+        /// <returns><see langword="true"/> if the bit field or bit fields that are set in <paramref name="flag"/> are also set in <paramref name="value"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool HasFlag<T>(T value, T flag)
+            where T : struct, Enum
+        {
+            const string size8Bytes = "8bytes";
+            const string size4Bytes = "4bytes";
+            const string size2Bytes = "2bytes";
+            const string size1Byte = "1byte";
+            const string fallback = "fallback";
+            Sizeof(typeof(T));
+            Switch(
+                fallback,   //0 bytes
+                size1Byte,  //1 byte
+                size2Bytes, //2 bytes
+                fallback,   //3 bytes
+                size4Bytes, //4 bytes
+                fallback,   //5 bytes
+                fallback,   //6 bytes
+                fallback,   //7 bytes
+                size8Bytes //8 bytes
+                );
+
+            MarkLabel(fallback);
+            Push(ref value);
+            Push(flag);
+            Box(typeof(T));
+            Constrained(typeof(T));
+            Callvirt(new M(typeof(Enum), nameof(Enum.HasFlag), typeof(Enum)));
+            Ret();
+
+            MarkLabel(size1Byte);
+            Push(ref value);
+            Ldind_U1();
+            Push(ref flag);
+            Ldind_U1();
+            And();
+            Ldc_I4_0();
+            Cgt_Un();
+            Ret();
+
+            MarkLabel(size2Bytes);
+            Push(ref value);
+            Ldind_U2();
+            Push(ref flag);
+            Ldind_U2();
+            And();
+            Ldc_I4_0();
+            Cgt_Un();
+            Ret();
+
+            MarkLabel(size4Bytes);
+            Push(ref value);
+            Ldind_U4();
+            Push(ref flag);
+            Ldind_U4();
+            And();
+            Ldc_I4_0();
+            Cgt_Un();
+            Ret();
+
+            MarkLabel(size8Bytes);
+            Push(ref value);
+            Ldind_I8();
+            Push(ref flag);
+            Ldind_I8();
+            And();
+            Conv_U8();
+            Ldc_I4_0();
+            Conv_U8();
+            Cgt_Un();
+            return Return<bool>();
+        }
     }
 }

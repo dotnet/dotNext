@@ -182,6 +182,13 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Determines whether one or more bit fields are set in the current instance.
+        /// </summary>
+        /// <param name="flag">An enumeration value.</param>
+        /// <returns></returns>
+        public bool HasFlag(E flag) => Runtime.Intrinsics.HasFlag(Value, flag);
+
+        /// <summary>
         /// Represents value of the enum member.
         /// </summary>
         public E Value { get; }

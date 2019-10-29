@@ -50,6 +50,7 @@ Release Date: 10-XX-2019
 * Improved performance of [AtomicEnum](https://sakno.github.io/dotNext/api/DotNext.Threading.AtomicEnum.html) methods
 * Improved performance of [Atomic&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.Atomic-1.html) using optimistic read locks
 * Fixed unnecessary boxing in atomic operations
+* `Intrinsics.HasFlag` static generic method is added as boxing-free and fast alternative to [Enum.HasFlag](https://docs.microsoft.com/en-us/dotnet/api/system.enum.hasflag?view=netcore-2.2#System_Enum_HasFlag_System_Enum_) method
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/1.2.0">DotNext.Reflection 1.2.0</a>
 * Updated version of `DotNext` dependency to fix potential memory leaks
