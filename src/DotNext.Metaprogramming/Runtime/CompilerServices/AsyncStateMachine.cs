@@ -37,7 +37,7 @@ namespace DotNext.Runtime.CompilerServices
         private AsyncValueTaskMethodBuilder builder;
         private readonly Transition transition;
         private ExceptionDispatchInfo exception;
-        private ushort guardedRegionsCounter;    //number of entries into try-clause
+        private uint guardedRegionsCounter;    //number of entries into try-clause
 
         private AsyncStateMachine(Transition transition, STATE state)
         {
@@ -227,7 +227,7 @@ namespace DotNext.Runtime.CompilerServices
         private AsyncValueTaskMethodBuilder<R> builder;
         private readonly Transition transition;
         private ExceptionDispatchInfo exception;
-        private ushort guardedRegionsCounter;    //number of entries into try-clause
+        private uint guardedRegionsCounter;    //number of entries into try-clause
         private R result;
 
         private AsyncStateMachine(Transition transition, STATE state)
