@@ -11,6 +11,7 @@ namespace DotNext.Runtime.CompilerServices
         private const string ValueActionType = "ValueAction";
         private const string ValueFuncType = "ValueFunc";
         private const string ValueRefActionType = "ValueRefAction";
+        private const string ValueRefFuncType = "ValueRefFunc";
         private const string ManagedMethodPointerType = Namespace + ".Runtime.CompilerServices.ManagedMethodPointer";
 
         private static MethodReference Rewrite(ModuleDefinition module, MethodReference ctor, Fody.TypeSystem typeLoader)
@@ -83,7 +84,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         private static bool IsValueDelegate(TypeReference typeRef)
-            => typeRef.IsValueType && typeRef.Namespace == Namespace && (typeRef.Name.StartsWith(ValueFuncType) || typeRef.Name.StartsWith(ValueActionType) || typeRef.Name.StartsWith(ValueRefActionType));
+            => typeRef.IsValueType && typeRef.Namespace == Namespace && (typeRef.Name.StartsWith(ValueFuncType) || typeRef.Name.StartsWith(ValueActionType) || typeRef.Name.StartsWith(ValueRefActionType) || typeRef.Name.StartsWith(ValueRefFuncType));
 
         internal static void Process(MethodBody body, Fody.TypeSystem typeLoader)
         {

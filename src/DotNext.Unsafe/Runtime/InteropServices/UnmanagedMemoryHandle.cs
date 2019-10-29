@@ -16,7 +16,7 @@ namespace DotNext.Runtime.InteropServices
     public abstract class UnmanagedMemoryHandle : SafeHandle, ICloneable, IEquatable<UnmanagedMemoryHandle>, IUnmanagedMemory
     {
         private protected UnmanagedMemoryHandle(long size, bool zeroMem)
-            : base(IntPtr.Zero, true)
+            : base(default, true)
         {
             handle = Marshal.AllocHGlobal(new IntPtr(size));
             GC.AddMemoryPressure(size);
@@ -29,7 +29,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Indicates that this object is no longer valid.
         /// </summary>
-		public sealed override bool IsInvalid => handle == IntPtr.Zero;
+		public sealed override bool IsInvalid => handle == default;
 
         private protected abstract UnmanagedMemoryHandle Clone();
 
@@ -66,7 +66,7 @@ namespace DotNext.Runtime.InteropServices
                 return false;
             Marshal.FreeHGlobal(handle);
             GC.RemoveMemoryPressure(Size);
-            handle = IntPtr.Zero;
+            handle = default;
             return true;
         }
 

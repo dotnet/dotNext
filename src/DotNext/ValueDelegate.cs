@@ -84,7 +84,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => action is null && methodPtr == default;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -261,7 +261,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => func is null && methodPtr == default;
 
         /// <summary>
         /// Returns activator for type <typeparamref name="R"/> in the form of typed method pointer.
@@ -455,7 +455,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => func is null && methodPtr == default;
 
         /// <summary>
         /// Initializes a new delegate using pointer to the static managed method.
@@ -671,7 +671,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => action is null && methodPtr == default;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -852,7 +852,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => func is null && methodPtr == default;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -1032,7 +1032,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => action is null && methodPtr == default;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -1217,7 +1217,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => func is null && methodPtr == default;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -1401,7 +1401,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => action is null && methodPtr == default;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -1590,7 +1590,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => func is null && methodPtr == default;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -1778,7 +1778,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => action is null && methodPtr == default;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -1967,7 +1967,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => func is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => func is null && methodPtr == default;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -2155,7 +2155,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => action is null && methodPtr == default;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -2347,7 +2347,7 @@ namespace DotNext
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
         /// </summary>
-        public bool IsEmpty => action is null && methodPtr == IntPtr.Zero;
+        public bool IsEmpty => action is null && methodPtr == default;
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
@@ -2355,7 +2355,7 @@ namespace DotNext
         public object Target => action?.Target;
 
         /// <summary>
-        /// Converts this pointer into <see cref="Action{T1,T2}"/>.
+        /// Converts this pointer into <see cref="RefAction{T, TArgs}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
         public RefAction<T, TArgs> ToDelegate()
@@ -2403,6 +2403,7 @@ namespace DotNext
         {
             var reference = (T)args[0];
             Invoke(ref reference, (TArgs)args[1]);
+            args[0] = reference;
             return null;
         }
 
@@ -2434,7 +2435,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueRefAction<T, TArgs> action && action.Equals(action);
+        public override bool Equals(object other) => other is ValueRefAction<T, TArgs> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -2457,5 +2458,191 @@ namespace DotNext
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in ValueRefAction<T, TArgs> first, in ValueAction<T, TArgs> second) => !first.Equals(second);
+    }
+
+    /// <summary>
+    /// Represents function that accepts arbitrary value by reference.
+    /// </summary>
+    /// <remarks>
+    /// This method pointer is intended to call managed methods only.
+    /// </remarks>
+    /// <typeparam name="T">The type of the object to be passed by reference into the action.</typeparam>
+    /// <typeparam name="TArgs">The type of the arguments to be passed into the action.</typeparam>
+    /// <typeparam name="TResult">The type of the return value of the method that this delegate encapsulates.</typeparam>
+    [StructLayout(LayoutKind.Auto)]
+    public readonly struct ValueRefFunc<T, TArgs, TResult> : ICallable<RefFunc<T, TArgs, TResult>>, IEquatable<ValueRefFunc<T, TArgs, TResult>>
+    {
+        private readonly IntPtr methodPtr;
+        private readonly RefFunc<T, TArgs, TResult> func;
+
+        /// <summary>
+        /// Initializes a new pointer to the method.
+        /// </summary>
+        /// <remarks>
+        /// This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
+        /// with the delegate type.
+        /// </remarks>
+        /// <param name="method">The method to convert into pointer.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="method"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException">Signature of <paramref name="method"/> doesn't match to this pointer type.</exception>
+        public ValueRefFunc(MethodInfo method)
+            : this(method.CreateDelegate<RefFunc<T, TArgs, TResult>>())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new pointer based on extracted pointer from the delegate.
+        /// </summary>
+        /// <remarks>
+        /// You can use this constructor to create value delegate once and cache it using <c>static readonly</c> field
+        /// for subsequent calls.
+        /// </remarks>
+        /// <param name="func">The delegate representing method.</param>
+        /// <param name="wrap"><see langword="true"/> to wrap <paramref name="func"/> into this delegate; <see langword="false"/> to extract method pointer without holding reference to the passed delegate.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="func"/> is <see langword="null"/>.</exception>
+        public ValueRefFunc(RefFunc<T, TArgs, TResult> func, bool wrap = false)
+        {
+            if (func is null)
+                throw new ArgumentNullException(nameof(func));
+            if (wrap || DelegateHelpers.IsRegularDelegate(func))
+            {
+                this.func = func;
+                methodPtr = default;
+            }
+            else
+            {
+                this.func = null;
+                methodPtr = func.Method.MethodHandle.GetFunctionPointer();
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new delegate using pointer to the static managed method.
+        /// </summary>
+        /// <param name="methodPtr">The pointer to the static managed method.</param>
+        [RuntimeFeatures(Augmentation = true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public ValueRefFunc([RequiredModifier(typeof(ManagedMethodPointer))] IntPtr methodPtr)
+        {
+            func = null;
+            this.methodPtr = methodPtr;
+        }
+
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        public bool IsEmpty => func is null && methodPtr == default;
+
+        /// <summary>
+        /// Gets the object on which the current pointer invokes the method.
+        /// </summary>
+        public object Target => func?.Target;
+
+        /// <summary>
+        /// Converts this pointer into <see cref="RefFunc{T, TArgs, TResult}"/>.
+        /// </summary>
+        /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
+        public RefFunc<T, TArgs, TResult> ToDelegate()
+        {
+            const string returnDelegate = "delegate";
+            Push(methodPtr);
+            Brfalse(returnDelegate);
+
+            Ldnull();
+            Push(methodPtr);
+            Newobj(M.Constructor(typeof(RefFunc<T, TArgs, TResult>), typeof(object), typeof(IntPtr)));
+            Ret();
+
+            MarkLabel(returnDelegate);
+            Push(func);
+            return Return<RefFunc<T, TArgs, TResult>>();
+        }
+
+        /// <summary>
+        /// Invokes method by pointer.
+        /// </summary>
+        /// <param name="reference">The object passed by reference.</param>
+        /// <param name="args">The action arguments.</param>
+        public TResult Invoke(ref T reference, TArgs args)
+        {
+            const string callDelegate = "delegate";
+            Push(methodPtr);
+            Brfalse(callDelegate);
+
+            Push(ref reference);
+            Push(args);
+            Push(methodPtr);
+            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(TResult), new TR(typeof(T)).MakeByRefType(), typeof(TArgs)));
+            Ret();
+
+            MarkLabel(callDelegate);
+            Push(func);
+            Push(ref reference);
+            Push(args);
+            Callvirt(new M(typeof(RefFunc<T, TArgs, TResult>), nameof(Invoke)));
+            return Return<TResult>();
+        }
+
+        object ICallable.DynamicInvoke(params object[] args)
+        {
+            var reference = (T)args[0];
+            Invoke(ref reference, (TArgs)args[1]);
+            args[0] = reference;
+            return null;
+        }
+
+        /// <summary>
+        /// Converts this pointer into <see cref="RefFunc{T, TArgs, TResult}"/>.
+        /// </summary>
+        /// <param name="pointer">The pointer to convert.</param>
+        /// <returns>The delegate created from this method pointer.</returns>
+        public static explicit operator RefFunc<T, TArgs, TResult>(in ValueRefFunc<T, TArgs, TResult> pointer) => pointer.ToDelegate();
+
+        /// <summary>
+        /// Computes hash code of this pointer.
+        /// </summary>
+        /// <returns>The hash code of this pointer.</returns>
+        public override int GetHashCode() => func?.GetHashCode() ?? methodPtr.GetHashCode();
+
+        bool IEquatable<ValueRefFunc<T, TArgs, TResult>>.Equals(ValueRefFunc<T, TArgs, TResult> other) => Equals(other);
+
+        /// <summary>
+        /// Determines whether this object points to the same method as other object.
+        /// </summary>
+        /// <param name="other">The pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        [CLSCompliant(false)]
+        public bool Equals(in ValueRefFunc<T, TArgs, TResult> other) => methodPtr == other.methodPtr && Equals(func, other.func);
+
+        /// <summary>
+        /// Determines whether this object points to the same method as other object.
+        /// </summary>
+        /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public override bool Equals(object other) => other is ValueRefFunc<T, TArgs, TResult> func && Equals(func);
+
+        /// <summary>
+        /// Obtains pointer value in HEX format.
+        /// </summary>
+        /// <returns>The address represented by pointer.</returns>
+        public override string ToString() => func?.ToString() ?? methodPtr.ToString("X");
+
+        /// <summary>
+        /// Determines whether the pointers represent the same method.
+        /// </summary>
+        /// <param name="first">The first pointer to compare.</param>
+        /// <param name="second">The second pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
+        public static bool operator ==(in ValueRefFunc<T, TArgs, TResult> first, in ValueRefFunc<T, TArgs, TResult> second) => first.Equals(second);
+
+        /// <summary>
+        /// Determines whether the pointers represent different methods.
+        /// </summary>
+        /// <param name="first">The first pointer to compare.</param>
+        /// <param name="second">The second pointer to compare.</param>
+        /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
+        public static bool operator !=(in ValueRefFunc<T, TArgs, TResult> first, in ValueRefFunc<T, TArgs, TResult> second) => !first.Equals(second);
     }
 }
