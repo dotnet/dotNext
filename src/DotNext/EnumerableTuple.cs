@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext
@@ -27,6 +26,7 @@ namespace DotNext
         [StructLayout(LayoutKind.Auto)]
         public struct Enumerator : IEnumerator<I>
         {
+            private const int InitialPosition = -1;
             private readonly T tuple;
             private readonly ItemAccessor accessor;
             private readonly int count;
@@ -36,7 +36,7 @@ namespace DotNext
             internal Enumerator(T tuple, ItemAccessor accessor, int count)
             {
                 this.tuple = tuple;
-                currentIndex = -1;
+                currentIndex = InitialPosition;
                 this.accessor = accessor;
                 this.count = count;
             }
@@ -52,17 +52,13 @@ namespace DotNext
             /// Advances position of this enumerator.
             /// </summary>
             /// <returns><see langword="true"/> if next item exists in the tuple; otherwise, <see langword="false"/>.</returns>
-            public bool MoveNext()
-            {
-                currentIndex += 1;
-                return currentIndex < count;
-            }
+            public bool MoveNext() => ++currentIndex < count;
 
             /// <summary>
             /// Sets the enumerator to its initial position, which is before 
             /// the first item in the tuple.
             /// </summary>
-            public void Reset() => currentIndex = -1;
+            public void Reset() => currentIndex = InitialPosition;
 
             void IDisposable.Dispose() => this = default;
         }
@@ -82,8 +78,8 @@ namespace DotNext
         /// </summary>
         /// <param name="index">The index of the item.</param>
         /// <returns>Item value.</returns>
-        /// <exception cref="IndexOutOfRangeException"><paramref name="index"/> is invalid.</exception>
-        public I this[int index] => index >= 0 && index < Count ? accessor(tuple, index) : throw new IndexOutOfRangeException();
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is invalid.</exception>
+        public I this[int index] => accessor is null ? throw new ArgumentOutOfRangeException(nameof(index)) : accessor(tuple, index);
 
         /// <summary>
         /// Gets number of items in the tuple.
