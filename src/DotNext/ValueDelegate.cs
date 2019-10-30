@@ -150,15 +150,12 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => action?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueAction>.Equals(ValueAction other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueAction other) => methodPtr == other.methodPtr && Equals(action, other.action);
+        public bool Equals(ValueAction other) => methodPtr == other.methodPtr && Equals(action, other.action);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -179,7 +176,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueAction first, in ValueAction second) => first.Equals(second);
+        public static bool operator ==(in ValueAction first, in ValueAction second) => first.methodPtr == second.methodPtr && Equals(first.action, second.action);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -187,7 +184,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueAction first, in ValueAction second) => !first.Equals(second);
+        public static bool operator !=(in ValueAction first, in ValueAction second) => first.methodPtr != second.methodPtr || !Equals(first.action, second.action);
     }
 
     /// <summary>
@@ -357,15 +354,12 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => func?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueFunc<R>>.Equals(ValueFunc<R> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueFunc<R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
+        public bool Equals(ValueFunc<R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -386,7 +380,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueFunc<R> first, in ValueFunc<R> second) => first.Equals(second);
+        public static bool operator ==(in ValueFunc<R> first, in ValueFunc<R> second) => first.methodPtr == second.methodPtr && Equals(first.func, second.func);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -394,7 +388,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueFunc<R> first, in ValueFunc<R> second) => !first.Equals(second);
+        public static bool operator !=(in ValueFunc<R> first, in ValueFunc<R> second) => first.methodPtr != second.methodPtr || !Equals(first.func, second.func);
     }
 
     /// <summary>
@@ -560,15 +554,12 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => func?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueFunc<T, R>>.Equals(ValueFunc<T, R> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueFunc<T, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
+        public bool Equals(ValueFunc<T, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -589,7 +580,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueFunc<T, R> first, in ValueFunc<T, R> second) => first.Equals(second);
+        public static bool operator ==(in ValueFunc<T, R> first, in ValueFunc<T, R> second) => first.methodPtr == second.methodPtr && Equals(first.func, second.func);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -597,7 +588,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueFunc<T, R> first, in ValueFunc<T, R> second) => !first.Equals(second);
+        public static bool operator !=(in ValueFunc<T, R> first, in ValueFunc<T, R> second) => first.methodPtr != second.methodPtr || !Equals(first.func, second.func);
     }
 
     /// <summary>
@@ -739,22 +730,19 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => action?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueAction<T>>.Equals(ValueAction<T> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueAction<T> other) => methodPtr == other.methodPtr && Equals(action, other.action);
+        public bool Equals(ValueAction<T> other) => methodPtr == other.methodPtr && Equals(action, other.action);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T> action && Equals(in action);
+        public override bool Equals(object other) => other is ValueAction<T> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -768,7 +756,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueAction<T> first, in ValueAction<T> second) => first.Equals(second);
+        public static bool operator ==(in ValueAction<T> first, in ValueAction<T> second) => first.methodPtr == second.methodPtr && Equals(first.action, second.action);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -776,7 +764,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueAction<T> first, in ValueAction<T> second) => !first.Equals(second);
+        public static bool operator !=(in ValueAction<T> first, in ValueAction<T> second) => first.methodPtr != second.methodPtr || !Equals(first.action, second.action);
     }
 
     /// <summary>
@@ -920,22 +908,19 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => func?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueFunc<T1, T2, R>>.Equals(ValueFunc<T1, T2, R> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueFunc<T1, T2, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
+        public bool Equals(ValueFunc<T1, T2, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<T1, T2, R> func && Equals(in func);
+        public override bool Equals(object other) => other is ValueFunc<T1, T2, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -949,7 +934,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueFunc<T1, T2, R> first, in ValueFunc<T1, T2, R> second) => first.Equals(second);
+        public static bool operator ==(in ValueFunc<T1, T2, R> first, in ValueFunc<T1, T2, R> second) => first.methodPtr == second.methodPtr && Equals(first.func, second.func);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -957,7 +942,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueFunc<T1, T2, R> first, in ValueFunc<T1, T2, R> second) => !first.Equals(second);
+        public static bool operator !=(in ValueFunc<T1, T2, R> first, in ValueFunc<T1, T2, R> second) => first.methodPtr != second.methodPtr || !Equals(first.func, second.func);
     }
 
     /// <summary>
@@ -1103,22 +1088,19 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => action?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueAction<T1, T2>>.Equals(ValueAction<T1, T2> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueAction<T1, T2> other) => methodPtr == other.methodPtr && Equals(action, other.action);
+        public bool Equals(ValueAction<T1, T2> other) => methodPtr == other.methodPtr && Equals(action, other.action);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T1, T2> action && action.Equals(action);
+        public override bool Equals(object other) => other is ValueAction<T1, T2> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -1132,7 +1114,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueAction<T1, T2> first, in ValueAction<T1, T2> second) => first.Equals(second);
+        public static bool operator ==(in ValueAction<T1, T2> first, in ValueAction<T1, T2> second) => first.methodPtr == second.methodPtr && Equals(first.action, second.action);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -1140,7 +1122,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueAction<T1, T2> first, in ValueAction<T1, T2> second) => !first.Equals(second);
+        public static bool operator !=(in ValueAction<T1, T2> first, in ValueAction<T1, T2> second) => first.methodPtr != second.methodPtr || !Equals(first.action, second.action);
     }
 
     /// <summary>
@@ -1288,15 +1270,12 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => func?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueFunc<T1, T2, T3, R>>.Equals(ValueFunc<T1, T2, T3, R> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueFunc<T1, T2, T3, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
+        public bool Equals(ValueFunc<T1, T2, T3, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -1317,7 +1296,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueFunc<T1, T2, T3, R> first, in ValueFunc<T1, T2, T3, R> second) => first.Equals(second);
+        public static bool operator ==(in ValueFunc<T1, T2, T3, R> first, in ValueFunc<T1, T2, T3, R> second) => first.methodPtr == second.methodPtr && Equals(first.func, second.func);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -1325,7 +1304,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueFunc<T1, T2, T3, R> first, in ValueFunc<T1, T2, T3, R> second) => !first.Equals(second);
+        public static bool operator !=(in ValueFunc<T1, T2, T3, R> first, in ValueFunc<T1, T2, T3, R> second) => first.methodPtr != second.methodPtr || !Equals(first.func, second.func);
     }
 
     /// <summary>
@@ -1475,15 +1454,12 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => action?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueAction<T1, T2, T3>>.Equals(ValueAction<T1, T2, T3> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueAction<T1, T2, T3> other) => methodPtr == other.methodPtr && Equals(action, other.action);
+        public bool Equals(ValueAction<T1, T2, T3> other) => methodPtr == other.methodPtr && Equals(action, other.action);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -1504,7 +1480,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueAction<T1, T2, T3> first, in ValueAction<T1, T2, T3> second) => first.Equals(second);
+        public static bool operator ==(in ValueAction<T1, T2, T3> first, in ValueAction<T1, T2, T3> second) => first.methodPtr == second.methodPtr && Equals(first.action, second.action);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -1512,7 +1488,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueAction<T1, T2, T3> first, in ValueAction<T1, T2, T3> second) => !first.Equals(second);
+        public static bool operator !=(in ValueAction<T1, T2, T3> first, in ValueAction<T1, T2, T3> second) => first.methodPtr != second.methodPtr || !Equals(first.action, second.action);
     }
 
     /// <summary>
@@ -1664,15 +1640,12 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => func?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueFunc<T1, T2, T3, T4, R>>.Equals(ValueFunc<T1, T2, T3, T4, R> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueFunc<T1, T2, T3, T4, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
+        public bool Equals(ValueFunc<T1, T2, T3, T4, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -1693,7 +1666,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueFunc<T1, T2, T3, T4, R> first, in ValueFunc<T1, T2, T3, T4, R> second) => first.Equals(second);
+        public static bool operator ==(in ValueFunc<T1, T2, T3, T4, R> first, in ValueFunc<T1, T2, T3, T4, R> second) => first.methodPtr == second.methodPtr && Equals(first.func, second.func);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -1701,7 +1674,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueFunc<T1, T2, T3, T4, R> first, in ValueFunc<T1, T2, T3, T4, R> second) => !first.Equals(second);
+        public static bool operator !=(in ValueFunc<T1, T2, T3, T4, R> first, in ValueFunc<T1, T2, T3, T4, R> second) => first.methodPtr != second.methodPtr || !Equals(first.func, second.func);
     }
 
     /// <summary>
@@ -1855,15 +1828,12 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => action?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueAction<T1, T2, T3, T4>>.Equals(ValueAction<T1, T2, T3, T4> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueAction<T1, T2, T3, T4> other) => methodPtr == other.methodPtr && Equals(action, other.action);
+        public bool Equals(ValueAction<T1, T2, T3, T4> other) => methodPtr == other.methodPtr && Equals(action, other.action);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -1884,7 +1854,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueAction<T1, T2, T3, T4> first, in ValueAction<T1, T2, T3, T4> second) => first.Equals(second);
+        public static bool operator ==(in ValueAction<T1, T2, T3, T4> first, in ValueAction<T1, T2, T3, T4> second) => first.methodPtr == second.methodPtr && Equals(first.action, second.action);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -1892,7 +1862,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueAction<T1, T2, T3, T4> first, in ValueAction<T1, T2, T3, T4> second) => !first.Equals(second);
+        public static bool operator !=(in ValueAction<T1, T2, T3, T4> first, in ValueAction<T1, T2, T3, T4> second) => first.methodPtr != second.methodPtr || !Equals(first.action, second.action);
     }
 
     /// <summary>
@@ -2044,15 +2014,12 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => func?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>.Equals(ValueFunc<T1, T2, T3, T4, T5, R> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueFunc<T1, T2, T3, T4, T5, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
+        public bool Equals(ValueFunc<T1, T2, T3, T4, T5, R> other) => methodPtr == other.methodPtr && Equals(func, other.func);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -2073,7 +2040,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueFunc<T1, T2, T3, T4, T5, R> first, in ValueFunc<T1, T2, T3, T4, T5, R> second) => first.Equals(second);
+        public static bool operator ==(in ValueFunc<T1, T2, T3, T4, T5, R> first, in ValueFunc<T1, T2, T3, T4, T5, R> second) => first.methodPtr == second.methodPtr && Equals(first.func, second.func);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -2081,7 +2048,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueFunc<T1, T2, T3, T4, T5, R> first, in ValueFunc<T1, T2, T3, T4, T5, R> second) => !first.Equals(second);
+        public static bool operator !=(in ValueFunc<T1, T2, T3, T4, T5, R> first, in ValueFunc<T1, T2, T3, T4, T5, R> second) => first.methodPtr != second.methodPtr || !Equals(first.func, second.func);
     }
 
     /// <summary>
@@ -2235,15 +2202,12 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => action?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueAction<T1, T2, T3, T4, T5>>.Equals(ValueAction<T1, T2, T3, T4, T5> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueAction<T1, T2, T3, T4, T5> other) => methodPtr == other.methodPtr && Equals(action, other.action);
+        public bool Equals(ValueAction<T1, T2, T3, T4, T5> other) => methodPtr == other.methodPtr && Equals(action, other.action);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -2264,7 +2228,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueAction<T1, T2, T3, T4, T5> first, in ValueAction<T1, T2, T3, T4, T5> second) => first.Equals(second);
+        public static bool operator ==(in ValueAction<T1, T2, T3, T4, T5> first, in ValueAction<T1, T2, T3, T4, T5> second) => first.methodPtr == second.methodPtr && Equals(first.action, second.action);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -2272,7 +2236,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueAction<T1, T2, T3, T4, T5> first, in ValueAction<T1, T2, T3, T4, T5> second) => !first.Equals(second);
+        public static bool operator !=(in ValueAction<T1, T2, T3, T4, T5> first, in ValueAction<T1, T2, T3, T4, T5> second) => first.methodPtr != second.methodPtr || !Equals(first.action, second.action);
     }
 
     /// <summary>
@@ -2420,15 +2384,12 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => action?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueRefAction<T, TArgs>>.Equals(ValueRefAction<T, TArgs> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueRefAction<T, TArgs> other) => methodPtr == other.methodPtr && Equals(action, other.action);
+        public bool Equals(ValueRefAction<T, TArgs> other) => methodPtr == other.methodPtr && Equals(action, other.action);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -2449,7 +2410,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueRefAction<T, TArgs> first, in ValueAction<T, TArgs> second) => first.Equals(second);
+        public static bool operator ==(in ValueRefAction<T, TArgs> first, in ValueRefAction<T, TArgs> second) => first.methodPtr == second.methodPtr && Equals(first.action, second.action);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -2457,7 +2418,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueRefAction<T, TArgs> first, in ValueAction<T, TArgs> second) => !first.Equals(second);
+        public static bool operator !=(in ValueRefAction<T, TArgs> first, in ValueRefAction<T, TArgs> second) => first.methodPtr != second.methodPtr || !Equals(first.action, second.action);
     }
 
     /// <summary>
@@ -2606,15 +2567,12 @@ namespace DotNext
         /// <returns>The hash code of this pointer.</returns>
         public override int GetHashCode() => func?.GetHashCode() ?? methodPtr.GetHashCode();
 
-        bool IEquatable<ValueRefFunc<T, TArgs, TResult>>.Equals(ValueRefFunc<T, TArgs, TResult> other) => Equals(other);
-
         /// <summary>
         /// Determines whether this object points to the same method as other object.
         /// </summary>
         /// <param name="other">The pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in ValueRefFunc<T, TArgs, TResult> other) => methodPtr == other.methodPtr && Equals(func, other.func);
+        public bool Equals(ValueRefFunc<T, TArgs, TResult> other) => methodPtr == other.methodPtr && Equals(func, other.func);
 
         /// <summary>
         /// Determines whether this object points to the same method as other object.
@@ -2635,7 +2593,7 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in ValueRefFunc<T, TArgs, TResult> first, in ValueRefFunc<T, TArgs, TResult> second) => first.Equals(second);
+        public static bool operator ==(in ValueRefFunc<T, TArgs, TResult> first, in ValueRefFunc<T, TArgs, TResult> second) => first.methodPtr == second.methodPtr && Equals(first.func, second.func);
 
         /// <summary>
         /// Determines whether the pointers represent different methods.
@@ -2643,6 +2601,6 @@ namespace DotNext
         /// <param name="first">The first pointer to compare.</param>
         /// <param name="second">The second pointer to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent different methods; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in ValueRefFunc<T, TArgs, TResult> first, in ValueRefFunc<T, TArgs, TResult> second) => !first.Equals(second);
+        public static bool operator !=(in ValueRefFunc<T, TArgs, TResult> first, in ValueRefFunc<T, TArgs, TResult> second) => first.methodPtr != second.methodPtr || !Equals(first.func, second.func);
     }
 }
