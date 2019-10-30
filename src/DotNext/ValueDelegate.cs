@@ -1273,7 +1273,7 @@ namespace DotNext
             return Return<R>();
         }
 
-        object ICallable.DynamicInvoke(params object[] args) => Invoke((T1)args[0], (T2)args[1], (T3)args[3]);
+        object ICallable.DynamicInvoke(params object[] args) => Invoke((T1)args[0], (T2)args[1], (T3)args[2]);
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, TResult}"/>.
