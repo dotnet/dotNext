@@ -20,6 +20,7 @@ Value Delegates provide general-purpose, CLS compliant, allocation-free, lightwe
 1. [ValueFunc&lt;T1,T2,T3,T4,R&gt;](../../api/DotNext.ValueFunc-5.yml) as alternative to [Func&lt;T1,T2,T3,T4,R&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-5)
 1. [ValueFunc&lt;T1,T2,T3,T4,T5,R&gt;](../../api/DotNext.ValueFunc-6.yml) as alternative to [Func&lt;T1,T2,T3,T4,T5,R&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.func-6)
 1. [ValueRefAction&lt;T,TArgs&gt;](../../api/DotNext.ValueRefAction-2.yml) as alternative to [RefAction&lt;T,TArgs&gt;](../../api/DotNext.RefAction-2.yml)
+1. [ValueRefFunc&lt;T,TArgs,TResult&gt;](../../api/DotNext.ValueRefFunc-3.yml) as alternative to [RefFunc&lt;T,TArgs,TResult&gt;](../../api/DotNext.RefFunc-3.yml)
 
 > [!NOTE]
 > It is recommended to pass Value Delegates by reference using **in** modifier to avoid copying on the stack. 
