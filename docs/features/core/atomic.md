@@ -10,6 +10,7 @@ The library provides advanced atomic operations for the following types:
     * [bool](https://docs.microsoft.com/en-us/dotnet/api/system.boolean)
     * [double](https://docs.microsoft.com/en-us/dotnet/api/system.double)
     * [float](https://docs.microsoft.com/en-us/dotnet/api/system.single)
+	* [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr)
     * [Reference types](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/reference-types)
 * One-dimensional arrays
 
