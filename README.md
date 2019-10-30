@@ -38,7 +38,7 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-XX-2019
+Release Date: 10-30-2019
 
 <a href="https://www.nuget.org/packages/dotnext/1.2.0">DotNext 1.2.0</a>
 * Fixed memory leaks caused by methods in [StreamExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.StreamExtensions.html) class
@@ -78,6 +78,9 @@ Release Date: 10-XX-2019
 * HTTP/2 support
 * Performance optimizations caused by changes in `ArrayRental` type
 * Strict package versioning rules are added to avoid accidental upgrade to major version
+
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.2.0">DotNext.Augmentation.Fody 1.2.0</a>
+* Improved support of `ValueRefAction` and `ValueRefFunc` value delegates
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
