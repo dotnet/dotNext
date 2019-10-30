@@ -10,6 +10,8 @@ namespace DotNext.Runtime.CompilerServices
         private const string Namespace = "DotNext";
         private const string ValueActionType = "ValueAction";
         private const string ValueFuncType = "ValueFunc";
+        private const string ValueRefActionType = "ValueRefAction";
+        private const string ValueRefFuncType = "ValueRefFunc";
         private const string ManagedMethodPointerType = Namespace + ".Runtime.CompilerServices.ManagedMethodPointer";
 
         private static MethodReference Rewrite(ModuleDefinition module, MethodReference ctor, Fody.TypeSystem typeLoader)
@@ -81,10 +83,13 @@ namespace DotNext.Runtime.CompilerServices
                 debugInfo.SequencePoints.Add(sequencePoint);
         }
 
+        private static bool IsValueDelegate(TypeReference typeRef)
+            => typeRef.IsValueType && typeRef.Namespace == Namespace && (typeRef.Name.StartsWith(ValueFuncType) || typeRef.Name.StartsWith(ValueActionType) || typeRef.Name.StartsWith(ValueRefActionType) || typeRef.Name.StartsWith(ValueRefFuncType));
+
         internal static void Process(MethodBody body, Fody.TypeSystem typeLoader)
         {
             for (var instruction = body.Instructions[0]; instruction != null; instruction = instruction.Next)
-                if (instruction.OpCode.FlowControl == FlowControl.Call && instruction.Operand is MethodReference methodRef && methodRef.DeclaringType.Namespace == Namespace && methodRef.DeclaringType.IsValueType && methodRef.Name == ConstructorName && methodRef.Parameters.Count == 2 && (methodRef.DeclaringType.Name.StartsWith(ValueFuncType) || methodRef.DeclaringType.Name.StartsWith(ValueActionType)))
+                if (instruction.OpCode.FlowControl == FlowControl.Call && instruction.Operand is MethodReference methodRef && methodRef.Name == ConstructorName && IsValueDelegate(methodRef.DeclaringType) && methodRef.Parameters.Count == 2)
                     ReplaceValueDelegateConstruction(body.GetILProcessor(), methodRef, instruction, typeLoader);
         }
     }

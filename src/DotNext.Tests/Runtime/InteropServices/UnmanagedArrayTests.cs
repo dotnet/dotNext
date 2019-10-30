@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
+    [ExcludeFromCodeCoverage]
     public sealed class UnmanagedArrayTests : Assert
     {
         [Fact]
@@ -10,21 +14,30 @@ namespace DotNext.Runtime.InteropServices
         {
             using (var owner = new UnmanagedMemory<long>(5))
             {
-                Span<long> array = owner;
-                array[0] = 10;
-                array[1] = 20;
-                array[2] = 30;
-                array[3] = 40;
-                array[4] = 50;
-                var slice = array.Slice(1, 2);
+                Span<long> span = owner;
+                span[0] = 10;
+                span[1] = 20;
+                span[2] = 30;
+                span[3] = 40;
+                span[4] = 50;
+                var slice = span.Slice(1, 2);
                 Equal(2, slice.Length);
                 Equal(20, slice[0]);
                 Equal(30, slice[1]);
-                slice = array.Slice(2);
+                slice = span.Slice(2);
                 Equal(3, slice.Length);
                 Equal(30, slice[0]);
                 Equal(40, slice[1]);
                 Equal(50, slice[2]);
+                var array = new long[3];
+                owner.WriteTo(array);
+                Equal(10, array[0]);
+                Equal(20, array[1]);
+                Equal(30, array[2]);
+                array[0] = long.MaxValue;
+                owner.ReadFrom(array);
+                Equal(long.MaxValue, span[0]);
+                Equal(20, span[1]);
             }
         }
 
@@ -145,6 +158,81 @@ namespace DotNext.Runtime.InteropServices
                         default:
                             throw new Exception();
                     }
+            }
+        }
+
+        [Fact]
+        public static async Task StreamInteropAsync()
+        {
+            using (var memory = new UnmanagedMemory<ushort>(3))
+            using (var ms = new MemoryStream())
+            {
+                new ushort[] { 1, 2, 3 }.AsSpan().CopyTo(memory.Span);
+                await memory.WriteToAsync(ms);
+                Equal(6L, ms.Length);
+                True(ms.TryGetBuffer(out var buffer));
+                buffer.Array.ForEach((ref byte value, long index) =>
+                {
+                    if (value == 1)
+                        value = 20;
+                });
+                ms.Position = 0;
+                Equal(6, await memory.ReadFromAsync(ms));
+                Equal(20, memory.Span[0]);
+            }
+        }
+
+        [Fact]
+        public static void StreamInterop()
+        {
+            using (var memory = new UnmanagedMemory<ushort>(3))
+            using (var ms = new MemoryStream())
+            {
+                new ushort[] { 1, 2, 3 }.AsSpan().CopyTo(memory.Span);
+                memory.WriteTo(ms);
+                Equal(6L, ms.Length);
+                True(ms.TryGetBuffer(out var buffer));
+                buffer.Array.ForEach((ref byte value, long index) =>
+                {
+                    if (value == 1)
+                        value = 20;
+                });
+                ms.Position = 0;
+                Equal(6, memory.ReadFrom(ms));
+                Equal(20, memory.Span[0]);
+            }
+        }
+
+        [Fact]
+        public static unsafe void ToStreamConversion()
+        {
+            using (var memory = new UnmanagedMemory<byte>(3, false))
+            {
+                new byte[] { 10, 20, 30 }.AsSpan().CopyTo(memory.Bytes);
+                using (var stream = memory.AsStream())
+                {
+                    var bytes = new byte[3];
+                    Equal(3, stream.Read(bytes, 0, 3));
+                    Equal(10, bytes[0]);
+                    Equal(20, bytes[1]);
+                    Equal(30, bytes[2]);
+                }
+            }
+        }
+
+        [Fact]
+        public static void CopyMemory()
+        {
+            using (var memory1 = new UnmanagedMemory<int>(3))
+            {
+                memory1.Span[0] = 10;
+                using (var memory2 = memory1.Copy())
+                {
+                    Equal(10, memory2.Span[0]);
+                    memory2.Span[0] = int.MaxValue;
+                    Equal(int.MaxValue, memory2.Span[0]);
+                    Equal(10, memory1.Span[0]);
+                }
             }
         }
     }

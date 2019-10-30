@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.InteropServices
@@ -129,7 +128,7 @@ namespace DotNext.Runtime.InteropServices
     /// the instance of this type.
     /// </remarks>
     /// <typeparam name="T">The type of elements in the unmanaged memory.</typeparam>
-    public sealed class UnmanagedMemory<T> : UnmanagedMemoryHandle, IEnumerable<T>
+    public sealed class UnmanagedMemory<T> : UnmanagedMemoryHandle, IUnmanagedArray<T>
         where T : unmanaged
     {
         private int length;
@@ -141,7 +140,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="zeroMem">Sets all bytes of allocated memory to zero.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than 1.</exception>
         /// <exception cref="OutOfMemoryException">There is insufficient memory to satisfy the request.</exception>
-        public UnmanagedMemory(int length, bool zeroMem = true) : base(GetSize(length), zeroMem) => this.length = length;
+        public UnmanagedMemory(int length, bool zeroMem = true) : base(SizeOf<T>(length), zeroMem) => this.length = length;
 
         /// <summary>
         /// Allocates the block of unmanaged memory which is equal to size of type <typeparamref name="T"/>.
@@ -165,9 +164,6 @@ namespace DotNext.Runtime.InteropServices
             memory.Pointer.Value = value;
             return memory;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe long GetSize(int length) => Math.BigMul(length, sizeof(T));
 
         /// <summary>
         /// Creates bitwise copy of the unmanaged memory.
@@ -325,7 +321,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Gets the size of allocated unmanaged memory, in bytes.
         /// </summary>
-        public override long Size => GetSize(length);
+        public override long Size => SizeOf<T>(length);
 
         /// <summary>
         /// Resizes a block of memory represented by this instance.
@@ -338,7 +334,7 @@ namespace DotNext.Runtime.InteropServices
                 throw HandleClosed();
             if (IsInvalid)
                 return;
-            long oldSize = Size, newSize = GetSize(this.length = length);
+            long oldSize = Size, newSize = SizeOf<T>(this.length = length);
             handle = Marshal.ReAllocHGlobal(handle, new IntPtr(newSize));
             var diff = newSize - oldSize;
             if (diff > 0L)

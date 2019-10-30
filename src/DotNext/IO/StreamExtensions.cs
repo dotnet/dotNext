@@ -120,9 +120,9 @@ namespace DotNext.IO
                     var n = stream.Read(buffer, 0, readLength);
                     if (n == 0)
                         throw new EndOfStreamException();
-                    var charsRead = decoder.GetChars(buffer, 0, n, charBuffer, 0);
+                    var charsRead = decoder.GetChars(buffer, 0, n, (char[])charBuffer, 0);
                     if (currentPos == 0 && n == length)
-                        return new string(charBuffer, 0, charsRead);
+                        return new string((char[])charBuffer, 0, charsRead);
                     if (result.IsEmpty)
                         result = new ArrayRental<char>(length);
                     Memory.Copy(ref charBuffer[0], ref result[resultOffset], (uint)charsRead);
@@ -130,10 +130,11 @@ namespace DotNext.IO
                     currentPos += n;
                 }
                 while (currentPos < length);
-                return new string(result, 0, resultOffset);
+                return new string((char[])result, 0, resultOffset);
             }
             finally
             {
+                charBuffer.Dispose();
                 result.Dispose();
             }
         }
@@ -165,9 +166,9 @@ namespace DotNext.IO
                     var n = await stream.ReadAsync(buffer, 0, readLength, token).ConfigureAwait(false);
                     if (n == 0)
                         throw new EndOfStreamException();
-                    var charsRead = decoder.GetChars(buffer, 0, n, charBuffer, 0);
+                    var charsRead = decoder.GetChars(buffer, 0, n, (char[])charBuffer, 0);
                     if (currentPos == 0 && n == length)
-                        return new string(charBuffer, 0, charsRead);
+                        return new string((char[])charBuffer, 0, charsRead);
                     if (result.IsEmpty)
                         result = new ArrayRental<char>(length);
                     Memory.Copy(ref charBuffer[0], ref result[resultOffset], (uint)charsRead);
@@ -175,10 +176,11 @@ namespace DotNext.IO
                     currentPos += n;
                 }
                 while (currentPos < length);
-                return new string(result, 0, resultOffset);
+                return new string((char[])result, 0, resultOffset);
             }
             finally
             {
+                charBuffer.Dispose();
                 result.Dispose();
             }
         }

@@ -33,6 +33,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// </summary>
         public IPAddress HostAddressHint { get; set; }
 
+        /// <summary>
+        /// Gets or sets HTTP version supported by Raft implementation.
+        /// </summary>
+        public HttpVersion ProtocolVersion { get; set; }
+
         internal void SetupHostAddressHint(IFeatureCollection features)
         {
             var address = HostAddressHint;

@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Threading
 {
+    [ExcludeFromCodeCoverage]
     public sealed class AtomicContainerTests : Assert
     {
         [Fact]
@@ -29,7 +31,7 @@ namespace DotNext.Threading
         public static void AtomicUpdate()
         {
             var container = new Atomic<Guid>();
-            container.GetAndUpdate((in Guid current, out Guid newValue) => newValue = Guid.NewGuid(), out var value);
+            container.GetAndUpdate((ref Guid current) => current = Guid.NewGuid(), out var value);
             Equal(Guid.Empty, value);
             NotEqual(Guid.Empty, container.Value);
         }
@@ -44,7 +46,7 @@ namespace DotNext.Threading
             NotEqual(Guid.Empty, container.Value);
         }
 
-        private static void Add(in decimal current, in decimal value, out decimal result) => result = current + value;
+        private static void Add(ref decimal current, in decimal value) => current += value;
 
         [Fact]
         public static void Accumulation()

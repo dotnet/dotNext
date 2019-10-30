@@ -59,7 +59,7 @@ namespace DotNext.Net.Cluster.Messaging
             //TODO: Should be rewritten for .NET Standard 2.1
             const int defaultBufferSize = 128;
             using (var buffer = new ArrayRental<byte>(defaultBufferSize))
-                await output.WriteStringAsync(Content, Type.GetEncoding(), buffer, token).ConfigureAwait(false);
+                await output.WriteStringAsync(Content, Type.GetEncoding(), (byte[])buffer, token).ConfigureAwait(false);
         }
 
         private static unsafe int Encode(Encoding encoding, ReadOnlySpan<char> chunk, Span<byte> output)

@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using CallSiteDescr = InlineIL.StandAloneMethodSig;
+using TR = InlineIL.TypeRef;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -23,20 +24,13 @@ namespace DotNext.Runtime.CompilerServices
         internal ManagedMethodPointer(RuntimeMethodHandle method)
             => methodPtr = method.GetFunctionPointer();
 
-        #region Invokers
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void InvokeStaticVoid<TSource>(TSource source, Span<char> buffer, ReadOnlySpan<char> allowedChars)
-            where TSource : class
+        internal O Invoke<I, O>(in I arg0, int arg1)
         {
-            Push(source);
-            Ldarg(nameof(buffer));
-            Ldarg(nameof(allowedChars));
-            Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(TSource), typeof(Span<char>), typeof(ReadOnlySpan<char>)));
-            Ret();
+            Push(nameof(arg0));
+            Push(arg1);
+            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(O), new TR(typeof(I)).MakeByRefType(), typeof(int)));
+            return Return<O>();
         }
-        #endregion
 
         /// <summary>
         /// Determines whether this method pointer is equal to the specified method pointer.

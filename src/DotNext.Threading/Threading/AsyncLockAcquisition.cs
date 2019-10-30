@@ -29,7 +29,8 @@ namespace DotNext.Threading
                 case SemaphoreSlim _:
                 case WaitHandle _:
                 case ReaderWriterLock _:
-                    throw new ArgumentException(ExceptionMessages.UnsupportedLockAcquisition, nameof(obj));
+                case string str when !(string.IsInterned(str) is null):
+                    throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
                 default:
                     return obj.GetUserData().GetOrSet(ReaderWriterLock);
             }
@@ -59,7 +60,8 @@ namespace DotNext.Threading
                 case ReaderWriterLockSlim _:
                 case WaitHandle _:
                 case ReaderWriterLock _:
-                    throw new ArgumentException(ExceptionMessages.UnsupportedLockAcquisition, nameof(obj));
+                case string str when !(string.IsInterned(str) is null):
+                    throw new InvalidOperationException(ExceptionMessages.UnsupportedLockAcquisition);
                 default:
                     @lock = AsyncLock.Exclusive(obj.GetUserData().GetOrSet(ExclusiveLock));
                     break;

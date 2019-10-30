@@ -1,15 +1,17 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Threading.Tasks
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ContinuationTest : Assert
     {
         [Fact]
         public static async Task OnCompletedContinuation()
         {
-            var t = Task.Factory.StartNew(() => Thread.Sleep(50));
+            var t = Task.Delay(50);
             var t2 = await t.OnCompleted();
             Equal(t, t2);
             True(t.IsCompletedSuccessfully);

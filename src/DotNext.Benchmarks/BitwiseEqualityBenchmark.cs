@@ -49,7 +49,7 @@ namespace DotNext
         [Benchmark]
         public void GuidBitwiseEqualsMethod()
         {
-            BitwiseComparer<Guid>.Equals(NonEmptyGuid, default);
+            BitwiseComparer<Guid>.Equals<Guid>(NonEmptyGuid, default);
         }
 
         [Benchmark]
@@ -71,7 +71,7 @@ namespace DotNext
         [Benchmark]
         public void LargeStructBitwiseEqualsMethod()
         {
-            BitwiseComparer<LargeStruct>.Equals(NonEmptyLargeStruct, default);
+            BitwiseComparer<LargeStruct>.Equals<LargeStruct>(NonEmptyLargeStruct, default);
         }
 
         [Benchmark]
@@ -82,6 +82,18 @@ namespace DotNext
             var empty = default(LargeStruct);
             var span2 = new ReadOnlySpan<byte>(&empty, sizeof(LargeStruct));
             span1.SequenceEqual(span2);
+        }
+
+        [Benchmark]
+        public void EnumEqualsUsingDefaultComparer()
+        {
+            System.Collections.Generic.EqualityComparer<EnvironmentVariableTarget>.Default.Equals(EnvironmentVariableTarget.Machine, EnvironmentVariableTarget.Process);
+        }
+
+        [Benchmark]
+        public void EnumEqualsUsingBitwiseComparer()
+        {
+            BitwiseComparer<EnvironmentVariableTarget>.Equals(EnvironmentVariableTarget.Machine, EnvironmentVariableTarget.Process);
         }
     }
 }

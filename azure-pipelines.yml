@@ -1,0 +1,35 @@
+variables:
+    Solution: src/DotNext.sln
+    TestFolder: src/DotNext.Tests
+    TestProject: $(TestFolder)/DotNext.Tests.csproj
+trigger:
+    - master
+    - develop
+jobs:
+    - job: Windows
+      pool:
+        vmImage: windows-2019
+      steps:
+        - task: DotNetCoreCLI@2
+          displayName: Test Debug
+          inputs:
+            command: test
+            projects: $(TestProject)
+            arguments: --configuration Debug --collect "Code coverage"
+            nobuild: false
+            testRunTitle: 'Debug on Windows'
+            publishTestResults: true
+            
+    - job: Linux
+      pool:
+        vmImage: ubuntu-18.04
+      steps:
+        - task: DotNetCoreCLI@2
+          displayName: Test Debug
+          inputs:
+            command: test
+            projects: $(TestProject)
+            arguments: --configuration Debug --collect "Code coverage"
+            nobuild: false
+            testRunTitle: 'Debug on Linux'
+            publishTestResults: true

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Concurrent
 {
@@ -16,6 +17,42 @@ namespace DotNext.Collections.Concurrent
     [Serializable]
     public class CopyOnWriteList<T> : IReadOnlyList<T>, IList<T>, ICloneable
     {
+        /// <summary>
+        /// Represents enumerator over elements in the list.
+        /// </summary>
+        [StructLayout(LayoutKind.Auto)]
+        public struct Enumerator : IEnumerator<T>
+        {
+            private const long InitialPosition = -1L;
+            private readonly T[] snapshot;
+            private long position;
+
+            internal Enumerator(T[] backingStore)
+            {
+                snapshot = backingStore;
+                position = InitialPosition;
+            }
+
+            /// <summary>
+            /// Gets the element in the collection at the current position of the enumerator.
+            /// </summary>
+            public readonly ref T Current => ref snapshot[position];
+
+            T IEnumerator<T>.Current => Current;
+
+            object IEnumerator.Current => Current;
+
+            void IDisposable.Dispose() => this = default;
+
+            /// <summary>
+            /// Advances the enumerator to the next element.
+            /// </summary>
+            /// <returns><see lanword="true"/> if the enumerator was successfully advanced to the next element; <see langword="false"/> if the enumerator has passed the end of the collection.</returns>
+            public bool MoveNext() => ++position < snapshot.LongLength;
+
+            void IEnumerator.Reset() => position = InitialPosition;
+        }
+
         private volatile T[] backingStore;
 
         /// <summary>
@@ -36,13 +73,8 @@ namespace DotNext.Collections.Concurrent
         /// Creates copy of this list.
         /// </summary>
         /// <returns>The copy of this list.</returns>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public CopyOnWriteList<T> Clone()
-        {
-            var newStore = new T[backingStore.LongLength];
-            backingStore.CopyTo(newStore, 0L);
-            return new CopyOnWriteList<T>(newStore);
-        }
+            => new CopyOnWriteList<T>(Snapshot.ToArray());
 
         object ICloneable.Clone() => Clone();
 
@@ -63,6 +95,11 @@ namespace DotNext.Collections.Concurrent
         public long Count => backingStore.LongLength;
 
         /// <summary>
+        /// Gets the snapshot view of the current list.
+        /// </summary>
+        public ReadOnlyMemory<T> Snapshot => new ReadOnlyMemory<T>(backingStore);
+
+        /// <summary>
         /// Gets or sets list item.
         /// </summary>
         /// <param name="index">The index of the list item.</param>
@@ -71,8 +108,12 @@ namespace DotNext.Collections.Concurrent
         public T this[long index]
         {
             get => backingStore[index];
-            [MethodImpl(MethodImplOptions.Synchronized)]
-            set => backingStore[index] = value;
+            set
+            {
+                var newArray = Snapshot.ToArray();
+                newArray[index] = value;
+                ReplaceStore(newArray);
+            }
         }
 
         T IList<T>.this[int index]
@@ -325,9 +366,9 @@ namespace DotNext.Collections.Concurrent
         /// Gets enumerator over snapshot of this list.
         /// </summary>
         /// <returns>The enumerator over snapshot of this list.</returns>
-        public ReadOnlySpan<T>.Enumerator GetEnumerator() => new ReadOnlySpan<T>(backingStore).GetEnumerator();
+        public Enumerator GetEnumerator() => new Enumerator(backingStore);
 
-        IEnumerator<T> IEnumerable<T>.GetEnumerator() => ((IReadOnlyList<T>)backingStore).GetEnumerator();
+        IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => backingStore.GetEnumerator();
 

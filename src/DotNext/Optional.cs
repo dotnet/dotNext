@@ -277,7 +277,7 @@ namespace DotNext
         /// If a value is present, returns the value, otherwise return default value.
         /// </summary>
         /// <returns>The value, if present, otherwise default</returns>
-        public T OrDefault() => Or(default);
+        public T OrDefault() => value;
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
@@ -361,18 +361,24 @@ namespace DotNext
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
 		public bool Equals(T other) => IsPresent && value.Equals(other);
 
-        bool IEquatable<Optional<T>>.Equals(Optional<T> other)
-            => Equals(in other);
-
         /// <summary>
         /// Determines whether this container stores
         /// the same value as other.
         /// </summary>
         /// <param name="other">Other container to compare.</param>
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        [CLSCompliant(false)]
-        public bool Equals(in Optional<T> other)
-            => IsPresent ? other.IsPresent && value.Equals(other.value) : !other.IsPresent;
+        public bool Equals(Optional<T> other)
+        {
+            switch (IsPresent.ToInt32() + other.IsPresent.ToInt32())
+            {
+                default:
+                    return true;
+                case 1:
+                    return false;
+                case 2:
+                    return value.Equals(other.value);
+            }
+        }
 
         /// <summary>
         /// Determines whether this container stores
@@ -435,7 +441,17 @@ namespace DotNext
         /// <param name="second">The second container to compare.</param>
         /// <returns><see langword="true"/>, if both containers store the same value; otherwise, <see langword="false"/>.</returns>
         public static bool operator ==(in Optional<T> first, in Optional<T> second)
-            => first.Equals(in second);
+        {
+            switch (first.IsPresent.ToInt32() + second.IsPresent.ToInt32())
+            {
+                default:
+                    return true;
+                case 1:
+                    return false;
+                case 2:
+                    return first.value.Equals(second.value);
+            }
+        }
 
         /// <summary>
         /// Determines whether two containers store the different values.
@@ -444,7 +460,17 @@ namespace DotNext
         /// <param name="second">The second container to compare.</param>
         /// <returns><see langword="true"/>, if both containers store the different values; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in Optional<T> first, in Optional<T> second)
-            => !first.Equals(in second);
+        {
+            switch (first.IsPresent.ToInt32() + second.IsPresent.ToInt32())
+            {
+                default:
+                    return false;
+                case 1:
+                    return true;
+                case 2:
+                    return !first.value.Equals(second.value);
+            }
+        }
 
         /// <summary>
         /// Returns non-empty container.
@@ -464,12 +490,15 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both containers are empty or have values; otherwise, <see langword="false"/>.</returns>
         public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second)
         {
-            if (first.IsPresent == second.IsPresent)
-                return Empty;
-            else if (first.IsPresent)
-                return first;
-            else
-                return second;
+            switch (first.IsPresent.ToInt32() - second.IsPresent.ToInt32())
+            {
+                default:
+                    return Empty;
+                case -1:
+                    return second;
+                case 1:
+                    return first;
+            }
         }
 
         /// <summary>

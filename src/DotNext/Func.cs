@@ -105,14 +105,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<R>(this Func<R> function)
         {
+            Result<R> result;
             try
             {
-                return function();
+                result = function();
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                result = new Result<R>(e);
             }
+            return result;
         }
 
         /// <summary>
@@ -126,14 +128,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T, R>(this Func<T, R> function, T arg)
         {
+            Result<R> result;
             try
             {
-                return function(arg);
+                result = function(arg);
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                result = new Result<R>(e);
             }
+            return result;
         }
 
         /// <summary>
@@ -149,14 +153,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, R>(this Func<T1, T2, R> function, T1 arg1, T2 arg2)
         {
+            Result<R> result;
             try
             {
-                return function(arg1, arg2);
+                result = function(arg1, arg2);
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                result = new Result<R>(e);
             }
+            return result;
         }
 
         /// <summary>
@@ -174,14 +180,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, R>(this Func<T1, T2, T3, R> function, T1 arg1, T2 arg2, T3 arg3)
         {
+            Result<R> result;
             try
             {
-                return function(arg1, arg2, arg3);
+                result = function(arg1, arg2, arg3);
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                result = new Result<R>(e);
             }
+            return result;
         }
 
         /// <summary>
@@ -201,14 +209,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, R>(this Func<T1, T2, T3, T4, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4)
         {
+            Result<R> result;
             try
             {
-                return function(arg1, arg2, arg3, arg4);
+                result = function(arg1, arg2, arg3, arg4);
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                result = new Result<R>(e);
             }
+            return result;
         }
 
         /// <summary>
@@ -230,14 +240,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5)
         {
+            Result<R> result;
             try
             {
-                return function(arg1, arg2, arg3, arg4, arg5);
+                result = function(arg1, arg2, arg3, arg4, arg5);
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                result = new Result<R>(e);
             }
+            return result;
         }
 
         /// <summary>
@@ -261,14 +273,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, R>(this Func<T1, T2, T3, T4, T5, T6, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6)
         {
+            Result<R> result;
             try
             {
-                return function(arg1, arg2, arg3, arg4, arg5, arg6);
+                result = function(arg1, arg2, arg3, arg4, arg5, arg6);
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                result = new Result<R>(e);
             }
+            return result;
         }
 
         /// <summary>
@@ -294,14 +308,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, R>(this Func<T1, T2, T3, T4, T5, T6, T7, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7)
         {
+            Result<R> result;
             try
             {
-                return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+                result = function(arg1, arg2, arg3, arg4, arg5, arg6, arg7);
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                result = new Result<R>(e);
             }
+            return result;
         }
 
         /// <summary>
@@ -329,14 +345,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, R>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8)
         {
+            Result<R> result;
             try
             {
-                return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+                result = function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                result = new Result<R>(e);
             }
+            return result;
         }
 
         /// <summary>
@@ -366,14 +384,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9, R>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9)
         {
+            Result<R> result;
             try
             {
-                return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+                result = function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                result = new Result<R>(e);
             }
+            return result;
         }
 
         /// <summary>
@@ -405,14 +425,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<R> TryInvoke<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R>(this Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> function, T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8, T9 arg9, T10 arg10)
         {
+            Result<R> result;
             try
             {
-                return function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
+                result = function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
             }
             catch (Exception e)
             {
-                return new Result<R>(e);
+                result = new Result<R>(e);
             }
+            return result;
         }
     }
 }

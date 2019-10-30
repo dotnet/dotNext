@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
+    [ExcludeFromCodeCoverage]
     public sealed class UnmanagedMemoryTests : Assert
     {
         private struct Data
@@ -40,6 +44,100 @@ namespace DotNext.Runtime.InteropServices
                 Equal(12, memory.Size);
                 Equal(10, bytes[0]);
                 Equal(20, bytes[1]);
+                var array = new byte[2];
+                memory.WriteTo(array);
+                Equal(10, array[0]);
+                Equal(20, array[1]);
+                array[0] = 30;
+                array[1] = 40;
+                memory.ReadFrom(array);
+                Equal(30, bytes[0]);
+                Equal(40, bytes[1]);
+                bytes = memory;
+                Equal(30, bytes[0]);
+                Equal(40, bytes[1]);
+                Pointer<byte> ptr = memory;
+                Equal(30, ptr[0]);
+                Equal(40, ptr[1]);
+            }
+        }
+
+        [Fact]
+        public static async Task StreamInteropAsync()
+        {
+            using (var memory = new UnmanagedMemory(3, false))
+            using (var ms = new MemoryStream())
+            {
+                memory.Bytes[0] = 1;
+                memory.Bytes[1] = 2;
+                memory.Bytes[2] = 3;
+                await memory.WriteToAsync(ms);
+                Equal(3L, ms.Length);
+                True(ms.TryGetBuffer(out var buffer));
+                buffer.Array.ForEach((ref byte value, long index) =>
+                {
+                    if (value == 1)
+                        value = 20;
+                });
+                ms.Position = 0;
+                Equal(3, await memory.ReadFromAsync(ms));
+                Equal(20, memory.Bytes[0]);
+            }
+        }
+
+        [Fact]
+        public static void StreamInterop()
+        {
+            using (var memory = new UnmanagedMemory(3, false))
+            using (var ms = new MemoryStream())
+            {
+                memory.Bytes[0] = 1;
+                memory.Bytes[1] = 2;
+                memory.Bytes[2] = 3;
+                memory.WriteTo(ms);
+                Equal(3L, ms.Length);
+                True(ms.TryGetBuffer(out var buffer));
+                buffer.Array.ForEach((ref byte value, long index) =>
+                {
+                    if (value == 1)
+                        value = 20;
+                });
+                ms.Position = 0;
+                Equal(3, memory.ReadFrom(ms));
+                Equal(20, memory.Bytes[0]);
+            }
+        }
+
+        [Fact]
+        public static unsafe void ToStreamConversion()
+        {
+            using (var memory = new UnmanagedMemory(3, false))
+            {
+                new byte[] { 10, 20, 30 }.AsSpan().CopyTo(memory.Bytes);
+                using (var stream = memory.AsStream())
+                {
+                    var bytes = new byte[3];
+                    Equal(3, stream.Read(bytes, 0, 3));
+                    Equal(10, bytes[0]);
+                    Equal(20, bytes[1]);
+                    Equal(30, bytes[2]);
+                }
+            }
+        }
+
+        [Fact]
+        public static void CopyMemory()
+        {
+            using (var memory1 = new UnmanagedMemory(3))
+            {
+                memory1.Bytes[0] = 10;
+                using (var memory2 = memory1.Copy())
+                {
+                    Equal(10, memory2.Bytes[0]);
+                    memory2.Bytes[0] = byte.MaxValue;
+                    Equal(byte.MaxValue, memory2.Bytes[0]);
+                    Equal(10, memory1.Bytes[0]);
+                }
             }
         }
     }

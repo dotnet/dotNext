@@ -58,7 +58,7 @@ namespace DotNext
             private ReaderWriterSpinLock lockState;
 
             //should be public because called through Activator by ConditionalWeakTable
-            public BackingStorage() 
+            public BackingStorage()
                 : base(3)
             {
             }
@@ -74,16 +74,15 @@ namespace DotNext
             internal V GetOrSet<V, S>(UserDataSlot<V> slot, ref S valueFactory)
                 where S : struct, ISupplier<V>
             {
-                V userData;
                 //fast path - read lock is required
                 lockState.EnterReadLock();
-                var exists = slot.GetUserData(this, out userData);
+                var exists = slot.GetUserData(this, out var userData);
                 lockState.ExitReadLock();
-                if(exists)
+                if (exists)
                     goto exit;
                 //non-fast path: factory should be called
                 lockState.EnterWriteLock();
-                if(slot.GetUserData(this, out userData))
+                if (slot.GetUserData(this, out userData))
                     lockState.ExitWriteLock();
                 else
                     try
@@ -94,7 +93,7 @@ namespace DotNext
                     {
                         lockState.ExitWriteLock();
                     }
-            exit:
+                exit:
                 return userData;
             }
 

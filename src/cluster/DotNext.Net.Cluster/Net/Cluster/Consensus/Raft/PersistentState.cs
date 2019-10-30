@@ -381,7 +381,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal override void PopulateCache(in DataAccessSession session)
             {
                 if (!lookupCache.IsEmpty)
-                    PopulateCache(session.Buffer, lookupCache.Memory.Slice(0, Capacity).Span);
+                    PopulateCache(session.Buffer, lookupCache.Memory.Span);
             }
 
             private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, byte[] buffer, long index, bool absoluteIndex, CancellationToken token)
@@ -929,7 +929,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         }
                         else
                             break;
-                    result = reader.ReadAsync<LogEntry, ArraySegment<LogEntry>>(new ArraySegment<LogEntry>(list, 0, listIndex), list[0].SnapshotIndex, token);
+                    result = reader.ReadAsync<LogEntry, ArraySegment<LogEntry>>(list.Slice(0, listIndex), list[0].SnapshotIndex, token);
                 }
             else if (snapshot.Length > 0)
             {
@@ -1209,7 +1209,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 //find partitions to be deleted
                 var partitionNumber = Math.DivRem(startIndex, recordsPerPartition, out var remainder);
                 //take the next partition if startIndex is not a beginning of the calculated partition
-                partitionNumber += remainder & 1L;
+                partitionNumber += (remainder > 0L).ToInt32();
                 for (Partition partition; partitionTable.TryGetValue(partitionNumber, out partition); partitionNumber++)
                 {
                     var fileName = partition.Name;

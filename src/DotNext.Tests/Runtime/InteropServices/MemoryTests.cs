@@ -1,8 +1,10 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Runtime.InteropServices
 {
+    [ExcludeFromCodeCoverage]
     public sealed class MemoryTests : Assert
     {
         private Guid field;
@@ -144,6 +146,14 @@ namespace DotNext.Runtime.InteropServices
         {
             var ptr = new IntPtr(value).ToPointer<byte>();
             Equal(new IntPtr(value), new IntPtr(ptr));
+        }
+
+        [Fact]
+        public static unsafe void ZeroMem()
+        {
+            var g = Guid.NewGuid();
+            Memory.ClearBits(&g, sizeof(Guid));
+            Equal(Guid.Empty, g);
         }
     }
 }

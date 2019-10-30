@@ -81,9 +81,6 @@ namespace DotNext.Reflection
                     yield return iface;
         }
 
-        private static bool CheckBaseDefinition(MemberInfo candidate, object criteria)
-            => candidate is MethodInfo method && method.GetBaseDefinition().Equals(criteria);
-
         /// <summary>
         /// Returns method that overrides the specified method.
         /// </summary>
@@ -112,7 +109,7 @@ namespace DotNext.Reflection
                 foreach (var candidate in lookup.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
                     if (candidate.GetBaseDefinition() == abstractMethod)
                         return candidate;
-                    exit:
+            exit:
             return null;
         }
 
@@ -242,11 +239,10 @@ namespace DotNext.Reflection
         public static object Cast(this Type type, object obj)
         {
             if (obj is null)
-                return type.IsValueType ? new InvalidCastException(ExceptionMessages.CastNullToValueType) : null;
-            else if (type.IsInstanceOfType(obj))
+                return type.IsValueType ? throw new InvalidCastException(ExceptionMessages.CastNullToValueType) : default(object);
+            if (type.IsInstanceOfType(obj))
                 return obj;
-            else
-                throw new InvalidCastException();
+            throw new InvalidCastException();
         }
     }
 }

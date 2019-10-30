@@ -5,11 +5,10 @@ using System.Runtime.Serialization;
 using System.Threading;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
+using F = InlineIL.FieldRef;
 
 namespace DotNext.Threading
 {
-    using F = InlineIL.FieldRef;
-
     /// <summary>
     /// Represents atomic boolean.
     /// </summary>
@@ -132,7 +131,7 @@ namespace DotNext.Threading
             bool oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = Atomic.Read(ref value).ToBoolean());
+                newValue = updater.Invoke(oldValue = AtomicInt32.VolatileRead(ref value).ToBoolean());
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
@@ -143,7 +142,7 @@ namespace DotNext.Threading
             bool oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = Atomic.Read(ref value).ToBoolean(), x);
+                newValue = accumulator.Invoke(oldValue = AtomicInt32.VolatileRead(ref value).ToBoolean(), x);
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);

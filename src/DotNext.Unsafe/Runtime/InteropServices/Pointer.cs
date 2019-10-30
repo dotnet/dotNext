@@ -6,9 +6,12 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using CancellationToken = System.Threading.CancellationToken;
+using MemoryHandle = System.Buffers.MemoryHandle;
 
 namespace DotNext.Runtime.InteropServices
 {
+    using Buffers;
     using Generic;
     using Threading.Tasks;
 
@@ -77,15 +80,12 @@ namespace DotNext.Runtime.InteropServices
             public void Dispose() => this = default;
         }
 
+        private const int BufferSize = 1024;
+
         /// <summary>
         /// Represents zero pointer.
         /// </summary>
         public static Pointer<T> Null => default;
-
-        /// <summary>
-        /// Size of type <typeparamref name="T"/>, in bytes.
-        /// </summary>
-        public static unsafe int Size => sizeof(T);
 
         private readonly unsafe T* value;
 
@@ -152,7 +152,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Converts this pointer into span of bytes.
         /// </summary>
-        public unsafe Span<byte> Bytes => Memory.AsSpan(value);
+        public unsafe Span<byte> Bytes => IsNull ? default : Memory.AsSpan(value);
 
         /// <summary>
 		/// Gets or sets pointer value at the specified position in the memory.
@@ -163,18 +163,15 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="index">Element index.</param>
 		/// <returns>Array element.</returns>
 		/// <exception cref="NullPointerException">This array is not allocated.</exception>
-        public unsafe T this[long index]
+        public unsafe ref T this[long index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => IsNull ? throw new NullPointerException() : *(value + index);
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            set
+            get
             {
                 if (IsNull)
                     throw new NullPointerException();
                 else
-                    *(this.value + index) = value;
+                    return ref value[index];
             }
         }
 
@@ -229,7 +226,7 @@ namespace DotNext.Runtime.InteropServices
             else if (destination.IsNull)
                 throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
             else
-                Memory.Copy(value, destination.value, count * Size);
+                Memory.Copy(value, destination.value, count * sizeof(T));
         }
 
         /// <summary>
@@ -253,22 +250,25 @@ namespace DotNext.Runtime.InteropServices
             else if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
                 return 0L;
             fixed (T* dest = &destination[offset])
-                Memory.Copy(value, dest, count * Size);
+                Memory.Copy(value, dest, count * sizeof(T));
             return count;
         }
 
-        private static void WriteToSteam(IntPtr source, long length, Stream destination)
+        private unsafe static void WriteToSteam(byte* source, long length, Stream destination)
         {
-            for (var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-            {
-                Unsafe.As<byte, IntPtr>(ref buffer[0]) = Memory.ReadUnaligned<IntPtr>(ref source);
-                destination.Write(buffer, 0, buffer.Length);
-            }
-            while (length > 0)
-            {
-                destination.WriteByte(Memory.Read<byte>(ref source));
-                length -= sizeof(byte);
-            }
+            //TODO: Should be rewritten for .NET Standard 2.1
+            var offset = 0L;
+            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
+                while (length > 0L)
+                {
+                    //copy from memory to buffer
+                    var count = (int)Math.Min(length, buffer.Length);
+                    Unsafe.CopyBlockUnaligned(ref buffer[0], ref source[offset], (uint)count);
+                    //copy from buffer to stream
+                    destination.Write((byte[])buffer, 0, count);
+                    length -= count;
+                    offset += count;
+                }
         }
 
         /// <summary>
@@ -279,32 +279,36 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
         /// <exception cref="ArgumentException">The stream is not writable.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
-        public void WriteTo(Stream destination, long count)
+        public unsafe void WriteTo(Stream destination, long count)
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0)
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (!destination.CanWrite)
+            if (!destination.CanWrite)
                 throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
-            else if (count == 0)
-                return;
-            else
-                WriteToSteam(Address, count * Size, destination);
+            if (count > 0)
+                WriteToSteam((byte*)value, count * sizeof(T), destination);
         }
 
-        private static async Task WriteToSteamAsync(IntPtr source, long length, Stream destination)
+        private static async Task WriteToSteamAsync(IntPtr source, long length, Stream destination, CancellationToken token)
         {
-            for (var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-            {
-                Unsafe.As<byte, IntPtr>(ref buffer[0]) = Memory.ReadUnaligned<IntPtr>(ref source);
-                await destination.WriteAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
-            }
-            while (length > 0)
-            {
-                destination.WriteByte(Memory.Read<byte>(ref source));
-                length -= sizeof(byte);
-            }
+            //TODO: Should be rewritten for .NET Standard 2.1
+            var offset = 0L;
+            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
+                while (length > 0L)
+                {
+                    //copy from memory to buffer
+                    var count = (int)Math.Min(length, buffer.Length);
+                    unsafe
+                    {
+                        Unsafe.CopyBlockUnaligned(ref buffer[0], ref source.ToPointer<byte>()[offset], (uint)count);
+                    }
+                    //copy from buffer to stream
+                    await destination.WriteAsync((byte[])buffer, 0, count, token).ConfigureAwait(false);
+                    length -= count;
+                    offset += count;
+                }
         }
 
         /// <summary>
@@ -313,22 +317,23 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="destination">The destination stream.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task instance representing asynchronous state of the copying process.</returns>
         /// <exception cref="NullPointerException">This pointer is equal to zero.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
         /// <exception cref="ArgumentException">The stream is not writable.</exception>
-        public Task WriteToAsync(Stream destination, long count)
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public unsafe Task WriteToAsync(Stream destination, long count, CancellationToken token = default)
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0)
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (!destination.CanWrite)
+            if (!destination.CanWrite)
                 throw new ArgumentException(ExceptionMessages.StreamNotWritable, nameof(destination));
-            else if (count == 0)
+            if (count == 0)
                 return Task.CompletedTask;
-            else
-                return WriteToSteamAsync(Address, count * Size, destination);
+            return WriteToSteamAsync(Address, count * sizeof(T), destination, token);
         }
 
         /// <summary>
@@ -352,34 +357,26 @@ namespace DotNext.Runtime.InteropServices
             else if (source.LongLength == 0L || (count + offset) > source.LongLength)
                 return 0L;
             fixed (T* src = &source[offset])
-                Memory.Copy(src, value, count * Size);
+                Memory.Copy(src, value, count * sizeof(T));
             return count;
         }
 
-        private static long ReadFromStream(Stream source, IntPtr destination, long length)
+        private unsafe static long ReadFromStream(Stream source, byte* destination, long length)
         {
+            //TODO: Should be rewritten for .NET Standard 2.1
             var total = 0L;
-            for (var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-            {
-                var count = source.Read(buffer, 0, buffer.Length);
-                Memory.WriteUnaligned(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
-                total += count;
-                if (count < IntPtr.Size)
-                    return total;
-                buffer.Initialize();
-            }
-            while (length > 0)
-            {
-                var b = source.ReadByte();
-                if (b >= 0)
+            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
+                while (length > 0L)
                 {
-                    Memory.Write(ref destination, (byte)b);
-                    length -= sizeof(byte);
-                    total += sizeof(byte);
+                    //copy from stream to buffer
+                    var bytesRead = source.Read((byte[])buffer, 0, buffer.Length);
+                    if (bytesRead == 0)
+                        break;
+                    //copy from buffer to memory
+                    Unsafe.CopyBlockUnaligned(ref destination[total], ref buffer[0], (uint)bytesRead);
+                    length -= bytesRead;
+                    total += bytesRead;
                 }
-                else
-                    break;
-            }
             return total;
         }
 
@@ -392,44 +389,38 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="NullPointerException">This pointer is zero.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
-        public long ReadFrom(Stream source, long count)
+        public unsafe long ReadFrom(Stream source, long count)
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0L)
+            if (count < 0L)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (!source.CanRead)
+            if (!source.CanRead)
                 throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
-            else if (count == 0L)
+            if (count == 0L)
                 return 0L;
-            else
-                return ReadFromStream(source, Address, Size * count);
+            return ReadFromStream(source, (byte*)value, sizeof(T) * count);
         }
 
-        private static async Task<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length)
+        private static async Task<long> ReadFromStreamAsync(Stream source, IntPtr destination, long length, CancellationToken token)
         {
+            //TODO: Should be rewritten for .NET Standard 2.1
             var total = 0L;
-            for (var buffer = new byte[IntPtr.Size]; length > IntPtr.Size; length -= IntPtr.Size)
-            {
-                var count = await source.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false);
-                Memory.WriteUnaligned(ref destination, Unsafe.ReadUnaligned<IntPtr>(ref buffer[0]));
-                total += count;
-                if (count < IntPtr.Size)
-                    return total;
-                buffer.Initialize();
-            }
-            while (length > 0)
-            {
-                var b = source.ReadByte();
-                if (b >= 0)
+            using (var buffer = new ArrayRental<byte>((int)Math.Min(BufferSize, length)))
+                while (length > 0L)
                 {
-                    Memory.Write(ref destination, (byte)b);
-                    length -= sizeof(byte);
-                    total += sizeof(byte);
+                    //copy from stream to buffer
+                    var bytesRead = await source.ReadAsync((byte[])buffer, 0, buffer.Length, token).ConfigureAwait(false);
+                    if (bytesRead == 0)
+                        break;
+                    //copy from buffer to memory
+                    unsafe
+                    {
+                        Unsafe.CopyBlock(ref destination.ToPointer<byte>()[total], ref buffer[0], (uint)bytesRead);
+                    }
+                    length -= bytesRead;
+                    total += bytesRead;
                 }
-                else
-                    break;
-            }
             return total;
         }
 
@@ -438,21 +429,22 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="source">The source stream.</param>
         /// <param name="count">The number of elements of type <typeparamref name="T"/> to be copied.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <exception cref="NullPointerException">This pointer is zero.</exception>
         /// <exception cref="ArgumentException">The stream is not readable.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is less than zero.</exception>
-		public Task<long> ReadFromAsync(Stream source, long count)
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+		public unsafe Task<long> ReadFromAsync(Stream source, long count, CancellationToken token = default)
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0L)
+            if (count < 0L)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (!source.CanRead)
+            if (!source.CanRead)
                 throw new ArgumentException(ExceptionMessages.StreamNotReadable, nameof(source));
-            else if (count == 0L)
+            if (count == 0L)
                 return CompletedTask<long, LongConst.Zero>.Task;
-            else
-                return ReadFromStreamAsync(source, Address, Size * count);
+            return ReadFromStreamAsync(source, Address, sizeof(T) * count, token);
         }
 
         /// <summary>
@@ -469,7 +461,7 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 return Stream.Null;
-            count = count * Size;
+            count *= sizeof(T);
             return new UnmanagedMemoryStream(As<byte>().value, count, count, access);
         }
 
@@ -483,7 +475,7 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 return Array.Empty<byte>();
-            var result = new byte[Size * length];
+            var result = new byte[sizeof(T) * length];
             fixed (byte* destination = result)
                 Memory.Copy(value, destination, result.LongLength);
             return result;
@@ -517,7 +509,7 @@ namespace DotNext.Runtime.InteropServices
         [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         public unsafe Pointer<U> As<U>()
             where U : unmanaged
-            => Size >= Pointer<U>.Size ? new Pointer<U>(Address) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize, nameof(U));
+            => sizeof(T) >= sizeof(U) ? new Pointer<U>(Address) : throw new GenericArgumentException<U>(ExceptionMessages.WrongTargetTypeSize, nameof(U));
 
         /// <summary>
         /// Gets the value stored in the memory identified by this pointer.
@@ -542,7 +534,16 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>The value stored in the memory.</returns>
         /// <exception cref="NullPointerException">The pointer is 0.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe T Get() => Value;
+        public T Get() => Value;
+
+        /// <summary>
+        /// Gets the value stored in the memory at the specified position.
+        /// </summary>
+        /// <param name="index">The index of the element.</param>
+        /// <returns>The value stored in the memory at the specified position.</returns>
+        /// <exception cref="NullPointerException">The pointer is 0.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Get(long index) => this[index];
 
         /// <summary>
         /// Sets the value stored in the memory identified by this pointer.
@@ -550,14 +551,22 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="value">The value to be stored in the memory.</param>
         /// <exception cref="NullPointerException">The pointer is 0.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe void Set(T value) => Value = value;
+        public void Set(T value) => Value = value;
+
+        /// <summary>
+        /// Sets the value at the specified position in the memory.
+        /// </summary>
+        /// <param name="value">The value to be stored in the memory.</param>
+        /// <param name="index">The index of the element to modify.</param>
+        /// <exception cref="NullPointerException">The pointer is 0.</exception>
+        public void Set(T value, long index) => this[index] = value;
 
         /// <summary>
         /// Gets enumerator over raw memory.
         /// </summary>
         /// <param name="length">A number of elements to iterate.</param>
         /// <returns>Iterator object.</returns>
-        public unsafe Enumerator GetEnumerator(long length) => new Enumerator(value, length);
+        public unsafe Enumerator GetEnumerator(long length) => IsNull ? default : new Enumerator(value, length);
 
         /// <summary>
         /// Computes bitwise equality between two blocks of memory.
@@ -572,7 +581,7 @@ namespace DotNext.Runtime.InteropServices
             else if (IsNull || other.IsNull)
                 return false;
             else
-                return Memory.Equals(value, other, count * Size);
+                return Memory.Equals(value, other, count * sizeof(T));
         }
 
         /// <summary>
@@ -582,7 +591,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe int BitwiseHashCode(long count, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode32(value, count * Size, salted);
+            => IsNull ? 0 : Memory.GetHashCode32(value, count * sizeof(T), salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -591,7 +600,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe long BitwiseHashCode64(long count, bool salted = true)
-            => IsNull ? 0L : Memory.GetHashCode64(value, count * Size, salted);
+            => IsNull ? 0L : Memory.GetHashCode64(value, count * sizeof(T), salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -613,7 +622,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe int BitwiseHashCode(long count, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode32(value, count * Size, hash, hashFunction, salted);
+            => IsNull ? 0 : Memory.GetHashCode32(value, count * sizeof(T), hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -624,7 +633,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe long BitwiseHashCode64(long count, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode64(value, count * Size, hash, hashFunction, salted);
+            => IsNull ? 0 : Memory.GetHashCode64(value, count * sizeof(T), hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -652,7 +661,7 @@ namespace DotNext.Runtime.InteropServices
             else if (other.IsNull)
                 throw new ArgumentNullException(nameof(other));
             else
-                return Memory.Compare(value, other, count * Size);
+                return Memory.Compare(value, other, count * sizeof(T));
         }
 
         /// <summary>
@@ -825,6 +834,13 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe implicit operator UIntPtr(Pointer<T> ptr) => new UIntPtr(ptr.value);
+
+        /// <summary>
+        /// Obtains pointer to the memory represented by given memory handle.
+        /// </summary>
+        /// <param name="handle">The memory handle.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static explicit operator Pointer<T>(in MemoryHandle handle) => new Pointer<T>(new IntPtr(handle.Pointer));
 
         /// <summary>
         /// Checks whether this pointer is not zero.

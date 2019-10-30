@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -6,6 +7,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    [ExcludeFromCodeCoverage]
     public sealed class AsyncExclusiveLockTests : Assert
     {
         [Fact]
@@ -37,9 +39,21 @@ namespace DotNext.Threading
                     @lock.Release();
                     task.SetResult(true);
                 });
-                are.WaitOne();
+                True(are.WaitOne(TimeSpan.FromMinutes(1)));
                 @lock.Release();
                 await task.Task;
+            }
+        }
+
+        [Fact]
+        public static void FailFastLock()
+        {
+            using (var @lock = new AsyncExclusiveLock())
+            {
+                True(@lock.TryAcquire());
+                True(@lock.IsLockHeld);
+                False(@lock.TryAcquire());
+                @lock.Release();
             }
         }
     }

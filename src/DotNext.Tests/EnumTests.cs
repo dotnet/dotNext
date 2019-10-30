@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext
 {
+    [ExcludeFromCodeCoverage]
     public sealed class EnumTests : Assert
     {
         [Fact]
@@ -13,6 +15,8 @@ namespace DotNext
             Equal(EnvironmentVariableTarget.Process, Enum<EnvironmentVariableTarget>.GetMember(nameof(EnvironmentVariableTarget.Process)));
             Equal(nameof(EnvironmentVariableTarget.User), Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.User).Name);
             Equal(nameof(EnvironmentVariableTarget.Process), default(Enum<EnvironmentVariableTarget>).Name);
+            Equal(typeof(int), Enum<EnvironmentVariableTarget>.UnderlyingType);
+            Equal(TypeCode.Int32, Enum<EnvironmentVariableTarget>.UnderlyingTypeCode);
         }
 
         [Fact]
@@ -50,6 +54,15 @@ namespace DotNext
             e2 = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.Process);
             False(e1 == e2);
             True(e1 != e2);
+        }
+
+        [Fact]
+        public static void MemberExistence()
+        {
+            True(Enum<EnvironmentVariableTarget>.IsDefined(EnvironmentVariableTarget.Process));
+            foreach (var member in Enum<EnvironmentVariableTarget>.Members)
+                True(Enum<EnvironmentVariableTarget>.IsDefined(member.Value));
+            False(Enum<EnvironmentVariableTarget>.IsDefined((EnvironmentVariableTarget)int.MaxValue));
         }
     }
 }

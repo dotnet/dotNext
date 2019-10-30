@@ -27,13 +27,41 @@ namespace DotNext.Threading
             internal void Write(in LargeStruct value) => this.value = value;
         }
 
+        private sealed class SpinLockContainer
+        {
+            private LargeStruct value;
+            private SpinLock spinLock;
+
+            internal SpinLockContainer() => spinLock = new SpinLock(false);
+
+            internal void Read(out LargeStruct result)
+            {
+                var lockTaken = false;
+                spinLock.Enter(ref lockTaken);
+                result = value;
+                if (lockTaken)
+                    spinLock.Exit(false);
+            }
+
+            internal void Write(in LargeStruct value)
+            {
+                var lockTaken = false;
+                spinLock.Enter(ref lockTaken);
+                this.value = value;
+                if (lockTaken)
+                    spinLock.Exit(false);
+            }
+        }
+
         private static Atomic<LargeStruct> VContainer = new Atomic<LargeStruct>();
         private static readonly SynchronizedContainer SContainer = new SynchronizedContainer();
+        private static readonly SpinLockContainer SLContainer = new SpinLockContainer();
 
         private static readonly LargeStruct Value = new LargeStruct { Field2 = Guid.NewGuid(), Field1 = Guid.NewGuid(), Field3 = Guid.NewGuid() };
 
         private Thread vRead1, vRead2, vWrite;
         private Thread sRead1, sRead2, sWrite;
+        private Thread lRead1, lRead2, lWrite;
 
         private static void VolatileRead()
         {
@@ -49,6 +77,13 @@ namespace DotNext.Threading
                 SContainer.Read(out value);
         }
 
+        private static void SpinLockRead()
+        {
+            LargeStruct value;
+            for (var i = 0; i < 10000; i++)
+                SLContainer.Read(out value);
+        }
+
         private static void VolatileWrite()
         {
             for (var i = 0; i < 1000; i++)
@@ -61,6 +96,12 @@ namespace DotNext.Threading
                 SContainer.Write(in Value);
         }
 
+        private static void SpinLockWrite()
+        {
+            for (var i = 0; i < 1000; i++)
+                SLContainer.Write(in Value);
+        }
+
         [IterationSetup]
         public void InitThreads()
         {
@@ -71,6 +112,10 @@ namespace DotNext.Threading
             vRead1 = new Thread(VolatileRead);
             vRead2 = new Thread(VolatileRead);
             vWrite = new Thread(VolatileWrite);
+
+            lRead1 = new Thread(SpinLockRead);
+            lRead2 = new Thread(SpinLockRead);
+            lWrite = new Thread(SpinLockWrite);
         }
 
         [Benchmark]
@@ -95,6 +140,18 @@ namespace DotNext.Threading
             vWrite.Join();
             vRead1.Join();
             vRead2.Join();
+        }
+
+        [Benchmark]
+        public void ReadWriteUsingSpinLock()
+        {
+            lWrite.Start();
+            lRead1.Start();
+            lRead2.Start();
+
+            lWrite.Join();
+            lRead1.Join();
+            lRead2.Join();
         }
     }
 }
