@@ -426,7 +426,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
                     return new Result<bool>(auditTrail.Term, true);
                 }
-            reject:
+                reject:
                 return new Result<bool>(auditTrail.Term, false);
             }
         }

@@ -9,7 +9,7 @@
         /// Automatically selects HTTP version.
         /// </summary>
         Auto = 0,
-        
+
         /// <summary>
         /// Use HTTP 1.1
         /// </summary>

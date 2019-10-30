@@ -1,11 +1,11 @@
 using System;
+using System.Collections;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
+using Debug = System.Diagnostics.Debug;
 using M = InlineIL.MethodRef;
 using Var = InlineIL.LocalVar;
-using Debug = System.Diagnostics.Debug;
-using System.Collections;
 
 namespace DotNext.Runtime
 {

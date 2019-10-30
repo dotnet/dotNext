@@ -129,7 +129,7 @@ namespace DotNext.Runtime.CompilerServices
 
         void IAsyncStateMachine.MoveNext()
         {
-        begin:
+            begin:
             try
             {
                 transition(ref this);
@@ -371,7 +371,7 @@ namespace DotNext.Runtime.CompilerServices
 
         void IAsyncStateMachine.MoveNext()
         {
-        begin:
+            begin:
             try
             {
                 transition(ref this);

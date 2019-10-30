@@ -109,7 +109,7 @@ namespace DotNext.Reflection
                 foreach (var candidate in lookup.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
                     if (candidate.GetBaseDefinition() == abstractMethod)
                         return candidate;
-                    exit:
+            exit:
             return null;
         }
 

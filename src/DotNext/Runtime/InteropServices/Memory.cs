@@ -727,7 +727,7 @@ namespace DotNext.Runtime.InteropServices
                 else
                     goto exit;
             result = true;
-        exit:
+            exit:
             return result;
         }
 
@@ -751,7 +751,7 @@ namespace DotNext.Runtime.InteropServices
                 else
                     goto exit;
             result = true;
-        exit:
+            exit:
             return result;
         }
 

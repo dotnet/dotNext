@@ -9,8 +9,8 @@ using Xunit;
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
-    using static Threading.Tasks.Synchronization;
     using static CodeGenerator;
+    using static Threading.Tasks.Synchronization;
     using U = Linq.Expressions.UniversalExpression;
 
     [ExcludeFromCodeCoverage]

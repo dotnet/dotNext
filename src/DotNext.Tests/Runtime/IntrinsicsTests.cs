@@ -85,7 +85,7 @@ namespace DotNext.Runtime
         }
 
         [Flags]
-        private enum ShortEnum: short
+        private enum ShortEnum : short
         {
             None = 0,
             One = 1,

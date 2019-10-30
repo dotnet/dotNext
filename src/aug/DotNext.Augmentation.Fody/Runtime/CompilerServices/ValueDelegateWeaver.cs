@@ -89,7 +89,7 @@ namespace DotNext.Runtime.CompilerServices
         internal static void Process(MethodBody body, Fody.TypeSystem typeLoader)
         {
             for (var instruction = body.Instructions[0]; instruction != null; instruction = instruction.Next)
-                if (instruction.OpCode.FlowControl == FlowControl.Call && instruction.Operand is MethodReference methodRef && methodRef.Name == ConstructorName && IsValueDelegate(methodRef.DeclaringType) && methodRef.Parameters.Count == 2 )
+                if (instruction.OpCode.FlowControl == FlowControl.Call && instruction.Operand is MethodReference methodRef && methodRef.Name == ConstructorName && IsValueDelegate(methodRef.DeclaringType) && methodRef.Parameters.Count == 2)
                     ReplaceValueDelegateConstruction(body.GetILProcessor(), methodRef, instruction, typeLoader);
         }
     }

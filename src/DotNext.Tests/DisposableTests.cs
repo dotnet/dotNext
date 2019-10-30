@@ -71,7 +71,7 @@ namespace DotNext
         [Fact]
         public static void QueueDispose()
         {
-            using(var resetEvent = new ManualResetEventSlim(false))
+            using (var resetEvent = new ManualResetEventSlim(false))
             {
                 var disposable = new DisposeCallback(resetEvent);
                 disposable.DisposeAsync();

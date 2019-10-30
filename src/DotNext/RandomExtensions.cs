@@ -3,8 +3,8 @@ using System.Security.Cryptography;
 
 namespace DotNext
 {
-    using CharBuffer = Buffers.MemoryRental<char>;
     using BytesRental = Buffers.ArrayRental<byte>;
+    using CharBuffer = Buffers.MemoryRental<char>;
 
     /// <summary>
     /// Provides random data generation.
