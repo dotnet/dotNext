@@ -139,6 +139,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile ICollection<TMember> members;
 
         private AsyncLock transitionSync;  //used to synchronize state transitions
+
+        [SuppressMessage("Usage", "CA2213", Justification = "It is disposed as a part of members collection")]
         private volatile RaftState state;
         private volatile TMember leader;
         private readonly bool allowPartitioning;
@@ -424,7 +426,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
                     return new Result<bool>(auditTrail.Term, true);
                 }
-            reject:
+                reject:
                 return new Result<bool>(auditTrail.Term, false);
             }
         }

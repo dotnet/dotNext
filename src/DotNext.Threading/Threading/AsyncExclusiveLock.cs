@@ -15,7 +15,7 @@ namespace DotNext.Threading
         {
             internal volatile bool IsAcquired;
 
-            bool ILockManager<WaitNode>.TryAcquire()
+            public bool TryAcquire()
             {
                 if (IsAcquired)
                     return false;
@@ -35,6 +35,13 @@ namespace DotNext.Threading
         /// Indicates that exclusive lock taken.
         /// </summary>
         public bool IsLockHeld => manager.IsAcquired;
+
+        /// <summary>
+        /// Attempts to obtain exclusive lock synchronously without blocking caller thread.
+        /// </summary>
+        /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool TryAcquire() => manager.TryAcquire();
 
         /// <summary>
         /// Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.

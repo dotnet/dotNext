@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -5,6 +6,7 @@ using Xunit;
 
 namespace DotNext.IO
 {
+    [ExcludeFromCodeCoverage]
     public sealed class StreamExtensionsTests : Assert
     {
         private static void ReadStringUsingEncoding(Encoding encoding, int bufferSize)
@@ -106,6 +108,17 @@ namespace DotNext.IO
             await ReadWriteStringUsingEncodingAsync(Encoding.UTF7, bufferSize);
             await ReadWriteStringUsingEncodingAsync(Encoding.UTF32, bufferSize);
             await ReadWriteStringUsingEncodingAsync(Encoding.ASCII, bufferSize);
+        }
+
+        [Fact]
+        public static void SynchronousCopying()
+        {
+            using (var source = new MemoryStream(new byte[] { 2, 4, 5 }))
+            using (var destination = new MemoryStream())
+            {
+                var buffer = new byte[2];
+                Equal(3L, source.CopyTo(destination, buffer));
+            }
         }
     }
 }

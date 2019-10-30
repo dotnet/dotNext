@@ -40,11 +40,18 @@ namespace DotNext
             //TODO: Should be rewritten for .NET Standard 2.1
             if (str.Length == 0)
                 return str;
-            var result = str.Length <= 1024 ? stackalloc char[str.Length] : new Span<char>(new char[str.Length]);
-            str.AsSpan().CopyTo(result);
-            result.Reverse();
-            fixed (char* ptr = result)
-                return new string(ptr, 0, result.Length);
+            MemoryRental<char> result = str.Length <= 1024 ? stackalloc char[str.Length] : new MemoryRental<char>(str.Length);
+            try
+            {
+                str.AsSpan().CopyTo(result.Span);
+                result.Span.Reverse();
+                fixed (char* ptr = result)
+                    return new string(ptr, 0, result.Length);
+            }
+            finally
+            {
+                result.Dispose();
+            }
         }
 
         /// <summary>

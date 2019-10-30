@@ -168,21 +168,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 using (var encodingBuffer = new ArrayRental<byte>(DefaultHttpEncoding.GetMaxByteCount(maxChars)))
                 {
                     //write start boundary
-                    await stream.WriteStringAsync(DoubleDash + boundary + CrLf, encodingContext, encodingBuffer).ConfigureAwait(false);
+                    await stream.WriteStringAsync(DoubleDash + boundary + CrLf, encodingContext, (byte[])encodingBuffer).ConfigureAwait(false);
                     encodingContext.Reset();
                     var builder = new StringBuilder(maxChars);
                     //write each nested content
                     var writeDivider = false;
                     foreach (var entry in entries)
                     {
-                        await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, encodingBuffer).ConfigureAwait(false);
+                        await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, (byte[])encodingBuffer).ConfigureAwait(false);
                         encodingContext.Reset();
                         Debug.Assert(builder.Length <= maxChars);
                         writeDivider = true;
                         await entry.CopyToAsync(stream).ConfigureAwait(false);
                     }
                     //write footer
-                    await stream.WriteStringAsync(CrLf + DoubleDash + boundary + DoubleDash + CrLf, encodingContext, encodingBuffer).ConfigureAwait(false);
+                    await stream.WriteStringAsync(CrLf + DoubleDash + boundary + DoubleDash + CrLf, encodingContext, (byte[])encodingBuffer).ConfigureAwait(false);
                 }
                 encodingContext.Reset();
             }

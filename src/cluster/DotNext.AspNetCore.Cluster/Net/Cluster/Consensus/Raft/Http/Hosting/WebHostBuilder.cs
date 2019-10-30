@@ -19,12 +19,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 
         internal WebHostBuilder()
         {
-            this.builder = new DefaultWebHostBuilder();
+            builder = new DefaultWebHostBuilder();
             isCustomBuilder = false;
         }
 
         internal IWebHostBuilder Configure(RaftHostedClusterMemberConfiguration memberConfig)
-            => isCustomBuilder ? this : builder.UseKestrel(options => options.ListenAnyIP(memberConfig.Port));
+            => isCustomBuilder ? this : builder.UseKestrel(memberConfig.ConfigureKestrel);
 
         public IWebHost Build() => builder.Build();
 

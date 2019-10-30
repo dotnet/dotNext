@@ -72,14 +72,16 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Result<O> TryInvoke<I, O>(this Converter<I, O> converter, I input)
         {
+            Result<O> result;
             try
             {
-                return converter(input);
+                result = converter(input);
             }
             catch (Exception e)
             {
-                return new Result<O>(e);
+                result = new Result<O>(e);
             }
+            return result;
         }
 
         /// <summary>

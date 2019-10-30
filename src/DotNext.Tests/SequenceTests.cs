@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Xunit;
 
 namespace DotNext
 {
+    [ExcludeFromCodeCoverage]
     public sealed class SequenceTests : Assert
     {
         private sealed class Counter<T>
@@ -94,6 +96,21 @@ namespace DotNext
             Equal(4, items.Count());
             Equal("One", items.First());
             Equal("Four", items.Last());
+        }
+
+        [Fact]
+        public static void Skip()
+        {
+            var range = Enumerable.Range(0, 10);
+            using (var enumerator = range.GetEnumerator())
+            {
+                True(enumerator.Skip(8));
+                True(enumerator.MoveNext());
+                Equal(8, enumerator.Current);
+                True(enumerator.MoveNext());
+                Equal(9, enumerator.Current);
+                False(enumerator.MoveNext());
+            }
         }
     }
 }

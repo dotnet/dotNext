@@ -1,36 +1,13 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
+using static System.Threading.Interlocked;
+using SpinWait = System.Threading.SpinWait;
 
 namespace DotNext.Threading
 {
     using static Runtime.InteropServices.Memory;
-
-    internal static class Atomic
-    {
-        //T should not be greater than maximum size of primitive type. For .NET Standard it is sizeof(long)
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static T Read<T>(ref T value)
-        {
-            Push(ref value);
-            Volatile();
-            Ldobj(typeof(T));
-            return Return<T>();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void Write<T>(ref T storage, T value)
-        {
-            Push(ref storage);
-            Push(value);
-            Volatile();
-            Stobj(typeof(T));
-            Ret();
-        }
-    }
 
     /// <summary>
     /// Provides atomic access to non-primitive data type.
@@ -42,6 +19,7 @@ namespace DotNext.Threading
     /// than synchronized methods according with benchmarks.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
+    [SuppressMessage("Performance", "CA1815", Justification = "This type is a container for atomic access and cannot be compared with other containers due to race conditions")]
     public struct Atomic<T> : IStrongBox, ICloneable
         where T : struct
     {
@@ -50,38 +28,33 @@ namespace DotNext.Threading
         /// </summary>
         /// <remarks>The atomic update action should side-effect free.</remarks>
         /// <param name="current">The value to update.</param>
-        /// <param name="newValue">The updated value.</param>
-        public delegate void Updater(in T current, out T newValue);
+        public delegate void Updater(ref T current);
 
         /// <summary>
         /// Represents atomic accumulator.
         /// </summary>
         /// <remarks>The atomic accumulator should side-effect free.</remarks>
         /// <param name="current">The value to update.</param>
-        /// <param name="x">The supplied value to be combined with the </param>
-        /// <param name="newValue">The accumulated value.</param>
-        public delegate void Accumulator(in T current, in T x, out T newValue);
+        /// <param name="x">The value to be combined with <paramref name="current"/>.</param>
+        public delegate void Accumulator(ref T current, in T x);
 
         private T value;
 
         private AtomicBoolean lockState;
+        private volatile int version;    //used for optimistic lock
 
         /// <summary>
-        /// Clones thic container atomically.
+        /// Clones this container atomically.
         /// </summary>
-        /// <param name="container">The memory location used to store cloned container.</param>
-        public void Clone(out Atomic<T> container)
+        /// <returns>The cloned container.</returns>
+        public Atomic<T> Clone()
         {
-            lockState.Acquire();
-            container = new Atomic<T> { value = value };
-            lockState.Release();
+            var result = new Atomic<T>();
+            Read(out result.value);
+            return result;
         }
 
-        object ICloneable.Clone()
-        {
-            Clone(out var container);
-            return container;
-        }
+        object ICloneable.Clone() => Clone();
 
         /// <summary>
         /// Performs atomic read.
@@ -89,9 +62,15 @@ namespace DotNext.Threading
         /// <param name="result">The result of atomic read.</param>
         public void Read(out T result)
         {
-            lockState.Acquire();
+            SpinWait spinner;
+            spin_loop:
+            var stamp = version;
             Copy(in value, out result);
-            lockState.Release();
+            if (stamp != version || lockState.Value)
+            {
+                spinner.SpinOnce();
+                goto spin_loop;
+            }
         }
 
         /// <summary>
@@ -104,6 +83,7 @@ namespace DotNext.Threading
         public void Swap(ref Atomic<T> other)
         {
             lockState.Acquire();
+            Increment(ref version);
             Swap(ref other.value);
             lockState.Release();
         }
@@ -115,6 +95,7 @@ namespace DotNext.Threading
         public void Swap(ref T other)
         {
             lockState.Acquire();
+            Increment(ref version);
             Runtime.InteropServices.Memory.Swap(ref value, ref other);
             lockState.Release();
         }
@@ -126,6 +107,7 @@ namespace DotNext.Threading
         public void Write(in T newValue)
         {
             lockState.Acquire();
+            Increment(ref version);
             Copy(in newValue, out value);
             lockState.Release();
         }
@@ -139,6 +121,7 @@ namespace DotNext.Threading
         public void CompareExchange(in T update, in T expected, out T result)
         {
             lockState.Acquire();
+            Increment(ref version);
             var current = value;
             if (BitwiseComparer<T>.Equals(current, expected))
                 Copy(in update, out value);
@@ -155,6 +138,7 @@ namespace DotNext.Threading
         public bool CompareAndSet(in T expected, in T update)
         {
             lockState.Acquire();
+            Increment(ref version);
             bool result;
             if (result = BitwiseComparer<T>.Equals(value, expected))
                 Copy(in update, out value);
@@ -170,21 +154,10 @@ namespace DotNext.Threading
         public void Exchange(in T update, out T previous)
         {
             lockState.Acquire();
+            Increment(ref version);
             Copy(in value, out previous);
             Copy(in update, out value);
             lockState.Release();
-        }
-
-        private void Update(Updater updater, out T result, bool newValueExpected)
-        {
-            T newValue, oldValue;
-            do
-            {
-                Read(out oldValue);
-                updater(oldValue, out newValue);
-            }
-            while (!CompareAndSet(in oldValue, in newValue));
-            result = newValueExpected ? newValue : oldValue;
         }
 
         /// <summary>
@@ -192,8 +165,23 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <param name="result">The updated value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
         public void UpdateAndGet(Updater updater, out T result)
-            => Update(updater, out result, true);
+        {
+            if (updater is null)
+                throw new ArgumentNullException(nameof(updater));
+            lockState.Acquire();
+            Increment(ref version);
+            try
+            {
+                updater(ref value);
+                Copy(in value, out result);
+            }
+            finally
+            {
+                lockState.Release();
+            }
+        }
 
         /// <summary>
         /// Atomically updates the stored value with the results 
@@ -201,19 +189,23 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="updater">A side-effect-free function</param>
         /// <param name="result">The original value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
         public void GetAndUpdate(Updater updater, out T result)
-            => Update(updater, out result, false);
-
-        private void Accumulate(in T x, Accumulator accumulator, out T result, bool newValueExpected)
         {
-            T oldValue, newValue;
-            do
+            if (updater is null)
+                throw new ArgumentNullException(nameof(updater));
+            lockState.Acquire();
+            Increment(ref version);
+            var previous = value;
+            try
             {
-                Read(out oldValue);
-                accumulator(oldValue, x, out newValue);
+                updater(ref value);
+                Copy(in previous, out result);
             }
-            while (!CompareAndSet(oldValue, newValue));
-            result = newValueExpected ? newValue : oldValue;
+            finally
+            {
+                lockState.Release();
+            }
         }
 
         /// <summary>
@@ -226,8 +218,23 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <param name="result">The updated value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
         public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
-            => Accumulate(x, accumulator, out result, true);
+        {
+            if (accumulator is null)
+                throw new ArgumentNullException(nameof(accumulator));
+            lockState.Acquire();
+            Increment(ref version);
+            try
+            {
+                accumulator(ref value, in x);
+                Copy(in value, out result);
+            }
+            finally
+            {
+                lockState.Release();
+            }
+        }
 
         /// <summary>
         /// Atomically updates the stored value with the results of applying the given function 
@@ -239,8 +246,24 @@ namespace DotNext.Threading
         /// <param name="x">Accumulator operand.</param>
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <param name="result">The original value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
         public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
-            => Accumulate(x, accumulator, out result, false);
+        {
+            if (accumulator is null)
+                throw new ArgumentNullException(nameof(accumulator));
+            lockState.Acquire();
+            Increment(ref version);
+            var previous = value;
+            try
+            {
+                accumulator(ref value, in x);
+                Copy(in previous, out result);
+            }
+            finally
+            {
+                lockState.Release();
+            }
+        }
 
         /// <summary>
         /// Gets or sets value atomically.

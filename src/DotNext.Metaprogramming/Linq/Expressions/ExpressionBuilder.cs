@@ -1221,7 +1221,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>The expression representing statically typed referenced.</returns>
         public static RefAnyValExpression RefAnyVal(this ParameterExpression typedRef, Type referenceType)
             => new RefAnyValExpression(typedRef, referenceType);
-        
+
         /// <summary>
         /// Creates a new expression that is equal to <c>refanyval</c> IL instruction.
         /// </summary>

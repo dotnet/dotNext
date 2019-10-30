@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
@@ -15,8 +16,11 @@ namespace DotNext.Threading
     public class AsyncReaderWriterLock : QueuedSynchronizer
     {
         //describes internal state of reader/writer lock
-        private sealed class State
+        internal sealed class State
         {
+            private long version;  //version of write lock
+
+            //number of acquired read locks
             internal long ReadLocks;
             /*
              * writeLock = false, upgradeable = false: regular read lock
@@ -26,6 +30,81 @@ namespace DotNext.Threading
              */
             internal volatile bool WriteLock;
             internal volatile bool Upgradeable;
+
+            internal State() => version = long.MinValue;
+
+            internal long Version => version.VolatileRead();
+
+            internal void IncrementVersion() => version.IncrementAndGet();
+        }
+
+        /// <summary>
+        /// Represents lock stamp used for optimistic reading.
+        /// </summary>
+        [StructLayout(LayoutKind.Auto)]
+        public readonly struct LockStamp : IEquatable<LockStamp>
+        {
+            private readonly long version;
+            private readonly State state;
+
+            internal LockStamp(State state)
+            {
+                version = state.Version;
+                this.state = state;
+            }
+
+            /// <summary>
+            /// Determines whether the version of internal lock state is not outdated.
+            /// </summary>
+            public bool IsValid => state != null && state.Version == version;
+
+            /// <summary>
+            /// Determines whether this stamp represents the same version of the lock state
+            /// as the given stamp.
+            /// </summary>
+            /// <param name="other">The lock stamp to compare.</param>
+            /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+            public bool Equals(LockStamp other) => ReferenceEquals(state, other.state) && version == other.version;
+
+            /// <summary>
+            /// Determines whether this stamp represents the same version of the lock state
+            /// as the given stamp.
+            /// </summary>
+            /// <param name="other">The lock stamp to compare.</param>
+            /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
+            public override bool Equals(object other) => other is LockStamp stamp && Equals(stamp);
+
+            /// <summary>
+            /// Computes hash code for this stamp.
+            /// </summary>
+            /// <returns>The hash code of this stamp.</returns>
+            public override int GetHashCode()
+            {
+                var hashCode = 1717085722;
+                hashCode = hashCode * -1521134295 + version.GetHashCode();
+                hashCode = hashCode * -1521134295 + RuntimeHelpers.GetHashCode(state);
+                return hashCode;
+            }
+
+            /// <summary>
+            /// Determines whether the first stamp represents the same version of the lock state
+            /// as the second stamp.
+            /// </summary>
+            /// <param name="first">The first lock stamp to compare.</param>
+            /// <param name="second">The second lock stamp to compare.</param>
+            /// <returns><see langword="true"/> of <paramref name="first"/> stamp is equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
+            public static bool operator ==(in LockStamp first, in LockStamp second)
+                => ReferenceEquals(first.state, second.state) && first.version == second.version;
+
+            /// <summary>
+            /// Determines whether the first stamp represents the different version of the lock state
+            /// as the second stamp.
+            /// </summary>
+            /// <param name="first">The first lock stamp to compare.</param>
+            /// <param name="second">The second lock stamp to compare.</param>
+            /// <returns><see langword="true"/> of <paramref name="first"/> stamp is not equal to <paramref name="second"/>; otherwise, <see langword="false"/>.</returns>
+            public static bool operator !=(in LockStamp first, in LockStamp second)
+                => !ReferenceEquals(first.state, second.state) || first.version != second.version;
         }
 
         private sealed class WriteLockNode : WaitNode
@@ -39,13 +118,14 @@ namespace DotNext.Threading
 
                 WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
 
-                bool ILockManager<WriteLockNode>.TryAcquire()
+                public bool TryAcquire()
                 {
                     if (state.WriteLock || state.ReadLocks > 1L)
                         return false;
                     else if (state.ReadLocks == 0L || state.ReadLocks == 1L && state.Upgradeable)    //no readers or single upgradeable read lock
                     {
                         state.WriteLock = true;
+                        state.IncrementVersion();
                         return true;
                     }
                     else
@@ -68,7 +148,7 @@ namespace DotNext.Threading
 
                 ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode node) => node is null ? new ReadLockNode(false) : new ReadLockNode(node, false);
 
-                bool ILockManager<ReadLockNode>.TryAcquire()
+                public bool TryAcquire()
                 {
                     if (state.WriteLock)
                         return false;
@@ -89,7 +169,7 @@ namespace DotNext.Threading
 
                 ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode node) => node is null ? new ReadLockNode(true) : new ReadLockNode(node, true);
 
-                bool ILockManager<ReadLockNode>.TryAcquire()
+                public bool TryAcquire()
                 {
                     if (state.WriteLock || state.Upgradeable)
                         return false;
@@ -154,6 +234,29 @@ namespace DotNext.Threading
         public bool IsWriteLockHeld => state.WriteLock;
 
         /// <summary>
+        /// Returns a stamp that can be validated later.
+        /// </summary>
+        /// <returns>Optimistic read stamp. May be invalid.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public LockStamp TryOptimisticRead()
+            => state.WriteLock ? new LockStamp() : new LockStamp(state);
+
+        /// <summary>
+        /// Attempts to acquire write lock without blocking.
+        /// </summary>
+        /// <param name="stamp">The stamp of the read lock.</param>
+        /// <returns><see langword="true"/> if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool TryEnterWriteLock(in LockStamp stamp) => stamp.IsValid && writeLock.TryAcquire();
+
+        /// <summary>
+        /// Attempts to obtain reader lock synchronously without blocking caller thread.
+        /// </summary>
+        /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool TryEnterReadLock() => readLock.TryAcquire();
+
+        /// <summary>
         /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
         /// </summary>
         /// <param name="timeout">The interval to wait for the lock.</param>
@@ -204,6 +307,13 @@ namespace DotNext.Threading
             => Wait(ref writeLock, timeout, token);
 
         /// <summary>
+        /// Attempts to obtain writer lock synchronously without blocking caller thread.
+        /// </summary>
+        /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool TryEnterWriteLock() => writeLock.TryAcquire();
+
+        /// <summary>
         /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
         /// </summary>
         /// <param name="timeout">The interval to wait for the lock.</param>
@@ -241,6 +351,13 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryEnterUpgradeableReadLock(TimeSpan timeout, CancellationToken token)
             => Wait(ref upgradeableLock, timeout, token);
+
+        /// <summary>
+        /// Attempts to obtain upgradeable reader lock synchronously without blocking caller thread.
+        /// </summary>
+        /// <returns><see langword="true"/> if lock is taken successfuly; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public bool TryEnterUpgradeableReadLock() => upgradeableLock.TryAcquire();
 
         /// <summary>
         /// Tries to enter the lock in upgradeable mode asynchronously, with an optional time-out.

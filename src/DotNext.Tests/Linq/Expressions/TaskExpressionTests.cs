@@ -1,9 +1,11 @@
-﻿using System.Linq.Expressions;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Linq.Expressions
 {
+    [ExcludeFromCodeCoverage]
     public sealed class TaskExpressionTests : Assert
     {
         [Fact]

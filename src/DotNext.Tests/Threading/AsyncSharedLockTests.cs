@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Threading
 {
+    [ExcludeFromCodeCoverage]
     public sealed class AsyncSharedLockTests : Assert
     {
         [Fact]
@@ -12,6 +14,7 @@ namespace DotNext.Threading
         {
             using (var sharedLock = new AsyncSharedLock(3))
             {
+                Equal(3, sharedLock.ConcurrencyLevel);
                 True(await sharedLock.TryAcquire(false, TimeSpan.Zero));
                 True(await sharedLock.TryAcquire(false, TimeSpan.Zero));
                 Equal(1, sharedLock.RemainingCount);
@@ -47,7 +50,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static async Task WeakToStringLockTransition()
+        public static async Task WeakToStrongLockTransition()
         {
             using (var acquireEvent = new AsyncCountdownEvent(3L))
             using (var sharedLock = new AsyncSharedLock(3))
@@ -56,7 +59,7 @@ namespace DotNext.Threading
                 AcquireWeakLockAndRelease(sharedLock, acquireEvent);
                 AcquireWeakLockAndRelease(sharedLock, acquireEvent);
                 await acquireEvent.Wait();
-                await sharedLock.Acquire(true, TimeSpan.FromSeconds(1));
+                await sharedLock.Acquire(true, TimeSpan.FromMinutes(1));
 
                 Equal(0, sharedLock.RemainingCount);
             }
@@ -78,8 +81,41 @@ namespace DotNext.Threading
                 AcquireWeakLock(sharedLock, acquireEvent);
                 AcquireWeakLock(sharedLock, acquireEvent);
                 sharedLock.Release();
-                True(await acquireEvent.Wait(TimeSpan.FromSeconds(1)));
+                True(await acquireEvent.Wait(TimeSpan.FromMinutes(1)));
                 Equal(1, sharedLock.RemainingCount);
+            }
+        }
+
+        [Fact]
+        public static void FailFastLock()
+        {
+            using (var sharedLock = new AsyncSharedLock(3))
+            {
+                True(sharedLock.TryAcquire(false));
+                True(sharedLock.TryAcquire(false));
+                True(sharedLock.TryAcquire(false));
+                False(sharedLock.TryAcquire(true));
+                False(sharedLock.TryAcquire(false));
+                sharedLock.Release();
+                sharedLock.Release();
+                sharedLock.Release();
+                True(sharedLock.TryAcquire(true));
+                False(sharedLock.TryAcquire(false));
+            }
+        }
+
+        [Fact]
+        public void DowngradeFromStrongToWeakLock()
+        {
+            using (var sharedLock = new AsyncSharedLock(3))
+            {
+                True(sharedLock.TryAcquire(true));
+                Equal(0, sharedLock.RemainingCount);
+                False(sharedLock.TryAcquire(false));
+                sharedLock.Downgrade();
+                Equal(2, sharedLock.RemainingCount);
+                sharedLock.Release();
+                Equal(3, sharedLock.RemainingCount);
             }
         }
     }

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Xunit;
 
 namespace DotNext
 {
+    [ExcludeFromCodeCoverage]
     public sealed class ValueTypeTests : Assert
     {
         [Fact]
@@ -27,6 +29,13 @@ namespace DotNext
             Equal(new IntPtr(20), value.Divide(new IntPtr(2)));
             Equal(new IntPtr(40 ^ 234), value.Xor(new IntPtr(234)));
             Equal(new IntPtr(-40), value.Negate());
+        }
+
+        [Require64BitProcess]
+        public static void IntPtrArithmeticOverflow()
+        {
+            var value = new IntPtr(long.MaxValue);
+            Throws<OverflowException>(() => value.AddChecked(new IntPtr(1)));
         }
 
         [Fact]
@@ -71,9 +80,9 @@ namespace DotNext
         {
             var value1 = (new Point { X = 10, Y = 20 }, new Point { X = 15, Y = 20 });
             var value2 = (new Point { X = 10, Y = 20 }, new Point { X = 15, Y = 30 });
-            False(BitwiseComparer<Point>.Equals(value1, value2));
+            False(BitwiseComparer<(Point, Point)>.Equals(value1, value2));
             value2.Item2.Y = 20;
-            True(BitwiseComparer<Point>.Equals(value1, value2));
+            True(BitwiseComparer<(Point, Point)>.Equals(value1, value2));
         }
 
         [Fact]
@@ -117,6 +126,36 @@ namespace DotNext
         public static void BitwiseCompare()
         {
             True(BitwiseComparer<int>.Compare(0, int.MinValue) < 0);
+        }
+
+        [Fact]
+        public static void NormalNumberCheckForSingle()
+        {
+            var value = default(float);
+            Equal(default, value.EnsureFinite());
+            value = 42F;
+            Equal(42F, value.EnsureFinite());
+            value = float.NaN;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
+            value = float.PositiveInfinity;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
+            value = float.NegativeInfinity;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
+        }
+
+        [Fact]
+        public static void NormalNumberCheckForDouble()
+        {
+            var value = default(double);
+            Equal(default, value.EnsureFinite());
+            value = 42D;
+            Equal(42D, value.EnsureFinite());
+            value = double.NaN;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
+            value = double.PositiveInfinity;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
+            value = double.NegativeInfinity;
+            ThrowsAny<ArithmeticException>(() => value.EnsureFinite());
         }
     }
 }

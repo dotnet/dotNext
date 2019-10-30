@@ -143,7 +143,7 @@ namespace DotNext.Buffers
                 {
                     token.ThrowIfCancellationRequested();
                     segment.CopyTo(array.Memory);
-                    await output.WriteAsync(array, 0, segment.Length, token).ConfigureAwait(false);
+                    await output.WriteAsync((byte[])array, 0, segment.Length, token).ConfigureAwait(false);
                 }
         }
 
@@ -162,7 +162,7 @@ namespace DotNext.Buffers
                 {
                     token.ThrowIfCancellationRequested();
                     segment.CopyTo(array.Memory);
-                    await output.WriteAsync(array, 0, segment.Length).ConfigureAwait(false);
+                    await output.WriteAsync((char[])array, 0, segment.Length).ConfigureAwait(false);
                 }
         }
     }

@@ -4,10 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    [ExcludeFromCodeCoverage]
     public abstract class ClusterMemberTest : Assert
     {
 
@@ -22,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     else
                         options.ListenAnyIP(port);
                 })
-                .UseShutdownTimeout(TimeSpan.FromHours(1))
+                .UseShutdownTimeout(TimeSpan.FromMinutes(2))
                 .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
                 .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                 .ConfigureServices(services =>

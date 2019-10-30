@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -6,6 +7,7 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    [ExcludeFromCodeCoverage]
     public sealed class AsyncReaderWriterLockTests : Assert
     {
         [Fact]
@@ -129,6 +131,25 @@ namespace DotNext.Threading
                 are.WaitOne();
                 rwLock.ExitWriteLock();
                 await task.Task;
+            }
+        }
+
+        [Fact]
+        public static void OptimisticRead()
+        {
+            using (var rwLock = new AsyncReaderWriterLock())
+            {
+                var stamp = rwLock.TryOptimisticRead();
+                True(stamp.IsValid);
+                True(rwLock.TryEnterReadLock());
+                Equal(1, rwLock.CurrentReadCount);
+                True(stamp.IsValid);
+                rwLock.ExitReadLock();
+                Equal(stamp, rwLock.TryOptimisticRead());
+                True(rwLock.TryEnterWriteLock());
+                False(rwLock.IsReadLockHeld);
+                True(rwLock.IsWriteLockHeld);
+                False(stamp.IsValid);
             }
         }
     }

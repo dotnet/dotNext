@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text;
@@ -10,6 +11,7 @@ namespace DotNext.Net.Cluster.Messaging
 {
     using Buffers;
 
+    [ExcludeFromCodeCoverage]
     public sealed class MessageTests : Assert
     {
         [Fact]

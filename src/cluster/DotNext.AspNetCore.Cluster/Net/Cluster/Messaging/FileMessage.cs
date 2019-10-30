@@ -22,6 +22,7 @@ namespace DotNext.Net.Cluster.Messaging
 
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
+            //TODO: Should be rewritten for .NET Standard 2.1
             using (var message = output.AsStream(true))
                 await CopyToAsync(message, BufferSize, token).ConfigureAwait(false);
         }

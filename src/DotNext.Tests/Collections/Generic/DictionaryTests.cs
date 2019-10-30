@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Collections.Generic
 {
+    [ExcludeFromCodeCoverage]
     public sealed class DictionaryTests : Assert
     {
         [Fact]
@@ -34,9 +37,9 @@ namespace DotNext.Collections.Generic
         }
 
         [Fact]
-        public void ConversionTest()
+        public static void ConversionTest()
         {
-            var dict = new Dictionary<string, int>()
+            var dict = new Dictionary<string, int>
             {
                 {"a", 1 },
                 {"b", 2 }
@@ -44,6 +47,27 @@ namespace DotNext.Collections.Generic
             var view = dict.ConvertValues(i => i + 10);
             Equal(11, view["a"]);
             Equal(12, view["b"]);
+        }
+
+        [Fact]
+        public static void ReadOnlyView()
+        {
+            var dict = new Dictionary<string, string>
+            {
+                {"one", "1" },
+                {"two", "2" }
+            };
+            var view = new ReadOnlyDictionaryView<string, string, int>(dict, new ValueFunc<string, int>(int.Parse));
+            Equal(1, view["one"]);
+            Equal(2, view["two"]);
+            True(view.TryGetValue("one", out var i));
+            Equal(1, i);
+            False(view.TryGetValue("three", out i));
+            False(view.ContainsKey("three"));
+            True(view.ContainsKey("two"));
+            foreach (var (key, value) in view)
+                if (!value.Between(0, 2, BoundType.Closed))
+                    throw new Exception();
         }
     }
 }

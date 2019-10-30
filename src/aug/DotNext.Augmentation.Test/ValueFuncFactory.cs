@@ -1,5 +1,8 @@
-﻿namespace DotNext
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace DotNext
 {
+    [ExcludeFromCodeCoverage]
     public static class ValueFuncFactory
     {
         private static ulong Sum(ulong x, ulong y) => x + y;

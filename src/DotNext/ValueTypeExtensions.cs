@@ -90,7 +90,6 @@ namespace DotNext
         public static int ToInt32(this bool value)
         {
             Push(value);
-            Conv_I4();
             return Return<int>();
         }
 
@@ -98,7 +97,7 @@ namespace DotNext
         /// Converts <see cref="int"/> into <see cref="bool"/>.
         /// </summary>
         /// <param name="value">The value to convert.</param>
-        /// <returns><see langword="true"/> if value != 0</returns>
+        /// <returns><see langword="true"/> if <c>value != 0</c>; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool ToBoolean(this int value) => value != 0;
 
@@ -637,5 +636,35 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static UIntPtr Decrement(this UIntPtr value) => Subtract(value, new UIntPtr(1));
+
+        /// <summary>
+        /// Throws <see cref="ArithmeticException"/> if the value
+        /// is "not a number" (NaN), positive or negative infinity.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        /// <returns>The value that is equal to <paramref name="value"/>.</returns>
+        /// <exception cref="ArithmeticException"><paramref name="value"/> is not a number.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float EnsureFinite(this float value)
+        {
+            Push(value);
+            Ckfinite();
+            return Return<float>();
+        }
+
+        /// <summary>
+        /// Throws <see cref="ArithmeticException"/> if the value
+        /// is "not a number" (NaN), positive or negative infinity.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        /// <returns>The value that is equal to <paramref name="value"/>.</returns>
+        /// <exception cref="ArithmeticException"><paramref name="value"/> is not a number.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static double EnsureFinite(this double value)
+        {
+            Push(value);
+            Ckfinite();
+            return Return<double>();
+        }
     }
 }

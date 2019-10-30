@@ -1,8 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
+using static InlineIL.IL;
+using MR = InlineIL.MethodRef;
+using TR = InlineIL.TypeRef;
+using Var = InlineIL.LocalVar;
 
 namespace DotNext.Threading
 {
@@ -26,7 +31,26 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static E VolatileRead<E>(this ref E value)
             where E : struct, Enum
-            => Atomic.Read(ref value);
+        {
+            const string resultVar = "result";
+            const string nonFastPath = "nonFastPath";
+            DeclareLocals(false, new Var(resultVar, typeof(long)));
+            Push(ref value);
+            Emit.Sizeof(typeof(E));
+            Emit.Ldc_I4_8();
+            Emit.Beq(nonFastPath);
+            //fast path - use volatile read instruction
+            Emit.Volatile();
+            Emit.Ldobj(typeof(E));
+            Emit.Ret();
+            //non-fast path - use Volatile class
+            MarkLabel(nonFastPath);
+            Emit.Call(new MR(typeof(Volatile), nameof(Volatile.Read), new TR(typeof(long)).MakeByRefType()));
+            Emit.Stloc(resultVar);
+            Emit.Ldloca(resultVar);
+            Emit.Ldobj(typeof(E));
+            return Return<E>();
+        }
 
         /// <summary>
         /// Writes the specified value to the specified field. On systems that require it,
@@ -42,7 +66,24 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite<E>(this ref E value, E newValue)
             where E : struct, Enum
-            => Atomic.Write(ref value, newValue);
+        {
+            const string nonFastPath = "nonFastPath";
+            Push(ref value);
+            Emit.Sizeof(typeof(E));
+            Emit.Ldc_I4_8();
+            Emit.Beq(nonFastPath);
+            //fast path - use volatile write instruction
+            Push(newValue);
+            Emit.Volatile();
+            Emit.Stobj(typeof(E));
+            Emit.Ret();
+            //non-fast path - use Volatile class
+            MarkLabel(nonFastPath);
+            Push(ref newValue);
+            Emit.Ldind_I8();
+            Emit.Call(new MR(typeof(Volatile), nameof(Volatile.Write), new TR(typeof(long)).MakeByRefType(), typeof(long)));
+            Emit.Ret();
+        }
     }
 
     /// <summary>
@@ -98,7 +139,7 @@ namespace DotNext.Threading
         /// <param name="update">The new value.</param>
         /// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool CompareAndSet(E expected, E update) => Atomic<E>.Equals(CompareExchange(update, expected), expected);
+        public bool CompareAndSet(E expected, E update) => EqualityComparer<E>.Default.Equals(CompareExchange(update, expected), expected);
 
         /// <summary>
 		/// Modifies the current value atomically.
@@ -125,7 +166,7 @@ namespace DotNext.Threading
             E oldValue, newValue;
             do
             {
-                newValue = updater.Invoke(oldValue = Atomic.Read(ref value).ToEnum<E>());
+                newValue = updater.Invoke(oldValue = Volatile.Read(ref value).ToEnum<E>());
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);
@@ -136,7 +177,7 @@ namespace DotNext.Threading
             E oldValue, newValue;
             do
             {
-                newValue = accumulator.Invoke(oldValue = Atomic.Read(ref value).ToEnum<E>(), x);
+                newValue = accumulator.Invoke(oldValue = Volatile.Read(ref value).ToEnum<E>(), x);
             }
             while (!CompareAndSet(oldValue, newValue));
             return (oldValue, newValue);

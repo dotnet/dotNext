@@ -1,5 +1,7 @@
 .NEXT
 ====
+[![Build Status](https://dev.azure.com/rvsakno/dotNext/_apis/build/status/sakno.dotNext?branchName=master)](https://dev.azure.com/rvsakno/dotNext/_build/latest?definitionId=1&branchName=master)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sakno/dotNext/blob/master/LICENSE)
 
 .NEXT (dotNext) is a set of powerful libaries aimed to improve development productivity and extend .NET API with unique features. Some of these features are planned in future releases of .NET platform but already implemented in the library:
 
@@ -36,34 +38,49 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-12-2019
+Release Date: 10-31-2019
 
-<a href="https://www.nuget.org/packages/dotnext/1.1.0">DotNext 1.1.0</a>
-* Reduced number of inline IL code
-* Updated version of FxCop analyzer
-* [ReaderWriterSpinLock](https://sakno.github.io/dotNext/api/DotNext.Threading.ReaderWriterSpinLock.html) type is introduced
-* Improved performance of [UserDataStorage](https://sakno.github.io/dotNext/api/DotNext.UserDataStorage.html)
+<a href="https://www.nuget.org/packages/dotnext/1.2.0">DotNext 1.2.0</a>
+* Fixed memory leaks caused by methods in [StreamExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.StreamExtensions.html) class
+* [MemoryRental](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryRental-1.html) type is introduced to replace memory allocation with memory rental in some scenarios
+* [ArrayRental](https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html) type is extended
+* Value Delegates now are protected from _dangling pointer_ issue caused by dynamic assembly loading 
+* Reduced amount of memory utilized by random string generation methods
+* Strict package versioning rules are added to avoid accidental upgrade to major version
+* Improved performance of [AtomicEnum](https://sakno.github.io/dotNext/api/DotNext.Threading.AtomicEnum.html) methods
+* Improved performance of [Atomic&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Threading.Atomic-1.html) using optimistic read locks
+* Fixed unnecessary boxing in atomic operations
+* `Intrinsics.HasFlag` static generic method is added as boxing-free and fast alternative to [Enum.HasFlag](https://docs.microsoft.com/en-us/dotnet/api/system.enum.hasflag?view=netcore-2.2#System_Enum_HasFlag_System_Enum_) method
 
-<a href="https://www.nuget.org/packages/dotnext.reflection/1.1.0">DotNext.Reflection 1.1.0</a>
-* Updated version of FxCop analyzer
-* Improved performance of internal caches
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.2.0">DotNext.Reflection 1.2.0</a>
+* Updated version of `DotNext` dependency to fix potential memory leaks
+* Strict package versioning rules are added to avoid accidental upgrade to major version
 
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.1.0">DotNext.Metaprogramming 1.1.0</a>
-* Updated version of FxCop analyzer
-* `RefAnyValExpression` is added
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.2.0">DotNext.Metaprogramming 1.2.0</a>
+* Updated version of `DotNext` dependency to fix potential memory leaks
+* Strict package versioning rules are added to avoid accidental upgrade to major version
 
-<a href="https://www.nuget.org/packages/dotnext.threading/1.1.0">DotNext.Threading 1.1.0</a>
-* Updated version of FxCop analyzer
+<a href="https://www.nuget.org/packages/dotnext.threading/1.2.0">DotNext.Threading 1.2.0</a>
+* Updated version of `DotNext` dependency to fix potential memory leaks
+* Strict package versioning rules are added to avoid accidental upgrade to major version
+* [AsyncReaderWriterLock](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncReaderWriterLock.html) now supports optimistic reads
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/1.1.0">DotNext.Unsafe 1.1.0</a>
-* Updated version of FxCop analyzer
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.0">DotNext.Unsafe 1.2.0</a>
+* [UnmanagedMemoryPool](https://sakno.github.io/dotNext/api/DotNext.Buffers.UnmanagedMemoryPool-1.html) is added
+* Strict package versioning rules are added to avoid accidental upgrade to major version
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.1.0">DotNext.Net.Cluster 1.1.0</a>
-* Minor performance optimizations of persistent WAL
-* Updated version of FxCop analyzer
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.0">DotNext.Net.Cluster 1.2.0</a>
+* Updated version of `DotNext` dependency to fix potential memory leaks
+* Strict package versioning rules are added to avoid accidental upgrade to major version
+* Fixed incorrect computation of partition in `PersistentState.DropAsync` method
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.1.0">DotNext.AspNetCore.Cluster 1.1.0</a>
-* Updated version of FxCop analyzer
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.0">DotNext.AspNetCore.Cluster 1.2.0</a>
+* HTTP/2 support
+* Performance optimizations caused by changes in `ArrayRental` type
+* Strict package versioning rules are added to avoid accidental upgrade to major version
+
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.2.0">DotNext.Augmentation.Fody 1.2.0</a>
+* Improved support of `ValueRefAction` and `ValueRefFunc` value delegates
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
