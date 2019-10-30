@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 10-30-2019
+# 10-31-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.0">DotNext 1.2.0</a>
 * Fixed memory leaks caused by methods in [StreamExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.StreamExtensions.html) class
 * [MemoryRental](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryRental-1.html) type is introduced to replace memory allocation with memory rental in some scenarios

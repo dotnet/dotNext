@@ -38,7 +38,7 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 10-30-2019
+Release Date: 10-31-2019
 
 <a href="https://www.nuget.org/packages/dotnext/1.2.0">DotNext 1.2.0</a>
 * Fixed memory leaks caused by methods in [StreamExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.StreamExtensions.html) class
