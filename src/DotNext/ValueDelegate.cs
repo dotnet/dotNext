@@ -2588,9 +2588,9 @@ namespace DotNext
         object ICallable.DynamicInvoke(params object[] args)
         {
             var reference = (T)args[0];
-            Invoke(ref reference, (TArgs)args[1]);
+            var result = Invoke(ref reference, (TArgs)args[1]);
             args[0] = reference;
-            return null;
+            return result;
         }
 
         /// <summary>
