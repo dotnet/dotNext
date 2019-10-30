@@ -309,6 +309,24 @@ references:
   fullName.vb: DotNext.Buffers.ArrayRental(Of T)
   nameWithType: ArrayRental<T>
   nameWithType.vb: ArrayRental(Of T)
+- uid: DotNext.Buffers.ArrayRental`1.#ctor(`0[])
+  name: ArrayRental(T[])
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1__ctor__0___
+  commentId: M:DotNext.Buffers.ArrayRental`1.#ctor(`0[])
+  name.vb: ArrayRental(T())
+  fullName: DotNext.Buffers.ArrayRental<T>.ArrayRental(T[])
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).ArrayRental(T())
+  nameWithType: ArrayRental<T>.ArrayRental(T[])
+  nameWithType.vb: ArrayRental(Of T).ArrayRental(T())
+- uid: DotNext.Buffers.ArrayRental`1.#ctor(`0[],System.Int32)
+  name: ArrayRental(T[], Int32)
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1__ctor__0___System_Int32_
+  commentId: M:DotNext.Buffers.ArrayRental`1.#ctor(`0[],System.Int32)
+  name.vb: ArrayRental(T(), Int32)
+  fullName: DotNext.Buffers.ArrayRental<T>.ArrayRental(T[], System.Int32)
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).ArrayRental(T(), System.Int32)
+  nameWithType: ArrayRental<T>.ArrayRental(T[], Int32)
+  nameWithType.vb: ArrayRental(Of T).ArrayRental(T(), Int32)
 - uid: DotNext.Buffers.ArrayRental`1.#ctor(System.Buffers.ArrayPool{`0},System.Int32,System.Boolean)
   name: ArrayRental(ArrayPool<T>, Int32, Boolean)
   href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1__ctor_System_Buffers_ArrayPool__0__System_Int32_System_Boolean_
@@ -387,6 +405,23 @@ references:
   fullName.vb: DotNext.Buffers.ArrayRental(Of T).Item
   nameWithType: ArrayRental<T>.Item
   nameWithType.vb: ArrayRental(Of T).Item
+- uid: DotNext.Buffers.ArrayRental`1.Length
+  name: Length
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Length
+  commentId: P:DotNext.Buffers.ArrayRental`1.Length
+  fullName: DotNext.Buffers.ArrayRental<T>.Length
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Length
+  nameWithType: ArrayRental<T>.Length
+  nameWithType.vb: ArrayRental(Of T).Length
+- uid: DotNext.Buffers.ArrayRental`1.Length*
+  name: Length
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Length_
+  commentId: Overload:DotNext.Buffers.ArrayRental`1.Length
+  isSpec: "True"
+  fullName: DotNext.Buffers.ArrayRental<T>.Length
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Length
+  nameWithType: ArrayRental<T>.Length
+  nameWithType.vb: ArrayRental(Of T).Length
 - uid: DotNext.Buffers.ArrayRental`1.Memory
   name: Memory
   href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Memory
@@ -404,25 +439,93 @@ references:
   fullName.vb: DotNext.Buffers.ArrayRental(Of T).Memory
   nameWithType: ArrayRental<T>.Memory
   nameWithType.vb: ArrayRental(Of T).Memory
-- uid: DotNext.Buffers.ArrayRental`1.op_Implicit(DotNext.Buffers.ArrayRental{`0}@)~`0[]
-  name: Implicit(ArrayRental<T> to T[])
-  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_op_Implicit_DotNext_Buffers_ArrayRental__0_____0__
-  commentId: M:DotNext.Buffers.ArrayRental`1.op_Implicit(DotNext.Buffers.ArrayRental{`0}@)~`0[]
-  name.vb: Widening(ByRef ArrayRental(Of T) to T())
-  fullName: DotNext.Buffers.ArrayRental<T>.Implicit(DotNext.Buffers.ArrayRental<T> to T[])
-  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Widening(ByRef DotNext.Buffers.ArrayRental(Of T) to T())
-  nameWithType: ArrayRental<T>.Implicit(ArrayRental<T> to T[])
-  nameWithType.vb: ArrayRental(Of T).Widening(ByRef ArrayRental(Of T) to T())
-- uid: DotNext.Buffers.ArrayRental`1.op_Implicit*
-  name: Implicit
-  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_op_Implicit_
-  commentId: Overload:DotNext.Buffers.ArrayRental`1.op_Implicit
+- uid: DotNext.Buffers.ArrayRental`1.op_Explicit(DotNext.Buffers.ArrayRental{`0}@)~`0[]
+  name: Explicit(ArrayRental<T> to T[])
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_op_Explicit_DotNext_Buffers_ArrayRental__0_____0__
+  commentId: M:DotNext.Buffers.ArrayRental`1.op_Explicit(DotNext.Buffers.ArrayRental{`0}@)~`0[]
+  name.vb: Narrowing(ByRef ArrayRental(Of T) to T())
+  fullName: DotNext.Buffers.ArrayRental<T>.Explicit(DotNext.Buffers.ArrayRental<T> to T[])
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Narrowing(ByRef DotNext.Buffers.ArrayRental(Of T) to T())
+  nameWithType: ArrayRental<T>.Explicit(ArrayRental<T> to T[])
+  nameWithType.vb: ArrayRental(Of T).Narrowing(ByRef ArrayRental(Of T) to T())
+- uid: DotNext.Buffers.ArrayRental`1.op_Explicit*
+  name: Explicit
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_op_Explicit_
+  commentId: Overload:DotNext.Buffers.ArrayRental`1.op_Explicit
   isSpec: "True"
-  name.vb: Widening
-  fullName: DotNext.Buffers.ArrayRental<T>.Implicit
-  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Widening
-  nameWithType: ArrayRental<T>.Implicit
-  nameWithType.vb: ArrayRental(Of T).Widening
+  name.vb: Narrowing
+  fullName: DotNext.Buffers.ArrayRental<T>.Explicit
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Narrowing
+  nameWithType: ArrayRental<T>.Explicit
+  nameWithType.vb: ArrayRental(Of T).Narrowing
+- uid: DotNext.Buffers.ArrayRental`1.Segment
+  name: Segment
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Segment
+  commentId: P:DotNext.Buffers.ArrayRental`1.Segment
+  fullName: DotNext.Buffers.ArrayRental<T>.Segment
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Segment
+  nameWithType: ArrayRental<T>.Segment
+  nameWithType.vb: ArrayRental(Of T).Segment
+- uid: DotNext.Buffers.ArrayRental`1.Segment*
+  name: Segment
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Segment_
+  commentId: Overload:DotNext.Buffers.ArrayRental`1.Segment
+  isSpec: "True"
+  fullName: DotNext.Buffers.ArrayRental<T>.Segment
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Segment
+  nameWithType: ArrayRental<T>.Segment
+  nameWithType.vb: ArrayRental(Of T).Segment
+- uid: DotNext.Buffers.ArrayRental`1.Slice(System.Int32,System.Int32)
+  name: Slice(Int32, Int32)
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Slice_System_Int32_System_Int32_
+  commentId: M:DotNext.Buffers.ArrayRental`1.Slice(System.Int32,System.Int32)
+  fullName: DotNext.Buffers.ArrayRental<T>.Slice(System.Int32, System.Int32)
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Slice(System.Int32, System.Int32)
+  nameWithType: ArrayRental<T>.Slice(Int32, Int32)
+  nameWithType.vb: ArrayRental(Of T).Slice(Int32, Int32)
+- uid: DotNext.Buffers.ArrayRental`1.Slice*
+  name: Slice
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Slice_
+  commentId: Overload:DotNext.Buffers.ArrayRental`1.Slice
+  isSpec: "True"
+  fullName: DotNext.Buffers.ArrayRental<T>.Slice
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Slice
+  nameWithType: ArrayRental<T>.Slice
+  nameWithType.vb: ArrayRental(Of T).Slice
+- uid: DotNext.Buffers.ArrayRental`1.Span
+  name: Span
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Span
+  commentId: P:DotNext.Buffers.ArrayRental`1.Span
+  fullName: DotNext.Buffers.ArrayRental<T>.Span
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Span
+  nameWithType: ArrayRental<T>.Span
+  nameWithType.vb: ArrayRental(Of T).Span
+- uid: DotNext.Buffers.ArrayRental`1.Span*
+  name: Span
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_Span_
+  commentId: Overload:DotNext.Buffers.ArrayRental`1.Span
+  isSpec: "True"
+  fullName: DotNext.Buffers.ArrayRental<T>.Span
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).Span
+  nameWithType: ArrayRental<T>.Span
+  nameWithType.vb: ArrayRental(Of T).Span
+- uid: DotNext.Buffers.ArrayRental`1.ToString
+  name: ToString()
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_ToString
+  commentId: M:DotNext.Buffers.ArrayRental`1.ToString
+  fullName: DotNext.Buffers.ArrayRental<T>.ToString()
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).ToString()
+  nameWithType: ArrayRental<T>.ToString()
+  nameWithType.vb: ArrayRental(Of T).ToString()
+- uid: DotNext.Buffers.ArrayRental`1.ToString*
+  name: ToString
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_ToString_
+  commentId: Overload:DotNext.Buffers.ArrayRental`1.ToString
+  isSpec: "True"
+  fullName: DotNext.Buffers.ArrayRental<T>.ToString
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).ToString
+  nameWithType: ArrayRental<T>.ToString
+  nameWithType.vb: ArrayRental(Of T).ToString
 - uid: DotNext.Buffers.ChunkSequence
   name: ChunkSequence
   href: api/DotNext.Buffers.ChunkSequence.html
@@ -670,6 +773,275 @@ references:
   fullName.vb: DotNext.Buffers.ChunkSequence(Of T).ToReadOnlySequence
   nameWithType: ChunkSequence<T>.ToReadOnlySequence
   nameWithType.vb: ChunkSequence(Of T).ToReadOnlySequence
+- uid: DotNext.Buffers.IUnmanagedMemoryOwner`1
+  name: IUnmanagedMemoryOwner<T>
+  href: api/DotNext.Buffers.IUnmanagedMemoryOwner-1.html
+  commentId: T:DotNext.Buffers.IUnmanagedMemoryOwner`1
+  name.vb: IUnmanagedMemoryOwner(Of T)
+  fullName: DotNext.Buffers.IUnmanagedMemoryOwner<T>
+  fullName.vb: DotNext.Buffers.IUnmanagedMemoryOwner(Of T)
+  nameWithType: IUnmanagedMemoryOwner<T>
+  nameWithType.vb: IUnmanagedMemoryOwner(Of T)
+- uid: DotNext.Buffers.MemoryRental`1
+  name: MemoryRental<T>
+  href: api/DotNext.Buffers.MemoryRental-1.html
+  commentId: T:DotNext.Buffers.MemoryRental`1
+  name.vb: MemoryRental(Of T)
+  fullName: DotNext.Buffers.MemoryRental<T>
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T)
+  nameWithType: MemoryRental<T>
+  nameWithType.vb: MemoryRental(Of T)
+- uid: DotNext.Buffers.MemoryRental`1.#ctor(System.Buffers.MemoryPool{`0},System.Int32)
+  name: MemoryRental(MemoryPool<T>, Int32)
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__System_Int32_
+  commentId: M:DotNext.Buffers.MemoryRental`1.#ctor(System.Buffers.MemoryPool{`0},System.Int32)
+  name.vb: MemoryRental(MemoryPool(Of T), Int32)
+  fullName: DotNext.Buffers.MemoryRental<T>.MemoryRental(System.Buffers.MemoryPool<T>, System.Int32)
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).MemoryRental(System.Buffers.MemoryPool(Of T), System.Int32)
+  nameWithType: MemoryRental<T>.MemoryRental(MemoryPool<T>, Int32)
+  nameWithType.vb: MemoryRental(Of T).MemoryRental(MemoryPool(Of T), Int32)
+- uid: DotNext.Buffers.MemoryRental`1.#ctor(System.Int32)
+  name: MemoryRental(Int32)
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1__ctor_System_Int32_
+  commentId: M:DotNext.Buffers.MemoryRental`1.#ctor(System.Int32)
+  fullName: DotNext.Buffers.MemoryRental<T>.MemoryRental(System.Int32)
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).MemoryRental(System.Int32)
+  nameWithType: MemoryRental<T>.MemoryRental(Int32)
+  nameWithType.vb: MemoryRental(Of T).MemoryRental(Int32)
+- uid: DotNext.Buffers.MemoryRental`1.#ctor(System.Span{`0})
+  name: MemoryRental(Span<T>)
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__
+  commentId: M:DotNext.Buffers.MemoryRental`1.#ctor(System.Span{`0})
+  name.vb: MemoryRental(Span(Of T))
+  fullName: DotNext.Buffers.MemoryRental<T>.MemoryRental(System.Span<T>)
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).MemoryRental(System.Span(Of T))
+  nameWithType: MemoryRental<T>.MemoryRental(Span<T>)
+  nameWithType.vb: MemoryRental(Of T).MemoryRental(Span(Of T))
+- uid: DotNext.Buffers.MemoryRental`1.#ctor*
+  name: MemoryRental
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1__ctor_
+  commentId: Overload:DotNext.Buffers.MemoryRental`1.#ctor
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryRental<T>.MemoryRental
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).MemoryRental
+  nameWithType: MemoryRental<T>.MemoryRental
+  nameWithType.vb: MemoryRental(Of T).MemoryRental
+- uid: DotNext.Buffers.MemoryRental`1.Dispose
+  name: Dispose()
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_Dispose
+  commentId: M:DotNext.Buffers.MemoryRental`1.Dispose
+  fullName: DotNext.Buffers.MemoryRental<T>.Dispose()
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).Dispose()
+  nameWithType: MemoryRental<T>.Dispose()
+  nameWithType.vb: MemoryRental(Of T).Dispose()
+- uid: DotNext.Buffers.MemoryRental`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_Dispose_
+  commentId: Overload:DotNext.Buffers.MemoryRental`1.Dispose
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryRental<T>.Dispose
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).Dispose
+  nameWithType: MemoryRental<T>.Dispose
+  nameWithType.vb: MemoryRental(Of T).Dispose
+- uid: DotNext.Buffers.MemoryRental`1.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_IsEmpty
+  commentId: P:DotNext.Buffers.MemoryRental`1.IsEmpty
+  fullName: DotNext.Buffers.MemoryRental<T>.IsEmpty
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).IsEmpty
+  nameWithType: MemoryRental<T>.IsEmpty
+  nameWithType.vb: MemoryRental(Of T).IsEmpty
+- uid: DotNext.Buffers.MemoryRental`1.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_IsEmpty_
+  commentId: Overload:DotNext.Buffers.MemoryRental`1.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryRental<T>.IsEmpty
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).IsEmpty
+  nameWithType: MemoryRental<T>.IsEmpty
+  nameWithType.vb: MemoryRental(Of T).IsEmpty
+- uid: DotNext.Buffers.MemoryRental`1.Item(System.Int32)
+  name: Item[Int32]
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_Item_System_Int32_
+  commentId: P:DotNext.Buffers.MemoryRental`1.Item(System.Int32)
+  name.vb: Item(Int32)
+  fullName: DotNext.Buffers.MemoryRental<T>.Item[System.Int32]
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).Item(System.Int32)
+  nameWithType: MemoryRental<T>.Item[Int32]
+  nameWithType.vb: MemoryRental(Of T).Item(Int32)
+- uid: DotNext.Buffers.MemoryRental`1.Item*
+  name: Item
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_Item_
+  commentId: Overload:DotNext.Buffers.MemoryRental`1.Item
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryRental<T>.Item
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).Item
+  nameWithType: MemoryRental<T>.Item
+  nameWithType.vb: MemoryRental(Of T).Item
+- uid: DotNext.Buffers.MemoryRental`1.Length
+  name: Length
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_Length
+  commentId: P:DotNext.Buffers.MemoryRental`1.Length
+  fullName: DotNext.Buffers.MemoryRental<T>.Length
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).Length
+  nameWithType: MemoryRental<T>.Length
+  nameWithType.vb: MemoryRental(Of T).Length
+- uid: DotNext.Buffers.MemoryRental`1.Length*
+  name: Length
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_Length_
+  commentId: Overload:DotNext.Buffers.MemoryRental`1.Length
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryRental<T>.Length
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).Length
+  nameWithType: MemoryRental<T>.Length
+  nameWithType.vb: MemoryRental(Of T).Length
+- uid: DotNext.Buffers.MemoryRental`1.op_Implicit(System.Span{`0})~DotNext.Buffers.MemoryRental{`0}
+  name: Implicit(Span<T> to MemoryRental<T>)
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_op_Implicit_System_Span__0___DotNext_Buffers_MemoryRental__0_
+  commentId: M:DotNext.Buffers.MemoryRental`1.op_Implicit(System.Span{`0})~DotNext.Buffers.MemoryRental{`0}
+  name.vb: Widening(Span(Of T) to MemoryRental(Of T))
+  fullName: DotNext.Buffers.MemoryRental<T>.Implicit(System.Span<T> to DotNext.Buffers.MemoryRental<T>)
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).Widening(System.Span(Of T) to DotNext.Buffers.MemoryRental(Of T))
+  nameWithType: MemoryRental<T>.Implicit(Span<T> to MemoryRental<T>)
+  nameWithType.vb: MemoryRental(Of T).Widening(Span(Of T) to MemoryRental(Of T))
+- uid: DotNext.Buffers.MemoryRental`1.op_Implicit*
+  name: Implicit
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_op_Implicit_
+  commentId: Overload:DotNext.Buffers.MemoryRental`1.op_Implicit
+  isSpec: "True"
+  name.vb: Widening
+  fullName: DotNext.Buffers.MemoryRental<T>.Implicit
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).Widening
+  nameWithType: MemoryRental<T>.Implicit
+  nameWithType.vb: MemoryRental(Of T).Widening
+- uid: DotNext.Buffers.MemoryRental`1.Span
+  name: Span
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_Span
+  commentId: P:DotNext.Buffers.MemoryRental`1.Span
+  fullName: DotNext.Buffers.MemoryRental<T>.Span
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).Span
+  nameWithType: MemoryRental<T>.Span
+  nameWithType.vb: MemoryRental(Of T).Span
+- uid: DotNext.Buffers.MemoryRental`1.Span*
+  name: Span
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_Span_
+  commentId: Overload:DotNext.Buffers.MemoryRental`1.Span
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryRental<T>.Span
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).Span
+  nameWithType: MemoryRental<T>.Span
+  nameWithType.vb: MemoryRental(Of T).Span
+- uid: DotNext.Buffers.MemoryRental`1.ToString
+  name: ToString()
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_ToString
+  commentId: M:DotNext.Buffers.MemoryRental`1.ToString
+  fullName: DotNext.Buffers.MemoryRental<T>.ToString()
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).ToString()
+  nameWithType: MemoryRental<T>.ToString()
+  nameWithType.vb: MemoryRental(Of T).ToString()
+- uid: DotNext.Buffers.MemoryRental`1.ToString*
+  name: ToString
+  href: api/DotNext.Buffers.MemoryRental-1.html#DotNext_Buffers_MemoryRental_1_ToString_
+  commentId: Overload:DotNext.Buffers.MemoryRental`1.ToString
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryRental<T>.ToString
+  fullName.vb: DotNext.Buffers.MemoryRental(Of T).ToString
+  nameWithType: MemoryRental<T>.ToString
+  nameWithType.vb: MemoryRental(Of T).ToString
+- uid: DotNext.Buffers.UnmanagedMemoryPool`1
+  name: UnmanagedMemoryPool<T>
+  href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html
+  commentId: T:DotNext.Buffers.UnmanagedMemoryPool`1
+  name.vb: UnmanagedMemoryPool(Of T)
+  fullName: DotNext.Buffers.UnmanagedMemoryPool<T>
+  fullName.vb: DotNext.Buffers.UnmanagedMemoryPool(Of T)
+  nameWithType: UnmanagedMemoryPool<T>
+  nameWithType.vb: UnmanagedMemoryPool(Of T)
+- uid: DotNext.Buffers.UnmanagedMemoryPool`1.#ctor(System.Int32,System.Int32,System.Boolean)
+  name: UnmanagedMemoryPool(Int32, Int32, Boolean)
+  href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1__ctor_System_Int32_System_Int32_System_Boolean_
+  commentId: M:DotNext.Buffers.UnmanagedMemoryPool`1.#ctor(System.Int32,System.Int32,System.Boolean)
+  fullName: DotNext.Buffers.UnmanagedMemoryPool<T>.UnmanagedMemoryPool(System.Int32, System.Int32, System.Boolean)
+  fullName.vb: DotNext.Buffers.UnmanagedMemoryPool(Of T).UnmanagedMemoryPool(System.Int32, System.Int32, System.Boolean)
+  nameWithType: UnmanagedMemoryPool<T>.UnmanagedMemoryPool(Int32, Int32, Boolean)
+  nameWithType.vb: UnmanagedMemoryPool(Of T).UnmanagedMemoryPool(Int32, Int32, Boolean)
+- uid: DotNext.Buffers.UnmanagedMemoryPool`1.#ctor*
+  name: UnmanagedMemoryPool
+  href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1__ctor_
+  commentId: Overload:DotNext.Buffers.UnmanagedMemoryPool`1.#ctor
+  isSpec: "True"
+  fullName: DotNext.Buffers.UnmanagedMemoryPool<T>.UnmanagedMemoryPool
+  fullName.vb: DotNext.Buffers.UnmanagedMemoryPool(Of T).UnmanagedMemoryPool
+  nameWithType: UnmanagedMemoryPool<T>.UnmanagedMemoryPool
+  nameWithType.vb: UnmanagedMemoryPool(Of T).UnmanagedMemoryPool
+- uid: DotNext.Buffers.UnmanagedMemoryPool`1.Allocate(System.Int32,System.Boolean)
+  name: Allocate(Int32, Boolean)
+  href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1_Allocate_System_Int32_System_Boolean_
+  commentId: M:DotNext.Buffers.UnmanagedMemoryPool`1.Allocate(System.Int32,System.Boolean)
+  fullName: DotNext.Buffers.UnmanagedMemoryPool<T>.Allocate(System.Int32, System.Boolean)
+  fullName.vb: DotNext.Buffers.UnmanagedMemoryPool(Of T).Allocate(System.Int32, System.Boolean)
+  nameWithType: UnmanagedMemoryPool<T>.Allocate(Int32, Boolean)
+  nameWithType.vb: UnmanagedMemoryPool(Of T).Allocate(Int32, Boolean)
+- uid: DotNext.Buffers.UnmanagedMemoryPool`1.Allocate*
+  name: Allocate
+  href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1_Allocate_
+  commentId: Overload:DotNext.Buffers.UnmanagedMemoryPool`1.Allocate
+  isSpec: "True"
+  fullName: DotNext.Buffers.UnmanagedMemoryPool<T>.Allocate
+  fullName.vb: DotNext.Buffers.UnmanagedMemoryPool(Of T).Allocate
+  nameWithType: UnmanagedMemoryPool<T>.Allocate
+  nameWithType.vb: UnmanagedMemoryPool(Of T).Allocate
+- uid: DotNext.Buffers.UnmanagedMemoryPool`1.Dispose(System.Boolean)
+  name: Dispose(Boolean)
+  href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1_Dispose_System_Boolean_
+  commentId: M:DotNext.Buffers.UnmanagedMemoryPool`1.Dispose(System.Boolean)
+  fullName: DotNext.Buffers.UnmanagedMemoryPool<T>.Dispose(System.Boolean)
+  fullName.vb: DotNext.Buffers.UnmanagedMemoryPool(Of T).Dispose(System.Boolean)
+  nameWithType: UnmanagedMemoryPool<T>.Dispose(Boolean)
+  nameWithType.vb: UnmanagedMemoryPool(Of T).Dispose(Boolean)
+- uid: DotNext.Buffers.UnmanagedMemoryPool`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1_Dispose_
+  commentId: Overload:DotNext.Buffers.UnmanagedMemoryPool`1.Dispose
+  isSpec: "True"
+  fullName: DotNext.Buffers.UnmanagedMemoryPool<T>.Dispose
+  fullName.vb: DotNext.Buffers.UnmanagedMemoryPool(Of T).Dispose
+  nameWithType: UnmanagedMemoryPool<T>.Dispose
+  nameWithType.vb: UnmanagedMemoryPool(Of T).Dispose
+- uid: DotNext.Buffers.UnmanagedMemoryPool`1.MaxBufferSize
+  name: MaxBufferSize
+  href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1_MaxBufferSize
+  commentId: P:DotNext.Buffers.UnmanagedMemoryPool`1.MaxBufferSize
+  fullName: DotNext.Buffers.UnmanagedMemoryPool<T>.MaxBufferSize
+  fullName.vb: DotNext.Buffers.UnmanagedMemoryPool(Of T).MaxBufferSize
+  nameWithType: UnmanagedMemoryPool<T>.MaxBufferSize
+  nameWithType.vb: UnmanagedMemoryPool(Of T).MaxBufferSize
+- uid: DotNext.Buffers.UnmanagedMemoryPool`1.MaxBufferSize*
+  name: MaxBufferSize
+  href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1_MaxBufferSize_
+  commentId: Overload:DotNext.Buffers.UnmanagedMemoryPool`1.MaxBufferSize
+  isSpec: "True"
+  fullName: DotNext.Buffers.UnmanagedMemoryPool<T>.MaxBufferSize
+  fullName.vb: DotNext.Buffers.UnmanagedMemoryPool(Of T).MaxBufferSize
+  nameWithType: UnmanagedMemoryPool<T>.MaxBufferSize
+  nameWithType.vb: UnmanagedMemoryPool(Of T).MaxBufferSize
+- uid: DotNext.Buffers.UnmanagedMemoryPool`1.Rent(System.Int32)
+  name: Rent(Int32)
+  href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1_Rent_System_Int32_
+  commentId: M:DotNext.Buffers.UnmanagedMemoryPool`1.Rent(System.Int32)
+  fullName: DotNext.Buffers.UnmanagedMemoryPool<T>.Rent(System.Int32)
+  fullName.vb: DotNext.Buffers.UnmanagedMemoryPool(Of T).Rent(System.Int32)
+  nameWithType: UnmanagedMemoryPool<T>.Rent(Int32)
+  nameWithType.vb: UnmanagedMemoryPool(Of T).Rent(Int32)
+- uid: DotNext.Buffers.UnmanagedMemoryPool`1.Rent*
+  name: Rent
+  href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html#DotNext_Buffers_UnmanagedMemoryPool_1_Rent_
+  commentId: Overload:DotNext.Buffers.UnmanagedMemoryPool`1.Rent
+  isSpec: "True"
+  fullName: DotNext.Buffers.UnmanagedMemoryPool<T>.Rent
+  fullName.vb: DotNext.Buffers.UnmanagedMemoryPool(Of T).Rent
+  nameWithType: UnmanagedMemoryPool<T>.Rent
+  nameWithType.vb: UnmanagedMemoryPool(Of T).Rent
 - uid: DotNext.Collections.Concurrent
   name: DotNext.Collections.Concurrent
   href: api/DotNext.Collections.Concurrent.html
@@ -832,6 +1204,125 @@ references:
   fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Count
   nameWithType: CopyOnWriteList<T>.Count
   nameWithType.vb: CopyOnWriteList(Of T).Count
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator
+  name: CopyOnWriteList<T>.Enumerator
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html
+  commentId: T:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator
+  name.vb: CopyOnWriteList(Of T).Enumerator
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator
+  nameWithType: CopyOnWriteList<T>.Enumerator
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.Current
+  name: Current
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_Current
+  commentId: P:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.Current
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.Current
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.Current
+  nameWithType: CopyOnWriteList<T>.Enumerator.Current
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.Current
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.Current*
+  name: Current
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_Current_
+  commentId: Overload:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.Current
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.Current
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.Current
+  nameWithType: CopyOnWriteList<T>.Enumerator.Current
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.Current
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.MoveNext
+  name: MoveNext()
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_MoveNext
+  commentId: M:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.MoveNext
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.MoveNext()
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.MoveNext()
+  nameWithType: CopyOnWriteList<T>.Enumerator.MoveNext()
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.MoveNext()
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.MoveNext*
+  name: MoveNext
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_MoveNext_
+  commentId: Overload:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.MoveNext
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.MoveNext
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.MoveNext
+  nameWithType: CopyOnWriteList<T>.Enumerator.MoveNext
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.MoveNext
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#Generic#IEnumerator{T}#Current
+  name: IEnumerator<T>.Current
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_System_Collections_Generic_IEnumerator_T__Current
+  commentId: P:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#Generic#IEnumerator{T}#Current
+  name.vb: System.Collections.Generic.IEnumerator<T>.Current
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.System.Collections.Generic.IEnumerator<T>.Current
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.System.Collections.Generic.IEnumerator<T>.Current
+  nameWithType: CopyOnWriteList<T>.Enumerator.IEnumerator<T>.Current
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.System.Collections.Generic.IEnumerator<T>.Current
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#Generic#IEnumerator{T}#Current*
+  name: IEnumerator<T>.Current
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_System_Collections_Generic_IEnumerator_T__Current_
+  commentId: Overload:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#Generic#IEnumerator{T}#Current
+  isSpec: "True"
+  name.vb: System.Collections.Generic.IEnumerator<T>.Current
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.System.Collections.Generic.IEnumerator<T>.Current
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.System.Collections.Generic.IEnumerator<T>.Current
+  nameWithType: CopyOnWriteList<T>.Enumerator.IEnumerator<T>.Current
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.System.Collections.Generic.IEnumerator<T>.Current
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#IEnumerator#Current
+  name: IEnumerator.Current
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_System_Collections_IEnumerator_Current
+  commentId: P:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#IEnumerator#Current
+  name.vb: System.Collections.IEnumerator.Current
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.System.Collections.IEnumerator.Current
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.System.Collections.IEnumerator.Current
+  nameWithType: CopyOnWriteList<T>.Enumerator.IEnumerator.Current
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.System.Collections.IEnumerator.Current
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#IEnumerator#Current*
+  name: IEnumerator.Current
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_System_Collections_IEnumerator_Current_
+  commentId: Overload:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#IEnumerator#Current
+  isSpec: "True"
+  name.vb: System.Collections.IEnumerator.Current
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.System.Collections.IEnumerator.Current
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.System.Collections.IEnumerator.Current
+  nameWithType: CopyOnWriteList<T>.Enumerator.IEnumerator.Current
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.System.Collections.IEnumerator.Current
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#IEnumerator#Reset
+  name: IEnumerator.Reset()
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_System_Collections_IEnumerator_Reset
+  commentId: M:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#IEnumerator#Reset
+  name.vb: System.Collections.IEnumerator.Reset()
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.System.Collections.IEnumerator.Reset()
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.System.Collections.IEnumerator.Reset()
+  nameWithType: CopyOnWriteList<T>.Enumerator.IEnumerator.Reset()
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.System.Collections.IEnumerator.Reset()
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#IEnumerator#Reset*
+  name: IEnumerator.Reset
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_System_Collections_IEnumerator_Reset_
+  commentId: Overload:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#Collections#IEnumerator#Reset
+  isSpec: "True"
+  name.vb: System.Collections.IEnumerator.Reset
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.System.Collections.IEnumerator.Reset
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.System.Collections.IEnumerator.Reset
+  nameWithType: CopyOnWriteList<T>.Enumerator.IEnumerator.Reset
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.System.Collections.IEnumerator.Reset
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#IDisposable#Dispose
+  name: IDisposable.Dispose()
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_System_IDisposable_Dispose
+  commentId: M:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#IDisposable#Dispose
+  name.vb: System.IDisposable.Dispose()
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.System.IDisposable.Dispose()
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.System.IDisposable.Dispose()
+  nameWithType: CopyOnWriteList<T>.Enumerator.IDisposable.Dispose()
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.System.IDisposable.Dispose()
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#IDisposable#Dispose*
+  name: IDisposable.Dispose
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Enumerator_System_IDisposable_Dispose_
+  commentId: Overload:DotNext.Collections.Concurrent.CopyOnWriteList`1.Enumerator.System#IDisposable#Dispose
+  isSpec: "True"
+  name.vb: System.IDisposable.Dispose
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Enumerator.System.IDisposable.Dispose
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Enumerator.System.IDisposable.Dispose
+  nameWithType: CopyOnWriteList<T>.Enumerator.IDisposable.Dispose
+  nameWithType.vb: CopyOnWriteList(Of T).Enumerator.System.IDisposable.Dispose
 - uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Exists(System.Predicate{`0})
   name: Exists(Predicate<T>)
   href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Exists_System_Predicate__0__
@@ -1142,6 +1633,23 @@ references:
   fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Set(Of G)(System.Collections.Generic.ICollection(Of G), System.Converter(Of G, T))
   nameWithType: CopyOnWriteList<T>.Set<G>(ICollection<G>, Converter<G, T>)
   nameWithType.vb: CopyOnWriteList(Of T).Set(Of G)(ICollection(Of G), Converter(Of G, T))
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Snapshot
+  name: Snapshot
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Snapshot
+  commentId: P:DotNext.Collections.Concurrent.CopyOnWriteList`1.Snapshot
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Snapshot
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Snapshot
+  nameWithType: CopyOnWriteList<T>.Snapshot
+  nameWithType.vb: CopyOnWriteList(Of T).Snapshot
+- uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.Snapshot*
+  name: Snapshot
+  href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_Snapshot_
+  commentId: Overload:DotNext.Collections.Concurrent.CopyOnWriteList`1.Snapshot
+  isSpec: "True"
+  fullName: DotNext.Collections.Concurrent.CopyOnWriteList<T>.Snapshot
+  fullName.vb: DotNext.Collections.Concurrent.CopyOnWriteList(Of T).Snapshot
+  nameWithType: CopyOnWriteList<T>.Snapshot
+  nameWithType.vb: CopyOnWriteList(Of T).Snapshot
 - uid: DotNext.Collections.Concurrent.CopyOnWriteList`1.System#Collections#Generic#ICollection{T}#Count
   name: ICollection<T>.Count
   href: api/DotNext.Collections.Concurrent.CopyOnWriteList-1.html#DotNext_Collections_Concurrent_CopyOnWriteList_1_System_Collections_Generic_ICollection_T__Count
@@ -3514,6 +4022,23 @@ references:
   fullName.vb: DotNext.Enum(Of E).GetMember
   nameWithType: Enum<E>.GetMember
   nameWithType.vb: Enum(Of E).GetMember
+- uid: DotNext.Enum`1.HasFlag(`0)
+  name: HasFlag(E)
+  href: api/DotNext.Enum-1.html#DotNext_Enum_1_HasFlag__0_
+  commentId: M:DotNext.Enum`1.HasFlag(`0)
+  fullName: DotNext.Enum<E>.HasFlag(E)
+  fullName.vb: DotNext.Enum(Of E).HasFlag(E)
+  nameWithType: Enum<E>.HasFlag(E)
+  nameWithType.vb: Enum(Of E).HasFlag(E)
+- uid: DotNext.Enum`1.HasFlag*
+  name: HasFlag
+  href: api/DotNext.Enum-1.html#DotNext_Enum_1_HasFlag_
+  commentId: Overload:DotNext.Enum`1.HasFlag
+  isSpec: "True"
+  fullName: DotNext.Enum<E>.HasFlag
+  fullName.vb: DotNext.Enum(Of E).HasFlag
+  nameWithType: Enum<E>.HasFlag
+  nameWithType.vb: Enum(Of E).HasFlag
 - uid: DotNext.Enum`1.IsDefined(`0)
   name: IsDefined(E)
   href: api/DotNext.Enum-1.html#DotNext_Enum_1_IsDefined__0_
@@ -11873,6 +12398,30 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.ReportResponseTime
   nameWithType: HttpMetricsCollector.ReportResponseTime
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion
+  name: HttpVersion
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.html
+  commentId: T:DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion
+  nameWithType: HttpVersion
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.Auto
+  name: Auto
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.html#DotNext_Net_Cluster_Consensus_Raft_Http_HttpVersion_Auto
+  commentId: F:DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.Auto
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.Auto
+  nameWithType: HttpVersion.Auto
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.Http1
+  name: Http1
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.html#DotNext_Net_Cluster_Consensus_Raft_Http_HttpVersion_Http1
+  commentId: F:DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.Http1
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.Http1
+  nameWithType: HttpVersion.Http1
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.Http2
+  name: Http2
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.html#DotNext_Net_Cluster_Consensus_Raft_Http_HttpVersion_Http2
+  commentId: F:DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.Http2
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.HttpVersion.Http2
+  nameWithType: HttpVersion.Http2
 - uid: DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter
   name: LeaderRouter
   href: api/DotNext.Net.Cluster.Consensus.Raft.Http.LeaderRouter.html
@@ -16312,15 +16861,15 @@ references:
   fullName.vb: DotNext.Optional(Of T).Equals(T)
   nameWithType: Optional<T>.Equals(T)
   nameWithType.vb: Optional(Of T).Equals(T)
-- uid: DotNext.Optional`1.Equals(DotNext.Optional{`0}@)
+- uid: DotNext.Optional`1.Equals(DotNext.Optional{`0})
   name: Equals(Optional<T>)
-  href: api/DotNext.Optional-1.html#DotNext_Optional_1_Equals_DotNext_Optional__0___
-  commentId: M:DotNext.Optional`1.Equals(DotNext.Optional{`0}@)
-  name.vb: Equals(ByRef Optional(Of T))
+  href: api/DotNext.Optional-1.html#DotNext_Optional_1_Equals_DotNext_Optional__0__
+  commentId: M:DotNext.Optional`1.Equals(DotNext.Optional{`0})
+  name.vb: Equals(Optional(Of T))
   fullName: DotNext.Optional<T>.Equals(DotNext.Optional<T>)
-  fullName.vb: DotNext.Optional(Of T).Equals(ByRef DotNext.Optional(Of T))
+  fullName.vb: DotNext.Optional(Of T).Equals(DotNext.Optional(Of T))
   nameWithType: Optional<T>.Equals(Optional<T>)
-  nameWithType.vb: Optional(Of T).Equals(ByRef Optional(Of T))
+  nameWithType.vb: Optional(Of T).Equals(Optional(Of T))
 - uid: DotNext.Optional`1.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.Optional-1.html#DotNext_Optional_1_Equals_System_Object_
@@ -16658,25 +17207,6 @@ references:
   fullName.vb: DotNext.Optional(Of T).OrThrow(Of E)(System.Func(Of E))
   nameWithType: Optional<T>.OrThrow<E>(Func<E>)
   nameWithType.vb: Optional(Of T).OrThrow(Of E)(Func(Of E))
-- uid: DotNext.Optional`1.System#IEquatable{DotNext#Optional{T}}#Equals(DotNext.Optional{`0})
-  name: IEquatable<Optional<T>>.Equals(Optional<T>)
-  href: api/DotNext.Optional-1.html#DotNext_Optional_1_System_IEquatable_DotNext_Optional_T___Equals_DotNext_Optional__0__
-  commentId: M:DotNext.Optional`1.System#IEquatable{DotNext#Optional{T}}#Equals(DotNext.Optional{`0})
-  name.vb: System.IEquatable<DotNext.Optional<T>>.Equals(Optional(Of T))
-  fullName: DotNext.Optional<T>.System.IEquatable<DotNext.Optional<T>>.Equals(DotNext.Optional<T>)
-  fullName.vb: DotNext.Optional(Of T).System.IEquatable<DotNext.Optional<T>>.Equals(DotNext.Optional(Of T))
-  nameWithType: Optional<T>.IEquatable<Optional<T>>.Equals(Optional<T>)
-  nameWithType.vb: Optional(Of T).System.IEquatable<DotNext.Optional<T>>.Equals(Optional(Of T))
-- uid: DotNext.Optional`1.System#IEquatable{DotNext#Optional{T}}#Equals*
-  name: IEquatable<Optional<T>>.Equals
-  href: api/DotNext.Optional-1.html#DotNext_Optional_1_System_IEquatable_DotNext_Optional_T___Equals_
-  commentId: Overload:DotNext.Optional`1.System#IEquatable{DotNext#Optional{T}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.Optional<T>>.Equals
-  fullName: DotNext.Optional<T>.System.IEquatable<DotNext.Optional<T>>.Equals
-  fullName.vb: DotNext.Optional(Of T).System.IEquatable<DotNext.Optional<T>>.Equals
-  nameWithType: Optional<T>.IEquatable<Optional<T>>.Equals
-  nameWithType.vb: Optional(Of T).System.IEquatable<DotNext.Optional<T>>.Equals
 - uid: DotNext.Optional`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)
   name: ISerializable.GetObjectData(SerializationInfo, StreamingContext)
   href: api/DotNext.Optional-1.html#DotNext_Optional_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_
@@ -17347,6 +17877,15 @@ references:
   fullName.vb: DotNext.RefAction(Of T, TArgs)
   nameWithType: RefAction<T, TArgs>
   nameWithType.vb: RefAction(Of T, TArgs)
+- uid: DotNext.RefFunc`3
+  name: RefFunc<T, TArgs, TResult>
+  href: api/DotNext.RefFunc-3.html
+  commentId: T:DotNext.RefFunc`3
+  name.vb: RefFunc(Of T, TArgs, TResult)
+  fullName: DotNext.RefFunc<T, TArgs, TResult>
+  fullName.vb: DotNext.RefFunc(Of T, TArgs, TResult)
+  nameWithType: RefFunc<T, TArgs, TResult>
+  nameWithType.vb: RefFunc(Of T, TArgs, TResult)
 - uid: DotNext.Reflection
   name: DotNext.Reflection
   href: api/DotNext.Reflection.html
@@ -27641,6 +28180,66 @@ references:
   commentId: N:DotNext.Runtime.InteropServices
   fullName: DotNext.Runtime.InteropServices
   nameWithType: DotNext.Runtime.InteropServices
+- uid: DotNext.Runtime.InteropServices.IUnmanagedArray`1
+  name: IUnmanagedArray<T>
+  href: api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html
+  commentId: T:DotNext.Runtime.InteropServices.IUnmanagedArray`1
+  name.vb: IUnmanagedArray(Of T)
+  fullName: DotNext.Runtime.InteropServices.IUnmanagedArray<T>
+  fullName.vb: DotNext.Runtime.InteropServices.IUnmanagedArray(Of T)
+  nameWithType: IUnmanagedArray<T>
+  nameWithType.vb: IUnmanagedArray(Of T)
+- uid: DotNext.Runtime.InteropServices.IUnmanagedArray`1.Length
+  name: Length
+  href: api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html#DotNext_Runtime_InteropServices_IUnmanagedArray_1_Length
+  commentId: P:DotNext.Runtime.InteropServices.IUnmanagedArray`1.Length
+  fullName: DotNext.Runtime.InteropServices.IUnmanagedArray<T>.Length
+  fullName.vb: DotNext.Runtime.InteropServices.IUnmanagedArray(Of T).Length
+  nameWithType: IUnmanagedArray<T>.Length
+  nameWithType.vb: IUnmanagedArray(Of T).Length
+- uid: DotNext.Runtime.InteropServices.IUnmanagedArray`1.Length*
+  name: Length
+  href: api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html#DotNext_Runtime_InteropServices_IUnmanagedArray_1_Length_
+  commentId: Overload:DotNext.Runtime.InteropServices.IUnmanagedArray`1.Length
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.IUnmanagedArray<T>.Length
+  fullName.vb: DotNext.Runtime.InteropServices.IUnmanagedArray(Of T).Length
+  nameWithType: IUnmanagedArray<T>.Length
+  nameWithType.vb: IUnmanagedArray(Of T).Length
+- uid: DotNext.Runtime.InteropServices.IUnmanagedArray`1.Pointer
+  name: Pointer
+  href: api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html#DotNext_Runtime_InteropServices_IUnmanagedArray_1_Pointer
+  commentId: P:DotNext.Runtime.InteropServices.IUnmanagedArray`1.Pointer
+  fullName: DotNext.Runtime.InteropServices.IUnmanagedArray<T>.Pointer
+  fullName.vb: DotNext.Runtime.InteropServices.IUnmanagedArray(Of T).Pointer
+  nameWithType: IUnmanagedArray<T>.Pointer
+  nameWithType.vb: IUnmanagedArray(Of T).Pointer
+- uid: DotNext.Runtime.InteropServices.IUnmanagedArray`1.Pointer*
+  name: Pointer
+  href: api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html#DotNext_Runtime_InteropServices_IUnmanagedArray_1_Pointer_
+  commentId: Overload:DotNext.Runtime.InteropServices.IUnmanagedArray`1.Pointer
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.IUnmanagedArray<T>.Pointer
+  fullName.vb: DotNext.Runtime.InteropServices.IUnmanagedArray(Of T).Pointer
+  nameWithType: IUnmanagedArray<T>.Pointer
+  nameWithType.vb: IUnmanagedArray(Of T).Pointer
+- uid: DotNext.Runtime.InteropServices.IUnmanagedArray`1.Span
+  name: Span
+  href: api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html#DotNext_Runtime_InteropServices_IUnmanagedArray_1_Span
+  commentId: P:DotNext.Runtime.InteropServices.IUnmanagedArray`1.Span
+  fullName: DotNext.Runtime.InteropServices.IUnmanagedArray<T>.Span
+  fullName.vb: DotNext.Runtime.InteropServices.IUnmanagedArray(Of T).Span
+  nameWithType: IUnmanagedArray<T>.Span
+  nameWithType.vb: IUnmanagedArray(Of T).Span
+- uid: DotNext.Runtime.InteropServices.IUnmanagedArray`1.Span*
+  name: Span
+  href: api/DotNext.Runtime.InteropServices.IUnmanagedArray-1.html#DotNext_Runtime_InteropServices_IUnmanagedArray_1_Span_
+  commentId: Overload:DotNext.Runtime.InteropServices.IUnmanagedArray`1.Span
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.IUnmanagedArray<T>.Span
+  fullName.vb: DotNext.Runtime.InteropServices.IUnmanagedArray(Of T).Span
+  nameWithType: IUnmanagedArray<T>.Span
+  nameWithType.vb: IUnmanagedArray(Of T).Span
 - uid: DotNext.Runtime.InteropServices.IUnmanagedMemory
   name: IUnmanagedMemory
   href: api/DotNext.Runtime.InteropServices.IUnmanagedMemory.html
@@ -28614,6 +29213,14 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Get()
   nameWithType: Pointer<T>.Get()
   nameWithType.vb: Pointer(Of T).Get()
+- uid: DotNext.Runtime.InteropServices.Pointer`1.Get(System.Int64)
+  name: Get(Int64)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Get_System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.Get(System.Int64)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Get(System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Get(System.Int64)
+  nameWithType: Pointer<T>.Get(Int64)
+  nameWithType.vb: Pointer(Of T).Get(Int64)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.Get*
   name: Get
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Get_
@@ -28799,6 +29406,25 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Equality
   nameWithType: Pointer<T>.Equality
   nameWithType.vb: Pointer(Of T).Equality
+- uid: DotNext.Runtime.InteropServices.Pointer`1.op_Explicit(System.Buffers.MemoryHandle@)~DotNext.Runtime.InteropServices.Pointer{`0}
+  name: Explicit(MemoryHandle to Pointer<T>)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_Explicit_System_Buffers_MemoryHandle___DotNext_Runtime_InteropServices_Pointer__0_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.op_Explicit(System.Buffers.MemoryHandle@)~DotNext.Runtime.InteropServices.Pointer{`0}
+  name.vb: Narrowing(ByRef MemoryHandle to Pointer(Of T))
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Explicit(System.Buffers.MemoryHandle to DotNext.Runtime.InteropServices.Pointer<T>)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Narrowing(ByRef System.Buffers.MemoryHandle to DotNext.Runtime.InteropServices.Pointer(Of T))
+  nameWithType: Pointer<T>.Explicit(MemoryHandle to Pointer<T>)
+  nameWithType.vb: Pointer(Of T).Narrowing(ByRef MemoryHandle to Pointer(Of T))
+- uid: DotNext.Runtime.InteropServices.Pointer`1.op_Explicit*
+  name: Explicit
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_Explicit_
+  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.op_Explicit
+  isSpec: "True"
+  name.vb: Narrowing
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Explicit
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Narrowing
+  nameWithType: Pointer<T>.Explicit
+  nameWithType.vb: Pointer(Of T).Narrowing
 - uid: DotNext.Runtime.InteropServices.Pointer`1.op_False(DotNext.Runtime.InteropServices.Pointer{`0})
   name: False(Pointer<T>)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_op_False_DotNext_Runtime_InteropServices_Pointer__0__
@@ -28988,14 +29614,14 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).ReadFrom
   nameWithType: Pointer<T>.ReadFrom
   nameWithType.vb: Pointer(Of T).ReadFrom
-- uid: DotNext.Runtime.InteropServices.Pointer`1.ReadFromAsync(System.IO.Stream,System.Int64)
-  name: ReadFromAsync(Stream, Int64)
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_ReadFromAsync_System_IO_Stream_System_Int64_
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.ReadFromAsync(System.IO.Stream,System.Int64)
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.ReadFromAsync(System.IO.Stream, System.Int64)
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).ReadFromAsync(System.IO.Stream, System.Int64)
-  nameWithType: Pointer<T>.ReadFromAsync(Stream, Int64)
-  nameWithType.vb: Pointer(Of T).ReadFromAsync(Stream, Int64)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.ReadFromAsync(System.IO.Stream,System.Int64,System.Threading.CancellationToken)
+  name: ReadFromAsync(Stream, Int64, CancellationToken)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_ReadFromAsync_System_IO_Stream_System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.ReadFromAsync(System.IO.Stream,System.Int64,System.Threading.CancellationToken)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.ReadFromAsync(System.IO.Stream, System.Int64, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).ReadFromAsync(System.IO.Stream, System.Int64, System.Threading.CancellationToken)
+  nameWithType: Pointer<T>.ReadFromAsync(Stream, Int64, CancellationToken)
+  nameWithType.vb: Pointer(Of T).ReadFromAsync(Stream, Int64, CancellationToken)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.ReadFromAsync*
   name: ReadFromAsync
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_ReadFromAsync_
@@ -29013,6 +29639,14 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Set(T)
   nameWithType: Pointer<T>.Set(T)
   nameWithType.vb: Pointer(Of T).Set(T)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.Set(`0,System.Int64)
+  name: Set(T, Int64)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Set__0_System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.Set(`0,System.Int64)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Set(T, System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Set(T, System.Int64)
+  nameWithType: Pointer<T>.Set(T, Int64)
+  nameWithType.vb: Pointer(Of T).Set(T, Int64)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.Set*
   name: Set
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Set_
@@ -29022,23 +29656,6 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Set
   nameWithType: Pointer<T>.Set
   nameWithType.vb: Pointer(Of T).Set
-- uid: DotNext.Runtime.InteropServices.Pointer`1.Size
-  name: Size
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Size
-  commentId: P:DotNext.Runtime.InteropServices.Pointer`1.Size
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Size
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Size
-  nameWithType: Pointer<T>.Size
-  nameWithType.vb: Pointer(Of T).Size
-- uid: DotNext.Runtime.InteropServices.Pointer`1.Size*
-  name: Size
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Size_
-  commentId: Overload:DotNext.Runtime.InteropServices.Pointer`1.Size
-  isSpec: "True"
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.Size
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).Size
-  nameWithType: Pointer<T>.Size
-  nameWithType.vb: Pointer(Of T).Size
 - uid: DotNext.Runtime.InteropServices.Pointer`1.Swap(DotNext.Runtime.InteropServices.Pointer{`0})
   name: Swap(Pointer<T>)
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_Swap_DotNext_Runtime_InteropServices_Pointer__0__
@@ -29198,14 +29815,14 @@ references:
   fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).WriteTo
   nameWithType: Pointer<T>.WriteTo
   nameWithType.vb: Pointer(Of T).WriteTo
-- uid: DotNext.Runtime.InteropServices.Pointer`1.WriteToAsync(System.IO.Stream,System.Int64)
-  name: WriteToAsync(Stream, Int64)
-  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_WriteToAsync_System_IO_Stream_System_Int64_
-  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.WriteToAsync(System.IO.Stream,System.Int64)
-  fullName: DotNext.Runtime.InteropServices.Pointer<T>.WriteToAsync(System.IO.Stream, System.Int64)
-  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).WriteToAsync(System.IO.Stream, System.Int64)
-  nameWithType: Pointer<T>.WriteToAsync(Stream, Int64)
-  nameWithType.vb: Pointer(Of T).WriteToAsync(Stream, Int64)
+- uid: DotNext.Runtime.InteropServices.Pointer`1.WriteToAsync(System.IO.Stream,System.Int64,System.Threading.CancellationToken)
+  name: WriteToAsync(Stream, Int64, CancellationToken)
+  href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_WriteToAsync_System_IO_Stream_System_Int64_System_Threading_CancellationToken_
+  commentId: M:DotNext.Runtime.InteropServices.Pointer`1.WriteToAsync(System.IO.Stream,System.Int64,System.Threading.CancellationToken)
+  fullName: DotNext.Runtime.InteropServices.Pointer<T>.WriteToAsync(System.IO.Stream, System.Int64, System.Threading.CancellationToken)
+  fullName.vb: DotNext.Runtime.InteropServices.Pointer(Of T).WriteToAsync(System.IO.Stream, System.Int64, System.Threading.CancellationToken)
+  nameWithType: Pointer<T>.WriteToAsync(Stream, Int64, CancellationToken)
+  nameWithType.vb: Pointer(Of T).WriteToAsync(Stream, Int64, CancellationToken)
 - uid: DotNext.Runtime.InteropServices.Pointer`1.WriteToAsync*
   name: WriteToAsync
   href: api/DotNext.Runtime.InteropServices.Pointer-1.html#DotNext_Runtime_InteropServices_Pointer_1_WriteToAsync_
@@ -30476,6 +31093,22 @@ references:
   fullName.vb: DotNext.Runtime.Intrinsics.DefaultOf(Of T)()
   nameWithType: Intrinsics.DefaultOf<T>()
   nameWithType.vb: Intrinsics.DefaultOf(Of T)()
+- uid: DotNext.Runtime.Intrinsics.HasFlag*
+  name: HasFlag
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_HasFlag_
+  commentId: Overload:DotNext.Runtime.Intrinsics.HasFlag
+  isSpec: "True"
+  fullName: DotNext.Runtime.Intrinsics.HasFlag
+  nameWithType: Intrinsics.HasFlag
+- uid: DotNext.Runtime.Intrinsics.HasFlag``1(``0,``0)
+  name: HasFlag<T>(T, T)
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_HasFlag__1___0___0_
+  commentId: M:DotNext.Runtime.Intrinsics.HasFlag``1(``0,``0)
+  name.vb: HasFlag(Of T)(T, T)
+  fullName: DotNext.Runtime.Intrinsics.HasFlag<T>(T, T)
+  fullName.vb: DotNext.Runtime.Intrinsics.HasFlag(Of T)(T, T)
+  nameWithType: Intrinsics.HasFlag<T>(T, T)
+  nameWithType.vb: Intrinsics.HasFlag(Of T)(T, T)
 - uid: DotNext.Runtime.Intrinsics.IsDefault*
   name: IsDefault
   href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_IsDefault_
@@ -32052,6 +32685,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncExclusiveLock.Release
   nameWithType: AsyncExclusiveLock.Release
+- uid: DotNext.Threading.AsyncExclusiveLock.TryAcquire
+  name: TryAcquire()
+  href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_TryAcquire
+  commentId: M:DotNext.Threading.AsyncExclusiveLock.TryAcquire
+  fullName: DotNext.Threading.AsyncExclusiveLock.TryAcquire()
+  nameWithType: AsyncExclusiveLock.TryAcquire()
 - uid: DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan)
   name: TryAcquire(TimeSpan)
   href: api/DotNext.Threading.AsyncExclusiveLock.html#DotNext_Threading_AsyncExclusiveLock_TryAcquire_System_TimeSpan_
@@ -32853,6 +33492,95 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncReaderWriterLock.IsWriteLockHeld
   nameWithType: AsyncReaderWriterLock.IsWriteLockHeld
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp
+  name: AsyncReaderWriterLock.LockStamp
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html
+  commentId: T:DotNext.Threading.AsyncReaderWriterLock.LockStamp
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp
+  nameWithType: AsyncReaderWriterLock.LockStamp
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals(DotNext.Threading.AsyncReaderWriterLock.LockStamp)
+  name: Equals(AsyncReaderWriterLock.LockStamp)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html#DotNext_Threading_AsyncReaderWriterLock_LockStamp_Equals_DotNext_Threading_AsyncReaderWriterLock_LockStamp_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals(DotNext.Threading.AsyncReaderWriterLock.LockStamp)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals(DotNext.Threading.AsyncReaderWriterLock.LockStamp)
+  nameWithType: AsyncReaderWriterLock.LockStamp.Equals(AsyncReaderWriterLock.LockStamp)
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals(System.Object)
+  name: Equals(Object)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html#DotNext_Threading_AsyncReaderWriterLock_LockStamp_Equals_System_Object_
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals(System.Object)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals(System.Object)
+  nameWithType: AsyncReaderWriterLock.LockStamp.Equals(Object)
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals*
+  name: Equals
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html#DotNext_Threading_AsyncReaderWriterLock_LockStamp_Equals_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equals
+  nameWithType: AsyncReaderWriterLock.LockStamp.Equals
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp.GetHashCode
+  name: GetHashCode()
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html#DotNext_Threading_AsyncReaderWriterLock_LockStamp_GetHashCode
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.LockStamp.GetHashCode
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp.GetHashCode()
+  nameWithType: AsyncReaderWriterLock.LockStamp.GetHashCode()
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp.GetHashCode*
+  name: GetHashCode
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html#DotNext_Threading_AsyncReaderWriterLock_LockStamp_GetHashCode_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.LockStamp.GetHashCode
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp.GetHashCode
+  nameWithType: AsyncReaderWriterLock.LockStamp.GetHashCode
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp.IsValid
+  name: IsValid
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html#DotNext_Threading_AsyncReaderWriterLock_LockStamp_IsValid
+  commentId: P:DotNext.Threading.AsyncReaderWriterLock.LockStamp.IsValid
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp.IsValid
+  nameWithType: AsyncReaderWriterLock.LockStamp.IsValid
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp.IsValid*
+  name: IsValid
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html#DotNext_Threading_AsyncReaderWriterLock_LockStamp_IsValid_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.LockStamp.IsValid
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp.IsValid
+  nameWithType: AsyncReaderWriterLock.LockStamp.IsValid
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Equality(DotNext.Threading.AsyncReaderWriterLock.LockStamp@,DotNext.Threading.AsyncReaderWriterLock.LockStamp@)
+  name: Equality(AsyncReaderWriterLock.LockStamp, AsyncReaderWriterLock.LockStamp)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html#DotNext_Threading_AsyncReaderWriterLock_LockStamp_op_Equality_DotNext_Threading_AsyncReaderWriterLock_LockStamp__DotNext_Threading_AsyncReaderWriterLock_LockStamp__
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Equality(DotNext.Threading.AsyncReaderWriterLock.LockStamp@,DotNext.Threading.AsyncReaderWriterLock.LockStamp@)
+  name.vb: Equality(ByRef AsyncReaderWriterLock.LockStamp, ByRef AsyncReaderWriterLock.LockStamp)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equality(DotNext.Threading.AsyncReaderWriterLock.LockStamp, DotNext.Threading.AsyncReaderWriterLock.LockStamp)
+  fullName.vb: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equality(ByRef DotNext.Threading.AsyncReaderWriterLock.LockStamp, ByRef DotNext.Threading.AsyncReaderWriterLock.LockStamp)
+  nameWithType: AsyncReaderWriterLock.LockStamp.Equality(AsyncReaderWriterLock.LockStamp, AsyncReaderWriterLock.LockStamp)
+  nameWithType.vb: AsyncReaderWriterLock.LockStamp.Equality(ByRef AsyncReaderWriterLock.LockStamp, ByRef AsyncReaderWriterLock.LockStamp)
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Equality*
+  name: Equality
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html#DotNext_Threading_AsyncReaderWriterLock_LockStamp_op_Equality_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Equality
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Equality
+  nameWithType: AsyncReaderWriterLock.LockStamp.Equality
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Inequality(DotNext.Threading.AsyncReaderWriterLock.LockStamp@,DotNext.Threading.AsyncReaderWriterLock.LockStamp@)
+  name: Inequality(AsyncReaderWriterLock.LockStamp, AsyncReaderWriterLock.LockStamp)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html#DotNext_Threading_AsyncReaderWriterLock_LockStamp_op_Inequality_DotNext_Threading_AsyncReaderWriterLock_LockStamp__DotNext_Threading_AsyncReaderWriterLock_LockStamp__
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Inequality(DotNext.Threading.AsyncReaderWriterLock.LockStamp@,DotNext.Threading.AsyncReaderWriterLock.LockStamp@)
+  name.vb: Inequality(ByRef AsyncReaderWriterLock.LockStamp, ByRef AsyncReaderWriterLock.LockStamp)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Inequality(DotNext.Threading.AsyncReaderWriterLock.LockStamp, DotNext.Threading.AsyncReaderWriterLock.LockStamp)
+  fullName.vb: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Inequality(ByRef DotNext.Threading.AsyncReaderWriterLock.LockStamp, ByRef DotNext.Threading.AsyncReaderWriterLock.LockStamp)
+  nameWithType: AsyncReaderWriterLock.LockStamp.Inequality(AsyncReaderWriterLock.LockStamp, AsyncReaderWriterLock.LockStamp)
+  nameWithType.vb: AsyncReaderWriterLock.LockStamp.Inequality(ByRef AsyncReaderWriterLock.LockStamp, ByRef AsyncReaderWriterLock.LockStamp)
+- uid: DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Inequality*
+  name: Inequality
+  href: api/DotNext.Threading.AsyncReaderWriterLock.LockStamp.html#DotNext_Threading_AsyncReaderWriterLock_LockStamp_op_Inequality_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.LockStamp.op_Inequality
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.LockStamp.Inequality
+  nameWithType: AsyncReaderWriterLock.LockStamp.Inequality
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock
+  name: TryEnterReadLock()
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock()
+  nameWithType: AsyncReaderWriterLock.TryEnterReadLock()
 - uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock(System.TimeSpan)
   name: TryEnterReadLock(TimeSpan)
   href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterReadLock_System_TimeSpan_
@@ -32872,6 +33600,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterReadLock
   nameWithType: AsyncReaderWriterLock.TryEnterReadLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock
+  name: TryEnterUpgradeableReadLock()
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLock
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock()
+  nameWithType: AsyncReaderWriterLock.TryEnterUpgradeableReadLock()
 - uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock(System.TimeSpan)
   name: TryEnterUpgradeableReadLock(TimeSpan)
   href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterUpgradeableReadLock_System_TimeSpan_
@@ -32891,6 +33625,21 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterUpgradeableReadLock
   nameWithType: AsyncReaderWriterLock.TryEnterUpgradeableReadLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock
+  name: TryEnterWriteLock()
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock()
+  nameWithType: AsyncReaderWriterLock.TryEnterWriteLock()
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(DotNext.Threading.AsyncReaderWriterLock.LockStamp@)
+  name: TryEnterWriteLock(AsyncReaderWriterLock.LockStamp)
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_DotNext_Threading_AsyncReaderWriterLock_LockStamp__
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(DotNext.Threading.AsyncReaderWriterLock.LockStamp@)
+  name.vb: TryEnterWriteLock(ByRef AsyncReaderWriterLock.LockStamp)
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(DotNext.Threading.AsyncReaderWriterLock.LockStamp)
+  fullName.vb: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(ByRef DotNext.Threading.AsyncReaderWriterLock.LockStamp)
+  nameWithType: AsyncReaderWriterLock.TryEnterWriteLock(AsyncReaderWriterLock.LockStamp)
+  nameWithType.vb: AsyncReaderWriterLock.TryEnterWriteLock(ByRef AsyncReaderWriterLock.LockStamp)
 - uid: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock(System.TimeSpan)
   name: TryEnterWriteLock(TimeSpan)
   href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryEnterWriteLock_System_TimeSpan_
@@ -32910,6 +33659,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncReaderWriterLock.TryEnterWriteLock
   nameWithType: AsyncReaderWriterLock.TryEnterWriteLock
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryOptimisticRead
+  name: TryOptimisticRead()
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryOptimisticRead
+  commentId: M:DotNext.Threading.AsyncReaderWriterLock.TryOptimisticRead
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryOptimisticRead()
+  nameWithType: AsyncReaderWriterLock.TryOptimisticRead()
+- uid: DotNext.Threading.AsyncReaderWriterLock.TryOptimisticRead*
+  name: TryOptimisticRead
+  href: api/DotNext.Threading.AsyncReaderWriterLock.html#DotNext_Threading_AsyncReaderWriterLock_TryOptimisticRead_
+  commentId: Overload:DotNext.Threading.AsyncReaderWriterLock.TryOptimisticRead
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncReaderWriterLock.TryOptimisticRead
+  nameWithType: AsyncReaderWriterLock.TryOptimisticRead
 - uid: DotNext.Threading.AsyncSharedLock
   name: AsyncSharedLock
   href: api/DotNext.Threading.AsyncSharedLock.html
@@ -32961,6 +33723,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncSharedLock.ConcurrencyLevel
   nameWithType: AsyncSharedLock.ConcurrencyLevel
+- uid: DotNext.Threading.AsyncSharedLock.Downgrade
+  name: Downgrade()
+  href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_Downgrade
+  commentId: M:DotNext.Threading.AsyncSharedLock.Downgrade
+  fullName: DotNext.Threading.AsyncSharedLock.Downgrade()
+  nameWithType: AsyncSharedLock.Downgrade()
+- uid: DotNext.Threading.AsyncSharedLock.Downgrade*
+  name: Downgrade
+  href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_Downgrade_
+  commentId: Overload:DotNext.Threading.AsyncSharedLock.Downgrade
+  isSpec: "True"
+  fullName: DotNext.Threading.AsyncSharedLock.Downgrade
+  nameWithType: AsyncSharedLock.Downgrade
 - uid: DotNext.Threading.AsyncSharedLock.IsLockHeld
   name: IsLockHeld
   href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_IsLockHeld
@@ -33000,6 +33775,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.AsyncSharedLock.RemainingCount
   nameWithType: AsyncSharedLock.RemainingCount
+- uid: DotNext.Threading.AsyncSharedLock.TryAcquire(System.Boolean)
+  name: TryAcquire(Boolean)
+  href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_TryAcquire_System_Boolean_
+  commentId: M:DotNext.Threading.AsyncSharedLock.TryAcquire(System.Boolean)
+  fullName: DotNext.Threading.AsyncSharedLock.TryAcquire(System.Boolean)
+  nameWithType: AsyncSharedLock.TryAcquire(Boolean)
 - uid: DotNext.Threading.AsyncSharedLock.TryAcquire(System.Boolean,System.TimeSpan)
   name: TryAcquire(Boolean, TimeSpan)
   href: api/DotNext.Threading.AsyncSharedLock.html#DotNext_Threading_AsyncSharedLock_TryAcquire_System_Boolean_System_TimeSpan_
@@ -33144,15 +33925,14 @@ references:
   fullName.vb: DotNext.Threading.Atomic(Of T).Accumulator
   nameWithType: Atomic<T>.Accumulator
   nameWithType.vb: Atomic(Of T).Accumulator
-- uid: DotNext.Threading.Atomic`1.Clone(DotNext.Threading.Atomic{`0}@)
-  name: Clone(out Atomic<T>)
-  href: api/DotNext.Threading.Atomic-1.html#DotNext_Threading_Atomic_1_Clone_DotNext_Threading_Atomic__0___
-  commentId: M:DotNext.Threading.Atomic`1.Clone(DotNext.Threading.Atomic{`0}@)
-  name.vb: Clone(ByRef Atomic(Of T))
-  fullName: DotNext.Threading.Atomic<T>.Clone(out DotNext.Threading.Atomic<T>)
-  fullName.vb: DotNext.Threading.Atomic(Of T).Clone(ByRef DotNext.Threading.Atomic(Of T))
-  nameWithType: Atomic<T>.Clone(out Atomic<T>)
-  nameWithType.vb: Atomic(Of T).Clone(ByRef Atomic(Of T))
+- uid: DotNext.Threading.Atomic`1.Clone
+  name: Clone()
+  href: api/DotNext.Threading.Atomic-1.html#DotNext_Threading_Atomic_1_Clone
+  commentId: M:DotNext.Threading.Atomic`1.Clone
+  fullName: DotNext.Threading.Atomic<T>.Clone()
+  fullName.vb: DotNext.Threading.Atomic(Of T).Clone()
+  nameWithType: Atomic<T>.Clone()
+  nameWithType.vb: Atomic(Of T).Clone()
 - uid: DotNext.Threading.Atomic`1.Clone*
   name: Clone
   href: api/DotNext.Threading.Atomic-1.html#DotNext_Threading_Atomic_1_Clone_
@@ -38264,6 +39044,82 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.ReaderWriterSpinLock.IsWriteLockHeld
   nameWithType: ReaderWriterSpinLock.IsWriteLockHeld
+- uid: DotNext.Threading.ReaderWriterSpinLock.LockStamp
+  name: ReaderWriterSpinLock.LockStamp
+  href: api/DotNext.Threading.ReaderWriterSpinLock.LockStamp.html
+  commentId: T:DotNext.Threading.ReaderWriterSpinLock.LockStamp
+  fullName: DotNext.Threading.ReaderWriterSpinLock.LockStamp
+  nameWithType: ReaderWriterSpinLock.LockStamp
+- uid: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equals(DotNext.Threading.ReaderWriterSpinLock.LockStamp)
+  name: Equals(ReaderWriterSpinLock.LockStamp)
+  href: api/DotNext.Threading.ReaderWriterSpinLock.LockStamp.html#DotNext_Threading_ReaderWriterSpinLock_LockStamp_Equals_DotNext_Threading_ReaderWriterSpinLock_LockStamp_
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equals(DotNext.Threading.ReaderWriterSpinLock.LockStamp)
+  fullName: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equals(DotNext.Threading.ReaderWriterSpinLock.LockStamp)
+  nameWithType: ReaderWriterSpinLock.LockStamp.Equals(ReaderWriterSpinLock.LockStamp)
+- uid: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equals(System.Object)
+  name: Equals(Object)
+  href: api/DotNext.Threading.ReaderWriterSpinLock.LockStamp.html#DotNext_Threading_ReaderWriterSpinLock_LockStamp_Equals_System_Object_
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equals(System.Object)
+  fullName: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equals(System.Object)
+  nameWithType: ReaderWriterSpinLock.LockStamp.Equals(Object)
+- uid: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equals*
+  name: Equals
+  href: api/DotNext.Threading.ReaderWriterSpinLock.LockStamp.html#DotNext_Threading_ReaderWriterSpinLock_LockStamp_Equals_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equals
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equals
+  nameWithType: ReaderWriterSpinLock.LockStamp.Equals
+- uid: DotNext.Threading.ReaderWriterSpinLock.LockStamp.GetHashCode
+  name: GetHashCode()
+  href: api/DotNext.Threading.ReaderWriterSpinLock.LockStamp.html#DotNext_Threading_ReaderWriterSpinLock_LockStamp_GetHashCode
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.LockStamp.GetHashCode
+  fullName: DotNext.Threading.ReaderWriterSpinLock.LockStamp.GetHashCode()
+  nameWithType: ReaderWriterSpinLock.LockStamp.GetHashCode()
+- uid: DotNext.Threading.ReaderWriterSpinLock.LockStamp.GetHashCode*
+  name: GetHashCode
+  href: api/DotNext.Threading.ReaderWriterSpinLock.LockStamp.html#DotNext_Threading_ReaderWriterSpinLock_LockStamp_GetHashCode_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.LockStamp.GetHashCode
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.LockStamp.GetHashCode
+  nameWithType: ReaderWriterSpinLock.LockStamp.GetHashCode
+- uid: DotNext.Threading.ReaderWriterSpinLock.LockStamp.op_Equality(DotNext.Threading.ReaderWriterSpinLock.LockStamp@,DotNext.Threading.ReaderWriterSpinLock.LockStamp@)
+  name: Equality(ReaderWriterSpinLock.LockStamp, ReaderWriterSpinLock.LockStamp)
+  href: api/DotNext.Threading.ReaderWriterSpinLock.LockStamp.html#DotNext_Threading_ReaderWriterSpinLock_LockStamp_op_Equality_DotNext_Threading_ReaderWriterSpinLock_LockStamp__DotNext_Threading_ReaderWriterSpinLock_LockStamp__
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.LockStamp.op_Equality(DotNext.Threading.ReaderWriterSpinLock.LockStamp@,DotNext.Threading.ReaderWriterSpinLock.LockStamp@)
+  name.vb: Equality(ByRef ReaderWriterSpinLock.LockStamp, ByRef ReaderWriterSpinLock.LockStamp)
+  fullName: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equality(DotNext.Threading.ReaderWriterSpinLock.LockStamp, DotNext.Threading.ReaderWriterSpinLock.LockStamp)
+  fullName.vb: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equality(ByRef DotNext.Threading.ReaderWriterSpinLock.LockStamp, ByRef DotNext.Threading.ReaderWriterSpinLock.LockStamp)
+  nameWithType: ReaderWriterSpinLock.LockStamp.Equality(ReaderWriterSpinLock.LockStamp, ReaderWriterSpinLock.LockStamp)
+  nameWithType.vb: ReaderWriterSpinLock.LockStamp.Equality(ByRef ReaderWriterSpinLock.LockStamp, ByRef ReaderWriterSpinLock.LockStamp)
+- uid: DotNext.Threading.ReaderWriterSpinLock.LockStamp.op_Equality*
+  name: Equality
+  href: api/DotNext.Threading.ReaderWriterSpinLock.LockStamp.html#DotNext_Threading_ReaderWriterSpinLock_LockStamp_op_Equality_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.LockStamp.op_Equality
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Equality
+  nameWithType: ReaderWriterSpinLock.LockStamp.Equality
+- uid: DotNext.Threading.ReaderWriterSpinLock.LockStamp.op_Inequality(DotNext.Threading.ReaderWriterSpinLock.LockStamp@,DotNext.Threading.ReaderWriterSpinLock.LockStamp@)
+  name: Inequality(ReaderWriterSpinLock.LockStamp, ReaderWriterSpinLock.LockStamp)
+  href: api/DotNext.Threading.ReaderWriterSpinLock.LockStamp.html#DotNext_Threading_ReaderWriterSpinLock_LockStamp_op_Inequality_DotNext_Threading_ReaderWriterSpinLock_LockStamp__DotNext_Threading_ReaderWriterSpinLock_LockStamp__
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.LockStamp.op_Inequality(DotNext.Threading.ReaderWriterSpinLock.LockStamp@,DotNext.Threading.ReaderWriterSpinLock.LockStamp@)
+  name.vb: Inequality(ByRef ReaderWriterSpinLock.LockStamp, ByRef ReaderWriterSpinLock.LockStamp)
+  fullName: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Inequality(DotNext.Threading.ReaderWriterSpinLock.LockStamp, DotNext.Threading.ReaderWriterSpinLock.LockStamp)
+  fullName.vb: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Inequality(ByRef DotNext.Threading.ReaderWriterSpinLock.LockStamp, ByRef DotNext.Threading.ReaderWriterSpinLock.LockStamp)
+  nameWithType: ReaderWriterSpinLock.LockStamp.Inequality(ReaderWriterSpinLock.LockStamp, ReaderWriterSpinLock.LockStamp)
+  nameWithType.vb: ReaderWriterSpinLock.LockStamp.Inequality(ByRef ReaderWriterSpinLock.LockStamp, ByRef ReaderWriterSpinLock.LockStamp)
+- uid: DotNext.Threading.ReaderWriterSpinLock.LockStamp.op_Inequality*
+  name: Inequality
+  href: api/DotNext.Threading.ReaderWriterSpinLock.LockStamp.html#DotNext_Threading_ReaderWriterSpinLock_LockStamp_op_Inequality_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.LockStamp.op_Inequality
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.LockStamp.Inequality
+  nameWithType: ReaderWriterSpinLock.LockStamp.Inequality
+- uid: DotNext.Threading.ReaderWriterSpinLock.TryEnterReadLock
+  name: TryEnterReadLock()
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_TryEnterReadLock
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.TryEnterReadLock
+  fullName: DotNext.Threading.ReaderWriterSpinLock.TryEnterReadLock()
+  nameWithType: ReaderWriterSpinLock.TryEnterReadLock()
 - uid: DotNext.Threading.ReaderWriterSpinLock.TryEnterReadLock(System.TimeSpan,System.Threading.CancellationToken)
   name: TryEnterReadLock(TimeSpan, CancellationToken)
   href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_TryEnterReadLock_System_TimeSpan_System_Threading_CancellationToken_
@@ -38277,6 +39133,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.ReaderWriterSpinLock.TryEnterReadLock
   nameWithType: ReaderWriterSpinLock.TryEnterReadLock
+- uid: DotNext.Threading.ReaderWriterSpinLock.TryEnterWriteLock
+  name: TryEnterWriteLock()
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_TryEnterWriteLock
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.TryEnterWriteLock
+  fullName: DotNext.Threading.ReaderWriterSpinLock.TryEnterWriteLock()
+  nameWithType: ReaderWriterSpinLock.TryEnterWriteLock()
 - uid: DotNext.Threading.ReaderWriterSpinLock.TryEnterWriteLock(System.TimeSpan,System.Threading.CancellationToken)
   name: TryEnterWriteLock(TimeSpan, CancellationToken)
   href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_TryEnterWriteLock_System_TimeSpan_System_Threading_CancellationToken_
@@ -38290,6 +39152,35 @@ references:
   isSpec: "True"
   fullName: DotNext.Threading.ReaderWriterSpinLock.TryEnterWriteLock
   nameWithType: ReaderWriterSpinLock.TryEnterWriteLock
+- uid: DotNext.Threading.ReaderWriterSpinLock.TryOptimisticRead
+  name: TryOptimisticRead()
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_TryOptimisticRead
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.TryOptimisticRead
+  fullName: DotNext.Threading.ReaderWriterSpinLock.TryOptimisticRead()
+  nameWithType: ReaderWriterSpinLock.TryOptimisticRead()
+- uid: DotNext.Threading.ReaderWriterSpinLock.TryOptimisticRead*
+  name: TryOptimisticRead
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_TryOptimisticRead_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.TryOptimisticRead
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.TryOptimisticRead
+  nameWithType: ReaderWriterSpinLock.TryOptimisticRead
+- uid: DotNext.Threading.ReaderWriterSpinLock.Validate(DotNext.Threading.ReaderWriterSpinLock.LockStamp@)
+  name: Validate(ReaderWriterSpinLock.LockStamp)
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_Validate_DotNext_Threading_ReaderWriterSpinLock_LockStamp__
+  commentId: M:DotNext.Threading.ReaderWriterSpinLock.Validate(DotNext.Threading.ReaderWriterSpinLock.LockStamp@)
+  name.vb: Validate(ByRef ReaderWriterSpinLock.LockStamp)
+  fullName: DotNext.Threading.ReaderWriterSpinLock.Validate(DotNext.Threading.ReaderWriterSpinLock.LockStamp)
+  fullName.vb: DotNext.Threading.ReaderWriterSpinLock.Validate(ByRef DotNext.Threading.ReaderWriterSpinLock.LockStamp)
+  nameWithType: ReaderWriterSpinLock.Validate(ReaderWriterSpinLock.LockStamp)
+  nameWithType.vb: ReaderWriterSpinLock.Validate(ByRef ReaderWriterSpinLock.LockStamp)
+- uid: DotNext.Threading.ReaderWriterSpinLock.Validate*
+  name: Validate
+  href: api/DotNext.Threading.ReaderWriterSpinLock.html#DotNext_Threading_ReaderWriterSpinLock_Validate_
+  commentId: Overload:DotNext.Threading.ReaderWriterSpinLock.Validate
+  isSpec: "True"
+  fullName: DotNext.Threading.ReaderWriterSpinLock.Validate
+  nameWithType: ReaderWriterSpinLock.Validate
 - uid: DotNext.Threading.Synchronizer
   name: Synchronizer
   href: api/DotNext.Threading.Synchronizer.html
@@ -39411,15 +40302,12 @@ references:
   fullName: DotNext.ValueAction.DotNext.ICallable.DynamicInvoke
   nameWithType: ValueAction.ICallable.DynamicInvoke
   nameWithType.vb: ValueAction.DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueAction.Equals(DotNext.ValueAction@)
+- uid: DotNext.ValueAction.Equals(DotNext.ValueAction)
   name: Equals(ValueAction)
-  href: api/DotNext.ValueAction.html#DotNext_ValueAction_Equals_DotNext_ValueAction__
-  commentId: M:DotNext.ValueAction.Equals(DotNext.ValueAction@)
-  name.vb: Equals(ByRef ValueAction)
+  href: api/DotNext.ValueAction.html#DotNext_ValueAction_Equals_DotNext_ValueAction_
+  commentId: M:DotNext.ValueAction.Equals(DotNext.ValueAction)
   fullName: DotNext.ValueAction.Equals(DotNext.ValueAction)
-  fullName.vb: DotNext.ValueAction.Equals(ByRef DotNext.ValueAction)
   nameWithType: ValueAction.Equals(ValueAction)
-  nameWithType.vb: ValueAction.Equals(ByRef ValueAction)
 - uid: DotNext.ValueAction.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueAction.html#DotNext_ValueAction_Equals_System_Object_
@@ -39523,23 +40411,6 @@ references:
   isSpec: "True"
   fullName: DotNext.ValueAction.Inequality
   nameWithType: ValueAction.Inequality
-- uid: DotNext.ValueAction.System#IEquatable{DotNext#ValueAction}#Equals(DotNext.ValueAction)
-  name: IEquatable<ValueAction>.Equals(ValueAction)
-  href: api/DotNext.ValueAction.html#DotNext_ValueAction_System_IEquatable_DotNext_ValueAction__Equals_DotNext_ValueAction_
-  commentId: M:DotNext.ValueAction.System#IEquatable{DotNext#ValueAction}#Equals(DotNext.ValueAction)
-  name.vb: System.IEquatable<DotNext.ValueAction>.Equals(ValueAction)
-  fullName: DotNext.ValueAction.System.IEquatable<DotNext.ValueAction>.Equals(DotNext.ValueAction)
-  nameWithType: ValueAction.IEquatable<ValueAction>.Equals(ValueAction)
-  nameWithType.vb: ValueAction.System.IEquatable<DotNext.ValueAction>.Equals(ValueAction)
-- uid: DotNext.ValueAction.System#IEquatable{DotNext#ValueAction}#Equals*
-  name: IEquatable<ValueAction>.Equals
-  href: api/DotNext.ValueAction.html#DotNext_ValueAction_System_IEquatable_DotNext_ValueAction__Equals_
-  commentId: Overload:DotNext.ValueAction.System#IEquatable{DotNext#ValueAction}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueAction>.Equals
-  fullName: DotNext.ValueAction.System.IEquatable<DotNext.ValueAction>.Equals
-  nameWithType: ValueAction.IEquatable<ValueAction>.Equals
-  nameWithType.vb: ValueAction.System.IEquatable<DotNext.ValueAction>.Equals
 - uid: DotNext.ValueAction.Target
   name: Target
   href: api/DotNext.ValueAction.html#DotNext_ValueAction_Target
@@ -39633,15 +40504,15 @@ references:
   fullName.vb: DotNext.ValueAction(Of T).DotNext.ICallable.DynamicInvoke
   nameWithType: ValueAction<T>.ICallable.DynamicInvoke
   nameWithType.vb: ValueAction(Of T).DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueAction`1.Equals(DotNext.ValueAction{`0}@)
+- uid: DotNext.ValueAction`1.Equals(DotNext.ValueAction{`0})
   name: Equals(ValueAction<T>)
-  href: api/DotNext.ValueAction-1.html#DotNext_ValueAction_1_Equals_DotNext_ValueAction__0___
-  commentId: M:DotNext.ValueAction`1.Equals(DotNext.ValueAction{`0}@)
-  name.vb: Equals(ByRef ValueAction(Of T))
+  href: api/DotNext.ValueAction-1.html#DotNext_ValueAction_1_Equals_DotNext_ValueAction__0__
+  commentId: M:DotNext.ValueAction`1.Equals(DotNext.ValueAction{`0})
+  name.vb: Equals(ValueAction(Of T))
   fullName: DotNext.ValueAction<T>.Equals(DotNext.ValueAction<T>)
-  fullName.vb: DotNext.ValueAction(Of T).Equals(ByRef DotNext.ValueAction(Of T))
+  fullName.vb: DotNext.ValueAction(Of T).Equals(DotNext.ValueAction(Of T))
   nameWithType: ValueAction<T>.Equals(ValueAction<T>)
-  nameWithType.vb: ValueAction(Of T).Equals(ByRef ValueAction(Of T))
+  nameWithType.vb: ValueAction(Of T).Equals(ValueAction(Of T))
 - uid: DotNext.ValueAction`1.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueAction-1.html#DotNext_ValueAction_1_Equals_System_Object_
@@ -39765,25 +40636,6 @@ references:
   fullName.vb: DotNext.ValueAction(Of T).Inequality
   nameWithType: ValueAction<T>.Inequality
   nameWithType.vb: ValueAction(Of T).Inequality
-- uid: DotNext.ValueAction`1.System#IEquatable{DotNext#ValueAction{T}}#Equals(DotNext.ValueAction{`0})
-  name: IEquatable<ValueAction<T>>.Equals(ValueAction<T>)
-  href: api/DotNext.ValueAction-1.html#DotNext_ValueAction_1_System_IEquatable_DotNext_ValueAction_T___Equals_DotNext_ValueAction__0__
-  commentId: M:DotNext.ValueAction`1.System#IEquatable{DotNext#ValueAction{T}}#Equals(DotNext.ValueAction{`0})
-  name.vb: System.IEquatable<DotNext.ValueAction<T>>.Equals(ValueAction(Of T))
-  fullName: DotNext.ValueAction<T>.System.IEquatable<DotNext.ValueAction<T>>.Equals(DotNext.ValueAction<T>)
-  fullName.vb: DotNext.ValueAction(Of T).System.IEquatable<DotNext.ValueAction<T>>.Equals(DotNext.ValueAction(Of T))
-  nameWithType: ValueAction<T>.IEquatable<ValueAction<T>>.Equals(ValueAction<T>)
-  nameWithType.vb: ValueAction(Of T).System.IEquatable<DotNext.ValueAction<T>>.Equals(ValueAction(Of T))
-- uid: DotNext.ValueAction`1.System#IEquatable{DotNext#ValueAction{T}}#Equals*
-  name: IEquatable<ValueAction<T>>.Equals
-  href: api/DotNext.ValueAction-1.html#DotNext_ValueAction_1_System_IEquatable_DotNext_ValueAction_T___Equals_
-  commentId: Overload:DotNext.ValueAction`1.System#IEquatable{DotNext#ValueAction{T}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueAction<T>>.Equals
-  fullName: DotNext.ValueAction<T>.System.IEquatable<DotNext.ValueAction<T>>.Equals
-  fullName.vb: DotNext.ValueAction(Of T).System.IEquatable<DotNext.ValueAction<T>>.Equals
-  nameWithType: ValueAction<T>.IEquatable<ValueAction<T>>.Equals
-  nameWithType.vb: ValueAction(Of T).System.IEquatable<DotNext.ValueAction<T>>.Equals
 - uid: DotNext.ValueAction`1.Target
   name: Target
   href: api/DotNext.ValueAction-1.html#DotNext_ValueAction_1_Target
@@ -39889,15 +40741,15 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2).DotNext.ICallable.DynamicInvoke
   nameWithType: ValueAction<T1, T2>.ICallable.DynamicInvoke
   nameWithType.vb: ValueAction(Of T1, T2).DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueAction`2.Equals(DotNext.ValueAction{`0,`1}@)
+- uid: DotNext.ValueAction`2.Equals(DotNext.ValueAction{`0,`1})
   name: Equals(ValueAction<T1, T2>)
-  href: api/DotNext.ValueAction-2.html#DotNext_ValueAction_2_Equals_DotNext_ValueAction__0__1___
-  commentId: M:DotNext.ValueAction`2.Equals(DotNext.ValueAction{`0,`1}@)
-  name.vb: Equals(ByRef ValueAction(Of T1, T2))
+  href: api/DotNext.ValueAction-2.html#DotNext_ValueAction_2_Equals_DotNext_ValueAction__0__1__
+  commentId: M:DotNext.ValueAction`2.Equals(DotNext.ValueAction{`0,`1})
+  name.vb: Equals(ValueAction(Of T1, T2))
   fullName: DotNext.ValueAction<T1, T2>.Equals(DotNext.ValueAction<T1, T2>)
-  fullName.vb: DotNext.ValueAction(Of T1, T2).Equals(ByRef DotNext.ValueAction(Of T1, T2))
+  fullName.vb: DotNext.ValueAction(Of T1, T2).Equals(DotNext.ValueAction(Of T1, T2))
   nameWithType: ValueAction<T1, T2>.Equals(ValueAction<T1, T2>)
-  nameWithType.vb: ValueAction(Of T1, T2).Equals(ByRef ValueAction(Of T1, T2))
+  nameWithType.vb: ValueAction(Of T1, T2).Equals(ValueAction(Of T1, T2))
 - uid: DotNext.ValueAction`2.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueAction-2.html#DotNext_ValueAction_2_Equals_System_Object_
@@ -40021,25 +40873,6 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2).Inequality
   nameWithType: ValueAction<T1, T2>.Inequality
   nameWithType.vb: ValueAction(Of T1, T2).Inequality
-- uid: DotNext.ValueAction`2.System#IEquatable{DotNext#ValueAction{T1,T2}}#Equals(DotNext.ValueAction{`0,`1})
-  name: IEquatable<ValueAction<T1, T2>>.Equals(ValueAction<T1, T2>)
-  href: api/DotNext.ValueAction-2.html#DotNext_ValueAction_2_System_IEquatable_DotNext_ValueAction_T1_T2___Equals_DotNext_ValueAction__0__1__
-  commentId: M:DotNext.ValueAction`2.System#IEquatable{DotNext#ValueAction{T1,T2}}#Equals(DotNext.ValueAction{`0,`1})
-  name.vb: System.IEquatable<DotNext.ValueAction<T1,T2>>.Equals(ValueAction(Of T1, T2))
-  fullName: DotNext.ValueAction<T1, T2>.System.IEquatable<DotNext.ValueAction<T1, T2>>.Equals(DotNext.ValueAction<T1, T2>)
-  fullName.vb: DotNext.ValueAction(Of T1, T2).System.IEquatable<DotNext.ValueAction<T1,T2>>.Equals(DotNext.ValueAction(Of T1, T2))
-  nameWithType: ValueAction<T1, T2>.IEquatable<ValueAction<T1, T2>>.Equals(ValueAction<T1, T2>)
-  nameWithType.vb: ValueAction(Of T1, T2).System.IEquatable<DotNext.ValueAction<T1,T2>>.Equals(ValueAction(Of T1, T2))
-- uid: DotNext.ValueAction`2.System#IEquatable{DotNext#ValueAction{T1,T2}}#Equals*
-  name: IEquatable<ValueAction<T1, T2>>.Equals
-  href: api/DotNext.ValueAction-2.html#DotNext_ValueAction_2_System_IEquatable_DotNext_ValueAction_T1_T2___Equals_
-  commentId: Overload:DotNext.ValueAction`2.System#IEquatable{DotNext#ValueAction{T1,T2}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueAction<T1,T2>>.Equals
-  fullName: DotNext.ValueAction<T1, T2>.System.IEquatable<DotNext.ValueAction<T1, T2>>.Equals
-  fullName.vb: DotNext.ValueAction(Of T1, T2).System.IEquatable<DotNext.ValueAction<T1,T2>>.Equals
-  nameWithType: ValueAction<T1, T2>.IEquatable<ValueAction<T1, T2>>.Equals
-  nameWithType.vb: ValueAction(Of T1, T2).System.IEquatable<DotNext.ValueAction<T1,T2>>.Equals
 - uid: DotNext.ValueAction`2.Target
   name: Target
   href: api/DotNext.ValueAction-2.html#DotNext_ValueAction_2_Target
@@ -40145,15 +40978,15 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2, T3).DotNext.ICallable.DynamicInvoke
   nameWithType: ValueAction<T1, T2, T3>.ICallable.DynamicInvoke
   nameWithType.vb: ValueAction(Of T1, T2, T3).DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueAction`3.Equals(DotNext.ValueAction{`0,`1,`2}@)
+- uid: DotNext.ValueAction`3.Equals(DotNext.ValueAction{`0,`1,`2})
   name: Equals(ValueAction<T1, T2, T3>)
-  href: api/DotNext.ValueAction-3.html#DotNext_ValueAction_3_Equals_DotNext_ValueAction__0__1__2___
-  commentId: M:DotNext.ValueAction`3.Equals(DotNext.ValueAction{`0,`1,`2}@)
-  name.vb: Equals(ByRef ValueAction(Of T1, T2, T3))
+  href: api/DotNext.ValueAction-3.html#DotNext_ValueAction_3_Equals_DotNext_ValueAction__0__1__2__
+  commentId: M:DotNext.ValueAction`3.Equals(DotNext.ValueAction{`0,`1,`2})
+  name.vb: Equals(ValueAction(Of T1, T2, T3))
   fullName: DotNext.ValueAction<T1, T2, T3>.Equals(DotNext.ValueAction<T1, T2, T3>)
-  fullName.vb: DotNext.ValueAction(Of T1, T2, T3).Equals(ByRef DotNext.ValueAction(Of T1, T2, T3))
+  fullName.vb: DotNext.ValueAction(Of T1, T2, T3).Equals(DotNext.ValueAction(Of T1, T2, T3))
   nameWithType: ValueAction<T1, T2, T3>.Equals(ValueAction<T1, T2, T3>)
-  nameWithType.vb: ValueAction(Of T1, T2, T3).Equals(ByRef ValueAction(Of T1, T2, T3))
+  nameWithType.vb: ValueAction(Of T1, T2, T3).Equals(ValueAction(Of T1, T2, T3))
 - uid: DotNext.ValueAction`3.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueAction-3.html#DotNext_ValueAction_3_Equals_System_Object_
@@ -40277,25 +41110,6 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2, T3).Inequality
   nameWithType: ValueAction<T1, T2, T3>.Inequality
   nameWithType.vb: ValueAction(Of T1, T2, T3).Inequality
-- uid: DotNext.ValueAction`3.System#IEquatable{DotNext#ValueAction{T1,T2,T3}}#Equals(DotNext.ValueAction{`0,`1,`2})
-  name: IEquatable<ValueAction<T1, T2, T3>>.Equals(ValueAction<T1, T2, T3>)
-  href: api/DotNext.ValueAction-3.html#DotNext_ValueAction_3_System_IEquatable_DotNext_ValueAction_T1_T2_T3___Equals_DotNext_ValueAction__0__1__2__
-  commentId: M:DotNext.ValueAction`3.System#IEquatable{DotNext#ValueAction{T1,T2,T3}}#Equals(DotNext.ValueAction{`0,`1,`2})
-  name.vb: System.IEquatable<DotNext.ValueAction<T1,T2,T3>>.Equals(ValueAction(Of T1, T2, T3))
-  fullName: DotNext.ValueAction<T1, T2, T3>.System.IEquatable<DotNext.ValueAction<T1, T2, T3>>.Equals(DotNext.ValueAction<T1, T2, T3>)
-  fullName.vb: DotNext.ValueAction(Of T1, T2, T3).System.IEquatable<DotNext.ValueAction<T1,T2,T3>>.Equals(DotNext.ValueAction(Of T1, T2, T3))
-  nameWithType: ValueAction<T1, T2, T3>.IEquatable<ValueAction<T1, T2, T3>>.Equals(ValueAction<T1, T2, T3>)
-  nameWithType.vb: ValueAction(Of T1, T2, T3).System.IEquatable<DotNext.ValueAction<T1,T2,T3>>.Equals(ValueAction(Of T1, T2, T3))
-- uid: DotNext.ValueAction`3.System#IEquatable{DotNext#ValueAction{T1,T2,T3}}#Equals*
-  name: IEquatable<ValueAction<T1, T2, T3>>.Equals
-  href: api/DotNext.ValueAction-3.html#DotNext_ValueAction_3_System_IEquatable_DotNext_ValueAction_T1_T2_T3___Equals_
-  commentId: Overload:DotNext.ValueAction`3.System#IEquatable{DotNext#ValueAction{T1,T2,T3}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueAction<T1,T2,T3>>.Equals
-  fullName: DotNext.ValueAction<T1, T2, T3>.System.IEquatable<DotNext.ValueAction<T1, T2, T3>>.Equals
-  fullName.vb: DotNext.ValueAction(Of T1, T2, T3).System.IEquatable<DotNext.ValueAction<T1,T2,T3>>.Equals
-  nameWithType: ValueAction<T1, T2, T3>.IEquatable<ValueAction<T1, T2, T3>>.Equals
-  nameWithType.vb: ValueAction(Of T1, T2, T3).System.IEquatable<DotNext.ValueAction<T1,T2,T3>>.Equals
 - uid: DotNext.ValueAction`3.Target
   name: Target
   href: api/DotNext.ValueAction-3.html#DotNext_ValueAction_3_Target
@@ -40401,15 +41215,15 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4).DotNext.ICallable.DynamicInvoke
   nameWithType: ValueAction<T1, T2, T3, T4>.ICallable.DynamicInvoke
   nameWithType.vb: ValueAction(Of T1, T2, T3, T4).DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueAction`4.Equals(DotNext.ValueAction{`0,`1,`2,`3}@)
+- uid: DotNext.ValueAction`4.Equals(DotNext.ValueAction{`0,`1,`2,`3})
   name: Equals(ValueAction<T1, T2, T3, T4>)
-  href: api/DotNext.ValueAction-4.html#DotNext_ValueAction_4_Equals_DotNext_ValueAction__0__1__2__3___
-  commentId: M:DotNext.ValueAction`4.Equals(DotNext.ValueAction{`0,`1,`2,`3}@)
-  name.vb: Equals(ByRef ValueAction(Of T1, T2, T3, T4))
+  href: api/DotNext.ValueAction-4.html#DotNext_ValueAction_4_Equals_DotNext_ValueAction__0__1__2__3__
+  commentId: M:DotNext.ValueAction`4.Equals(DotNext.ValueAction{`0,`1,`2,`3})
+  name.vb: Equals(ValueAction(Of T1, T2, T3, T4))
   fullName: DotNext.ValueAction<T1, T2, T3, T4>.Equals(DotNext.ValueAction<T1, T2, T3, T4>)
-  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4).Equals(ByRef DotNext.ValueAction(Of T1, T2, T3, T4))
+  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4).Equals(DotNext.ValueAction(Of T1, T2, T3, T4))
   nameWithType: ValueAction<T1, T2, T3, T4>.Equals(ValueAction<T1, T2, T3, T4>)
-  nameWithType.vb: ValueAction(Of T1, T2, T3, T4).Equals(ByRef ValueAction(Of T1, T2, T3, T4))
+  nameWithType.vb: ValueAction(Of T1, T2, T3, T4).Equals(ValueAction(Of T1, T2, T3, T4))
 - uid: DotNext.ValueAction`4.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueAction-4.html#DotNext_ValueAction_4_Equals_System_Object_
@@ -40533,25 +41347,6 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4).Inequality
   nameWithType: ValueAction<T1, T2, T3, T4>.Inequality
   nameWithType.vb: ValueAction(Of T1, T2, T3, T4).Inequality
-- uid: DotNext.ValueAction`4.System#IEquatable{DotNext#ValueAction{T1,T2,T3,T4}}#Equals(DotNext.ValueAction{`0,`1,`2,`3})
-  name: IEquatable<ValueAction<T1, T2, T3, T4>>.Equals(ValueAction<T1, T2, T3, T4>)
-  href: api/DotNext.ValueAction-4.html#DotNext_ValueAction_4_System_IEquatable_DotNext_ValueAction_T1_T2_T3_T4___Equals_DotNext_ValueAction__0__1__2__3__
-  commentId: M:DotNext.ValueAction`4.System#IEquatable{DotNext#ValueAction{T1,T2,T3,T4}}#Equals(DotNext.ValueAction{`0,`1,`2,`3})
-  name.vb: System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4>>.Equals(ValueAction(Of T1, T2, T3, T4))
-  fullName: DotNext.ValueAction<T1, T2, T3, T4>.System.IEquatable<DotNext.ValueAction<T1, T2, T3, T4>>.Equals(DotNext.ValueAction<T1, T2, T3, T4>)
-  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4).System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4>>.Equals(DotNext.ValueAction(Of T1, T2, T3, T4))
-  nameWithType: ValueAction<T1, T2, T3, T4>.IEquatable<ValueAction<T1, T2, T3, T4>>.Equals(ValueAction<T1, T2, T3, T4>)
-  nameWithType.vb: ValueAction(Of T1, T2, T3, T4).System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4>>.Equals(ValueAction(Of T1, T2, T3, T4))
-- uid: DotNext.ValueAction`4.System#IEquatable{DotNext#ValueAction{T1,T2,T3,T4}}#Equals*
-  name: IEquatable<ValueAction<T1, T2, T3, T4>>.Equals
-  href: api/DotNext.ValueAction-4.html#DotNext_ValueAction_4_System_IEquatable_DotNext_ValueAction_T1_T2_T3_T4___Equals_
-  commentId: Overload:DotNext.ValueAction`4.System#IEquatable{DotNext#ValueAction{T1,T2,T3,T4}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4>>.Equals
-  fullName: DotNext.ValueAction<T1, T2, T3, T4>.System.IEquatable<DotNext.ValueAction<T1, T2, T3, T4>>.Equals
-  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4).System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4>>.Equals
-  nameWithType: ValueAction<T1, T2, T3, T4>.IEquatable<ValueAction<T1, T2, T3, T4>>.Equals
-  nameWithType.vb: ValueAction(Of T1, T2, T3, T4).System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4>>.Equals
 - uid: DotNext.ValueAction`4.Target
   name: Target
   href: api/DotNext.ValueAction-4.html#DotNext_ValueAction_4_Target
@@ -40657,15 +41452,15 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4, T5).DotNext.ICallable.DynamicInvoke
   nameWithType: ValueAction<T1, T2, T3, T4, T5>.ICallable.DynamicInvoke
   nameWithType.vb: ValueAction(Of T1, T2, T3, T4, T5).DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueAction`5.Equals(DotNext.ValueAction{`0,`1,`2,`3,`4}@)
+- uid: DotNext.ValueAction`5.Equals(DotNext.ValueAction{`0,`1,`2,`3,`4})
   name: Equals(ValueAction<T1, T2, T3, T4, T5>)
-  href: api/DotNext.ValueAction-5.html#DotNext_ValueAction_5_Equals_DotNext_ValueAction__0__1__2__3__4___
-  commentId: M:DotNext.ValueAction`5.Equals(DotNext.ValueAction{`0,`1,`2,`3,`4}@)
-  name.vb: Equals(ByRef ValueAction(Of T1, T2, T3, T4, T5))
+  href: api/DotNext.ValueAction-5.html#DotNext_ValueAction_5_Equals_DotNext_ValueAction__0__1__2__3__4__
+  commentId: M:DotNext.ValueAction`5.Equals(DotNext.ValueAction{`0,`1,`2,`3,`4})
+  name.vb: Equals(ValueAction(Of T1, T2, T3, T4, T5))
   fullName: DotNext.ValueAction<T1, T2, T3, T4, T5>.Equals(DotNext.ValueAction<T1, T2, T3, T4, T5>)
-  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4, T5).Equals(ByRef DotNext.ValueAction(Of T1, T2, T3, T4, T5))
+  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4, T5).Equals(DotNext.ValueAction(Of T1, T2, T3, T4, T5))
   nameWithType: ValueAction<T1, T2, T3, T4, T5>.Equals(ValueAction<T1, T2, T3, T4, T5>)
-  nameWithType.vb: ValueAction(Of T1, T2, T3, T4, T5).Equals(ByRef ValueAction(Of T1, T2, T3, T4, T5))
+  nameWithType.vb: ValueAction(Of T1, T2, T3, T4, T5).Equals(ValueAction(Of T1, T2, T3, T4, T5))
 - uid: DotNext.ValueAction`5.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueAction-5.html#DotNext_ValueAction_5_Equals_System_Object_
@@ -40789,25 +41584,6 @@ references:
   fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4, T5).Inequality
   nameWithType: ValueAction<T1, T2, T3, T4, T5>.Inequality
   nameWithType.vb: ValueAction(Of T1, T2, T3, T4, T5).Inequality
-- uid: DotNext.ValueAction`5.System#IEquatable{DotNext#ValueAction{T1,T2,T3,T4,T5}}#Equals(DotNext.ValueAction{`0,`1,`2,`3,`4})
-  name: IEquatable<ValueAction<T1, T2, T3, T4, T5>>.Equals(ValueAction<T1, T2, T3, T4, T5>)
-  href: api/DotNext.ValueAction-5.html#DotNext_ValueAction_5_System_IEquatable_DotNext_ValueAction_T1_T2_T3_T4_T5___Equals_DotNext_ValueAction__0__1__2__3__4__
-  commentId: M:DotNext.ValueAction`5.System#IEquatable{DotNext#ValueAction{T1,T2,T3,T4,T5}}#Equals(DotNext.ValueAction{`0,`1,`2,`3,`4})
-  name.vb: System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4,T5>>.Equals(ValueAction(Of T1, T2, T3, T4, T5))
-  fullName: DotNext.ValueAction<T1, T2, T3, T4, T5>.System.IEquatable<DotNext.ValueAction<T1, T2, T3, T4, T5>>.Equals(DotNext.ValueAction<T1, T2, T3, T4, T5>)
-  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4, T5).System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4,T5>>.Equals(DotNext.ValueAction(Of T1, T2, T3, T4, T5))
-  nameWithType: ValueAction<T1, T2, T3, T4, T5>.IEquatable<ValueAction<T1, T2, T3, T4, T5>>.Equals(ValueAction<T1, T2, T3, T4, T5>)
-  nameWithType.vb: ValueAction(Of T1, T2, T3, T4, T5).System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4,T5>>.Equals(ValueAction(Of T1, T2, T3, T4, T5))
-- uid: DotNext.ValueAction`5.System#IEquatable{DotNext#ValueAction{T1,T2,T3,T4,T5}}#Equals*
-  name: IEquatable<ValueAction<T1, T2, T3, T4, T5>>.Equals
-  href: api/DotNext.ValueAction-5.html#DotNext_ValueAction_5_System_IEquatable_DotNext_ValueAction_T1_T2_T3_T4_T5___Equals_
-  commentId: Overload:DotNext.ValueAction`5.System#IEquatable{DotNext#ValueAction{T1,T2,T3,T4,T5}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4,T5>>.Equals
-  fullName: DotNext.ValueAction<T1, T2, T3, T4, T5>.System.IEquatable<DotNext.ValueAction<T1, T2, T3, T4, T5>>.Equals
-  fullName.vb: DotNext.ValueAction(Of T1, T2, T3, T4, T5).System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4,T5>>.Equals
-  nameWithType: ValueAction<T1, T2, T3, T4, T5>.IEquatable<ValueAction<T1, T2, T3, T4, T5>>.Equals
-  nameWithType.vb: ValueAction(Of T1, T2, T3, T4, T5).System.IEquatable<DotNext.ValueAction<T1,T2,T3,T4,T5>>.Equals
 - uid: DotNext.ValueAction`5.Target
   name: Target
   href: api/DotNext.ValueAction-5.html#DotNext_ValueAction_5_Target
@@ -40947,15 +41723,15 @@ references:
   fullName.vb: DotNext.ValueFunc(Of R).DotNext.ICallable.DynamicInvoke
   nameWithType: ValueFunc<R>.ICallable.DynamicInvoke
   nameWithType.vb: ValueFunc(Of R).DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueFunc`1.Equals(DotNext.ValueFunc{`0}@)
+- uid: DotNext.ValueFunc`1.Equals(DotNext.ValueFunc{`0})
   name: Equals(ValueFunc<R>)
-  href: api/DotNext.ValueFunc-1.html#DotNext_ValueFunc_1_Equals_DotNext_ValueFunc__0___
-  commentId: M:DotNext.ValueFunc`1.Equals(DotNext.ValueFunc{`0}@)
-  name.vb: Equals(ByRef ValueFunc(Of R))
+  href: api/DotNext.ValueFunc-1.html#DotNext_ValueFunc_1_Equals_DotNext_ValueFunc__0__
+  commentId: M:DotNext.ValueFunc`1.Equals(DotNext.ValueFunc{`0})
+  name.vb: Equals(ValueFunc(Of R))
   fullName: DotNext.ValueFunc<R>.Equals(DotNext.ValueFunc<R>)
-  fullName.vb: DotNext.ValueFunc(Of R).Equals(ByRef DotNext.ValueFunc(Of R))
+  fullName.vb: DotNext.ValueFunc(Of R).Equals(DotNext.ValueFunc(Of R))
   nameWithType: ValueFunc<R>.Equals(ValueFunc<R>)
-  nameWithType.vb: ValueFunc(Of R).Equals(ByRef ValueFunc(Of R))
+  nameWithType.vb: ValueFunc(Of R).Equals(ValueFunc(Of R))
 - uid: DotNext.ValueFunc`1.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueFunc-1.html#DotNext_ValueFunc_1_Equals_System_Object_
@@ -41079,25 +41855,6 @@ references:
   fullName.vb: DotNext.ValueFunc(Of R).Inequality
   nameWithType: ValueFunc<R>.Inequality
   nameWithType.vb: ValueFunc(Of R).Inequality
-- uid: DotNext.ValueFunc`1.System#IEquatable{DotNext#ValueFunc{R}}#Equals(DotNext.ValueFunc{`0})
-  name: IEquatable<ValueFunc<R>>.Equals(ValueFunc<R>)
-  href: api/DotNext.ValueFunc-1.html#DotNext_ValueFunc_1_System_IEquatable_DotNext_ValueFunc_R___Equals_DotNext_ValueFunc__0__
-  commentId: M:DotNext.ValueFunc`1.System#IEquatable{DotNext#ValueFunc{R}}#Equals(DotNext.ValueFunc{`0})
-  name.vb: System.IEquatable<DotNext.ValueFunc<R>>.Equals(ValueFunc(Of R))
-  fullName: DotNext.ValueFunc<R>.System.IEquatable<DotNext.ValueFunc<R>>.Equals(DotNext.ValueFunc<R>)
-  fullName.vb: DotNext.ValueFunc(Of R).System.IEquatable<DotNext.ValueFunc<R>>.Equals(DotNext.ValueFunc(Of R))
-  nameWithType: ValueFunc<R>.IEquatable<ValueFunc<R>>.Equals(ValueFunc<R>)
-  nameWithType.vb: ValueFunc(Of R).System.IEquatable<DotNext.ValueFunc<R>>.Equals(ValueFunc(Of R))
-- uid: DotNext.ValueFunc`1.System#IEquatable{DotNext#ValueFunc{R}}#Equals*
-  name: IEquatable<ValueFunc<R>>.Equals
-  href: api/DotNext.ValueFunc-1.html#DotNext_ValueFunc_1_System_IEquatable_DotNext_ValueFunc_R___Equals_
-  commentId: Overload:DotNext.ValueFunc`1.System#IEquatable{DotNext#ValueFunc{R}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueFunc<R>>.Equals
-  fullName: DotNext.ValueFunc<R>.System.IEquatable<DotNext.ValueFunc<R>>.Equals
-  fullName.vb: DotNext.ValueFunc(Of R).System.IEquatable<DotNext.ValueFunc<R>>.Equals
-  nameWithType: ValueFunc<R>.IEquatable<ValueFunc<R>>.Equals
-  nameWithType.vb: ValueFunc(Of R).System.IEquatable<DotNext.ValueFunc<R>>.Equals
 - uid: DotNext.ValueFunc`1.Target
   name: Target
   href: api/DotNext.ValueFunc-1.html#DotNext_ValueFunc_1_Target
@@ -41222,15 +41979,15 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T, R).DotNext.ICallable<System.Converter<T,R>>.ToDelegate
   nameWithType: ValueFunc<T, R>.ICallable<Converter<T, R>>.ToDelegate
   nameWithType.vb: ValueFunc(Of T, R).DotNext.ICallable<System.Converter<T,R>>.ToDelegate
-- uid: DotNext.ValueFunc`2.Equals(DotNext.ValueFunc{`0,`1}@)
+- uid: DotNext.ValueFunc`2.Equals(DotNext.ValueFunc{`0,`1})
   name: Equals(ValueFunc<T, R>)
-  href: api/DotNext.ValueFunc-2.html#DotNext_ValueFunc_2_Equals_DotNext_ValueFunc__0__1___
-  commentId: M:DotNext.ValueFunc`2.Equals(DotNext.ValueFunc{`0,`1}@)
-  name.vb: Equals(ByRef ValueFunc(Of T, R))
+  href: api/DotNext.ValueFunc-2.html#DotNext_ValueFunc_2_Equals_DotNext_ValueFunc__0__1__
+  commentId: M:DotNext.ValueFunc`2.Equals(DotNext.ValueFunc{`0,`1})
+  name.vb: Equals(ValueFunc(Of T, R))
   fullName: DotNext.ValueFunc<T, R>.Equals(DotNext.ValueFunc<T, R>)
-  fullName.vb: DotNext.ValueFunc(Of T, R).Equals(ByRef DotNext.ValueFunc(Of T, R))
+  fullName.vb: DotNext.ValueFunc(Of T, R).Equals(DotNext.ValueFunc(Of T, R))
   nameWithType: ValueFunc<T, R>.Equals(ValueFunc<T, R>)
-  nameWithType.vb: ValueFunc(Of T, R).Equals(ByRef ValueFunc(Of T, R))
+  nameWithType.vb: ValueFunc(Of T, R).Equals(ValueFunc(Of T, R))
 - uid: DotNext.ValueFunc`2.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueFunc-2.html#DotNext_ValueFunc_2_Equals_System_Object_
@@ -41363,25 +42120,6 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T, R).Inequality
   nameWithType: ValueFunc<T, R>.Inequality
   nameWithType.vb: ValueFunc(Of T, R).Inequality
-- uid: DotNext.ValueFunc`2.System#IEquatable{DotNext#ValueFunc{T,R}}#Equals(DotNext.ValueFunc{`0,`1})
-  name: IEquatable<ValueFunc<T, R>>.Equals(ValueFunc<T, R>)
-  href: api/DotNext.ValueFunc-2.html#DotNext_ValueFunc_2_System_IEquatable_DotNext_ValueFunc_T_R___Equals_DotNext_ValueFunc__0__1__
-  commentId: M:DotNext.ValueFunc`2.System#IEquatable{DotNext#ValueFunc{T,R}}#Equals(DotNext.ValueFunc{`0,`1})
-  name.vb: System.IEquatable<DotNext.ValueFunc<T,R>>.Equals(ValueFunc(Of T, R))
-  fullName: DotNext.ValueFunc<T, R>.System.IEquatable<DotNext.ValueFunc<T, R>>.Equals(DotNext.ValueFunc<T, R>)
-  fullName.vb: DotNext.ValueFunc(Of T, R).System.IEquatable<DotNext.ValueFunc<T,R>>.Equals(DotNext.ValueFunc(Of T, R))
-  nameWithType: ValueFunc<T, R>.IEquatable<ValueFunc<T, R>>.Equals(ValueFunc<T, R>)
-  nameWithType.vb: ValueFunc(Of T, R).System.IEquatable<DotNext.ValueFunc<T,R>>.Equals(ValueFunc(Of T, R))
-- uid: DotNext.ValueFunc`2.System#IEquatable{DotNext#ValueFunc{T,R}}#Equals*
-  name: IEquatable<ValueFunc<T, R>>.Equals
-  href: api/DotNext.ValueFunc-2.html#DotNext_ValueFunc_2_System_IEquatable_DotNext_ValueFunc_T_R___Equals_
-  commentId: Overload:DotNext.ValueFunc`2.System#IEquatable{DotNext#ValueFunc{T,R}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueFunc<T,R>>.Equals
-  fullName: DotNext.ValueFunc<T, R>.System.IEquatable<DotNext.ValueFunc<T, R>>.Equals
-  fullName.vb: DotNext.ValueFunc(Of T, R).System.IEquatable<DotNext.ValueFunc<T,R>>.Equals
-  nameWithType: ValueFunc<T, R>.IEquatable<ValueFunc<T, R>>.Equals
-  nameWithType.vb: ValueFunc(Of T, R).System.IEquatable<DotNext.ValueFunc<T,R>>.Equals
 - uid: DotNext.ValueFunc`2.Target
   name: Target
   href: api/DotNext.ValueFunc-2.html#DotNext_ValueFunc_2_Target
@@ -41487,15 +42225,15 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, R).DotNext.ICallable.DynamicInvoke
   nameWithType: ValueFunc<T1, T2, R>.ICallable.DynamicInvoke
   nameWithType.vb: ValueFunc(Of T1, T2, R).DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueFunc`3.Equals(DotNext.ValueFunc{`0,`1,`2}@)
+- uid: DotNext.ValueFunc`3.Equals(DotNext.ValueFunc{`0,`1,`2})
   name: Equals(ValueFunc<T1, T2, R>)
-  href: api/DotNext.ValueFunc-3.html#DotNext_ValueFunc_3_Equals_DotNext_ValueFunc__0__1__2___
-  commentId: M:DotNext.ValueFunc`3.Equals(DotNext.ValueFunc{`0,`1,`2}@)
-  name.vb: Equals(ByRef ValueFunc(Of T1, T2, R))
+  href: api/DotNext.ValueFunc-3.html#DotNext_ValueFunc_3_Equals_DotNext_ValueFunc__0__1__2__
+  commentId: M:DotNext.ValueFunc`3.Equals(DotNext.ValueFunc{`0,`1,`2})
+  name.vb: Equals(ValueFunc(Of T1, T2, R))
   fullName: DotNext.ValueFunc<T1, T2, R>.Equals(DotNext.ValueFunc<T1, T2, R>)
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, R).Equals(ByRef DotNext.ValueFunc(Of T1, T2, R))
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, R).Equals(DotNext.ValueFunc(Of T1, T2, R))
   nameWithType: ValueFunc<T1, T2, R>.Equals(ValueFunc<T1, T2, R>)
-  nameWithType.vb: ValueFunc(Of T1, T2, R).Equals(ByRef ValueFunc(Of T1, T2, R))
+  nameWithType.vb: ValueFunc(Of T1, T2, R).Equals(ValueFunc(Of T1, T2, R))
 - uid: DotNext.ValueFunc`3.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueFunc-3.html#DotNext_ValueFunc_3_Equals_System_Object_
@@ -41619,25 +42357,6 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, R).Inequality
   nameWithType: ValueFunc<T1, T2, R>.Inequality
   nameWithType.vb: ValueFunc(Of T1, T2, R).Inequality
-- uid: DotNext.ValueFunc`3.System#IEquatable{DotNext#ValueFunc{T1,T2,R}}#Equals(DotNext.ValueFunc{`0,`1,`2})
-  name: IEquatable<ValueFunc<T1, T2, R>>.Equals(ValueFunc<T1, T2, R>)
-  href: api/DotNext.ValueFunc-3.html#DotNext_ValueFunc_3_System_IEquatable_DotNext_ValueFunc_T1_T2_R___Equals_DotNext_ValueFunc__0__1__2__
-  commentId: M:DotNext.ValueFunc`3.System#IEquatable{DotNext#ValueFunc{T1,T2,R}}#Equals(DotNext.ValueFunc{`0,`1,`2})
-  name.vb: System.IEquatable<DotNext.ValueFunc<T1,T2,R>>.Equals(ValueFunc(Of T1, T2, R))
-  fullName: DotNext.ValueFunc<T1, T2, R>.System.IEquatable<DotNext.ValueFunc<T1, T2, R>>.Equals(DotNext.ValueFunc<T1, T2, R>)
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, R).System.IEquatable<DotNext.ValueFunc<T1,T2,R>>.Equals(DotNext.ValueFunc(Of T1, T2, R))
-  nameWithType: ValueFunc<T1, T2, R>.IEquatable<ValueFunc<T1, T2, R>>.Equals(ValueFunc<T1, T2, R>)
-  nameWithType.vb: ValueFunc(Of T1, T2, R).System.IEquatable<DotNext.ValueFunc<T1,T2,R>>.Equals(ValueFunc(Of T1, T2, R))
-- uid: DotNext.ValueFunc`3.System#IEquatable{DotNext#ValueFunc{T1,T2,R}}#Equals*
-  name: IEquatable<ValueFunc<T1, T2, R>>.Equals
-  href: api/DotNext.ValueFunc-3.html#DotNext_ValueFunc_3_System_IEquatable_DotNext_ValueFunc_T1_T2_R___Equals_
-  commentId: Overload:DotNext.ValueFunc`3.System#IEquatable{DotNext#ValueFunc{T1,T2,R}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueFunc<T1,T2,R>>.Equals
-  fullName: DotNext.ValueFunc<T1, T2, R>.System.IEquatable<DotNext.ValueFunc<T1, T2, R>>.Equals
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, R).System.IEquatable<DotNext.ValueFunc<T1,T2,R>>.Equals
-  nameWithType: ValueFunc<T1, T2, R>.IEquatable<ValueFunc<T1, T2, R>>.Equals
-  nameWithType.vb: ValueFunc(Of T1, T2, R).System.IEquatable<DotNext.ValueFunc<T1,T2,R>>.Equals
 - uid: DotNext.ValueFunc`3.Target
   name: Target
   href: api/DotNext.ValueFunc-3.html#DotNext_ValueFunc_3_Target
@@ -41743,15 +42462,15 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, R).DotNext.ICallable.DynamicInvoke
   nameWithType: ValueFunc<T1, T2, T3, R>.ICallable.DynamicInvoke
   nameWithType.vb: ValueFunc(Of T1, T2, T3, R).DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueFunc`4.Equals(DotNext.ValueFunc{`0,`1,`2,`3}@)
+- uid: DotNext.ValueFunc`4.Equals(DotNext.ValueFunc{`0,`1,`2,`3})
   name: Equals(ValueFunc<T1, T2, T3, R>)
-  href: api/DotNext.ValueFunc-4.html#DotNext_ValueFunc_4_Equals_DotNext_ValueFunc__0__1__2__3___
-  commentId: M:DotNext.ValueFunc`4.Equals(DotNext.ValueFunc{`0,`1,`2,`3}@)
-  name.vb: Equals(ByRef ValueFunc(Of T1, T2, T3, R))
+  href: api/DotNext.ValueFunc-4.html#DotNext_ValueFunc_4_Equals_DotNext_ValueFunc__0__1__2__3__
+  commentId: M:DotNext.ValueFunc`4.Equals(DotNext.ValueFunc{`0,`1,`2,`3})
+  name.vb: Equals(ValueFunc(Of T1, T2, T3, R))
   fullName: DotNext.ValueFunc<T1, T2, T3, R>.Equals(DotNext.ValueFunc<T1, T2, T3, R>)
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, R).Equals(ByRef DotNext.ValueFunc(Of T1, T2, T3, R))
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, R).Equals(DotNext.ValueFunc(Of T1, T2, T3, R))
   nameWithType: ValueFunc<T1, T2, T3, R>.Equals(ValueFunc<T1, T2, T3, R>)
-  nameWithType.vb: ValueFunc(Of T1, T2, T3, R).Equals(ByRef ValueFunc(Of T1, T2, T3, R))
+  nameWithType.vb: ValueFunc(Of T1, T2, T3, R).Equals(ValueFunc(Of T1, T2, T3, R))
 - uid: DotNext.ValueFunc`4.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueFunc-4.html#DotNext_ValueFunc_4_Equals_System_Object_
@@ -41875,25 +42594,6 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, R).Inequality
   nameWithType: ValueFunc<T1, T2, T3, R>.Inequality
   nameWithType.vb: ValueFunc(Of T1, T2, T3, R).Inequality
-- uid: DotNext.ValueFunc`4.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,R}}#Equals(DotNext.ValueFunc{`0,`1,`2,`3})
-  name: IEquatable<ValueFunc<T1, T2, T3, R>>.Equals(ValueFunc<T1, T2, T3, R>)
-  href: api/DotNext.ValueFunc-4.html#DotNext_ValueFunc_4_System_IEquatable_DotNext_ValueFunc_T1_T2_T3_R___Equals_DotNext_ValueFunc__0__1__2__3__
-  commentId: M:DotNext.ValueFunc`4.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,R}}#Equals(DotNext.ValueFunc{`0,`1,`2,`3})
-  name.vb: System.IEquatable<DotNext.ValueFunc<T1,T2,T3,R>>.Equals(ValueFunc(Of T1, T2, T3, R))
-  fullName: DotNext.ValueFunc<T1, T2, T3, R>.System.IEquatable<DotNext.ValueFunc<T1, T2, T3, R>>.Equals(DotNext.ValueFunc<T1, T2, T3, R>)
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,R>>.Equals(DotNext.ValueFunc(Of T1, T2, T3, R))
-  nameWithType: ValueFunc<T1, T2, T3, R>.IEquatable<ValueFunc<T1, T2, T3, R>>.Equals(ValueFunc<T1, T2, T3, R>)
-  nameWithType.vb: ValueFunc(Of T1, T2, T3, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,R>>.Equals(ValueFunc(Of T1, T2, T3, R))
-- uid: DotNext.ValueFunc`4.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,R}}#Equals*
-  name: IEquatable<ValueFunc<T1, T2, T3, R>>.Equals
-  href: api/DotNext.ValueFunc-4.html#DotNext_ValueFunc_4_System_IEquatable_DotNext_ValueFunc_T1_T2_T3_R___Equals_
-  commentId: Overload:DotNext.ValueFunc`4.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,R}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueFunc<T1,T2,T3,R>>.Equals
-  fullName: DotNext.ValueFunc<T1, T2, T3, R>.System.IEquatable<DotNext.ValueFunc<T1, T2, T3, R>>.Equals
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,R>>.Equals
-  nameWithType: ValueFunc<T1, T2, T3, R>.IEquatable<ValueFunc<T1, T2, T3, R>>.Equals
-  nameWithType.vb: ValueFunc(Of T1, T2, T3, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,R>>.Equals
 - uid: DotNext.ValueFunc`4.Target
   name: Target
   href: api/DotNext.ValueFunc-4.html#DotNext_ValueFunc_4_Target
@@ -41999,15 +42699,15 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, R).DotNext.ICallable.DynamicInvoke
   nameWithType: ValueFunc<T1, T2, T3, T4, R>.ICallable.DynamicInvoke
   nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, R).DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueFunc`5.Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4}@)
+- uid: DotNext.ValueFunc`5.Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4})
   name: Equals(ValueFunc<T1, T2, T3, T4, R>)
-  href: api/DotNext.ValueFunc-5.html#DotNext_ValueFunc_5_Equals_DotNext_ValueFunc__0__1__2__3__4___
-  commentId: M:DotNext.ValueFunc`5.Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4}@)
-  name.vb: Equals(ByRef ValueFunc(Of T1, T2, T3, T4, R))
+  href: api/DotNext.ValueFunc-5.html#DotNext_ValueFunc_5_Equals_DotNext_ValueFunc__0__1__2__3__4__
+  commentId: M:DotNext.ValueFunc`5.Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4})
+  name.vb: Equals(ValueFunc(Of T1, T2, T3, T4, R))
   fullName: DotNext.ValueFunc<T1, T2, T3, T4, R>.Equals(DotNext.ValueFunc<T1, T2, T3, T4, R>)
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, R).Equals(ByRef DotNext.ValueFunc(Of T1, T2, T3, T4, R))
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, R).Equals(DotNext.ValueFunc(Of T1, T2, T3, T4, R))
   nameWithType: ValueFunc<T1, T2, T3, T4, R>.Equals(ValueFunc<T1, T2, T3, T4, R>)
-  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, R).Equals(ByRef ValueFunc(Of T1, T2, T3, T4, R))
+  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, R).Equals(ValueFunc(Of T1, T2, T3, T4, R))
 - uid: DotNext.ValueFunc`5.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueFunc-5.html#DotNext_ValueFunc_5_Equals_System_Object_
@@ -42131,25 +42831,6 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, R).Inequality
   nameWithType: ValueFunc<T1, T2, T3, T4, R>.Inequality
   nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, R).Inequality
-- uid: DotNext.ValueFunc`5.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,T4,R}}#Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4})
-  name: IEquatable<ValueFunc<T1, T2, T3, T4, R>>.Equals(ValueFunc<T1, T2, T3, T4, R>)
-  href: api/DotNext.ValueFunc-5.html#DotNext_ValueFunc_5_System_IEquatable_DotNext_ValueFunc_T1_T2_T3_T4_R___Equals_DotNext_ValueFunc__0__1__2__3__4__
-  commentId: M:DotNext.ValueFunc`5.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,T4,R}}#Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4})
-  name.vb: System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,R>>.Equals(ValueFunc(Of T1, T2, T3, T4, R))
-  fullName: DotNext.ValueFunc<T1, T2, T3, T4, R>.System.IEquatable<DotNext.ValueFunc<T1, T2, T3, T4, R>>.Equals(DotNext.ValueFunc<T1, T2, T3, T4, R>)
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,R>>.Equals(DotNext.ValueFunc(Of T1, T2, T3, T4, R))
-  nameWithType: ValueFunc<T1, T2, T3, T4, R>.IEquatable<ValueFunc<T1, T2, T3, T4, R>>.Equals(ValueFunc<T1, T2, T3, T4, R>)
-  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,R>>.Equals(ValueFunc(Of T1, T2, T3, T4, R))
-- uid: DotNext.ValueFunc`5.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,T4,R}}#Equals*
-  name: IEquatable<ValueFunc<T1, T2, T3, T4, R>>.Equals
-  href: api/DotNext.ValueFunc-5.html#DotNext_ValueFunc_5_System_IEquatable_DotNext_ValueFunc_T1_T2_T3_T4_R___Equals_
-  commentId: Overload:DotNext.ValueFunc`5.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,T4,R}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,R>>.Equals
-  fullName: DotNext.ValueFunc<T1, T2, T3, T4, R>.System.IEquatable<DotNext.ValueFunc<T1, T2, T3, T4, R>>.Equals
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,R>>.Equals
-  nameWithType: ValueFunc<T1, T2, T3, T4, R>.IEquatable<ValueFunc<T1, T2, T3, T4, R>>.Equals
-  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,R>>.Equals
 - uid: DotNext.ValueFunc`5.Target
   name: Target
   href: api/DotNext.ValueFunc-5.html#DotNext_ValueFunc_5_Target
@@ -42255,15 +42936,15 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R).DotNext.ICallable.DynamicInvoke
   nameWithType: ValueFunc<T1, T2, T3, T4, T5, R>.ICallable.DynamicInvoke
   nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, T5, R).DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueFunc`6.Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4,`5}@)
+- uid: DotNext.ValueFunc`6.Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4,`5})
   name: Equals(ValueFunc<T1, T2, T3, T4, T5, R>)
-  href: api/DotNext.ValueFunc-6.html#DotNext_ValueFunc_6_Equals_DotNext_ValueFunc__0__1__2__3__4__5___
-  commentId: M:DotNext.ValueFunc`6.Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4,`5}@)
-  name.vb: Equals(ByRef ValueFunc(Of T1, T2, T3, T4, T5, R))
+  href: api/DotNext.ValueFunc-6.html#DotNext_ValueFunc_6_Equals_DotNext_ValueFunc__0__1__2__3__4__5__
+  commentId: M:DotNext.ValueFunc`6.Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4,`5})
+  name.vb: Equals(ValueFunc(Of T1, T2, T3, T4, T5, R))
   fullName: DotNext.ValueFunc<T1, T2, T3, T4, T5, R>.Equals(DotNext.ValueFunc<T1, T2, T3, T4, T5, R>)
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R).Equals(ByRef DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R))
+  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R).Equals(DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R))
   nameWithType: ValueFunc<T1, T2, T3, T4, T5, R>.Equals(ValueFunc<T1, T2, T3, T4, T5, R>)
-  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, T5, R).Equals(ByRef ValueFunc(Of T1, T2, T3, T4, T5, R))
+  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, T5, R).Equals(ValueFunc(Of T1, T2, T3, T4, T5, R))
 - uid: DotNext.ValueFunc`6.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueFunc-6.html#DotNext_ValueFunc_6_Equals_System_Object_
@@ -42387,25 +43068,6 @@ references:
   fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R).Inequality
   nameWithType: ValueFunc<T1, T2, T3, T4, T5, R>.Inequality
   nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, T5, R).Inequality
-- uid: DotNext.ValueFunc`6.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,T4,T5,R}}#Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4,`5})
-  name: IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>.Equals(ValueFunc<T1, T2, T3, T4, T5, R>)
-  href: api/DotNext.ValueFunc-6.html#DotNext_ValueFunc_6_System_IEquatable_DotNext_ValueFunc_T1_T2_T3_T4_T5_R___Equals_DotNext_ValueFunc__0__1__2__3__4__5__
-  commentId: M:DotNext.ValueFunc`6.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,T4,T5,R}}#Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4,`5})
-  name.vb: System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,T5,R>>.Equals(ValueFunc(Of T1, T2, T3, T4, T5, R))
-  fullName: DotNext.ValueFunc<T1, T2, T3, T4, T5, R>.System.IEquatable<DotNext.ValueFunc<T1, T2, T3, T4, T5, R>>.Equals(DotNext.ValueFunc<T1, T2, T3, T4, T5, R>)
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,T5,R>>.Equals(DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R))
-  nameWithType: ValueFunc<T1, T2, T3, T4, T5, R>.IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>.Equals(ValueFunc<T1, T2, T3, T4, T5, R>)
-  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, T5, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,T5,R>>.Equals(ValueFunc(Of T1, T2, T3, T4, T5, R))
-- uid: DotNext.ValueFunc`6.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,T4,T5,R}}#Equals*
-  name: IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>.Equals
-  href: api/DotNext.ValueFunc-6.html#DotNext_ValueFunc_6_System_IEquatable_DotNext_ValueFunc_T1_T2_T3_T4_T5_R___Equals_
-  commentId: Overload:DotNext.ValueFunc`6.System#IEquatable{DotNext#ValueFunc{T1,T2,T3,T4,T5,R}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,T5,R>>.Equals
-  fullName: DotNext.ValueFunc<T1, T2, T3, T4, T5, R>.System.IEquatable<DotNext.ValueFunc<T1, T2, T3, T4, T5, R>>.Equals
-  fullName.vb: DotNext.ValueFunc(Of T1, T2, T3, T4, T5, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,T5,R>>.Equals
-  nameWithType: ValueFunc<T1, T2, T3, T4, T5, R>.IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>.Equals
-  nameWithType.vb: ValueFunc(Of T1, T2, T3, T4, T5, R).System.IEquatable<DotNext.ValueFunc<T1,T2,T3,T4,T5,R>>.Equals
 - uid: DotNext.ValueFunc`6.Target
   name: Target
   href: api/DotNext.ValueFunc-6.html#DotNext_ValueFunc_6_Target
@@ -42511,15 +43173,15 @@ references:
   fullName.vb: DotNext.ValueRefAction(Of T, TArgs).DotNext.ICallable.DynamicInvoke
   nameWithType: ValueRefAction<T, TArgs>.ICallable.DynamicInvoke
   nameWithType.vb: ValueRefAction(Of T, TArgs).DotNext.ICallable.DynamicInvoke
-- uid: DotNext.ValueRefAction`2.Equals(DotNext.ValueRefAction{`0,`1}@)
+- uid: DotNext.ValueRefAction`2.Equals(DotNext.ValueRefAction{`0,`1})
   name: Equals(ValueRefAction<T, TArgs>)
-  href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_Equals_DotNext_ValueRefAction__0__1___
-  commentId: M:DotNext.ValueRefAction`2.Equals(DotNext.ValueRefAction{`0,`1}@)
-  name.vb: Equals(ByRef ValueRefAction(Of T, TArgs))
+  href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_Equals_DotNext_ValueRefAction__0__1__
+  commentId: M:DotNext.ValueRefAction`2.Equals(DotNext.ValueRefAction{`0,`1})
+  name.vb: Equals(ValueRefAction(Of T, TArgs))
   fullName: DotNext.ValueRefAction<T, TArgs>.Equals(DotNext.ValueRefAction<T, TArgs>)
-  fullName.vb: DotNext.ValueRefAction(Of T, TArgs).Equals(ByRef DotNext.ValueRefAction(Of T, TArgs))
+  fullName.vb: DotNext.ValueRefAction(Of T, TArgs).Equals(DotNext.ValueRefAction(Of T, TArgs))
   nameWithType: ValueRefAction<T, TArgs>.Equals(ValueRefAction<T, TArgs>)
-  nameWithType.vb: ValueRefAction(Of T, TArgs).Equals(ByRef ValueRefAction(Of T, TArgs))
+  nameWithType.vb: ValueRefAction(Of T, TArgs).Equals(ValueRefAction(Of T, TArgs))
 - uid: DotNext.ValueRefAction`2.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_Equals_System_Object_
@@ -42589,15 +43251,15 @@ references:
   fullName.vb: DotNext.ValueRefAction(Of T, TArgs).IsEmpty
   nameWithType: ValueRefAction<T, TArgs>.IsEmpty
   nameWithType.vb: ValueRefAction(Of T, TArgs).IsEmpty
-- uid: DotNext.ValueRefAction`2.op_Equality(DotNext.ValueRefAction{`0,`1}@,DotNext.ValueAction{`0,`1}@)
-  name: Equality(ValueRefAction<T, TArgs>, ValueAction<T, TArgs>)
-  href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_op_Equality_DotNext_ValueRefAction__0__1___DotNext_ValueAction__0__1___
-  commentId: M:DotNext.ValueRefAction`2.op_Equality(DotNext.ValueRefAction{`0,`1}@,DotNext.ValueAction{`0,`1}@)
-  name.vb: Equality(ByRef ValueRefAction(Of T, TArgs), ByRef ValueAction(Of T, TArgs))
-  fullName: DotNext.ValueRefAction<T, TArgs>.Equality(DotNext.ValueRefAction<T, TArgs>, DotNext.ValueAction<T, TArgs>)
-  fullName.vb: DotNext.ValueRefAction(Of T, TArgs).Equality(ByRef DotNext.ValueRefAction(Of T, TArgs), ByRef DotNext.ValueAction(Of T, TArgs))
-  nameWithType: ValueRefAction<T, TArgs>.Equality(ValueRefAction<T, TArgs>, ValueAction<T, TArgs>)
-  nameWithType.vb: ValueRefAction(Of T, TArgs).Equality(ByRef ValueRefAction(Of T, TArgs), ByRef ValueAction(Of T, TArgs))
+- uid: DotNext.ValueRefAction`2.op_Equality(DotNext.ValueRefAction{`0,`1}@,DotNext.ValueRefAction{`0,`1}@)
+  name: Equality(ValueRefAction<T, TArgs>, ValueRefAction<T, TArgs>)
+  href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_op_Equality_DotNext_ValueRefAction__0__1___DotNext_ValueRefAction__0__1___
+  commentId: M:DotNext.ValueRefAction`2.op_Equality(DotNext.ValueRefAction{`0,`1}@,DotNext.ValueRefAction{`0,`1}@)
+  name.vb: Equality(ByRef ValueRefAction(Of T, TArgs), ByRef ValueRefAction(Of T, TArgs))
+  fullName: DotNext.ValueRefAction<T, TArgs>.Equality(DotNext.ValueRefAction<T, TArgs>, DotNext.ValueRefAction<T, TArgs>)
+  fullName.vb: DotNext.ValueRefAction(Of T, TArgs).Equality(ByRef DotNext.ValueRefAction(Of T, TArgs), ByRef DotNext.ValueRefAction(Of T, TArgs))
+  nameWithType: ValueRefAction<T, TArgs>.Equality(ValueRefAction<T, TArgs>, ValueRefAction<T, TArgs>)
+  nameWithType.vb: ValueRefAction(Of T, TArgs).Equality(ByRef ValueRefAction(Of T, TArgs), ByRef ValueRefAction(Of T, TArgs))
 - uid: DotNext.ValueRefAction`2.op_Equality*
   name: Equality
   href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_op_Equality_
@@ -42626,15 +43288,15 @@ references:
   fullName.vb: DotNext.ValueRefAction(Of T, TArgs).Narrowing
   nameWithType: ValueRefAction<T, TArgs>.Explicit
   nameWithType.vb: ValueRefAction(Of T, TArgs).Narrowing
-- uid: DotNext.ValueRefAction`2.op_Inequality(DotNext.ValueRefAction{`0,`1}@,DotNext.ValueAction{`0,`1}@)
-  name: Inequality(ValueRefAction<T, TArgs>, ValueAction<T, TArgs>)
-  href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_op_Inequality_DotNext_ValueRefAction__0__1___DotNext_ValueAction__0__1___
-  commentId: M:DotNext.ValueRefAction`2.op_Inequality(DotNext.ValueRefAction{`0,`1}@,DotNext.ValueAction{`0,`1}@)
-  name.vb: Inequality(ByRef ValueRefAction(Of T, TArgs), ByRef ValueAction(Of T, TArgs))
-  fullName: DotNext.ValueRefAction<T, TArgs>.Inequality(DotNext.ValueRefAction<T, TArgs>, DotNext.ValueAction<T, TArgs>)
-  fullName.vb: DotNext.ValueRefAction(Of T, TArgs).Inequality(ByRef DotNext.ValueRefAction(Of T, TArgs), ByRef DotNext.ValueAction(Of T, TArgs))
-  nameWithType: ValueRefAction<T, TArgs>.Inequality(ValueRefAction<T, TArgs>, ValueAction<T, TArgs>)
-  nameWithType.vb: ValueRefAction(Of T, TArgs).Inequality(ByRef ValueRefAction(Of T, TArgs), ByRef ValueAction(Of T, TArgs))
+- uid: DotNext.ValueRefAction`2.op_Inequality(DotNext.ValueRefAction{`0,`1}@,DotNext.ValueRefAction{`0,`1}@)
+  name: Inequality(ValueRefAction<T, TArgs>, ValueRefAction<T, TArgs>)
+  href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_op_Inequality_DotNext_ValueRefAction__0__1___DotNext_ValueRefAction__0__1___
+  commentId: M:DotNext.ValueRefAction`2.op_Inequality(DotNext.ValueRefAction{`0,`1}@,DotNext.ValueRefAction{`0,`1}@)
+  name.vb: Inequality(ByRef ValueRefAction(Of T, TArgs), ByRef ValueRefAction(Of T, TArgs))
+  fullName: DotNext.ValueRefAction<T, TArgs>.Inequality(DotNext.ValueRefAction<T, TArgs>, DotNext.ValueRefAction<T, TArgs>)
+  fullName.vb: DotNext.ValueRefAction(Of T, TArgs).Inequality(ByRef DotNext.ValueRefAction(Of T, TArgs), ByRef DotNext.ValueRefAction(Of T, TArgs))
+  nameWithType: ValueRefAction<T, TArgs>.Inequality(ValueRefAction<T, TArgs>, ValueRefAction<T, TArgs>)
+  nameWithType.vb: ValueRefAction(Of T, TArgs).Inequality(ByRef ValueRefAction(Of T, TArgs), ByRef ValueRefAction(Of T, TArgs))
 - uid: DotNext.ValueRefAction`2.op_Inequality*
   name: Inequality
   href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_op_Inequality_
@@ -42644,25 +43306,6 @@ references:
   fullName.vb: DotNext.ValueRefAction(Of T, TArgs).Inequality
   nameWithType: ValueRefAction<T, TArgs>.Inequality
   nameWithType.vb: ValueRefAction(Of T, TArgs).Inequality
-- uid: DotNext.ValueRefAction`2.System#IEquatable{DotNext#ValueRefAction{T,TArgs}}#Equals(DotNext.ValueRefAction{`0,`1})
-  name: IEquatable<ValueRefAction<T, TArgs>>.Equals(ValueRefAction<T, TArgs>)
-  href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_System_IEquatable_DotNext_ValueRefAction_T_TArgs___Equals_DotNext_ValueRefAction__0__1__
-  commentId: M:DotNext.ValueRefAction`2.System#IEquatable{DotNext#ValueRefAction{T,TArgs}}#Equals(DotNext.ValueRefAction{`0,`1})
-  name.vb: System.IEquatable<DotNext.ValueRefAction<T,TArgs>>.Equals(ValueRefAction(Of T, TArgs))
-  fullName: DotNext.ValueRefAction<T, TArgs>.System.IEquatable<DotNext.ValueRefAction<T, TArgs>>.Equals(DotNext.ValueRefAction<T, TArgs>)
-  fullName.vb: DotNext.ValueRefAction(Of T, TArgs).System.IEquatable<DotNext.ValueRefAction<T,TArgs>>.Equals(DotNext.ValueRefAction(Of T, TArgs))
-  nameWithType: ValueRefAction<T, TArgs>.IEquatable<ValueRefAction<T, TArgs>>.Equals(ValueRefAction<T, TArgs>)
-  nameWithType.vb: ValueRefAction(Of T, TArgs).System.IEquatable<DotNext.ValueRefAction<T,TArgs>>.Equals(ValueRefAction(Of T, TArgs))
-- uid: DotNext.ValueRefAction`2.System#IEquatable{DotNext#ValueRefAction{T,TArgs}}#Equals*
-  name: IEquatable<ValueRefAction<T, TArgs>>.Equals
-  href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_System_IEquatable_DotNext_ValueRefAction_T_TArgs___Equals_
-  commentId: Overload:DotNext.ValueRefAction`2.System#IEquatable{DotNext#ValueRefAction{T,TArgs}}#Equals
-  isSpec: "True"
-  name.vb: System.IEquatable<DotNext.ValueRefAction<T,TArgs>>.Equals
-  fullName: DotNext.ValueRefAction<T, TArgs>.System.IEquatable<DotNext.ValueRefAction<T, TArgs>>.Equals
-  fullName.vb: DotNext.ValueRefAction(Of T, TArgs).System.IEquatable<DotNext.ValueRefAction<T,TArgs>>.Equals
-  nameWithType: ValueRefAction<T, TArgs>.IEquatable<ValueRefAction<T, TArgs>>.Equals
-  nameWithType.vb: ValueRefAction(Of T, TArgs).System.IEquatable<DotNext.ValueRefAction<T,TArgs>>.Equals
 - uid: DotNext.ValueRefAction`2.Target
   name: Target
   href: api/DotNext.ValueRefAction-2.html#DotNext_ValueRefAction_2_Target
@@ -42714,6 +43357,244 @@ references:
   fullName.vb: DotNext.ValueRefAction(Of T, TArgs).ToString
   nameWithType: ValueRefAction<T, TArgs>.ToString
   nameWithType.vb: ValueRefAction(Of T, TArgs).ToString
+- uid: DotNext.ValueRefFunc`3
+  name: ValueRefFunc<T, TArgs, TResult>
+  href: api/DotNext.ValueRefFunc-3.html
+  commentId: T:DotNext.ValueRefFunc`3
+  name.vb: ValueRefFunc(Of T, TArgs, TResult)
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult)
+  nameWithType: ValueRefFunc<T, TArgs, TResult>
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult)
+- uid: DotNext.ValueRefFunc`3.#ctor(DotNext.RefFunc{`0,`1,`2},System.Boolean)
+  name: ValueRefFunc(RefFunc<T, TArgs, TResult>, Boolean)
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3__ctor_DotNext_RefFunc__0__1__2__System_Boolean_
+  commentId: M:DotNext.ValueRefFunc`3.#ctor(DotNext.RefFunc{`0,`1,`2},System.Boolean)
+  name.vb: ValueRefFunc(RefFunc(Of T, TArgs, TResult), Boolean)
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.ValueRefFunc(DotNext.RefFunc<T, TArgs, TResult>, System.Boolean)
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).ValueRefFunc(DotNext.RefFunc(Of T, TArgs, TResult), System.Boolean)
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.ValueRefFunc(RefFunc<T, TArgs, TResult>, Boolean)
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).ValueRefFunc(RefFunc(Of T, TArgs, TResult), Boolean)
+- uid: DotNext.ValueRefFunc`3.#ctor(System.Reflection.MethodInfo)
+  name: ValueRefFunc(MethodInfo)
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3__ctor_System_Reflection_MethodInfo_
+  commentId: M:DotNext.ValueRefFunc`3.#ctor(System.Reflection.MethodInfo)
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.ValueRefFunc(System.Reflection.MethodInfo)
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).ValueRefFunc(System.Reflection.MethodInfo)
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.ValueRefFunc(MethodInfo)
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).ValueRefFunc(MethodInfo)
+- uid: DotNext.ValueRefFunc`3.#ctor*
+  name: ValueRefFunc
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3__ctor_
+  commentId: Overload:DotNext.ValueRefFunc`3.#ctor
+  isSpec: "True"
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.ValueRefFunc
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).ValueRefFunc
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.ValueRefFunc
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).ValueRefFunc
+- uid: DotNext.ValueRefFunc`3.DotNext#ICallable#DynamicInvoke(System.Object[])
+  name: ICallable.DynamicInvoke(Object[])
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_DotNext_ICallable_DynamicInvoke_System_Object___
+  commentId: M:DotNext.ValueRefFunc`3.DotNext#ICallable#DynamicInvoke(System.Object[])
+  name.vb: DotNext.ICallable.DynamicInvoke(Object())
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.DotNext.ICallable.DynamicInvoke(System.Object[])
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).DotNext.ICallable.DynamicInvoke(System.Object())
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.ICallable.DynamicInvoke(Object[])
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).DotNext.ICallable.DynamicInvoke(Object())
+- uid: DotNext.ValueRefFunc`3.DotNext#ICallable#DynamicInvoke*
+  name: ICallable.DynamicInvoke
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_DotNext_ICallable_DynamicInvoke_
+  commentId: Overload:DotNext.ValueRefFunc`3.DotNext#ICallable#DynamicInvoke
+  isSpec: "True"
+  name.vb: DotNext.ICallable.DynamicInvoke
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.DotNext.ICallable.DynamicInvoke
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).DotNext.ICallable.DynamicInvoke
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.ICallable.DynamicInvoke
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).DotNext.ICallable.DynamicInvoke
+- uid: DotNext.ValueRefFunc`3.Equals(DotNext.ValueRefFunc{`0,`1,`2})
+  name: Equals(ValueRefFunc<T, TArgs, TResult>)
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_Equals_DotNext_ValueRefFunc__0__1__2__
+  commentId: M:DotNext.ValueRefFunc`3.Equals(DotNext.ValueRefFunc{`0,`1,`2})
+  name.vb: Equals(ValueRefFunc(Of T, TArgs, TResult))
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Equals(DotNext.ValueRefFunc<T, TArgs, TResult>)
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Equals(DotNext.ValueRefFunc(Of T, TArgs, TResult))
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Equals(ValueRefFunc<T, TArgs, TResult>)
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Equals(ValueRefFunc(Of T, TArgs, TResult))
+- uid: DotNext.ValueRefFunc`3.Equals(System.Object)
+  name: Equals(Object)
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_Equals_System_Object_
+  commentId: M:DotNext.ValueRefFunc`3.Equals(System.Object)
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Equals(System.Object)
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Equals(System.Object)
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Equals(Object)
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Equals(Object)
+- uid: DotNext.ValueRefFunc`3.Equals*
+  name: Equals
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_Equals_
+  commentId: Overload:DotNext.ValueRefFunc`3.Equals
+  isSpec: "True"
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Equals
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Equals
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Equals
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Equals
+- uid: DotNext.ValueRefFunc`3.GetHashCode
+  name: GetHashCode()
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_GetHashCode
+  commentId: M:DotNext.ValueRefFunc`3.GetHashCode
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.GetHashCode()
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).GetHashCode()
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.GetHashCode()
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).GetHashCode()
+- uid: DotNext.ValueRefFunc`3.GetHashCode*
+  name: GetHashCode
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_GetHashCode_
+  commentId: Overload:DotNext.ValueRefFunc`3.GetHashCode
+  isSpec: "True"
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.GetHashCode
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).GetHashCode
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.GetHashCode
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).GetHashCode
+- uid: DotNext.ValueRefFunc`3.Invoke(`0@,`1)
+  name: Invoke(ref T, TArgs)
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_Invoke__0___1_
+  commentId: M:DotNext.ValueRefFunc`3.Invoke(`0@,`1)
+  name.vb: Invoke(ByRef T, TArgs)
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Invoke(ref T, TArgs)
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Invoke(ByRef T, TArgs)
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Invoke(ref T, TArgs)
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Invoke(ByRef T, TArgs)
+- uid: DotNext.ValueRefFunc`3.Invoke*
+  name: Invoke
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_Invoke_
+  commentId: Overload:DotNext.ValueRefFunc`3.Invoke
+  isSpec: "True"
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Invoke
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Invoke
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Invoke
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Invoke
+- uid: DotNext.ValueRefFunc`3.IsEmpty
+  name: IsEmpty
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_IsEmpty
+  commentId: P:DotNext.ValueRefFunc`3.IsEmpty
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.IsEmpty
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).IsEmpty
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.IsEmpty
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).IsEmpty
+- uid: DotNext.ValueRefFunc`3.IsEmpty*
+  name: IsEmpty
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_IsEmpty_
+  commentId: Overload:DotNext.ValueRefFunc`3.IsEmpty
+  isSpec: "True"
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.IsEmpty
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).IsEmpty
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.IsEmpty
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).IsEmpty
+- uid: DotNext.ValueRefFunc`3.op_Equality(DotNext.ValueRefFunc{`0,`1,`2}@,DotNext.ValueRefFunc{`0,`1,`2}@)
+  name: Equality(ValueRefFunc<T, TArgs, TResult>, ValueRefFunc<T, TArgs, TResult>)
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_op_Equality_DotNext_ValueRefFunc__0__1__2___DotNext_ValueRefFunc__0__1__2___
+  commentId: M:DotNext.ValueRefFunc`3.op_Equality(DotNext.ValueRefFunc{`0,`1,`2}@,DotNext.ValueRefFunc{`0,`1,`2}@)
+  name.vb: Equality(ByRef ValueRefFunc(Of T, TArgs, TResult), ByRef ValueRefFunc(Of T, TArgs, TResult))
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Equality(DotNext.ValueRefFunc<T, TArgs, TResult>, DotNext.ValueRefFunc<T, TArgs, TResult>)
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Equality(ByRef DotNext.ValueRefFunc(Of T, TArgs, TResult), ByRef DotNext.ValueRefFunc(Of T, TArgs, TResult))
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Equality(ValueRefFunc<T, TArgs, TResult>, ValueRefFunc<T, TArgs, TResult>)
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Equality(ByRef ValueRefFunc(Of T, TArgs, TResult), ByRef ValueRefFunc(Of T, TArgs, TResult))
+- uid: DotNext.ValueRefFunc`3.op_Equality*
+  name: Equality
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_op_Equality_
+  commentId: Overload:DotNext.ValueRefFunc`3.op_Equality
+  isSpec: "True"
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Equality
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Equality
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Equality
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Equality
+- uid: DotNext.ValueRefFunc`3.op_Explicit(DotNext.ValueRefFunc{`0,`1,`2}@)~DotNext.RefFunc{`0,`1,`2}
+  name: Explicit(ValueRefFunc<T, TArgs, TResult> to RefFunc<T, TArgs, TResult>)
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_op_Explicit_DotNext_ValueRefFunc__0__1__2____DotNext_RefFunc__0__1__2_
+  commentId: M:DotNext.ValueRefFunc`3.op_Explicit(DotNext.ValueRefFunc{`0,`1,`2}@)~DotNext.RefFunc{`0,`1,`2}
+  name.vb: Narrowing(ByRef ValueRefFunc(Of T, TArgs, TResult) to RefFunc(Of T, TArgs, TResult))
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Explicit(DotNext.ValueRefFunc<T, TArgs, TResult> to DotNext.RefFunc<T, TArgs, TResult>)
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Narrowing(ByRef DotNext.ValueRefFunc(Of T, TArgs, TResult) to DotNext.RefFunc(Of T, TArgs, TResult))
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Explicit(ValueRefFunc<T, TArgs, TResult> to RefFunc<T, TArgs, TResult>)
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Narrowing(ByRef ValueRefFunc(Of T, TArgs, TResult) to RefFunc(Of T, TArgs, TResult))
+- uid: DotNext.ValueRefFunc`3.op_Explicit*
+  name: Explicit
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_op_Explicit_
+  commentId: Overload:DotNext.ValueRefFunc`3.op_Explicit
+  isSpec: "True"
+  name.vb: Narrowing
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Explicit
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Narrowing
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Explicit
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Narrowing
+- uid: DotNext.ValueRefFunc`3.op_Inequality(DotNext.ValueRefFunc{`0,`1,`2}@,DotNext.ValueRefFunc{`0,`1,`2}@)
+  name: Inequality(ValueRefFunc<T, TArgs, TResult>, ValueRefFunc<T, TArgs, TResult>)
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_op_Inequality_DotNext_ValueRefFunc__0__1__2___DotNext_ValueRefFunc__0__1__2___
+  commentId: M:DotNext.ValueRefFunc`3.op_Inequality(DotNext.ValueRefFunc{`0,`1,`2}@,DotNext.ValueRefFunc{`0,`1,`2}@)
+  name.vb: Inequality(ByRef ValueRefFunc(Of T, TArgs, TResult), ByRef ValueRefFunc(Of T, TArgs, TResult))
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Inequality(DotNext.ValueRefFunc<T, TArgs, TResult>, DotNext.ValueRefFunc<T, TArgs, TResult>)
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Inequality(ByRef DotNext.ValueRefFunc(Of T, TArgs, TResult), ByRef DotNext.ValueRefFunc(Of T, TArgs, TResult))
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Inequality(ValueRefFunc<T, TArgs, TResult>, ValueRefFunc<T, TArgs, TResult>)
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Inequality(ByRef ValueRefFunc(Of T, TArgs, TResult), ByRef ValueRefFunc(Of T, TArgs, TResult))
+- uid: DotNext.ValueRefFunc`3.op_Inequality*
+  name: Inequality
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_op_Inequality_
+  commentId: Overload:DotNext.ValueRefFunc`3.op_Inequality
+  isSpec: "True"
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Inequality
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Inequality
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Inequality
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Inequality
+- uid: DotNext.ValueRefFunc`3.Target
+  name: Target
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_Target
+  commentId: P:DotNext.ValueRefFunc`3.Target
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Target
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Target
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Target
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Target
+- uid: DotNext.ValueRefFunc`3.Target*
+  name: Target
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_Target_
+  commentId: Overload:DotNext.ValueRefFunc`3.Target
+  isSpec: "True"
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.Target
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).Target
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.Target
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).Target
+- uid: DotNext.ValueRefFunc`3.ToDelegate
+  name: ToDelegate()
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_ToDelegate
+  commentId: M:DotNext.ValueRefFunc`3.ToDelegate
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.ToDelegate()
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).ToDelegate()
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.ToDelegate()
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).ToDelegate()
+- uid: DotNext.ValueRefFunc`3.ToDelegate*
+  name: ToDelegate
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_ToDelegate_
+  commentId: Overload:DotNext.ValueRefFunc`3.ToDelegate
+  isSpec: "True"
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.ToDelegate
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).ToDelegate
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.ToDelegate
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).ToDelegate
+- uid: DotNext.ValueRefFunc`3.ToString
+  name: ToString()
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_ToString
+  commentId: M:DotNext.ValueRefFunc`3.ToString
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.ToString()
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).ToString()
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.ToString()
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).ToString()
+- uid: DotNext.ValueRefFunc`3.ToString*
+  name: ToString
+  href: api/DotNext.ValueRefFunc-3.html#DotNext_ValueRefFunc_3_ToString_
+  commentId: Overload:DotNext.ValueRefFunc`3.ToString
+  isSpec: "True"
+  fullName: DotNext.ValueRefFunc<T, TArgs, TResult>.ToString
+  fullName.vb: DotNext.ValueRefFunc(Of T, TArgs, TResult).ToString
+  nameWithType: ValueRefFunc<T, TArgs, TResult>.ToString
+  nameWithType.vb: ValueRefFunc(Of T, TArgs, TResult).ToString
 - uid: DotNext.ValueTypeExtensions
   name: ValueTypeExtensions
   href: api/DotNext.ValueTypeExtensions.html
@@ -42815,6 +43696,25 @@ references:
   isSpec: "True"
   fullName: DotNext.ValueTypeExtensions.Divide
   nameWithType: ValueTypeExtensions.Divide
+- uid: DotNext.ValueTypeExtensions.EnsureFinite(System.Double)
+  name: EnsureFinite(Double)
+  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_EnsureFinite_System_Double_
+  commentId: M:DotNext.ValueTypeExtensions.EnsureFinite(System.Double)
+  fullName: DotNext.ValueTypeExtensions.EnsureFinite(System.Double)
+  nameWithType: ValueTypeExtensions.EnsureFinite(Double)
+- uid: DotNext.ValueTypeExtensions.EnsureFinite(System.Single)
+  name: EnsureFinite(Single)
+  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_EnsureFinite_System_Single_
+  commentId: M:DotNext.ValueTypeExtensions.EnsureFinite(System.Single)
+  fullName: DotNext.ValueTypeExtensions.EnsureFinite(System.Single)
+  nameWithType: ValueTypeExtensions.EnsureFinite(Single)
+- uid: DotNext.ValueTypeExtensions.EnsureFinite*
+  name: EnsureFinite
+  href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_EnsureFinite_
+  commentId: Overload:DotNext.ValueTypeExtensions.EnsureFinite
+  isSpec: "True"
+  fullName: DotNext.ValueTypeExtensions.EnsureFinite
+  nameWithType: ValueTypeExtensions.EnsureFinite
 - uid: DotNext.ValueTypeExtensions.GreaterThan(System.IntPtr,System.IntPtr)
   name: GreaterThan(IntPtr, IntPtr)
   href: api/DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_GreaterThan_System_IntPtr_System_IntPtr_
@@ -43233,6 +44133,15 @@ references:
   fullName.vb: DotNext.VariantType.Variant(Of T1, T2).Convert
   nameWithType: Variant<T1, T2>.Convert
   nameWithType.vb: Variant(Of T1, T2).Convert
+- uid: DotNext.VariantType.Variant`2.Convert``1(DotNext.ValueFunc{`0,``0}@,DotNext.ValueFunc{`1,``0}@)
+  name: Convert<R>(ValueFunc<T1, R>, ValueFunc<T2, R>)
+  href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_Convert__1_DotNext_ValueFunc__0___0___DotNext_ValueFunc__1___0___
+  commentId: M:DotNext.VariantType.Variant`2.Convert``1(DotNext.ValueFunc{`0,``0}@,DotNext.ValueFunc{`1,``0}@)
+  name.vb: Convert(Of R)(ByRef ValueFunc(Of T1, R), ByRef ValueFunc(Of T2, R))
+  fullName: DotNext.VariantType.Variant<T1, T2>.Convert<R>(DotNext.ValueFunc<T1, R>, DotNext.ValueFunc<T2, R>)
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2).Convert(Of R)(ByRef DotNext.ValueFunc(Of T1, R), ByRef DotNext.ValueFunc(Of T2, R))
+  nameWithType: Variant<T1, T2>.Convert<R>(ValueFunc<T1, R>, ValueFunc<T2, R>)
+  nameWithType.vb: Variant(Of T1, T2).Convert(Of R)(ByRef ValueFunc(Of T1, R), ByRef ValueFunc(Of T2, R))
 - uid: DotNext.VariantType.Variant`2.Convert``1(System.Converter{`0,``0},System.Converter{`1,``0})
   name: Convert<R>(Converter<T1, R>, Converter<T2, R>)
   href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_Convert__1_System_Converter__0___0__System_Converter__1___0__
@@ -43242,6 +44151,15 @@ references:
   fullName.vb: DotNext.VariantType.Variant(Of T1, T2).Convert(Of R)(System.Converter(Of T1, R), System.Converter(Of T2, R))
   nameWithType: Variant<T1, T2>.Convert<R>(Converter<T1, R>, Converter<T2, R>)
   nameWithType.vb: Variant(Of T1, T2).Convert(Of R)(Converter(Of T1, R), Converter(Of T2, R))
+- uid: DotNext.VariantType.Variant`2.Convert``2(DotNext.ValueFunc{`0,``0}@,DotNext.ValueFunc{`1,``1}@)
+  name: Convert<U1, U2>(ValueFunc<T1, U1>, ValueFunc<T2, U2>)
+  href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_Convert__2_DotNext_ValueFunc__0___0___DotNext_ValueFunc__1___1___
+  commentId: M:DotNext.VariantType.Variant`2.Convert``2(DotNext.ValueFunc{`0,``0}@,DotNext.ValueFunc{`1,``1}@)
+  name.vb: Convert(Of U1, U2)(ByRef ValueFunc(Of T1, U1), ByRef ValueFunc(Of T2, U2))
+  fullName: DotNext.VariantType.Variant<T1, T2>.Convert<U1, U2>(DotNext.ValueFunc<T1, U1>, DotNext.ValueFunc<T2, U2>)
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2).Convert(Of U1, U2)(ByRef DotNext.ValueFunc(Of T1, U1), ByRef DotNext.ValueFunc(Of T2, U2))
+  nameWithType: Variant<T1, T2>.Convert<U1, U2>(ValueFunc<T1, U1>, ValueFunc<T2, U2>)
+  nameWithType.vb: Variant(Of T1, T2).Convert(Of U1, U2)(ByRef ValueFunc(Of T1, U1), ByRef ValueFunc(Of T2, U2))
 - uid: DotNext.VariantType.Variant`2.Convert``2(System.Converter{`0,``0},System.Converter{`1,``1})
   name: Convert<U1, U2>(Converter<T1, U1>, Converter<T2, U2>)
   href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_Convert__2_System_Converter__0___0__System_Converter__1___1__
@@ -43251,6 +44169,24 @@ references:
   fullName.vb: DotNext.VariantType.Variant(Of T1, T2).Convert(Of U1, U2)(System.Converter(Of T1, U1), System.Converter(Of T2, U2))
   nameWithType: Variant<T1, T2>.Convert<U1, U2>(Converter<T1, U1>, Converter<T2, U2>)
   nameWithType.vb: Variant(Of T1, T2).Convert(Of U1, U2)(Converter(Of T1, U1), Converter(Of T2, U2))
+- uid: DotNext.VariantType.Variant`2.Deconstruct(`0@,`1@)
+  name: Deconstruct(out T1, out T2)
+  href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_Deconstruct__0___1__
+  commentId: M:DotNext.VariantType.Variant`2.Deconstruct(`0@,`1@)
+  name.vb: Deconstruct(ByRef T1, ByRef T2)
+  fullName: DotNext.VariantType.Variant<T1, T2>.Deconstruct(out T1, out T2)
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2).Deconstruct(ByRef T1, ByRef T2)
+  nameWithType: Variant<T1, T2>.Deconstruct(out T1, out T2)
+  nameWithType.vb: Variant(Of T1, T2).Deconstruct(ByRef T1, ByRef T2)
+- uid: DotNext.VariantType.Variant`2.Deconstruct*
+  name: Deconstruct
+  href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_Deconstruct_
+  commentId: Overload:DotNext.VariantType.Variant`2.Deconstruct
+  isSpec: "True"
+  fullName: DotNext.VariantType.Variant<T1, T2>.Deconstruct
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2).Deconstruct
+  nameWithType: Variant<T1, T2>.Deconstruct
+  nameWithType.vb: Variant(Of T1, T2).Deconstruct
 - uid: DotNext.VariantType.Variant`2.DotNext#VariantType#IVariant#Value
   name: IVariant.Value
   href: api/DotNext.VariantType.Variant-2.html#DotNext_VariantType_Variant_2_DotNext_VariantType_IVariant_Value
@@ -43606,6 +44542,24 @@ references:
   fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3).Variant
   nameWithType: Variant<T1, T2, T3>.Variant
   nameWithType.vb: Variant(Of T1, T2, T3).Variant
+- uid: DotNext.VariantType.Variant`3.Deconstruct(`0@,`1@,`2@)
+  name: Deconstruct(out T1, out T2, out T3)
+  href: api/DotNext.VariantType.Variant-3.html#DotNext_VariantType_Variant_3_Deconstruct__0___1___2__
+  commentId: M:DotNext.VariantType.Variant`3.Deconstruct(`0@,`1@,`2@)
+  name.vb: Deconstruct(ByRef T1, ByRef T2, ByRef T3)
+  fullName: DotNext.VariantType.Variant<T1, T2, T3>.Deconstruct(out T1, out T2, out T3)
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3).Deconstruct(ByRef T1, ByRef T2, ByRef T3)
+  nameWithType: Variant<T1, T2, T3>.Deconstruct(out T1, out T2, out T3)
+  nameWithType.vb: Variant(Of T1, T2, T3).Deconstruct(ByRef T1, ByRef T2, ByRef T3)
+- uid: DotNext.VariantType.Variant`3.Deconstruct*
+  name: Deconstruct
+  href: api/DotNext.VariantType.Variant-3.html#DotNext_VariantType_Variant_3_Deconstruct_
+  commentId: Overload:DotNext.VariantType.Variant`3.Deconstruct
+  isSpec: "True"
+  fullName: DotNext.VariantType.Variant<T1, T2, T3>.Deconstruct
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3).Deconstruct
+  nameWithType: Variant<T1, T2, T3>.Deconstruct
+  nameWithType.vb: Variant(Of T1, T2, T3).Deconstruct
 - uid: DotNext.VariantType.Variant`3.DotNext#VariantType#IVariant#Value
   name: IVariant.Value
   href: api/DotNext.VariantType.Variant-3.html#DotNext_VariantType_Variant_3_DotNext_VariantType_IVariant_Value
@@ -43962,6 +44916,24 @@ references:
   fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3, T4).Variant
   nameWithType: Variant<T1, T2, T3, T4>.Variant
   nameWithType.vb: Variant(Of T1, T2, T3, T4).Variant
+- uid: DotNext.VariantType.Variant`4.Deconstruct(`0@,`1@,`2@,`3@)
+  name: Deconstruct(out T1, out T2, out T3, out T4)
+  href: api/DotNext.VariantType.Variant-4.html#DotNext_VariantType_Variant_4_Deconstruct__0___1___2___3__
+  commentId: M:DotNext.VariantType.Variant`4.Deconstruct(`0@,`1@,`2@,`3@)
+  name.vb: Deconstruct(ByRef T1, ByRef T2, ByRef T3, ByRef T4)
+  fullName: DotNext.VariantType.Variant<T1, T2, T3, T4>.Deconstruct(out T1, out T2, out T3, out T4)
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3, T4).Deconstruct(ByRef T1, ByRef T2, ByRef T3, ByRef T4)
+  nameWithType: Variant<T1, T2, T3, T4>.Deconstruct(out T1, out T2, out T3, out T4)
+  nameWithType.vb: Variant(Of T1, T2, T3, T4).Deconstruct(ByRef T1, ByRef T2, ByRef T3, ByRef T4)
+- uid: DotNext.VariantType.Variant`4.Deconstruct*
+  name: Deconstruct
+  href: api/DotNext.VariantType.Variant-4.html#DotNext_VariantType_Variant_4_Deconstruct_
+  commentId: Overload:DotNext.VariantType.Variant`4.Deconstruct
+  isSpec: "True"
+  fullName: DotNext.VariantType.Variant<T1, T2, T3, T4>.Deconstruct
+  fullName.vb: DotNext.VariantType.Variant(Of T1, T2, T3, T4).Deconstruct
+  nameWithType: Variant<T1, T2, T3, T4>.Deconstruct
+  nameWithType.vb: Variant(Of T1, T2, T3, T4).Deconstruct
 - uid: DotNext.VariantType.Variant`4.DotNext#VariantType#IVariant#Value
   name: IVariant.Value
   href: api/DotNext.VariantType.Variant-4.html#DotNext_VariantType_Variant_4_DotNext_VariantType_IVariant_Value

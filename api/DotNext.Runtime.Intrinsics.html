@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Intrinsics
    | .NEXT ">
-    <meta name="generator" content="docfx 2.45.1.0">
+    <meta name="generator" content="docfx 2.46.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -115,10 +115,10 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_Bitcast__2___0____1__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.Bitcast%60%602(%60%600%40%2C%60%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_Bitcast__2___0____1__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.Bitcast%60%602(%60%600%40%2C%60%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L71">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L73">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_Bitcast_" data-uid="DotNext.Runtime.Intrinsics.Bitcast*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_Bitcast__2___0____1__" data-uid="DotNext.Runtime.Intrinsics.Bitcast``2(``0@,``1@)">Bitcast&lt;T, TResult&gt;(T, out TResult)</h4>
@@ -129,6 +129,7 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Bitcast&lt;T, TResult&gt;(in T input, out TResult output)
+
     where T : struct where TResult : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -186,10 +187,10 @@ CPU architectures if size of types is different.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_DefaultOf__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.DefaultOf%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_DefaultOf__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.DefaultOf%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L47">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_DefaultOf_" data-uid="DotNext.Runtime.Intrinsics.DefaultOf*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_DefaultOf__1" data-uid="DotNext.Runtime.Intrinsics.DefaultOf``1">DefaultOf&lt;T&gt;()</h4>
@@ -238,10 +239,83 @@ necessary for <code>default</code> keyword implementation.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_IsDefault__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.IsDefault%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_HasFlag__1___0___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.HasFlag%60%601(%60%600%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L103">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L179">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Intrinsics_HasFlag_" data-uid="DotNext.Runtime.Intrinsics.HasFlag*"></a>
+  <h4 id="DotNext_Runtime_Intrinsics_HasFlag__1___0___0_" data-uid="DotNext.Runtime.Intrinsics.HasFlag``1(``0,``0)">HasFlag&lt;T&gt;(T, T)</h4>
+  <div class="markdown level1 summary"><p>Determines whether one or more bit fields are set in the given value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool HasFlag&lt;T&gt;(T value, T flag)
+
+    where T : struct, Enum</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to check.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">flag</span></td>
+        <td><p>An enumeration value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the bit field or bit fields that are set in <code data-dev-comment-type="paramref" class="paramref">flag</code> are also set in <code data-dev-comment-type="paramref" class="paramref">value</code>; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_IsDefault__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.IsDefault%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_IsDefault_" data-uid="DotNext.Runtime.Intrinsics.IsDefault*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_IsDefault__1___0_" data-uid="DotNext.Runtime.Intrinsics.IsDefault``1(``0)">IsDefault&lt;T&gt;(T)</h4>
@@ -303,10 +377,10 @@ necessary for <code>default</code> keyword implementation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_IsNullable__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.IsNullable%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_IsNullable__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.IsNullable%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L26">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L28">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_IsNullable_" data-uid="DotNext.Runtime.Intrinsics.IsNullable*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_IsNullable__1" data-uid="DotNext.Runtime.Intrinsics.IsNullable``1">IsNullable&lt;T&gt;()</h4>
@@ -355,10 +429,10 @@ On mainstream implementations of .NET CLR, this method is replaced by constant v
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_TypeOf__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.TypeOf%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_TypeOf__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.TypeOf%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L148">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L150">View Source</a>
   </span>
   <a id="DotNext_Runtime_Intrinsics_TypeOf_" data-uid="DotNext.Runtime.Intrinsics.TypeOf*"></a>
   <h4 id="DotNext_Runtime_Intrinsics_TypeOf__1" data-uid="DotNext.Runtime.Intrinsics.TypeOf``1">TypeOf&lt;T&gt;()</h4>
@@ -409,10 +483,10 @@ On mainstream implementations of .NET CLR, this method is replaced by constant v
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L15" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L17" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
