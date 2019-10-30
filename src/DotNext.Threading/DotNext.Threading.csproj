@@ -37,7 +37,7 @@
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext" Version="[1.2.0, 2)" Condition="'$(Configuration)'=='Release'" />
     <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.3" />
-    <PackageReference Include="Fody" Version="6.0.2" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.0.3" PrivateAssets="all" />
     <PackageReference Include="DotNext.Augmentation.Fody" Version="[1.0.1, 2)" PrivateAssets="all" />
   </ItemGroup>
 
