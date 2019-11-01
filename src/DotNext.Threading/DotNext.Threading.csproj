@@ -36,8 +36,8 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01" PrivateAssets="All" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
     <PackageReference Include="DotNext" Version="[1.2.0, 2)" Condition="'$(Configuration)'=='Release'" />
-    <PackageReference Include="Fody" Version="6.0.2" PrivateAssets="all" />
-    <PackageReference Include="DotNext.Augmentation.Fody" Version="[1.0.1, 2)" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.0.3" PrivateAssets="all" />
+    <PackageReference Include="DotNext.Augmentation.Fody" Version="[1.2.0, 2)" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

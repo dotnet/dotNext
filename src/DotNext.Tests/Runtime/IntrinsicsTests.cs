@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Reflection;
 using Xunit;
 
 namespace DotNext.Runtime
@@ -73,6 +74,46 @@ namespace DotNext.Runtime
             var handle = Intrinsics.TypeOf<string>();
             Equal(typeof(string).TypeHandle, handle);
             NotEqual(typeof(StringComparer).TypeHandle, handle);
+        }
+
+        [Flags]
+        private enum ByteEnum : byte
+        {
+            None = 0,
+            One = 1,
+            Two = 2,
+        }
+
+        [Flags]
+        private enum ShortEnum : short
+        {
+            None = 0,
+            One = 1,
+            Two = 2,
+        }
+
+        [Flags]
+        private enum LongEnum : long
+        {
+            None = 0L,
+            One = 1L,
+            Two = 2L,
+        }
+
+        private static void HasFlagTest<T>(T value, T validFlag, T invalidFlag)
+            where T : struct, Enum
+        {
+            True(Intrinsics.HasFlag(value, validFlag));
+            False(Intrinsics.HasFlag(value, invalidFlag));
+        }
+
+        [Fact]
+        public static void HasFlag()
+        {
+            HasFlagTest(BindingFlags.Public | BindingFlags.Instance, BindingFlags.Public, BindingFlags.Static);
+            HasFlagTest(ByteEnum.Two, ByteEnum.Two, ByteEnum.One);
+            HasFlagTest(ShortEnum.Two, ShortEnum.Two, ShortEnum.One);
+            HasFlagTest(LongEnum.Two, LongEnum.Two, LongEnum.One);
         }
     }
 }

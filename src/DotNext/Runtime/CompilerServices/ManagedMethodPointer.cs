@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
+using static InlineIL.IL;
+using static InlineIL.IL.Emit;
+using CallSiteDescr = InlineIL.StandAloneMethodSig;
+using TR = InlineIL.TypeRef;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -18,6 +23,14 @@ namespace DotNext.Runtime.CompilerServices
 
         internal ManagedMethodPointer(RuntimeMethodHandle method)
             => methodPtr = method.GetFunctionPointer();
+
+        internal O Invoke<I, O>(in I arg0, int arg1)
+        {
+            Push(nameof(arg0));
+            Push(arg1);
+            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(O), new TR(typeof(I)).MakeByRefType(), typeof(int)));
+            return Return<O>();
+        }
 
         /// <summary>
         /// Determines whether this method pointer is equal to the specified method pointer.

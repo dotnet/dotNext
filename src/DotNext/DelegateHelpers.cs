@@ -11,16 +11,33 @@ namespace DotNext
     /// </summary>
     public static class DelegateHelpers
     {
+        private interface ITargetRewriter
+        {
+            object Rewrite(Delegate d);
+        }
+
         private static readonly Predicate<Assembly> IsCollectible;
         private static readonly WaitCallback ActionInvoker;
-        private static readonly SendOrPostCallback ActionCallback;
 
         static DelegateHelpers()
         {
             var isCollectibleGetter = typeof(Assembly).GetProperty("IsCollectible", BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)?.GetMethod;
             IsCollectible = isCollectibleGetter?.CreateDelegate<Predicate<Assembly>>();
-            ActionInvoker = InvokeAction;
-            ActionCallback = InvokeAction;
+            ActionInvoker = Runtime.Intrinsics.UnsafeInvoke;
+        }
+
+        private readonly struct TargetRewriter : ITargetRewriter
+        {
+            private readonly object target;
+
+            internal TargetRewriter(object newTarget) => this.target = newTarget;
+
+            object ITargetRewriter.Rewrite(Delegate d) => this.target;
+        }
+
+        private readonly struct EmptyTargetRewriter : ITargetRewriter
+        {
+            object ITargetRewriter.Rewrite(Delegate d) => d.Target;
         }
 
         private static MethodInfo GetMethod<D>(Expression<D> expression)
@@ -101,6 +118,19 @@ namespace DotNext
             where D : Delegate
             => (D)method.CreateDelegate(typeof(D), target);
 
+
+        private static D ChangeType<D, TRewriter>(this Delegate d, TRewriter rewriter)
+            where D : Delegate
+            where TRewriter : struct, ITargetRewriter
+        {
+            var list = d.GetInvocationList();
+            if (list.LongLength == 1)
+                return ReferenceEquals(list[0], d) ? d.Method.CreateDelegate<D>(rewriter.Rewrite(d)) : ChangeType<D, TRewriter>(list[0], rewriter);
+            foreach (ref var sub in list.AsSpan())
+                sub = sub.Method.CreateDelegate<D>(rewriter.Rewrite(sub));
+            return (D)Delegate.Combine(list);
+        }
+
         /// <summary>
         /// Returns a new delegate of different type which
         /// points to the same method as original delegate.
@@ -109,18 +139,17 @@ namespace DotNext
         /// <typeparam name="D">A new delegate type.</typeparam>
         /// <returns>A method wrapped into new delegate type.</returns>
         /// <exception cref="ArgumentException">Cannot convert delegate type.</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static D ChangeType<D>(this Delegate d) where D : Delegate => d.Method.CreateDelegate<D>(d.Target);
+        public static D ChangeType<D>(this Delegate d)
+            where D : Delegate
+            => d is D ? Unsafe.As<D>(d) : ChangeType<D, EmptyTargetRewriter>(d, new EmptyTargetRewriter());
 
-        private static D BindUnsafe<T, D>(this Delegate del, T obj)
+        private static D UnsafeBind<T, D>(this Delegate del, T obj)
             where T : class
             where D : Delegate
         {
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if (!(del.Target is null))
-                throw new InvalidOperationException();
-            return del.Method.CreateDelegate<D>(obj);
+            return del.Target is null ? ChangeType<D, TargetRewriter>(del, new TargetRewriter(obj)) : throw new InvalidOperationException();
         }
 
         /// <summary>
@@ -134,7 +163,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
         public static Action Bind<T>(this Action<T> action, T obj)
             where T : class
-            => action.BindUnsafe<T, Action>(obj);
+            => action.UnsafeBind<T, Action>(obj);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -148,7 +177,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
         public static Func<R> Bind<T, R>(this Func<T, R> func, T obj)
             where T : class
-            => func.BindUnsafe<T, Func<R>>(obj);
+            => func.UnsafeBind<T, Func<R>>(obj);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -163,7 +192,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
         public static Func<T2, R> Bind<T1, T2, R>(this Func<T1, T2, R> func, T1 obj)
             where T1 : class
-            => func.BindUnsafe<T1, Func<T2, R>>(obj);
+            => func.UnsafeBind<T1, Func<T2, R>>(obj);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -177,7 +206,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
         public static Action<T2> Bind<T1, T2>(this Action<T1, T2> action, T1 obj)
             where T1 : class
-            => action.BindUnsafe<T1, Action<T2>>(obj);
+            => action.UnsafeBind<T1, Action<T2>>(obj);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -193,7 +222,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
         public static Func<T2, T3, R> Bind<T1, T2, T3, R>(this Func<T1, T2, T3, R> func, T1 obj)
             where T1 : class
-            => func.BindUnsafe<T1, Func<T2, T3, R>>(obj);
+            => func.UnsafeBind<T1, Func<T2, T3, R>>(obj);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -208,7 +237,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
         public static Action<T2, T3> Bind<T1, T2, T3>(this Action<T1, T2, T3> action, T1 obj)
             where T1 : class
-            => action.BindUnsafe<T1, Action<T2, T3>>(obj);
+            => action.UnsafeBind<T1, Action<T2, T3>>(obj);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -225,7 +254,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
         public static Func<T2, T3, T4, R> Bind<T1, T2, T3, T4, R>(this Func<T1, T2, T3, T4, R> func, T1 obj)
             where T1 : class
-            => func.BindUnsafe<T1, Func<T2, T3, T4, R>>(obj);
+            => func.UnsafeBind<T1, Func<T2, T3, T4, R>>(obj);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -241,7 +270,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
         public static Action<T2, T3, T4> Bind<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action, T1 obj)
             where T1 : class
-            => action.BindUnsafe<T1, Action<T2, T3, T4>>(obj);
+            => action.UnsafeBind<T1, Action<T2, T3, T4>>(obj);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -259,7 +288,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
         public static Func<T2, T3, T4, T5, R> Bind<T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> func, T1 obj)
             where T1 : class
-            => func.BindUnsafe<T1, Func<T2, T3, T4, T5, R>>(obj);
+            => func.UnsafeBind<T1, Func<T2, T3, T4, T5, R>>(obj);
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -276,11 +305,11 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
         public static Action<T2, T3, T4, T5> Bind<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action, T1 obj)
             where T1 : class
-            => action.BindUnsafe<T1, Action<T2, T3, T4, T5>>(obj);
+            => action.UnsafeBind<T1, Action<T2, T3, T4, T5>>(obj);
 
         private static U UnsafeUnbind<U>(this Delegate del, Type targetType)
             where U : MulticastDelegate
-            => ObjectExtensions.IsContravariant(del.Target, targetType) ? del.Method.CreateDelegate<U>() : throw new InvalidOperationException();
+            => ObjectExtensions.IsContravariant(del.Target, targetType) ? ChangeType<U, TargetRewriter>(del, default) : throw new InvalidOperationException();
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -446,9 +475,7 @@ namespace DotNext
             where G : class
             => action.UnsafeUnbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
 
-        private static void InvokeAction(object continuation) => Unsafe.As<Action>(continuation).Invoke();
-
-        internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(ActionCallback, action);
+        internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(Unsafe.As<SendOrPostCallback>(ActionInvoker), action);
 
         internal static void InvokeInThreadPool(this Action action) => ThreadPool.QueueUserWorkItem(ActionInvoker, action);
 
@@ -458,6 +485,6 @@ namespace DotNext
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsRegularDelegate(Delegate d)
-            => !d.Method.IsStatic || d.Target != null || CanBeUnloaded(d.Method.Module.Assembly);
+            => (d.Method.Attributes & MethodAttributes.Static) == 0 || d.Target != null || CanBeUnloaded(d.Method.Module.Assembly);
     }
 }

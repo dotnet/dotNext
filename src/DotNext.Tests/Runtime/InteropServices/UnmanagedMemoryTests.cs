@@ -128,10 +128,10 @@ namespace DotNext.Runtime.InteropServices
         [Fact]
         public static void CopyMemory()
         {
-            using(var memory1 = new UnmanagedMemory(3))
+            using (var memory1 = new UnmanagedMemory(3))
             {
                 memory1.Bytes[0] = 10;
-                using(var memory2 = memory1.Copy())
+                using (var memory2 = memory1.Copy())
                 {
                     Equal(10, memory2.Bytes[0]);
                     memory2.Bytes[0] = byte.MaxValue;

@@ -9,8 +9,8 @@ using Xunit;
 namespace DotNext.Metaprogramming
 {
     using Linq.Expressions;
-    
     using static CodeGenerator;
+    using static Threading.Tasks.Synchronization;
     using U = Linq.Expressions.UniversalExpression;
 
     [ExcludeFromCodeCoverage]
@@ -42,7 +42,7 @@ namespace DotNext.Metaprogramming
                 var (arg1, arg2) = fun;
                 Assign(result, new AsyncResultExpression((U)arg1 + arg2, false));
             });
-            Equal(42, lambda.Compile().Invoke(40, 2).Result);
+            Equal(42, lambda.Compile().Invoke(40, 2).GetResult(TimeSpan.FromMinutes(1)));
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace DotNext.Metaprogramming
                 var (arg1, arg2) = fun;
                 Assign(result, new AsyncResultExpression((U)arg1 + arg2, true));
             });
-            Equal(42, lambda.Compile().Invoke(40, 2).Result);
+            Equal(42, lambda.Compile().Invoke(40, 2).AsTask().GetResult(TimeSpan.FromMinutes(1)));
         }
 
         private static Task<long> Sum(long x, long y)
@@ -71,7 +71,7 @@ namespace DotNext.Metaprogramming
                 Return((U)temp + 20L);
             });
             var fn = lambda.Compile();
-            Equal(35L, fn(5L, 10L).Result);
+            Equal(35L, fn(5L, 10L).GetResult(TimeSpan.FromMinutes(1)));
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace DotNext.Metaprogramming
                 Return((U)temp + 20L);
             });
             var fn = lambda.Compile();
-            Equal(35L, fn(5L, 10L).Result);
+            Equal(35L, fn(5L, 10L).AsTask().GetResult(TimeSpan.FromMinutes(1)));
         }
 
         [Fact]
@@ -107,8 +107,8 @@ namespace DotNext.Metaprogramming
                     .End();
             });
             var fn = lambda.Compile();
-            Equal(25L, fn(15L).Result);
-            Equal(99L, fn(9L).Result);
+            Equal(25L, fn(15L).GetResult(TimeSpan.FromMinutes(1)));
+            Equal(99L, fn(9L).GetResult(TimeSpan.FromMinutes(1)));
         }
 
         [Fact]
@@ -126,8 +126,8 @@ namespace DotNext.Metaprogramming
                 Return(result);
             });
             var fn = lambda.Compile();
-            Equal(15L, fn(new[] { 3L, 2L, 10L }).Result);
-            Equal(5, fn(new[] { 3L, 2L, 0L, 10L }).Result);
+            Equal(15L, fn(new[] { 3L, 2L, 10L }).GetResult(TimeSpan.FromMinutes(1)));
+            Equal(5, fn(new[] { 3L, 2L, 0L, 10L }).GetResult(TimeSpan.FromMinutes(1)));
         }
 
         [Fact]
@@ -147,9 +147,10 @@ namespace DotNext.Metaprogramming
                 .End();
             });
             var fn = lambda.Compile();
-            Equal(5L, fn(5L).Result);
-            Equal(-42L, fn(80L).Result);
-            var exception = Throws<AggregateException>(() => fn(-10L).Result);
+            Equal(5L, fn(5L).GetResult(TimeSpan.FromMinutes(1)));
+            Equal(-42L, fn(80L).GetResult(TimeSpan.FromMinutes(1)));
+            var exception = fn(-10L).GetResult(TimeSpan.FromMinutes(1)).Error;
+            IsType<AggregateException>(exception);
             IsType<InvalidOperationException>(exception.InnerException);
         }
 
@@ -164,11 +165,11 @@ namespace DotNext.Metaprogramming
                 });
             });
             var fn = lambda.Compile();
-            Null(fn(new[] { 1L }).Result);
+            Null(fn(new[] { 1L }).GetResult(TimeSpan.FromMinutes(1)).Value);
         }
 
         [Fact]
-        public static async Task AwaitStatements()
+        public static void AwaitStatements()
         {
             var lambda = AsyncLambda<Func<Task<int>>>(fun =>
             {
@@ -178,7 +179,7 @@ namespace DotNext.Metaprogramming
                 Await(typeof(Task).CallStatic(nameof(Task.Delay), 100.Const()));
                 Return(typeof(int).CallStatic(nameof(int.Parse), result));
             }).Compile();
-            Equal(423, await lambda());
+            Equal(423, lambda().GetResult(TimeSpan.FromMinutes(1)));
         }
 
         [Fact]

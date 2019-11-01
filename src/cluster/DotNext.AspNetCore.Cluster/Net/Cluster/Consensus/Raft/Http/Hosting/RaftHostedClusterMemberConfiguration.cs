@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 
         private void ConfigureListener(ListenOptions options)
         {
-            switch(ProtocolVersion)
+            switch (ProtocolVersion)
             {
                 case HttpVersion.Http1:
                     options.Protocols = HttpProtocols.Http1;

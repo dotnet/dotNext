@@ -71,7 +71,7 @@ namespace DotNext
                 type = type.GetEnumUnderlyingType();
             //find conversion method using Reflection
             var method = typeof(Convert).GetMethod(conversionMethod, new[] { type }) ?? new Func<I, O>(ConvertSlow).Method;
-            Debug.Assert(method.IsStatic && method.IsPublic);
+            Debug.Assert(method.IsStatic & method.IsPublic);
             converter = method.MethodHandle.GetFunctionPointer();
         }
 

@@ -149,7 +149,7 @@ namespace DotNext.Reflection
             var resultType = typeof(R);
             //perform automatic cast from byte/short/ushort/sbyte so binary operators become available for these types
             var usePrimitiveCast = resultType.IsPrimitive && first.NormalizePrimitive() && second.NormalizePrimitive();
-        tail_call:  //C# doesn't support tail calls so replace it with label/goto
+            tail_call:  //C# doesn't support tail calls so replace it with label/goto
             overloaded = null;
             try
             {

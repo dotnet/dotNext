@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Threading.Tasks
 {
     using Generic;
-    
+
     [ExcludeFromCodeCoverage]
     public sealed class CompletedTaskTests : Assert
     {

@@ -41,7 +41,7 @@ namespace DotNext.IO.MemoryMappedFiles
                 ptr += 1;
                 ptr.Value = 5;
                 da.Flush();
-                using(var stream = da.AsStream())
+                using (var stream = da.AsStream())
                 {
                     var data = new byte[4];
                     Equal(4, stream.Read(data, 0, data.Length));
