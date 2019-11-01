@@ -863,7 +863,7 @@ namespace DotNext.Runtime.InteropServices
         [CLSCompliant(false)]
         public static void Copy<T>(T* input, T* output)
             where T : unmanaged
-            => Copy<T>(in input[0], out output[0]);
+            => Copy(in input[0], out output[0]);
 
         /// <summary>
         /// Determines whether the specified managed pointer is <see langword="null"/>.
@@ -894,6 +894,24 @@ namespace DotNext.Runtime.InteropServices
             Ldobj(typeof(T));
             Pop();
             Ret();
+        }
+
+        /// <summary>
+        /// Gets a reference to the array element with restricted mutability.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="array">The array object.</param>
+        /// <param name="index">The index of the array element.</param>
+        /// <returns>The reference to the array element with restricted mutability.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref readonly T GetReadonlyRef<T>(this T[] array, long index)
+        {
+            Push(array);
+            Push(index);
+            Conv_Ovf_I();
+            Readonly();
+            Ldelema(typeof(T));
+            return ref ReturnRef<T>();
         }
     }
 }

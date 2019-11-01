@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 11-02-2019
+<a href="https://www.nuget.org/packages/dotnext/1.2.1">DotNext 1.2.1</a>
+* Fixed type modifier of `Current` property declared in [CopyOnWriteList&lt;T&gt;.Enumerator](https://sakno.github.io/dotNext/api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html)
+
 # 10-31-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.0">DotNext 1.2.0</a>
 * Fixed memory leaks caused by methods in [StreamExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.StreamExtensions.html) class
