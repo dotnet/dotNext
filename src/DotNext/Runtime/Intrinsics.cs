@@ -249,14 +249,9 @@ namespace DotNext.Runtime
         }
 
         internal static E GetTupleItem<T, E>(ref T tuple, int index)
-            where T : struct, IStructuralEquatable, IStructuralComparable
+            where T : struct, ITuple
         {
-            //TODO: Should be rewritten with ITuple interface in .NET Standard 2.1
-            Sizeof(typeof(T));
-            Sizeof(typeof(E));
-            Div_Un();
-            Pop(out int count);
-            if (index < 0 || index >= count)
+            if (index < 0 || index >= tuple.Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
             Push(ref tuple);
             Sizeof(typeof(E));
