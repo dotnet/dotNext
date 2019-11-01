@@ -178,21 +178,13 @@ namespace DotNext
         public Optional(T value)
         {
             this.value = value;
-            switch (type)
+            IsPresent = type switch
             {
-                default:
-                    IsPresent = false;
-                    break;
-                case ReferenceType:
-                    IsPresent = value != null;
-                    break;
-                case ValueType:
-                    IsPresent = true;
-                    break;
-                case NullableType:
-                    IsPresent = !value.Equals(null);
-                    break;
-            }
+                ReferenceType => value != null,
+                ValueType => true,
+                NullableType => !value.Equals(null),
+                _ => false,
+            };
         }
 
         [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
@@ -367,18 +359,12 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other container to compare.</param>
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(Optional<T> other)
+        public bool Equals(Optional<T> other) => (IsPresent.ToInt32() + other.IsPresent.ToInt32()) switch
         {
-            switch (IsPresent.ToInt32() + other.IsPresent.ToInt32())
-            {
-                default:
-                    return true;
-                case 1:
-                    return false;
-                case 2:
-                    return value.Equals(other.value);
-            }
-        }
+            1 => false,
+            2 => value.Equals(other.value),
+            _ => true,
+        };
 
         /// <summary>
         /// Determines whether this container stores
@@ -386,20 +372,13 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other container to compare.</param>
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object other) => other switch
         {
-            switch (other)
-            {
-                case null:
-                    return IsPresent == false;
-                case Optional<T> optional:
-                    return Equals(optional);
-                case T value:
-                    return Equals(value);
-                default:
-                    return false;
-            }
-        }
+            null => IsPresent == false,
+            Optional<T> optional => Equals(optional),
+            T value => Equals(value),
+            _ => false,
+        };
 
         /// <summary>
         /// Performs equality check between stored value
@@ -440,18 +419,12 @@ namespace DotNext
         /// <param name="first">The first container to compare.</param>
         /// <param name="second">The second container to compare.</param>
         /// <returns><see langword="true"/>, if both containers store the same value; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in Optional<T> first, in Optional<T> second)
+        public static bool operator ==(in Optional<T> first, in Optional<T> second) => (first.IsPresent.ToInt32() + second.IsPresent.ToInt32()) switch
         {
-            switch (first.IsPresent.ToInt32() + second.IsPresent.ToInt32())
-            {
-                default:
-                    return true;
-                case 1:
-                    return false;
-                case 2:
-                    return first.value.Equals(second.value);
-            }
-        }
+            1 => false,
+            2 => first.value.Equals(second.value),
+            _ => true,
+        };
 
         /// <summary>
         /// Determines whether two containers store the different values.
@@ -459,18 +432,12 @@ namespace DotNext
         /// <param name="first">The first container to compare.</param>
         /// <param name="second">The second container to compare.</param>
         /// <returns><see langword="true"/>, if both containers store the different values; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in Optional<T> first, in Optional<T> second)
+        public static bool operator !=(in Optional<T> first, in Optional<T> second) => (first.IsPresent.ToInt32() + second.IsPresent.ToInt32()) switch
         {
-            switch (first.IsPresent.ToInt32() + second.IsPresent.ToInt32())
-            {
-                default:
-                    return false;
-                case 1:
-                    return true;
-                case 2:
-                    return !first.value.Equals(second.value);
-            }
-        }
+            1 => true,
+            2 => !first.value.Equals(second.value),
+            _ => false,
+        };
 
         /// <summary>
         /// Returns non-empty container.
@@ -488,18 +455,12 @@ namespace DotNext
         /// <param name="first">The first container.</param>
         /// <param name="second">The second container.</param>
         /// <returns><see langword="true"/>, if both containers are empty or have values; otherwise, <see langword="false"/>.</returns>
-        public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second)
+        public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second) => (first.IsPresent.ToInt32() - second.IsPresent.ToInt32()) switch
         {
-            switch (first.IsPresent.ToInt32() - second.IsPresent.ToInt32())
-            {
-                default:
-                    return Empty;
-                case -1:
-                    return second;
-                case 1:
-                    return first;
-            }
-        }
+            -1 => second,
+            1 => first,
+            _ => Empty,
+        };
 
         /// <summary>
         /// Checks whether the container has value.

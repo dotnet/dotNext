@@ -37,9 +37,9 @@ namespace DotNext.Buffers
             /// <summary>
             /// Gets currently iterating memory segment.
             /// </summary>
-            public ReadOnlyMemory<T> Current => source.Slice(startIndex, length);
+            public readonly ReadOnlyMemory<T> Current => source.Slice(startIndex, length);
 
-            object IEnumerator.Current => Current;
+            readonly object IEnumerator.Current => Current;
 
             void IDisposable.Dispose() => this = default;
 

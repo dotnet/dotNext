@@ -30,19 +30,13 @@ namespace DotNext
 		/// <returns><see langword="true"/>, if <paramref name="value"/> is in its bounds.</returns>
         public static bool Between<T>(this T value, T left, T right, BoundType boundType = BoundType.Open)
             where T : IComparable<T>
-        {
-            switch (Math.Sign(value.CompareTo(left)) + Math.Sign(value.CompareTo(right)))
+            => (Math.Sign(value.CompareTo(left)) + Math.Sign(value.CompareTo(right))) switch
             {
-                case 0:
-                    return true;
-                case 1:
-                    return (boundType & BoundType.RightClosed) != 0;
-                case -1:
-                    return (boundType & BoundType.LeftClosed) != 0;
-                default:
-                    return false;
-            }
-        }
+                0 => true,
+                1 => (boundType & BoundType.RightClosed) != 0,
+                -1 => (boundType & BoundType.LeftClosed) != 0,
+                _ => false,
+            };
 
         /// <summary>
         /// Returns the smaller of two values.

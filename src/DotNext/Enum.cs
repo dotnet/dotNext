@@ -230,18 +230,12 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns>Equality check result.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object other) => other switch
         {
-            switch (other)
-            {
-                case Enum<E> en:
-                    return Equals(en);
-                case E en:
-                    return Equals(en);
-                default:
-                    return false;
-            }
-        }
+            Enum<E> en => Equals(en),
+            E en => Equals(en),
+            _ => false,
+        };
 
         /// <summary>
         /// Gets hash code of the enum member.
@@ -249,10 +243,10 @@ namespace DotNext
         /// <returns>The hash code of the enum member.</returns>
         public override int GetHashCode()
         {
-            var hashCode = -1670801664;
-            hashCode = hashCode * -1521134295 + Value.GetHashCode();
-            hashCode = hashCode * -1521134295 + Name.GetHashCode(StringComparison.Ordinal);
-            return hashCode;
+            var hashCode = new HashCode();
+            hashCode.Add(Value);
+            hashCode.Add(Name, StringComparer.Ordinal);
+            return hashCode.ToHashCode();
         }
 
         /// <summary>

@@ -36,11 +36,11 @@ namespace DotNext.Collections.Concurrent
             /// <summary>
             /// Gets the element in the collection at the current position of the enumerator.
             /// </summary>
-            public readonly ref T Current => ref snapshot[position];
+            public readonly ref readonly T Current => ref snapshot[position];
 
-            T IEnumerator<T>.Current => Current;
+            readonly T IEnumerator<T>.Current => Current;
 
-            object IEnumerator.Current => Current;
+            readonly object IEnumerator.Current => Current;
 
             void IDisposable.Dispose() => this = default;
 

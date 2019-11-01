@@ -58,8 +58,8 @@ namespace DotNext
         public static T? FirstOrNull<T>(this IEnumerable<T> seq)
             where T : struct
         {
-            using (var enumerator = seq.GetEnumerator())
-                return enumerator.MoveNext() ? enumerator.Current : new T?();
+            using var enumerator = seq.GetEnumerator();
+            return enumerator.MoveNext() ? enumerator.Current : new T?();
         }
 
         /// <summary>
@@ -71,8 +71,8 @@ namespace DotNext
         /// <returns>First element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq)
         {
-            using (var enumerator = seq.GetEnumerator())
-                return enumerator.MoveNext() ? enumerator.Current : Optional<T>.Empty;
+            using var enumerator = seq.GetEnumerator();
+            return enumerator.MoveNext() ? enumerator.Current : Optional<T>.Empty;
         }
 
         /// <summary>

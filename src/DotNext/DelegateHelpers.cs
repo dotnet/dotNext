@@ -42,23 +42,15 @@ namespace DotNext
 
         private static MethodInfo GetMethod<D>(Expression<D> expression)
             where D : Delegate
-        {
-            switch (expression.Body)
+            => expression.Body switch
             {
-                case MethodCallExpression expr:
-                    return expr.Method;
-                case MemberExpression expr when expr.Member is PropertyInfo property:
-                    return property.GetMethod;
-                case BinaryExpression expr:
-                    return expr.Method;
-                case IndexExpression expr:
-                    return expr.Indexer.GetMethod;
-                case UnaryExpression expr:
-                    return expr.Method;
-                default:
-                    return null;
-            }
-        }
+                MethodCallExpression expr => expr.Method,
+                MemberExpression expr when expr.Member is PropertyInfo property => property.GetMethod,
+                BinaryExpression expr => expr.Method,
+                IndexExpression expr => expr.Indexer.GetMethod,
+                UnaryExpression expr => expr.Method,
+                _ => null,
+            };
 
         /// <summary>
         /// Creates open delegate for the instance method, property, operator referenced
