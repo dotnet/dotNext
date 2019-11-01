@@ -28594,6 +28594,22 @@ references:
   isSpec: "True"
   fullName: DotNext.Runtime.InteropServices.Memory.GetHashCode64
   nameWithType: Memory.GetHashCode64
+- uid: DotNext.Runtime.InteropServices.Memory.GetReadonlyRef*
+  name: GetReadonlyRef
+  href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_GetReadonlyRef_
+  commentId: Overload:DotNext.Runtime.InteropServices.Memory.GetReadonlyRef
+  isSpec: "True"
+  fullName: DotNext.Runtime.InteropServices.Memory.GetReadonlyRef
+  nameWithType: Memory.GetReadonlyRef
+- uid: DotNext.Runtime.InteropServices.Memory.GetReadonlyRef``1(``0[],System.Int64)
+  name: GetReadonlyRef<T>(T[], Int64)
+  href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_GetReadonlyRef__1___0___System_Int64_
+  commentId: M:DotNext.Runtime.InteropServices.Memory.GetReadonlyRef``1(``0[],System.Int64)
+  name.vb: GetReadonlyRef(Of T)(T(), Int64)
+  fullName: DotNext.Runtime.InteropServices.Memory.GetReadonlyRef<T>(T[], System.Int64)
+  fullName.vb: DotNext.Runtime.InteropServices.Memory.GetReadonlyRef(Of T)(T(), System.Int64)
+  nameWithType: Memory.GetReadonlyRef<T>(T[], Int64)
+  nameWithType.vb: Memory.GetReadonlyRef(Of T)(T(), Int64)
 - uid: DotNext.Runtime.InteropServices.Memory.IsNull*
   name: IsNull
   href: api/DotNext.Runtime.InteropServices.Memory.html#DotNext_Runtime_InteropServices_Memory_IsNull_
