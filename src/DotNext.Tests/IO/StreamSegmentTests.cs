@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -48,7 +49,7 @@ namespace DotNext.IO
         [Fact]
         public static async Task ReadRangeAsync()
         {
-            var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
+            using (var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 }))
             using (var segment = new StreamSegment(ms))
             {
                 segment.Adjust(1L, 2L);
@@ -60,6 +61,18 @@ namespace DotNext.IO
                 Equal(0, buffer[3]);
                 //read from the end of the stream
                 Equal(-1, segment.ReadByte());
+            }
+        }
+
+        [Fact]
+        public static async Task ExceptionCheck()
+        {
+            using (var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 }))
+            using (var segment = new StreamSegment(ms))
+            {
+                Throws<NotSupportedException>(() => segment.WriteByte(2));
+                Throws<NotSupportedException>(() => segment.Write(new byte[3], 0, 3));
+                await ThrowsAsync<NotSupportedException>(() => segment.WriteAsync(new byte[3], 0, 3));
             }
         }
     }
