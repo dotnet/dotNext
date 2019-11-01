@@ -155,5 +155,13 @@ namespace DotNext.Runtime.InteropServices
             Memory.ClearBits(&g, sizeof(Guid));
             Equal(Guid.Empty, g);
         }
+
+        [Fact]
+        public static void ReadonlyRef()
+        {
+            var array = new[] { "a", "b", "c" };
+            ref readonly var element = ref array.GetReadonlyRef(2);
+            Equal("c", element);
+        }
     }
 }
