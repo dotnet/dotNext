@@ -16,7 +16,7 @@ namespace DotNext
             object Rewrite(Delegate d);
         }
 
-        private static readonly Predicate<Assembly> IsCollectible;
+        private static readonly Predicate<Assembly>? IsCollectible;
         private static readonly WaitCallback ActionInvoker;
 
         static DelegateHelpers()
@@ -40,7 +40,7 @@ namespace DotNext
             object ITargetRewriter.Rewrite(Delegate d) => d.Target;
         }
 
-        private static MethodInfo GetMethod<D>(Expression<D> expression)
+        private static MethodInfo? GetMethod<D>(Expression<D> expression)
             where D : Delegate
             => expression.Body switch
             {
@@ -59,7 +59,7 @@ namespace DotNext
         /// <typeparam name="D">The type of the delegate describing expression tree.</typeparam>
         /// <param name="expression">The expression tree containing instance method call.</param>
         /// <returns>The open delegate.</returns>
-        public static D CreateOpenDelegate<D>(Expression<D> expression)
+        public static D? CreateOpenDelegate<D>(Expression<D> expression)
             where D : Delegate
             => GetMethod(expression)?.CreateDelegate<D>();
 
@@ -69,7 +69,7 @@ namespace DotNext
         /// <param name="expression">The expression tree containing instance method, property, operator call.</param>
         /// <typeparam name="D">The type of the delegate describing expression tree.</typeparam>
         /// <returns>The factory of closed delegate.</returns>
-        public static Func<object, D> CreateClosedDelegateFactory<D>(Expression<D> expression)
+        public static Func<object, D>? CreateClosedDelegateFactory<D>(Expression<D> expression)
             where D : Delegate
         {
             var method = GetMethod(expression);
@@ -106,7 +106,7 @@ namespace DotNext
         /// <returns>The delegate for the specified method.</returns>
         /// <seealso cref="MethodInfo.CreateDelegate(Type, object)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static D CreateDelegate<D>(this MethodInfo method, object target = null)
+        public static D CreateDelegate<D>(this MethodInfo method, object? target = null)
             where D : Delegate
             => (D)method.CreateDelegate(typeof(D), target);
 
