@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -261,6 +261,26 @@ namespace DotNext.Runtime
             Add();
             Ldobj(typeof(E));
             return Return<E>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+
+        //throw InvalidCastException for reference type as well as for value type
+        [return: NotNull]
+        internal static T Cast<T>(object? obj)
+        {
+            const string notNull = "notNull";
+            Push(obj);
+            Isinst(typeof(T));
+            Dup();
+            Brtrue(notNull);
+            Pop();
+            Newobj(M.Constructor(typeof(InvalidCastException)));
+            Throw();
+
+            MarkLabel(notNull);
+            Unbox_Any(typeof(T));
+            return Return<T>();
         }
     }
 }

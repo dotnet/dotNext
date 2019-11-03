@@ -29,7 +29,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="taskType">A type of <see cref="Task"/> or <see cref="Task{TResult}"/>.</param>
         /// <returns>Task result type; or <see langword="null"/> if <paramref name="taskType"/> is not a task type.</returns>
-		public static Type GetTaskType(this Type taskType)
+		public static Type? GetTaskType(this Type taskType)
         {
             var result = taskType.FindGenericInstance(typeof(Task<>));
             if (!(result is null))

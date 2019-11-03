@@ -77,7 +77,7 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="C">The type describing constant value.</typeparam>
         /// <returns>The task representing continuation.</returns>        
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
-        public static Task<T> OnFaultedOrCanceled<T, C>(this Task<T> task, TaskScheduler scheduler = null)
+        public static Task<T> OnFaultedOrCanceled<T, C>(this Task<T> task, TaskScheduler? scheduler = null)
             where C : Constant<T>, new()
             => ContinueWithConstant<T, C>(task, task.IsFaulted | task.IsCanceled, Continuation<T, C>.WhenFaultedOrCanceled, DefaultOf<CancellationToken>(), scheduler);
 

@@ -143,7 +143,7 @@ namespace DotNext
         internal UserDataStorage(object owner)
             => this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
-        private BackingStorage GetStorage(bool createIfNeeded)
+        private BackingStorage? GetStorage(bool createIfNeeded)
         {
             if (createIfNeeded)
                 return UserData.GetOrCreateValue(owner);
@@ -317,7 +317,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">Remove user data.</param>
         /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
-        public bool Remove<V>(UserDataSlot<V> slot, out V userData)
+        public bool Remove<V>(UserDataSlot<V> slot, [AllowNull]out V userData)
         {
             var storage = GetStorage(false);
             if (storage is null)

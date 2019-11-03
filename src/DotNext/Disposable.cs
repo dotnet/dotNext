@@ -61,7 +61,7 @@ namespace DotNext
         /// Disposes many objects.
         /// </summary>
         /// <param name="objects">An array of objects to dispose.</param>
-        public static void Dispose(IEnumerable<IDisposable> objects)
+        public static void Dispose(IEnumerable<IDisposable?> objects)
         {
             foreach (var obj in objects)
                 obj?.Dispose();
@@ -71,7 +71,7 @@ namespace DotNext
         /// Disposes many objects.
         /// </summary>
         /// <param name="objects">An array of objects to dispose.</param>
-        public static async ValueTask DisposeAsync(IEnumerable<IAsyncDisposable> objects)
+        public static async ValueTask DisposeAsync(IEnumerable<IAsyncDisposable?> objects)
         {
             foreach (var obj in objects)
                 await (obj?.DisposeAsync()).GetValueOrDefault();
@@ -81,15 +81,15 @@ namespace DotNext
         /// Disposes many objects in safe manner.
         /// </summary>
         /// <param name="objects">An array of objects to dispose.</param>
-        public static void Dispose(params IDisposable[] objects)
-            => Dispose((IEnumerable<IDisposable>)objects);
+        public static void Dispose(params IDisposable?[] objects)
+            => Dispose((IEnumerable<IDisposable?>)objects);
 
         /// <summary>
         /// Disposes many objects in safe manner.
         /// </summary>
         /// <param name="objects">An array of objects to dispose.</param>
-        public static ValueTask DisposeAsync(params IAsyncDisposable[] objects)
-            => DisposeAsync((IEnumerable<IAsyncDisposable>)objects);
+        public static ValueTask DisposeAsync(params IAsyncDisposable?[] objects)
+            => DisposeAsync((IEnumerable<IAsyncDisposable?>)objects);
 
         /// <summary>
         /// Finalizes this object.

@@ -76,7 +76,7 @@ namespace DotNext.Threading.Tasks
             }
         }
 
-        private Action continuation;
+        private Action? continuation;
         private readonly bool runContinuationsAsynchronously;
 
         /// <summary>

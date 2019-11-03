@@ -19,38 +19,38 @@ namespace DotNext.VariantType
         where T1 : class
         where T2 : class
     {
-        private readonly object value;
+        private readonly object? value;
 
-        private Variant(object value) => this.value = value;
+        private Variant(object? value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T1"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-		public Variant(T1 value) => this.value = value;
+		public Variant(T1? value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T2 value) => this.value = value;
+        public Variant(T2? value) => this.value = value;
 
         /// <summary>
         /// Indicates that this container stores non-<see langword="null"/> value.
         /// </summary>
         public bool IsNull => value is null;
 
-        object IVariant.Value => value;
+        object? IVariant.Value => value;
 
         /// <summary>
         /// Interprets stored value as <typeparamref name="T1"/>.
         /// </summary>
-        public Optional<T1> First => value as T1;
+        public Optional<T1?> First => value as T1;
 
         /// <summary>
         /// Interprets stored value as <typeparamref name="T2"/>.
         /// </summary>
-        public Optional<T2> Second => value as T2;
+        public Optional<T2?> Second => value as T2;
 
         /// <summary>
         /// Converts the stored value.
@@ -59,15 +59,12 @@ namespace DotNext.VariantType
         /// <param name="mapper1">The converter for the first possible type.</param>
         /// <param name="mapper2">The converter for the second possible type.</param>
         /// <returns>Conversion result; or <see cref="Optional{T}.Empty"/> if stored value is <see langword="null"/>.</returns>
-        public Optional<R> Convert<R>(in ValueFunc<T1, R> mapper1, in ValueFunc<T2, R> mapper2)
+        public Optional<R> Convert<R>(in ValueFunc<T1, R> mapper1, in ValueFunc<T2, R> mapper2) => value switch
         {
-            switch (value)
-            {
-                case T1 first: return mapper1.Invoke(first);
-                case T2 second: return mapper2.Invoke(second);
-                default: return Optional<R>.Empty;
-            }
-        }
+            T1 first => mapper1.Invoke(first),
+            T2 second => mapper2.Invoke(second),
+            _ => Optional<R>.Empty,
+        };
 
         /// <summary>
         /// Converts the stored value.
@@ -127,7 +124,7 @@ namespace DotNext.VariantType
         /// </remarks>
         /// <param name="value1">The value of type <typeparamref name="T1"/>; or <see langword="null"/>.</param>
         /// <param name="value2">The value of type <typeparamref name="T2"/>; or <see langword="null"/>.</param>
-        public void Deconstruct(out T1 value1, out T2 value2)
+        public void Deconstruct(out T1? value1, out T2? value2)
         {
             value1 = value as T1;
             value2 = value as T2;
@@ -137,25 +134,25 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T1"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2>(T1 value) => new Variant<T1, T2>(value);
+        public static implicit operator Variant<T1, T2>(T1? value) => new Variant<T1, T2>(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T1"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T1"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T1"/>.</param>
-        public static explicit operator T1(Variant<T1, T2> var) => var.value as T1;
+        public static explicit operator T1?(Variant<T1, T2> var) => var.value as T1;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T2"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2>(T2 value) => new Variant<T1, T2>(value);
+        public static implicit operator Variant<T1, T2>(T2? value) => new Variant<T1, T2>(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T2"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T2"/>.</param>
-        public static explicit operator T2(Variant<T1, T2> var) => var.value as T2;
+        public static explicit operator T2?(Variant<T1, T2> var) => var.value as T2;
 
         /// <summary>
         /// Determines whether the value stored in this variant
@@ -253,27 +250,27 @@ namespace DotNext.VariantType
         where T2 : class
         where T3 : class
     {
-        private readonly object value;
+        private readonly object? value;
 
-        private Variant(object value) => this.value = value;
+        private Variant(object? value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T1"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T1 value) => this.value = value;
+        public Variant(T1? value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T2 value) => this.value = value;
+        public Variant(T2? value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T3"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T3 value) => this.value = value;
+        public Variant(T3? value) => this.value = value;
 
         private static Variant<T1, T2, T3> Create<V>(V variant)
             where V : struct, IVariant
@@ -300,14 +297,14 @@ namespace DotNext.VariantType
         /// <param name="value1">The value of type <typeparamref name="T1"/>; or <see langword="null"/>.</param>
         /// <param name="value2">The value of type <typeparamref name="T2"/>; or <see langword="null"/>.</param>
         /// <param name="value3">The value of type <typeparamref name="T3"/>; or <see langword="null"/>.</param>
-        public void Deconstruct(out T1 value1, out T2 value2, out T3 value3)
+        public void Deconstruct(out T1? value1, out T2? value2, out T3? value3)
         {
             value1 = value as T1;
             value2 = value as T2;
             value3 = value as T3;
         }
 
-        object IVariant.Value => value;
+        object? IVariant.Value => value;
 
         /// <summary>
         /// Determines whether the value stored in this variant
@@ -355,37 +352,37 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T1"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3>(T1 value) => new Variant<T1, T2, T3>(value);
+        public static implicit operator Variant<T1, T2, T3>(T1? value) => new Variant<T1, T2, T3>(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T1"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T1"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T1"/>.</param>
-        public static explicit operator T1(Variant<T1, T2, T3> var) => var.value as T1;
+        public static explicit operator T1?(Variant<T1, T2, T3> var) => var.value as T1;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T2"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3>(T2 value) => new Variant<T1, T2, T3>(value);
+        public static implicit operator Variant<T1, T2, T3>(T2? value) => new Variant<T1, T2, T3>(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T2"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T2"/>.</param>
-        public static explicit operator T2(Variant<T1, T2, T3> var) => var.value as T2;
+        public static explicit operator T2?(Variant<T1, T2, T3> var) => var.value as T2;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T3"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3>(T3 value) => new Variant<T1, T2, T3>(value);
+        public static implicit operator Variant<T1, T2, T3>(T3? value) => new Variant<T1, T2, T3>(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T3"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T3"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T3"/>.</param>
-        public static explicit operator T3(Variant<T1, T2, T3> var) => var.value as T3;
+        public static explicit operator T3?(Variant<T1, T2, T3> var) => var.value as T3;
 
         /// <summary>
         /// Converts variant value of two possible types into variant value
@@ -451,33 +448,33 @@ namespace DotNext.VariantType
         where T3 : class
         where T4 : class
     {
-        private readonly object value;
+        private readonly object? value;
 
-        private Variant(object value) => this.value = value;
+        private Variant(object? value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T1"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T1 value) => this.value = value;
+        public Variant(T1? value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T2 value) => this.value = value;
+        public Variant(T2? value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T3"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T3 value) => this.value = value;
+        public Variant(T3? value) => this.value = value;
 
         /// <summary>
         /// Creates a new variant value from value of type <typeparamref name="T4"/>.
         /// </summary>
         /// <param name="value">The value to be placed into variant container.</param>
-        public Variant(T4 value) => this.value = value;
+        public Variant(T4? value) => this.value = value;
 
         private static Variant<T1, T2, T3, T4> Create<V>(V variant)
             where V : struct, IVariant
@@ -505,7 +502,7 @@ namespace DotNext.VariantType
         /// <param name="value2">The value of type <typeparamref name="T2"/>; or <see langword="null"/>.</param>
         /// <param name="value3">The value of type <typeparamref name="T3"/>; or <see langword="null"/>.</param>
         /// <param name="value4">The value of type <typeparamref name="T4"/>; or <see langword="null"/>.</param>
-        public void Deconstruct(out T1 value1, out T2 value2, out T3 value3, out T4 value4)
+        public void Deconstruct(out T1? value1, out T2? value2, out T3? value3, out T4? value4)
         {
             value1 = value as T1;
             value2 = value as T2;
@@ -513,7 +510,7 @@ namespace DotNext.VariantType
             value4 = value as T4;
         }
 
-        object IVariant.Value => value;
+        object? IVariant.Value => value;
 
         /// <summary>
         /// Determines whether the value stored in this variant
@@ -561,49 +558,49 @@ namespace DotNext.VariantType
         /// Converts value of type <typeparamref name="T1"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3, T4>(T1 value) => new Variant<T1, T2, T3, T4>(value);
+        public static implicit operator Variant<T1, T2, T3, T4>(T1? value) => new Variant<T1, T2, T3, T4>(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T1"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T1"/>.</param>
-        public static explicit operator T1(Variant<T1, T2, T3, T4> var) => var.value as T1;
+        public static explicit operator T1?(Variant<T1, T2, T3, T4> var) => var.value as T1;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T2"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3, T4>(T2 value) => new Variant<T1, T2, T3, T4>(value);
+        public static implicit operator Variant<T1, T2, T3, T4>(T2? value) => new Variant<T1, T2, T3, T4>(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T2"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T2"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T2"/>.</param>
-        public static explicit operator T2(Variant<T1, T2, T3, T4> var) => var.value as T2;
+        public static explicit operator T2?(Variant<T1, T2, T3, T4> var) => var.value as T2;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T3"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3, T4>(T3 value) => new Variant<T1, T2, T3, T4>(value);
+        public static implicit operator Variant<T1, T2, T3, T4>(T3? value) => new Variant<T1, T2, T3, T4>(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T3"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T3"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T3"/>.</param>
-        public static explicit operator T3(Variant<T1, T2, T3, T4> var) => var.value as T3;
+        public static explicit operator T3?(Variant<T1, T2, T3, T4> var) => var.value as T3;
 
         /// <summary>
         /// Converts value of type <typeparamref name="T4"/> into variant.
         /// </summary>
         /// <param name="value">The value to be converted.</param>
-        public static implicit operator Variant<T1, T2, T3, T4>(T4 value) => new Variant<T1, T2, T3, T4>(value);
+        public static implicit operator Variant<T1, T2, T3, T4>(T4? value) => new Variant<T1, T2, T3, T4>(value);
 
         /// <summary>
         /// Converts variant value into type <typeparamref name="T4"/>.
         /// </summary>
         /// <param name="var">Variant value to convert into type <typeparamref name="T4"/>; or <see langword="null"/> if current value is not of type <typeparamref name="T4"/>.</param>
-        public static explicit operator T4(Variant<T1, T2, T3, T4> var) => var.value as T4;
+        public static explicit operator T4?(Variant<T1, T2, T3, T4> var) => var.value as T4;
 
         /// <summary>
         /// Converts variant value of three possible types into variant value

@@ -14,7 +14,7 @@ namespace DotNext.Collections.Generic
             where C : class, IEnumerable<T>
         {
             internal static readonly Func<C, int, T> Getter;
-            internal static readonly Action<C, int, T> Setter;
+            internal static readonly Action<C, int, T>? Setter;
 
             static Indexer()
             {
@@ -48,7 +48,7 @@ namespace DotNext.Collections.Generic
             /// <summary>
             /// Represents list item setter.
             /// </summary>
-            public static Action<IList<T>, int, T> Setter => Indexer<IList<T>, T>.Setter;
+            public static Action<IList<T>, int, T> Setter => Indexer<IList<T>, T>.Setter!;
         }
 
         /// <summary>

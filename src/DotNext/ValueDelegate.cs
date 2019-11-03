@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -514,8 +513,7 @@ namespace DotNext
         /// </summary>
         /// <param name="arg">The first argument to be passed into the target method.</param>
         /// <returns>The result of method invocation.</returns>
-        [return: MaybeNull]
-        public R Invoke([MaybeNull]T arg)
+        public R Invoke(T arg)
         {
             const string callDelegate = "delegate";
             Push(methodPtr);
@@ -533,7 +531,7 @@ namespace DotNext
             return Return<R>();
         }
 
-        object? ICallable.DynamicInvoke(params object?[] args) => Invoke((T)args[0]);
+        object? ICallable.DynamicInvoke(params object?[] args) => Invoke(Intrinsics.Cast<T>(args[0]));
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
@@ -713,9 +711,9 @@ namespace DotNext
             Ret();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke((T)args[0]);
+            Invoke(Intrinsics.Cast<T>(args[0]));
             return null;
         }
 
@@ -895,7 +893,8 @@ namespace DotNext
             return Return<R>();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args) => Invoke((T1)args[0], (T2)args[1]);
+        object? ICallable.DynamicInvoke(params object?[] args)
+            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]));
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, TResult}"/>.
@@ -1071,9 +1070,9 @@ namespace DotNext
             Ret();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke((T1)args[0], (T2)args[1]);
+            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]));
             return null;
         }
 
@@ -1257,7 +1256,8 @@ namespace DotNext
             return Return<R>();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args) => Invoke((T1)args[0], (T2)args[1], (T3)args[2]);
+        object? ICallable.DynamicInvoke(params object?[] args)
+            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]));
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, TResult}"/>.
@@ -1437,9 +1437,9 @@ namespace DotNext
             Ret();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke((T1)args[0], (T2)args[1], (T3)args[2]);
+            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]));
             return null;
         }
 
@@ -1627,7 +1627,8 @@ namespace DotNext
             return Return<R>();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args) => Invoke((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3]);
+        object? ICallable.DynamicInvoke(params object?[] args)
+            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]));
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, TResult}"/>.
@@ -1811,9 +1812,9 @@ namespace DotNext
             Ret();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3]);
+            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]));
             return null;
         }
 
@@ -2001,7 +2002,8 @@ namespace DotNext
             return Return<R>();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args) => Invoke((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3], (T5)args[4]);
+        object? ICallable.DynamicInvoke(params object?[] args)
+            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]), Intrinsics.Cast<T5>(args[4]));
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, T5, TResult}"/>.
@@ -2185,9 +2187,9 @@ namespace DotNext
             Ret();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3], (T5)args[4]);
+            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]), Intrinsics.Cast<T5>(args[4]));
             return null;
         }
 
@@ -2367,8 +2369,8 @@ namespace DotNext
 
         object? ICallable.DynamicInvoke(params object?[] args)
         {
-            var reference = (T)args[0]!;
-            Invoke(ref reference, (TArgs)args[1]!);
+            var reference = Intrinsics.Cast<T>(args[0]);
+            Invoke(ref reference, Intrinsics.Cast<TArgs>(args[1]));
             args[0] = reference;
             return null;
         }
@@ -2528,8 +2530,7 @@ namespace DotNext
         /// </summary>
         /// <param name="reference">The object passed by reference.</param>
         /// <param name="args">The action arguments.</param>
-        [return: MaybeNull]
-        public TResult Invoke([MaybeNull]ref T reference, [MaybeNull]TArgs args)
+        public TResult Invoke(ref T reference, TArgs args)
         {
             const string callDelegate = "delegate";
             Push(methodPtr);
@@ -2551,8 +2552,8 @@ namespace DotNext
 
         object? ICallable.DynamicInvoke(params object?[] args)
         {
-            var reference = (T)args[0]!;
-            var result = Invoke(ref reference, (TArgs)args[1]!);
+            var reference = Intrinsics.Cast<T>(args[0]);
+            var result = Invoke(ref reference, Intrinsics.Cast<TArgs>(args[1]));
             args[0] = reference;
             return result;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -15,6 +16,7 @@ namespace DotNext.Collections.Generic
     /// <typeparam name="O">Type of values in the converted dictionary.</typeparam>
     [StructLayout(LayoutKind.Auto)]
     public readonly struct ReadOnlyDictionaryView<K, I, O> : IReadOnlyDictionary<K, O>, IEquatable<ReadOnlyDictionaryView<K, I, O>>
+        where K : notnull
     {
         private readonly IReadOnlyDictionary<K, I> source;
         private readonly ValueFunc<I, O> mapper;
@@ -80,7 +82,7 @@ namespace DotNext.Collections.Generic
         /// This parameter is passed uninitialized.
         /// </param>
         /// <returns><see langword="true"/>, if the dictionary contains the specified key; otherwise, <see langword="false"/>.</returns>
-        public bool TryGetValue(K key, out O value)
+        public bool TryGetValue(K key, [MaybeNullWhen(false)]out O value)
         {
             if (source.TryGetValue(key, out var sourceVal))
             {

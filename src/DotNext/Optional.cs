@@ -220,6 +220,7 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultValue">The value to be returned if there is no value present.</param>
         /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
+        [return: NotNullIfNotNull("defaultValue")]
         public T Or(T defaultValue) => IsPresent ? value : defaultValue;
 
         /// <summary>
@@ -227,6 +228,7 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="E">Type of exception to throw.</typeparam>
         /// <returns>The value, if present.</returns>
+        [return: NotNull]
         public T OrThrow<E>()
             where E : Exception, new()
             => IsPresent ? value : throw new E();
@@ -237,6 +239,7 @@ namespace DotNext
         /// <typeparam name="E"></typeparam>
         /// <param name="exceptionFactory">Exception factory.</param>
         /// <returns>The value, if present.</returns>
+        [return: NotNull]
         public T OrThrow<E>(in ValueFunc<E> exceptionFactory)
             where E : Exception
             => IsPresent ? value : throw exceptionFactory.Invoke();
@@ -247,6 +250,7 @@ namespace DotNext
         /// <typeparam name="E"></typeparam>
         /// <param name="exceptionFactory">Exception factory.</param>
         /// <returns>The value, if present.</returns>
+        [return: NotNull]
         public T OrThrow<E>(Func<E> exceptionFactory)
             where E : Exception
             => OrThrow(new ValueFunc<E>(exceptionFactory, true));
@@ -275,6 +279,7 @@ namespace DotNext
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>
         /// <exception cref="InvalidOperationException">No value is present.</exception>
+        [NotNull]
         public T Value => IsPresent ? value : throw new InvalidOperationException(ExceptionMessages.OptionalNoValue);
 
         /// <summary>

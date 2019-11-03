@@ -42,7 +42,7 @@ namespace DotNext.Collections.Concurrent
 
             readonly T IEnumerator<T>.Current => Current;
 
-            readonly object IEnumerator.Current => Current;
+            readonly object? IEnumerator.Current => Current;
 
             void IDisposable.Dispose() => this = default;
 

@@ -107,7 +107,7 @@ namespace DotNext.Buffers
                 return default;
             if (memory.Length < chunkSize)
                 return new ReadOnlySequence<T>(memory);
-            Chunk<T> first = null, last = null;
+            Chunk<T>? first = null, last = null;
             foreach (var segment in this)
                 Chunk<T>.AddChunk(segment, ref first, ref last);
             Assert(first != null);

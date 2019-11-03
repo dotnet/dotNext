@@ -85,7 +85,7 @@ namespace DotNext.Reflection
         /// <param name="type">The type that contains overridden method.</param>
         /// <param name="abstractMethod">The abstract method definition.</param>
         /// <returns>The method that overrides <paramref name="abstractMethod"/>.</returns>
-        public static MethodInfo Devirtualize(this Type type, MethodInfo abstractMethod)
+        public static MethodInfo? Devirtualize(this Type type, MethodInfo abstractMethod)
         {
             if (abstractMethod.IsFinal || !abstractMethod.IsVirtual)
                 return abstractMethod;
@@ -123,7 +123,7 @@ namespace DotNext.Reflection
         /// <remarks>
         /// Element of the array <paramref name="parameters"/> should be <see langword="null"/> if this parameter of generic type.
         /// </remarks>
-        public static MethodInfo GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type[] parameters)
+        public static MethodInfo? GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type[] parameters)
         {
             //TODO: Should be deprecated for .NET Standard 2.1 and replaced with native implementation
             foreach (var method in type.GetMethods(flags))
@@ -156,7 +156,7 @@ namespace DotNext.Reflection
 		public static MethodInfo GetMethod(this Type type, string name, BindingFlags flags, params Type[] parameters)
             => type.GetMethod(name, flags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
 
-        internal static Type FindGenericInstance(this Type type, Type genericDefinition)
+        internal static Type? FindGenericInstance(this Type type, Type genericDefinition)
         {
             bool IsGenericInstanceOf(Type candidate)
                 => candidate.IsGenericType && !candidate.IsGenericTypeDefinition && candidate.GetGenericTypeDefinition() == genericDefinition;
@@ -234,7 +234,7 @@ namespace DotNext.Reflection
         /// If the object is not <see langword="null"/> and is not assignable to the <paramref name="type"/>; 
         /// or if object is <see langword="null"/> and <paramref name="type"/> is value type.
         /// </exception>
-        public static object Cast(this Type type, object obj)
+        public static object? Cast(this Type type, object? obj)
         {
             if (obj is null)
                 return type.IsValueType ? throw new InvalidCastException(ExceptionMessages.CastNullToValueType) : default(object);
