@@ -17,6 +17,7 @@ namespace DotNext.Collections.Generic
             internal static readonly Func<D, K, V> Getter;
             internal static readonly Action<D, K, V>? Setter;
 
+#nullable disable
             static Indexer()
             {
                 foreach (var member in typeof(D).GetDefaultMembers())
@@ -28,6 +29,7 @@ namespace DotNext.Collections.Generic
                     }
                 Debug.Fail(ExceptionMessages.UnreachableCodeDetected);
             }
+#nullable restore
         }
 
         /// <summary>

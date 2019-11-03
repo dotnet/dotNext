@@ -22,7 +22,7 @@ namespace DotNext.Threading.Tasks
     public static class Continuation
     {
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
-        private static Task<T> ContinueWithConstant<T, C>(Task<T> task, bool completedSynchronously, Func<Task<T>, T> continuation, CancellationToken token = default, TaskScheduler scheduler = null)
+        private static Task<T> ContinueWithConstant<T, C>(Task<T> task, bool completedSynchronously, Func<Task<T>, T> continuation, CancellationToken token = default, TaskScheduler? scheduler = null)
             where C : Constant<T>, new()
             => completedSynchronously ? CompletedTask<T, C>.Task : task.ContinueWith(continuation, token, TaskContinuationOptions.ExecuteSynchronously, scheduler ?? TaskScheduler.Current);
 
@@ -60,7 +60,7 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="C">The type describing constant value.</typeparam>
         /// <returns>The task representing continuation.</returns>
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
-        public static Task<T> OnFaulted<T, C>(this Task<T> task, TaskScheduler scheduler = null)
+        public static Task<T> OnFaulted<T, C>(this Task<T> task, TaskScheduler? scheduler = null)
             where C : Constant<T>, new()
             => ContinueWithConstant<T, C>(task, task.IsFaulted, Continuation<T, C>.WhenFaulted, DefaultOf<CancellationToken>(), scheduler);
 
@@ -94,7 +94,7 @@ namespace DotNext.Threading.Tasks
         /// <typeparam name="C">The type describing constant value.</typeparam>
         /// <returns>The task representing continuation.</returns>
         [SuppressMessage("Design", "CA1068", Justification = "Signature is similar to ContinueWith method")]
-        public static Task<T> OnCanceled<T, C>(this Task<T> task, TaskScheduler scheduler = null)
+        public static Task<T> OnCanceled<T, C>(this Task<T> task, TaskScheduler? scheduler = null)
             where C : Constant<T>, new()
             => ContinueWithConstant<T, C>(task, task.IsCanceled, Continuation<T, C>.WhenCanceled, DefaultOf<CancellationToken>(), scheduler);
     }

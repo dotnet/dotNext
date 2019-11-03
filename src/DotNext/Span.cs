@@ -270,7 +270,7 @@ namespace DotNext
         /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
         /// <param name="comparison">The comparer used for sorting.</param>
         /// <typeparam name="T">The type of the elements.</typeparam>
-        public static void Sort<T>(this Span<T> span, IComparer<T> comparison = null)
+        public static void Sort<T>(this Span<T> span, IComparer<T>? comparison = null)
         {
             var cmp = new ValueComparer<T>(comparison ?? Comparer<T>.Default);
             QuickSort(span, 0, span.Length - 1, ref cmp);

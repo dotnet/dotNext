@@ -263,9 +263,8 @@ namespace DotNext.Runtime
             return Return<E>();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-
         //throw InvalidCastException for reference type as well as for value type
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
         internal static T Cast<T>(object? obj)
         {

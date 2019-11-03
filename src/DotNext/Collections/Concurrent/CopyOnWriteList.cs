@@ -271,7 +271,7 @@ namespace DotNext.Collections.Concurrent
             {
                 ref var item = ref oldStore[i];
                 cleaner.Invoke(item);
-                item = default;
+                item = default!;
             }
         }
 

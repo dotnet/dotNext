@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Collections.Generic
 {
@@ -30,7 +31,7 @@ namespace DotNext.Collections.Generic
         /// <param name="obj">An object at the top of the stack.</param>
         /// <typeparam name="T">The type of elements in the stack.</typeparam>
         /// <returns><see langword="true"/> if stack is not empty and object at the top of the stack exists; otherwise, <see langword="false"/>.</returns>
-        public static bool TryPeek<T>(this Stack<T> stack, out T obj)
+        public static bool TryPeek<T>(this Stack<T> stack, [MaybeNullWhen(false)]out T obj)
         {
             if (stack.Count > 0)
             {
@@ -39,7 +40,7 @@ namespace DotNext.Collections.Generic
             }
             else
             {
-                obj = default;
+                obj = default!;
                 return false;
             }
         }
@@ -51,7 +52,7 @@ namespace DotNext.Collections.Generic
         /// <param name="obj">An object at the top of the stack.</param>
         /// <typeparam name="T">The type of elements in the stack.</typeparam>
         /// <returns><see langword="true"/> if stack is not empty and object at the top of the stack exists; otherwise, <see langword="false"/>.</returns>
-        public static bool TryPop<T>(this Stack<T> stack, out T obj)
+        public static bool TryPop<T>(this Stack<T> stack, [MaybeNullWhen(false)]out T obj)
         {
             if (stack.Count > 0)
             {
@@ -60,7 +61,7 @@ namespace DotNext.Collections.Generic
             }
             else
             {
-                obj = default;
+                obj = default!;
                 return false;
             }
         }

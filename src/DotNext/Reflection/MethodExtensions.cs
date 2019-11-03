@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace DotNext.Reflection
@@ -13,7 +14,8 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="method">The method to reflect.</param>
         /// <returns>The array of parameter types.</returns>
-		public static Type[] GetParameterTypes(this MethodBase method)
+        [return: NotNullIfNotNull("method")]
+		public static Type[]? GetParameterTypes(this MethodBase? method)
             => method is null ? null : Array.ConvertAll(method.GetParameters(), p => p.ParameterType);
 
         /// <summary>

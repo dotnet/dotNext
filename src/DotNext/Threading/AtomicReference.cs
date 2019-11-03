@@ -26,7 +26,7 @@ namespace DotNext.Threading
             => ReferenceEquals(Interlocked.CompareExchange(ref value, update, expected), expected);
 
         private static (T OldValue, T NewValue) Update<T>(ref T value, in ValueFunc<T, T> updater)
-            where T : class
+            where T : class?
         {
             T oldValue, newValue;
             do
@@ -38,7 +38,7 @@ namespace DotNext.Threading
         }
 
         private static (T OldValue, T NewValue) Accumulate<T>(ref T value, T x, in ValueFunc<T, T, T> accumulator)
-            where T : class
+            where T : class?
         {
             T oldValue, newValue;
             do
@@ -80,7 +80,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T AccumulateAndGet<T>(ref T value, T x, in ValueFunc<T, T, T> accumulator)
-            where T : class
+            where T : class?
             => Accumulate(ref value, x, accumulator).NewValue;
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetAndAccumulate<T>(ref T value, T x, Func<T, T, T> accumulator)
-            where T : class
+            where T : class?
             => GetAndAccumulate(ref value, x, new ValueFunc<T, T, T>(accumulator, true));
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetAndAccumulate<T>(ref T value, T x, in ValueFunc<T, T, T> accumulator)
-            where T : class
+            where T : class?
             => Accumulate(ref value, x, accumulator).OldValue;
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T UpdateAndGet<T>(ref T value, Func<T, T> updater)
-            where T : class
+            where T : class?
             => UpdateAndGet(ref value, new ValueFunc<T, T>(updater, true));
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T UpdateAndGet<T>(ref T value, in ValueFunc<T, T> updater)
-            where T : class
+            where T : class?
             => Update(ref value, updater).NewValue;
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetAndUpdate<T>(ref T value, Func<T, T> updater)
-            where T : class
+            where T : class?
             => GetAndUpdate(ref value, new ValueFunc<T, T>(updater, true));
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace DotNext.Threading
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T GetAndUpdate<T>(ref T value, in ValueFunc<T, T> updater)
-            where T : class
+            where T : class?
             => Update(ref value, updater).OldValue;
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace DotNext.Threading
         /// <param name="element">The new value of the array element.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void VolatileWrite<T>(this T[] array, long index, T element)
-            where T : class
+            where T : class?
             => Volatile.Write(ref array[index], element);
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace DotNext.Threading
 		/// <returns><see langword="true"/> if successful. <see langword="false"/> return indicates that the actual value was not equal to the expected value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet<T>(this T[] array, long index, T expected, T update)
-            where T : class
+            where T : class?
             => CompareAndSet(ref array[index], expected, update);
 
         /// <summary>
@@ -214,7 +214,7 @@ namespace DotNext.Threading
 		/// <returns>The original value of the array element.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T CompareExchange<T>(this T[] array, long index, T update, T comparand)
-            where T : class
+            where T : class?
             => Interlocked.CompareExchange(ref array[index], update, comparand);
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace DotNext.Threading
 		/// <param name="update">A new value to be stored as array element.</param>
 		/// <returns>Original array element before modification.</returns>
 		public static T GetAndSet<T>(this T[] array, long index, T update)
-            where T : class
+            where T : class?
             => Interlocked.Exchange(ref array[index], update);
 
         /// <summary>
@@ -237,7 +237,7 @@ namespace DotNext.Threading
 		/// <returns>The array element after modification.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T SetAndGet<T>(this T[] array, long index, T update)
-            where T : class
+            where T : class?
         {
             VolatileWrite(array, index, update);
             return update;
@@ -256,7 +256,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The updated value.</returns>
 		public static T AccumulateAndGet<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
-            where T : class
+            where T : class?
             => AccumulateAndGet(array, index, x, new ValueFunc<T, T, T>(accumulator, true));
 
         /// <summary>
@@ -272,7 +272,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The updated value.</returns>
 		public static T AccumulateAndGet<T>(this T[] array, long index, T x, in ValueFunc<T, T, T> accumulator)
-            where T : class
+            where T : class?
             => AccumulateAndGet(ref array[index], x, accumulator);
 
         /// <summary>
@@ -288,7 +288,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The original value of the array element.</returns>
 		public static T GetAndAccumulate<T>(this T[] array, long index, T x, Func<T, T, T> accumulator)
-            where T : class
+            where T : class?
             => GetAndAccumulate(array, index, x, new ValueFunc<T, T, T>(accumulator, true));
 
         /// <summary>
@@ -304,7 +304,7 @@ namespace DotNext.Threading
 		/// <param name="accumulator">A side-effect-free function of two arguments.</param>
 		/// <returns>The original value of the array element.</returns>
 		public static T GetAndAccumulate<T>(this T[] array, long index, T x, in ValueFunc<T, T, T> accumulator)
-            where T : class
+            where T : class?
             => GetAndAccumulate(ref array[index], x, accumulator);
 
         /// <summary>
@@ -316,7 +316,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
 		public static T UpdateAndGet<T>(this T[] array, long index, Func<T, T> updater)
-            where T : class
+            where T : class?
             => UpdateAndGet(array, index, new ValueFunc<T, T>(updater, true));
 
         /// <summary>
@@ -328,7 +328,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The updated value.</returns>
 		public static T UpdateAndGet<T>(this T[] array, long index, in ValueFunc<T, T> updater)
-            where T : class
+            where T : class?
             => UpdateAndGet(ref array[index], updater);
 
         /// <summary>
@@ -340,7 +340,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value of the array element.</returns>
 		public static T GetAndUpdate<T>(this T[] array, long index, Func<T, T> updater)
-            where T : class
+            where T : class?
             => GetAndUpdate(array, index, new ValueFunc<T, T>(updater, true));
 
         /// <summary>
@@ -352,7 +352,7 @@ namespace DotNext.Threading
 		/// <param name="updater">A side-effect-free function</param>
 		/// <returns>The original value of the array element.</returns>
 		public static T GetAndUpdate<T>(this T[] array, long index, in ValueFunc<T, T> updater)
-            where T : class
+            where T : class?
             => GetAndUpdate(ref array[index], updater);
     }
 
@@ -570,7 +570,7 @@ namespace DotNext.Threading
         /// <typeparam name="G">A derived type with default constructor.</typeparam>
         /// <returns>Modified value.</returns>
         public T SetIfNull<G>()
-            where G : T, new()
+            where G : notnull, T, new()
         {
             var value = Value;
             if (value is null)

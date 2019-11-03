@@ -48,7 +48,7 @@ namespace DotNext
         }
 
         [SuppressMessage("Performance", "CA1812", Justification = "It is instantiated by method GetOrCreateValue")]
-        private sealed class BackingStorage : Dictionary<long, object>
+        private sealed class BackingStorage : Dictionary<long, object?>
         {
 
             //ReaderWriterLockSlim is not used because it is heavyweight
@@ -143,15 +143,10 @@ namespace DotNext
         internal UserDataStorage(object owner)
             => this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
 
-        private BackingStorage? GetStorage(bool createIfNeeded)
-        {
-            if (createIfNeeded)
-                return UserData.GetOrCreateValue(owner);
-            else if (UserData.TryGetValue(owner, out var storage))
-                return storage;
-            else
-                return null;
-        }
+        private BackingStorage? GetStorage()
+            => UserData.TryGetValue(owner, out var storage) ? storage : null;
+
+        private BackingStorage GetOrCreateStorage() => UserData.GetOrCreateValue(owner);
 
         /// <summary>
 		/// Gets user data.
@@ -162,7 +157,7 @@ namespace DotNext
 		/// <returns>User data.</returns>
         public V Get<V>(UserDataSlot<V> slot, V defaultValue = default)
         {
-            var storage = GetStorage(false);
+            var storage = GetStorage();
             return storage is null ? defaultValue : storage.Get(slot, defaultValue);
         }
 
@@ -173,10 +168,10 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <returns>The data associated with the slot.</returns>
         public V GetOrSet<V>(UserDataSlot<V> slot)
-            where V : new()
+            where V : notnull, new()
         {
             var activator = ValueFunc<V>.Activator;
-            return GetStorage(true).GetOrSet(slot, ref activator);
+            return GetOrCreateStorage().GetOrSet(slot, ref activator);
         }
 
         /// <summary>
@@ -190,7 +185,7 @@ namespace DotNext
             where D : class, B, new()
         {
             var activator = ValueFunc<D>.Activator;
-            return GetStorage(true).GetOrSet(slot, ref activator);
+            return GetOrCreateStorage().GetOrSet(slot, ref activator);
         }
 
         /// <summary>
@@ -236,7 +231,7 @@ namespace DotNext
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
         public V GetOrSet<V>(UserDataSlot<V> slot, in ValueFunc<V> valueFactory)
-            => GetStorage(true).GetOrSet(slot, ref Unsafe.AsRef(valueFactory));
+            => GetOrCreateStorage().GetOrSet(slot, ref Unsafe.AsRef(valueFactory));
 
         /// <summary>
         /// Gets existing user data or creates a new data and return it.
@@ -250,7 +245,7 @@ namespace DotNext
         public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, in ValueFunc<T, V> valueFactory)
         {
             var supplier = new Supplier<T, V>(arg, valueFactory);
-            return GetStorage(true).GetOrSet(slot, ref supplier);
+            return GetOrCreateStorage().GetOrSet(slot, ref supplier);
         }
 
         /// <summary>
@@ -267,7 +262,7 @@ namespace DotNext
         public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, in ValueFunc<T1, T2, V> valueFactory)
         {
             var supplier = new Supplier<T1, T2, V>(arg1, arg2, valueFactory);
-            return GetStorage(true).GetOrSet(slot, ref supplier);
+            return GetOrCreateStorage().GetOrSet(slot, ref supplier);
         }
 
         /// <summary>
@@ -277,12 +272,12 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">User data.</param>
         /// <returns><see langword="true"/>, if user data slot exists in this collection.</returns>
-        public bool TryGet<V>(UserDataSlot<V> slot, out V userData)
+        public bool TryGet<V>(UserDataSlot<V> slot, [MaybeNullWhen(false)]out V userData)
         {
-            var storage = GetStorage(false);
+            var storage = GetStorage();
             if (storage is null)
             {
-                userData = default;
+                userData = default!;
                 return false;
             }
             else
@@ -296,7 +291,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">User data to be saved in this collection.</param>
         public void Set<V>(UserDataSlot<V> slot, V userData)
-            => GetStorage(true).Set(slot, userData);
+            => GetOrCreateStorage().Set(slot, userData);
 
         /// <summary>
         /// Removes user data slot.
@@ -306,8 +301,8 @@ namespace DotNext
         /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
         public bool Remove<V>(UserDataSlot<V> slot)
         {
-            var storage = GetStorage(false);
-            return (storage?.Remove(slot)).GetValueOrDefault();
+            var storage = GetStorage();
+            return storage?.Remove(slot) ?? false;
         }
 
         /// <summary>
@@ -317,12 +312,12 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">Remove user data.</param>
         /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
-        public bool Remove<V>(UserDataSlot<V> slot, [AllowNull]out V userData)
+        public bool Remove<V>(UserDataSlot<V> slot, [MaybeNullWhen(false)]out V userData)
         {
-            var storage = GetStorage(false);
+            var storage = GetStorage();
             if (storage is null)
             {
-                userData = default;
+                userData = default!;
                 return false;
             }
             else

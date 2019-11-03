@@ -123,7 +123,7 @@ namespace DotNext.Reflection
         /// <remarks>
         /// Element of the array <paramref name="parameters"/> should be <see langword="null"/> if this parameter of generic type.
         /// </remarks>
-        public static MethodInfo? GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type[] parameters)
+        public static MethodInfo? GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type?[] parameters)
         {
             //TODO: Should be deprecated for .NET Standard 2.1 and replaced with native implementation
             foreach (var method in type.GetMethods(flags))

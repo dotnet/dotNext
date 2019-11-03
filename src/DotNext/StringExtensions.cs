@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -61,7 +62,8 @@ namespace DotNext
         /// <param name="str">Source string.</param>
         /// <param name="maxLength">Maximum length.</param>
         /// <returns>Trimmed string value.</returns>
-        public static string TrimLength(this string str, int maxLength)
+        [return: NotNullIfNotNull("str")]
+        public static string? TrimLength(this string? str, int maxLength)
             => str is null || str.Length <= maxLength ? str : str.Substring(0, maxLength);
 
         /// <summary>

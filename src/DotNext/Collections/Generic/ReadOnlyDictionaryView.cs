@@ -91,7 +91,7 @@ namespace DotNext.Collections.Generic
             }
             else
             {
-                value = default;
+                value = default!;
                 return false;
             }
         }

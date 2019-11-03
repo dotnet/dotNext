@@ -81,7 +81,7 @@ namespace DotNext
         private static MethodInfo EqualsMethodForArrayElementType(Type itemType)
             => itemType.IsValueType ?
                 typeof(OneDimensionalArray)
-                        .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, null)
+                        .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, null)!
                         .MakeGenericMethod(itemType)
                 : new Func<IEnumerable<object>, IEnumerable<object>, bool>(Sequence.SequenceEqual).Method;
 
@@ -94,7 +94,7 @@ namespace DotNext
         private static MethodInfo HashCodeMethodForArrayElementType(Type itemType)
             => itemType.IsValueType ?
                 typeof(OneDimensionalArray)
-                        .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, typeof(bool))
+                        .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, typeof(bool))!
                         .MakeGenericMethod(itemType) :
                 typeof(Sequence)
                         .GetMethod(nameof(Sequence.SequenceHashCode), new[] { typeof(IEnumerable<object>), typeof(bool) });
@@ -123,9 +123,8 @@ namespace DotNext
             {
                 var y = Expression.Parameter(x.Type);
                 //collect all fields in the hierarchy
-                Expression expr = x.Type.IsClass ? Expression.ReferenceNotEqual(y, Expression.Constant(null, y.Type)) : null;
-                foreach (var field in GetAllFields(x.Type
-                ))
+                Expression? expr = x.Type.IsClass ? Expression.ReferenceNotEqual(y, Expression.Constant(null, y.Type)) : null;
+                foreach (var field in GetAllFields(x.Type))
                     if (IsIncluded(field))
                     {
                         var fieldX = Expression.Field(x, field);
