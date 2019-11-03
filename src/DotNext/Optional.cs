@@ -110,7 +110,7 @@ namespace DotNext
         /// </summary>
         /// <param name="optionalType">Optional type.</param>
         /// <returns>Underlying type argument of optional type; otherwise, <see langword="null"/>.</returns>
-        public static Type GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
+        public static Type? GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
 
         /// <summary>
         /// Constructs optional value from nullable reference type.
@@ -182,7 +182,7 @@ namespace DotNext
             {
                 ReferenceType => value != null,
                 ValueType => true,
-                NullableType => !value.Equals(null),
+                NullableType => !value!.Equals(null),
                 _ => false,
             };
         }
@@ -209,7 +209,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">Extracted value.</param>
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-        public bool TryGet(out T value)
+        public bool TryGet([MaybeNullWhen(false)]out T value)
         {
             value = this.value;
             return IsPresent;
@@ -333,7 +333,7 @@ namespace DotNext
         /// Returns textual representation of this object.
         /// </summary>
         /// <returns>The textual representation of this object.</returns>
-		public override string ToString() => IsPresent ? value.ToString() : "<EMPTY>";
+		public override string ToString() => IsPresent ? value!.ToString() : "<EMPTY>";
 
         /// <summary>
         /// Computes hash code of the stored value.
@@ -343,7 +343,7 @@ namespace DotNext
         /// This method calls <see cref="object.GetHashCode()"/>
         /// for the object <see cref="Value"/>.
         /// </remarks>
-		public override int GetHashCode() => IsPresent ? value.GetHashCode() : 0;
+		public override int GetHashCode() => IsPresent ? value!.GetHashCode() : 0;
 
         /// <summary>
         /// Determines whether this container stored the same
@@ -351,7 +351,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-		public bool Equals(T other) => IsPresent && value.Equals(other);
+		public bool Equals(T other) => IsPresent && value!.Equals(other);
 
         /// <summary>
         /// Determines whether this container stores
@@ -362,7 +362,7 @@ namespace DotNext
         public bool Equals(Optional<T> other) => (IsPresent.ToInt32() + other.IsPresent.ToInt32()) switch
         {
             1 => false,
-            2 => value.Equals(other.value),
+            2 => value!.Equals(other.value),
             _ => true,
         };
 
@@ -422,7 +422,7 @@ namespace DotNext
         public static bool operator ==(in Optional<T> first, in Optional<T> second) => (first.IsPresent.ToInt32() + second.IsPresent.ToInt32()) switch
         {
             1 => false,
-            2 => first.value.Equals(second.value),
+            2 => first.value!.Equals(second.value),
             _ => true,
         };
 
@@ -435,7 +435,7 @@ namespace DotNext
         public static bool operator !=(in Optional<T> first, in Optional<T> second) => (first.IsPresent.ToInt32() + second.IsPresent.ToInt32()) switch
         {
             1 => true,
-            2 => !first.value.Equals(second.value),
+            2 => !first.value!.Equals(second.value),
             _ => false,
         };
 

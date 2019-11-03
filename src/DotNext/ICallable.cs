@@ -18,7 +18,7 @@ namespace DotNext
         /// </summary>
         /// <param name="args">The arguments to be passed into the method.</param>
         /// <returns>Invocation result.</returns>
-        object? DynamicInvoke(params object[] args);
+        object? DynamicInvoke(params object?[] args);
 
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.

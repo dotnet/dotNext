@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -131,7 +132,7 @@ namespace DotNext
             Ret();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
             Invoke();
             return null;
@@ -339,7 +340,7 @@ namespace DotNext
             return Return<R>();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args) => Invoke();
+        object? ICallable.DynamicInvoke(params object?[] args) => Invoke();
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{TResult}"/>.
@@ -513,7 +514,8 @@ namespace DotNext
         /// </summary>
         /// <param name="arg">The first argument to be passed into the target method.</param>
         /// <returns>The result of method invocation.</returns>
-        public R Invoke(T arg)
+        [return: MaybeNull]
+        public R Invoke([MaybeNull]T arg)
         {
             const string callDelegate = "delegate";
             Push(methodPtr);
@@ -531,7 +533,7 @@ namespace DotNext
             return Return<R>();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args) => Invoke((T)args[0]);
+        object? ICallable.DynamicInvoke(params object?[] args) => Invoke((T)args[0]);
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
@@ -2363,10 +2365,10 @@ namespace DotNext
             Ret();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            var reference = (T)args[0];
-            Invoke(ref reference, (TArgs)args[1]);
+            var reference = (T)args[0]!;
+            Invoke(ref reference, (TArgs)args[1]!);
             args[0] = reference;
             return null;
         }
@@ -2526,7 +2528,8 @@ namespace DotNext
         /// </summary>
         /// <param name="reference">The object passed by reference.</param>
         /// <param name="args">The action arguments.</param>
-        public TResult Invoke(ref T reference, TArgs args)
+        [return: MaybeNull]
+        public TResult Invoke([MaybeNull]ref T reference, [MaybeNull]TArgs args)
         {
             const string callDelegate = "delegate";
             Push(methodPtr);
@@ -2546,10 +2549,10 @@ namespace DotNext
             return Return<TResult>();
         }
 
-        object? ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            var reference = (T)args[0];
-            var result = Invoke(ref reference, (TArgs)args[1]);
+            var reference = (T)args[0]!;
+            var result = Invoke(ref reference, (TArgs)args[1]!);
             args[0] = reference;
             return result;
         }
