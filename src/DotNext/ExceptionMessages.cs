@@ -26,5 +26,7 @@ namespace DotNext
         internal static string UnsupportedMethodPointerType => Resources.GetString("UnsupportedMethodPointerType");
 
         internal static string UnreachableCodeDetected => Resources.GetString("UnreachableCodeDetected");
+
+        internal static string ConcreteDelegateExpected => Resources.GetString("ConcreteDelegateExpected");
     }
 }
