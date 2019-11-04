@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
@@ -832,9 +833,11 @@ namespace DotNext.Runtime.InteropServices
         /// <typeparam name="T">The type of the pointer.</typeparam>
         /// <returns>The span of contiguous memory.</returns>
         [CLSCompliant(false)]
-        public static unsafe Span<byte> AsSpan<T>(T* pointer)
-            where T : unmanaged
-            => new Span<byte>(pointer, sizeof(T));
+        public static unsafe Span<byte> AsSpan<T>(T* pointer) where T : unmanaged => AsSpan(ref pointer[0]);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<byte> AsSpan<T>(ref T value) where T : unmanaged => MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref value), sizeof(T));
+        
 
         /// <summary>
         /// Copies one value into another.

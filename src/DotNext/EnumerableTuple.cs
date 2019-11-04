@@ -41,7 +41,7 @@ namespace DotNext
             /// </summary>
             public I Current => accessor.Invoke(ref tuple, currentIndex);
 
-            object IEnumerator.Current => Current;
+            object? IEnumerator.Current => Current;
 
             /// <summary>
             /// Advances position of this enumerator.
