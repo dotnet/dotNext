@@ -443,7 +443,7 @@ namespace DotNext.Threading
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if the stored value is equal to <paramref name="other"/> value.</returns>
         public readonly override bool Equals(object? other)
-            => other is AtomicReference<T> atomic ? Equals(atomic.Value) : Equals(other as T);
+            => other is AtomicReference<T> atomic ? Equals(atomic.Value) : Equals(other, Value);
 
         /// <summary>
         /// Computes hash code for the stored value.

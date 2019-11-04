@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
+using TR = InlineIL.TypeRef;
 
 namespace DotNext
 {
@@ -175,7 +176,7 @@ namespace DotNext
                     Push(ref value);
                     Push(size);
                     Push(salted);
-                    Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(bool)));
+                    Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), new TR(typeof(byte)).MakeByRefType(), typeof(long), typeof(bool)));
                     return Return<int>();
                 case sizeof(byte):
                     Push(ref value);
@@ -218,7 +219,7 @@ namespace DotNext
             Push(hash);
             Ldarg(nameof(hashFunction));
             Push(salted);
-            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>).MakeByRefType(), typeof(bool)));
+            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), new TR(typeof(byte)).MakeByRefType(), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>).MakeByRefType(), typeof(bool)));
             return Return<int>();
         }
 

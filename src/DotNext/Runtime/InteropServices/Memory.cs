@@ -244,21 +244,14 @@ namespace DotNext.Runtime.InteropServices
             return Return<T>();
         }
 
-        /// <summary>
-        /// Computes 64-bit hash code for the block of memory, 64-bit version.
-        /// </summary>
-        /// <remarks>
-        /// This method may give different value each time you run the program for
-        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
-        /// </remarks>
-        /// <param name="source">A pointer to the block of memory.</param>
-        /// <param name="length">Length of memory block to be hashed, in bytes.</param>
-        /// <param name="hash">Initial value of the hash.</param>
-        /// <param name="hashFunction">Hashing function.</param>
-        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-        /// <returns>Hash code of the memory block.</returns>
-        public static long GetHashCode64(IntPtr source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(source, length, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
+        private static T AsUnaligned<T>(this ref byte address)
+            where T : unmanaged
+        {
+            Push(ref address);
+            Unaligned(1);
+            Ldobj(typeof(T));
+            return Return<T>();
+        }
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -273,24 +266,40 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
-        public static long GetHashCode64(IntPtr source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
+        public static long GetHashCode64(ref byte source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
+            => GetHashCode64(ref source, length, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
+
+        /// <summary>
+        /// Computes 64-bit hash code for the block of memory, 64-bit version.
+        /// </summary>
+        /// <remarks>
+        /// This method may give different value each time you run the program for
+        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
+        /// </remarks>
+        /// <param name="source">A pointer to the block of memory.</param>
+        /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Hash code of the memory block.</returns>
+        public static long GetHashCode64(ref byte source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
         {
             switch (length)
             {
                 case sizeof(byte):
-                    hash = hashFunction.Invoke(hash, Unsafe.Read<byte>(source.ToPointer()));
+                    hash = hashFunction.Invoke(hash, source);
                     break;
-                case sizeof(short):
-                    hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<short>(source.ToPointer()));
+                case sizeof(ushort):
+                    hash = hashFunction.Invoke(hash, source.AsUnaligned<ushort>());
                     break;
-                case sizeof(int):
-                    hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<int>(source.ToPointer()));
+                case sizeof(uint):
+                    hash = hashFunction.Invoke(hash, source.AsUnaligned<uint>());
                     break;
                 default:
-                    for (; length >= sizeof(IntPtr); length -= sizeof(IntPtr))
-                        hash = hashFunction.Invoke(hash, ReadUnaligned<IntPtr>(ref source).ToInt64());
-                    for (; length > 0L; length -= sizeof(byte))
-                        hash = hashFunction.Invoke(hash, Read<byte>(ref source));
+                    for (; length >= sizeof(IntPtr); source = ref source.Adjust<IntPtr>(&length))
+                        hash = hashFunction.Invoke(hash, source.AsUnaligned<IntPtr>().ToInt64());
+                    for (; length > 0L; source = ref source.Adjust<byte>(&length))
+                        hash = hashFunction.Invoke(hash, source);
                     break;
             }
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
@@ -311,7 +320,7 @@ namespace DotNext.Runtime.InteropServices
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
         public static long GetHashCode64(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(new IntPtr(source), length, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
+            => GetHashCode64(ref Unsafe.AsRef<byte>(source), length, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory, 64-bit version.
@@ -328,7 +337,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static long GetHashCode64(void* source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(new IntPtr(source), length, hash, hashFunction, salted);
+            => GetHashCode64(ref Unsafe.AsRef<byte>(source), length, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory.
@@ -342,8 +351,8 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [RuntimeFeatures(Augmentation = true)]
-        public static long GetHashCode64(IntPtr source, long length, bool salted = true)
-            => GetHashCode64(source, length, FNV1a64.Offset, new ValueFunc<long, long, long>(FNV1a64.GetHashCode), salted);
+        public static long GetHashCode64(ref byte source, long length, bool salted = true)
+            => GetHashCode64(ref source, length, FNV1a64.Offset, new ValueFunc<long, long, long>(FNV1a64.GetHashCode), salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory.
@@ -358,7 +367,7 @@ namespace DotNext.Runtime.InteropServices
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
         public static long GetHashCode64(void* source, long length, bool salted = true)
-            => GetHashCode64(new IntPtr(source), length, salted);
+            => GetHashCode64(ref Unsafe.AsRef<byte>(source), length, salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -373,8 +382,8 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
-        public static int GetHashCode32(IntPtr source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(source, length, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+        public static int GetHashCode32(ref byte source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
+            => GetHashCode32(ref source, length, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -389,21 +398,21 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
-        public static int GetHashCode32(IntPtr source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
+        public static int GetHashCode32(ref byte source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
         {
             switch (length)
             {
                 case sizeof(byte):
-                    hash = hashFunction.Invoke(hash, Unsafe.Read<byte>(source.ToPointer()));
+                    hash = hashFunction.Invoke(hash, source);
                     break;
-                case sizeof(short):
-                    hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<short>(source.ToPointer()));
+                case sizeof(ushort):
+                    hash = hashFunction.Invoke(hash, source.AsUnaligned<ushort>());
                     break;
                 default:
-                    for (; length >= sizeof(int); length -= sizeof(int))
-                        hash = hashFunction.Invoke(hash, ReadUnaligned<int>(ref source));
-                    for (; length > 0L; length -= sizeof(byte))
-                        hash = hashFunction.Invoke(hash, Read<byte>(ref source));
+                    for (; length >= sizeof(int); source = ref source.Adjust<int>(&length))
+                        hash = hashFunction.Invoke(hash, source.AsUnaligned<int>());
+                    for (; length > 0L; source = ref source.Adjust<byte>(&length))
+                        hash = hashFunction.Invoke(hash, source);
                     break;
             }
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
@@ -424,7 +433,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static int GetHashCode32(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(new IntPtr(source), length, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
+            => GetHashCode32(ref Unsafe.AsRef<byte>(source), length, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -441,7 +450,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static int GetHashCode32(void* source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(new IntPtr(source), length, hash, hashFunction, salted);
+            => GetHashCode32(ref Unsafe.AsRef<byte>(source), length, hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -455,52 +464,52 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [RuntimeFeatures(Augmentation = true)]
-        public static int GetHashCode32(IntPtr source, long length, bool salted = true)
-            => GetHashCode32(source, length, FNV1a32.Offset, new ValueFunc<int, int, int>(FNV1a32.GetHashCode), salted);
+        public static int GetHashCode32(ref byte source, long length, bool salted = true)
+            => GetHashCode32(ref source, length, FNV1a32.Offset, new ValueFunc<int, int, int>(FNV1a32.GetHashCode), salted);
 
-        internal static int GetHashCode32Aligned(IntPtr source, long length, bool salted)
+        internal static int GetHashCode32Aligned(ref byte source, long length, bool salted)
         {
             //do not call overloaded GetHashCode32Aligned accepting ValueFunc because it
             //is not so performant as manually inlined code
             var hash = FNV1a32.Offset;
-            for (; length >= sizeof(int); length -= sizeof(int))
-                hash = FNV1a32.GetHashCode(hash, Read<int>(ref source));
-            for (; length > 0L; length -= sizeof(byte))
-                hash = FNV1a32.GetHashCode(hash, Read<byte>(ref source));
+            for (; length >= sizeof(int); source = ref source.Adjust<int>(&length))
+                hash = FNV1a32.GetHashCode(hash, source.As<int>());
+            for (; length > 0L; source = ref source.Adjust<byte>(&length))
+                hash = FNV1a32.GetHashCode(hash, source);
             return salted ? FNV1a32.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
-        internal static int GetHashCode32Aligned(IntPtr source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
+        internal static int GetHashCode32Aligned(ref byte source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
         {
-            for (; length >= sizeof(int); length -= sizeof(int))
-                hash = hashFunction.Invoke(hash, Read<int>(ref source));
-            for (; length > 0L; length -= sizeof(byte))
-                hash = hashFunction.Invoke(hash, Read<byte>(ref source));
+            for (; length >= sizeof(int); source = ref source.Adjust<int>(&length))
+                hash = hashFunction.Invoke(hash, source.As<int>());
+            for (; length > 0L; source = ref source.Adjust<byte>(&length))
+                hash = hashFunction.Invoke(hash, source);
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
-        internal static long GetHashCode64Aligned(IntPtr source, long length, bool salted)
+        internal static long GetHashCode64Aligned(ref byte source, long length, bool salted)
         {
             //do not call overloaded GetHashCode64Aligned accepting ValueFunc because it
             //is not so performant as manually inlined code
             var hash = FNV1a64.Offset;
-            for (; length >= sizeof(long); length -= sizeof(long))
-                hash = FNV1a64.GetHashCode(hash, Read<long>(ref source));
-            for (; length >= sizeof(int); length -= sizeof(int))
-                hash = FNV1a64.GetHashCode(hash, Read<int>(ref source));
-            for (; length > 0L; length -= sizeof(byte))
-                hash = FNV1a64.GetHashCode(hash, Read<byte>(ref source));
+            for (; length >= sizeof(long); source = ref source.Adjust<long>(&length))
+                hash = FNV1a64.GetHashCode(hash, source.As<long>());
+            for (; length >= sizeof(uint); source = ref source.Adjust<uint>(&length))
+                hash = FNV1a64.GetHashCode(hash, source.As<uint>());
+            for (; length > 0L; source = ref source.Adjust<byte>(&length))
+                hash = FNV1a64.GetHashCode(hash, source);
             return salted ? FNV1a64.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
-        internal static long GetHashCode64Aligned(IntPtr source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
+        internal static long GetHashCode64Aligned(ref byte source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
         {
-            for (; length >= sizeof(long); length -= sizeof(long))
-                hash = hashFunction.Invoke(hash, Read<long>(ref source));
-            for (; length >= sizeof(int); length -= sizeof(int))
-                hash = hashFunction.Invoke(hash, Read<int>(ref source));
-            for (; length > 0L; length -= sizeof(byte))
-                hash = hashFunction.Invoke(hash, Read<byte>(ref source));
+            for (; length >= sizeof(long); source = ref source.Adjust<long>(&length))
+                hash = hashFunction.Invoke(hash, source.As<long>());
+            for (; length >= sizeof(uint); source = ref source.Adjust<uint>(&length))
+                hash = hashFunction.Invoke(hash, source.As<uint>());
+            for (; length > 0L; source = ref source.Adjust<byte>(&length))
+                hash = hashFunction.Invoke(hash, source);
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
@@ -517,7 +526,7 @@ namespace DotNext.Runtime.InteropServices
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
         public static int GetHashCode32(void* source, long length, bool salted = true)
-            => GetHashCode32(new IntPtr(source), length, salted);
+            => GetHashCode32(ref Unsafe.AsRef<byte>(source), length, salted);
 
         /// <summary>
         /// Sets all bits of allocated memory to zero.
@@ -555,17 +564,18 @@ namespace DotNext.Runtime.InteropServices
 		/// <param name="length">Length of first and second memory blocks, in bytes.</param>
 		/// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
 		[CLSCompliant(false)]
-        public static bool Equals(void* first, void* second, long length) => Equals(new IntPtr(first), new IntPtr(second), length);
+        public static bool Equals(void* first, void* second, long length)
+            => Equals(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
-        private static bool EqualsUnaligned(IntPtr first, IntPtr second, long length)
+        private static bool EqualsUnaligned(ref byte first, ref byte second, long length)
         {
             do
             {
                 var count = (int)Math.Min(length, int.MaxValue);
-                if (new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceEqual(new ReadOnlySpan<byte>(second.ToPointer(), count)))
+                if (MemoryMarshal.CreateSpan(ref first, count).SequenceEqual(MemoryMarshal.CreateSpan(ref second, count)))
                 {
-                    first += count;
-                    second += count;
+                    first = ref Unsafe.Add(ref first, count);
+                    second = ref Unsafe.Add(ref second, count);
                     length -= count;
                 }
                 else
@@ -581,7 +591,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="second">A pointer to the second memory block.</param>
         /// <param name="length">Length of first and second memory blocks, in bytes.</param>
         /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
-        public static bool Equals(IntPtr first, IntPtr second, long length)
+        public static bool Equals(ref byte first, ref byte second, long length)
         {
             if (first == second)
                 return true;
