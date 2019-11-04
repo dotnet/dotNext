@@ -828,9 +828,6 @@ namespace DotNext.Runtime.InteropServices
             return Return<IntPtr>();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static int PointerHashCode(void* pointer) => new IntPtr(pointer).GetHashCode();
-
         /// <summary>
         /// Swaps two values.
         /// </summary>

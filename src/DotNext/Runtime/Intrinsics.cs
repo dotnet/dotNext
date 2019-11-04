@@ -281,5 +281,13 @@ namespace DotNext.Runtime
             Unbox_Any(typeof(T));
             return Return<T>();
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe int PointerHashCode(void* pointer)
+        {
+            Ldarga(nameof(pointer));
+            Call(new M(typeof(UIntPtr), nameof(UIntPtr.GetHashCode)));
+            return Return<int>();
+        }
     }
 }

@@ -9,6 +9,7 @@ namespace DotNext
     using Reflection;
     using Runtime.CompilerServices;
     using Runtime.InteropServices;
+    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Generates hash code and equality check functions for the particular type.
@@ -167,7 +168,7 @@ namespace DotNext
                     {
                         expr = Expression.Field(inputParam, field);
                         if (field.FieldType.IsPointer)
-                            expr = Expression.Call(typeof(Memory).GetMethod(nameof(Memory.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic), expr);
+                            expr = Expression.Call(typeof(Memory).GetMethod(nameof(Intrinsics.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic), expr);
                         else if (field.FieldType.IsPrimitive)
                             expr = Expression.Call(expr, nameof(GetHashCode), Array.Empty<Type>());
                         else if (field.FieldType.IsValueType)
