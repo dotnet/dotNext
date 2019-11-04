@@ -250,13 +250,11 @@ namespace DotNext
         {
             if (first is null || second is null)
                 return ReferenceEquals(first, second);
-            else if (first.LongLength != second.LongLength)
+            if (first.LongLength != second.LongLength)
                 return false;
-            else if (first.LongLength == 0)
+            if (first.LongLength == 0)
                 return true;
-            else
-                fixed (T* firstPtr = first, secondPtr = second)
-                    return Memory.EqualsAligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * sizeof(T));
+            return Memory.EqualsAligned(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
         }
 
         /// <summary>
@@ -383,7 +381,7 @@ namespace DotNext
         /// <param name="first">The first array to compare.</param>
         /// <param name="second">The second array to compare.</param>
         /// <returns>Comparison result.</returns>
-        public static unsafe int BitwiseCompare<T>(this T[] first, T[] second)
+        public unsafe static int BitwiseCompare<T>(this T[] first, T[] second)
             where T : unmanaged
         {
             if (first is null)
@@ -392,8 +390,7 @@ namespace DotNext
                 return 1;
             else if (first.LongLength != second.LongLength)
                 return first.LongLength.CompareTo(second.LongLength);
-            fixed (T* firstPtr = first, secondPtr = second)
-                return Memory.CompareUnaligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * sizeof(T));
+            return Memory.CompareUnaligned(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
         }
     }
 }

@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
+using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
@@ -208,6 +208,40 @@ namespace DotNext.Runtime.InteropServices
             Mul_Ovf_Un();
             Cpblk();
             Ret();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ref byte Adjust<T>(this ref byte address)
+            where T : unmanaged
+        {
+            Push(ref address);
+            Sizeof(typeof(T));
+            Conv_I();
+            Add();
+            return ref ReturnRef<byte>();
+        }
+
+        private static ref byte Adjust<T>(this ref byte address, [In, Out]long* length)
+            where T : unmanaged
+        {
+            Push(length);
+            Dup();
+            Ldind_I8();
+            Sizeof(typeof(T));
+            Conv_I8();
+            Sub();
+            Stind_I8();
+
+            return ref address.Adjust<T>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static T As<T>(this ref byte address)
+            where T : unmanaged
+        {
+            Push(ref address);
+            Ldobj(typeof(T));
+            return Return<T>();
         }
 
         /// <summary>
@@ -600,22 +634,14 @@ namespace DotNext.Runtime.InteropServices
             return Return<bool>();
         }
 
-        internal static int CompareUnaligned(IntPtr first, IntPtr second, long length)
+        internal static int CompareUnaligned(ref byte first, ref byte second, long length)
         {
-            int comparison;
-            do
+            var comparison = 0;
+            for (int count; length > 0 && comparison == 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
             {
-                var count = (int)Math.Min(length, int.MaxValue);
-                comparison = new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceCompareTo(new ReadOnlySpan<byte>(second.ToPointer(), count));
-                if (comparison == 0)
-                {
-                    first += count;
-                    second += count;
-                    length -= count;
-                }
-                else
-                    break;
-            } while (length > 0);
+                count = (int)Math.Min(length, int.MaxValue);
+                comparison = MemoryMarshal.CreateSpan(ref first, count).SequenceCompareTo(MemoryMarshal.CreateSpan(ref second, count));
+            }
             return comparison;
         }
 
@@ -626,7 +652,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="second">The pointer to the second memory block.</param>
         /// <param name="length">The length of the first and second memory blocks.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
-        public static int Compare(IntPtr first, IntPtr second, long length)
+        public static int Compare(ref byte first, ref byte second, long length)
         {
             if (first == second)
                 return 0;
@@ -644,7 +670,6 @@ namespace DotNext.Runtime.InteropServices
                 case 1:
                     Push(first);
                     Push(second);
-                    Unaligned(1);
                     Ldind_U1();
                     Call(new M(typeof(byte), nameof(byte.CompareTo), typeof(byte)));
                     break;
@@ -697,25 +722,26 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="length">The length of the first and second memory blocks.</param>
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         [CLSCompliant(false)]
-        public static int Compare(void* first, void* second, long length) => Compare(new IntPtr(first), new IntPtr(second), length);
+        public static int Compare(void* first, void* second, long length) 
+            => Compare(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
-        internal static bool IsZeroAligned(IntPtr address, long length)
+        internal static bool IsZeroAligned(ref byte address, long length)
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
                 while (length >= Vector<byte>.Count)
-                    if (Read<Vector<byte>>(ref address) == Vector<byte>.Zero)
-                        length -= sizeof(Vector<byte>);
+                    if (address.As<Vector<byte>>() == Vector<byte>.Zero)
+                        address = ref address.Adjust<Vector<byte>>(&length);
                     else
                         goto exit;
             while (length >= sizeof(UIntPtr))
-                if (Read<UIntPtr>(ref address) == default)
-                    length -= sizeof(UIntPtr);
+                if (address.As<UIntPtr>() == default)
+                    address = ref address.Adjust<UIntPtr>(&length);
                 else
                     goto exit;
-            while (length > sizeof(byte))
-                if (Read<byte>(ref address) == 0)
-                    length -= sizeof(byte);
+            while (length > 0)
+                if (address == 0)
+                    address = ref address.Adjust<byte>(&length);
                 else
                     goto exit;
             result = true;
@@ -723,23 +749,35 @@ namespace DotNext.Runtime.InteropServices
             return result;
         }
 
-        internal static bool EqualsAligned(IntPtr first, IntPtr second, long length)
+        internal static bool EqualsAligned(ref byte first, ref byte second, long length)
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
                 while (length >= Vector<byte>.Count)
-                    if (Read<Vector<byte>>(ref first) == Read<Vector<byte>>(ref second))
+                    if (first.As<Vector<byte>>() == second.As<Vector<byte>>())
+                    {
                         length -= sizeof(Vector<byte>);
+                        first = ref first.Adjust<Vector<byte>>();
+                        second = ref second.Adjust<Vector<byte>>();
+                    }
                     else
                         goto exit;
             while (length >= sizeof(UIntPtr))
-                if (Read<UIntPtr>(ref first) == Read<UIntPtr>(ref second))
+                if (first.As<UIntPtr>() == second.As<UIntPtr>())
+                {
                     length -= sizeof(UIntPtr);
+                    first = ref first.Adjust<UIntPtr>();
+                    second = ref second.Adjust<UIntPtr>();
+                }
                 else
                     goto exit;
-            while (length > sizeof(byte))
-                if (Read<byte>(ref first) == Read<byte>(ref second))
+            while (length > 0)
+                if (first == second)
+                {
                     length -= sizeof(byte);
+                    first = ref first.Adjust<byte>();
+                    second = ref second.Adjust<byte>();
+                }
                 else
                     goto exit;
             result = true;
