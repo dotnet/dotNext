@@ -17,7 +17,7 @@ namespace DotNext
     {
         private readonly struct Tuple : IEquatable<Tuple>
         {
-            internal readonly string Name;
+            internal readonly string? Name;
             internal readonly E Value;
 
             private Tuple(string name)
@@ -166,9 +166,9 @@ namespace DotNext
 
         private const string NameSerData = "Name";
         private const string ValueSerData = "Value";
-        private readonly string name;
+        private readonly string? name;
 
-        private Enum(E value, string name)
+        private Enum(E value, string? name)
         {
             Value = value;
             this.name = name;

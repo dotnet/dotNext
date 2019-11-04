@@ -22,7 +22,7 @@ namespace DotNext.Threading
         /// <returns>true if successful. False return indicates that the actual value was not equal to the expected value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool CompareAndSet<T>(ref T value, T expected, T update)
-            where T : class
+            where T : class?
             => ReferenceEquals(Interlocked.CompareExchange(ref value, update, expected), expected);
 
         private static (T OldValue, T NewValue) Update<T>(ref T value, in ValueFunc<T, T> updater)
@@ -63,7 +63,7 @@ namespace DotNext.Threading
         /// <returns>The updated value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T AccumulateAndGet<T>(ref T value, T x, Func<T, T, T> accumulator)
-            where T : class
+            where T : class?
             => AccumulateAndGet(ref value, x, new ValueFunc<T, T, T>(accumulator, true));
 
         /// <summary>
@@ -372,7 +372,7 @@ namespace DotNext.Threading
     [SuppressMessage("Design", "CA1066")]
     [SuppressMessage("Usage", "CA2231")]
     public struct AtomicReference<T> : IEquatable<T>, ISerializable
-        where T : class
+        where T : class?
     {
         private const string ValueSerData = "Value";
         private T value;
@@ -393,6 +393,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Provides volatile access to the reference value.
         /// </summary>
+        [MaybeNull]
         public T Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -434,14 +435,14 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if the stored value is equal to <paramref name="other"/> value.</returns>
-		public readonly bool Equals(T other) => Equals(other, Value);
+		public readonly bool Equals([AllowNull]T other) => Equals(other, Value);
 
         /// <summary>
         /// Checks whether the stored value is equal to the given value.
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if the stored value is equal to <paramref name="other"/> value.</returns>
-        public readonly override bool Equals(object other)
+        public readonly override bool Equals(object? other)
             => other is AtomicReference<T> atomic ? Equals(atomic.Value) : Equals(other as T);
 
         /// <summary>
@@ -468,6 +469,7 @@ namespace DotNext.Threading
         /// <param name="update">A new value to be stored inside of container.</param>
         /// <returns>A new value passed as argument.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull("update")]
         public T SetAndGet(T update)
         {
             Value = update;
@@ -574,7 +576,7 @@ namespace DotNext.Threading
             if (value is null)
             {
                 value = new G();
-                return CompareExchange(null, value) ?? value;
+                return CompareExchange(null!, value) ?? value;
             }
             else
                 return value;
@@ -591,7 +593,7 @@ namespace DotNext.Threading
             if (value is null)
             {
                 value = supplier();
-                return CompareExchange(null, value) ?? value;
+                return CompareExchange(null!, value) ?? value;
             }
             else
                 return value;
