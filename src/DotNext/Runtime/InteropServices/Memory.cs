@@ -610,20 +610,12 @@ namespace DotNext.Runtime.InteropServices
 
         internal static int CompareUnaligned(IntPtr first, IntPtr second, long length)
         {
-            int comparison;
-            do
+            var comparison = 0;
+            for (int count; length > 0 && comparison == 0; length -= count, first += count, second += count)
             {
-                var count = (int)Math.Min(length, int.MaxValue);
+                count = (int)Math.Min(length, int.MaxValue);
                 comparison = new ReadOnlySpan<byte>(first.ToPointer(), count).SequenceCompareTo(new ReadOnlySpan<byte>(second.ToPointer(), count));
-                if (comparison == 0)
-                {
-                    first += count;
-                    second += count;
-                    length -= count;
-                }
-                else
-                    break;
-            } while (length > 0);
+            }
             return comparison;
         }
 
@@ -721,7 +713,7 @@ namespace DotNext.Runtime.InteropServices
                     length -= sizeof(UIntPtr);
                 else
                     goto exit;
-            while (length > sizeof(byte))
+            while (length > 0)
                 if (Read<byte>(ref address) == 0)
                     length -= sizeof(byte);
                 else
@@ -745,7 +737,7 @@ namespace DotNext.Runtime.InteropServices
                     length -= sizeof(UIntPtr);
                 else
                     goto exit;
-            while (length > sizeof(byte))
+            while (length > 0)
                 if (Read<byte>(ref first) == Read<byte>(ref second))
                     length -= sizeof(byte);
                 else
