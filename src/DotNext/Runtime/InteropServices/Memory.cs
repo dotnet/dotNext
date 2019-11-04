@@ -835,9 +835,15 @@ namespace DotNext.Runtime.InteropServices
         [CLSCompliant(false)]
         public static unsafe Span<byte> AsSpan<T>(T* pointer) where T : unmanaged => AsSpan(ref pointer[0]);
 
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="Span{T}"/>.
+        /// </summary>
+        /// <param name="value">The managed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Span<byte> AsSpan<T>(ref T value) where T : unmanaged => MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref value), sizeof(T));
-        
 
         /// <summary>
         /// Copies one value into another.

@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace DotNext.Generic
 {
     /// <summary>
@@ -16,7 +18,7 @@ namespace DotNext.Generic
         /// Initializes a new generic-level constant.
         /// </summary>
         /// <param name="constVal">Constant value.</param>
-        protected Constant(T constVal)
+        protected Constant([AllowNull]T constVal)
         {
             Value = constVal;
         }
@@ -57,6 +59,7 @@ namespace DotNext.Generic
         /// Extracts constant value.
         /// </summary>
         /// <param name="const">The constant value holder.</param>
+        [return: MaybeNull]
         public static implicit operator T(Constant<T> @const) => @const.Value;
     }
 }

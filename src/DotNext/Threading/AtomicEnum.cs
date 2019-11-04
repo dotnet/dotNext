@@ -277,7 +277,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(E other) => value.VolatileRead() == other.ToInt64();
+        public readonly bool Equals(E other) => Unsafe.AsRef(in value).VolatileRead() == other.ToInt64();
 
         /// <summary>
         /// Determines whether stored value is equal to
@@ -285,26 +285,20 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public readonly override bool Equals(object other) => other switch
         {
-            switch (other)
-            {
-                case E b:
-                    return Equals(b);
-                case AtomicEnum<E> b:
-                    return b.value.VolatileRead() == value.VolatileRead();
-                default:
-                    return false;
-            }
-        }
+            E b => Equals(b),
+            AtomicEnum<E> b => b.value.VolatileRead() == Unsafe.AsRef(in value).VolatileRead(),
+            _ => false,
+        };
 
         /// <summary>
         /// Computes hash code for the stored value.
         /// </summary>
         /// <returns>The hash code of the stored boolean value.</returns>
-        public override int GetHashCode() => value.VolatileRead().GetHashCode();
+        public readonly override int GetHashCode() => Unsafe.AsRef(in value).VolatileRead().GetHashCode();
 
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        readonly void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
             => info.AddValue(ValueSerData, value);
     }
 }
