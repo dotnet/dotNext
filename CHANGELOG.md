@@ -1,6 +1,11 @@
 Release Notes
 ====
 
+# 11-05-2019
+<a href="https://www.nuget.org/packages/dotnext/1.2.2">DotNext 1.2.2</a>
+* Fixed bitwise equality
+* Fixed `Intrinsics.IsDefault` method
+
 # 11-02-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.1">DotNext 1.2.1</a>
 * Fixed type modifier of `Current` property declared in [CopyOnWriteList&lt;T&gt;.Enumerator](https://sakno.github.io/dotNext/api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html)

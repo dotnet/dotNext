@@ -39,10 +39,11 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-02-2019
+Release Date: 11-05-2019
 
-<a href="https://www.nuget.org/packages/dotnext/1.2.1">DotNext 1.2.1</a>
-* Fixed type modifier of `Current` property declared in [CopyOnWriteList&lt;T&gt;.Enumerator](https://sakno.github.io/dotNext/api/DotNext.Collections.Concurrent.CopyOnWriteList-1.Enumerator.html)
+<a href="https://www.nuget.org/packages/dotnext/1.2.2">DotNext 1.2.2</a>
+* Fixed bitwise equality
+* Fixed `Intrinsics.IsDefault` method
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
