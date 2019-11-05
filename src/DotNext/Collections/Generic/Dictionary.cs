@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 
 namespace DotNext.Collections.Generic
 {
+    using static Diagnostics.Assert;
+
     /// <summary>
     /// Represents various extensions for types <see cref="Dictionary{TKey, TValue}"/>
     /// and <see cref="IDictionary{TKey, TValue}"/>.
@@ -17,7 +18,6 @@ namespace DotNext.Collections.Generic
             internal static readonly Func<D, K, V> Getter;
             internal static readonly Action<D, K, V>? Setter;
 
-#nullable disable
             static Indexer()
             {
                 foreach (var member in typeof(D).GetDefaultMembers())
@@ -27,9 +27,8 @@ namespace DotNext.Collections.Generic
                         Setter = indexer.SetMethod?.CreateDelegate<Action<D, K, V>>();
                         return;
                     }
-                Debug.Fail(ExceptionMessages.UnreachableCodeDetected);
+                throw Unreachable();
             }
-#nullable restore
         }
 
         /// <summary>

@@ -87,14 +87,12 @@ namespace DotNext.VariantType
         public Variant<U1, U2> Convert<U1, U2>(in ValueFunc<T1, U1> mapper1, in ValueFunc<T2, U2> mapper2)
             where U1 : class
             where U2 : class
-        {
-            switch (value)
+            => value switch
             {
-                case T1 first: return new Variant<U1, U2>(mapper1.Invoke(first));
-                case T2 second: return new Variant<U1, U2>(mapper2.Invoke(second));
-                default: return default;
-            }
-        }
+                T1 first => new Variant<U1, U2>(mapper1.Invoke(first)),
+                T2 second => new Variant<U1, U2>(mapper2.Invoke(second)),
+                _ => default,
+            };
 
         /// <summary>
         /// Converts this variant value into another value.

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 
 namespace DotNext.Collections.Generic
 {
+    using static Diagnostics.Assert;
+
     /// <summary>
     /// Provides various extensions for <see cref="IList{T}"/> interface.
     /// </summary>
@@ -16,7 +17,6 @@ namespace DotNext.Collections.Generic
             internal static readonly Func<C, int, T> Getter;
             internal static readonly Action<C, int, T>? Setter;
 
-#nullable disable
             static Indexer()
             {
                 foreach (var member in typeof(C).GetDefaultMembers())
@@ -26,9 +26,8 @@ namespace DotNext.Collections.Generic
                         Setter = indexer.SetMethod?.CreateDelegate<Action<C, int, T>>();
                         return;
                     }
-                Debug.Fail(ExceptionMessages.UnreachableCodeDetected);
+                throw Unreachable();
             }
-#nullable restore
         }
 
         /// <summary>

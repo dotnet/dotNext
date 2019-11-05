@@ -173,16 +173,15 @@ namespace DotNext.Threading
             return new Holder(lockedObject, type);
         }
 
-        private readonly bool TryAcquire()
-            => type switch
-            {
-                Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject),
-                Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0),
-                Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0),
-                Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0),
-                Type.Semaphore => As<SemaphoreSlim>(lockedObject).Wait(0),
-                _ => false,
-            };
+        private readonly bool TryAcquire() => type switch
+        {
+            Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject),
+            Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0),
+            Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0),
+            Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0),
+            Type.Semaphore => As<SemaphoreSlim>(lockedObject).Wait(0),
+            _ => false,
+        };
 
         /// <summary>
         /// Attempts to acquire lock.
@@ -203,16 +202,15 @@ namespace DotNext.Threading
             }
         }
 
-        private readonly bool TryAcquire(TimeSpan timeout)
-            => type switch
-            {
-                Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject, timeout),
-                Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout),
-                Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout),
-                Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout),
-                Type.Semaphore => As<SemaphoreSlim>(lockedObject).Wait(timeout),
-                _ => false,
-            };
+        private readonly bool TryAcquire(TimeSpan timeout) => type switch
+        {
+            Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject, timeout),
+            Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout),
+            Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout),
+            Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout),
+            Type.Semaphore => As<SemaphoreSlim>(lockedObject).Wait(timeout),
+            _ => false,
+        };
 
         /// <summary>
         /// Attempts to acquire lock.
