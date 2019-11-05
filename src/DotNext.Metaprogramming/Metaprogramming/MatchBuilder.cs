@@ -255,9 +255,9 @@ namespace DotNext.Metaprogramming
 
         private static readonly MethodInfo PlainCaseStatementBuilder = new Func<Expression, ParameterExpression, Expression>(CaseStatementBuilder.Build).Method;
         private readonly ParameterExpression value;
-        private readonly BinaryExpression assignment;
+        private readonly BinaryExpression? assignment;
         private readonly ICollection<PatternMatch> patterns;
-        private CaseStatement defaultCase;
+        private CaseStatement? defaultCase;
 
         internal MatchBuilder(Expression value, ILexicalScope currentScope)
             : base(currentScope)

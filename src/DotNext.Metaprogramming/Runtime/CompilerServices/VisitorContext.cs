@@ -35,7 +35,7 @@ namespace DotNext.Runtime.CompilerServices
             return pair;
         }
 
-        private S FindStatement<S>()
+        private S? FindStatement<S>()
             where S : Statement
         {
             foreach (var statement in statements)

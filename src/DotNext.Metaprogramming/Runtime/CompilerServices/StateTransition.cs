@@ -8,15 +8,15 @@ namespace DotNext.Runtime.CompilerServices
     internal readonly struct StateTransition : IEquatable<StateTransition>
     {
         internal readonly LabelTarget Successful;
-        internal readonly LabelTarget Failure;
+        internal readonly LabelTarget? Failure;
 
-        internal StateTransition(LabelTarget successful, LabelTarget failed)
+        internal StateTransition(LabelTarget successful, LabelTarget? failed)
         {
             Successful = successful;
             Failure = failed;
         }
 
-        internal void Deconstruct(out LabelTarget successful, out LabelTarget failed)
+        internal void Deconstruct(out LabelTarget successful, out LabelTarget? failed)
         {
             successful = Successful;
             failed = Failure;

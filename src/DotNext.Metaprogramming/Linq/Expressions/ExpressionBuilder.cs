@@ -262,7 +262,7 @@ namespace DotNext.Linq.Expressions
         public static Expression IsNull(this Expression operand)
         {
             //handle nullable value type
-            var underlyingType = Nullable.GetUnderlyingType(operand.Type);
+            Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
                 return operand.Property(nameof(Nullable<int>.HasValue)).Not();
             //handle optional type
@@ -284,7 +284,7 @@ namespace DotNext.Linq.Expressions
         public static Expression IsNotNull(this Expression operand)
         {
             //handle nullable value type
-            var underlyingType = Nullable.GetUnderlyingType(operand.Type);
+            Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
                 return operand.Property(nameof(Nullable<int>.HasValue));
             //handle optional type
@@ -998,7 +998,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="ifFalse">Negative branch.</param>
         /// <param name="type">The type of conditional expression. Default is <see cref="void"/>.</param>
         /// <returns>Conditional expression.</returns>
-        public static ConditionalExpression Condition(this Expression test, Expression ifTrue = null, Expression ifFalse = null, Type type = null)
+        public static ConditionalExpression Condition(this Expression test, Expression? ifTrue = null, Expression? ifFalse = null, Type? type = null)
             => Expression.Condition(test, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), type ?? typeof(void));
 
         /// <summary>
@@ -1035,7 +1035,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="exception">An exception to be thrown.</param>
         /// <param name="type">The type of expression. Default is <see cref="void"/>.</param>
         /// <returns><c>throw</c> expression.</returns>
-        public static UnaryExpression Throw(this Expression exception, Type type = null) => Expression.Throw(exception, type ?? typeof(void));
+        public static UnaryExpression Throw(this Expression exception, Type? type = null) => Expression.Throw(exception, type ?? typeof(void));
 
         /// <summary>
         /// Converts arbitrary value into constant expression.

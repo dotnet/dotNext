@@ -214,6 +214,7 @@ namespace DotNext
         /// Extracts actual result.
         /// </summary>
         /// <param name="result">The result object.</param>
+        [return: MaybeNull]
         public static explicit operator T(in Result<T> result) => result.Value;
 
         /// <summary>

@@ -59,5 +59,7 @@ namespace DotNext
         internal static string UnsupportedSafeNavigationType(Type type) => string.Format(Resources.GetString("UnsupportedSafeNavigationType"), type);
 
         internal static string TypedReferenceExpected => Resources.GetString("TypedReferenceExpected");
+
+        internal static string UndeclaredVariable(string name) => string.Format(Resources.GetString("UndeclaredVariable"), name);
     }
 }

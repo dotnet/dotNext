@@ -22,3 +22,4 @@ InvalidFragmentRendering=Expression fragment cannot be rendered with invalid set
 CollectionImplementationExpected=One of the supported collection interfaces is not implemented
 UnsupportedSafeNavigationType=Type {0} cannot be used in null-safe navigation
 TypedReferenceExpected=The variable should be of type System.TypedReference
+UndeclaredVariable=Variable {0} is undeclared
