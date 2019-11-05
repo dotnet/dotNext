@@ -26,9 +26,9 @@ namespace DotNext.Linq.Expressions
         private readonly BinaryExpression enumeratorAssignment;
         private readonly MethodCallExpression moveNextCall;
 
-        private Expression body;
+        private Expression? body;
 
-        internal ForEachExpression(Expression collection, LabelTarget continueLabel, LabelTarget breakLabel)
+        internal ForEachExpression(Expression collection, LabelTarget? continueLabel, LabelTarget? breakLabel)
         {
             collection.Type.GetItemType(out var enumerable);
             const string GetEnumeratorMethod = nameof(IEnumerable.GetEnumerator);

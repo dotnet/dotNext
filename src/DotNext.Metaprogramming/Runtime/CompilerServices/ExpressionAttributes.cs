@@ -30,7 +30,7 @@ namespace DotNext.Runtime.CompilerServices
         internal void AttachTo(Expression node)
             => node.GetUserData().Set(AttributesSlot, this);
 
-        internal static ExpressionAttributes? Get(Expression? node)
-            => node?.GetUserData().Get(AttributesSlot);
+        internal static ExpressionAttributes Get(Expression node)
+            => node.GetUserData().Get<ExpressionAttributes?>(AttributesSlot);
     }
 }

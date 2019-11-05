@@ -59,7 +59,7 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
-        internal ParameterExpression ExceptionHolder => FindStatement<CatchStatement>()?.ExceptionVar;
+        internal ParameterExpression? ExceptionHolder => FindStatement<CatchStatement>()?.ExceptionVar;
 
         private void ContainsAwait()
         {
@@ -78,7 +78,7 @@ namespace DotNext.Runtime.CompilerServices
             target.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId;
         }
 
-        internal O Rewrite<I, O, A>(I expression, Converter<I, O> rewriter, Action<A> initializer = null)
+        internal O Rewrite<I, O, A>(I expression, Converter<I, O> rewriter, Action<A>? initializer = null)
             where I : Expression
             where O : Expression
             where A : ExpressionAttributes, new()

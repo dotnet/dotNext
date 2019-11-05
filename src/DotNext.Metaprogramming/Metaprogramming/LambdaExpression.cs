@@ -35,7 +35,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         internal abstract IReadOnlyList<ParameterExpression> Parameters { get; }
 
-        internal abstract Expression Return(Expression result);
+        internal abstract Expression Return(Expression? result);
     }
 
     /// <summary>
@@ -45,9 +45,9 @@ namespace DotNext.Metaprogramming
     internal sealed class LambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>, ILexicalScope<Expression<D>, Action<LambdaContext, ParameterExpression>>, ILexicalScope<Expression<D>, Func<LambdaContext, Expression>>
         where D : Delegate
     {
-        private ParameterExpression recursion;
-        private ParameterExpression lambdaResult;
-        private LabelTarget returnLabel;
+        private ParameterExpression? recursion;
+        private ParameterExpression? lambdaResult;
+        private LabelTarget? returnLabel;
 
         private readonly Type returnType;
 
@@ -75,7 +75,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         internal override IReadOnlyList<ParameterExpression> Parameters { get; }
 
-        private ParameterExpression Result
+        private ParameterExpression? Result
         {
             get
             {

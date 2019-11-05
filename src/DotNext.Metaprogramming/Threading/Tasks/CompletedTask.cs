@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -50,7 +51,8 @@ namespace DotNext.Threading.Tasks
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct CompletedTask<T>
     {
-        private readonly Exception failure;
+        private readonly Exception? failure;
+        [AllowNull]
         private readonly T result;
 
         /// <summary>

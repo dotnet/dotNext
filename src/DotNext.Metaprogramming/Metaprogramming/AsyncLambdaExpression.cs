@@ -12,7 +12,7 @@ namespace DotNext.Metaprogramming
     internal sealed class AsyncLambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>
         where D : Delegate
     {
-        private ParameterExpression recursion;
+        private ParameterExpression? recursion;
         private readonly TaskType taskType;
 
         [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]

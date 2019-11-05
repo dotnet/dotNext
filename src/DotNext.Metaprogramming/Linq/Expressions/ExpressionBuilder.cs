@@ -119,20 +119,13 @@ namespace DotNext.Linq.Expressions
         public static BinaryExpression Add(this Expression left, Expression right)
             => Expression.Add(left, right);
 
-        private static MethodCallExpression Concat(Expression[] strings)
+        private static MethodCallExpression Concat(Expression[] strings) => strings.LongLength switch
         {
-            switch (strings.LongLength)
-            {
-                case 2:
-                    return CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1]);
-                case 3:
-                    return CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1], strings[2]);
-                case 4:
-                    return CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1], strings[2], strings[3]);
-                default:
-                    return CallStatic(typeof(string), nameof(string.Concat), Expression.NewArrayInit(typeof(string), strings));
-            }
-        }
+            2 => CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1]),
+            3 => CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1], strings[2]),
+            4 => CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1], strings[2], strings[3]),
+            _ => CallStatic(typeof(string), nameof(string.Concat), Expression.NewArrayInit(typeof(string), strings)),
+        };
 
         /// <summary>
         /// Constructs string concatenation expression.
@@ -1192,7 +1185,7 @@ namespace DotNext.Linq.Expressions
 
         internal static MethodCallExpression Breakpoint() => CallStatic(typeof(Debugger), nameof(Debugger.Break));
 
-        internal static MethodCallExpression Assert(this Expression test, string message)
+        internal static MethodCallExpression Assert(this Expression test, string? message)
         {
             if (test is null)
                 throw new ArgumentNullException(nameof(test));
