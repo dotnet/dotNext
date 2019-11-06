@@ -43,17 +43,24 @@ namespace DotNext.IO
         public static async ValueTask<long> WriteAsync(this Stream destination, PipeReader source, CancellationToken token = default)
         {
             var total = 0L;
-            for (ReadResult result; ; token.ThrowIfCancellationRequested())
-            {
-                result = await source.ReadAsync(token).ConfigureAwait(false);
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
-                if (result.IsCompleted)
-                    break;
-                total += result.Buffer.Length;
-                foreach (var block in result.Buffer)
-                    await destination.WriteAsync(block, token).ConfigureAwait(false);
-            }
+            for (SequencePosition consumed = default; ; consumed = default)
+                try
+                {
+                    var result = await source.ReadAsync(token).ConfigureAwait(false);
+                    var buffer = result.Buffer;
+                    if (result.IsCanceled)
+                        throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
+                    for (var position = buffer.Start; buffer.TryGet(ref position, out var block); consumed = position, total += block.Length)
+                        await destination.WriteAsync(block, token).ConfigureAwait(false);
+                    if (consumed.Equals(default))
+                        consumed = buffer.End;
+                    if (result.IsCompleted)
+                        break;
+                }
+                finally
+                {
+                    source.AdvanceTo(consumed);
+                }
             return total;
         }
 
