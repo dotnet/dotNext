@@ -241,13 +241,7 @@ namespace DotNext
         /// Gets hash code of the enum member.
         /// </summary>
         /// <returns>The hash code of the enum member.</returns>
-        public override int GetHashCode()
-        {
-            var hashCode = new HashCode();
-            hashCode.Add(Value);
-            hashCode.Add(Name, StringComparer.Ordinal);
-            return hashCode.ToHashCode();
-        }
+        public override int GetHashCode() => HashCode.Combine(Value, Name);
 
         /// <summary>
         /// Returns textual representation of the enum value.

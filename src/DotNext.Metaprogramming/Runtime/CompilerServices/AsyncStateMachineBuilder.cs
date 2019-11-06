@@ -458,27 +458,35 @@ namespace DotNext.Runtime.CompilerServices
             return Expression.Lambda<D>(Expression.Block(new[] { stateVariable }, newBody), true, parameters);
         }
 
-        private static MemberExpression[] CreateStateHolderType(Type returnType, ParameterExpression[] variables, out ParameterExpression stateMachine)
+        private sealed class StateMachineBuilder
         {
-            var sm = default(ParameterExpression?);
-            MemberExpression MakeStateHolder(Type stateType)
+            private readonly Type returnType;
+            internal ParameterExpression? StateMachine;
+
+            internal StateMachineBuilder(Type returnType) => this.returnType = returnType;
+
+            internal MemberExpression Build(Type stateType)
             {
                 var stateMachineType = returnType == typeof(void) ?
                     typeof(AsyncStateMachine<>).MakeGenericType(stateType) :
                     typeof(AsyncStateMachine<,>).MakeGenericType(stateType, returnType);
                 stateMachineType = stateMachineType.MakeByRefType();
-                sm = Expression.Parameter(stateMachineType);
-                return GetStateField(sm);
+                return GetStateField(StateMachine = Expression.Parameter(stateMachineType));
             }
+        }
+
+        private static MemberExpression[] CreateStateHolderType(Type returnType, ParameterExpression[] variables, out ParameterExpression stateMachine)
+        {
+            var sm = new StateMachineBuilder(returnType);
             MemberExpression[] slots;
             using (var builder = new ValueTupleBuilder())
             {
                 foreach (var v in variables)
                     builder.Add(v.Type);
-                slots = builder.Build(MakeStateHolder, out _);
+                slots = builder.Build(sm.Build, out _);
             }
-            Assert(sm != null);
-            stateMachine = sm;
+            Assert(sm.StateMachine != null);
+            stateMachine = sm.StateMachine;
             return slots;
         }
 

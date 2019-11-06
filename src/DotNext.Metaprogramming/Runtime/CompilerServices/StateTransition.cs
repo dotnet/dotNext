@@ -39,20 +39,7 @@ namespace DotNext.Runtime.CompilerServices
 
         public override bool Equals(object other) => other is StateTransition transition && Equals(transition);
 
-        public override int GetHashCode()
-        {
-            if (Successful is null)
-                return Failure is null ? 0 : Failure.GetHashCode();
-            else if (Failure is null)
-                return Successful.GetHashCode();
-            else
-            {
-                var hashCode = 237146532;
-                hashCode = hashCode * -1521134295 + Successful.GetHashCode();
-                hashCode = hashCode * -1521134295 + Failure.GetHashCode();
-                return hashCode;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(Successful, Failure);
 
         public static bool operator ==(in StateTransition first, in StateTransition second) => first.Equals(second);
         public static bool operator !=(in StateTransition first, in StateTransition second) => !first.Equals(second);
