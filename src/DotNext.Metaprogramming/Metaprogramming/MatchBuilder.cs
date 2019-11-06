@@ -401,7 +401,7 @@ namespace DotNext.Metaprogramming
                     var element = Expression.PropertyOrField(obj, name).Equal(value);
                     result = result is null ? element : result.AndAlso(element);
                 }
-                return result;
+                return result ?? Expression.Constant(false);
             };
 
         private MatchBuilder Case(IEnumerable<(string, Expression)> structPattern, CaseStatement body)

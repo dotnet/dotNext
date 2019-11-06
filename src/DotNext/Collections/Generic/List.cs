@@ -4,8 +4,6 @@ using System.Reflection;
 
 namespace DotNext.Collections.Generic
 {
-    using static Diagnostics.Assert;
-
     /// <summary>
     /// Provides various extensions for <see cref="IList{T}"/> interface.
     /// </summary>
@@ -26,7 +24,7 @@ namespace DotNext.Collections.Generic
                         Setter = indexer.SetMethod?.CreateDelegate<Action<C, int, T>>();
                         return;
                     }
-                throw Unreachable();
+                throw new InvalidProgramException(ExceptionMessages.UnreachableCodeDetected);
             }
         }
 

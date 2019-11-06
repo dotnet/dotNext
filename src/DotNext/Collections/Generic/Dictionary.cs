@@ -4,8 +4,6 @@ using System.Reflection;
 
 namespace DotNext.Collections.Generic
 {
-    using static Diagnostics.Assert;
-
     /// <summary>
     /// Represents various extensions for types <see cref="Dictionary{TKey, TValue}"/>
     /// and <see cref="IDictionary{TKey, TValue}"/>.
@@ -27,7 +25,7 @@ namespace DotNext.Collections.Generic
                         Setter = indexer.SetMethod?.CreateDelegate<Action<D, K, V>>();
                         return;
                     }
-                throw Unreachable();
+                throw new InvalidProgramException(ExceptionMessages.UnreachableCodeDetected);
             }
         }
 

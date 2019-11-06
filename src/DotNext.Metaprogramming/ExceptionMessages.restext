@@ -23,3 +23,4 @@ CollectionImplementationExpected=One of the supported collection interfaces is n
 UnsupportedSafeNavigationType=Type {0} cannot be used in null-safe navigation
 TypedReferenceExpected=The variable should be of type System.TypedReference
 UndeclaredVariable=Variable {0} is undeclared
+VoidLambda=Lambda function has void return type

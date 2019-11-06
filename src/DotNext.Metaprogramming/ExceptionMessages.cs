@@ -61,5 +61,7 @@ namespace DotNext
         internal static string TypedReferenceExpected => Resources.GetString("TypedReferenceExpected");
 
         internal static string UndeclaredVariable(string name) => string.Format(Resources.GetString("UndeclaredVariable"), name);
+
+        internal static string VoidLambda => Resources.GetString("VoidLambda");
     }
 }

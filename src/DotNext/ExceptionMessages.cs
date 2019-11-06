@@ -28,8 +28,5 @@ namespace DotNext
         internal static string UnreachableCodeDetected => Resources.GetString("UnreachableCodeDetected");
 
         internal static string ConcreteDelegateExpected => Resources.GetString("ConcreteDelegateExpected");
-
-        internal static string AssertionFailed(string memberName, int lineNumber, string reason)
-            => string.Format(Resources.GetString("AssertionFailed"), memberName, lineNumber, reason);
     }
 }

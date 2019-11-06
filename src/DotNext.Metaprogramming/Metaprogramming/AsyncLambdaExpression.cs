@@ -35,7 +35,7 @@ namespace DotNext.Metaprogramming
         /// </summary>
         internal override IReadOnlyList<ParameterExpression> Parameters { get; }
 
-        internal override Expression Return(Expression result) => new AsyncResultExpression(result, taskType);
+        internal override Expression Return(Expression? result) => new AsyncResultExpression(result, taskType);
 
         private new Expression<D> Build()
         {

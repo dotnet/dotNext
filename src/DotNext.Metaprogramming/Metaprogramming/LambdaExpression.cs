@@ -87,7 +87,7 @@ namespace DotNext.Metaprogramming
             }
         }
 
-        internal override Expression Return(Expression result)
+        internal override Expression Return(Expression? result)
         {
             if (returnLabel is null)
                 returnLabel = Expression.Label("leave");
@@ -124,7 +124,7 @@ namespace DotNext.Metaprogramming
         public Expression<D> Build(Action<LambdaContext, ParameterExpression> scope)
         {
             using (var context = new LambdaContext(this))
-                scope(context, Result);
+                scope(context, Result ?? throw new InvalidOperationException(ExceptionMessages.VoidLambda));
             return Build();
         }
 
