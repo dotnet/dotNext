@@ -3,6 +3,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Diagnostics.Debug;
 using static System.Runtime.CompilerServices.Unsafe;
 using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
@@ -132,34 +133,20 @@ namespace DotNext.IO
             if (maxChars == 0)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
             var decoder = context.GetDecoder();
-            var charBuffer = maxChars <= 1024 ? stackalloc char[maxChars] : new MemoryRental<char>(maxChars);
-            var result = default(MemoryRental<char>);
-            int currentPos = 0, resultOffset = 0;
-            try
+            using var charBuffer = maxChars <= 1024 ? stackalloc char[maxChars] : new MemoryRental<char>(maxChars);
+            using var result = length <= 1024 ? stackalloc char[length] : new MemoryRental<char>(length);
+            int resultOffset;
+            for (resultOffset = 0; length > 0;)
             {
-                do
-                {
-                    var n = stream.Read(buffer.Slice(0, Math.Min(length - currentPos, buffer.Length)));
-                    if (n == 0)
-                        throw new EndOfStreamException();
-                    var flush = currentPos + n == length;
-                    var charsRead = decoder.GetChars(buffer.Slice(0, n), charBuffer.Span, flush);
-                    if (flush && currentPos == 0)
-                        return new string(charBuffer.Span.Slice(0, n));
-                    if (result.IsEmpty)
-                        result = new MemoryRental<char>(length);
-                    Memory.Copy(ref charBuffer[0], ref result[resultOffset], (uint)charsRead);
-                    resultOffset += charsRead;
-                    currentPos += n;
-                }
-                while (currentPos < length);
-                return new string(result.Span.Slice(0, resultOffset));
+                var n = stream.Read(buffer.Slice(0, Math.Min(length, buffer.Length)));
+                if (n == 0)
+                    throw new EndOfStreamException();
+                length -= n;
+                var charsRead = decoder.GetChars(buffer.Slice(0, n), charBuffer.Span, length == 0);
+                Memory.Copy(ref charBuffer[0], ref result[resultOffset], (uint)charsRead);
+                resultOffset += charsRead;
             }
-            finally
-            {
-                charBuffer.Dispose();
-                result.Dispose();
-            }
+            return new string(result.Span.Slice(0, resultOffset));
         }
 
         /// <summary>
@@ -177,34 +164,22 @@ namespace DotNext.IO
             if (maxChars == 0)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
             var decoder = context.GetDecoder();
-            var charBuffer = new ArrayRental<char>(maxChars);
-            var result = default(ArrayRental<char>);
-            int currentPos = 0, resultOffset = 0;
-            try
+            using var continuousBuffer = new ArrayRental<char>(maxChars + length);
+            var charBuffer = continuousBuffer.Memory.Slice(0, maxChars);
+            var result = continuousBuffer.Memory.Slice(maxChars);
+            Assert(result.Length == length);
+            int resultOffset;
+            for (resultOffset = 0; length > 0;)
             {
-                do
-                {
-                    var n = await stream.ReadAsync(buffer.Slice(0, Math.Min(length - currentPos, buffer.Length)), token).ConfigureAwait(false);
-                    if (n == 0)
-                        throw new EndOfStreamException();
-                    var flush = currentPos + n == length;
-                    var charsRead = decoder.GetChars(buffer.Span.Slice(0, n), charBuffer.Span, flush);
-                    if (flush && currentPos == 0)
-                        return new string(charBuffer.Span.Slice(0, n));
-                    if (result.IsEmpty)
-                        result = new ArrayRental<char>(length);
-                    Memory.Copy(ref charBuffer[0], ref result[resultOffset], (uint)charsRead);
-                    resultOffset += charsRead;
-                    currentPos += n;
-                }
-                while (currentPos < length);
-                return new string(result.Span.Slice(0, resultOffset));
+                var n = await stream.ReadAsync(buffer.Slice(0, Math.Min(length, buffer.Length))).ConfigureAwait(false);
+                if (n == 0)
+                    throw new EndOfStreamException();
+                length -= n;
+                var charsRead = decoder.GetChars(buffer.Span.Slice(0, n), charBuffer.Span, length == 0);
+                Memory.Copy(ref charBuffer.Span[0], ref result.Span[resultOffset], (uint)charsRead);
+                resultOffset += charsRead;
             }
-            finally
-            {
-                charBuffer.Dispose();
-                result.Dispose();
-            }
+            return new string(result.Span.Slice(0, resultOffset));
         }
 
         /// <summary>
