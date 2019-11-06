@@ -7,7 +7,7 @@ namespace DotNext.IO.Pipelines
 {
     using Text;
 
-    public static class PipeWriterExtensions
+    public static class PipeExtensions
     {
         public static async ValueTask WriteStringAsync(this PipeWriter writer, ReadOnlyMemory<char> value, EncodingContext context, int bufferSize = 0, CancellationToken token = default)
         {
