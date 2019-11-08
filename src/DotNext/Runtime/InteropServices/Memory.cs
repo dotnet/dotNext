@@ -591,58 +591,15 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="second">A pointer to the second memory block.</param>
         /// <param name="length">Length of first and second memory blocks, in bytes.</param>
         /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
-        public static bool Equals(ref byte first, ref byte second, long length)
+        public static bool Equals(ref byte first, ref byte second, long length) => AreSame(in first, in second) || length switch
         {
-            if (first == second)
-                return true;
-            switch (length)
-            {
-                default:
-                    Push(first);
-                    Push(second);
-                    Push(length);
-                    Call(new M(typeof(Memory), nameof(EqualsUnaligned)));
-                    break;
-                case 0L:
-                    Ldc_I4_1();
-                    break;
-                case sizeof(byte):
-                    Push(first);
-                    Ldind_I1();
-                    Push(second);
-                    Ldind_I1();
-                    Ceq();
-                    break;
-                case sizeof(ushort):
-                    Push(first);
-                    Unaligned(1);
-                    Ldind_I2();
-                    Push(second);
-                    Unaligned(1);
-                    Ldind_I2();
-                    Ceq();
-                    break;
-                case sizeof(uint):
-                    Push(first);
-                    Unaligned(1);
-                    Ldind_I4();
-                    Push(second);
-                    Unaligned(1);
-                    Ldind_I4();
-                    Ceq();
-                    break;
-                case sizeof(ulong):
-                    Push(first);
-                    Unaligned(1);
-                    Ldind_I8();
-                    Push(second);
-                    Unaligned(1);
-                    Ldind_I8();
-                    Ceq();
-                    break;
-            }
-            return Return<bool>();
-        }
+            0L => true,
+            sizeof(byte) => first == second,
+            sizeof(ushort) => first.AsUnaligned<ushort>() == second.As<ushort>(),
+            sizeof(uint) => first.AsUnaligned<uint>() == second.AsUnaligned<uint>(),
+            sizeof(ulong) => first.AsUnaligned<ulong>() == second.AsUnaligned<ulong>(),
+            _ => EqualsUnaligned(ref first, ref second, length)
+        };
 
         internal static int CompareUnaligned(ref byte first, ref byte second, long length)
         {
@@ -664,7 +621,7 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         public static int Compare(ref byte first, ref byte second, long length)
         {
-            if (first == second)
+            if (AreSame(in first, in second))
                 return 0;
             switch (length)
             {
