@@ -26,7 +26,7 @@ var sizeOf = DelegateHelpers.CreateOpenDelegate<Func<ICollection, int>>(collecti
 `sizeOf` delegate instance representing `get_Count` getter method directly instead of wrapping it into static method.
 
 > [!WARNING]
-> `CreateOpenDelegate` method utilizes Expression Treed feature of C# programming language. There is no free lunch and you paying for such convenience by performance when instantiating delegate instead of `CreateDelegate`. That's why it is recommended to create such delegates statically and save them into **static readonly** fields. However, `CreateOpenDelegate` doesn't use dynamic code compilation feature.
+> `CreateOpenDelegate` method utilizes Expression Trees feature of C# programming language. There is no free lunch and you paying for such convenience by performance when instantiating delegate instead of `CreateDelegate`. That's why it is recommended to create such delegates statically and save them into **static readonly** fields. However, `CreateOpenDelegate` doesn't use dynamic code compilation feature.
 
 This method is suitable for capturing overloaded operator.
 
