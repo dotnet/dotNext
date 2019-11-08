@@ -1,4 +1,5 @@
-﻿using System.Buffers;
+﻿using System;
+using System.Buffers;
 
 namespace DotNext.Buffers
 {
@@ -13,5 +14,15 @@ namespace DotNext.Buffers
     public interface IUnmanagedMemoryOwner<T> : IMemoryOwner<T>, IUnmanagedArray<T>
         where T : unmanaged
     {
+        /// <summary>
+        /// Resizes a block of memory represented by this instance.
+        /// </summary>
+        /// <remarks>
+        /// This method is dangerous becase it invalidates all buffers returned by <see cref="IMemoryOwner{T}.Memory"/> property.
+        /// </remarks>
+        /// <param name="length">The new number of elements in the unmanaged array.</param>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than or equal to zero.</exception>
+        void Reallocate(int length);
     }
 }

@@ -1,27 +1,30 @@
 ﻿using System;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
 {
     using Runtime.InteropServices;
 
-    internal class UnmanagedMemoryManager<T> : MemoryManager<T>
+    internal class UnmanagedMemory<T> : MemoryManager<T>
         where T : unmanaged
     {
         private protected IntPtr address;
         private readonly bool owner;
 
-        //TODO: This ctor is reserved for future use by copying methods of Pointer<T> data type to convert raw pointer into Memory<T> type
-        internal UnmanagedMemoryManager(IntPtr address, int length)
+        internal UnmanagedMemory(IntPtr address, int length)
         {
             this.address = address;
             Length = length;
         }
 
-        private protected UnmanagedMemoryManager(int length, bool zeroMem)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private protected unsafe static long SizeOf(int length) => Math.BigMul(length, sizeof(T));
+
+        private protected UnmanagedMemory(int length, bool zeroMem)
         {
-            var size = UnmanagedMemoryHandle.SizeOf<T>(length);
+            var size = SizeOf(length);
             address = Marshal.AllocHGlobal(new IntPtr(size));
             GC.AddMemoryPressure(size);
             Length = length;
@@ -29,10 +32,24 @@ namespace DotNext.Buffers
                 Runtime.InteropServices.Memory.ClearBits(address, size);
             owner = true;
         }
+        public long Size => SizeOf(Length);
 
-        public long Size => UnmanagedMemoryHandle.SizeOf<T>(Length);
+        public int Length { get; private set; }
 
-        public int Length { get; }
+        internal void Reallocate(int length)
+        {
+            if (length <= 0)
+                throw new ArgumentOutOfRangeException(nameof(length));
+            if (address == default)
+                throw new ObjectDisposedException(GetType().Name);
+            long oldSize = Size, newSize = SizeOf(Length = length);
+            address = Marshal.ReAllocHGlobal(address, new IntPtr(newSize));
+            var diff = newSize - oldSize;
+            if (diff > 0L)
+                GC.AddMemoryPressure(diff);
+            else if (diff < 0L)
+                GC.RemoveMemoryPressure(diff & long.MaxValue);
+        }
 
         public unsafe sealed override Span<T> GetSpan() => new Span<T>(address.ToPointer(), Length);
 

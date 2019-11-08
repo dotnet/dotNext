@@ -14,7 +14,7 @@ namespace DotNext.Text
     public readonly struct EncodingContext
     {
         private readonly Encoding encoding;
-        private readonly Encoder encoder;
+        private readonly Encoder? encoder;
 
         /// <summary>
         /// Initializes a new encoding context.

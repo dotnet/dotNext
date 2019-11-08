@@ -14,7 +14,7 @@ namespace DotNext
         /// <param name="genericParam">Incorrect actual generic argument.</param>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="paramName">The name of generic parameter.</param>
-        public GenericArgumentException(Type genericParam, string message, string paramName = null)
+        public GenericArgumentException(Type genericParam, string message, string? paramName = null)
             : base(message, string.IsNullOrEmpty(paramName) ? genericParam.FullName : paramName)
         {
             Argument = genericParam;
@@ -38,7 +38,7 @@ namespace DotNext
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="paramName">The name of generic parameter.</param>
-		public GenericArgumentException(string message, string paramName = null)
+		public GenericArgumentException(string message, string? paramName = null)
             : base(typeof(G), message, paramName)
         {
         }

@@ -52,7 +52,7 @@ namespace DotNext.Threading
         }
 
         [SuppressMessage("Usage", "CA2213", Justification = "It is disposed in Dispose method")]
-        private volatile TimerCompletionSource timerTask;
+        private volatile TimerCompletionSource? timerTask;
         private readonly ValueFunc<CancellationToken, Task<bool>> callback;
 
         /// <summary>

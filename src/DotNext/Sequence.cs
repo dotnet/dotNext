@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace DotNext
@@ -58,8 +59,8 @@ namespace DotNext
         public static T? FirstOrNull<T>(this IEnumerable<T> seq)
             where T : struct
         {
-            using (var enumerator = seq.GetEnumerator())
-                return enumerator.MoveNext() ? enumerator.Current : new T?();
+            using var enumerator = seq.GetEnumerator();
+            return enumerator.MoveNext() ? enumerator.Current : new T?();
         }
 
         /// <summary>
@@ -71,8 +72,8 @@ namespace DotNext
         /// <returns>First element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq)
         {
-            using (var enumerator = seq.GetEnumerator())
-                return enumerator.MoveNext() ? enumerator.Current : Optional<T>.Empty;
+            using var enumerator = seq.GetEnumerator();
+            return enumerator.MoveNext() ? enumerator.Current : Optional<T>.Empty;
         }
 
         /// <summary>
@@ -92,7 +93,7 @@ namespace DotNext
             return true;
         }
 
-        private static bool ElementAt<T>(this IList<T> list, int index, out T element)
+        private static bool ElementAt<T>(this IList<T> list, int index, [MaybeNullWhen(false)]out T element)
         {
             if (index >= 0 && index < list.Count)
             {
@@ -101,12 +102,12 @@ namespace DotNext
             }
             else
             {
-                element = default;
+                element = default!;
                 return false;
             }
         }
 
-        private static bool ElementAt<T>(this IReadOnlyList<T> list, int index, out T element)
+        private static bool ElementAt<T>(this IReadOnlyList<T> list, int index, [MaybeNullWhen(false)]out T element)
         {
             if (index >= 0 && index < list.Count)
             {
@@ -115,7 +116,7 @@ namespace DotNext
             }
             else
             {
-                element = default;
+                element = default!;
                 return false;
             }
         }
@@ -132,7 +133,7 @@ namespace DotNext
         /// <param name="index">Index of the element to read.</param>
         /// <param name="element">Obtained element.</param>
         /// <returns><see langword="true"/>, if element is available in the collection and obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public static bool ElementAt<T>(this IEnumerable<T> collection, int index, out T element)
+        public static bool ElementAt<T>(this IEnumerable<T> collection, int index, [MaybeNullWhen(false)]out T element)
         {
             switch (collection)
             {
@@ -151,7 +152,7 @@ namespace DotNext
                         }
                         else
                         {
-                            element = default;
+                            element = default!;
                             return false;
                         }
                     }

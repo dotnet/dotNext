@@ -66,13 +66,7 @@ namespace DotNext.Reflection
 
         public override bool Equals(object other) => other is MemberKey key && Equals(key);
 
-        public override int GetHashCode()
-        {
-            var hashCode = -910176598;
-            hashCode = hashCode * -1521134295 + NonPublic.GetHashCode();
-            hashCode = hashCode * -1521134295 + Name?.GetHashCode() ?? 0;
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(NonPublic, Name);
     }
 
     internal abstract class MemberCache<M, E> : Cache<MemberKey, E>

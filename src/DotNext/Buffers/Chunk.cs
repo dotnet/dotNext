@@ -19,7 +19,7 @@ namespace DotNext.Buffers
             return chunk;
         }
 
-        internal static void AddChunk(ReadOnlyMemory<T> segment, ref Chunk<T> first, ref Chunk<T> last)
+        internal static void AddChunk(ReadOnlyMemory<T> segment, ref Chunk<T>? first, ref Chunk<T>? last)
         {
             if (first is null || last is null)
                 first = last = new Chunk<T>(segment);

@@ -12,7 +12,7 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public readonly struct ArrayRental<T> : IDisposable
     {
-        private readonly ArrayPool<T> pool;
+        private readonly ArrayPool<T>? pool;
         private readonly T[] array;
         private readonly bool clearArray;
 
@@ -123,7 +123,7 @@ namespace DotNext.Buffers
         /// the returned array may differs from <see cref="Length"/>.
         /// </remarks>
         /// <param name="rental">Array rental.</param>
-        public static explicit operator T[](in ArrayRental<T> rental) => rental.array;
+        public static explicit operator T[]?(in ArrayRental<T> rental) => rental.array;
 
         /// <summary>
         /// Gets textual representation of the rented memory.

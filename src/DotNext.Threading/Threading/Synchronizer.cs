@@ -24,7 +24,7 @@ namespace DotNext.Threading
             internal void Complete() => SetResult(true);
         }
 
-        private protected volatile WaitNode node;//null means signaled state
+        private protected volatile WaitNode? node;//null means signaled state
 
         private protected Synchronizer()
         {

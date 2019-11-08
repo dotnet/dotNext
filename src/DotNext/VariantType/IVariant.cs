@@ -10,7 +10,7 @@ namespace DotNext.VariantType
         /// <summary>
         /// Gets value stored in the container.
         /// </summary>
-        object Value { get; }
+        object? Value { get; }
 
         /// <summary>
         /// Determines whether the value stored in this variant

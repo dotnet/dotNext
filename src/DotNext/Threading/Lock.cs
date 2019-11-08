@@ -30,7 +30,7 @@ namespace DotNext.Threading
         /// <remarks>
         /// The lock can be released by calling <see cref="Dispose()"/>.
         /// </remarks>
-        public struct Holder : IDisposable   //TODO: Should be ref struct but Dispose pattern is not working in C# 7.x
+        public ref struct Holder
         {
             private readonly object lockedObject;
             private readonly Type type;
@@ -150,7 +150,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Acquires lock.
         /// </summary>
-        public Holder Acquire()
+        public readonly Holder Acquire()
         {
             switch (type)
             {
@@ -173,31 +173,22 @@ namespace DotNext.Threading
             return new Holder(lockedObject, type);
         }
 
-        private bool TryAcquire()
+        private readonly bool TryAcquire() => type switch
         {
-            switch (type)
-            {
-                case Type.Monitor:
-                    return System.Threading.Monitor.TryEnter(lockedObject);
-                case Type.ReadLock:
-                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0);
-                case Type.WriteLock:
-                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0);
-                case Type.UpgradeableReadLock:
-                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0);
-                case Type.Semaphore:
-                    return As<SemaphoreSlim>(lockedObject).Wait(0);
-                default:
-                    return false;
-            }
-        }
+            Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject),
+            Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(0),
+            Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(0),
+            Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(0),
+            Type.Semaphore => As<SemaphoreSlim>(lockedObject).Wait(0),
+            _ => false,
+        };
 
         /// <summary>
         /// Attempts to acquire lock.
         /// </summary>
         /// <param name="holder">The lock holder that can be used to release acquired lock.</param>
         /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/></returns>
-        public bool TryAcquire(out Holder holder)
+        public readonly bool TryAcquire(out Holder holder)
         {
             if (TryAcquire())
             {
@@ -211,24 +202,15 @@ namespace DotNext.Threading
             }
         }
 
-        private bool TryAcquire(TimeSpan timeout)
+        private readonly bool TryAcquire(TimeSpan timeout) => type switch
         {
-            switch (type)
-            {
-                case Type.Monitor:
-                    return System.Threading.Monitor.TryEnter(lockedObject, timeout);
-                case Type.ReadLock:
-                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout);
-                case Type.WriteLock:
-                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout);
-                case Type.UpgradeableReadLock:
-                    return As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout);
-                case Type.Semaphore:
-                    return As<SemaphoreSlim>(lockedObject).Wait(timeout);
-                default:
-                    return false;
-            }
-        }
+            Type.Monitor => System.Threading.Monitor.TryEnter(lockedObject, timeout),
+            Type.ReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterReadLock(timeout),
+            Type.WriteLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterWriteLock(timeout),
+            Type.UpgradeableReadLock => As<ReaderWriterLockSlim>(lockedObject).TryEnterUpgradeableReadLock(timeout),
+            Type.Semaphore => As<SemaphoreSlim>(lockedObject).Wait(timeout),
+            _ => false,
+        };
 
         /// <summary>
         /// Attempts to acquire lock.
@@ -236,7 +218,7 @@ namespace DotNext.Threading
         /// <param name="holder">The lock holder that can be used to release acquired lock.</param>
         /// <param name="timeout">The amount of time to wait for the lock</param>
         /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/></returns>
-        public bool TryAcquire(TimeSpan timeout, out Holder holder)
+        public readonly bool TryAcquire(TimeSpan timeout, out Holder holder)
         {
             if (TryAcquire(timeout))
             {
@@ -255,7 +237,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="timeout">The amount of time to wait for the lock</param>
         /// <exception cref="TimeoutException">The lock has not been acquired during the specified timeout.</exception>
-        public Holder Acquire(TimeSpan timeout)
+        public readonly Holder Acquire(TimeSpan timeout)
             => TryAcquire(timeout) ? new Holder(lockedObject, type) : throw new TimeoutException();
 
         /// <summary>
@@ -278,35 +260,26 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other lock to compare.</param>
         /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(Lock other) => type == other.type && ReferenceEquals(lockedObject, other.lockedObject) && owner == other.owner;
+        public readonly bool Equals(Lock other) => type == other.type && ReferenceEquals(lockedObject, other.lockedObject) && owner == other.owner;
 
         /// <summary>
         /// Determines whether this lock object is the same as other lock.
         /// </summary>
         /// <param name="other">Other lock to compare.</param>
         /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is Lock @lock && Equals(@lock);
+        public readonly override bool Equals(object other) => other is Lock @lock && Equals(@lock);
 
         /// <summary>
         /// Computes hash code of this lock.
         /// </summary>
         /// <returns>The hash code of this lock.</returns>
-        public override int GetHashCode()
-        {
-            if (lockedObject is null)
-                return 0;
-            var hashCode = -549183179;
-            hashCode = hashCode * -1521134295 + lockedObject.GetHashCode();
-            hashCode = hashCode * -1521134295 + type.GetHashCode();
-            hashCode = hashCode * -1521134295 + owner.GetHashCode();
-            return hashCode;
-        }
+        public readonly override int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
 
         /// <summary>
         /// Returns actual type of this lock in the form of the string.
         /// </summary>
         /// <returns>The actual type of this lock.</returns>
-        public override string ToString() => type.ToString();
+        public readonly override string ToString() => type.ToString();
 
         /// <summary>
         /// Determines whether two locks are the same.

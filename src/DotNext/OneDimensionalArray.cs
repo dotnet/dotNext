@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
@@ -23,7 +24,7 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the array.</typeparam>
         /// <param name="array">The array to check.</param>
         /// <returns><see langword="true"/>, if array is <see langword="null"/> or empty.</returns>
-        public static bool IsNullOrEmpty<T>(this T[] array)
+        public static bool IsNullOrEmpty<T>([MaybeNullWhen(false)]this T[] array)
             => array is null || array.LongLength == 0L;
 
         /// <summary>
@@ -250,13 +251,11 @@ namespace DotNext
         {
             if (first is null || second is null)
                 return ReferenceEquals(first, second);
-            else if (first.LongLength != second.LongLength)
+            if (first.LongLength != second.LongLength)
                 return false;
-            else if (first.LongLength == 0)
+            if (first.LongLength == 0)
                 return true;
-            else
-                fixed (T* firstPtr = first, secondPtr = second)
-                    return Memory.EqualsAligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * sizeof(T));
+            return Memory.EqualsAligned(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
         }
 
         /// <summary>
@@ -268,12 +267,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
             where T : unmanaged
-        {
-            if (array.IsNullOrEmpty())
-                return 0;
-            fixed (T* ptr = array)
-                return Memory.GetHashCode32Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), salted);
-        }
+            => array.LongLength > 0L ? Memory.GetHashCode32Aligned(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0;
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -286,12 +280,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-        {
-            if (array.IsNullOrEmpty())
-                return hash;
-            fixed (T* ptr = array)
-                return Memory.GetHashCode32Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), hash, hashFunction, salted);
-        }
+            => array.LongLength > 0L ? Memory.GetHashCode32Aligned(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -317,12 +306,7 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-        {
-            if (array.IsNullOrEmpty())
-                return hash;
-            fixed (T* ptr = array)
-                return Memory.GetHashCode64Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), hash, hashFunction, salted);
-        }
+            => array.LongLength > 0L ? Memory.GetHashCode64Aligned(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -346,12 +330,7 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static unsafe long BitwiseHashCode64<T>(this T[] array, bool salted = true)
             where T : unmanaged
-        {
-            if (array.IsNullOrEmpty())
-                return 0;
-            fixed (T* ptr = array)
-                return Memory.GetHashCode64Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), salted);
-        }
+            => array.LongLength > 0L ? Memory.GetHashCode64Aligned(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0L;
 
         /// <summary>
 		/// Determines whether two arrays contain the same set of elements.
@@ -366,9 +345,9 @@ namespace DotNext
         {
             if (ReferenceEquals(first, second))
                 return true;
-            else if (first is null)
+            if (first is null)
                 return second is null;
-            else if (second is null || first.LongLength != second.LongLength)
+            if (second is null || first.LongLength != second.LongLength)
                 return false;
             for (var i = 0L; i < first.LongLength; i++)
                 if (!Equals(first[i], second[i]))
@@ -392,8 +371,7 @@ namespace DotNext
                 return 1;
             else if (first.LongLength != second.LongLength)
                 return first.LongLength.CompareTo(second.LongLength);
-            fixed (T* firstPtr = first, secondPtr = second)
-                return Memory.CompareUnaligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * sizeof(T));
+            return Memory.CompareUnaligned(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
         }
     }
 }

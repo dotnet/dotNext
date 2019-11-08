@@ -16,7 +16,7 @@ namespace DotNext
             object Rewrite(Delegate d);
         }
 
-        private static readonly Predicate<Assembly> IsCollectible;
+        private static readonly Predicate<Assembly>? IsCollectible;
         private static readonly WaitCallback ActionInvoker;
 
         static DelegateHelpers()
@@ -40,25 +40,17 @@ namespace DotNext
             object ITargetRewriter.Rewrite(Delegate d) => d.Target;
         }
 
-        private static MethodInfo GetMethod<D>(Expression<D> expression)
+        private static MethodInfo? GetMethod<D>(Expression<D> expression)
             where D : Delegate
-        {
-            switch (expression.Body)
+            => expression.Body switch
             {
-                case MethodCallExpression expr:
-                    return expr.Method;
-                case MemberExpression expr when expr.Member is PropertyInfo property:
-                    return property.GetMethod;
-                case BinaryExpression expr:
-                    return expr.Method;
-                case IndexExpression expr:
-                    return expr.Indexer.GetMethod;
-                case UnaryExpression expr:
-                    return expr.Method;
-                default:
-                    return null;
-            }
-        }
+                MethodCallExpression expr => expr.Method,
+                MemberExpression expr when expr.Member is PropertyInfo property => property.GetMethod,
+                BinaryExpression expr => expr.Method,
+                IndexExpression expr => expr.Indexer.GetMethod,
+                UnaryExpression expr => expr.Method,
+                _ => null,
+            };
 
         /// <summary>
         /// Creates open delegate for the instance method, property, operator referenced
@@ -67,7 +59,7 @@ namespace DotNext
         /// <typeparam name="D">The type of the delegate describing expression tree.</typeparam>
         /// <param name="expression">The expression tree containing instance method call.</param>
         /// <returns>The open delegate.</returns>
-        public static D CreateOpenDelegate<D>(Expression<D> expression)
+        public static D? CreateOpenDelegate<D>(Expression<D> expression)
             where D : Delegate
             => GetMethod(expression)?.CreateDelegate<D>();
 
@@ -77,7 +69,7 @@ namespace DotNext
         /// <param name="expression">The expression tree containing instance method, property, operator call.</param>
         /// <typeparam name="D">The type of the delegate describing expression tree.</typeparam>
         /// <returns>The factory of closed delegate.</returns>
-        public static Func<object, D> CreateClosedDelegateFactory<D>(Expression<D> expression)
+        public static Func<object, D>? CreateClosedDelegateFactory<D>(Expression<D> expression)
             where D : Delegate
         {
             var method = GetMethod(expression);
@@ -114,7 +106,7 @@ namespace DotNext
         /// <returns>The delegate for the specified method.</returns>
         /// <seealso cref="MethodInfo.CreateDelegate(Type, object)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static D CreateDelegate<D>(this MethodInfo method, object target = null)
+        public static D CreateDelegate<D>(this MethodInfo method, object? target = null)
             where D : Delegate
             => (D)method.CreateDelegate(typeof(D), target);
 

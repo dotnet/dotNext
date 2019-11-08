@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -12,10 +13,10 @@ namespace DotNext
     public static class ValueTypeExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string ToString<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToString(provider);
+        internal static string ToString<T>(T value, IFormatProvider? provider = null) where T : struct, IConvertible => value.ToString(provider);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string ToString<T>(T value, string format, IFormatProvider provider = null) where T : struct, IFormattable => value.ToString(format, provider);
+        internal static string ToString<T>(T value, string format, IFormatProvider? provider = null) where T : struct, IFormattable => value.ToString(format, provider);
 
         /// <summary>
 		/// Checks whether the specified value is equal to one
@@ -61,7 +62,7 @@ namespace DotNext
         /// <param name="nullable">Nullable value.</param>
         /// <param name="value">Underlying value.</param>
         /// <returns><see langword="true"/> if <paramref name="nullable"/> is not <see langword="null"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool TryGet<T>(this in T? nullable, out T value) where T : struct
+        public static bool TryGet<T>(this in T? nullable, [MaybeNullWhen(false)]out T value) where T : struct
         {
             value = nullable.GetValueOrDefault();
             return nullable.HasValue;

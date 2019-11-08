@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Reflection;
 
 namespace DotNext.Collections.Generic
@@ -15,7 +14,7 @@ namespace DotNext.Collections.Generic
             where D : class, IEnumerable<KeyValuePair<K, V>>
         {
             internal static readonly Func<D, K, V> Getter;
-            internal static readonly Action<D, K, V> Setter;
+            internal static readonly Action<D, K, V>? Setter;
 
             static Indexer()
             {
@@ -26,7 +25,7 @@ namespace DotNext.Collections.Generic
                         Setter = indexer.SetMethod?.CreateDelegate<Action<D, K, V>>();
                         return;
                     }
-                Debug.Fail(ExceptionMessages.UnreachableCodeDetected);
+                throw new InvalidProgramException(ExceptionMessages.UnreachableCodeDetected);
             }
         }
 
@@ -50,7 +49,7 @@ namespace DotNext.Collections.Generic
             /// <summary>
             /// Represents dictionary value setter.
             /// </summary>
-			public static Action<IDictionary<K, V>, K, V> Setter => Indexer<IDictionary<K, V>, K, V>.Setter;
+			public static Action<IDictionary<K, V>, K, V> Setter => Indexer<IDictionary<K, V>, K, V>.Setter!;
         }
 
         /// <summary>
@@ -279,6 +278,7 @@ namespace DotNext.Collections.Generic
         /// <param name="mapper">Mapping function.</param>
         /// <returns>Read-only view of the dictionary where each value is converted in lazy manner.</returns>
         public static ReadOnlyDictionaryView<K, V, T> ConvertValues<K, V, T>(this IReadOnlyDictionary<K, V> dictionary, in ValueFunc<V, T> mapper)
+            where K : notnull
             => new ReadOnlyDictionaryView<K, V, T>(dictionary, mapper);
 
         /// <summary>
@@ -291,6 +291,7 @@ namespace DotNext.Collections.Generic
         /// <param name="mapper">Mapping function.</param>
         /// <returns>Read-only view of the dictionary where each value is converted in lazy manner.</returns>
         public static ReadOnlyDictionaryView<K, V, T> ConvertValues<K, V, T>(this IReadOnlyDictionary<K, V> dictionary, Converter<V, T> mapper)
+            where K : notnull
             => ConvertValues(dictionary, mapper.AsValueFunc(true));
     }
 }

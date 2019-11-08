@@ -62,7 +62,7 @@ namespace DotNext.Runtime.CompilerServices
         private const long CompletedState = -1L;
         private long index, totalCount;
         private volatile bool hasErrors;
-        private volatile object exceptions; //has type Exception[] or AggregateException
+        private volatile object? exceptions; //has type Exception[] or AggregateException
 
         private protected AsyncDelegateFuture(CancellationToken token)
             : base(token)
@@ -81,7 +81,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private void InvokeOne(object d)
         {
-            var errors = (Exception[])exceptions;
+            var errors = (Exception[])exceptions!;
             var currentIndex = index.IncrementAndGet();
             if (d is D @delegate)
                 try
@@ -107,7 +107,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void Complete(Exception[] errors)
+        private void Complete(Exception[]? errors)
         {
             if (errors != null)
                 exceptions = new AggregateException(errors.SkipNulls());

@@ -191,15 +191,7 @@ namespace DotNext.Reflection
         /// Computes hash code of the reflected operator.
         /// </summary>
         /// <returns>The hash code of the reflected operator.</returns>
-        public override int GetHashCode()
-        {
-            var hashCode = 220548157;
-            hashCode = hashCode * -1521134295 + typeof(D).GetHashCode();
-            hashCode = hashCode * -1521134295 + Type.GetHashCode();
-            if (!(Method is null))
-                hashCode = hashCode * -1521134295 + Method.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(typeof(D), Type, Method);
 
         /// <summary>
         /// Returns textual representation of the reflected operator.

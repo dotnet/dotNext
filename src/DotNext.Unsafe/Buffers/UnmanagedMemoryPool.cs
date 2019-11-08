@@ -12,8 +12,8 @@ namespace DotNext.Buffers
     public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
         where T : unmanaged
     {
-        private readonly Action<IUnmanagedMemoryOwner<T>> removeMemory;
-        private volatile Action ownerDisposal;
+        private readonly Action<IUnmanagedMemoryOwner<T>>? removeMemory;
+        private volatile Action? ownerDisposal;
         private readonly int defaultBufferSize;
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace DotNext.Buffers
                 throw new ArgumentOutOfRangeException(nameof(length));
             if (length < 0)
                 length = defaultBufferSize;
-            var result = new UnmanagedMemoryOwner<T>(length, true) { OnDisposed = removeMemory };
+            var result = new UnmanagedMemoryOwner<T>(length, true, true) { OnDisposed = removeMemory };
             if (removeMemory != null)
                 AddTracking(result);
             return result;
@@ -70,7 +70,7 @@ namespace DotNext.Buffers
         /// <param name="zeroMem"><see langword="true"/> to set all bits in the memory to zero; otherwise, <see langword="false"/>.</param>
         /// <returns>The object representing allocated unmanaged memory.</returns>
         public static IUnmanagedMemoryOwner<T> Allocate(int length, bool zeroMem = true)
-            => new UnmanagedMemoryOwner<T>(length, zeroMem);
+            => new UnmanagedMemoryOwner<T>(length, zeroMem, false);
 
         /// <summary>
         /// Frees the unmanaged resources used by the memory pool and optionally releases the managed resources.

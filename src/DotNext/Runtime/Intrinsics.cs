@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -249,14 +249,9 @@ namespace DotNext.Runtime
         }
 
         internal static E GetTupleItem<T, E>(ref T tuple, int index)
-            where T : struct, IStructuralEquatable, IStructuralComparable
+            where T : struct, ITuple
         {
-            //TODO: Should be rewritten with ITuple interface in .NET Standard 2.1
-            Sizeof(typeof(T));
-            Sizeof(typeof(E));
-            Div_Un();
-            Pop(out int count);
-            if (index < 0 || index >= count)
+            if (index < 0 || index >= tuple.Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
             Push(ref tuple);
             Sizeof(typeof(E));
@@ -266,6 +261,33 @@ namespace DotNext.Runtime
             Add();
             Ldobj(typeof(E));
             return Return<E>();
+        }
+
+        //throw InvalidCastException for reference type as well as for value type
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNull]
+        internal static T Cast<T>(object? obj)
+        {
+            const string notNull = "notNull";
+            Push(obj);
+            Isinst(typeof(T));
+            Dup();
+            Brtrue(notNull);
+            Pop();
+            Newobj(M.Constructor(typeof(InvalidCastException)));
+            Throw();
+
+            MarkLabel(notNull);
+            Unbox_Any(typeof(T));
+            return Return<T>();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static unsafe int PointerHashCode(void* pointer)
+        {
+            Ldarga(nameof(pointer));
+            Call(new M(typeof(UIntPtr), nameof(UIntPtr.GetHashCode)));
+            return Return<int>();
         }
     }
 }

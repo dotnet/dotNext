@@ -17,7 +17,7 @@ namespace DotNext.Threading.Tasks
         /// <summary>
         /// Represents the completed task containing a value passed as constant through <typeparamref name="C"/> generic parameter.
         /// </summary>
-        public static readonly Task<T> Task = System.Threading.Tasks.Task.FromResult<T>(value);
+        public static readonly Task<T> Task = System.Threading.Tasks.Task.FromResult(value);
 
         internal static T WhenFaulted(Task<T> task) => task.IsFaulted ? value : task.Result;
 

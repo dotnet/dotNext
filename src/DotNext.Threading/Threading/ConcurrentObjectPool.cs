@@ -79,7 +79,7 @@ namespace DotNext.Threading
         private sealed class Rental : IRental
         {
             private AtomicBoolean lockState;
-            private T resource; //this is not volatile because it's consistency is protected by lockState memory barrier
+            private T? resource; //this is not volatile because it's consistency is protected by lockState memory barrier
             private readonly int position;
             private long timeToLive;    //not used by Round-robin algorithm
 
@@ -89,13 +89,13 @@ namespace DotNext.Threading
 
             internal bool IsFirst => position == 0;
 
-            internal Rental Next
+            internal Rental? Next
             {
                 get;
                 private set;
             }
 
-            internal Rental Previous
+            internal Rental? Previous
             {
                 get;
                 private set;
@@ -111,11 +111,15 @@ namespace DotNext.Threading
                 next.Previous = this;
             }
 
-            internal event Action<Rental> Released;
+            internal event Action<Rental>? Released;
 
             T IRental.Resource
             {
-                get => resource;
+                get
+                {
+                    Debug.Assert(resource != null);
+                    return resource;
+                }
                 set => resource = value ?? throw new ArgumentNullException(nameof(value));
             }
 
@@ -176,7 +180,8 @@ namespace DotNext.Threading
         }
 
         private readonly ValueFunc<T> factory;
-        private AtomicReference<Rental> last, current;
+        private AtomicReference<Rental?> last;
+        private AtomicReference<Rental> current;
         [SuppressMessage("Design", "IDE0032", Justification = "Volatile operations are applied directly to this field")]
         private int waitCount;
         private readonly long lifetime;
@@ -205,7 +210,11 @@ namespace DotNext.Threading
                 var next = new Rental(index);
                 next.Released += callback;
                 if (rental is null)
-                    current = last = new AtomicReference<Rental>(rental = next);
+                {
+                    rental = next;
+                    current = new AtomicReference<Rental>(rental);
+                    last = new AtomicReference<Rental?>(rental);
+                }
                 else
                 {
                     rental.Attach(next);
@@ -213,7 +222,7 @@ namespace DotNext.Threading
                 }
             }
             Debug.Assert(!(rental is null));
-            rental.Attach(current.Value);
+            rental.Attach(current.Value!);
             current = new AtomicReference<Rental>(rental);
             Capacity = capacity;
             lifetime = capacity + Math.DivRem(capacity, 2L, out var remainder) + remainder;
@@ -250,7 +259,11 @@ namespace DotNext.Threading
             {
                 var next = new Rental(index++, resource);
                 if (rental is null)
-                    current = last = new AtomicReference<Rental>(rental = next);
+                {
+                    rental = next;
+                    current = new AtomicReference<Rental>(rental);
+                    last = new AtomicReference<Rental?>(rental);
+                }
                 else
                 {
                     rental.Attach(next);
@@ -259,24 +272,26 @@ namespace DotNext.Threading
             }
             if (rental is null)
                 throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
-            rental.Attach(current.Value);
+            rental.Attach(current.Value!);
             current = new AtomicReference<Rental>(rental);
             Capacity = index;
         }
 
-        private static Rental SelectNextRental(Rental current) => current.Next;
+        private static Rental SelectNextRental(Rental current) => current.Next!;
 
-        private static Rental SelectLastRenal(Rental current, Rental update) => current is null || current.IsPredecessorOf(update) ? update : current;
+        private static Rental SelectLastRenal(Rental? current, Rental update) => current is null || current.IsPredecessorOf(update) ? update : current;
 
         //release object according with Shortest Job First algorithm
         [RuntimeFeatures(Augmentation = true)]
         private void AdjustAvailableObjectAndCheckStarvation(Rental rental)
         {
+#nullable disable
             current.Value = rental.Previous;
             rental = last.AccumulateAndGet(rental, new ValueFunc<Rental, Rental, Rental>(SelectLastRenal));
             //starvation detected, dispose the resource stored in rental object
             if (rental.Starve())
                 last.Value = rental.IsFirst ? null : rental.Previous;
+#nullable restore
         }
 
         /// <summary>
@@ -337,12 +352,13 @@ namespace DotNext.Threading
         {
             if (disposing)
             {
-                for (Rental rental = current.Value, next; !(rental is null); rental = next)
+                for (Rental? rental = current.Value, next; !(rental is null); rental = next)
                 {
                     next = rental.Next;
                     rental.Destroy(!factory.IsEmpty);
                 }
-                current = last = default;
+                current = default;
+                last = default;
             }
             base.Dispose(disposing);
         }

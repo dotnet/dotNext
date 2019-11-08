@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -35,23 +36,14 @@ namespace DotNext
         /// </summary>
         /// <param name="str">The string to reverse.</param>
         /// <returns>The string in inverse order of characters.</returns>
-        public static unsafe string Reverse(this string str)
+        public static string Reverse(this string str)
         {
-            //TODO: Should be rewritten for .NET Standard 2.1
             if (str.Length == 0)
                 return str;
-            MemoryRental<char> result = str.Length <= 1024 ? stackalloc char[str.Length] : new MemoryRental<char>(str.Length);
-            try
-            {
-                str.AsSpan().CopyTo(result.Span);
-                result.Span.Reverse();
-                fixed (char* ptr = result)
-                    return new string(ptr, 0, result.Length);
-            }
-            finally
-            {
-                result.Dispose();
-            }
+            using MemoryRental<char> result = str.Length <= 1024 ? stackalloc char[str.Length] : new MemoryRental<char>(str.Length);
+            str.AsSpan().CopyTo(result.Span);
+            result.Span.Reverse();
+            return new string(result.Span);
         }
 
         /// <summary>
@@ -70,7 +62,8 @@ namespace DotNext
         /// <param name="str">Source string.</param>
         /// <param name="maxLength">Maximum length.</param>
         /// <returns>Trimmed string value.</returns>
-        public static string TrimLength(this string str, int maxLength)
+        [return: NotNullIfNotNull("str")]
+        public static string? TrimLength(this string? str, int maxLength)
             => str is null || str.Length <= maxLength ? str : str.Substring(0, maxLength);
 
         /// <summary>

@@ -138,7 +138,20 @@ namespace DotNext.IO
         /// <returns>The total number of bytes read into the buffer.</returns>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            count = BaseStream.Read(buffer, offset, Math.Min(count, (int)(length - position)));
+            count = BaseStream.Read(buffer, offset, (int)Math.Min(count, length - position));
+            position += count;
+            return count;
+        }
+
+        /// <summary>
+        /// Reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
+        /// </summary>
+        /// <param name="buffer">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
+        /// <returns>The total number of bytes read into the buffer.</returns>
+        public override int Read(Span<byte> buffer)
+        {
+            buffer = buffer.Slice(0, (int)Math.Min(buffer.Length, length - position));
+            var count = BaseStream.Read(buffer);
             position += count;
             return count;
         }
@@ -153,7 +166,21 @@ namespace DotNext.IO
         /// <returns>The total number of bytes read into the buffer.</returns>
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
         {
-            count = await BaseStream.ReadAsync(buffer, offset, Math.Min(count, (int)(length - position))).ConfigureAwait(false);
+            count = await BaseStream.ReadAsync(buffer, offset, (int)Math.Min(count, length - position)).ConfigureAwait(false);
+            position += count;
+            return count;
+        }
+
+        /// <summary>
+        /// Asynchronously reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
+        /// </summary>
+        /// <param name="buffer">The region of memory to write the data into.</param>
+        /// <param name="token">The token to monitor for cancellation requests.</param>
+        /// <returns>The total number of bytes read into the buffer.</returns>
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
+        {
+            buffer = buffer.Slice(0, (int)Math.Min(buffer.Length, length - position));
+            var count = await BaseStream.ReadAsync(buffer, token).ConfigureAwait(false);
             position += count;
             return count;
         }
@@ -210,12 +237,28 @@ namespace DotNext.IO
         /// This method is not supported.
         /// </summary>
         /// <param name="buffer"></param>
+        /// <exception cref="NotSupportedException">The method is not supported.</exception>
+        public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
+
+        /// <summary>
+        /// This method is not supported.
+        /// </summary>
+        /// <param name="buffer"></param>
         /// <param name="offset"></param>
         /// <param name="count"></param>
         /// <param name="token"></param>
         /// <returns></returns>
         /// <exception cref="NotSupportedException">The method is not supported.</exception>
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token = default) => Task.FromException(new NotSupportedException());
+
+        /// <summary>
+        /// This method is not supported.
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="NotSupportedException">The method is not supported.</exception>
+        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) => throw new NotSupportedException();
 
         /// <summary>
         /// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to read before timing out.

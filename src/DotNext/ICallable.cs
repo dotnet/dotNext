@@ -11,14 +11,14 @@ namespace DotNext
         /// Gets object targeted by this pointer.
         /// </summary>
         /// <value>The object targeted by this pointer.</value>
-        object Target { get; }
+        object? Target { get; }
 
         /// <summary>
         /// Invokes the method dynamically.
         /// </summary>
         /// <param name="args">The arguments to be passed into the method.</param>
         /// <returns>Invocation result.</returns>
-        object DynamicInvoke(params object[] args);
+        object? DynamicInvoke(params object?[] args);
 
         /// <summary>
         /// Indicates that this delegate doesn't refer to any method.
@@ -37,6 +37,6 @@ namespace DotNext
         /// Converts method pointer into delegate.
         /// </summary>
         /// <returns>The delegate instance created from this pointer.</returns>
-        D ToDelegate();
+        D? ToDelegate();
     }
 }

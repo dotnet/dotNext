@@ -17,8 +17,8 @@ namespace DotNext.Linq.Expressions
         /// <returns>The body of synchronized block of code.</returns>
         public delegate Expression Statement(ParameterExpression syncRoot);
 
-        private readonly BinaryExpression assignment;
-        private Expression body;
+        private readonly BinaryExpression? assignment;
+        private Expression? body;
 
         internal LockExpression(Expression syncRoot)
         {
