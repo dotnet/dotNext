@@ -13,14 +13,21 @@ namespace DotNext.Buffers
     /// unmanaged memory.
     /// </summary>
     /// <typeparam name="T">The type of elements to store in memory.</typeparam>
-    internal sealed class UnmanagedMemoryOwner<T> : UnmanagedMemoryManager<T>, IUnmanagedMemoryOwner<T>
+    internal sealed class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMemoryOwner<T>
         where T : unmanaged
     {
-        internal Action<IUnmanagedMemoryOwner<T>> OnDisposed;
+        internal Action<IUnmanagedMemoryOwner<T>>? OnDisposed;
 
         internal UnmanagedMemoryOwner(int length, bool zeroMem)
             : base(length, zeroMem)
         {
+        }
+
+        object ICloneable.Clone()
+        {
+            var copy = new UnmanagedMemoryOwner<T>(Length, false);
+            Runtime.InteropServices.Memory.Copy(address, copy.address, Size);
+            return copy;
         }
 
         Pointer<byte> IUnmanagedMemory.Pointer => new Pointer<byte>(address);

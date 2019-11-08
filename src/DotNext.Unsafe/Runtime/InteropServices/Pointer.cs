@@ -11,7 +11,7 @@ using MemoryHandle = System.Buffers.MemoryHandle;
 
 namespace DotNext.Runtime.InteropServices
 {
-    using MemorySource = Buffers.UnmanagedMemoryManager<byte>;
+    using MemorySource = Buffers.UnmanagedMemory<byte>;
 
     /// <summary>
     /// CLS-compliant typed pointer for .NET languages without direct support of pointer data type.

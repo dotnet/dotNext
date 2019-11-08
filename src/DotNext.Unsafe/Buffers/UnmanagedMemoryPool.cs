@@ -12,8 +12,8 @@ namespace DotNext.Buffers
     public sealed class UnmanagedMemoryPool<T> : MemoryPool<T>
         where T : unmanaged
     {
-        private readonly Action<IUnmanagedMemoryOwner<T>> removeMemory;
-        private volatile Action ownerDisposal;
+        private readonly Action<IUnmanagedMemoryOwner<T>>? removeMemory;
+        private volatile Action? ownerDisposal;
         private readonly int defaultBufferSize;
 
         /// <summary>
