@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class NotifyCompletion&lt;TAwaiter&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.46.0.0">
+    <meta name="generator" content="docfx 2.47.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,38 +81,11 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">NotifyCompletion&lt;TAwaiter&gt;</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.CompilerServices.html">DotNext.Runtime.CompilerServices</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Runtime_CompilerServices_NotifyCompletion_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[BeforeFieldInit(false)]
-public static class NotifyCompletion&lt;TAwaiter&gt;
-
-    where TAwaiter : INotifyCompletion</code></pre>
+    <pre><code class="lang-csharp hljs">public static class NotifyCompletion&lt;TAwaiter&gt; : object where TAwaiter : INotifyCompletion</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -187,13 +160,13 @@ public static class NotifyCompletion&lt;TAwaiter&gt;
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_NotifyCompletion_1_OnCompleted__0__System_Action_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.NotifyCompletion%601.OnCompleted(%600%40%2CSystem.Action)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_CompilerServices_NotifyCompletion_1_OnCompleted__0__Action_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.CompilerServices.NotifyCompletion%601.OnCompleted(%600%40%2CAction)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Runtime/CompilerServices/NotifyCompletion.cs/#L35">View Source</a>
   </span>
   <a id="DotNext_Runtime_CompilerServices_NotifyCompletion_1_OnCompleted_" data-uid="DotNext.Runtime.CompilerServices.NotifyCompletion`1.OnCompleted*"></a>
-  <h4 id="DotNext_Runtime_CompilerServices_NotifyCompletion_1_OnCompleted__0__System_Action_" data-uid="DotNext.Runtime.CompilerServices.NotifyCompletion`1.OnCompleted(`0@,System.Action)">OnCompleted(TAwaiter, Action)</h4>
+  <h4 id="DotNext_Runtime_CompilerServices_NotifyCompletion_1_OnCompleted__0__Action_" data-uid="DotNext.Runtime.CompilerServices.NotifyCompletion`1.OnCompleted(`0@,Action)">OnCompleted(TAwaiter, Action)</h4>
   <div class="markdown level1 summary"><p>Schedules the continuation action that's invoked when the instance completes.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -218,7 +191,7 @@ public static class NotifyCompletion&lt;TAwaiter&gt;
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a></td>
+        <td><span class="xref">Action</span></td>
         <td><span class="parametername">continuation</span></td>
         <td><p>The action to invoke when the operation completes.</p>
 </td>

@@ -8,7 +8,7 @@
     <title>Open and Closed Delegates | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Open and Closed Delegates | .NEXT ">
-    <meta name="generator" content="docfx 2.46.0.0">
+    <meta name="generator" content="docfx 2.47.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -90,7 +90,7 @@ var sizeOf = DelegateHelpers.CreateOpenDelegate&lt;Func&lt;ICollection, int&gt;&
 <p><code>sizeOf</code> delegate instance representing <code>get_Count</code> getter method directly instead of wrapping it into static method.</p>
 <div class="WARNING">
 <h5>Warning</h5>
-<p><code>CreateOpenDelegate</code> method utilizes Expression Treed feature of C# programming language. There is no free lunch and you paying for such convenience by performance when instantiating delegate instead of <code>CreateDelegate</code>. That's why it is recommended to create such delegates statically and save them into <strong>static readonly</strong> fields. However, <code>CreateOpenDelegate</code> doesn't use dynamic code compilation feature.</p>
+<p><code>CreateOpenDelegate</code> method utilizes Expression Trees feature of C# programming language. There is no free lunch and you paying for such convenience by performance when instantiating delegate instead of <code>CreateDelegate</code>. That's why it is recommended to create such delegates statically and save them into <strong>static readonly</strong> fields. However, <code>CreateOpenDelegate</code> doesn't use dynamic code compilation feature.</p>
 </div>
 <p>This method is suitable for capturing overloaded operator.</p>
 <pre><code class="lang-csharp">var decimalToInt = DelegateHelpers.CreateOpenDelegate&lt;Func&lt;int, decimal&gt;&gt;(i =&gt; (decimal) i);
