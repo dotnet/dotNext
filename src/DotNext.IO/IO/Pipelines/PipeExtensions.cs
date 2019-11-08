@@ -12,17 +12,15 @@ namespace DotNext.IO.Pipelines
 
     public static class PipeExtensions
     {
-        private static void GetChars(this Decoder decoder, ReadOnlySpan<byte> bytes, Span<char> output, ref int outputOffset, ref int length)
+        private static void GetChars(this Decoder decoder, ReadOnlySpan<byte> bytes, int charCount, Span<char> output, ref int outputOffset, ref int length)
         {
-            length -= bytes.Length;
-            var charCount = decoder.
             using MemoryRental<char> charBuffer = charCount <= 1024 ? stackalloc char[charCount] : new MemoryRental<char>(charCount);
             length -= bytes.Length;
             charCount = decoder.GetChars(bytes, charBuffer.Span, length == 0);
             Memory.Copy(ref charBuffer[0], ref output[outputOffset], (uint)charCount);
             outputOffset += charCount;
         }
-
+         
         public static async ValueTask<string> ReadStringAsync(this PipeReader reader, int length, DecodingContext context, CancellationToken token = default)
         {
             if (length == 0)
@@ -40,7 +38,7 @@ namespace DotNext.IO.Pipelines
                 for (var position = buffer.Start; length > 0 && buffer.TryGet(ref position, out var block); consumed = buffer.GetPosition(bytesToConsume, position))
                 {
                     bytesToConsume = Math.Min(length, block.Length);
-                    decoder.GetChars(block.Slice(0, bytesToConsume).Span, result.Span, ref resultOffset, ref length);
+                    decoder.GetChars(block.Slice(0, bytesToConsume).Span, context.Encoding.GetMaxCharCount(bytesToConsume), result.Span, ref resultOffset, ref length);
                 }
             }
             return new string(result.Span.Slice(0, resultOffset));
