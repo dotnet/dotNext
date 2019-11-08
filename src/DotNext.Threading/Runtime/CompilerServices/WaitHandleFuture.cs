@@ -20,7 +20,7 @@ namespace DotNext.Runtime.CompilerServices
         private const int TimedOutState = 1;
         private const int SuccessfulState = 2;
 
-        private readonly RegisteredWaitHandle handle;
+        private readonly RegisteredWaitHandle? handle;
         private int state;
 
         //constructor should be synchronized because OnTimeout can be called before than handle field will be set
@@ -33,7 +33,7 @@ namespace DotNext.Runtime.CompilerServices
         [MethodImpl(MethodImplOptions.Synchronized)]
         private void Complete(object state, bool timedOut)
         {
-            handle.Unregister(null);
+            handle?.Unregister(null);
             this.state = timedOut ? TimedOutState : SuccessfulState;
             Complete();
         }
@@ -49,18 +49,12 @@ namespace DotNext.Runtime.CompilerServices
         /// <returns>The object that is used to monitor the completion of an asynchronous operation.</returns>
         public IAwaiter<bool> GetAwaiter() => this;
 
-        bool IAwaiter<bool>.GetResult()
+        bool IAwaiter<bool>.GetResult() => state switch
         {
-            switch (state)
-            {
-                case SuccessfulState:
-                    return true;
-                case TimedOutState:
-                    return false;
-                default:
-                    throw new IncompletedFutureException();
-            }
-        }
+            SuccessfulState => true,
+            TimedOutState => false,
+            _ => throw new IncompletedFutureException(),
+        };
 
         private async Task<bool> ExecuteAsync() => await this;
 
@@ -68,17 +62,11 @@ namespace DotNext.Runtime.CompilerServices
         /// Converts wait handle into <see cref="Task{TResult}"/>.
         /// </summary>
         /// <returns>The task representing wait handle.</returns>
-        public override Task<bool> AsTask()
+        public override Task<bool> AsTask() => state switch
         {
-            switch (state)
-            {
-                case SuccessfulState:
-                    return CompletedTask<bool, True>.Task;
-                case TimedOutState:
-                    return CompletedTask<bool, False>.Task;
-                default:
-                    return ExecuteAsync();
-            }
-        }
+            SuccessfulState => CompletedTask<bool, True>.Task,
+            TimedOutState => CompletedTask<bool, False>.Task,
+            _ => ExecuteAsync(),
+        };
     }
 }

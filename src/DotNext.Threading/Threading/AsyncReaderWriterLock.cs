@@ -116,7 +116,7 @@ namespace DotNext.Threading
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 internal LockManager(State state) => this.state = state;
 
-                WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
+                WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode? node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
 
                 public bool TryAcquire()
                 {
@@ -146,7 +146,7 @@ namespace DotNext.Threading
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 internal LockManager(State state) => this.state = state;
 
-                ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode node) => node is null ? new ReadLockNode(false) : new ReadLockNode(node, false);
+                ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode? node) => node is null ? new ReadLockNode(false) : new ReadLockNode(node, false);
 
                 public bool TryAcquire()
                 {
@@ -167,7 +167,7 @@ namespace DotNext.Threading
                 [MethodImpl(MethodImplOptions.AggressiveInlining)]
                 internal UpgradeableLockManager(State state) => this.state = state;
 
-                ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode node) => node is null ? new ReadLockNode(true) : new ReadLockNode(node, true);
+                ReadLockNode ILockManager<ReadLockNode>.CreateNode(WaitNode? node) => node is null ? new ReadLockNode(true) : new ReadLockNode(node, true);
 
                 public bool TryAcquire()
                 {
@@ -389,20 +389,20 @@ namespace DotNext.Threading
 
         private void ProcessReadLocks()
         {
-            if (head is ReadLockNode readLock)
-                for (WaitNode next; !(readLock is null); readLock = next as ReadLockNode)
-                {
-                    next = readLock.Next;
-                    //remove all read locks and leave upgradeable read locks until first write lock
-                    if (readLock.Upgradeable)
-                        if (state.Upgradeable)    //already in upgradeable lock, leave the current node alive
-                            continue;
-                        else
-                            state.Upgradeable = true;    //enter upgradeable read lock
-                    RemoveNode(readLock);
-                    readLock.Complete();
-                    state.ReadLocks += 1L;
-                }
+            var readLock = head as ReadLockNode;
+            for (WaitNode? next; !(readLock is null); readLock = next as ReadLockNode)
+            {
+                next = readLock.Next;
+                //remove all read locks and leave upgradeable read locks until first write lock
+                if (readLock.Upgradeable)
+                    if (state.Upgradeable)    //already in upgradeable lock, leave the current node alive
+                        continue;
+                    else
+                        state.Upgradeable = true;    //enter upgradeable read lock
+                RemoveNode(readLock);
+                readLock.Complete();
+                state.ReadLocks += 1L;
+            }
         }
 
         /// <summary>

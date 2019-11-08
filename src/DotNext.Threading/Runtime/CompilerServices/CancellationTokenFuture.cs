@@ -13,7 +13,7 @@ namespace DotNext.Runtime.CompilerServices
         internal static readonly CancellationTokenFuture Completed = new CancellationTokenFuture(false);
         internal static readonly CancellationTokenFuture Canceled = new CancellationTokenFuture(true);
 
-        private object state;
+        private object? state;
         private readonly CancellationTokenRegistration registration;
         private readonly bool throwIfCanceled;
 

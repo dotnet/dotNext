@@ -288,16 +288,7 @@ namespace DotNext.Threading
         /// Computes hash code of this lock.
         /// </summary>
         /// <returns>The hash code of this lock.</returns>
-        public readonly override int GetHashCode()
-        {
-            if (lockedObject is null)
-                return 0;
-            var hashCode = -549183179;
-            hashCode = hashCode * -1521134295 + lockedObject.GetHashCode();
-            hashCode = hashCode * -1521134295 + type.GetHashCode();
-            hashCode = hashCode * -1521134295 + owner.GetHashCode();
-            return hashCode;
-        }
+        public readonly override int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
 
         /// <summary>
         /// Returns actual type of this lock in the form of the string.

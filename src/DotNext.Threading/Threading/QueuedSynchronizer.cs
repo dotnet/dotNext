@@ -20,13 +20,12 @@ namespace DotNext.Threading
     {
         private protected class WaitNode : Synchronizer.WaitNode
         {
-            private WaitNode previous;
-            private WaitNode next;
+            private WaitNode? previous;
+            private WaitNode? next;
 
-            internal WaitNode() => previous = next = null;
+            internal WaitNode() { }
 
             internal WaitNode(WaitNode previous)
-                : this()
             {
                 previous.next = this;
                 this.previous = previous;
@@ -41,16 +40,16 @@ namespace DotNext.Threading
                 next = previous = null;
             }
 
-            internal WaitNode CleanupAndGotoNext()
+            internal WaitNode? CleanupAndGotoNext()
             {
                 var next = this.next;
                 this.next = previous = null;
                 return next;
             }
 
-            internal WaitNode Previous => previous;
+            internal WaitNode? Previous => previous;
 
-            internal WaitNode Next => next;
+            internal WaitNode? Next => next;
 
             internal bool IsRoot => previous is null && next is null;
         }
@@ -60,10 +59,10 @@ namespace DotNext.Threading
         {
             bool TryAcquire();  //if true then Wait method can be completed synchronously; otherwise, false.
 
-            N CreateNode(WaitNode tail);
+            N CreateNode(WaitNode? tail);
         }
 
-        private protected WaitNode head, tail;
+        private protected WaitNode? head, tail;
 
         private protected QueuedSynchronizer()
         {
@@ -126,7 +125,7 @@ namespace DotNext.Threading
                 return CompletedTask<bool, BooleanConst.True>.Task;
             if (timeout == TimeSpan.Zero)
                 return CompletedTask<bool, BooleanConst.False>.Task;    //if timeout is zero fail fast
-            if (head is null)
+            if (tail is null)
                 head = tail = manager.CreateNode(null);
             else
                 tail = manager.CreateNode(tail);
