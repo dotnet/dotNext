@@ -32,8 +32,11 @@ namespace DotNext.Buffers
                 Runtime.InteropServices.Memory.ClearBits(address, size);
             owner = true;
         }
+        public long Size => SizeOf(Length);
 
-        public void Reallocate(int length)
+        public int Length { get; private set; }
+
+        internal void Reallocate(int length)
         {
             if (length <= 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
@@ -47,10 +50,6 @@ namespace DotNext.Buffers
             else if (diff < 0L)
                 GC.RemoveMemoryPressure(diff & long.MaxValue);
         }
-
-        public long Size => SizeOf(Length);
-
-        public int Length { get; private set; }
 
         public unsafe sealed override Span<T> GetSpan() => new Span<T>(address.ToPointer(), Length);
 
