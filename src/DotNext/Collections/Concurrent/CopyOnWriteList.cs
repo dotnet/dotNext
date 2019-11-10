@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Concurrent
 {
-    using static Runtime.InteropServices.Memory;
+    using static Runtime.Intrinsics;
 
     /// <summary>
     /// A thread-safe variant of <see cref="List{T}"/> in which all mutative operations are implemented by making a snapshot copy of the underlying array. 

@@ -124,14 +124,14 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0)
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (count == 0)
+            if (count == 0)
                 return;
             var pointer = Address;
             do
             {
-                var actualCount = (int)count.Min(int.MaxValue);
+                var actualCount = count.Truncate();
                 var span = new Span<T>(pointer.ToPointer(), actualCount);
                 span.Fill(value);
                 count -= actualCount;
@@ -150,7 +150,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Converts this pointer into span of bytes.
         /// </summary>
-        public unsafe Span<byte> Bytes => IsNull ? default : Memory.AsSpan(value);
+        public unsafe Span<byte> Bytes => IsNull ? default : Intrinsics.AsSpan(value);
 
         /// <summary>
 		/// Gets or sets pointer value at the specified position in the memory.
@@ -185,7 +185,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new NullPointerException();
             else if (other.IsNull)
                 throw new ArgumentNullException(nameof(other));
-            Memory.Swap(value, other.value);
+            Intrinsics.Swap(value, other.value);
         }
 
         unsafe object IStrongBox.Value
@@ -204,10 +204,9 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count <= 0)
+            if (count <= 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else
-                Memory.ClearBits(value, count);
+            Intrinsics.ClearBits(value, count);
         }
 
         /// <summary>
@@ -221,10 +220,9 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 throw new NullPointerException(ExceptionMessages.NullSource);
-            else if (destination.IsNull)
+            if (destination.IsNull)
                 throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
-            else
-                Memory.Copy(value, destination.value, count * sizeof(T));
+            Intrinsics.Copy(ref value[0], ref destination.value[0], count);
         }
 
         /// <summary>
@@ -241,14 +239,13 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0)
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (offset < 0)
+            if (offset < 0)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            else if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
+            if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
                 return 0L;
-            fixed (T* dest = &destination[offset])
-                Memory.Copy(value, dest, count * sizeof(T));
+            Intrinsics.Copy(ref value[0], ref destination[0], count);
             return count;
         }
 
@@ -332,14 +329,13 @@ namespace DotNext.Runtime.InteropServices
         {
             if (IsNull)
                 throw new NullPointerException();
-            else if (count < 0L)
+            if (count < 0L)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            else if (offset < 0L)
+            if (offset < 0L)
                 throw new ArgumentOutOfRangeException(nameof(offset));
-            else if (source.LongLength == 0L || (count + offset) > source.LongLength)
+            if (source.LongLength == 0L || (count + offset) > source.LongLength)
                 return 0L;
-            fixed (T* src = &source[offset])
-                Memory.Copy(src, value, count * sizeof(T));
+            Intrinsics.Copy(ref source[0], ref value[0], count);
             return count;
         }
 
@@ -447,8 +443,7 @@ namespace DotNext.Runtime.InteropServices
             if (IsNull)
                 return Array.Empty<byte>();
             var result = new byte[sizeof(T) * length];
-            fixed (byte* destination = result)
-                Memory.Copy(value, destination, result.LongLength);
+            Intrinsics.Copy(ref Unsafe.AsRef<byte>(value), ref result[0], length * sizeof(T));
             return result;
         }
 
@@ -549,10 +544,9 @@ namespace DotNext.Runtime.InteropServices
         {
             if (value == other.value)
                 return true;
-            else if (IsNull || other.IsNull)
+            if (IsNull || other.IsNull)
                 return false;
-            else
-                return Memory.Equals(value, other, count * sizeof(T));
+            return Intrinsics.Equals(value, other, count * sizeof(T));
         }
 
         /// <summary>
@@ -562,7 +556,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe int BitwiseHashCode(long count, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode32(value, count * sizeof(T), salted);
+            => IsNull ? 0 : Intrinsics.GetHashCode32(value, count * sizeof(T), salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -571,7 +565,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe long BitwiseHashCode64(long count, bool salted = true)
-            => IsNull ? 0L : Memory.GetHashCode64(value, count * sizeof(T), salted);
+            => IsNull ? 0L : Intrinsics.GetHashCode64(value, count * sizeof(T), salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory identified by this pointer.
@@ -593,7 +587,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe int BitwiseHashCode(long count, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode32(value, count * sizeof(T), hash, hashFunction, salted);
+            => IsNull ? 0 : Intrinsics.GetHashCode32(value, count * sizeof(T), hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -604,7 +598,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
         public unsafe long BitwiseHashCode64(long count, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
-            => IsNull ? 0 : Memory.GetHashCode64(value, count * sizeof(T), hash, hashFunction, salted);
+            => IsNull ? 0 : Intrinsics.GetHashCode64(value, count * sizeof(T), hash, hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory identified by this pointer.
@@ -632,7 +626,7 @@ namespace DotNext.Runtime.InteropServices
             else if (other.IsNull)
                 throw new ArgumentNullException(nameof(other));
             else
-                return Memory.Compare(value, other, count * sizeof(T));
+                return Intrinsics.Compare(value, other, count * sizeof(T));
         }
 
         /// <summary>

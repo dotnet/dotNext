@@ -667,5 +667,13 @@ namespace DotNext
             Ckfinite();
             return Return<double>();
         }
+
+        /// <summary>
+        /// Truncates 64-bit signed integer.
+        /// </summary>
+        /// <param name="value">The value to truncate.</param>
+        /// <returns><see cref="int.MaxValue"/> if <paramref name="value"/> is greater than <see cref="int.MaxValue"/>; otherwise, cast <paramref name="value"/> to <see cref="int"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Truncate(this long value) => value > int.MaxValue ? int.MaxValue : (int)value;
     }
 }

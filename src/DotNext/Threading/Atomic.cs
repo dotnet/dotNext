@@ -7,7 +7,7 @@ using SpinWait = System.Threading.SpinWait;
 
 namespace DotNext.Threading
 {
-    using static Runtime.InteropServices.Memory;
+    using static Runtime.Intrinsics;
 
     /// <summary>
     /// Provides atomic access to non-primitive data type.
@@ -96,7 +96,7 @@ namespace DotNext.Threading
         {
             lockState.Acquire();
             Increment(ref version);
-            Runtime.InteropServices.Memory.Swap(ref value, ref other);
+            Runtime.Intrinsics.Swap(ref value, ref other);
             lockState.Release();
         }
 
