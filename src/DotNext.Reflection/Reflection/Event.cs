@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -10,17 +11,14 @@ namespace DotNext.Reflection
     /// Represents reflected event.
     /// </summary>
     /// <typeparam name="D">A delegate representing event handler.</typeparam>
-    public class EventBase<D> : EventInfo, IEvent, IEquatable<EventInfo>
+    public class EventBase<D> : EventInfo, IEvent, IEquatable<EventInfo?>
         where D : MulticastDelegate
     {
         private readonly EventInfo @event;
 
-        private protected EventBase(EventInfo @event)
-        {
-            this.@event = @event;
-        }
+        private protected EventBase(EventInfo @event) => this.@event = @event;
 
-        private static bool AddOrRemoveHandler(EventInfo @event, object target, D handler, Action<object, Delegate> modifier)
+        private static bool AddOrRemoveHandler(EventInfo @event, object? target, D handler, Action<object?, Delegate> modifier)
         {
             if (@event.AddMethod.IsStatic)
             {
@@ -44,7 +42,7 @@ namespace DotNext.Reflection
         /// <param name="target">The event source.</param>
         /// <param name="handler">Encapsulates a method or methods to be invoked when the event is raised by the target.</param>
         /// <returns><see langword="true"/>, if arguments are correct; otherwise, <see langword="false"/>.</returns>
-        public virtual bool AddEventHandler(object target, D handler)
+        public virtual bool AddEventHandler(object? target, D handler)
             => AddOrRemoveHandler(@event, target, handler, @event.AddEventHandler);
 
         /// <summary>
@@ -53,7 +51,7 @@ namespace DotNext.Reflection
         /// <param name="target">The event source.</param>
         /// <param name="handler">The delegate to be disassociated from the events raised by target.</param>
         /// <returns><see langword="true"/>, if arguments are correct; otherwise, <see langword="false"/>.</returns>
-        public virtual bool RemoveEventHandler(object target, D handler)
+        public virtual bool RemoveEventHandler(object? target, D handler)
             => AddOrRemoveHandler(@event, target, handler, @event.RemoveEventHandler);
 
         EventInfo IMember<EventInfo>.RuntimeMember => @event;
@@ -196,25 +194,19 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other event to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same event as the specified object; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(EventInfo other) => other is Event<D> @event ? this.@event == @event.@event : this.@event == other;
+        public bool Equals(EventInfo? other) => other is Event<D> @event ? this.@event == @event.@event : this.@event == other;
 
         /// <summary>
         /// Determines whether this event is equal to the given event.
         /// </summary>
         /// <param name="other">Other event to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same event as the specified object; otherwise, <see langword="false"/>.</returns>
-        public sealed override bool Equals(object other)
+        public sealed override bool Equals(object? other) => other switch
         {
-            switch (other)
-            {
-                case EventBase<D> @event:
-                    return @event.@event == this.@event;
-                case EventInfo @event:
-                    return this.@event == @event;
-                default:
-                    return false;
-            }
-        }
+            EventBase<D> @event => @event.@event == this.@event,
+            EventInfo @event => this.@event == @event,
+            _ => false,
+        };
 
         /// <summary>
         /// Computes hash code uniquely identifies the reflected event.
@@ -238,8 +230,9 @@ namespace DotNext.Reflection
     {
         private sealed class Cache<T> : MemberCache<EventInfo, Event<D>>
         {
-            private protected override Event<D> Create(string eventName, bool nonPublic) => Reflect(typeof(T), eventName, nonPublic);
+            private protected override Event<D>? Create(string eventName, bool nonPublic) => Reflect(typeof(T), eventName, nonPublic);
         }
+
         private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
@@ -249,8 +242,8 @@ namespace DotNext.Reflection
         private Event(EventInfo @event)
             : base(@event)
         {
-            addMethod = @event.AddMethod?.CreateDelegate<Action<D>>();
-            removeMethod = @event.RemoveMethod?.CreateDelegate<Action<D>>();
+            addMethod = @event.AddMethod.CreateDelegate<Action<D>>();
+            removeMethod = @event.RemoveMethod.CreateDelegate<Action<D>>();
         }
 
         /// <summary>
@@ -259,7 +252,7 @@ namespace DotNext.Reflection
         /// <param name="target">Should be <see langword="null"/>.</param>
         /// <param name="handler">Encapsulates a method or methods to be invoked when the event is raised by the target.</param>
         /// <returns><see langword="true"/>, if <paramref name="target"/> is <see langword="null"/>, <see langword="false"/>.</returns>
-        public override bool AddEventHandler(object target, D handler)
+        public override bool AddEventHandler(object? target, D handler)
         {
             if (target is null)
             {
@@ -276,7 +269,7 @@ namespace DotNext.Reflection
         /// <param name="target">Should be <see langword="null"/>.</param>
         /// <param name="handler">The delegate to be disassociated from the events raised by target.</param>
         /// <returns><see langword="true"/>, if <paramref name="target"/> is <see langword="null"/>, <see langword="false"/>.</returns>
-        public override bool RemoveEventHandler(object target, D handler)
+        public override bool RemoveEventHandler(object? target, D handler)
         {
             if (target is null)
             {
@@ -300,7 +293,7 @@ namespace DotNext.Reflection
         /// <param name="target">Should be <see langword="null"/>.</param>
         /// <param name="handler">Encapsulates a method or methods to be invoked when the event is raised by the target.</param>
         /// <returns><see langword="true"/>, if <paramref name="target"/> is <see langword="null"/>, <see langword="false"/>.</returns>
-        public override void AddEventHandler(object target, Delegate handler)
+        public override void AddEventHandler(object? target, Delegate handler)
         {
             if (handler is D typedHandler)
                 AddEventHandler(typedHandler);
@@ -321,7 +314,7 @@ namespace DotNext.Reflection
         /// <param name="target">Should be <see langword="null"/>.</param>
         /// <param name="handler">The delegate to be disassociated from the events raised by target.</param>
         /// <returns><see langword="true"/>, if <paramref name="target"/> is <see langword="null"/>, <see langword="false"/>.</returns>
-        public override void RemoveEventHandler(object target, Delegate handler)
+        public override void RemoveEventHandler(object? target, Delegate handler)
         {
             if (handler is D typedHandler)
                 RemoveEventHandler(typedHandler);
@@ -334,22 +327,24 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="event">Reflected event.</param>
         /// <returns>The delegate which can be used to attach new handlers to the event.</returns>
-        public static Action<D> operator +(Event<D> @event) => @event?.addMethod;
+        [return: NotNullIfNotNull("event")]
+        public static Action<D>? operator +(Event<D>? @event) => @event?.addMethod;
 
         /// <summary>
         /// Returns a delegate which can be used to detach from the event.
         /// </summary>
         /// <param name="event">Reflected event.</param>
         /// <returns>The delegate which can be used to detach from the event.</returns>
-        public static Action<D> operator -(Event<D> @event) => @event?.removeMethod;
+        [return: NotNullIfNotNull("event")]
+        public static Action<D>? operator -(Event<D>? @event) => @event?.removeMethod;
 
-        private static Event<D> Reflect(Type declaringType, string eventName, bool nonPublic)
+        private static Event<D>? Reflect(Type declaringType, string eventName, bool nonPublic)
         {
             var @event = declaringType.GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
             return @event is null ? null : new Event<D>(@event);
         }
 
-        internal static Event<D> GetOrCreate<T>(string eventName, bool nonPublic)
+        internal static Event<D>? GetOrCreate<T>(string eventName, bool nonPublic)
             => Cache<T>.Of<Cache<T>>(typeof(T)).GetOrCreate(eventName, nonPublic);
     }
 
@@ -360,10 +355,11 @@ namespace DotNext.Reflection
     /// <typeparam name="D">Type of event handler.</typeparam>
     public sealed class Event<T, D> : EventBase<D>, IEvent<T, D>
         where D : MulticastDelegate
+        where T : notnull
     {
         private sealed class Cache : MemberCache<EventInfo, Event<T, D>>
         {
-            private protected override Event<T, D> Create(string eventName, bool nonPublic) => Reflect(eventName, nonPublic);
+            private protected override Event<T, D>? Create(string eventName, bool nonPublic) => Reflect(eventName, nonPublic);
         }
 
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
@@ -394,15 +390,12 @@ namespace DotNext.Reflection
         private static Accessor CompileAccessor(MethodInfo accessor, ParameterExpression instanceParam,
             ParameterExpression handlerParam)
         {
-            if (accessor is null)
-                return null;
-            else if (accessor.DeclaringType is null)
+            if (accessor.DeclaringType is null)
                 throw new ArgumentException(ExceptionMessages.ModuleMemberDetected(accessor), nameof(accessor));
-            else if (accessor.DeclaringType.IsValueType)
+            if (accessor.DeclaringType.IsValueType)
                 return accessor.CreateDelegate<Accessor>();
-            else
-                return Expression.Lambda<Accessor>(Expression.Call(instanceParam, accessor, handlerParam),
-                    instanceParam, handlerParam).Compile();
+            return Expression.Lambda<Accessor>(Expression.Call(instanceParam, accessor, handlerParam),
+                instanceParam, handlerParam).Compile();
         }
 
         /// <summary>
@@ -411,7 +404,7 @@ namespace DotNext.Reflection
         /// <param name="target">The event source.</param>
         /// <param name="handler">Encapsulates a method or methods to be invoked when the event is raised by the target.</param>
         /// <returns><see langword="true"/>, if arguments are correct; otherwise, <see langword="false"/>.</returns>
-        public override bool AddEventHandler(object target, D handler)
+        public override bool AddEventHandler(object? target, D handler)
         {
             if (target is T instance)
             {
@@ -428,7 +421,7 @@ namespace DotNext.Reflection
         /// <param name="target">The event source.</param>
         /// <param name="handler">The delegate to be disassociated from the events raised by target.</param>
         /// <returns><see langword="true"/>, if arguments are correct; otherwise, <see langword="false"/>.</returns>
-        public override bool RemoveEventHandler(object target, D handler)
+        public override bool RemoveEventHandler(object? target, D handler)
         {
             if (target is T instance)
             {
@@ -453,7 +446,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="target">The event source.</param>
         /// <param name="handler">Encapsulates a method or methods to be invoked when the event is raised by the target.</param>
-        public override void AddEventHandler(object target, Delegate handler)
+        public override void AddEventHandler(object? target, Delegate handler)
         {
             if (target is T typedTarget && handler is D typedHandler)
                 AddEventHandler(typedTarget, typedHandler);
@@ -475,7 +468,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="target">The event source.</param>
         /// <param name="handler">The delegate to be disassociated from the events raised by target.</param>
-        public override void RemoveEventHandler(object target, Delegate handler)
+        public override void RemoveEventHandler(object? target, Delegate handler)
         {
             if (target is T typedTarget && handler is D typedHandler)
                 RemoveEventHandler(typedTarget, typedHandler);
@@ -488,22 +481,24 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="event">Reflected event.</param>
         /// <returns>The delegate which can be used to attach new handlers to the event.</returns>
-        public static Accessor operator +(Event<T, D> @event) => @event.addMethod;
+        [return: NotNullIfNotNull("event")]
+        public static Accessor? operator +(Event<T, D>? @event) => @event?.addMethod;
 
         /// <summary>
         /// Returns a delegate which can be used to detach from the event.
         /// </summary>
         /// <param name="event">Reflected event.</param>
         /// <returns>The delegate which can be used to detach from the event.</returns>
-        public static Accessor operator -(Event<T, D> @event) => @event.removeMethod;
+        [return: NotNullIfNotNull("event")]
+        public static Accessor? operator -(Event<T, D>? @event) => @event?.removeMethod;
 
-        private static Event<T, D> Reflect(string eventName, bool nonPublic)
+        private static Event<T, D>? Reflect(string eventName, bool nonPublic)
         {
             var @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
             return @event is null ? null : new Event<T, D>(@event);
         }
 
-        internal static Event<T, D> GetOrCreate(string eventName, bool nonPublic)
+        internal static Event<T, D>? GetOrCreate(string eventName, bool nonPublic)
             => Cache.Of<Cache>(typeof(T)).GetOrCreate(eventName, nonPublic);
     }
 }

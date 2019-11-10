@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -11,14 +12,11 @@ namespace DotNext.Reflection
     /// Represents reflected field.
     /// </summary>
     /// <typeparam name="V">Type of field value.</typeparam>
-    public abstract class FieldBase<V> : FieldInfo, IField, IEquatable<FieldInfo>
+    public abstract class FieldBase<V> : FieldInfo, IField, IEquatable<FieldInfo?>
     {
         private readonly FieldInfo field;
 
-        private protected FieldBase(FieldInfo field)
-        {
-            this.field = field;
-        }
+        private protected FieldBase(FieldInfo field) => this.field = field;
 
         /// <summary>
         /// Returns the value of a field supported by a given object.
@@ -26,7 +24,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose field value will be returned.</param>
         /// <param name="value">An object containing the value of the field reflected by this instance.</param>
         /// <returns><see langword="true"/>, if field value is obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public abstract bool GetValue(object obj, out V value);
+        public abstract bool GetValue(object? obj, [MaybeNull]out V value);
 
         /// <summary>
         /// Sets the value of the field supported by the given object.
@@ -34,7 +32,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose field value will be set.</param>
         /// <param name="value">The value to assign to the field.</param>
         /// <returns><see langword="true"/>, if field value is modified successfully; otherwise, <see langword="false"/>.</returns>
-        public abstract bool SetValue(object obj, V value);
+        public abstract bool SetValue(object? obj, V value);
 
         /// <summary>
         /// Gets the class that declares this field.
@@ -125,7 +123,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <returns>The literal value associated with the field. If the literal value is a class type with an element value of zero, 
         /// the return value is <see langword="null"/>.</returns>
-        public sealed override object GetRawConstantValue() => field.GetRawConstantValue();
+        public sealed override object? GetRawConstantValue() => field.GetRawConstantValue();
 
         /// <summary>
         /// Gets an array of types that identify the required custom modifiers of the field.
@@ -138,7 +136,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="obj">The object whose field value will be returned.</param>
         /// <returns>An object containing the value of the field reflected by this instance.</returns>
-        public override object GetValue(object obj) => field.GetValue(obj);
+        public override object? GetValue(object? obj) => field.GetValue(obj);
 
         /// <summary>
         /// Returns the value of a field supported by a given object.
@@ -146,7 +144,7 @@ namespace DotNext.Reflection
         /// <param name="obj">A managed pointer to a location and a runtime representation of the type that might be stored at that location.</param>
         /// <returns>An object containing the value of the field reflected by this instance.</returns>
         [CLSCompliant(false)]
-        public sealed override object GetValueDirect(TypedReference obj) => field.GetValueDirect(obj);
+        public sealed override object? GetValueDirect(TypedReference obj) => field.GetValueDirect(obj);
 
         /// <summary>
         /// Gets a value that indicates whether the field is security-critical or security-safe-critical at the current trust level, 
@@ -174,7 +172,7 @@ namespace DotNext.Reflection
         /// <param name="invokeAttr">The type of binding that is desired.</param>
         /// <param name="binder">A set of properties that enables the binding, coercion of argument types, and invocation of members through reflection.</param>
         /// <param name="culture">The software preferences of a particular culture.</param>
-        public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
+        public override void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, CultureInfo culture)
             => field.SetValue(obj, value, invokeAttr, binder, culture);
 
         /// <summary>
@@ -183,13 +181,13 @@ namespace DotNext.Reflection
         /// <param name="obj">A managed pointer to a location and a runtime representation of the type that might be stored at that location.</param>
         /// <param name="value">The value to assign to the field.</param>
         [CLSCompliant(false)]
-        public sealed override void SetValueDirect(TypedReference obj, object value)
+        public sealed override void SetValueDirect(TypedReference obj, object? value)
             => field.SetValueDirect(obj, value);
 
         /// <summary>
         /// Determines whether this field is read-only and cannot be modified.
         /// </summary>
-        public bool IsReadOnly => field.Attributes.HasFlag(FieldAttributes.InitOnly);
+        public bool IsReadOnly => (field.Attributes & FieldAttributes.InitOnly) != 0;
 
         FieldInfo IMember<FieldInfo>.RuntimeMember => field;
 
@@ -198,7 +196,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other field to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same field as the specified object; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(FieldInfo other) => other is FieldBase<V> field ? field.field == this.field : this.field == other;
+        public bool Equals(FieldInfo? other) => other is FieldBase<V> field ? field.field == this.field : this.field == other;
 
         /// <summary>
         /// Computes hash code uniquely identifies the reflected field.
@@ -211,18 +209,12 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other field to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same field as the specified object; otherwise, <see langword="false"/>.</returns>
-        public sealed override bool Equals(object other)
+        public sealed override bool Equals(object? other) => other switch
         {
-            switch (other)
-            {
-                case FieldBase<V> field:
-                    return this.field == field.field;
-                case FieldInfo field:
-                    return this.field == field;
-                default:
-                    return false;
-            }
-        }
+            FieldBase<V> field => this.field == field.field,
+            FieldInfo field => this.field == field,
+            _ => false,
+        };
 
         /// <summary>
         /// Returns textual representation of this field.
@@ -237,12 +229,14 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Declaring type.</typeparam>
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<T, V> : FieldBase<V>, IField<T, V>
+        where T : notnull
     {
+        [return: MaybeNull]
         private delegate ref V Provider(in T instance);
 
         private sealed class Cache : MemberCache<FieldInfo, Field<T, V>>
         {
-            private protected override Field<T, V> Create(string fieldName, bool nonPublic) => Reflect(fieldName, nonPublic);
+            private protected override Field<T, V>? Create(string fieldName, bool nonPublic) => Reflect(fieldName, nonPublic);
         }
 
         private static readonly UserDataSlot<Field<T, V>> CacheSlot = UserDataSlot<Field<T, V>>.Allocate();
@@ -251,7 +245,7 @@ namespace DotNext.Reflection
 
 
         private readonly MemberGetter<T, V> getter;
-        private readonly MemberSetter<T, V> setter;
+        private readonly MemberSetter<T, V>? setter;
         private readonly Provider provider;
 
         private Field(FieldInfo field)
@@ -264,9 +258,10 @@ namespace DotNext.Reflection
             provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new[] { field.FieldType }, Field(instanceParam, field)), instanceParam).Compile();
             const BindingFlags staticPrivate = BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
             getter = GetType().GetMethod(nameof(GetValue), staticPrivate).CreateDelegate<MemberGetter<T, V>>(provider);
-            setter = GetType().GetMethod(nameof(SetValue), staticPrivate).CreateDelegate<MemberSetter<T, V>>(provider);
+            setter = field.IsInitOnly ? null : GetType().GetMethod(nameof(SetValue), staticPrivate).CreateDelegate<MemberSetter<T, V>>(provider);
         }
 
+        [return: MaybeNull]
         private static V GetValue(Provider provider, in T instance) => provider(instance);
 
         private static void SetValue(Provider provider, in T instance, V value) => provider(instance) = value;
@@ -275,13 +270,14 @@ namespace DotNext.Reflection
         /// Obtains field getter in the form of the delegate instance.
         /// </summary>
         /// <param name="field">The reflected field.</param>
-        public static implicit operator MemberGetter<T, V>(Field<T, V> field) => field?.getter;
+        [return: NotNullIfNotNull("field")]
+        public static implicit operator MemberGetter<T, V>?(Field<T, V>? field) => field?.getter;
 
         /// <summary>
         /// Obtains field setter in the form of the delegate instance.
         /// </summary>
         /// <param name="field">The reflected field.</param>
-        public static implicit operator MemberSetter<T, V>(Field<T, V> field) => field?.setter;
+        public static implicit operator MemberSetter<T, V>?(Field<T, V>? field) => field?.setter;
 
         /// <summary>
         /// Returns the value of a field supported by a given object.
@@ -289,7 +285,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose field value will be returned.</param>
         /// <param name="value">An object containing the value of the field reflected by this instance.</param>
         /// <returns><see langword="true"/>, if field value is obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public override bool GetValue(object obj, out V value)
+        public override bool GetValue(object? obj, [MaybeNull]out V value)
         {
             if (obj is T instance)
             {
@@ -298,7 +294,7 @@ namespace DotNext.Reflection
             }
             else
             {
-                value = default;
+                value = default!;
                 return false;
             }
         }
@@ -309,17 +305,16 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose field value will be set.</param>
         /// <param name="value">The value to assign to the field.</param>
         /// <returns><see langword="true"/>, if field value is modified successfully; otherwise, <see langword="false"/>.</returns>
-        public override bool SetValue(object obj, V value)
+        public override bool SetValue(object? obj, V value)
         {
-            if (IsInitOnly)
+            if (setter is null)
                 return false;
-            else if (obj is T instance)
+            if (obj is T instance)
             {
                 this[instance] = value;
                 return true;
             }
-            else
-                return false;
+            return false;
         }
 
         /// <summary>
@@ -327,7 +322,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="obj">The object whose field value will be returned.</param>
         /// <returns>An object containing the value of the field reflected by this instance.</returns>
-        public override object GetValue(object obj)
+        public override object? GetValue(object? obj)
             => obj is T instance ? this[instance] : throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(obj, typeof(T)));
 
         /// <summary>
@@ -338,37 +333,37 @@ namespace DotNext.Reflection
         /// <param name="invokeAttr">The type of binding that is desired.</param>
         /// <param name="binder">A set of properties that enables the binding, coercion of argument types, and invocation of members through reflection.</param>
         /// <param name="culture">The software preferences of a particular culture.</param>
-        public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
+        public override void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, CultureInfo culture)
         {
-            if (IsInitOnly)
+            if (setter is null)
                 throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
-            else if (!(obj is T))
+            if (!(obj is T))
                 throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(obj, typeof(T)));
-            else if (value is null)
-                this[(T)obj] = FieldType.IsValueType ? throw new ArgumentException(ExceptionMessages.NullFieldValue) : default(V);
-            else if (!(value is V))
+            if (value is null)
+                this[(T)obj] = FieldType.IsValueType ? throw new ArgumentException(ExceptionMessages.NullFieldValue) : default(V)!;
+            if (!(value is V))
                 throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(value, typeof(V)));
-            else
-                this[(T)obj] = (V)value;
+            this[(T)obj] = (V)value;
         }
 
         /// <summary>
         /// Gets or sets instance field value.
         /// </summary>
         /// <param name="this"><c>this</c> argument.</param>
+        [MaybeNull]
         public ref V this[in T @this]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref provider(@this);
         }
 
-        private static Field<T, V> Reflect(string fieldName, bool nonPublic)
+        private static Field<T, V>? Reflect(string fieldName, bool nonPublic)
         {
             var field = typeof(T).GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
             return field is null ? null : new Field<T, V>(field);
         }
 
-        internal static Field<T, V> GetOrCreate(string fieldName, bool nonPublic)
+        internal static Field<T, V>? GetOrCreate(string fieldName, bool nonPublic)
             => Cache.Of<Cache>(typeof(T)).GetOrCreate(fieldName, nonPublic);
 
         private static Field<T, V> Unreflect(FieldInfo field)
@@ -383,11 +378,12 @@ namespace DotNext.Reflection
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<V> : FieldBase<V>, IField<V>
     {
+        [return: MaybeNull]
         private delegate ref V Provider();
 
         private sealed class Cache<T> : MemberCache<FieldInfo, Field<V>>
         {
-            private protected override Field<V> Create(string fieldName, bool nonPublic) => Reflect(typeof(T), fieldName, nonPublic);
+            private protected override Field<V>? Create(string fieldName, bool nonPublic) => Reflect(typeof(T), fieldName, nonPublic);
         }
 
         private static readonly UserDataSlot<Field<V>> CacheSlot = UserDataSlot<Field<V>>.Allocate();
@@ -395,7 +391,7 @@ namespace DotNext.Reflection
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         private readonly MemberGetter<V> getter;
-        private readonly MemberSetter<V> setter;
+        private readonly MemberSetter<V>? setter;
         private readonly Provider provider;
 
         private Field(FieldInfo field)
@@ -408,6 +404,7 @@ namespace DotNext.Reflection
             setter = field.IsInitOnly ? null : GetType().GetMethod(nameof(SetValue), staticPrivate).CreateDelegate<MemberSetter<V>>(provider);
         }
 
+        [return: MaybeNull]
         private static V GetValue(Provider provider) => provider();
 
         private static void SetValue(Provider provider, V value) => provider() = value;
@@ -416,13 +413,14 @@ namespace DotNext.Reflection
         /// Obtains field getter in the form of the delegate instance.
         /// </summary>
         /// <param name="field">The reflected field.</param>
-        public static implicit operator MemberGetter<V>(Field<V> field) => field?.getter;
+        [return: NotNullIfNotNull("field")]
+        public static implicit operator MemberGetter<V>?(Field<V>? field) => field?.getter;
 
         /// <summary>
         /// Obtains field setter in the form of the delegate instance.
         /// </summary>
         /// <param name="field">The reflected field.</param>
-        public static implicit operator MemberSetter<V>(Field<V> field) => field?.setter;
+        public static implicit operator MemberSetter<V>?(Field<V>? field) => field?.setter;
 
         /// <summary>
         /// Returns the value of a field supported by a given object.
@@ -430,7 +428,7 @@ namespace DotNext.Reflection
         /// <param name="obj">Must be <see langword="null"/>.</param>
         /// <param name="value">An object containing the value of the field reflected by this instance.</param>
         /// <returns><see langword="true"/>, if field value is obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public override bool GetValue(object obj, out V value)
+        public override bool GetValue(object? obj, [MaybeNull]out V value)
         {
             if (obj is null)
             {
@@ -439,7 +437,7 @@ namespace DotNext.Reflection
             }
             else
             {
-                value = default;
+                value = default!;
                 return false;
             }
         }
@@ -450,17 +448,16 @@ namespace DotNext.Reflection
         /// <param name="obj">Must be <see langword="null"/>.</param>
         /// <param name="value">The value to assign to the field.</param>
         /// <returns><see langword="true"/>, if field value is modified successfully; otherwise, <see langword="false"/>.</returns>
-        public override bool SetValue(object obj, V value)
+        public override bool SetValue(object? obj, V value)
         {
-            if (IsInitOnly)
+            if (setter is null)
                 return false;
-            else if (obj is null)
+            if (obj is null)
             {
                 Value = value;
                 return true;
             }
-            else
-                return false;
+            return false;
         }
 
         /// <summary>
@@ -468,7 +465,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="obj">Must be <see langword="null"/>.</param>
         /// <returns>An object containing the value of the field reflected by this instance.</returns>
-        public override object GetValue(object obj) => Value;
+        public override object? GetValue(object? obj) => Value;
 
         /// <summary>
         /// Sets the value of the field supported by the given object.
@@ -478,29 +475,29 @@ namespace DotNext.Reflection
         /// <param name="invokeAttr">The type of binding that is desired.</param>
         /// <param name="binder">A set of properties that enables the binding, coercion of argument types, and invocation of members through reflection.</param>
         /// <param name="culture">The software preferences of a particular culture.</param>
-        public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
+        public override void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, CultureInfo culture)
         {
-            if (IsInitOnly)
+            if (setter is null)
                 throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
-            else if (value is null)
-                Value = FieldType.IsValueType ? throw new ArgumentException(ExceptionMessages.NullFieldValue) : default(V);
-            else if (!(value is V))
+            if (value is null)
+                Value = FieldType.IsValueType ? throw new ArgumentException(ExceptionMessages.NullFieldValue) : default(V)!;
+            if (!(value is V))
                 throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(value, typeof(V)));
-            else
-                Value = (V)value;
+            Value = (V)value;
         }
 
         /// <summary>
         /// Obtains managed pointer to the static field.
         /// </summary>
         /// <value>The managed pointer to the static field.</value>
+        [MaybeNull]
         public ref V Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref provider();
         }
 
-        private static Field<V> Reflect(Type declaringType, string fieldName, bool nonPublic)
+        private static Field<V>? Reflect(Type declaringType, string fieldName, bool nonPublic)
         {
             var field = declaringType.GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
             return field is null ? null : new Field<V>(field);
@@ -511,7 +508,7 @@ namespace DotNext.Reflection
 
         internal static Field<V> GetOrCreate(FieldInfo field) => field.GetUserData().GetOrSet(CacheSlot, field, new ValueFunc<FieldInfo, Field<V>>(Unreflect));
 
-        internal static Field<V> GetOrCreate<T>(string fieldName, bool nonPublic)
+        internal static Field<V>? GetOrCreate<T>(string fieldName, bool nonPublic)
             => Cache<T>.Of<Cache<T>>(typeof(T)).GetOrCreate(fieldName, nonPublic);
     }
 }

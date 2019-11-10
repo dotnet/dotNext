@@ -12,7 +12,7 @@ namespace DotNext.Reflection
     /// Provides constructor definition based on delegate signature.
     /// </summary>
     /// <typeparam name="D">Type of delegate representing constructor of type <typeparamref name="D"/>.</typeparam>
-    public sealed class Constructor<D> : ConstructorInfo, IConstructor<D>, IEquatable<ConstructorInfo>
+    public sealed class Constructor<D> : ConstructorInfo, IConstructor<D>, IEquatable<ConstructorInfo?>
         where D : MulticastDelegate
     {
         private static readonly UserDataSlot<Constructor<D>?> CacheSlot = UserDataSlot<Constructor<D>?>.Allocate();
@@ -191,7 +191,7 @@ namespace DotNext.Reflection
         /// <param name="parameters">A list of constructor arguments.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>Instantiated object.</returns>
-        public override object Invoke(BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+        public override object Invoke(BindingFlags invokeAttr, Binder? binder, object?[] parameters, CultureInfo culture)
             => Invoke(null, invokeAttr, binder, parameters, culture);
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace DotNext.Reflection
         /// <param name="parameters">A list of constructor arguments.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>Instantiated object.</returns>
-        public override object Invoke(object? obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+        public override object Invoke(object? obj, BindingFlags invokeAttr, Binder? binder, object?[] parameters, CultureInfo culture)
             => (ctorInfo as MethodBase ?? invoker.Method).Invoke(obj, invokeAttr, binder, parameters, culture);
 
         /// <summary>
@@ -249,14 +249,14 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other constructor to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same constructor as the specified object; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ConstructorInfo other) => other is Constructor<D> ctor ? Equals(ctorInfo, ctor.ctorInfo) : Equals(ctorInfo, other);
+        public bool Equals(ConstructorInfo? other) => other is Constructor<D> ctor ? Equals(ctorInfo, ctor.ctorInfo) : Equals(ctorInfo, other);
 
         /// <summary>
         /// Determines whether this constructor is equal to the given constructor.
         /// </summary>
         /// <param name="other">Other constructor to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same constructor as the specified object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other switch
+        public override bool Equals(object? other) => other switch
         {
             Constructor<D> ctor => Equals(ctorInfo, ctor.ctorInfo),
             ConstructorInfo ctor => Equals(ctorInfo, ctor),

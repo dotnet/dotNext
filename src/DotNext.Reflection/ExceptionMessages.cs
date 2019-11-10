@@ -15,7 +15,7 @@ namespace DotNext
 
         internal static string AbstractDelegate => Resources.GetString("AbstractDelegate");
 
-        internal static string ObjectOfTypeExpected(object obj, Type t) => string.Format(Resources.GetString("ObjectOfTypeExpected"), obj, t.FullName);
+        internal static string ObjectOfTypeExpected(object? obj, Type t) => string.Format(Resources.GetString("ObjectOfTypeExpected"), obj, t.FullName);
 
         internal static string ReadOnlyField(string fieldName) => string.Format(Resources.GetString("ReadOnlyField"), fieldName);
 

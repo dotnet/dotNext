@@ -23,12 +23,12 @@ namespace DotNext.Reflection
         {
         }
 
-        private protected abstract V Create(K cacheKey);
+        private protected abstract V? Create(K cacheKey);
 
-        internal V GetOrCreate(K cacheKey)
+        internal V? GetOrCreate(K cacheKey)
         {
             syncObject.EnterReadLock();
-            var exists = elements.TryGetValue(cacheKey, out var item);
+            var exists = elements.TryGetValue(cacheKey, out V? item);
             syncObject.ExitReadLock();
             if (exists)
                 goto exit;
@@ -39,7 +39,9 @@ namespace DotNext.Reflection
             else
                 try
                 {
-                    elements.Add(cacheKey, item = Create(cacheKey));
+                    item = Create(cacheKey);
+                    if (item != null)
+                        elements.Add(cacheKey, item);
                 }
                 finally
                 {
@@ -75,11 +77,11 @@ namespace DotNext.Reflection
     {
         private static readonly UserDataSlot<MemberCache<M, E>> Slot = UserDataSlot<MemberCache<M, E>>.Allocate();
 
-        internal E GetOrCreate(string memberName, bool nonPublic) => GetOrCreate(new MemberKey(memberName, nonPublic));
+        internal E? GetOrCreate(string memberName, bool nonPublic) => GetOrCreate(new MemberKey(memberName, nonPublic));
 
-        private protected abstract E Create(string memberName, bool nonPublic);
+        private protected abstract E? Create(string memberName, bool nonPublic);
 
-        private protected sealed override E Create(MemberKey key) => Create(key.Name, key.NonPublic);
+        private protected sealed override E? Create(MemberKey key) => Create(key.Name, key.NonPublic);
 
         internal static MemberCache<M, E> Of<C>(MemberInfo member)
             where C : MemberCache<M, E>, new()
