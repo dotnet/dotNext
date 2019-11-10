@@ -11,8 +11,6 @@ using Var = InlineIL.LocalVar;
 
 namespace DotNext.Runtime
 {
-    using RuntimeFeaturesAttribute = Runtime.CompilerServices.RuntimeFeaturesAttribute;
-
     /// <summary>
     /// Represents highly optimized runtime intrinsic methods.
     /// </summary>
@@ -778,7 +776,6 @@ namespace DotNext.Runtime
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
-        [RuntimeFeatures(Augmentation = true)]
         public static unsafe long GetHashCode64(void* source, long length, bool salted = true)
             => GetHashCode64(in Unsafe.AsRef<byte>(source), length, salted);
 
@@ -869,7 +866,6 @@ namespace DotNext.Runtime
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
-        [RuntimeFeatures(Augmentation = true)]
         public static unsafe int GetHashCode32(void* source, long length, bool salted = true)
             => GetHashCode32(in Unsafe.AsRef<byte>(source), length, salted);
         #endregion
