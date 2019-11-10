@@ -43,7 +43,7 @@ namespace DotNext
         /// <param name="value">The object to compare with other.</param>
         /// <param name="values">Candidate objects.</param>
         /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
-        public static bool IsOneOf<T>(this T value, IEnumerable<T> values)
+        public static bool IsOneOf<T>(this T value, IEnumerable<T?> values)
             where T : class
         {
             foreach (var v in values)
@@ -64,9 +64,9 @@ namespace DotNext
         /// <param name="value">The object to compare with other.</param>
         /// <param name="values">Candidate objects.</param>
         /// <returns><see langword="true"/>, if <paramref name="value"/> is equal to one of <paramref name="values"/>.</returns>
-        public static bool IsOneOf<T>(this T value, params T[] values)
+        public static bool IsOneOf<T>(this T value, params T?[] values)
             where T : class
-            => value.IsOneOf((IEnumerable<T>)values);
+            => value.IsOneOf((IEnumerable<T?>)values);
 
         /// <summary>
         /// Performs decomposition of object into two values.
@@ -80,7 +80,7 @@ namespace DotNext
         /// <param name="result1">First decomposition result.</param>
         /// <param name="result2">Second decomposition result.</param>
         public static void Decompose<T, R1, R2>(this T obj, Func<T, R1> decomposer1, Func<T, R2> decomposer2, out R1 result1, out R2 result2)
-            where T : class
+            where T : class?
             => Decompose(obj, new ValueFunc<T, R1>(decomposer1, true), new ValueFunc<T, R2>(decomposer2, true), out result1, out result2);
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace DotNext
         /// <param name="result1">First decomposition result.</param>
         /// <param name="result2">Second decomposition result.</param>
         public static void Decompose<T, R1, R2>(this T obj, in ValueFunc<T, R1> decomposer1, in ValueFunc<T, R2> decomposer2, out R1 result1, out R2 result2)
-            where T : class
+            where T : class?
         {
             result1 = decomposer1.Invoke(obj);
             result2 = decomposer2.Invoke(obj);
@@ -112,7 +112,7 @@ namespace DotNext
         /// <param name="decomposer2">Second decomposition function.</param>
         /// <returns>Decomposition result.</returns>
         public static (R1, R2) Decompose<T, R1, R2>(this T obj, Func<T, R1> decomposer1, Func<T, R2> decomposer2)
-            where T : class
+            where T : class?
             => Decompose(obj, new ValueFunc<T, R1>(decomposer1, true), new ValueFunc<T, R2>(decomposer2, true));
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace DotNext
         /// <param name="decomposer2">Second decomposition function.</param>
         /// <returns>Decomposition result.</returns>
         public static (R1, R2) Decompose<T, R1, R2>(this T obj, in ValueFunc<T, R1> decomposer1, in ValueFunc<T, R2> decomposer2)
-            where T : class
+            where T : class?
         {
             var tuple = default((R1 result1, R2 result2));
             obj.Decompose(decomposer1, decomposer2, out tuple.result1, out tuple.result2);

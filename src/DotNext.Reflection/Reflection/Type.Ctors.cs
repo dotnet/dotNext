@@ -11,7 +11,7 @@ namespace DotNext.Reflection
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
         /// <typeparam name="A">A structure describing constructor signature.</typeparam>
         /// <returns>Constructor for type <typeparamref name="T"/>; or null, if it doesn't exist.</returns>
-        public static Reflection.Constructor<Function<A, T>> GetConstructor<A>(bool nonPublic = false)
+        public static Reflection.Constructor<Function<A, T>>? GetConstructor<A>(bool nonPublic = false)
             where A : struct
             => Constructor.Get<Function<A, T>>(nonPublic);
 
@@ -51,7 +51,7 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <typeparam name="D">Type of delegate describing constructor signature.</typeparam>
             /// <returns>Reflected constructor; or <see langword="null"/>, if constructor doesn't exist.</returns>
-            public static Reflection.Constructor<D> Get<D>(bool nonPublic = false)
+            public static Reflection.Constructor<D>? Get<D>(bool nonPublic = false)
                 where D : MulticastDelegate
                 => Reflection.Constructor<D>.GetOrCreate<T>(nonPublic);
 
@@ -72,7 +72,7 @@ namespace DotNext.Reflection
             /// </summary>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public constructor.</param>
             /// <returns>Reflected constructor without parameters; or <see langword="null"/>, if it doesn't exist.</returns>
-            public static Reflection.Constructor<Func<T>> Get(bool nonPublic = false)
+            public static Reflection.Constructor<Func<T>>? Get(bool nonPublic = false)
                 => Get<Func<T>>(nonPublic);
 
             /// <summary>
@@ -91,7 +91,7 @@ namespace DotNext.Reflection
             /// <returns>Instance of <typeparamref name="T"/> if constructor exists.</returns>
             public static Optional<T> TryInvoke(bool nonPublic = false)
             {
-                Func<T> ctor = Get(nonPublic);
+                Func<T>? ctor = Get(nonPublic);
                 return ctor is null ? Optional<T>.Empty : ctor();
             }
 

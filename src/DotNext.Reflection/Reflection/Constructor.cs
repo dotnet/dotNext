@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -14,19 +15,18 @@ namespace DotNext.Reflection
     public sealed class Constructor<D> : ConstructorInfo, IConstructor<D>, IEquatable<ConstructorInfo>
         where D : MulticastDelegate
     {
-        private static readonly UserDataSlot<Constructor<D>> CacheSlot = UserDataSlot<Constructor<D>>.Allocate();
+        private static readonly UserDataSlot<Constructor<D>?> CacheSlot = UserDataSlot<Constructor<D>?>.Allocate();
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
 
         private readonly D invoker;
-        private readonly ConstructorInfo ctor;
-        private readonly Type valueType;
+        private readonly object ctorInfo;
 
         private Constructor(ConstructorInfo ctor, Expression<D> invoker)
         {
             if (ctor.IsStatic || ctor.DeclaringType is null)
                 throw new ArgumentException(ExceptionMessages.StaticCtorDetected, nameof(ctor));
-            this.ctor = ctor;
+            ctorInfo = ctor;
             this.invoker = invoker.Compile();
         }
 
@@ -42,7 +42,7 @@ namespace DotNext.Reflection
 
         private Constructor(Type valueType, IEnumerable<ParameterExpression> parameters)
         {
-            this.valueType = valueType;
+            ctorInfo = valueType;
             invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters).Compile();
         }
 
@@ -50,41 +50,47 @@ namespace DotNext.Reflection
         /// Extracts delegate which can be used to invoke this constructor.
         /// </summary>
         /// <param name="ctor">The reflected constructor.</param>
-        public static implicit operator D(Constructor<D> ctor) => ctor?.invoker;
+        [return: NotNullIfNotNull("ctor")]
+        public static implicit operator D?(Constructor<D>? ctor) => ctor?.invoker;
 
         /// <summary>
         /// Gets name of the constructor.
         /// </summary>
         public override string Name => ConstructorName;
 
-        ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctor;
+        ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctorInfo as ConstructorInfo ?? this;
 
         D IMember<ConstructorInfo, D>.Invoker => invoker;
 
         /// <summary>
         /// Gets the attributes associated with this constructor.
         /// </summary>
-        public override MethodAttributes Attributes => ctor is null ? (MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName) : ctor.Attributes;
+        public override MethodAttributes Attributes => (ctorInfo as ConstructorInfo)?.Attributes ?? MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName;
 
         /// <summary>
         /// Gets a handle to the internal metadata representation of a constructor.
         /// </summary>
-        public override RuntimeMethodHandle MethodHandle => ctor is null ? invoker.Method.MethodHandle : ctor.MethodHandle;
+        public override RuntimeMethodHandle MethodHandle => (ctorInfo as MethodBase ?? invoker.Method).MethodHandle;
 
         /// <summary>
         /// Gets the class that declares this constructor.
         /// </summary>
-        public override Type DeclaringType => ctor?.DeclaringType ?? valueType;
+        public override Type DeclaringType => ctorInfo switch
+        {
+            ConstructorInfo ctor => ctor.DeclaringType,
+            Type vt => vt,
+            _ => GetType()
+        };
 
         /// <summary>
         /// Gets the class object that was used to obtain this instance.
         /// </summary>
-        public override Type ReflectedType => ctor is null ? ctor.ReflectedType : invoker.Method.ReflectedType;
+        public override Type ReflectedType => (ctorInfo as MethodBase ?? invoker.Method).ReflectedType;
 
         /// <summary>
         /// Gets a value indicating the calling conventions for this constructor.
         /// </summary>
-        public override CallingConventions CallingConvention => ctor is null ? invoker.Method.CallingConvention : ctor.CallingConvention;
+        public override CallingConventions CallingConvention => (ctorInfo as MethodBase ?? invoker.Method).CallingConvention;
 
         /// <summary>
         /// Gets a value indicating whether the generic method contains unassigned generic type parameters.
@@ -100,13 +106,13 @@ namespace DotNext.Reflection
         /// Provides access to the MSIL stream, local variables, and exceptions for the current constructor.
         /// </summary>
         /// <returns>An object that provides access to the MSIL stream, local variables, and exceptions for the current constructor.</returns>
-        public override MethodBody GetMethodBody() => ctor?.GetMethodBody() ?? invoker.Method.GetMethodBody();
+        public override MethodBody GetMethodBody() => (ctorInfo as MethodBase ?? invoker.Method).GetMethodBody();
 
         /// <summary>
         /// Returns a list of custom attributes that have been applied to the target constructor.
         /// </summary>
         /// <returns>The data about the attributes that have been applied to the target constructor.</returns>
-        public override IList<CustomAttributeData> GetCustomAttributesData() => ctor?.GetCustomAttributesData() ?? Array.Empty<CustomAttributeData>();
+        public override IList<CustomAttributeData> GetCustomAttributesData() => (ctorInfo as MethodBase ?? invoker.Method).GetCustomAttributesData();
 
         /// <summary>
         /// Returns the type arguments of a generic method or the type parameters of a generic method definition.
@@ -128,19 +134,34 @@ namespace DotNext.Reflection
         /// Gets a value that indicates whether the constructor is security-critical or security-safe-critical at the current trust level, 
         /// and therefore can perform critical operations.
         /// </summary>
-        public override bool IsSecurityCritical => ctor is null ? invoker.Method.IsSecurityCritical : ctor.IsSecurityCritical;
+        public override bool IsSecurityCritical => ctorInfo switch
+        {
+            MethodBase ctor => ctor.IsSecurityCritical,
+            Type vt => vt.IsSecurityCritical,
+            _ => invoker.Method.IsSecurityCritical
+        };
 
         /// <summary>
         /// Gets a value that indicates whether the constructor is security-safe-critical at the current trust level; that is, 
         /// whether it can perform critical operations and can be accessed by transparent code.
         /// </summary>
-        public override bool IsSecuritySafeCritical => ctor is null ? invoker.Method.IsSecuritySafeCritical : ctor.IsSecuritySafeCritical;
+        public override bool IsSecuritySafeCritical => ctorInfo switch
+        {
+            MethodBase ctor => ctor.IsSecuritySafeCritical,
+            Type vt => vt.IsSecuritySafeCritical,
+            _ => invoker.Method.IsSecuritySafeCritical
+        };
 
         /// <summary>
         /// Gets a value that indicates whether the current constructor is transparent at the current trust level, 
         /// and therefore cannot perform critical operations.
         /// </summary>
-        public override bool IsSecurityTransparent => ctor is null ? invoker.Method.IsSecurityTransparent : ctor.IsSecurityTransparent;
+        public override bool IsSecurityTransparent => ctorInfo switch
+        {
+            MethodBase ctor => ctor.IsSecurityTransparent,
+            Type vt => vt.IsSecurityTransparent,
+            _ => invoker.Method.IsSecurityTransparent
+        };
 
         /// <summary>
         /// Always returns <see cref="MemberTypes.Constructor"/>.
@@ -150,12 +171,12 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets a value that identifies a metadata element.
         /// </summary>
-        public override int MetadataToken => ctor is null ? invoker.Method.MetadataToken : ctor.MetadataToken;
+        public override int MetadataToken => (ctorInfo as MethodBase ?? invoker.Method).MetadataToken;
 
         /// <summary>
         /// Gets constructor implementation attributes.
         /// </summary>
-        public override MethodImplAttributes MethodImplementationFlags => ctor is null ? invoker.Method.MethodImplementationFlags : ctor.MethodImplementationFlags;
+        public override MethodImplAttributes MethodImplementationFlags => (ctorInfo as MethodBase ?? invoker.Method).MethodImplementationFlags;
 
         /// <summary>
         /// Gets the module in which the type that declares the constructor represented by the current instance is defined.
@@ -183,7 +204,7 @@ namespace DotNext.Reflection
         /// Gets constructor parameters.
         /// </summary>
         /// <returns>The array of constructor parameters.</returns>
-        public override ParameterInfo[] GetParameters() => ctor is null ? invoker.Method.GetParameters() : ctor.GetParameters();
+        public override ParameterInfo[] GetParameters() => (ctorInfo as MethodBase ?? invoker.Method).GetParameters();
 
         /// <summary>
         /// Invokes this constructor.
@@ -194,8 +215,8 @@ namespace DotNext.Reflection
         /// <param name="parameters">A list of constructor arguments.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>Instantiated object.</returns>
-        public override object Invoke(object obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
-            => ctor is null ? invoker.Method.Invoke(obj, invokeAttr, binder, parameters, culture) : ctor.Invoke(obj, invokeAttr, binder, parameters, culture);
+        public override object Invoke(object? obj, BindingFlags invokeAttr, Binder binder, object[] parameters, CultureInfo culture)
+            => (ctorInfo as MethodBase ?? invoker.Method).Invoke(obj, invokeAttr, binder, parameters, culture);
 
         /// <summary>
         /// Returns an array of all custom attributes applied to this constructor.
@@ -203,7 +224,7 @@ namespace DotNext.Reflection
         /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
         /// <returns>An array that contains all the custom attributes applied to this constructor.</returns>
         public override object[] GetCustomAttributes(bool inherit)
-            => ctor is null ? Array.Empty<object>() : ctor.GetCustomAttributes(inherit);
+            => (ctorInfo as MethodBase ?? invoker.Method).GetCustomAttributes(inherit);
 
         /// <summary>
         /// Returns an array of all custom attributes applied to this constructor.
@@ -212,7 +233,7 @@ namespace DotNext.Reflection
         /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
         /// <returns>An array that contains all the custom attributes applied to this constructor.</returns>
         public override object[] GetCustomAttributes(Type attributeType, bool inherit)
-            => ctor is null ? Array.Empty<object>() : ctor.GetCustomAttributes(attributeType, inherit);
+            => (ctorInfo as MethodBase ?? invoker.Method).GetCustomAttributes(attributeType, inherit);
 
         /// <summary>
         /// Determines whether one or more attributes of the specified type or of its derived types is applied to this constructor.
@@ -221,48 +242,41 @@ namespace DotNext.Reflection
         /// <param name="inherit"><see langword="true"/> to search this member's inheritance chain to find the attributes; otherwise, <see langword="false"/>.</param>
         /// <returns><see langword="true"/> if one or more instances of <paramref name="attributeType"/> or any of its derived types is applied to this constructor; otherwise, <see langword="false"/>.</returns>
         public override bool IsDefined(Type attributeType, bool inherit)
-            => ctor is null ? false : ctor.IsDefined(attributeType, inherit);
+            => (ctorInfo as MethodBase ?? invoker.Method).IsDefined(attributeType, inherit);
 
         /// <summary>
         /// Determines whether this constructor is equal to the given constructor.
         /// </summary>
         /// <param name="other">Other constructor to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same constructor as the specified object; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ConstructorInfo other) => other is Constructor<D> ctor ? this.ctor == ctor.ctor : other == this.ctor;
+        public bool Equals(ConstructorInfo other) => other is Constructor<D> ctor ? Equals(ctorInfo, ctor.ctorInfo) : Equals(ctorInfo, other);
 
         /// <summary>
         /// Determines whether this constructor is equal to the given constructor.
         /// </summary>
         /// <param name="other">Other constructor to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same constructor as the specified object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object other) => other switch
         {
-            switch (other)
-            {
-                case Constructor<D> ctor:
-                    return this.ctor == ctor.ctor;
-                case ConstructorInfo ctor:
-                    return this.ctor == ctor;
-                case D invoker:
-                    return Equals(this.invoker, invoker);
-                default:
-                    return false;
-            }
-        }
+            Constructor<D> ctor => Equals(ctorInfo, ctor.ctorInfo),
+            ConstructorInfo ctor => Equals(ctorInfo, ctor),
+            D invoker => Equals(this.invoker, invoker),
+            _ => false,
+        };
 
         /// <summary>
         /// Returns textual representation of this constructor.
         /// </summary>
         /// <returns>The textual representation of this constructor.</returns>
-        public override string ToString() => ctor is null ? invoker.ToString() : ctor.ToString();
+        public override string ToString() => (ctorInfo as MethodBase ?? invoker.Method).ToString();
 
         /// <summary>
         /// Computes hash code uniquely identifies the reflected constructor.
         /// </summary>
         /// <returns>The hash code of the constructor.</returns>
-        public override int GetHashCode() => DeclaringType.GetHashCode();
+        public override int GetHashCode() => ctorInfo.GetHashCode();
 
-        private static Constructor<D> Reflect(Type declaringType, Type[] parameters, bool nonPublic)
+        private static Constructor<D>? Reflect(Type declaringType, Type[] parameters, bool nonPublic)
         {
             if (declaringType.IsValueType)
                 return new Constructor<D>(declaringType, Array.ConvertAll(parameters, Expression.Parameter));
@@ -273,7 +287,7 @@ namespace DotNext.Reflection
             }
         }
 
-        private static Constructor<D> Reflect(Type declaringType, Type argumentsType, bool nonPublic)
+        private static Constructor<D>? Reflect(Type declaringType, Type argumentsType, bool nonPublic)
         {
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
             //handle value type
@@ -284,7 +298,7 @@ namespace DotNext.Reflection
             return ctor is null ? null : new Constructor<D>(ctor, arglist, new[] { input });
         }
 
-        private static Constructor<D> Reflect(bool nonPublic)
+        private static Constructor<D>? Reflect(bool nonPublic)
         {
             var delegateType = typeof(D);
             if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType) == 2L)
@@ -294,10 +308,10 @@ namespace DotNext.Reflection
             else
             {
                 var (parameters, returnType) = DelegateType.GetInvokeMethod<D>().Decompose(MethodExtensions.GetParameterTypes, method => method.ReturnType);
-                return Reflect(returnType, parameters, nonPublic);
+                return Reflect(returnType, parameters!, nonPublic);
             }
         }
-        private static Constructor<D> Unreflect(ConstructorInfo ctor, Type argumentsType, Type returnType)
+        private static Constructor<D>? Unreflect(ConstructorInfo ctor, Type argumentsType, Type returnType)
         {
             var (_, arglist, input) = Signature.Reflect(argumentsType);
             var prologue = new LinkedList<Expression>();
@@ -328,7 +342,7 @@ namespace DotNext.Reflection
             return new Constructor<D>(ctor, Expression.Lambda<D>(body, input));
         }
 
-        private static Constructor<D> Unreflect(ConstructorInfo ctor)
+        private static Constructor<D>? Unreflect(ConstructorInfo ctor)
         {
             var delegateType = typeof(D);
             if (delegateType.IsAbstract)
@@ -348,13 +362,13 @@ namespace DotNext.Reflection
             }
         }
 
-        internal static Constructor<D> GetOrCreate(ConstructorInfo ctor)
-            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, new ValueFunc<ConstructorInfo, Constructor<D>>(Unreflect));
+        internal static Constructor<D>? GetOrCreate(ConstructorInfo ctor)
+            => ctor.GetUserData().GetOrSet(CacheSlot, ctor, new ValueFunc<ConstructorInfo, Constructor<D>?>(Unreflect));
 
-        internal static Constructor<D> GetOrCreate<T>(bool nonPublic)
+        internal static Constructor<D>? GetOrCreate<T>(bool nonPublic)
         {
             var type = typeof(T);
-            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, new ValueFunc<bool, Constructor<D>>(Reflect));
+            var ctor = type.GetUserData().GetOrSet(CacheSlot, nonPublic, new ValueFunc<bool, Constructor<D>?>(Reflect));
             return ctor?.DeclaringType == type ? ctor : null;
         }
     }
