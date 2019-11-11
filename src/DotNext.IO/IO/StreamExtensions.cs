@@ -171,7 +171,7 @@ namespace DotNext.IO
             int resultOffset;
             for (resultOffset = 0; length > 0;)
             {
-                var n = await stream.ReadAsync(buffer.Slice(0, Math.Min(length, buffer.Length))).ConfigureAwait(false);
+                var n = await stream.ReadAsync(buffer.Slice(0, Math.Min(length, buffer.Length)), token).ConfigureAwait(false);
                 if (n == 0)
                     throw new EndOfStreamException();
                 length -= n;
@@ -259,10 +259,10 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
         /// <returns>The task representing asynchronous st</returns>
-        public static ValueTask WriteAsync<T>(this Stream stream, T value, CancellationToken token = default)
+        public static unsafe ValueTask WriteAsync<T>(this Stream stream, T value, CancellationToken token = default)
             where T : unmanaged
         {
-            using var buffer = new ArrayRental<byte>(SizeOf<T>());
+            using var buffer = new ArrayRental<byte>(sizeof(T));
             MemoryMarshal.Write(buffer.Span, ref value);
             return stream.WriteAsync(buffer.Memory, token);
         }
