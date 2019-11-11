@@ -181,7 +181,7 @@ namespace DotNext.Reflection
                 case Operator<D> op:
                     return Type == op.Type && Method == op.Method;
                 case D invoker:
-                    return Equals(this.Invoker, invoker);
+                    return Equals(Invoker, invoker);
                 default:
                     return false;
             }

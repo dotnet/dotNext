@@ -39,11 +39,11 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-05-2019
+Release Date: 11-11-2019
 
-<a href="https://www.nuget.org/packages/dotnext/1.2.2">DotNext 1.2.2</a>
-* Fixed bitwise equality
-* Fixed `Intrinsics.IsDefault` method
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.2.2">DotNext.Reflection 1.2.2</a>
+* Fixed potential NRE
+* Fixed reflection of value type constructors
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

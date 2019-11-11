@@ -1,6 +1,11 @@
 Release Notes
 ====
 
+# 11-11-2019
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.2.2">DotNext.Reflection 1.2.2</a>
+* Fixed potential NRE
+* Fixed reflection of value type constructors
+
 # 11-05-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.2">DotNext 1.2.2</a>
 * Fixed bitwise equality

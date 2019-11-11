@@ -40,10 +40,10 @@ namespace DotNext.Reflection
         {
         }
 
-        private Constructor(Type valueType, IEnumerable<ParameterExpression> parameters)
+        private Constructor(Type valueType, IEnumerable<ParameterExpression> parameters = null)
         {
             this.valueType = valueType;
-            invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters).Compile();
+            invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters ?? Enumerable.Empty<ParameterExpression>()).Compile();
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace DotNext.Reflection
         /// </summary>
         public override string Name => ConstructorName;
 
-        ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctor;
+        ConstructorInfo IMember<ConstructorInfo>.RuntimeMember => ctor ?? this;
 
         D IMember<ConstructorInfo, D>.Invoker => invoker;
 
@@ -79,7 +79,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the class object that was used to obtain this instance.
         /// </summary>
-        public override Type ReflectedType => ctor is null ? ctor.ReflectedType : invoker.Method.ReflectedType;
+        public override Type ReflectedType => ctor is null ? invoker.Method.ReflectedType : ctor.ReflectedType;
 
         /// <summary>
         /// Gets a value indicating the calling conventions for this constructor.
@@ -264,24 +264,20 @@ namespace DotNext.Reflection
 
         private static Constructor<D> Reflect(Type declaringType, Type[] parameters, bool nonPublic)
         {
-            if (declaringType.IsValueType)
-                return new Constructor<D>(declaringType, Array.ConvertAll(parameters, Expression.Parameter));
-            else
-            {
-                var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
-                return ctor is null ? null : new Constructor<D>(ctor, Array.ConvertAll(parameters, Expression.Parameter));
-            }
+            var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
+            if (ctor is null)
+                return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<D>(declaringType) : null;
+            return new Constructor<D>(ctor, Array.ConvertAll(parameters, Expression.Parameter));
         }
 
         private static Constructor<D> Reflect(Type declaringType, Type argumentsType, bool nonPublic)
         {
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-            //handle value type
-            if (declaringType.IsValueType)
-                return new Constructor<D>(declaringType, Array.ConvertAll(parameters, Expression.Parameter));
-
             var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
-            return ctor is null ? null : new Constructor<D>(ctor, arglist, new[] { input });
+
+            if (ctor is null)
+                return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<D>(declaringType, Sequence.Singleton(input)) : null;
+            return new Constructor<D>(ctor, arglist, Sequence.Singleton(input));
         }
 
         private static Constructor<D> Reflect(bool nonPublic)
