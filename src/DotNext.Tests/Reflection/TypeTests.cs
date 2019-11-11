@@ -16,6 +16,12 @@ namespace DotNext.Reflection
         {
             public int X, Y;
 
+            public Point(int x, int y)
+            {
+                X = x;
+                Y = y;
+            }
+
             public void Zero() => X = Y = 0;
 
             bool IEquatable<Point>.Equals(Point other)
@@ -68,7 +74,7 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public void ConstructorTests()
+        public static void ConstructorTests()
         {
             Func<char, int, string> stringCtor = Type<string>.Constructor<char, int>.Require();
             var str = stringCtor('a', 3);
@@ -79,10 +85,10 @@ namespace DotNext.Reflection
             Func<int, ClassWithProperties> classCtor = Type<ClassWithProperties>.Constructor<int>.Get(true);
             var obj = classCtor(10);
             Equal(10, obj.ReadOnlyProp);
-        }
+        } 
 
         [Fact]
-        public void SpecialConstructorTests()
+        public static void SpecialConstructorTests()
         {
             var stringCtor = Type<string>.RequireConstructor<(char, int)>();
             var str = stringCtor.Invoke(('a', 3));
@@ -99,10 +105,19 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public void ValueTypeTests()
+        public static void ValueTypeTests()
         {
             Func<long> longCtor = Type<long>.Constructor.Get();
             Equal(0L, longCtor());
+            Func<int, int, Point> pointCtor = Type<Point>.Constructor<int, int>.Get();
+            NotNull(pointCtor);
+            var point = pointCtor(10, 20);
+            Equal(10, point.X);
+            Equal(20, point.Y);
+            Function<(int, int), Point> pointCtor2 = Type<Point>.RequireConstructor<(int, int)>();
+            point = pointCtor2((30, 40));
+            Equal(30, point.X);
+            Equal(40, point.Y);
         }
 
         private sealed class ClassWithProperties

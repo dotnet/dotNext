@@ -264,7 +264,7 @@ namespace DotNext.Reflection
             provider = Lambda<Provider>(Call(typeof(Unsafe), nameof(Unsafe.AsRef), new[] { field.FieldType }, Field(instanceParam, field)), instanceParam).Compile();
             const BindingFlags staticPrivate = BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
             getter = GetType().GetMethod(nameof(GetValue), staticPrivate).CreateDelegate<MemberGetter<T, V>>(provider);
-            setter = GetType().GetMethod(nameof(SetValue), staticPrivate).CreateDelegate<MemberSetter<T, V>>(provider);
+            setter = field.IsInitOnly ? null : GetType().GetMethod(nameof(SetValue), staticPrivate).CreateDelegate<MemberSetter<T, V>>(provider);
         }
 
         private static V GetValue(Provider provider, in T instance) => provider(instance);
@@ -311,7 +311,7 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if field value is modified successfully; otherwise, <see langword="false"/>.</returns>
         public override bool SetValue(object obj, V value)
         {
-            if (IsInitOnly)
+            if (setter is null)
                 return false;
             else if (obj is T instance)
             {
@@ -340,7 +340,7 @@ namespace DotNext.Reflection
         /// <param name="culture">The software preferences of a particular culture.</param>
         public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, CultureInfo culture)
         {
-            if (IsInitOnly)
+            if (setter is null)
                 throw new InvalidOperationException(ExceptionMessages.ReadOnlyField(Name));
             else if (!(obj is T))
                 throw new ArgumentException(ExceptionMessages.ObjectOfTypeExpected(obj, typeof(T)));
