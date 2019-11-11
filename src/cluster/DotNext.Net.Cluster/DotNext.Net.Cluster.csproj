@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
-    <Version>1.2.0</Version>
+    <Version>1.2.3</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Basic framework for building clusters</Description>
@@ -48,8 +48,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="[2.2.0, 3)" />
     <PackageReference Include="System.IO.Pipelines" Version="4.6.0" />
     <ProjectReference Include="..\..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="[1.2.0, 2)" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="[1.2.3, 2)" Condition="'$(Configuration)'=='Release'" />
     <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Threading" Version="[1.2.0, 2)" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext.Threading" Version="[1.2.3, 2)" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 </Project>
