@@ -43,7 +43,7 @@ namespace DotNext.Reflection
         private Constructor(Type valueType, IEnumerable<ParameterExpression> parameters = null)
         {
             this.valueType = valueType;
-            invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters ?? Array.Empty<ParameterExpression>()).Compile();
+            invoker = Expression.Lambda<D>(Expression.Default(valueType), parameters ?? Enumerable.Empty<ParameterExpression>()).Compile();
         }
 
         /// <summary>
