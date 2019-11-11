@@ -18,7 +18,9 @@ namespace DotNext
     /// <param name="arguments">Procedure arguments in the form of public structure fields.</param>
     /// <typeparam name="T">Type of instance to be passed into underlying method.</typeparam>
     /// <typeparam name="A">Type of structure with procedure arguments allocated on the stack.</typeparam>
-    public delegate void Procedure<T, A>(in T @this, in A arguments) where A : struct;
+    public delegate void Procedure<T, A>(in T @this, in A arguments) 
+        where T : notnull
+        where A : struct;
 
     /// <summary>
     /// Provides extension methods for delegates <see cref="Procedure{A}"/> and <see cref="Procedure{T, A}"/>.
@@ -26,6 +28,7 @@ namespace DotNext
 	public static class Procedure
     {
         private sealed class Closure<T, A>
+            where T : notnull
             where A : struct
         {
             private readonly Procedure<T, A> procedure;
@@ -49,7 +52,10 @@ namespace DotNext
         /// <param name="procedure">The procedure to be converted.</param>
         /// <param name="this">The first argument to be captured.</param>
         /// <returns>The procedure instance.</returns>
-        public static Procedure<A> Capture<T, A>(this Procedure<T, A> procedure, T @this) where A : struct => new Closure<T, A>(procedure, @this).Invoke;
+        public static Procedure<A> Capture<T, A>(this Procedure<T, A> procedure, T @this) 
+            where T : notnull
+            where A : struct 
+            => new Closure<T, A>(procedure, @this).Invoke;
 
         /// <summary>
         /// Allocates list of arguments on the stack.
@@ -69,6 +75,7 @@ namespace DotNext
         /// <param name="procedure">The procedure instance.</param>
         /// <returns>Allocated list of arguments.</returns>
         public static A ArgList<T, A>(this Procedure<T, A> procedure)
+            where T : notnull
             where A : struct
             => new A();
 
@@ -79,6 +86,7 @@ namespace DotNext
         /// <param name="procedure">The procedure to be invoked.</param>
         /// <param name="instance">Explicit <c>this</c> argument.</param>
         public static void Invoke<T>(this Procedure<T, ValueTuple> procedure, in T instance)
+            where T : notnull
             => procedure(in instance, default);
 
         /// <summary>
@@ -97,6 +105,7 @@ namespace DotNext
         /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <param name="arg">The first procedure argument.</param>
         public static void Invoke<T, P>(this Procedure<T, ValueTuple<P>> procedure, in T instance, P arg)
+            where T : notnull
             => procedure(in instance, new ValueTuple<P>(arg));
 
         /// <summary>

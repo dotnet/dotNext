@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext
@@ -23,7 +24,9 @@ namespace DotNext
     /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
     /// <typeparam name="R">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
-    public delegate R Function<T, A, out R>(in T @this, in A arguments) where A : struct;
+    public delegate R Function<T, A, out R>(in T @this, in A arguments)
+        where T : notnull
+        where A : struct;
 
     /// <summary>
     /// Provides extension methods for delegates <see cref="Function{A, R}"/> and <see cref="Function{T, A, R}"/>.
@@ -31,6 +34,7 @@ namespace DotNext
     public static class Function
     {
         private sealed class Closure<T, A, R>
+            where T : notnull
             where A : struct
         {
             private readonly Function<T, A, R> function;
@@ -55,7 +59,10 @@ namespace DotNext
         /// <param name="function">The function to be converted.</param>
         /// <param name="this">The first argument to be captured.</param>
         /// <returns>The function instance.</returns>
-        public static Function<A, R> Capture<T, A, R>(this Function<T, A, R> function, T @this) where A : struct => new Closure<T, A, R>(function, @this).Invoke;
+        public static Function<A, R> Capture<T, A, R>(this Function<T, A, R> function, T @this) 
+            where T : notnull
+            where A : struct 
+            => new Closure<T, A, R>(function, @this).Invoke;
 
         /// <summary>
         /// Invokes function without throwing exception in case of its failure.

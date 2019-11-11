@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 
 namespace DotNext.Reflection
@@ -18,6 +19,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets delegate representing operator.
         /// </summary>
+        [NotNull]
         D Invoker { get; }
     }
 }

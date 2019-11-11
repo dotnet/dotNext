@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,7 +12,7 @@ namespace DotNext.Reflection
     /// Represents reflected method.
     /// </summary>
     /// <typeparam name="D">Type of delegate describing signature of the reflected method.</typeparam>
-    public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<MethodInfo>
+    public sealed class Method<D> : MethodInfo, IMethod<D>, IEquatable<MethodInfo?>
         where D : MulticastDelegate
     {
         private sealed class Cache : MemberCache<MethodInfo, Method<D>>
@@ -264,27 +265,20 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other constructor to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same method as the specified object; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(MethodInfo other) => other is Method<D> method ? this.method == method.method : this.method == other;
+        public bool Equals(MethodInfo? other) => other is Method<D> method ? this.method == method.method : this.method == other;
 
         /// <summary>
         /// Determines whether this method is equal to the given method.
         /// </summary>
         /// <param name="other">Other constructor to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same method as the specified object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other) => other switch
         {
-            switch (other)
-            {
-                case Method<D> method:
-                    return this.method == method.method;
-                case MethodInfo method:
-                    return this.method == method;
-                case D invoker:
-                    return Equals(Invoker, invoker);
-                default:
-                    return false;
-            }
-        }
+            Method<D> method => this.method == method.method,
+            MethodInfo method => this.method == method,
+            D invoker => Equals(Invoker, invoker),
+            _ => false,
+        };
 
         /// <summary>
         /// Computes hash code uniquely identifies the reflected method.
@@ -296,7 +290,8 @@ namespace DotNext.Reflection
         /// Gets a delegate representing this method.
         /// </summary>
         /// <param name="method">The reflected method.</param>
-        public static implicit operator D(Method<D> method) => method?.Invoker;
+        [return: NotNullIfNotNull("method")]
+        public static implicit operator D?(Method<D>? method) => method?.Invoker;
 
         MethodInfo IMember<MethodInfo>.RuntimeMember => method;
         D IMember<MethodInfo, D>.Invoker => Invoker;

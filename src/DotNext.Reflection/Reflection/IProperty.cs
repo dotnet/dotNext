@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace DotNext.Reflection
 {
@@ -27,6 +28,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets or sets property value.
         /// </summary>
+        [MaybeNull]
         P Value { get; set; }
     }
 
@@ -36,12 +38,14 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Property declaring type.</typeparam>
     /// <typeparam name="P">Type of property value.</typeparam>
     public interface IProperty<T, P> : IProperty
+        where T : notnull
     {
         /// <summary>
         /// Gets or sets property value.
         /// </summary>
         /// <param name="this">The object whose property value will be set or returned.</param>
         /// <returns>Property value.</returns>
+        [MaybeNull]
         P this[in T @this] { get; set; }
     }
 }

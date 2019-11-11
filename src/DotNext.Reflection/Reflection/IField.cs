@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace DotNext.Reflection
 {
@@ -23,6 +24,7 @@ namespace DotNext.Reflection
         /// Obtains managed pointer to the static field.
         /// </summary>
         /// <value>The managed pointer to the static field.</value>
+        [MaybeNull]
         ref F Value { get; }
     }
 
@@ -32,12 +34,14 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Field declaring type.</typeparam>
     /// <typeparam name="F">Type of field.</typeparam>
     public interface IField<T, F> : IField
+        where T : notnull
     {
         /// <summary>
         /// Obtains managed pointer to the field.
         /// </summary>
         /// <param name="this">A reference to <c>this</c> parameter.</param>
         /// <returns>The managed pointer to the instance field.</returns>
+        [MaybeNull]
         ref F this[in T @this] { get; }
     }
 }

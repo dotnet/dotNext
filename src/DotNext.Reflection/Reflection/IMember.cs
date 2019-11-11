@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -19,6 +20,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Member metadata.
         /// </summary>
+        [NotNull]
         M RuntimeMember { get; }
     }
 
@@ -34,6 +36,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets delegate that can be used to invoke member.
         /// </summary>
+        [NotNull]
         D Invoker { get; }
     }
 

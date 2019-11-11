@@ -36,6 +36,7 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Type of event declaring type.</typeparam>
     /// <typeparam name="H">Type of event handler.</typeparam>
     public interface IEvent<T, in H> : IEvent
+        where T : notnull
         where H : MulticastDelegate
     {
         /// <summary>
