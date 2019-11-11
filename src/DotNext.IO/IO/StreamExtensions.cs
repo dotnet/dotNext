@@ -11,7 +11,7 @@ namespace DotNext.IO
 {
     using Buffers;
     using Text;
-    using Memory = Runtime.InteropServices.Memory;
+    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Represents high-level read/write methods for the stream.
@@ -143,7 +143,7 @@ namespace DotNext.IO
                     throw new EndOfStreamException();
                 length -= n;
                 var charsRead = decoder.GetChars(buffer.Slice(0, n), charBuffer.Span, length == 0);
-                Memory.Copy(ref charBuffer[0], ref result[resultOffset], (uint)charsRead);
+                Intrinsics.Copy(ref charBuffer[0], ref result[resultOffset], charsRead);
                 resultOffset += charsRead;
             }
             return new string(result.Span.Slice(0, resultOffset));
@@ -176,7 +176,7 @@ namespace DotNext.IO
                     throw new EndOfStreamException();
                 length -= n;
                 var charsRead = decoder.GetChars(buffer.Span.Slice(0, n), charBuffer.Span, length == 0);
-                Memory.Copy(ref charBuffer.Span[0], ref result.Span[resultOffset], (uint)charsRead);
+                Intrinsics.Copy(ref charBuffer.Span[0], ref result.Span[resultOffset], charsRead);
                 resultOffset += charsRead;
             }
             return new string(result.Span.Slice(0, resultOffset));
@@ -193,7 +193,7 @@ namespace DotNext.IO
             where T : unmanaged
         {
             var result = default(T);
-            return stream.Read(Memory.AsSpan(&result)) == sizeof(T) ? result : throw new EndOfStreamException();
+            return stream.Read(Intrinsics.AsSpan(ref result)) == sizeof(T) ? result : throw new EndOfStreamException();
         }
 
         /// <summary>
@@ -233,7 +233,7 @@ namespace DotNext.IO
         /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The value to be written into the stream.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
-        public static unsafe void Write<T>(this Stream stream, ref T value) where T : unmanaged => stream.Write(Memory.AsSpan(ref value));
+        public static unsafe void Write<T>(this Stream stream, ref T value) where T : unmanaged => stream.Write(Intrinsics.AsSpan(ref value));
 
         /// <summary>
         /// Asynchronously serializes value to the stream.

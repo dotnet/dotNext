@@ -41,7 +41,7 @@
   <ItemGroup>
     <PackageReference Include="System.IO.Pipelines" Version="4.6.0" />
     <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="[1.2.0, 2)" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext" Version="[2, 3)" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 
   <ItemGroup>

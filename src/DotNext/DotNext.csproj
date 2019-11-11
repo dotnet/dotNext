@@ -39,6 +39,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Runtime\InteropServices\**" />
+    <EmbeddedResource Remove="Runtime\InteropServices\**" />
+    <None Remove="Runtime\InteropServices\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.6.0" />
     <PackageReference Include="Fody" Version="6.0.3" PrivateAssets="all" />
@@ -51,10 +57,6 @@
     <EmbeddedResource Include="ExceptionMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Runtime\InteropServices\" />
   </ItemGroup>
 
 </Project>

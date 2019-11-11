@@ -593,7 +593,7 @@ namespace DotNext.Runtime
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static T As<T>(this in byte address)
+        private static T Load<T>(this in byte address)
             where T : unmanaged
         {
             Ldarg(nameof(address));
@@ -602,7 +602,7 @@ namespace DotNext.Runtime
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe T AsUnaligned<T>(this in byte address)
+        private static unsafe T LoadUnaligned<T>(this in byte address)
             where T : unmanaged
         {
             Ldarg(nameof(address));
@@ -630,12 +630,12 @@ namespace DotNext.Runtime
             var result = false;
             if (Vector.IsHardwareAccelerated)
                 while (length >= Vector<byte>.Count)
-                    if (address.As<Vector<byte>>() == Vector<byte>.Zero)
+                    if (address.Load<Vector<byte>>() == Vector<byte>.Zero)
                         address = ref address.Adjust<Vector<byte>>(&length);
                     else
                         goto exit;
             while (length >= sizeof(UIntPtr))
-                if (address.As<UIntPtr>() == default)
+                if (address.Load<UIntPtr>() == default)
                     address = ref address.Adjust<UIntPtr>(&length);
                 else
                     goto exit;
@@ -677,7 +677,7 @@ namespace DotNext.Runtime
             {
                 default:
                     for (; length >= sizeof(long); source = ref source.Adjust<long>(&length))
-                        hash = hashFunction.Invoke(hash, source.AsUnaligned<long>());
+                        hash = hashFunction.Invoke(hash, source.LoadUnaligned<long>());
                     for (; length > 0L; source = ref source.Adjust<byte>(&length))
                         hash = hashFunction.Invoke(hash, *(byte*)source);
                     break;
@@ -685,12 +685,12 @@ namespace DotNext.Runtime
                     hash = hashFunction.Invoke(hash, source);
                     break;
                 case sizeof(ushort):
-                    hash = hashFunction.Invoke(hash, source.AsUnaligned<ushort>());
+                    hash = hashFunction.Invoke(hash, source.LoadUnaligned<ushort>());
                     break;
                 case 3:
                     goto default;
                 case sizeof(uint):
-                    hash = hashFunction.Invoke(hash, source.AsUnaligned<uint>());
+                    hash = hashFunction.Invoke(hash, source.LoadUnaligned<uint>());
                     break;
                 case 5:
                 case 6:
@@ -707,7 +707,7 @@ namespace DotNext.Runtime
             {
                 default:
                     for (; length >= sizeof(long); source = ref source.Adjust<long>(&length))
-                        hash = FNV1a64.GetHashCode(hash, source.AsUnaligned<long>());
+                        hash = FNV1a64.GetHashCode(hash, source.LoadUnaligned<long>());
                     for (; length > 0L; source = ref source.Adjust<byte>(&length))
                         hash = FNV1a64.GetHashCode(hash, source);
                     break;
@@ -715,12 +715,12 @@ namespace DotNext.Runtime
                     hash = FNV1a64.GetHashCode(hash, source);
                     break;
                 case sizeof(ushort):
-                    hash = FNV1a64.GetHashCode(hash, source.AsUnaligned<ushort>());
+                    hash = FNV1a64.GetHashCode(hash, source.LoadUnaligned<ushort>());
                     break;
                 case 3:
                     goto default;
                 case sizeof(uint):
-                    hash = FNV1a64.GetHashCode(hash, source.AsUnaligned<uint>());
+                    hash = FNV1a64.GetHashCode(hash, source.LoadUnaligned<uint>());
                     break;
                 case 5:
                 case 6:
@@ -802,7 +802,7 @@ namespace DotNext.Runtime
             {
                 default:
                     for (; length >= sizeof(int); source = ref source.Adjust<int>(&length))
-                        hash = hashFunction.Invoke(hash, AsUnaligned<int>(source));
+                        hash = hashFunction.Invoke(hash, LoadUnaligned<int>(source));
                     for (; length > 0L; source = ref source.Adjust<byte>(&length))
                         hash = hashFunction.Invoke(hash, source);
                     break;
@@ -810,7 +810,7 @@ namespace DotNext.Runtime
                     hash = hashFunction.Invoke(hash, source);
                     break;
                 case sizeof(ushort):
-                    hash = hashFunction.Invoke(hash, source.AsUnaligned<ushort>());
+                    hash = hashFunction.Invoke(hash, source.LoadUnaligned<ushort>());
                     break;
             }
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
@@ -823,7 +823,7 @@ namespace DotNext.Runtime
             {
                 default:
                     for (; length >= sizeof(int); source = ref source.Adjust<int>(&length))
-                        hash = FNV1a32.GetHashCode(hash, AsUnaligned<int>(source));
+                        hash = FNV1a32.GetHashCode(hash, LoadUnaligned<int>(source));
                     for (; length > 0L; source = ref source.Adjust<byte>(&length))
                         hash = FNV1a32.GetHashCode(hash, source);
                     break;
@@ -831,7 +831,7 @@ namespace DotNext.Runtime
                     hash = FNV1a32.GetHashCode(hash, source);
                     break;
                 case sizeof(ushort):
-                    hash = FNV1a32.GetHashCode(hash, source.AsUnaligned<ushort>());
+                    hash = FNV1a32.GetHashCode(hash, source.LoadUnaligned<ushort>());
                     break;
             }
             return salted ? FNV1a32.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
