@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipelines;
-using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,15 +14,86 @@ namespace DotNext.IO.Pipelines
 
     public static class PipeExtensions
     {
-        private static void GetChars(this Decoder decoder, ReadOnlySpan<byte> bytes, int charCount, Span<char> output, ref int outputOffset, ref int length)
+        private interface IBufferReader<out T>
         {
-            using MemoryRental<char> charBuffer = charCount <= 1024 ? stackalloc char[charCount] : new MemoryRental<char>(charCount);
-            length -= bytes.Length;
-            charCount = decoder.GetChars(bytes, charBuffer.Span, length == 0);
-            Intrinsics.Copy(ref charBuffer[0], ref output[outputOffset], charCount);
-            outputOffset += charCount;
+            int RemainingBytes { get; }
+
+            void Append(ReadOnlySpan<byte> block);
+            T Complete();
         }
-        
+
+        [StructLayout(LayoutKind.Auto)]
+        private struct StringReader : IBufferReader<string>
+        {
+            private readonly Decoder decoder;
+            private readonly Encoding encoding;
+            private int length, resultOffset;
+            private readonly Memory<char> result;
+
+            internal StringReader(in DecodingContext context, Memory<char> result)
+            {
+                decoder = context.GetDecoder();
+                encoding = context.Encoding;
+                length = result.Length;
+                this.result = result;
+                resultOffset = 0;
+            }
+
+            int IBufferReader<string>.RemainingBytes => length;
+
+            string IBufferReader<string>.Complete() => new string(result.Span.Slice(0, resultOffset));
+
+            private static void GetChars(Decoder decoder, ReadOnlySpan<byte> bytes, int charCount, Span<char> output, ref int outputOffset, ref int length)
+            {
+                using MemoryRental<char> charBuffer = charCount <= 1024 ? stackalloc char[charCount] : new MemoryRental<char>(charCount);
+                length -= bytes.Length;
+                charCount = decoder.GetChars(bytes, charBuffer.Span, length == 0);
+                Intrinsics.Copy(ref charBuffer[0], ref output[outputOffset], charCount);
+                outputOffset += charCount;
+            }
+
+            void IBufferReader<string>.Append(ReadOnlySpan<byte> bytes) => GetChars(decoder, bytes, encoding.GetMaxCharCount(bytes.Length), result.Span, ref resultOffset, ref length);
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private struct ValueReader<T> : IBufferReader<T>
+            where T : unmanaged
+        {
+            private T result;
+            private int offset;
+
+            unsafe int IBufferReader<T>.RemainingBytes => sizeof(T) - offset;
+
+            T IBufferReader<T>.Complete() => result;
+
+            void IBufferReader<T>.Append(ReadOnlySpan<byte> block)
+            {
+                block.CopyTo(Intrinsics.AsSpan(ref result).Slice(offset));
+                offset += block.Length;
+            }
+        }
+
+        private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token = default)
+            where TParser : struct, IBufferReader<TResult>
+        {
+            for (SequencePosition consumed = default; parser.RemainingBytes > 0; reader.AdvanceTo(consumed), consumed = default)
+            {
+                var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
+                if (readResult.IsCanceled)
+                    throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
+                if (readResult.IsCompleted)
+                    throw new EndOfStreamException();
+                var buffer = readResult.Buffer;
+                int bytesToConsume;
+                for (var position = buffer.Start; parser.RemainingBytes > 0 && buffer.TryGet(ref position, out var block); consumed = buffer.GetPosition(bytesToConsume, position))
+                {
+                    bytesToConsume = Math.Min(parser.RemainingBytes, block.Length);
+                    parser.Append(block.Slice(0, bytesToConsume).Span);
+                }
+            }
+            return parser.Complete();
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -36,56 +107,23 @@ namespace DotNext.IO.Pipelines
         {
             if (length == 0)
                 return "";
-            using var result = new ArrayRental<char>(context.Encoding.GetMaxCharCount(length));
-            var resultOffset = 0; //offset in result buffer
-            var decoder = context.GetDecoder();
-            for (SequencePosition consumed = default; length > 0; reader.AdvanceTo(consumed), consumed = default)
-            {
-                var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
-                if (readResult.IsCanceled)
-                    throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
-                if (readResult.IsCompleted)
-                    throw new EndOfStreamException();
-                var buffer = readResult.Buffer;
-                int bytesToConsume;
-                for (var position = buffer.Start; length > 0 && buffer.TryGet(ref position, out var block); consumed = buffer.GetPosition(bytesToConsume, position))
-                {
-                    bytesToConsume = Math.Min(length, block.Length);
-                    decoder.GetChars(block.Slice(0, bytesToConsume).Span, context.Encoding.GetMaxCharCount(bytesToConsume), result.Span, ref resultOffset, ref length);
-                }
-            }
-            return new string(result.Span.Slice(0, resultOffset));
+            using var resultBuffer = new ArrayRental<char>(context.Encoding.GetMaxCharCount(length));
+            return await ReadAsync<string, StringReader>(reader, new StringReader(context, resultBuffer.Memory), token);
         }
 
-        public static async ValueTask<T> ReadAsync<T>(this PipeReader reader, CancellationToken token = default)
+        public static ValueTask<T> ReadAsync<T>(this PipeReader reader, CancellationToken token = default)
             where T : unmanaged
-        {
-            var result = new T();
-            var offset = 0;
-            for (SequencePosition consumed = default; offset < Unsafe.SizeOf<T>(); reader.AdvanceTo(consumed), consumed = default)
-            {
-                var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
-                if (readResult.IsCanceled)
-                    throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
-                if (readResult.IsCompleted)
-                    throw new EndOfStreamException();
-                var buffer = readResult.Buffer;
-                int bytesToConsume;
-                for (var position = buffer.Start; offset < Unsafe.SizeOf<T>() && buffer.TryGet(ref position, out var block); consumed = buffer.GetPosition(bytesToConsume, position))
-                {
-                    bytesToConsume = Math.Min(Unsafe.SizeOf<T>() - offset, block.Length);
-                    block.Span.Slice(0, bytesToConsume).CopyTo(Intrinsics.AsSpan(ref result).Slice(offset));
-                    offset += bytesToConsume;
-                }
-            }
-            return result;
-        }
+            => ReadAsync<T, ValueReader<T>>(reader, new ValueReader<T>(), token);
 
         public static async ValueTask WriteAsync<T>(this PipeWriter writer, T value, CancellationToken token = default)
             where T : unmanaged
         {
-            var bytesUsed = Unsafe.SizeOf<T>();
-            Intrinsics.AsSpan(ref value).CopyTo(writer.GetMemory(bytesUsed).Span);
+            int bytesUsed;
+            unsafe
+            {
+                bytesUsed = sizeof(T);
+            }
+            Intrinsics.AsReadOnlySpan(in value).CopyTo(writer.GetMemory(bytesUsed).Span);
             writer.Advance(bytesUsed);
             var result = await writer.FlushAsync(token).ConfigureAwait(false);
             if (result.IsCanceled)
