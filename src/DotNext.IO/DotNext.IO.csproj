@@ -14,10 +14,10 @@
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>.netstandard;io;pipe;encoding;buffer;pipelines;stream</PackageTags>
+    <PackageTags>.netstandard;io;pipe;encoding;buffer;pipelines;stream;readstring;writestring</PackageTags>
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Description>Provides various extensions of .NET Base Class Library</Description>
+    <Description>Bridging gap between streams and I/O Pipelines</Description>
     <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
     <PackageReleaseNotes>https://github.com/sakno/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
