@@ -2,9 +2,31 @@ Release Notes
 ====
 
 # 11-11-2019
-<a href="https://www.nuget.org/packages/dotnext.reflection/1.2.2">DotNext.Reflection 1.2.2</a>
+<a href="https://www.nuget.org/packages/dotnext/1.2.3">DotNext 1.2.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.2.3">DotNext.Metaprogramming 1.2.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.2.3">DotNext.Reflection 1.2.3</a>
 * Fixed potential NRE
 * Fixed reflection of value type constructors
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/1.2.3">DotNext.Threading 1.2.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.3">DotNext.Unsafe 1.2.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.3">DotNext.Net.Cluster 1.2.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.3">DotNext.AspNetCore.Cluster 1.2.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.2.3">DotNext.Augmentation.Fody 1.2.3</a>
+* Updated dependencies
 
 # 11-05-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.2">DotNext 1.2.2</a>
