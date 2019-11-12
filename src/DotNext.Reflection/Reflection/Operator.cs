@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using static System.Diagnostics.Debug;
@@ -140,14 +141,15 @@ namespace DotNext.Reflection
         /// Returns the delegate instance that can be used to invoke operator.
         /// </summary>
         /// <param name="operator">The reflected operator.</param>
-        public static implicit operator D(Operator<D> @operator) => @operator?.Invoker;
+        [return: NotNullIfNotNull("operator")]
+        public static implicit operator D?(Operator<D>? @operator) => @operator?.Invoker;
 
         /// <summary>
         /// Gets type of operator.
         /// </summary>
         public ExpressionType Type { get; }
 
-        private static Expression<D> Convert(ParameterExpression parameter, Expression operand, Type conversionType, bool @checked)
+        private static Expression<D>? Convert(ParameterExpression parameter, Expression operand, Type conversionType, bool @checked)
         {
             try
             {
@@ -167,25 +169,19 @@ namespace DotNext.Reflection
             }
         }
 
-        private protected static Expression<D> MakeConvert<T>(ParameterExpression parameter, bool @checked) => Convert(parameter, parameter, typeof(T), @checked);
+        private protected static Expression<D>? MakeConvert<T>(ParameterExpression parameter, bool @checked) => Convert(parameter, parameter, typeof(T), @checked);
 
         /// <summary>
         /// Determines whether this object reflects the same operator as other object.
         /// </summary>
         /// <param name="other">Other reflected operator to be compared.</param>
         /// <returns><see langword="true"/>, if  this object reflects the same operator as other object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other) => other switch
         {
-            switch (other)
-            {
-                case Operator<D> op:
-                    return Type == op.Type && Method == op.Method;
-                case D invoker:
-                    return Equals(this.Invoker, invoker);
-                default:
-                    return false;
-            }
-        }
+            Operator<D> op => Type == op.Type && Method == op.Method,
+            D invoker => Equals(this.Invoker, invoker),
+            _ => false,
+        };
 
         /// <summary>
         /// Computes hash code of the reflected operator.

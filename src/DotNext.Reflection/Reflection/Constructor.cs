@@ -106,7 +106,7 @@ namespace DotNext.Reflection
         /// Provides access to the MSIL stream, local variables, and exceptions for the current constructor.
         /// </summary>
         /// <returns>An object that provides access to the MSIL stream, local variables, and exceptions for the current constructor.</returns>
-        public override MethodBody GetMethodBody() => (ctorInfo as MethodBase ?? invoker.Method).GetMethodBody();
+        public override MethodBody? GetMethodBody() => (ctorInfo as MethodBase ?? invoker.Method).GetMethodBody();
 
         /// <summary>
         /// Returns a list of custom attributes that have been applied to the target constructor.
@@ -278,7 +278,7 @@ namespace DotNext.Reflection
 
         private static Constructor<D>? Reflect(Type declaringType, Type[] parameters, bool nonPublic)
         {
-            var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
+            ConstructorInfo? ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
             if (ctor is null)
                 return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<D>(declaringType) : null;
             return new Constructor<D>(ctor, Array.ConvertAll(parameters, Expression.Parameter));
@@ -287,7 +287,7 @@ namespace DotNext.Reflection
         private static Constructor<D>? Reflect(Type declaringType, Type argumentsType, bool nonPublic)
         {
             var (parameters, arglist, input) = Signature.Reflect(argumentsType);
-            var ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
+            ConstructorInfo? ctor = declaringType.GetConstructor(nonPublic ? NonPublicFlags : PublicFlags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
 
             if (ctor is null)
                 return declaringType.IsValueType && parameters.Length == 0 ? new Constructor<D>(declaringType, Sequence.Singleton(input)) : null;

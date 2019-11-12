@@ -128,6 +128,7 @@ namespace DotNext
         /// <param name="arg1">The first procedure argument.</param>
         /// <param name="arg2">The second procedure argument.</param>
         public static void Invoke<T, P1, P2>(this Procedure<T, (P1, P2)> procedure, in T instance, P1 arg1, P2 arg2)
+            where T : notnull
             => procedure(in instance, (arg1, arg2));
 
         /// <summary>
@@ -154,6 +155,7 @@ namespace DotNext
         /// <param name="arg2">The second procedure argument.</param>
         /// <param name="arg3">The third procedure argument.</param>
         public static void Invoke<T, P1, P2, P3>(this Procedure<T, (P1, P2, P3)> procedure, in T instance, P1 arg1, P2 arg2, P3 arg3)
+            where T : notnull
             => procedure(in instance, (arg1, arg2, arg3));
 
         /// <summary>
@@ -184,6 +186,7 @@ namespace DotNext
         /// <param name="arg3">The third procedure argument.</param>
         /// <param name="arg4">The fourth procedure argument.</param>
         public static void Invoke<T, P1, P2, P3, P4>(this Procedure<T, (P1, P2, P3, P4)> procedure, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4)
+            where T : notnull
             => procedure(in instance, (arg1, arg2, arg3, arg4));
 
         /// <summary>
@@ -218,6 +221,7 @@ namespace DotNext
         /// <param name="arg4">The fourth procedure argument.</param>
         /// <param name="arg5">The fifth procedure argument.</param>
         public static void Invoke<T, P1, P2, P3, P4, P5>(this Procedure<T, (P1, P2, P3, P4, P5)> procedure, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5)
+            where T : notnull
             => procedure(in instance, (arg1, arg2, arg3, arg4, arg5));
 
         /// <summary>
@@ -256,6 +260,7 @@ namespace DotNext
         /// <param name="arg5">The fifth procedure argument.</param>
         /// <param name="arg6">The sixth procedure argument.</param>
         public static void Invoke<T, P1, P2, P3, P4, P5, P6>(this Procedure<T, (P1, P2, P3, P4, P5, P6)> procedure, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6)
+           where T : notnull
             => procedure(in instance, (arg1, arg2, arg3, arg4, arg5, arg6));
 
         /// <summary>
@@ -298,6 +303,7 @@ namespace DotNext
         /// <param name="arg6">The sixth procedure argument.</param>
         /// <param name="arg7">The seventh procedure argument.</param>
         public static void Invoke<T, P1, P2, P3, P4, P5, P6, P7>(this Procedure<T, (P1, P2, P3, P4, P5, P6, P7)> procedure, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7)
+            where T : notnull
             => procedure(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7));
 
         /// <summary>
@@ -344,6 +350,7 @@ namespace DotNext
         /// <param name="arg7">The seventh procedure argument.</param>
         /// <param name="arg8">The eighth procedure argument.</param>
         public static void Invoke<T, P1, P2, P3, P4, P5, P6, P7, P8>(this Procedure<T, (P1, P2, P3, P4, P5, P6, P7, P8)> procedure, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8)
+            where T : notnull
             => procedure(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
 
         /// <summary>
@@ -394,6 +401,7 @@ namespace DotNext
         /// <param name="arg8">The eighth procedure argument.</param>
         /// <param name="arg9">The ninth procedure argument.</param>
         public static void Invoke<T, P1, P2, P3, P4, P5, P6, P7, P8, P9>(this Procedure<T, (P1, P2, P3, P4, P5, P6, P7, P8, P9)> procedure, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9)
+            where T : notnull
             => procedure(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9));
 
         /// <summary>
@@ -448,6 +456,7 @@ namespace DotNext
         /// <param name="arg9">The ninth procedure argument.</param>
         /// <param name="arg10">The tenth procedure argument.</param>
         public static void Invoke<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10>(this Procedure<T, (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10)> procedure, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10)
+            where T : notnull
             => procedure(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10));
 
         /// <summary>

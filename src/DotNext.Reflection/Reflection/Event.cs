@@ -340,7 +340,7 @@ namespace DotNext.Reflection
 
         private static Event<D>? Reflect(Type declaringType, string eventName, bool nonPublic)
         {
-            var @event = declaringType.GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
+            EventInfo? @event = declaringType.GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
             return @event is null ? null : new Event<D>(@event);
         }
 
@@ -494,7 +494,7 @@ namespace DotNext.Reflection
 
         private static Event<T, D>? Reflect(string eventName, bool nonPublic)
         {
-            var @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
+            EventInfo? @event = typeof(T).GetEvent(eventName, nonPublic ? NonPublicFlags : PublicFlags);
             return @event is null ? null : new Event<T, D>(@event);
         }
 

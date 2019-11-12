@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -20,7 +19,6 @@ namespace DotNext.Reflection
         /// <summary>
         /// Member metadata.
         /// </summary>
-        [NotNull]
         M RuntimeMember { get; }
     }
 
@@ -36,7 +34,6 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets delegate that can be used to invoke member.
         /// </summary>
-        [NotNull]
         D Invoker { get; }
     }
 
@@ -73,6 +70,7 @@ namespace DotNext.Reflection
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static R Invoke<M, T, A, R>(this IMember<M, Function<T, A, R>> member, in T @this, in A arguments)
+            where T : notnull
             where M : MemberInfo
             where A : struct
             => member.Invoker(in @this, in arguments);
@@ -88,6 +86,7 @@ namespace DotNext.Reflection
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static R Invoke<M, T, R>(this IMember<M, Function<T, ValueTuple, R>> member, in T @this)
+            where T : notnull
             where M : MemberInfo
             => member.Invoke(in @this, default);
 
@@ -114,6 +113,7 @@ namespace DotNext.Reflection
         /// <returns>Allocated structure for placing arguments.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static A ArgList<M, T, A, R>(this IMember<M, Function<T, A, R>> member)
+            where T : notnull
             where M : MemberInfo
             where A : struct
             => member.Invoker.ArgList();
@@ -141,6 +141,7 @@ namespace DotNext.Reflection
         /// <param name="member">Callable member.</param>
         /// <returns>Allocated list of arguments.</returns>
 		public static A ArgList<M, T, A>(this IMember<M, Procedure<T, A>> member)
+            where T : notnull
             where M : MemberInfo
             where A : struct
             => member.Invoker.ArgList();

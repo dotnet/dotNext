@@ -359,7 +359,7 @@ namespace DotNext.Reflection
 
         private static Field<T, V>? Reflect(string fieldName, bool nonPublic)
         {
-            var field = typeof(T).GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
+            FieldInfo? field = typeof(T).GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
             return field is null ? null : new Field<T, V>(field);
         }
 
@@ -499,7 +499,7 @@ namespace DotNext.Reflection
 
         private static Field<V>? Reflect(Type declaringType, string fieldName, bool nonPublic)
         {
-            var field = declaringType.GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
+            FieldInfo? field = declaringType.GetField(fieldName, nonPublic ? NonPublicFlags : PubicFlags);
             return field is null ? null : new Field<V>(field);
         }
 

@@ -273,7 +273,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">User data.</param>
         /// <returns><see langword="true"/>, if user data slot exists in this collection.</returns>
-        public bool TryGet<V>(UserDataSlot<V> slot, [NotNullWhen(true)]out V userData)
+        public bool TryGet<V>(UserDataSlot<V> slot, [MaybeNullWhen(false)]out V userData)
         {
             var storage = GetStorage();
             if (storage is null)
@@ -313,7 +313,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">Remove user data.</param>
         /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
-        public bool Remove<V>(UserDataSlot<V> slot, [NotNullWhen(true)]out V userData)
+        public bool Remove<V>(UserDataSlot<V> slot, [MaybeNullWhen(false)]out V userData)
         {
             var storage = GetStorage();
             if (storage is null)

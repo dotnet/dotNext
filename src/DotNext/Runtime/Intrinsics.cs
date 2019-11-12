@@ -307,6 +307,20 @@ namespace DotNext.Runtime
         }
 
         /// <summary>
+        /// Returns an address of the given by-ref parameter.
+        /// </summary>
+        /// <typeparam name="T">The type of object.</typeparam>
+        /// <param name="value">The object whose address is obtained.</param>
+        /// <returns>An address of the given object.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr AddressOf<T>(in T value)
+        {
+            Ldarg(nameof(value));
+            Conv_I();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
         /// Converts typed reference into managed pointer.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>

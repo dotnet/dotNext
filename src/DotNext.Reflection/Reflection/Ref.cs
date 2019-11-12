@@ -7,12 +7,12 @@ using System.Security;
 
 namespace DotNext.Reflection
 {
-    using static Runtime.InteropServices.Memory;
+    using static Runtime.Intrinsics;
     internal static class Ref
     {
         private static bool Is(Type type) => type.IsGenericInstanceOf(typeof(Ref<>));
 
-        internal static bool Reflect(Type byRefType, out Type underlyingType, out FieldInfo valueField)
+        internal static bool Reflect(Type byRefType, [NotNullWhen(true)]out Type? underlyingType, [NotNullWhen(true)]out FieldInfo? valueField)
         {
             if (Is(byRefType))
             {
@@ -51,12 +51,13 @@ namespace DotNext.Reflection
         /// Gets or sets value.
         /// </summary>
         [SuppressMessage("Design", "CA1051", Justification = "It is by-design due to nature of this type")]
+        [AllowNull]
         public T Value;
 
-        object IStrongBox.Value
+        object? IStrongBox.Value
         {
             get => Value;
-            set => Value = (T)value;
+            set => Value = (T)value!;
         }
 
         /// <summary>
@@ -95,7 +96,7 @@ namespace DotNext.Reflection
         /// Gets hash code of this reference based on its address.
         /// </summary>
         /// <returns>Hash code of the reference.</returns>
-        public override int GetHashCode() => AddressOf(in Value).ToInt32();
+        public override int GetHashCode() => AddressOf(in Value).GetHashCode();
 
         /// <summary>
         /// Always returns <see langword="false"/> because two boxed references
