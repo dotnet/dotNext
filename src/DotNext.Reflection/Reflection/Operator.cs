@@ -123,7 +123,7 @@ namespace DotNext.Reflection
 
         private protected readonly D Invoker;
 
-        private protected Operator(D invoker, ExpressionType type, MethodInfo overloaded)
+        private protected Operator(D invoker, ExpressionType type, MethodInfo? overloaded)
         {
             Type = type;
             Invoker = invoker;
@@ -133,7 +133,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the implementing method for the operator.
         /// </summary>
-        public MethodInfo Method { get; }
+        public MethodInfo? Method { get; }
 
         D IOperator<D>.Invoker => Invoker;
 
