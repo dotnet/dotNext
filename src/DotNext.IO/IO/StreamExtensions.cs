@@ -233,23 +233,7 @@ namespace DotNext.IO
         /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The value to be written into the stream.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
-        public static unsafe void Write<T>(this Stream stream, ref T value) where T : unmanaged => stream.Write(Intrinsics.AsSpan(ref value));
-
-        /// <summary>
-        /// Asynchronously serializes value to the stream.
-        /// </summary>
-        /// <param name="stream">The stream to write into.</param>
-        /// <param name="value">The value to be written into the stream.</param>
-        /// <param name="buffer">The buffer that is allocated by the caller.</param>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-        /// <typeparam name="T">The value type to be serialized.</typeparam>
-        /// <returns>The task representing asynchronous st</returns>
-        public static ValueTask WriteAsync<T>(this Stream stream, ref T value, Memory<byte> buffer, CancellationToken token = default)
-            where T : unmanaged
-        {
-            MemoryMarshal.Write(buffer.Span, ref value);
-            return stream.WriteAsync(buffer.Slice(0, SizeOf<T>()), token);
-        }
+        public static unsafe void Write<T>(this Stream stream, in T value) where T : unmanaged => stream.Write(Intrinsics.AsReadOnlySpan(in value));
 
         /// <summary>
         /// Asynchronously serializes value to the stream.
@@ -259,12 +243,12 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
         /// <returns>The task representing asynchronous st</returns>
-        public static unsafe ValueTask WriteAsync<T>(this Stream stream, T value, CancellationToken token = default)
+        public static async ValueTask WriteAsync<T>(this Stream stream, T value, CancellationToken token = default)
             where T : unmanaged
         {
-            using var buffer = new ArrayRental<byte>(sizeof(T));
+            using var buffer = new ArrayRental<byte>(SizeOf<T>());
             MemoryMarshal.Write(buffer.Span, ref value);
-            return stream.WriteAsync(buffer.Memory, token);
+            await stream.WriteAsync(buffer.Slice(0, SizeOf<T>()), token);
         }
 
         /// <summary>
