@@ -297,7 +297,7 @@ namespace DotNext.Reflection
         private static Constructor<D>? Reflect(bool nonPublic)
         {
             var delegateType = typeof(D);
-            if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType) == 2L)
+            if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && typeof(D).GetGenericArguments().Take(out var argumentsType, out var declaringType))
                 return Reflect(declaringType, argumentsType, nonPublic);
             else if (delegateType.IsAbstract)
                 throw new AbstractDelegateException<D>();
@@ -347,7 +347,7 @@ namespace DotNext.Reflection
                 return existing;
             else if (ctor.IsGenericMethodDefinition || ctor.IsAbstract)
                 return null;
-            else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
+            else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType))
                 return Unreflect(ctor, argumentsType, returnType);
             else
             {

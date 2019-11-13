@@ -146,9 +146,9 @@ namespace DotNext.Reflection
         /// <summary>
         /// Returns the delegate instance that can be used to invoke operator.
         /// </summary>
-        /// <param name="operator">The reflected operator.</param>
-        [return: NotNullIfNotNull("operator")]
-        public static implicit operator D?(Operator<D>? @operator) => @operator?.Invoker;
+        /// <param name="op">The reflected operator.</param>
+        [return: NotNullIfNotNull("op")]
+        public static implicit operator D?(Operator<D>? op) => op?.Invoker;
 
         /// <summary>
         /// Gets type of operator.

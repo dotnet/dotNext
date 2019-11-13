@@ -410,15 +410,15 @@ namespace DotNext.Reflection
             var delegateType = typeof(D);
             if (delegateType.IsAbstract)
                 throw new AbstractDelegateException<D>();
-            else if (delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
+            else if (delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType))
                 return ReflectInstance(thisParam, argumentsType, returnType, methodName, nonPublic);
-            else if (delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
+            else if (delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take<Type>(out thisParam, out argumentsType))
                 return ReflectInstance(thisParam, argumentsType, typeof(void), methodName, nonPublic);
             else
             {
                 DelegateType.GetInvokeMethod<D>().Decompose(MethodExtensions.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
                 thisParam = parameters?.FirstOrDefault() ?? throw new ArgumentException(ExceptionMessages.ThisParamExpected);
-                return ReflectInstance(thisParam, parameters.RemoveFirst(1), returnType, methodName, nonPublic);
+                return ReflectInstance(thisParam, parameters.RemoveFirst(1), returnType!, methodName, nonPublic);
             }
         }
 
@@ -434,14 +434,14 @@ namespace DotNext.Reflection
             var delegateType = typeof(D);
             if (delegateType.IsAbstract)
                 throw new AbstractDelegateException<D>();
-            else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
+            else if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType))
                 return ReflectStatic(declaringType, argumentsType, returnType, methodName, nonPublic);
             else if (delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
                 return ReflectStatic(declaringType, delegateType.GetGenericArguments()[0], typeof(void), methodName, nonPublic);
             else
             {
                 DelegateType.GetInvokeMethod<D>().Decompose(MethodExtensions.GetParameterTypes, method => method.ReturnType, out var parameters, out returnType);
-                return ReflectStatic(declaringType, parameters!, returnType, methodName, nonPublic);
+                return ReflectStatic(declaringType, parameters!, returnType!, methodName, nonPublic);
             }
         }
 
@@ -489,7 +489,7 @@ namespace DotNext.Reflection
         private static Method<D>? UnreflectStatic(MethodInfo method)
         {
             var delegateType = typeof(D);
-            if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType) == 2L)
+            if (delegateType.IsGenericInstanceOf(typeof(Function<,>)) && delegateType.GetGenericArguments().Take(out var argumentsType, out var returnType))
                 return Unreflect(method, null, argumentsType, returnType);
             else if (delegateType.IsGenericInstanceOf(typeof(Procedure<>)))
                 return Unreflect(method, null, delegateType.GetGenericArguments()[0], typeof(void));
@@ -502,9 +502,9 @@ namespace DotNext.Reflection
         private static Method<D>? UnreflectInstance(MethodInfo method)
         {
             var delegateType = typeof(D);
-            if (delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType) == 3L)
+            if (delegateType.IsGenericInstanceOf(typeof(Function<,,>)) && delegateType.GetGenericArguments().Take(out var thisParam, out var argumentsType, out var returnType))
                 return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, returnType);
-            else if (delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take(out thisParam, out argumentsType) == 2L)
+            else if (delegateType.IsGenericInstanceOf(typeof(Procedure<,>)) && delegateType.GetGenericArguments().Take<Type>(out thisParam, out argumentsType))
                 return Unreflect(method, Expression.Parameter(thisParam.MakeByRefType()), argumentsType, typeof(void));
             else
             {

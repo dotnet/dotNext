@@ -20,7 +20,7 @@ namespace DotNext.Reflection
             /// <param name="inherit">True to find inherited attribute.</param>
             /// <param name="condition">Optional predicate to check attribute properties.</param>
             /// <returns>Attribute associated with type <typeparamref name="T"/>; or null, if attribute doesn't exist.</returns>
-            public static A Get(bool inherit = false, Predicate<A> condition = null)
+            public static A? Get(bool inherit = false, Predicate<A>? condition = null)
             {
                 var attr = RuntimeType.GetCustomAttribute<A>(inherit);
                 return attr is null || condition is null || condition(attr) ? attr : null;
@@ -33,7 +33,7 @@ namespace DotNext.Reflection
             /// <param name="condition">Optional predicate to check attribute properties.</param>
             /// <returns>Attribute associated with type <typeparamref name="T"/>.</returns>
             /// <exception cref="MissingAttributeException">Event doesn't exist.</exception>
-            public static A Require(bool inherit = false, Predicate<A> condition = null)
+            public static A Require(bool inherit = false, Predicate<A>? condition = null)
                 => Get(inherit, condition) ?? throw MissingAttributeException.Create<T, A>();
 
             /// <summary>
@@ -42,7 +42,7 @@ namespace DotNext.Reflection
             /// <param name="inherit">True to find inherited attribute.</param>
             /// <param name="condition">Optional predicate to check attribute properties.</param>
             /// <returns>All attributes associated with type <typeparamref name="T"/>.</returns>
-            public static IEnumerable<A> GetAll(bool inherit = false, Predicate<A> condition = null)
+            public static IEnumerable<A> GetAll(bool inherit = false, Predicate<A>? condition = null)
                 => from attr in RuntimeType.GetCustomAttributes<A>(inherit)
                    where condition is null || condition(attr)
                    select attr;

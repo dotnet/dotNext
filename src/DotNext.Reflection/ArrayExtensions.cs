@@ -1,37 +1,38 @@
-﻿namespace DotNext
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace DotNext
 {
     internal static class ArrayExtensions
     {
-        internal static long Take<T>(this T[] array, out T first, out T second, int startIndex = 0)
+        internal static bool Take<T>(this T[] array, [MaybeNullWhen(false)] out T first, [MaybeNullWhen(false)] out T second, int startIndex = 0)
         {
-            if (array.ElementAt(startIndex, out first))
-                startIndex += 1;
+            if (startIndex + 1 < array.LongLength)
+            {
+                first = array[startIndex++];
+                second = array[startIndex];
+                return true;
+            }
             else
             {
-                second = default;
-                return 0;
+                first = second = default!;
+                return false;
             }
-            return array.ElementAt(startIndex, out second) ? 2L : 1L;
         }
 
-        internal static long Take<T>(this T[] array, out T first, out T second, out T third, int startIndex = 0)
+        internal static bool Take<T>(this T[] array, [MaybeNullWhen(false)] out T first, [MaybeNullWhen(false)] out T second, [MaybeNullWhen(false)]out T third, int startIndex = 0)
         {
-            if (array.ElementAt(startIndex, out first))
-                startIndex += 1;
+            if (startIndex + 2 < array.LongLength)
+            {
+                first = array[startIndex++];
+                second = array[startIndex++];
+                third = array[startIndex];
+                return true;
+            }
             else
             {
-                second = third = default;
-                return 0L;
+                first = second = third = default!;
+                return false;
             }
-
-            if (array.ElementAt(startIndex, out second))
-                startIndex += 1;
-            else
-            {
-                third = default;
-                return 1L;
-            }
-            return array.ElementAt(startIndex, out third) ? 3L : 2L;
         }
     }
 }
