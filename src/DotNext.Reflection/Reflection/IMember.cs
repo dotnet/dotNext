@@ -55,7 +55,7 @@ namespace DotNext.Reflection
         /// <param name="arguments">Invocation arguments placed onto stack.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<M, A, R>(this IMember<M, Function<A, R>> member, in A arguments)
+        public static R Invoke<M, A, R>(this IMember<M, Function<A, R>> member, [DisallowNull]in A arguments)
             where M : MemberInfo
             where A : struct
             => member.Invoker(in arguments);
@@ -72,8 +72,7 @@ namespace DotNext.Reflection
         /// <param name="arguments">Invocation arguments placed onto stack.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<M, T, A, R>(this IMember<M, Function<T, A, R>> member, in T @this, in A arguments)
-            where T : notnull
+        public static R Invoke<M, T, A, R>(this IMember<M, Function<T, A, R>> member, [DisallowNull]in T @this, in A arguments)
             where M : MemberInfo
             where A : struct
             => member.Invoker(in @this, in arguments);
@@ -88,8 +87,7 @@ namespace DotNext.Reflection
         /// <param name="this"><c>this</c> argument.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<M, T, R>(this IMember<M, Function<T, ValueTuple, R>> member, in T @this)
-            where T : notnull
+        public static R Invoke<M, T, R>(this IMember<M, Function<T, ValueTuple, R>> member, [DisallowNull]in T @this)
             where M : MemberInfo
             => member.Invoke(in @this, default);
 
@@ -116,7 +114,6 @@ namespace DotNext.Reflection
         /// <returns>Allocated structure for placing arguments.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static A ArgList<M, T, A, R>(this IMember<M, Function<T, A, R>> member)
-            where T : notnull
             where M : MemberInfo
             where A : struct
             => member.Invoker.ArgList();
@@ -144,7 +141,6 @@ namespace DotNext.Reflection
         /// <param name="member">Callable member.</param>
         /// <returns>Allocated list of arguments.</returns>
 		public static A ArgList<M, T, A>(this IMember<M, Procedure<T, A>> member)
-            where T : notnull
             where M : MemberInfo
             where A : struct
             => member.Invoker.ArgList();
@@ -656,8 +652,7 @@ namespace DotNext.Reflection
         /// <returns>The member value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: MaybeNull]
-        public static V Invoke<M, T, V>(this IMember<M, MemberGetter<T, V>> member, in T @this)
-            where T : notnull
+        public static V Invoke<M, T, V>(this IMember<M, MemberGetter<T, V>> member, [DisallowNull]in T @this)
             where M : MemberInfo
             => member.Invoker(@this);
 
@@ -685,8 +680,7 @@ namespace DotNext.Reflection
         /// <param name="value">The new value of the field or property.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: MaybeNull]
-        public static void Invoke<M, T, V>(this IMember<M, MemberSetter<T, V>> member, in T @this, V value)
-            where T : notnull
+        public static void Invoke<M, T, V>(this IMember<M, MemberSetter<T, V>> member, [DisallowNull]in T @this, V value)
             where M : MemberInfo
             => member.Invoker(@this, value);
 

@@ -312,14 +312,12 @@ namespace DotNext.Reflection
         /// Obtains property getter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
-        [return: NotNullIfNotNull("indexer")]
         public static implicit operator Getter?(Indexer<A, V>? indexer) => indexer?.GetMethod;
 
         /// <summary>
         /// Obtains property setter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
-        [return: NotNullIfNotNull("indexer")]
         public static implicit operator Setter?(Indexer<A, V>? indexer) => indexer?.SetMethod;
 
         private static Indexer<A, V>? Reflect(Type declaringType, string propertyName, bool nonPublic)
@@ -403,14 +401,12 @@ namespace DotNext.Reflection
         /// Obtains property getter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
-        [return: NotNullIfNotNull("indexer")]
         public static implicit operator Getter?(Indexer<T, A, V>? indexer) => indexer?.GetMethod;
 
         /// <summary>
         /// Obtains property setter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
-        [return: NotNullIfNotNull("indexer")]
         public static implicit operator Setter?(Indexer<T, A, V>? indexer) => indexer?.SetMethod;
 
         /// <summary>

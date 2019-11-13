@@ -277,14 +277,12 @@ namespace DotNext.Reflection
         /// Obtains property getter in the form of the delegate instance.
         /// </summary>
         /// <param name="property">The reflected property.</param>
-        [return: NotNullIfNotNull("property")]
 		public static implicit operator MemberGetter<V>?(Property<V>? property) => property?.GetMethod;
 
         /// <summary>
         /// Obtains property setter in the form of the delegate instance.
         /// </summary>
         /// <param name="property">The reflected property.</param>
-        [return: NotNullIfNotNull("property")]
 		public static implicit operator MemberSetter<V>?(Property<V>? property) => property?.SetMethod;
 
         /// <summary>
@@ -370,7 +368,6 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Declaring type.</typeparam>
     /// <typeparam name="V">Type of property.</typeparam>
     public sealed class Property<T, V> : PropertyBase<V>, IProperty<T, V>
-        where T : notnull
     {
         private sealed class Cache : MemberCache<PropertyInfo, Property<T, V>>
         {
@@ -391,7 +388,6 @@ namespace DotNext.Reflection
         /// Obtains property getter in the form of the delegate instance.
         /// </summary>
         /// <param name="property">The reflected property.</param>
-        [return: NotNullIfNotNull("property")]
         public static implicit operator MemberGetter<T, V>?(Property<T, V>? property)
             => property?.GetMethod;
 
@@ -399,7 +395,6 @@ namespace DotNext.Reflection
         /// Obtains property setter in the form of the delegate instance.
         /// </summary>
         /// <param name="property">The reflected property.</param>
-        [return: NotNullIfNotNull("property")]
         public static implicit operator MemberSetter<T, V>?(Property<T, V>? property)
             => property?.SetMethod;
 
@@ -421,14 +416,14 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/>, if property value is obtained successfully; otherwise, <see langword="false"/>.</returns>
 		public override bool GetValue(object? obj, [MaybeNull]out V value)
         {
-            if (GetMethod is null || !(obj is T))
+            if (GetMethod is null || !(obj is T thisArg))
             {
                 value = default!;
                 return false;
             }
             else
             {
-                value = GetMethod.Invoke((T)obj);
+                value = GetMethod.Invoke(thisArg);
                 return true;
             }
         }

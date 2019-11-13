@@ -38,7 +38,6 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Property declaring type.</typeparam>
     /// <typeparam name="P">Type of property value.</typeparam>
     public interface IProperty<T, P> : IProperty
-        where T : notnull
     {
         /// <summary>
         /// Gets or sets property value.

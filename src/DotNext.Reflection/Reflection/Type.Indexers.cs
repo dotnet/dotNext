@@ -18,7 +18,7 @@
             /// <param name="propertyName">The name of the indexer property.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public property.</param>
 			/// <returns>The reflected property; or <see langword="null"/>, if property doesn't exist.</returns>
-            public static Reflection.Indexer<A, V> GetStatic(string propertyName, bool nonPublic = false)
+            public static Reflection.Indexer<A, V>? GetStatic(string propertyName, bool nonPublic = false)
                 => Reflection.Indexer<A, V>.GetOrCreate<T>(propertyName, nonPublic);
 
             /// <summary>
@@ -37,7 +37,7 @@
             /// <param name="propertyName">The name of the indexer property.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public property.</param>
             /// <returns>The reflected property; or <see langword="null"/>, if property doesn't exist.</returns>
-            public static Indexer<T, A, V> Get(string propertyName = DefaultIndexerName, bool nonPublic = false)
+            public static Indexer<T, A, V>? Get(string propertyName = DefaultIndexerName, bool nonPublic = false)
                 => Indexer<T, A, V>.GetOrCreate(propertyName, nonPublic);
 
             /// <summary>
