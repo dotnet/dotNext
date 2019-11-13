@@ -135,7 +135,13 @@ namespace DotNext.Reflection
         /// </summary>
         public MethodInfo? Method { get; }
 
-        D IOperator<D>.Invoker => Invoker;
+        private protected abstract Type DeclaringType { get; }
+
+        MemberInfo IMember<MemberInfo>.RuntimeMember => Method ?? (MemberInfo)new BuiltinOperatorInfo(DeclaringType, Type);
+
+        D IMember<MemberInfo, D>.Invoker => Invoker;
+
+        string IMember<MemberInfo>.Name => Type.ToString();
 
         /// <summary>
         /// Returns the delegate instance that can be used to invoke operator.
@@ -203,6 +209,7 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Type of operand.</typeparam>
     /// <typeparam name="R">Type of operator result.</typeparam>
     /// <returns>Result of unary operation.</returns>
+    [return: MaybeNull]
     public delegate R Operator<T, out R>(in T operand);
 
     /// <summary>
@@ -214,5 +221,6 @@ namespace DotNext.Reflection
     /// <typeparam name="T2">Type of second operand.</typeparam>
     /// <typeparam name="R">Type of operator result.</typeparam>
     /// <returns>Result of binary operator.</returns>
+    [return: MaybeNull]
     public delegate R Operator<T1, T2, out R>(in T1 first, in T2 second);
 }

@@ -355,7 +355,6 @@ namespace DotNext.Reflection
     /// <typeparam name="D">Type of event handler.</typeparam>
     public sealed class Event<T, D> : EventBase<D>, IEvent<T, D>
         where D : MulticastDelegate
-        where T : notnull
     {
         private sealed class Cache : MemberCache<EventInfo, Event<T, D>>
         {
@@ -370,7 +369,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="instance">The event target.</param>
         /// <param name="handler">The event handler.</param>
-        public delegate void Accessor(in T instance, D handler);
+        public delegate void Accessor([DisallowNull]in T instance, D handler);
 
         private readonly Accessor addMethod;
         private readonly Accessor removeMethod;
@@ -438,7 +437,7 @@ namespace DotNext.Reflection
         /// <param name="target">The event source.</param>
         /// <param name="handler">Encapsulates a method or methods to be invoked when the event is raised by the target.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AddEventHandler(in T target, D handler)
+        public void AddEventHandler([DisallowNull]in T target, D handler)
             => addMethod(in target, handler);
 
         /// <summary>
@@ -460,7 +459,7 @@ namespace DotNext.Reflection
         /// <param name="target">The event source.</param>
         /// <param name="handler">The delegate to be disassociated from the events raised by target.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void RemoveEventHandler(in T target, D handler)
+        public void RemoveEventHandler([DisallowNull]in T target, D handler)
             => removeMethod(in target, handler);
 
         /// <summary>

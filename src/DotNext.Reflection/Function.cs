@@ -12,6 +12,7 @@ namespace DotNext
     /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
     /// <typeparam name="R">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
+    [return: MaybeNull]
     public delegate R Function<A, out R>(in A arguments) where A : struct;
 
     /// <summary>
@@ -24,6 +25,7 @@ namespace DotNext
     /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
     /// <typeparam name="R">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
+    [return: MaybeNull]
     public delegate R Function<T, A, out R>(in T @this, in A arguments)
         where T : notnull
         where A : struct;

@@ -95,6 +95,8 @@ namespace DotNext.Reflection
         {
         }
 
+        private protected override Type DeclaringType => typeof(T);
+
         /// <summary>
         /// Type of operator.
         /// </summary>

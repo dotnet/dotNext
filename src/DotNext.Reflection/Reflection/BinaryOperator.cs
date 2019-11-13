@@ -130,6 +130,8 @@ namespace DotNext.Reflection
         {
         }
 
+        private protected override Type DeclaringType => typeof(Op1);
+
         /// <summary>
         /// Invokes binary operator.
         /// </summary>

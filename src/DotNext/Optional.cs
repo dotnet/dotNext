@@ -279,7 +279,7 @@ namespace DotNext
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>
         /// <exception cref="InvalidOperationException">No value is present.</exception>
-        [NotNull]
+        [DisallowNull]
         public T Value => IsPresent ? value : throw new InvalidOperationException(ExceptionMessages.OptionalNoValue);
 
         /// <summary>

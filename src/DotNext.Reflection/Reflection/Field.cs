@@ -229,10 +229,9 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Declaring type.</typeparam>
     /// <typeparam name="V">Type of field value.</typeparam>
     public sealed class Field<T, V> : FieldBase<V>, IField<T, V>
-        where T : notnull
     {
         [return: MaybeNull]
-        private delegate ref V Provider(in T instance);
+        private delegate ref V Provider([DisallowNull]in T instance);
 
         private sealed class Cache : MemberCache<FieldInfo, Field<T, V>>
         {
@@ -351,7 +350,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="this"><c>this</c> argument.</param>
         [MaybeNull]
-        public ref V this[in T @this]
+        public ref V this[[DisallowNull]in T @this]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => ref provider(@this);

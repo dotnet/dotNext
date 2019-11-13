@@ -312,12 +312,14 @@ namespace DotNext.Reflection
         /// Obtains property getter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
+        [return: NotNullIfNotNull("indexer")]
         public static implicit operator Getter?(Indexer<A, V>? indexer) => indexer?.GetMethod;
 
         /// <summary>
         /// Obtains property setter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
+        [return: NotNullIfNotNull("indexer")]
         public static implicit operator Setter?(Indexer<A, V>? indexer) => indexer?.SetMethod;
 
         private static Indexer<A, V>? Reflect(Type declaringType, string propertyName, bool nonPublic)
@@ -364,7 +366,6 @@ namespace DotNext.Reflection
 	/// <typeparam name="A">A structure representing parameters of indexer.</typeparam>
 	/// <typeparam name="V">Property value.</typeparam>
     public sealed class Indexer<T, A, V> : IndexerBase<A, V>
-        where T : notnull
         where A : struct
     {
         private sealed class Cache : MemberCache<PropertyInfo, Indexer<T, A, V>>
@@ -381,7 +382,7 @@ namespace DotNext.Reflection
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns>The property value.</returns>
         [return: MaybeNull]
-        public delegate V Getter(in T @this, in A index);
+        public delegate V Getter([DisallowNull]in T @this, in A index);
 
         /// <summary>
         /// Represents property setter.
@@ -389,7 +390,7 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property value will be set.</param>
         /// <param name="value">The new property value.</param>
         /// <param name="index">The property value of the specified object.</param>
-        public delegate void Setter(in T @this, in A index, V value);
+        public delegate void Setter([DisallowNull]in T @this, in A index, V value);
 
         private Indexer(PropertyInfo property, Method<Getter>? getter, Method<Setter>? setter)
             : base(property)
@@ -402,12 +403,14 @@ namespace DotNext.Reflection
         /// Obtains property getter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
+        [return: NotNullIfNotNull("indexer")]
         public static implicit operator Getter?(Indexer<T, A, V>? indexer) => indexer?.GetMethod;
 
         /// <summary>
         /// Obtains property setter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
+        [return: NotNullIfNotNull("indexer")]
         public static implicit operator Setter?(Indexer<T, A, V>? indexer) => indexer?.SetMethod;
 
         /// <summary>
@@ -427,7 +430,7 @@ namespace DotNext.Reflection
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns></returns>
         [MaybeNull]
-		public V this[in T @this, in A index]
+        public V this[[DisallowNull]in T @this, in A index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => GetMethod is null ? throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name)) : GetMethod.Invoker(@this, index);

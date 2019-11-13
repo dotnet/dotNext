@@ -19,18 +19,13 @@ namespace DotNext
         /// <param name="args">The arguments to be passed into the method.</param>
         /// <returns>Invocation result.</returns>
         object? DynamicInvoke(params object?[] args);
-
-        /// <summary>
-        /// Indicates that this delegate doesn't refer to any method.
-        /// </summary>
-        bool IsEmpty { get; }
     }
 
     /// <summary>
     /// Represents common interface for typed method pointers.
     /// </summary>
     /// <typeparam name="D">The type of the delegate that is compatible with the pointer.</typeparam>
-    public interface ICallable<out D> : ICallable
+    public interface ICallable<out D> : ICallable, IConvertible<D?>
         where D : Delegate
     {
         /// <summary>
@@ -38,5 +33,7 @@ namespace DotNext
         /// </summary>
         /// <returns>The delegate instance created from this pointer.</returns>
         D? ToDelegate();
+
+        D? IConvertible<D?>.Convert() => ToDelegate();
     }
 }

@@ -34,7 +34,6 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Field declaring type.</typeparam>
     /// <typeparam name="F">Type of field.</typeparam>
     public interface IField<T, F> : IField
-        where T : notnull
     {
         /// <summary>
         /// Obtains managed pointer to the field.
@@ -42,6 +41,6 @@ namespace DotNext.Reflection
         /// <param name="this">A reference to <c>this</c> parameter.</param>
         /// <returns>The managed pointer to the instance field.</returns>
         [MaybeNull]
-        ref F this[in T @this] { get; }
+        ref F this[[DisallowNull]in T @this] { get; }
     }
 }

@@ -14,6 +14,17 @@ namespace DotNext
     using Runtime.CompilerServices;
     using Intrinsics = Runtime.Intrinsics;
 
+    internal interface IValueDelegate<D> : ICallable<D>, ISupplier<D?>
+        where D : Delegate
+    {
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        bool IsEmpty { get; }
+
+        D? ISupplier<D?>.Invoke() => ToDelegate();
+    }
+
     /// <summary>
     /// Represents a pointer to parameterless method with <see cref="void"/> return type.
     /// </summary>
@@ -21,7 +32,7 @@ namespace DotNext
     /// This method pointer is intended to call managed methods only.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction : ICallable<Action>, IEquatable<ValueAction>
+    public readonly struct ValueAction : IValueDelegate<Action>, IEquatable<ValueAction>
     {
         private readonly IntPtr methodPtr;
         private readonly Action? action;
@@ -195,7 +206,7 @@ namespace DotNext
     /// </remarks>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<R> : ICallable<Func<R>>, IEquatable<ValueFunc<R>>, ISupplier<R>
+    public readonly struct ValueFunc<R> : IValueDelegate<Func<R>>, IEquatable<ValueFunc<R>>, ISupplier<R>
     {
         private readonly IntPtr methodPtr;
         private readonly Func<R>? func;
@@ -400,7 +411,7 @@ namespace DotNext
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<T, R> : ICallable<Func<T, R>>, ICallable<Converter<T, R>>, IEquatable<ValueFunc<T, R>>
+    public readonly struct ValueFunc<T, R> : IValueDelegate<Func<T, R>>, IValueDelegate<Converter<T, R>>, IEquatable<ValueFunc<T, R>>
     {
         private readonly IntPtr methodPtr;
         private readonly Func<T, R>? func;
@@ -599,7 +610,7 @@ namespace DotNext
     /// </remarks>
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction<T> : ICallable<Action<T>>, IEquatable<ValueAction<T>>, IConsumer<T>
+    public readonly struct ValueAction<T> : IValueDelegate<Action<T>>, IEquatable<ValueAction<T>>, IConsumer<T>
     {
         private readonly IntPtr methodPtr;
         private readonly Action<T>? action;
@@ -777,7 +788,7 @@ namespace DotNext
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<T1, T2, R> : ICallable<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>, ISupplier<T1, T2, R>
+    public readonly struct ValueFunc<T1, T2, R> : IValueDelegate<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>, ISupplier<T1, T2, R>
     {
         private readonly IntPtr methodPtr;
         private readonly Func<T1, T2, R>? func;
@@ -955,7 +966,7 @@ namespace DotNext
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction<T1, T2> : ICallable<Action<T1, T2>>, IEquatable<ValueAction<T1, T2>>
+    public readonly struct ValueAction<T1, T2> : IValueDelegate<Action<T1, T2>>, IEquatable<ValueAction<T1, T2>>
     {
         private readonly IntPtr methodPtr;
         private readonly Action<T1, T2>? action;
@@ -1137,7 +1148,7 @@ namespace DotNext
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<T1, T2, T3, R> : ICallable<Func<T1, T2, T3, R>>, IEquatable<ValueFunc<T1, T2, T3, R>>
+    public readonly struct ValueFunc<T1, T2, T3, R> : IValueDelegate<Func<T1, T2, T3, R>>, IEquatable<ValueFunc<T1, T2, T3, R>>
     {
         private readonly IntPtr methodPtr;
         private readonly Func<T1, T2, T3, R>? func;
@@ -1319,7 +1330,7 @@ namespace DotNext
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction<T1, T2, T3> : ICallable<Action<T1, T2, T3>>, IEquatable<ValueAction<T1, T2, T3>>
+    public readonly struct ValueAction<T1, T2, T3> : IValueDelegate<Action<T1, T2, T3>>, IEquatable<ValueAction<T1, T2, T3>>
     {
         private readonly IntPtr methodPtr;
         private readonly Action<T1, T2, T3>? action;
@@ -1505,7 +1516,7 @@ namespace DotNext
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<T1, T2, T3, T4, R> : ICallable<Func<T1, T2, T3, T4, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, R>>
+    public readonly struct ValueFunc<T1, T2, T3, T4, R> : IValueDelegate<Func<T1, T2, T3, T4, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, R>>
     {
         private readonly IntPtr methodPtr;
         private readonly Func<T1, T2, T3, T4, R>? func;
@@ -1691,7 +1702,7 @@ namespace DotNext
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction<T1, T2, T3, T4> : ICallable<Action<T1, T2, T3, T4>>, IEquatable<ValueAction<T1, T2, T3, T4>>
+    public readonly struct ValueAction<T1, T2, T3, T4> : IValueDelegate<Action<T1, T2, T3, T4>>, IEquatable<ValueAction<T1, T2, T3, T4>>
     {
         private readonly IntPtr methodPtr;
         private readonly Action<T1, T2, T3, T4>? action;
@@ -1881,7 +1892,7 @@ namespace DotNext
     /// <typeparam name="T5">The type of the fifth method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<T1, T2, T3, T4, T5, R> : ICallable<Func<T1, T2, T3, T4, T5, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>
+    public readonly struct ValueFunc<T1, T2, T3, T4, T5, R> : IValueDelegate<Func<T1, T2, T3, T4, T5, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>
     {
         private readonly IntPtr methodPtr;
         private readonly Func<T1, T2, T3, T4, T5, R>? func;
@@ -2067,7 +2078,7 @@ namespace DotNext
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     /// <typeparam name="T5">The type of the fifth method parameter.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction<T1, T2, T3, T4, T5> : ICallable<Action<T1, T2, T3, T4, T5>>, IEquatable<ValueAction<T1, T2, T3, T4, T5>>
+    public readonly struct ValueAction<T1, T2, T3, T4, T5> : IValueDelegate<Action<T1, T2, T3, T4, T5>>, IEquatable<ValueAction<T1, T2, T3, T4, T5>>
     {
         private readonly IntPtr methodPtr;
         private readonly Action<T1, T2, T3, T4, T5>? action;
@@ -2252,7 +2263,7 @@ namespace DotNext
     /// <typeparam name="T">The type of the object to be passed by reference into the action.</typeparam>
     /// <typeparam name="TArgs">The type of the arguments to be passed into the action.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueRefAction<T, TArgs> : ICallable<RefAction<T, TArgs>>, IEquatable<ValueRefAction<T, TArgs>>
+    public readonly struct ValueRefAction<T, TArgs> : IValueDelegate<RefAction<T, TArgs>>, IEquatable<ValueRefAction<T, TArgs>>
     {
         private readonly IntPtr methodPtr;
         private readonly RefAction<T, TArgs>? action;
@@ -2435,7 +2446,7 @@ namespace DotNext
     /// <typeparam name="TArgs">The type of the arguments to be passed into the action.</typeparam>
     /// <typeparam name="TResult">The type of the return value of the method that this delegate encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueRefFunc<T, TArgs, TResult> : ICallable<RefFunc<T, TArgs, TResult>>, IEquatable<ValueRefFunc<T, TArgs, TResult>>
+    public readonly struct ValueRefFunc<T, TArgs, TResult> : IValueDelegate<RefFunc<T, TArgs, TResult>>, IEquatable<ValueRefFunc<T, TArgs, TResult>>
     {
         private readonly IntPtr methodPtr;
         private readonly RefFunc<T, TArgs, TResult>? func;
