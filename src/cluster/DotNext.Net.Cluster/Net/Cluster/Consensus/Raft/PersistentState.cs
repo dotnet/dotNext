@@ -728,7 +728,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets memory pool that is used by Write Ahead Log for its I/O operations.
             /// </summary>
-            public virtual MemoryPool<T> GetMemoryPool<T>() where T : struct => MemoryPool<T>.Shared;
+            public virtual MemoryPool<T> CreateMemoryPool<T>() where T : struct => MemoryPool<T>.Shared;
 
             /// <summary>
             /// Gets or sets the number of possible parallel reads.
@@ -783,10 +783,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.recordsPerPartition = recordsPerPartition;
             initialSize = configuration.InitialPartitionSize;
             commitEvent = new AsyncManualResetEvent(false);
-            sessionManager = new ReadSessionManager(configuration.MaxConcurrentReads, configuration.GetMemoryPool<byte>(), new DataAccessSession(new byte[bufferSize]));
+            sessionManager = new ReadSessionManager(configuration.MaxConcurrentReads, configuration.CreateMemoryPool<byte>(), new DataAccessSession(new byte[bufferSize]));
             syncRoot = new AsyncSharedLock(sessionManager.Capacity);
-            entryPool = configuration.GetMemoryPool<LogEntry>();
-            metadataPool = configuration.UseCaching ? configuration.GetMemoryPool<LogEntryMetadata>() : null;
+            entryPool = configuration.CreateMemoryPool<LogEntry>();
+            metadataPool = configuration.UseCaching ? configuration.CreateMemoryPool<LogEntryMetadata>() : null;
             nullSegment = new StreamSegment(Stream.Null);
             initialEntry = new LogEntry(nullSegment, sessionManager.WriteSession.Buffer, new LogEntryMetadata());
             //sorted dictionary to improve performance of log compaction and snapshot installation procedures
