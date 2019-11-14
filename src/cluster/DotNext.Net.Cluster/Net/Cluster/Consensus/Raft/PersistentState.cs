@@ -250,7 +250,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly MemoryPool<byte>? bufferPool;
             internal readonly DataAccessSession WriteSession;
 
-            internal ReadSessionManager(int readersCount, MemoryPool<byte>? sharedPool, DataAccessSession writeSession)
+            internal ReadSessionManager(int readersCount, Func<MemoryPool<byte>> sharedPool, DataAccessSession writeSession)
             {
                 Capacity = readersCount;
                 if (readersCount == 1)
@@ -261,7 +261,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 else
                 {
                     tokens = new ConcurrentBag<int>(Enumerable.Range(0, readersCount));
-                    bufferPool = sharedPool ?? MemoryPool<byte>.Shared;
+                    bufferPool = sharedPool();
                 }
                 WriteSession = writeSession;
             }
@@ -284,7 +284,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 readSession.Dispose();
             }
 
-            public void Dispose() => WriteSession.Dispose();
+            public void Dispose()
+            {
+                WriteSession.Dispose();
+                bufferPool?.Dispose();
+            }
         }
 
         private abstract class ConcurrentStorageAccess : FileStream
@@ -783,7 +787,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.recordsPerPartition = recordsPerPartition;
             initialSize = configuration.InitialPartitionSize;
             commitEvent = new AsyncManualResetEvent(false);
-            sessionManager = new ReadSessionManager(configuration.MaxConcurrentReads, configuration.CreateMemoryPool<byte>(), new DataAccessSession(new byte[bufferSize]));
+            sessionManager = new ReadSessionManager(configuration.MaxConcurrentReads, configuration.CreateMemoryPool<byte>, new DataAccessSession(new byte[bufferSize]));
             syncRoot = new AsyncSharedLock(sessionManager.Capacity);
             entryPool = configuration.CreateMemoryPool<LogEntry>();
             metadataPool = configuration.UseCaching ? configuration.CreateMemoryPool<LogEntryMetadata>() : null;
