@@ -7,8 +7,6 @@ using System.Threading.Tasks;
 
 namespace DotNext
 {
-    using Buffers;
-
     /// <summary>
     /// Represents binary object.
     /// </summary>
@@ -38,22 +36,17 @@ namespace DotNext
 
         long? IDataTransferObject.Length => Content.Length;
 
-        async Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
+        async ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
-            //TODO: Should be rewritten for .NET Standard 2.1
             foreach (var segment in Content)
-                using (var array = new ArrayRental<byte>(segment.Length))
-                {
-                    segment.CopyTo(array.Memory);
-                    await output.WriteAsync((byte[])array, 0, segment.Length, token).ConfigureAwait(false);
-                }
+                await output.WriteAsync(segment, token).ConfigureAwait(false);
         }
 
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             foreach (var segment in Content)
             {
-                var result = await output.WriteAsync(segment, token);
+                var result = await output.WriteAsync(segment, token).ConfigureAwait(false);
                 if (result.IsCompleted)
                     break;
                 if (result.IsCanceled)

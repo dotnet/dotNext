@@ -11,12 +11,6 @@ namespace DotNext
     /// </summary>
     public static class DataTransferObject
     {
-        private static unsafe string ToString(Encoding encoding, Span<byte> bytes)
-        {
-            fixed (byte* ptr = bytes)
-                return encoding.GetString(ptr, bytes.Length);
-        }
-
         /// <summary>
         /// Converts DTO content into string.
         /// </summary>
@@ -26,20 +20,14 @@ namespace DotNext
         /// <returns>The content of the object.</returns>
         public static async Task<string> ReadAsTextAsync(this IDataTransferObject content, Encoding encoding, CancellationToken token = default)
         {
-            //TODO: Should be rewritten for .NET Standard 2.1, private static ToString method should be removed
-            using (var ms = new MemoryStream(1024))
-            {
-                await content.CopyToAsync(ms, token).ConfigureAwait(false);
-                ms.Seek(0, SeekOrigin.Begin);
-                if (ms.Length == 0L)
-                    return string.Empty;
-                if (ms.TryGetBuffer(out var buffer))
-                {
-                    Memory<byte> memory = buffer;
-                    return ToString(encoding, memory.Span);
-                }
-                return encoding.GetString(ms.ToArray());
-            }
+            using var ms = new MemoryStream(1024);
+            await content.CopyToAsync(ms, token).ConfigureAwait(false);
+            ms.Seek(0, SeekOrigin.Begin);
+            if (ms.Length == 0L)
+                return string.Empty;
+            if (!ms.TryGetBuffer(out var buffer))
+                buffer = new ArraySegment<byte>(ms.ToArray());
+            return encoding.GetString(buffer.AsSpan());
         }
     }
 }

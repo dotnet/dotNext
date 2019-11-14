@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly struct InitialLogEntry : IRaftLogEntry
         {
             long? IDataTransferObject.Length => 0L;
-            Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
+            ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => token.IsCancellationRequested ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
 
             ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask();
 
@@ -102,7 +102,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile IRaftLogEntry[] log;
 
         private long term;
-        private volatile IRaftClusterMember votedFor;
+        private volatile IRaftClusterMember? votedFor;
         private readonly AsyncManualResetEvent commitEvent;
         private readonly AsyncReaderWriterLock syncRoot;
 
@@ -124,7 +124,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         long IPersistentState.Term => term.VolatileRead();
 
-        bool IPersistentState.IsVotedFor(IRaftClusterMember member)
+        bool IPersistentState.IsVotedFor(IRaftClusterMember? member)
         {
             var lastVote = votedFor;
             return lastVote is null || ReferenceEquals(lastVote, member);
@@ -138,7 +138,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         ValueTask<long> IPersistentState.IncrementTermAsync() => new ValueTask<long>(term.IncrementAndGet());
 
-        ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember member)
+        ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member)
         {
             votedFor = member;
             return new ValueTask();

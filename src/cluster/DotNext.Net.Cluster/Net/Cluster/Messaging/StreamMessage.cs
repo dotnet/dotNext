@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="leaveOpen"><see langword="true"/> to leave the stream open after <see cref="StreamMessage"/> object is disposed; otherwise, <see langword="false"/>.</param>
         /// <param name="name">The name of the message.</param>
         /// <param name="type">Media type of the message.</param>
-        public StreamMessage(Stream content, bool leaveOpen, string name, ContentType type = null)
+        public StreamMessage(Stream content, bool leaveOpen, string name, ContentType? type = null)
             : base(content, leaveOpen)
         {
             Name = name;

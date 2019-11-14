@@ -43,7 +43,7 @@ namespace DotNext.Threading
 
             internal StrongLockManager(State state) => this.state = state;
 
-            StrongLockNode ILockManager<StrongLockNode>.CreateNode(WaitNode tail) => tail is null ? new StrongLockNode() : new StrongLockNode(tail);
+            StrongLockNode ILockManager<StrongLockNode>.CreateNode(WaitNode? tail) => tail is null ? new StrongLockNode() : new StrongLockNode(tail);
 
             public bool TryAcquire()
             {
@@ -60,7 +60,7 @@ namespace DotNext.Threading
 
             internal WeakLockManager(State state) => this.state = state;
 
-            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
 
             public bool TryAcquire()
             {
@@ -157,7 +157,7 @@ namespace DotNext.Threading
 
         private void ReleasePendingWeakLocks()
         {
-            for (WaitNode current = head, next; !(current is null || current is StrongLockNode) && state.RemainingLocks > 0L; state.RemainingLocks--, current = next)
+            for (WaitNode? current = head, next; !(current is null || current is StrongLockNode) && state.RemainingLocks > 0L; state.RemainingLocks--, current = next)
             {
                 next = current.Next;
                 RemoveNode(current);

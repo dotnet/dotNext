@@ -76,7 +76,7 @@ namespace DotNext.IO
         /// <param name="context">The encoding.</param>
         /// <param name="buffer">The buffer allocated by the caller needed for characters encoding.</param>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding.</exception>
-        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, EncodingContext context, Span<byte> buffer)
+        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, in EncodingContext context, Span<byte> buffer)
         {
             if (value.Length == 0)
                 return;
@@ -127,7 +127,7 @@ namespace DotNext.IO
         /// <param name="context">The text decoding context.</param>
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <returns>The string decoded from the log entry content stream.</returns>
-        public static string ReadString(this Stream stream, int length, DecodingContext context, Span<byte> buffer)
+        public static string ReadString(this Stream stream, int length, in DecodingContext context, Span<byte> buffer)
         {
             var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
             if (maxChars == 0)
@@ -240,6 +240,22 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The value to be written into the stream.</param>
+        /// <param name="buffer">The buffer that is used for serialization.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <typeparam name="T">The value type to be serialized.</typeparam>
+        /// <returns>The task representing asynchronous st</returns>
+        public static ValueTask WriteAsync<T>(this Stream stream, T value, Memory<byte> buffer, CancellationToken token = default)
+            where T : unmanaged
+        {
+            MemoryMarshal.Write(buffer.Span, ref value);
+            return stream.WriteAsync(buffer.Slice(0, SizeOf<T>()), token);
+        }
+
+        /// <summary>
+        /// Asynchronously serializes value to the stream.
+        /// </summary>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The value to be written into the stream.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
         /// <returns>The task representing asynchronous st</returns>
@@ -247,8 +263,7 @@ namespace DotNext.IO
             where T : unmanaged
         {
             using var buffer = new ArrayRental<byte>(SizeOf<T>());
-            MemoryMarshal.Write(buffer.Span, ref value);
-            await stream.WriteAsync(buffer.Slice(0, SizeOf<T>()), token);
+            await WriteAsync(stream, value, buffer.Memory, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -259,7 +274,7 @@ namespace DotNext.IO
         /// <param name="buffer">The buffer used to hold copied content temporarily.</param>
         /// <param name="token">The token that can be used to cancel this operation.</param>
         /// <returns>The total number of copied bytes.</returns>
-        public static async Task<long> CopyToAsync(this Stream source, Stream destination, Memory<byte> buffer, CancellationToken token = default)
+        public static async ValueTask<long> CopyToAsync(this Stream source, Stream destination, Memory<byte> buffer, CancellationToken token = default)
         {
             var totalBytes = 0L;
             int count;
