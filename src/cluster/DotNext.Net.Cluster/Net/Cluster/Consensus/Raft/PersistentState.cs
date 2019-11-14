@@ -18,7 +18,6 @@ using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Buffers;
     using Collections.Generic;
     using IO;
     using Replication;
@@ -213,28 +212,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly struct DataAccessSession : IDisposable
         {
             internal readonly int SessionId;
-            private readonly IMemoryOwner<byte>? owner;
-            internal readonly Memory<byte> Buffer;
+            private readonly IMemoryOwner<byte> owner;
+
 
             //read session ctor
             internal DataAccessSession(int sessionId, MemoryPool<byte> bufferPool, int bufferSize)
             {
                 SessionId = sessionId;
                 owner = bufferPool.Rent(bufferSize);
-                Buffer = owner.Memory;
             }
 
-            //write session ctor
-            internal DataAccessSession(Memory<byte> buffer)
-            {
-                SessionId = 0;
-                Buffer = buffer;
-                owner = null;
-            }
+            internal readonly Memory<byte> Buffer => owner.Memory;
 
-            internal bool IsWriteSession => owner is null;
-
-            public void Dispose() => owner?.Dispose();
+            public void Dispose() => owner.Dispose();
         }
 
         /*
@@ -243,27 +233,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
          * which dramatically improves the performance
          */
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct ReadSessionManager : IDisposable
+        private readonly struct DataAccessSessionManager : IDisposable
         {
             private readonly ConcurrentBag<int>? tokens;
             internal readonly int Capacity;
-            private readonly MemoryPool<byte>? bufferPool;
+            private readonly MemoryPool<byte> bufferPool;
             internal readonly DataAccessSession WriteSession;
 
-            internal ReadSessionManager(int readersCount, Func<MemoryPool<byte>> sharedPool, DataAccessSession writeSession)
+            internal DataAccessSessionManager(int readersCount, Func<MemoryPool<byte>> sharedPool, int writeBufferSize)
             {
                 Capacity = readersCount;
-                if (readersCount == 1)
-                {
-                    tokens = null;
-                    bufferPool = null;
-                }
-                else
-                {
-                    tokens = new ConcurrentBag<int>(Enumerable.Range(0, readersCount));
-                    bufferPool = sharedPool();
-                }
-                WriteSession = writeSession;
+                bufferPool = sharedPool();
+                tokens = readersCount == 1 ? null : new ConcurrentBag<int>(Enumerable.Range(0, readersCount));
+                WriteSession = new DataAccessSession(0, bufferPool, writeBufferSize);
             }
 
             internal DataAccessSession OpenSession(int bufferSize)
@@ -287,7 +269,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public void Dispose()
             {
                 WriteSession.Dispose();
-                bufferPool?.Dispose();
+                bufferPool.Dispose();
             }
         }
 
@@ -764,7 +746,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly MemoryPool<LogEntryMetadata>? metadataPool;
         private readonly StreamSegment nullSegment;
         //concurrent read sessions management
-        private readonly ReadSessionManager sessionManager;
+        private readonly DataAccessSessionManager sessionManager;
         private readonly int bufferSize;
 
         /// <summary>
@@ -787,7 +769,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.recordsPerPartition = recordsPerPartition;
             initialSize = configuration.InitialPartitionSize;
             commitEvent = new AsyncManualResetEvent(false);
-            sessionManager = new ReadSessionManager(configuration.MaxConcurrentReads, configuration.CreateMemoryPool<byte>, new DataAccessSession(new byte[bufferSize]));
+            sessionManager = new DataAccessSessionManager(configuration.MaxConcurrentReads, configuration.CreateMemoryPool<byte>, bufferSize);
             syncRoot = new AsyncSharedLock(sessionManager.Capacity);
             entryPool = configuration.CreateMemoryPool<LogEntry>();
             metadataPool = configuration.UseCaching ? configuration.CreateMemoryPool<LogEntryMetadata>() : null;
