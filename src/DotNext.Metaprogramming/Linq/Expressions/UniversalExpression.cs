@@ -210,7 +210,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator -(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.Subtract, right.expression);
+            => left.Transform(ExpressionBuilder.Subtract, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Binary arithmetic subtraction expression.
@@ -228,7 +228,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator >(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.GreaterThan, right.expression);
+            => left.Transform(ExpressionBuilder.GreaterThan, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// "greater than" numeric comparison.
@@ -246,7 +246,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator >=(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.GreaterThanOrEqual, right.expression);
+            => left.Transform(ExpressionBuilder.GreaterThanOrEqual, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// "greater than or equal" numeric comparison.
@@ -264,7 +264,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator <(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.LessThan, right.expression);
+            => left.Transform(ExpressionBuilder.LessThan, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// "less than" numeric comparison.
@@ -282,7 +282,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator <=(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.LessThanOrEqual, right.expression);
+            => left.Transform(ExpressionBuilder.LessThanOrEqual, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// "less than or equal" numeric comparison.
@@ -300,7 +300,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator *(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.Multiply, right.expression);
+            => left.Transform(ExpressionBuilder.Multiply, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Binary arithmetic multiplication expression.
@@ -318,7 +318,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator /(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.Divide, right.expression);
+            => left.Transform(ExpressionBuilder.Divide, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Binary arithmetic division expression.
@@ -336,7 +336,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator |(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.Or, right.expression);
+            => left.Transform(ExpressionBuilder.Or, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Binary logical OR expression.
@@ -354,7 +354,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator &(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.And, right.expression);
+            => left.Transform(ExpressionBuilder.And, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Binary logical AND expression.
@@ -372,7 +372,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator ^(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.Xor, right.expression);
+            => left.Transform(ExpressionBuilder.Xor, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Binary logical exclusive OR expression.
@@ -390,7 +390,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator ==(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.Equal, right.expression);
+            => left.Transform(ExpressionBuilder.Equal, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Equality comparison.
@@ -408,7 +408,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator !=(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.NotEqual, right.expression);
+            => left.Transform(ExpressionBuilder.NotEqual, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Inequality comparison.
@@ -426,7 +426,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator %(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.Modulo, right.expression);
+            => left.Transform(ExpressionBuilder.Modulo, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Arithmetic remainder expression.
@@ -465,7 +465,7 @@ namespace DotNext.Linq.Expressions
         [SuppressMessage("Style", "IDE1006")]
         [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_Exponent(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.Power, right.expression);
+            => left.Transform(ExpressionBuilder.Power, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Constructs raising a number to a power expression.
@@ -489,7 +489,7 @@ namespace DotNext.Linq.Expressions
         [SuppressMessage("Style", "IDE1006")]
         [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_LeftShift(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.LeftShift, right.expression);
+            => left.Transform(ExpressionBuilder.LeftShift, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Bitwise left-shift expression.
@@ -513,7 +513,7 @@ namespace DotNext.Linq.Expressions
         [SuppressMessage("Style", "IDE1006")]
         [SuppressMessage("Style", "CA1707", Justification = "This is special name of the operation method")]
         public static UniversalExpression op_RightShift(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.RightShift, right.expression);
+            => left.Transform(ExpressionBuilder.RightShift, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Bitwise right-shift expression.
@@ -532,7 +532,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <returns><see langword="await"/> expression.</returns>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
-        public UniversalExpression Await() => new UniversalExpression(expression.Await());
+        public UniversalExpression Await() => new UniversalExpression((expression ?? Expression.Empty()).Await());
 
         /// <summary>
         /// Constructs type conversion expression.
@@ -553,7 +553,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="targetType">The target type.</param>
         /// <returns>The type test expression.</returns>
-        public UniversalExpression InstanceOf(Type targetType) => new UniversalExpression(expression.InstanceOf(targetType));
+        public UniversalExpression InstanceOf(Type targetType) => new UniversalExpression(expression?.InstanceOf(targetType) ?? (Expression)false.Const());
 
         /// <summary>
         /// Constructs type check expression.
@@ -568,7 +568,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="targetType">The target type.</param>
         /// <returns>Type conversion expression.</returns>
-        public UniversalExpression TryConvert(Type targetType) => new UniversalExpression(expression.TryConvert(targetType));
+        public UniversalExpression TryConvert(Type targetType) => new UniversalExpression((expression ?? Expression.Empty()).TryConvert(targetType));
 
         /// <summary>
         /// Constructs an expression that represents an explicit
@@ -592,7 +592,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="other">The second operand.</param>
         /// <returns>Binary expression.</returns>
-        public UniversalExpression OrElse(UniversalExpression other) => OrElse(other.expression);
+        public UniversalExpression OrElse(UniversalExpression other) => OrElse(other.expression ?? Expression.Empty());
 
         /// <summary>
         /// Constructs binary expression that represents a conditional
@@ -608,7 +608,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="other">The second operand.</param>
         /// <returns>Binary expression.</returns>
-        public UniversalExpression AndAlso(UniversalExpression other) => AndAlso(other.expression);
+        public UniversalExpression AndAlso(UniversalExpression other) => AndAlso(other.expression ?? Expression.Empty());
 
         /// <summary>
         /// Explicit unboxing.
@@ -748,7 +748,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="type">The type of conditional expression. Default is <see cref="void"/>.</param>
         /// <returns>Conditional expression.</returns>
         public UniversalExpression Condition(Expression ifTrue = null, Expression ifFalse = null, Type type = null)
-            => new UniversalExpression(expression.Condition(ifTrue, ifFalse, type));
+            => new UniversalExpression((expression ?? Expression.Empty()).Condition(ifTrue, ifFalse, type));
 
         /// <summary>
         /// Constructs conditional expression.
@@ -758,13 +758,13 @@ namespace DotNext.Linq.Expressions
         /// <param name="ifFalse">Negative branch.</param>
         /// <returns>Conditional expression.</returns>
         public UniversalExpression Condition<R>(Expression ifTrue, Expression ifFalse)
-            => new UniversalExpression(expression.Condition<R>(ifTrue, ifFalse));
+            => new UniversalExpression((expression ?? Expression.Empty()).Condition<R>(ifTrue, ifFalse));
 
         /// <summary>
         /// Constructs <c>throw</c> statement.
         /// </summary>
         /// <returns><c>throw</c> statement.</returns>
-        public UnaryExpression Throw() => expression.Throw();
+        public UnaryExpression Throw() => (expression ?? Expression.Empty()).Throw();
 
         /// <summary>
         /// Computes the hash code for the underlying expression.
