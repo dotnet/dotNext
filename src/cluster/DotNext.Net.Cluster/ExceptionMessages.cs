@@ -30,7 +30,5 @@ namespace DotNext
         internal static string RangeTooBig => Resources.GetString("RangeTooBig");
 
         internal static string UnexpectedError => Resources.GetString("UnexpectedError");
-
-        internal static string NoAvailableReadSessions => Resources.GetString("NoAvailableReadSessions");
     }
 }

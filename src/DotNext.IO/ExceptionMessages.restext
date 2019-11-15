@@ -1,1 +1,2 @@
 BufferTooSmall=The buffer is too small for buffered stream operations
+NoAvailableReadSessions=Lack of available read sessions is encountered by persistent audit trail
