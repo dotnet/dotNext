@@ -39,7 +39,9 @@ namespace DotNext.Reflection
             else
                 try
                 {
-                    elements.Add(cacheKey, item = Create(cacheKey));
+                    item = Create(cacheKey);
+                    if (item != null)
+                        elements.Add(cacheKey, item);
                 }
                 finally
                 {
