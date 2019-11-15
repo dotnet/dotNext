@@ -1,6 +1,31 @@
 Release Notes
 ====
 
+# 11-15-2019
+<a href="https://www.nuget.org/packages/dotnext/1.2.4">DotNext 1.2.4</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.2.4">DotNext.Metaprogramming 1.2.4</a>
+* Fixed NRE
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.2.4">DotNext.Reflection 1.2.4</a>
+* Internal cache is optimized to avoid storage of null values
+
+<a href="https://www.nuget.org/packages/dotnext.threading/1.2.4">DotNext.Threading 1.2.4</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.4">DotNext.Unsafe 1.2.4</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.3">DotNext.Net.Cluster 1.2.4</a>
+* Fixed unnecessary boxing of generic log entry value
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.3">DotNext.AspNetCore.Cluster 1.2.3</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.2.3">DotNext.Augmentation.Fody 1.2.4</a>
+* Updated dependencies
+
 # 11-11-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.3">DotNext 1.2.3</a>
 * Updated dependencies
