@@ -7,7 +7,7 @@
     <StartupObject>DotNext.Program</StartupObject>
     <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Various benchmarks demonstrating performance aspects of .NEXT extensions</Description>
