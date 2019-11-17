@@ -63,24 +63,24 @@ namespace DotNext.Threading.Channels
         bool IChannelWriter<TInput>.TryComplete(Exception e)
             => (e is null ? completion.TrySetResult(true) : completion.TrySetException(e)) && readTrigger.Signal();
 
-        ValueTask IChannelWriter<TInput>.SerializeAsync(TInput input, TopicStream output, CancellationToken token)
+        ValueTask IChannelWriter<TInput>.SerializeAsync(TInput input, PartitionStream output, CancellationToken token)
             => SerializeAsync(input, output, token);
 
         Task IChannelReader<TOutput>.WaitToReadAsync(CancellationToken token)
             => readTrigger.Wait(token);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private long GetPartition(long index) => index % maxCount;
+        private PartitionStream CreateTopicStream(long partition, in FileCreationOptions options)
+            => new PartitionStream(location, partition, options.Mode, options.Access, options.Share, bufferSize);
 
-        private TopicStream CreateTopicStream(long partition, in FileCreationOptions options)
-            => new TopicStream(location, partition, options.Mode, options.Access, options.Share, bufferSize);
-
-        TopicStream IChannel.GetOrCreateTopic(ref State state, ref TopicStream topic, in FileCreationOptions options, bool deleteOnDispose)
+        PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, ref PartitionStream topic, in FileCreationOptions options, bool deleteOnDispose)
         {
-            var partition = GetPartition(state.Position);
-            TopicStream result;
+            var partition = state.Position / maxCount;
+            PartitionStream result;
             if (topic is null)
+            {
                 topic = result = CreateTopicStream(partition, options);
+                state.Adjust(result);
+            }
             else if (topic.PartitionNumber != partition)
             {
                 //delete previous topic file
@@ -89,6 +89,7 @@ namespace DotNext.Threading.Channels
                 if (deleteOnDispose)
                     File.Delete(fileName);
                 topic = result = CreateTopicStream(partition, options);
+                state.Reset();
             }
             else
                 result = topic;
@@ -112,7 +113,7 @@ namespace DotNext.Threading.Channels
         /// <returns>Deserialized message.</returns>
         protected abstract ValueTask<TOutput> DeserializeAsync(Stream input, CancellationToken token);
 
-        ValueTask<TOutput> IChannelReader<TOutput>.DeserializeAsync(TopicStream input, CancellationToken token)
+        ValueTask<TOutput> IChannelReader<TOutput>.DeserializeAsync(PartitionStream input, CancellationToken token)
             => DeserializeAsync(input, token);
 
         /// <summary>

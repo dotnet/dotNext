@@ -68,5 +68,31 @@ namespace DotNext.Threading.Channels
                 Equal(g3, await channel.Reader.ReadAsync());
             }
         }
+
+        [Fact]
+        public static async Task PartitionOverflow()
+        {
+            var options = new PersistentChannelOptions
+            {
+                SingleReader = true,
+                SingleWriter = true,
+                RecordsPerPartition = 3
+            };
+            Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid(), g4 = Guid.NewGuid();
+            using (var channel = new GuidChannel(options))
+            {
+                await channel.Writer.WriteAsync(g1);
+                await channel.Writer.WriteAsync(g2);
+                await channel.Writer.WriteAsync(g3);
+                await channel.Writer.WriteAsync(g4);
+                Equal(g1, await channel.Reader.ReadAsync());
+            }
+            using (var channel = new GuidChannel(options))
+            {
+                Equal(g2, await channel.Reader.ReadAsync());
+                Equal(g3, await channel.Reader.ReadAsync());
+                Equal(g4, await channel.Reader.ReadAsync());
+            }
+        }
     }
 }

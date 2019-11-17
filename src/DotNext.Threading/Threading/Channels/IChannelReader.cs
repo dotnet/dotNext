@@ -12,6 +12,6 @@ namespace DotNext.Threading.Channels
 
         Task WaitToReadAsync(CancellationToken token);
 
-        ValueTask<T> DeserializeAsync(TopicStream input, CancellationToken token);
+        ValueTask<T> DeserializeAsync(PartitionStream input, CancellationToken token);
     }
 }

@@ -57,10 +57,10 @@ namespace DotNext.Threading.Channels
 
         private readonly IChannelReader<T> reader;
         private AsyncLock readLock;
-        private TopicStream readTopic;
+        private PartitionStream readTopic;
         private readonly IReadBuffer buffer;
         private readonly FileCreationOptions fileOptions;
-        private State state;
+        private ChannelCursor cursor;
 
         internal PersistentChannelReader(IChannelReader<T> reader, bool singleReader)
         {
@@ -76,13 +76,12 @@ namespace DotNext.Threading.Channels
                 buffer = new MultipleReadersBuffer();
             }
             fileOptions = new FileCreationOptions(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            state = new State(reader.Location, StateFileName);
+            cursor = new ChannelCursor(reader.Location, StateFileName);
         }
 
-        public long Position => state.Position;
+        public long Position => cursor.Position;
 
-        private TopicStream NextTopic()
-            => reader.GetOrCreateTopic(ref state, ref readTopic, fileOptions, true);
+        private PartitionStream Partition => reader.GetOrCreatePartition(ref cursor, ref readTopic, fileOptions, true);
 
         public override Task Completion => reader.CompletionTask;
 
@@ -104,13 +103,13 @@ namespace DotNext.Threading.Channels
                 throw new ChannelClosedException();
             }
             //lock and deserialize
-            T result;
             using (await readLock.Acquire(token).ConfigureAwait(false))
             {
-                result = await reader.DeserializeAsync(NextTopic(), token).ConfigureAwait(false);
+                var lookup = Partition;
+                var result = await reader.DeserializeAsync(lookup, token).ConfigureAwait(false);
+                cursor.Advance(lookup.Position);
+                return result;
             }
-            state.Advance();
-            return result;
         }
 
         public override async ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
@@ -130,12 +129,12 @@ namespace DotNext.Threading.Channels
                 return false;
             }
             //lock and deserialize
-
             using (await readLock.Acquire(token).ConfigureAwait(false))
             {
-                buffer.Add(await reader.DeserializeAsync(NextTopic(), token).ConfigureAwait(false));
+                var partition = Partition;
+                buffer.Add(await reader.DeserializeAsync(partition, token).ConfigureAwait(false));
+                cursor.Advance(partition.Position);
             }
-            state.Advance();
             return true;
         }
 
@@ -145,7 +144,7 @@ namespace DotNext.Threading.Channels
             {
                 readTopic?.Dispose();
                 readTopic = null;
-                state.Dispose();
+                cursor.Dispose();
             }
             readLock.Dispose();
         }
