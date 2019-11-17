@@ -12,6 +12,6 @@ namespace DotNext.Threading.Channels
 
         void MessageReady();
 
-        ValueTask SerializeAsync(T input, TopicStream output, CancellationToken token);
+        ValueTask SerializeAsync(T input, PartitionStream output, CancellationToken token);
     }
 }

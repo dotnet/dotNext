@@ -13,28 +13,27 @@ namespace DotNext.Threading.Channels
         private const string StateFileName = "writer.state";
         private readonly IChannelWriter<T> writer;
         private AsyncLock writeLock;
-        private TopicStream writeTopic;
+        private PartitionStream writeTopic;
         private volatile bool closed;
         private readonly FileCreationOptions fileOptions;
-        private State state;
+        private ChannelCursor cursor;
 
         internal PersistentChannelWriter(IChannelWriter<T> writer, bool singleWriter)
         {
             writeLock = singleWriter ? default : AsyncLock.Exclusive();
             this.writer = writer;
             fileOptions = new FileCreationOptions(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
-            state = new State(writer.Location, StateFileName);
+            cursor = new ChannelCursor(writer.Location, StateFileName);
         }
 
-        public long Position => state.Position;
+        public long Position => cursor.Position;
 
         public override bool TryWrite(T item) => false;
 
         public override ValueTask<bool> WaitToWriteAsync(CancellationToken token = default)
             => token.IsCancellationRequested ? new ValueTask<bool>(Task.FromCanceled<bool>(token)) : new ValueTask<bool>(!closed);
 
-        private TopicStream NextTopic()
-            => writer.GetOrCreateTopic(ref state, ref writeTopic, fileOptions, false);
+        private PartitionStream Partition => writer.GetOrCreatePartition(ref cursor, ref writeTopic, fileOptions, false);
 
         public override async ValueTask WriteAsync(T item, CancellationToken token)
         {
@@ -42,10 +41,11 @@ namespace DotNext.Threading.Channels
                 throw new ChannelClosedException();
             using (await writeLock.Acquire(token).ConfigureAwait(false))
             {
-                await writer.SerializeAsync(item, NextTopic(), token).ConfigureAwait(false);
+                var partition = Partition;
+                await writer.SerializeAsync(item, partition, token).ConfigureAwait(false);
+                cursor.Advance(partition.Position);
                 writer.MessageReady();
             }
-            state.Advance();
         }
 
         public override bool TryComplete(Exception error = null)
@@ -62,7 +62,7 @@ namespace DotNext.Threading.Channels
             {
                 writeTopic?.Dispose();
                 writeTopic = null;
-                state.Dispose();
+                cursor.Dispose();
             }
             writeLock.Dispose();
             closed = true;
