@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Threading.Channels
 {
@@ -8,6 +9,7 @@ namespace DotNext.Threading.Channels
      * [8 bytes] = message number
      * [8 bytes] = offset in stream
      */
+    [StructLayout(LayoutKind.Auto)]
     internal struct ChannelCursor
     {
         private const long StateFileSize = sizeof(long) + sizeof(long);
