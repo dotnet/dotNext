@@ -42,9 +42,9 @@ namespace DotNext.Threading.Channels
         }
 
         /// <summary>
-        /// Gets ration between number of consumed and produced messages.
+        /// Gets ratio between number of consumed and produced messages.
         /// </summary>
-        public double Ratio
+        public double Throughput
         {
             get
             {
