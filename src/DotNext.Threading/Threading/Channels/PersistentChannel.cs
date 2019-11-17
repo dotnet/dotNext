@@ -72,27 +72,27 @@ namespace DotNext.Threading.Channels
         private PartitionStream CreateTopicStream(long partition, in FileCreationOptions options)
             => new PartitionStream(location, partition, options.Mode, options.Access, options.Share, bufferSize);
 
-        PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, ref PartitionStream topic, in FileCreationOptions options, bool deleteOnDispose)
+        PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, ref PartitionStream partition, in FileCreationOptions options, bool deleteOnDispose)
         {
-            var partition = state.Position / maxCount;
+            var partitionNumber = state.Position / maxCount;
             PartitionStream result;
-            if (topic is null)
+            if (partition is null)
             {
-                topic = result = CreateTopicStream(partition, options);
+                partition = result = CreateTopicStream(partitionNumber, options);
                 state.Adjust(result);
             }
-            else if (topic.PartitionNumber != partition)
+            else if (partition.PartitionNumber == partitionNumber)
+                result = partition;
+            else
             {
                 //delete previous topic file
-                var fileName = topic.Name;
-                topic.Dispose();
+                var fileName = partition.Name;
+                partition.Dispose();
                 if (deleteOnDispose)
                     File.Delete(fileName);
-                topic = result = CreateTopicStream(partition, options);
+                partition = result = CreateTopicStream(partitionNumber, options);
                 state.Reset();
             }
-            else
-                result = topic;
             return result;
         }
 
