@@ -49,7 +49,7 @@ namespace DotNext.Threading.Channels
                 True(await channel.Reader.WaitToReadAsync());
                 True(channel.Reader.TryRead(out var last));
                 Equal(g3, last);
-                Equal(1D, channel.Ratio);
+                Equal(1D, channel.Throughput);
             }
         }
 
