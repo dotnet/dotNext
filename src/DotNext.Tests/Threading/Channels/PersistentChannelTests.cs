@@ -1,0 +1,72 @@
+﻿using System;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace DotNext.Threading.Channels
+{
+    public sealed class PersistentChannelTests : Assert
+    {
+        private sealed class GuidChannel : PersistentChannel<Guid, Guid>
+        {
+            private readonly IFormatter formatter;
+
+            internal GuidChannel(PersistentChannelOptions options)
+                : base(options)
+            {
+                formatter = new BinaryFormatter();
+            }
+
+            protected override ValueTask<Guid> DeserializeAsync(Stream input, CancellationToken token)
+                => new ValueTask<Guid>((Guid)formatter.Deserialize(input));
+
+            protected override ValueTask SerializeAsync(Guid input, Stream output, CancellationToken token)
+            {
+                formatter.Serialize(output, input);
+                return new ValueTask();
+            }
+        }
+
+        [Theory]
+        [InlineData(false, false)]
+        [InlineData(false, true)]
+        [InlineData(true, false)]
+        [InlineData(true, true)]
+        public static async Task ReadWrite(bool singleReader, bool singleWriter)
+        {
+            Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
+            using (var channel = new GuidChannel(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter }))
+            {
+                await channel.Writer.WriteAsync(g1);
+                await channel.Writer.WriteAsync(g2);
+                await channel.Writer.WriteAsync(g3);
+                Equal(g1, await channel.Reader.ReadAsync());
+                Equal(g2, await channel.Reader.ReadAsync());
+                Equal(g3, await channel.Reader.ReadAsync());
+                Equal(1D, channel.Ratio);
+            }
+        }
+
+        [Fact]
+        public static async Task Persistence()
+        {
+            Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
+            var options = new PersistentChannelOptions { BufferSize = 1024 };
+            using (var channel = new GuidChannel(options))
+            {
+                await channel.Writer.WriteAsync(g1);
+                await channel.Writer.WriteAsync(g2);
+                await channel.Writer.WriteAsync(g3);
+                Equal(g1, await channel.Reader.ReadAsync());
+            }
+            using (var channel = new GuidChannel(options))
+            {
+                Equal(g2, await channel.Reader.ReadAsync());
+                Equal(g3, await channel.Reader.ReadAsync());
+            }
+        }
+    }
+}
