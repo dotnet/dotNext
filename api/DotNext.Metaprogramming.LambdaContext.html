@@ -78,14 +78,38 @@
   <div class="markdown level0 conceptual"></div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><span class="xref">IReadOnlyList</span>&lt;<span class="xref">ParameterExpression</span>&gt;</div>
-    <div><span class="xref">IDisposable</span></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">IReadOnlyList</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerable">IEnumerable</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Metaprogramming.html">DotNext.Metaprogramming</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
   <h5 id="DotNext_Metaprogramming_LambdaContext_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct LambdaContext : IReadOnlyList&lt;ParameterExpression&gt;, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public struct LambdaContext : IReadOnlyList&lt;ParameterExpression&gt;, IReadOnlyCollection&lt;ParameterExpression&gt;, IEnumerable&lt;ParameterExpression&gt;, IEnumerable, IDisposable</code></pre>
   </div>
   <h5 id="DotNext_Metaprogramming_LambdaContext_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The context lifetime is limited by surrounding lexical scope of the lambda function.</p>
@@ -136,8 +160,24 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><p>The parameter of lambda function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This context is no longer available.</p>
 </td>
       </tr>
     </tbody>
@@ -146,13 +186,13 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression%40%2CParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L37">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Deconstruct_" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct*"></a>
-  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression@,ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression)</h4>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression)</h4>
   <div class="markdown level1 summary"><p>Obtains first two arguments in the form of expressions.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -171,28 +211,44 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The expression representing the first argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The expression representing the second argument.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This context is no longer available.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L51">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Deconstruct_" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct*"></a>
-  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression@,ParameterExpression@,ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
   <div class="markdown level1 summary"><p>Obtains first three arguments in the form of expressions.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -211,34 +267,50 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The expression representing the first argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The expression representing the second argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The expression representing the third argument.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This context is no longer available.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L67">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Deconstruct_" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct*"></a>
-  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
   <div class="markdown level1 summary"><p>Obtains first four arguments in the form of expressions.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -257,40 +329,56 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The expression representing the first argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The expression representing the second argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The expression representing the third argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The expression representing the fourth argument.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This context is no longer available.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L85">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Deconstruct_" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct*"></a>
-  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
   <div class="markdown level1 summary"><p>Obtains first five arguments in the form of expressions.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -309,46 +397,62 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The expression representing the first argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The expression representing the second argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The expression representing the third argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The expression representing the fourth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The expression representing the fifth argument.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This context is no longer available.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L105">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Deconstruct_" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct*"></a>
-  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
   <div class="markdown level1 summary"><p>Obtains first six arguments in the form of expressions.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -367,52 +471,68 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The expression representing the first argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The expression representing the second argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The expression representing the third argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The expression representing the fourth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The expression representing the fifth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg6</span></td>
         <td><p>The expression representing the sixth argument.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This context is no longer available.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L127">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Deconstruct_" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct*"></a>
-  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
   <div class="markdown level1 summary"><p>Obtains first seven arguments in the form of expressions.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -431,58 +551,74 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The expression representing the first argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The expression representing the second argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The expression representing the third argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The expression representing the fourth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The expression representing the fifth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg6</span></td>
         <td><p>The expression representing the sixth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The expression representing the seventh argument.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This context is no longer available.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L151">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Deconstruct_" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct*"></a>
-  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
   <div class="markdown level1 summary"><p>Obtains first eight arguments in the form of expressions.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -501,64 +637,80 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The expression representing the first argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The expression representing the second argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The expression representing the third argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The expression representing the fourth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The expression representing the fifth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg6</span></td>
         <td><p>The expression representing the sixth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The expression representing the seventh argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg8</span></td>
         <td><p>The expression representing the eighth argument.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This context is no longer available.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L177">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Deconstruct_" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct*"></a>
-  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
   <div class="markdown level1 summary"><p>Obtains first nine arguments in the form of expressions.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -577,70 +729,86 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The expression representing the first argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The expression representing the second argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The expression representing the third argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The expression representing the fourth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The expression representing the fifth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg6</span></td>
         <td><p>The expression representing the sixth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The expression representing the seventh argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg8</span></td>
         <td><p>The expression representing the eighth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg9</span></td>
         <td><p>The expression representing the ninth argument.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This context is no longer available.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40%2CParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40%2CSystem.Linq.Expressions.ParameterExpression%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L205">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Deconstruct_" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct*"></a>
-  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@,ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_Deconstruct_System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__System_Linq_Expressions_ParameterExpression__" data-uid="DotNext.Metaprogramming.LambdaContext.Deconstruct(System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@,System.Linq.Expressions.ParameterExpression@)">Deconstruct(out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression, out ParameterExpression)</h4>
   <div class="markdown level1 summary"><p>Obtains first ten arguments in the form of expressions.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -659,76 +827,92 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg1</span></td>
         <td><p>The expression representing the first argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg2</span></td>
         <td><p>The expression representing the second argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg3</span></td>
         <td><p>The expression representing the third argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg4</span></td>
         <td><p>The expression representing the fourth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg5</span></td>
         <td><p>The expression representing the fifth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg6</span></td>
         <td><p>The expression representing the sixth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg7</span></td>
         <td><p>The expression representing the seventh argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg8</span></td>
         <td><p>The expression representing the eighth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg9</span></td>
         <td><p>The expression representing the ninth argument.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">ParameterExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a></td>
         <td><span class="parametername">arg10</span></td>
         <td><p>The expression representing the ninth argument.</p>
 </td>
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This context is no longer available.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Invoke_Expression___.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Invoke(Expression%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_Invoke_System_Linq_Expressions_Expression___.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.Invoke(System.Linq.Expressions.Expression%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L229">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_LambdaContext_Invoke_" data-uid="DotNext.Metaprogramming.LambdaContext.Invoke*"></a>
-  <h4 id="DotNext_Metaprogramming_LambdaContext_Invoke_Expression___" data-uid="DotNext.Metaprogramming.LambdaContext.Invoke(Expression[])">Invoke(Expression[])</h4>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_Invoke_System_Linq_Expressions_Expression___" data-uid="DotNext.Metaprogramming.LambdaContext.Invoke(System.Linq.Expressions.Expression[])">Invoke(Expression[])</h4>
   <div class="markdown level1 summary"><p>Invokes function recursively.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -747,7 +931,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Expression</span>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a>[]</td>
         <td><span class="parametername">args</span></td>
         <td><p>The arguments to be passed into function.</p>
 </td>
@@ -764,25 +948,199 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">InvocationExpression</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.invocationexpression">InvocationExpression</a></td>
         <td></td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Metaprogramming_LambdaContext_Invoke_Expression____remarks">Remarks</h5>
+  <h5 id="DotNext_Metaprogramming_LambdaContext_Invoke_System_Linq_Expressions_Expression____remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method doesn't add invocation expression as a statement.
-To add recursive call as statement, use <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Invoke_Expression_Expression___">Invoke(Expression, Expression[])</a> instead.</p>
+To add recursive call as statement, use <a class="xref" href="DotNext.Metaprogramming.CodeGenerator.html#DotNext_Metaprogramming_CodeGenerator_Invoke_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression___">Invoke(Expression, Expression[])</a> instead.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This context is no longer available.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_System_Collections_Generic_IEnumerable_System_Linq_Expressions_ParameterExpression__GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.System%23Collections%23Generic%23IEnumerable%7BSystem%23Linq%23Expressions%23ParameterExpression%7D%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L235">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_LambdaContext_System_Collections_Generic_IEnumerable_System_Linq_Expressions_ParameterExpression__GetEnumerator_" data-uid="DotNext.Metaprogramming.LambdaContext.System#Collections#Generic#IEnumerable{System#Linq#Expressions#ParameterExpression}#GetEnumerator*"></a>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_System_Collections_Generic_IEnumerable_System_Linq_Expressions_ParameterExpression__GetEnumerator" data-uid="DotNext.Metaprogramming.LambdaContext.System#Collections#Generic#IEnumerable{System#Linq#Expressions#ParameterExpression}#GetEnumerator">IEnumerable&lt;ParameterExpression&gt;.GetEnumerator()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IEnumerator&lt;ParameterExpression&gt; IEnumerable&lt;ParameterExpression&gt;.GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerator-1">IEnumerator</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.parameterexpression">ParameterExpression</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_System_Collections_Generic_IReadOnlyCollection_System_Linq_Expressions_ParameterExpression__Count.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.System%23Collections%23Generic%23IReadOnlyCollection%7BSystem%23Linq%23Expressions%23ParameterExpression%7D%23Count%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L231">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_LambdaContext_System_Collections_Generic_IReadOnlyCollection_System_Linq_Expressions_ParameterExpression__Count_" data-uid="DotNext.Metaprogramming.LambdaContext.System#Collections#Generic#IReadOnlyCollection{System#Linq#Expressions#ParameterExpression}#Count*"></a>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_System_Collections_Generic_IReadOnlyCollection_System_Linq_Expressions_ParameterExpression__Count" data-uid="DotNext.Metaprogramming.LambdaContext.System#Collections#Generic#IReadOnlyCollection{System#Linq#Expressions#ParameterExpression}#Count">IReadOnlyCollection&lt;ParameterExpression&gt;.Count</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">int IReadOnlyCollection&lt;ParameterExpression&gt;.Count { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_System_Collections_IEnumerable_GetEnumerator.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.System%23Collections%23IEnumerable%23GetEnumerator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L237">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_LambdaContext_System_Collections_IEnumerable_GetEnumerator_" data-uid="DotNext.Metaprogramming.LambdaContext.System#Collections#IEnumerable#GetEnumerator*"></a>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_System_Collections_IEnumerable_GetEnumerator" data-uid="DotNext.Metaprogramming.LambdaContext.System#Collections#IEnumerable#GetEnumerator">IEnumerable.GetEnumerator()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">IEnumerator IEnumerable.GetEnumerator()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerator">IEnumerator</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_LambdaContext_System_IDisposable_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.LambdaContext.System%23IDisposable%23Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/LambdaContext.cs/#L239">View Source</a>
+  </span>
+  <a id="DotNext_Metaprogramming_LambdaContext_System_IDisposable_Dispose_" data-uid="DotNext.Metaprogramming.LambdaContext.System#IDisposable#Dispose*"></a>
+  <h4 id="DotNext_Metaprogramming_LambdaContext_System_IDisposable_Dispose" data-uid="DotNext.Metaprogramming.LambdaContext.System#IDisposable#Dispose">IDisposable.Dispose()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">void IDisposable.Dispose()</code></pre>
+  </div>
   <h3 id="implements">Implements</h3>
   <div>
-      <span class="xref">IReadOnlyList&lt;&gt;</span>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlylist-1">System.Collections.Generic.IReadOnlyList&lt;T&gt;</a>
   </div>
   <div>
-      <span class="xref">IDisposable</span>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">System.Collections.Generic.IReadOnlyCollection&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">System.Collections.Generic.IEnumerable&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.ienumerable">System.Collections.IEnumerable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_SequenceHashCode_System_Collections_Generic_IEnumerable_System_Object__System_Boolean_">Sequence.SequenceHashCode(IEnumerable&lt;Object&gt;, Boolean)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueAction___0___">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, ValueAction&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Sequence.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, Int32, out T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_SkipNulls__1_System_Collections_Generic_IEnumerable___0__">Sequence.SkipNulls&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, String, String)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Append__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Append&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__DotNext_ValueFunc___0___1___">Collection.Convert&lt;I, O&gt;(IReadOnlyCollection&lt;I&gt;, ValueFunc&lt;I, O&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.Collection.html#DotNext_Collections_Generic_Collection_Convert__2_System_Collections_Generic_IReadOnlyCollection___0__System_Converter___0___1__">Collection.Convert&lt;I, O&gt;(IReadOnlyCollection&lt;I&gt;, Converter&lt;I, O&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_IndexerGetter__1_System_Collections_Generic_IReadOnlyList___0__">List.IndexerGetter&lt;T&gt;(IReadOnlyList&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__DotNext_ValueFunc___0___1___">List.Convert&lt;I, O&gt;(IReadOnlyList&lt;I&gt;, ValueFunc&lt;I, O&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Convert__2_System_Collections_Generic_IReadOnlyList___0__System_Converter___0___1__">List.Convert&lt;I, O&gt;(IReadOnlyList&lt;I&gt;, Converter&lt;I, O&gt;)</a>
   </div>
 </article>
           </div>

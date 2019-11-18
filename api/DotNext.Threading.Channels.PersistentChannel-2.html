@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class StreamTransferObject
+    <title>Class PersistentChannel&lt;TInput, TOutput&gt;
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class StreamTransferObject
+    <meta name="title" content="Class PersistentChannel&lt;TInput, TOutput&gt;
    | .NEXT ">
     <meta name="generator" content="docfx 2.47.0.0">
     
@@ -68,45 +68,31 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.StreamTransferObject">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.Channels.PersistentChannel`2">
   
   
-  <h1 id="DotNext_StreamTransferObject" data-uid="DotNext.StreamTransferObject" class="text-break">Class StreamTransferObject
+  <h1 id="DotNext_Threading_Channels_PersistentChannel_2" data-uid="DotNext.Threading.Channels.PersistentChannel`2" class="text-break">Class PersistentChannel&lt;TInput, TOutput&gt;
   </h1>
-  <div class="markdown level0 summary"><p>Represents object which content is represented by <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a>.</p>
+  <div class="markdown level0 summary"><p>Represents persistent unbounded channel.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
-    <div class="level2"><span class="xref">StreamTransferObject</span></div>
-      <div class="level3"><a class="xref" href="DotNext.Net.Cluster.Messaging.StreamMessage.html">StreamMessage</a></div>
+    <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.channels.channel-2">Channel</a>&lt;TInput, TOutput&gt;</div>
+    <div class="level2"><span class="xref">PersistentChannel&lt;TInput, TOutput&gt;</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
-    <div><a class="xref" href="DotNext.IDataTransferObject.html">IDataTransferObject</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.channels.channel-2.reader#System_Threading_Channels_Channel_2_Reader">Channel&lt;TInput, TOutput&gt;.Reader</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed">Disposable.ThrowIfDisposed()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_QueueDispose_System_IDisposable_">Disposable.QueueDispose(IDisposable)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_IDisposable___">Disposable.Dispose(IDisposable[])</a>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.channels.channel-2.writer#System_Threading_Channels_Channel_2_Writer">Channel&lt;TInput, TOutput&gt;.Writer</a>
     </div>
     <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
@@ -130,29 +116,119 @@
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
     </div>
   </div>
-  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
-  <h5 id="DotNext_StreamTransferObject_syntax">Syntax</h5>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.Channels.html">DotNext.Threading.Channels</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
+  <h5 id="DotNext_Threading_Channels_PersistentChannel_2_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class StreamTransferObject : Disposable, IDisposable, IDataTransferObject</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class PersistentChannel&lt;TInput, TOutput&gt; : Channel&lt;TInput, TOutput&gt;, IChannelWriter&lt;TInput&gt;, IChannelReader&lt;TOutput&gt;, IChannel, IDisposable</code></pre>
   </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TInput</span></td>
+        <td><p>Specifies the type of data that may be written to the channel.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TOutput</span></td>
+        <td><p>Specifies the type of data that may be read from the channel.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StreamTransferObject__ctor_System_IO_Stream_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.StreamTransferObject.%23ctor(System.IO.Stream%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Channels_PersistentChannel_2__ctor_DotNext_Threading_Channels_PersistentChannelOptions_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Channels.PersistentChannel%602.%23ctor(DotNext.Threading.Channels.PersistentChannelOptions)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/StreamTransferObject.cs/#L22">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Channels/PersistentChannel.cs/#L27">View Source</a>
   </span>
-  <a id="DotNext_StreamTransferObject__ctor_" data-uid="DotNext.StreamTransferObject.#ctor*"></a>
-  <h4 id="DotNext_StreamTransferObject__ctor_System_IO_Stream_System_Boolean_" data-uid="DotNext.StreamTransferObject.#ctor(System.IO.Stream,System.Boolean)">StreamTransferObject(Stream, Boolean)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new message.</p>
+  <a id="DotNext_Threading_Channels_PersistentChannel_2__ctor_" data-uid="DotNext.Threading.Channels.PersistentChannel`2.#ctor*"></a>
+  <h4 id="DotNext_Threading_Channels_PersistentChannel_2__ctor_DotNext_Threading_Channels_PersistentChannelOptions_" data-uid="DotNext.Threading.Channels.PersistentChannel`2.#ctor(DotNext.Threading.Channels.PersistentChannelOptions)">PersistentChannel(PersistentChannelOptions)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new persistent channel with the specified options.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public StreamTransferObject(Stream content, bool leaveOpen)</code></pre>
+    <pre><code class="lang-csharp hljs">protected PersistentChannel(PersistentChannelOptions options)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.Channels.PersistentChannelOptions.html">PersistentChannelOptions</a></td>
+        <td><span class="parametername">options</span></td>
+        <td><p>The options of the channel.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Channels_PersistentChannel_2_Throughput.md&amp;value=---%0Auid%3A%20DotNext.Threading.Channels.PersistentChannel%602.Throughput%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Channels/PersistentChannel.cs/#L44">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Channels_PersistentChannel_2_Throughput_" data-uid="DotNext.Threading.Channels.PersistentChannel`2.Throughput*"></a>
+  <h4 id="DotNext_Threading_Channels_PersistentChannel_2_Throughput" data-uid="DotNext.Threading.Channels.PersistentChannel`2.Throughput">Throughput</h4>
+  <div class="markdown level1 summary"><p>Gets ratio between number of consumed and produced messages.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public double Throughput { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.double">Double</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Channels_PersistentChannel_2_DeserializeAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Channels.PersistentChannel%602.DeserializeAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Channels/PersistentChannel.cs/#L110">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Channels_PersistentChannel_2_DeserializeAsync_" data-uid="DotNext.Threading.Channels.PersistentChannel`2.DeserializeAsync*"></a>
+  <h4 id="DotNext_Threading_Channels_PersistentChannel_2_DeserializeAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Channels.PersistentChannel`2.DeserializeAsync(System.IO.Stream,System.Threading.CancellationToken)">DeserializeAsync(Stream, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Deserializes message from stream asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract ValueTask&lt;TOutput&gt; DeserializeAsync(Stream input, CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -166,37 +242,19 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">content</span></td>
-        <td><p>The message content.</p>
+        <td><span class="parametername">input</span></td>
+        <td><p>The stream containing serialized message.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">leaveOpen</span></td>
-        <td><p><span class="xref">true</span> to leave the stream open after <a class="xref" href="DotNext.StreamTransferObject.html">StreamTransferObject</a> object is disposed; otherwise, <span class="xref">false</span>.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h3 id="properties">Properties
-  </h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StreamTransferObject_IsReusable.md&amp;value=---%0Auid%3A%20DotNext.StreamTransferObject.IsReusable%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/StreamTransferObject.cs/#L31">View Source</a>
-  </span>
-  <a id="DotNext_StreamTransferObject_IsReusable_" data-uid="DotNext.StreamTransferObject.IsReusable*"></a>
-  <h4 id="DotNext_StreamTransferObject_IsReusable" data-uid="DotNext.StreamTransferObject.IsReusable">IsReusable</h4>
-  <div class="markdown level1 summary"><p>Indicates that the content of this message can be copied to the output stream or pipe multiple times.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public virtual bool IsReusable { get; }</code></pre>
-  </div>
-  <h5 class="propertyValue">Property Value</h5>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -206,28 +264,43 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TOutput&gt;</td>
+        <td><p>Deserialized message.</p>
+</td>
       </tr>
     </tbody>
   </table>
-  <h3 id="methods">Methods
-  </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StreamTransferObject_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.StreamTransferObject.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Channels_PersistentChannel_2_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Threading.Channels.PersistentChannel%602.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/StreamTransferObject.cs/#L56">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Channels/PersistentChannel.cs/#L134">View Source</a>
   </span>
-  <a id="DotNext_StreamTransferObject_Dispose_" data-uid="DotNext.StreamTransferObject.Dispose*"></a>
-  <h4 id="DotNext_StreamTransferObject_Dispose_System_Boolean_" data-uid="DotNext.StreamTransferObject.Dispose(System.Boolean)">Dispose(Boolean)</h4>
-  <div class="markdown level1 summary"><p>Releases resources associated with this object.</p>
+  <a id="DotNext_Threading_Channels_PersistentChannel_2_Dispose_" data-uid="DotNext.Threading.Channels.PersistentChannel`2.Dispose*"></a>
+  <h4 id="DotNext_Threading_Channels_PersistentChannel_2_Dispose" data-uid="DotNext.Threading.Channels.PersistentChannel`2.Dispose">Dispose()</h4>
+  <div class="markdown level1 summary"><p>Releases all resources associated with this channel.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+    <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Channels_PersistentChannel_2_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Channels.PersistentChannel%602.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Channels/PersistentChannel.cs/#L119">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Channels_PersistentChannel_2_Dispose_" data-uid="DotNext.Threading.Channels.PersistentChannel`2.Dispose*"></a>
+  <h4 id="DotNext_Threading_Channels_PersistentChannel_2_Dispose_System_Boolean_" data-uid="DotNext.Threading.Channels.PersistentChannel`2.Dispose(System.Boolean)">Dispose(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Releases managed and, optionally, unmanaged resources associated with this channel.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected virtual void Dispose(bool disposing)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -242,29 +315,42 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">disposing</span></td>
-        <td><p><span class="xref">true</span> if called from <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Dispose()</a>; <span class="xref">false</span> if called from finalizer <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Finalize">Finalize()</a>.</p>
+        <td><p><span class="xref">true</span> to dispose all resources; <span class="xref">false</span> to release unmanaged resources only.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(Boolean)</a></div>
-  <h3 id="eii">Explicit Interface Implementations
-  </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StreamTransferObject_DotNext_IDataTransferObject_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.StreamTransferObject.DotNext%23IDataTransferObject%23CopyToAsync(System.IO.Pipelines.PipeWriter%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Channels_PersistentChannel_2_Finalize.md&amp;value=---%0Auid%3A%20DotNext.Threading.Channels.PersistentChannel%602.Finalize%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/StreamTransferObject.cs/#L43">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Channels/PersistentChannel.cs/#L143">View Source</a>
   </span>
-  <a id="DotNext_StreamTransferObject_DotNext_IDataTransferObject_CopyToAsync_" data-uid="DotNext.StreamTransferObject.DotNext#IDataTransferObject#CopyToAsync*"></a>
-  <h4 id="DotNext_StreamTransferObject_DotNext_IDataTransferObject_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_" data-uid="DotNext.StreamTransferObject.DotNext#IDataTransferObject#CopyToAsync(System.IO.Pipelines.PipeWriter,System.Threading.CancellationToken)">IDataTransferObject.CopyToAsync(PipeWriter, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
+  <a id="DotNext_Threading_Channels_PersistentChannel_2_Finalize_" data-uid="DotNext.Threading.Channels.PersistentChannel`2.Finalize*"></a>
+  <h4 id="DotNext_Threading_Channels_PersistentChannel_2_Finalize" data-uid="DotNext.Threading.Channels.PersistentChannel`2.Finalize">Finalize()</h4>
+  <div class="markdown level1 summary"><p>Releases file handles associated with this channel.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">protected void Finalize()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Channels_PersistentChannel_2_SerializeAsync__0_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Channels.PersistentChannel%602.SerializeAsync(%600%2CSystem.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Channels/PersistentChannel.cs/#L102">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Channels_PersistentChannel_2_SerializeAsync_" data-uid="DotNext.Threading.Channels.PersistentChannel`2.SerializeAsync*"></a>
+  <h4 id="DotNext_Threading_Channels_PersistentChannel_2_SerializeAsync__0_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.Threading.Channels.PersistentChannel`2.SerializeAsync(`0,System.IO.Stream,System.Threading.CancellationToken)">SerializeAsync(TInput, Stream, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Serializes message to stream asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected abstract ValueTask SerializeAsync(TInput input, Stream output, CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -277,14 +363,22 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a></td>
+        <td><span class="xref">TInput</span></td>
+        <td><span class="parametername">input</span></td>
+        <td><p>The message to serialize.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">output</span></td>
-        <td></td>
+        <td><p>The stream used to serialize object.</p>
+</td>
       </tr>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
-        <td></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -299,98 +393,14 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StreamTransferObject_DotNext_IDataTransferObject_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.StreamTransferObject.DotNext%23IDataTransferObject%23CopyToAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/StreamTransferObject.cs/#L36">View Source</a>
-  </span>
-  <a id="DotNext_StreamTransferObject_DotNext_IDataTransferObject_CopyToAsync_" data-uid="DotNext.StreamTransferObject.DotNext#IDataTransferObject#CopyToAsync*"></a>
-  <h4 id="DotNext_StreamTransferObject_DotNext_IDataTransferObject_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.StreamTransferObject.DotNext#IDataTransferObject#CopyToAsync(System.IO.Stream,System.Threading.CancellationToken)">IDataTransferObject.CopyToAsync(Stream, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
-        <td><span class="parametername">output</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StreamTransferObject_DotNext_IDataTransferObject_Length.md&amp;value=---%0Auid%3A%20DotNext.StreamTransferObject.DotNext%23IDataTransferObject%23Length%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/StreamTransferObject.cs/#L33">View Source</a>
-  </span>
-  <a id="DotNext_StreamTransferObject_DotNext_IDataTransferObject_Length_" data-uid="DotNext.StreamTransferObject.DotNext#IDataTransferObject#Length*"></a>
-  <h4 id="DotNext_StreamTransferObject_DotNext_IDataTransferObject_Length" data-uid="DotNext.StreamTransferObject.DotNext#IDataTransferObject#Length">IDataTransferObject.Length</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">long? IDataTransferObject.Length { get; }</code></pre>
-  </div>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
-        <td></td>
+        <td><p>The task representing asynchronous state of operation.</p>
+</td>
       </tr>
     </tbody>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.IDataTransferObject.html">IDataTransferObject</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
@@ -416,9 +426,6 @@
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.DataTransferObject.html#DotNext_DataTransferObject_ReadAsTextAsync_DotNext_IDataTransferObject_System_Text_Encoding_System_Threading_CancellationToken_">DataTransferObject.ReadAsTextAsync(IDataTransferObject, Encoding, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
@@ -470,10 +477,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_StreamTransferObject.md&amp;value=---%0Auid%3A%20DotNext.StreamTransferObject%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Channels_PersistentChannel_2.md&amp;value=---%0Auid%3A%20DotNext.Threading.Channels.PersistentChannel%602%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/StreamTransferObject.cs/#L11" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Channels/PersistentChannel.cs/#L16" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

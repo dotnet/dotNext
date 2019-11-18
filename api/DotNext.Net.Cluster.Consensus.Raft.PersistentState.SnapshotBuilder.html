@@ -79,19 +79,66 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><span class="xref">PersistentState.SnapshotBuilder</span></div>
+    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
+    <div class="level2"><span class="xref">PersistentState.SnapshotBuilder</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a></div>
     <div><a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntry.html">ILogEntry</a></div>
     <div><a class="xref" href="DotNext.IDataTransferObject.html">IDataTransferObject</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed">Disposable.ThrowIfDisposed()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_QueueDispose_System_IDisposable_">Disposable.QueueDispose(IDisposable)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_IDisposable___">Disposable.Dispose(IDisposable[])</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">DotNext.Net.Cluster.Consensus.Raft</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract class SnapshotBuilder : Disposable, IRaftLogEntry, ILogEntry, IDataTransferObject</code></pre>
+    <pre><code class="lang-csharp hljs">protected abstract class SnapshotBuilder : Disposable, IDisposable, IRaftLogEntry, ILogEntry, IDataTransferObject</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -100,7 +147,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder__ctor.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.%23ctor%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L661">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L669">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder__ctor_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.#ctor*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder__ctor" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.#ctor">SnapshotBuilder()</h4>
@@ -118,7 +165,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.ApplyAsync(DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L668">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L676">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_ApplyAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.ApplyAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_ApplyAsync_DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.ApplyAsync(DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry)">ApplyAsync(PersistentState.LogEntry)</h4>
@@ -168,7 +215,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.CopyToAsync(System.IO.Pipelines.PipeWriter%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L700">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L708">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_CopyToAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.CopyToAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.CopyToAsync(System.IO.Pipelines.PipeWriter,System.Threading.CancellationToken)">CopyToAsync(PipeWriter, CancellationToken)</h4>
@@ -196,7 +243,7 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">System.Threading.CancellationToken</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel the operation.</p>
 </td>
@@ -224,7 +271,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.CopyToAsync(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L692">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L700">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_CopyToAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.CopyToAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.CopyToAsync(System.IO.Stream,System.Threading.CancellationToken)">CopyToAsync(Stream, CancellationToken)</h4>
@@ -252,7 +299,7 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">System.Threading.CancellationToken</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel the operation.</p>
 </td>
@@ -282,7 +329,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_IDataTransferObject_IsReusable.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext%23IDataTransferObject%23IsReusable%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L682">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L690">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_IDataTransferObject_IsReusable_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext#IDataTransferObject#IsReusable*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_IDataTransferObject_IsReusable" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext#IDataTransferObject#IsReusable">IDataTransferObject.IsReusable</h4>
@@ -312,7 +359,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_IDataTransferObject_Length.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext%23IDataTransferObject%23Length%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L676">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L684">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_IDataTransferObject_Length_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext#IDataTransferObject#Length*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_IDataTransferObject_Length" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext#IDataTransferObject#Length">IDataTransferObject.Length</h4>
@@ -342,7 +389,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry_Term.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%23Term%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L678">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L686">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry_Term_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry#Term*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry_Term" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry#Term">IRaftLogEntry.Term</h4>
@@ -372,7 +419,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_Net_Cluster_Replication_ILogEntry_IsSnapshot.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext%23Net%23Cluster%23Replication%23ILogEntry%23IsSnapshot%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L684">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L692">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_Net_Cluster_Replication_ILogEntry_IsSnapshot_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext#Net#Cluster#Replication#ILogEntry#IsSnapshot*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_Net_Cluster_Replication_ILogEntry_IsSnapshot" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext#Net#Cluster#Replication#ILogEntry#IsSnapshot">ILogEntry.IsSnapshot</h4>
@@ -402,7 +449,7 @@
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_Net_Cluster_Replication_ILogEntry_Timestamp.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext%23Net%23Cluster%23Replication%23ILogEntry%23Timestamp%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L680">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L688">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_Net_Cluster_Replication_ILogEntry_Timestamp_" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext#Net#Cluster#Replication#ILogEntry#Timestamp*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_DotNext_Net_Cluster_Replication_ILogEntry_Timestamp" data-uid="DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.DotNext#Net#Cluster#Replication#ILogEntry#Timestamp">ILogEntry.Timestamp</h4>
@@ -428,6 +475,9 @@
     </tbody>
   </table>
   <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a>
   </div>
@@ -518,7 +568,7 @@
                     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L653" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/PersistentState.cs/#L661" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

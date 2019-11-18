@@ -74,12 +74,15 @@
   <h1 id="DotNext_Buffers_IUnmanagedMemoryOwner_1" data-uid="DotNext.Buffers.IUnmanagedMemoryOwner`1" class="text-break">Interface IUnmanagedMemoryOwner&lt;T&gt;
   </h1>
   <div class="markdown level0 summary"><p>Represents unmanaged memory access that allows
-to obtain <see cref="!:System.Memory&lt;T>"></see> pointing to the
+to obtain <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory&lt;T&gt;</a> pointing to the
 unmanaged memory.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.imemoryowner-1.memory#System_Buffers_IMemoryOwner_1_Memory">IMemoryOwner&lt;T&gt;.Memory</a>
+    </div>
     <div>
       <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedArray-1.html#DotNext_Runtime_InteropServices_IUnmanagedArray_1_Length">IUnmanagedArray&lt;T&gt;.Length</a>
     </div>
@@ -101,12 +104,18 @@ unmanaged memory.</p>
     <div>
       <a class="xref" href="DotNext.Runtime.InteropServices.IUnmanagedMemory.html#DotNext_Runtime_InteropServices_IUnmanagedMemory_AsStream">IUnmanagedMemory.AsStream()</a>
     </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable.dispose#System_IDisposable_Dispose">IDisposable.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1.getenumerator#System_Collections_Generic_IEnumerable_1_GetEnumerator">IEnumerable&lt;T&gt;.GetEnumerator()</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Buffers.html">DotNext.Buffers</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_Buffers_IUnmanagedMemoryOwner_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IUnmanagedMemoryOwner&lt;T&gt; : IMemoryOwner&lt;T&gt;, IUnmanagedArray&lt;T&gt;, IUnmanagedMemory, IDisposable, IEnumerable&lt;T&gt; where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IUnmanagedMemoryOwner&lt;T&gt; : IMemoryOwner&lt;T&gt;, IUnmanagedArray&lt;T&gt;, IUnmanagedMemory, IDisposable, IEnumerable&lt;T&gt;, IEnumerable where T : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -172,6 +181,30 @@ unmanaged memory.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__System_Action___0__">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, Action&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ForEach__1_System_Collections_Generic_IEnumerable___0__DotNext_ValueAction___0___">Sequence.ForEach&lt;T&gt;(IEnumerable&lt;T&gt;, ValueAction&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrNull__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrNull&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_FirstOrEmpty__1_System_Collections_Generic_IEnumerable___0__">Sequence.FirstOrEmpty&lt;T&gt;(IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ElementAt__1_System_Collections_Generic_IEnumerable___0__System_Int32___0__">Sequence.ElementAt&lt;T&gt;(IEnumerable&lt;T&gt;, Int32, out T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_ToString__1_System_Collections_Generic_IEnumerable___0__System_String_System_String_">Sequence.ToString&lt;T&gt;(IEnumerable&lt;T&gt;, String, String)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Prepend__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Prepend&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Append__1_System_Collections_Generic_IEnumerable___0____0___">Sequence.Append&lt;T&gt;(IEnumerable&lt;T&gt;, T[])</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>

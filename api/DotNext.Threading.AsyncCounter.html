@@ -5,10 +5,10 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Class AsyncExclusiveLock
+    <title>Class AsyncCounter
    | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Class AsyncExclusiveLock
+    <meta name="title" content="Class AsyncCounter
    | .NEXT ">
     <meta name="generator" content="docfx 2.47.0.0">
     
@@ -68,23 +68,25 @@
         </div>
         <div class="article row grid-right">
           <div class="col-md-10">
-            <article class="content wrap" id="_content" data-uid="DotNext.Threading.AsyncExclusiveLock">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.AsyncCounter">
   
   
-  <h1 id="DotNext_Threading_AsyncExclusiveLock" data-uid="DotNext.Threading.AsyncExclusiveLock" class="text-break">Class AsyncExclusiveLock
+  <h1 id="DotNext_Threading_AsyncCounter" data-uid="DotNext.Threading.AsyncCounter" class="text-break">Class AsyncCounter
   </h1>
-  <div class="markdown level0 summary"><p>Represents asynchronous mutually exclusive lock.</p>
+  <div class="markdown level0 summary"><p>Represents a synchronization primitive that is signaled when its count becomes non zero.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><a class="xref" href="DotNext.Threading.QueuedSynchronizer.html">QueuedSynchronizer</a></div>
-    <div class="level2"><span class="xref">AsyncExclusiveLock</span></div>
+    <div class="level2"><span class="xref">AsyncCounter</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.Threading.IAsyncEvent.html">IAsyncEvent</a></div>
     <div><a class="xref" href="DotNext.Threading.ISynchronizer.html">ISynchronizer</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -97,29 +99,236 @@
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.html">DotNext.Threading</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
-  <h5 id="DotNext_Threading_AsyncExclusiveLock_syntax">Syntax</h5>
+  <h5 id="DotNext_Threading_AsyncCounter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class AsyncExclusiveLock : QueuedSynchronizer, ISynchronizer</code></pre>
+    <pre><code class="lang-csharp hljs">public class AsyncCounter : QueuedSynchronizer, IAsyncEvent, ISynchronizer, IDisposable</code></pre>
   </div>
-  <h3 id="properties">Properties
+  <h5 id="DotNext_Threading_AsyncCounter_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>This class behaves in opposite to <a class="xref" href="DotNext.Threading.AsyncCountdownEvent.html">AsyncCountdownEvent</a>.
+Every call of <a class="xref" href="DotNext.Threading.AsyncCounter.html#DotNext_Threading_AsyncCounter_Increment">Increment()</a> increments the counter.
+Every call of <a class="xref" href="DotNext.Threading.AsyncCounter.html#DotNext_Threading_AsyncCounter_Wait_System_TimeSpan_System_Threading_CancellationToken_">Wait(TimeSpan, CancellationToken)</a>
+decrements counter and release the caller if the current count is greater than zero.</p>
+</div>
+  <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncExclusiveLock_IsLockHeld.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.IsLockHeld%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter__ctor_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.%23ctor(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L37">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L52">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncExclusiveLock_IsLockHeld_" data-uid="DotNext.Threading.AsyncExclusiveLock.IsLockHeld*"></a>
-  <h4 id="DotNext_Threading_AsyncExclusiveLock_IsLockHeld" data-uid="DotNext.Threading.AsyncExclusiveLock.IsLockHeld">IsLockHeld</h4>
-  <div class="markdown level1 summary"><p>Indicates that exclusive lock taken.</p>
+  <a id="DotNext_Threading_AsyncCounter__ctor_" data-uid="DotNext.Threading.AsyncCounter.#ctor*"></a>
+  <h4 id="DotNext_Threading_AsyncCounter__ctor_System_Int64_" data-uid="DotNext.Threading.AsyncCounter.#ctor(System.Int64)">AsyncCounter(Int64)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new asynchronous counter.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool IsLockHeld { get; }</code></pre>
+    <pre><code class="lang-csharp hljs">public AsyncCounter(long initialValue = 0L)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">initialValue</span></td>
+        <td><p>The initial value of the counter.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">initialValue</code> is less than zero.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_Value.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L69">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncCounter_Value_" data-uid="DotNext.Threading.AsyncCounter.Value*"></a>
+  <h4 id="DotNext_Threading_AsyncCounter_Value" data-uid="DotNext.Threading.AsyncCounter.Value">Value</h4>
+  <div class="markdown level1 summary"><p>Gets the counter value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public long Value { get; }</code></pre>
   </div>
   <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AsyncCounter_Value_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The returned value indicates how many calls you can perform
+using <a class="xref" href="DotNext.Threading.AsyncCounter.html#DotNext_Threading_AsyncCounter_Wait_System_TimeSpan_System_Threading_CancellationToken_">Wait(TimeSpan, CancellationToken)</a> without
+blocking.</p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_Increment.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.Increment%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L78">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncCounter_Increment_" data-uid="DotNext.Threading.AsyncCounter.Increment*"></a>
+  <h4 id="DotNext_Threading_AsyncCounter_Increment" data-uid="DotNext.Threading.AsyncCounter.Increment">Increment()</h4>
+  <div class="markdown level1 summary"><p>Increments counter and resume suspended callers.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Increment()</code></pre>
+  </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_Wait_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.Wait(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L106">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncCounter_Wait_" data-uid="DotNext.Threading.AsyncCounter.Wait*"></a>
+  <h4 id="DotNext_Threading_AsyncCounter_Wait_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncCounter.Wait(System.TimeSpan,System.Threading.CancellationToken)">Wait(TimeSpan, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Suspends caller if <a class="xref" href="DotNext.Threading.AsyncCounter.html#DotNext_Threading_AsyncCounter_Value">Value</a> is zero
+or just decrements it.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; Wait(TimeSpan timeout, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="parametername">timeout</span></td>
+        <td><p>Time to wait for increment.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the waiting operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><p><span class="xref">true</span> if counter is decremented successfully; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
+        <td><p>This object is disposed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_IsSet.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.DotNext%23Threading%23IAsyncEvent%23IsSet%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L59">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_IsSet_" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#IsSet*"></a>
+  <h4 id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_IsSet" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#IsSet">IAsyncEvent.IsSet</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">bool IAsyncEvent.IsSet { get; }</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
@@ -134,207 +343,20 @@
       </tr>
     </tbody>
   </table>
-  <h3 id="methods">Methods
-  </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncExclusiveLock_Acquire_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.Acquire(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Reset.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.DotNext%23Threading%23IAsyncEvent%23Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L82">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L71">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncExclusiveLock_Acquire_" data-uid="DotNext.Threading.AsyncExclusiveLock.Acquire*"></a>
-  <h4 id="DotNext_Threading_AsyncExclusiveLock_Acquire_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncExclusiveLock.Acquire(System.Threading.CancellationToken)">Acquire(CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Enters the lock in exclusive mode asynchronously.</p>
-</div>
+  <a id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Reset_" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#Reset*"></a>
+  <h4 id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Reset" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#Reset">IAsyncEvent.Reset()</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task Acquire(CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to abort lock acquisition.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing lock acquisition operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p>Time-out value is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>This object has been disposed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncExclusiveLock_Acquire_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.Acquire(System.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L73">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncExclusiveLock_Acquire_" data-uid="DotNext.Threading.AsyncExclusiveLock.Acquire*"></a>
-  <h4 id="DotNext_Threading_AsyncExclusiveLock_Acquire_System_TimeSpan_" data-uid="DotNext.Threading.AsyncExclusiveLock.Acquire(System.TimeSpan)">Acquire(TimeSpan)</h4>
-  <div class="markdown level1 summary"><p>Enters the lock in exclusive mode asynchronously.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task Acquire(TimeSpan timeout)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The interval to wait for the lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
-        <td><p>The task representing lock acquisition operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p>Time-out value is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>This object has been disposed.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
-        <td><p>The lock cannot be acquired during the specified amount of time.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncExclusiveLock_Release.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.Release%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L89">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncExclusiveLock_Release_" data-uid="DotNext.Threading.AsyncExclusiveLock.Release*"></a>
-  <h4 id="DotNext_Threading_AsyncExclusiveLock_Release" data-uid="DotNext.Threading.AsyncExclusiveLock.Release">Release()</h4>
-  <div class="markdown level1 summary"><p>Releases previously acquired exclusive lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public void Release()</code></pre>
-  </div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.synchronizationlockexception">SynchronizationLockException</a></td>
-        <td><p>The caller has not entered the lock.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>This object has been disposed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncExclusiveLock_TryAcquire.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.TryAcquire%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L43">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncExclusiveLock_TryAcquire_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquire*"></a>
-  <h4 id="DotNext_Threading_AsyncExclusiveLock_TryAcquire" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquire">TryAcquire()</h4>
-  <div class="markdown level1 summary"><p>Attempts to obtain exclusive lock synchronously without blocking caller thread.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public bool TryAcquire()</code></pre>
+    <pre><code class="lang-csharp hljs">bool IAsyncEvent.Reset()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -347,45 +369,25 @@
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><p><span class="xref">true</span> if lock is taken successfuly; otherwise, <span class="xref">false</span>.</p>
-</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncExclusiveLock_TryAcquire_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Signal.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter.DotNext%23Threading%23IAsyncEvent%23Signal%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L63">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L91">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncExclusiveLock_TryAcquire_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquire*"></a>
-  <h4 id="DotNext_Threading_AsyncExclusiveLock_TryAcquire_System_TimeSpan_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan)">TryAcquire(TimeSpan)</h4>
-  <div class="markdown level1 summary"><p>Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.</p>
-</div>
+  <a id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Signal_" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#Signal*"></a>
+  <h4 id="DotNext_Threading_AsyncCounter_DotNext_Threading_IAsyncEvent_Signal" data-uid="DotNext.Threading.AsyncCounter.DotNext#Threading#IAsyncEvent#Signal">IAsyncEvent.Signal()</h4>
+  <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; TryAcquire(TimeSpan timeout)</code></pre>
+    <pre><code class="lang-csharp hljs">bool IAsyncEvent.Signal()</code></pre>
   </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The interval to wait for the lock.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h5 class="returns">Returns</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
@@ -396,115 +398,31 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
-        <td><p><span class="xref">true</span> if the caller entered exclusive mode; otherwise, <span class="xref">false</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p>Time-out value is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>This object has been disposed.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncExclusiveLock_TryAcquire_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L54">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncExclusiveLock_TryAcquire_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquire*"></a>
-  <h4 id="DotNext_Threading_AsyncExclusiveLock_TryAcquire_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncExclusiveLock.TryAcquire(System.TimeSpan,System.Threading.CancellationToken)">TryAcquire(TimeSpan, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Tries to enter the lock in exclusive mode asynchronously, with an optional time-out.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; TryAcquire(TimeSpan timeout, CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
-        <td><span class="parametername">timeout</span></td>
-        <td><p>The interval to wait for the lock.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to abort lock acquisition.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
-        <td><p><span class="xref">true</span> if the caller entered exclusive mode; otherwise, <span class="xref">false</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
-        <td><p>Time-out value is negative.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.objectdisposedexception">ObjectDisposedException</a></td>
-        <td><p>This object has been disposed.</p>
-</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
+      <a class="xref" href="DotNext.Threading.IAsyncEvent.html">IAsyncEvent</a>
+  </div>
+  <div>
       <a class="xref" href="DotNext.Threading.ISynchronizer.html">ISynchronizer</a>
   </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncEvent.html#DotNext_Threading_AsyncEvent_Wait_DotNext_Threading_IAsyncEvent_System_TimeSpan_">AsyncEvent.Wait(IAsyncEvent, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncEvent.html#DotNext_Threading_AsyncEvent_Wait_DotNext_Threading_IAsyncEvent_System_Threading_CancellationToken_">AsyncEvent.Wait(IAsyncEvent, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncEvent.html#DotNext_Threading_AsyncEvent_Wait_DotNext_Threading_IAsyncEvent_">AsyncEvent.Wait(IAsyncEvent)</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
   </div>
@@ -579,10 +497,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncExclusiveLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncExclusiveLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncCounter.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncCounter%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncExclusiveLock.cs/#L12" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncCounter.cs/#L17" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

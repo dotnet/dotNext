@@ -85,11 +85,35 @@
       <div class="level2"><a class="xref" href="DotNext.Metaprogramming.SwitchBuilder.html">SwitchBuilder</a></div>
       <div class="level2"><a class="xref" href="DotNext.Metaprogramming.TryBuilder.html">TryBuilder</a></div>
   </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Metaprogramming.html">DotNext.Metaprogramming</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Metaprogramming.dll</h6>
   <h5 id="DotNext_Metaprogramming_ExpressionBuilder_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class ExpressionBuilder&lt;E&gt; : object, IExpressionBuilder&lt;E&gt; where E : Expression</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class ExpressionBuilder&lt;E&gt; : IExpressionBuilder&lt;E&gt; where E : Expression</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -130,15 +154,31 @@ and adds constructed expression as statement to the entire lexical scope.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void End()</code></pre>
   </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
+        <td><p>The expression has been constructed already.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_ExpressionBuilder_1_OfType_Type_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.ExpressionBuilder%601.OfType(Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Metaprogramming_ExpressionBuilder_1_OfType_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Metaprogramming.ExpressionBuilder%601.OfType(System.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Metaprogramming/Metaprogramming/ExpressionBuilder.cs/#L47">View Source</a>
   </span>
   <a id="DotNext_Metaprogramming_ExpressionBuilder_1_OfType_" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1.OfType*"></a>
-  <h4 id="DotNext_Metaprogramming_ExpressionBuilder_1_OfType_Type_" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1.OfType(Type)">OfType(Type)</h4>
+  <h4 id="DotNext_Metaprogramming_ExpressionBuilder_1_OfType_System_Type_" data-uid="DotNext.Metaprogramming.ExpressionBuilder`1.OfType(System.Type)">OfType(Type)</h4>
   <div class="markdown level1 summary"><p>Changes type of the expression.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -157,7 +197,7 @@ and adds constructed expression as statement to the entire lexical scope.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Type</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
         <td><span class="parametername">expressionType</span></td>
         <td><p>The expression type.</p>
 </td>
@@ -180,8 +220,8 @@ and adds constructed expression as statement to the entire lexical scope.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Metaprogramming_ExpressionBuilder_1_OfType_Type__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>By default, type of expression is <see cref="!:System.Void"></see>.</p>
+  <h5 id="DotNext_Metaprogramming_ExpressionBuilder_1_OfType_System_Type__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>By default, type of expression is <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
