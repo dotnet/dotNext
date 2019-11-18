@@ -50,6 +50,8 @@
       href: threading/interop.md
     - name: Async Lazy
       href: threading/lazy.md
+    - name: Persistent Channels
+      href: threading/channel.md
 - name: Type Classes
   href: concept.md
 - name: Advanced Reflection
