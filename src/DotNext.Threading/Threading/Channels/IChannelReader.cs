@@ -8,8 +8,6 @@ namespace DotNext.Threading.Channels
 
     internal interface IChannelReader<T> : IChannel, IDisposable
     {
-        Task CompletionTask { get; }
-
         Task WaitToReadAsync(CancellationToken token);
 
         ValueTask<T> DeserializeAsync(PartitionStream input, CancellationToken token);
