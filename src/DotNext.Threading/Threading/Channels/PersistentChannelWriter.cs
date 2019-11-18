@@ -17,11 +17,11 @@ namespace DotNext.Threading.Channels
         private readonly FileCreationOptions fileOptions;
         private ChannelCursor cursor;
 
-        internal PersistentChannelWriter(IChannelWriter<T> writer, bool singleWriter)
+        internal PersistentChannelWriter(IChannelWriter<T> writer, bool singleWriter, long initialSize)
         {
             writeLock = singleWriter ? default : AsyncLock.Exclusive();
             this.writer = writer;
-            fileOptions = new FileCreationOptions(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+            fileOptions = new FileCreationOptions(FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read, FileOptions.Asynchronous | FileOptions.WriteThrough, initialSize);
             cursor = new ChannelCursor(writer.Location, StateFileName);
         }
 
@@ -41,8 +41,8 @@ namespace DotNext.Threading.Channels
                 var partition = Partition;
                 await writer.SerializeAsync(item, partition, token).ConfigureAwait(false);
                 cursor.Advance(partition.Position);
-                writer.MessageReady();
             }
+            writer.MessageReady();
         }
 
         private void Dispose(bool disposing)

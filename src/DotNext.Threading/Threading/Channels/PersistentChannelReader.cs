@@ -75,7 +75,7 @@ namespace DotNext.Threading.Channels
                 readLock = AsyncLock.Exclusive();
                 buffer = new MultipleReadersBuffer();
             }
-            fileOptions = new FileCreationOptions(FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            fileOptions = new FileCreationOptions(FileMode.Open, FileAccess.Read, FileShare.ReadWrite, FileOptions.Asynchronous | FileOptions.SequentialScan);
             cursor = new ChannelCursor(reader.Location, StateFileName);
         }
 
@@ -93,6 +93,8 @@ namespace DotNext.Threading.Channels
             using (await readLock.Acquire(token).ConfigureAwait(false))
             {
                 var lookup = Partition;
+                //reset file cache
+                await lookup.FlushAsync(token).ConfigureAwait(false);
                 result = await reader.DeserializeAsync(lookup, token).ConfigureAwait(false);
                 cursor.Advance(lookup.Position);
             }

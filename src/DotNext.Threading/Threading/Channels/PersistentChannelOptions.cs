@@ -51,5 +51,18 @@ namespace DotNext.Threading.Channels
             get => recordsPerPartition;
             set => recordsPerPartition = value > 0 ? value : DefaultRecordsPerPartition;
         }
+
+        /// <summary>
+        /// Gets or sets initial size of partition file, in bytes. 
+        /// </summary>
+        /// <remarks>
+        /// This property may help to avoid fragmentation of partition
+        /// file on disk during writing.
+        /// </remarks>
+        public long InitialPartitionSize
+        {
+            get;
+            set;
+        }
     }
 }

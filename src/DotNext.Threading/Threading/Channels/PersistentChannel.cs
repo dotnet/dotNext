@@ -31,7 +31,7 @@ namespace DotNext.Threading.Channels
             location = new DirectoryInfo(options.Location);
             if (!location.Exists)
                 location.Create();
-            var writer = new PersistentChannelWriter<TInput>(this, options.SingleWriter);
+            var writer = new PersistentChannelWriter<TInput>(this, options.SingleWriter, options.InitialPartitionSize);
             var reader = new PersistentChannelReader<TOutput>(this, options.SingleReader);
             Reader = reader;
             Writer = writer;
@@ -62,7 +62,12 @@ namespace DotNext.Threading.Channels
             => readTrigger.Wait(token);
 
         private PartitionStream CreateTopicStream(long partition, in FileCreationOptions options)
-            => new PartitionStream(location, partition, options.Mode, options.Access, options.Share, bufferSize);
+        {
+            var result = new PartitionStream(location, partition, options, bufferSize);
+            if (result.Length == 0L && options.InitialSize > 0L)
+                result.SetLength(options.InitialSize);
+            return result;
+        }
 
         PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, ref PartitionStream partition, in FileCreationOptions options, bool deleteOnDispose)
         {

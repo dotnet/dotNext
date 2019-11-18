@@ -32,11 +32,15 @@ namespace DotNext.Threading.Channels
         }
 
         [Theory]
-        [InlineData(false, false)]
-        [InlineData(false, true)]
-        [InlineData(true, false)]
-        [InlineData(true, true)]
-        public static async Task ReadWrite(bool singleReader, bool singleWriter)
+        [InlineData(false, false, 0L)]
+        [InlineData(false, true, 0L)]
+        [InlineData(true, false, 0L)]
+        [InlineData(true, true, 0L)]
+        [InlineData(false, false, 10240)]
+        [InlineData(false, true, 10240)]
+        [InlineData(true, false, 10240)]
+        [InlineData(true, true, 10240)]
+        public static async Task ReadWrite(bool singleReader, bool singleWriter, long initialSize)
         {
             Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
             using (var channel = new SerializationChannel<Guid>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter }))
@@ -124,20 +128,22 @@ namespace DotNext.Threading.Channels
 
         private static async Task Produce(ChannelWriter<decimal> writer)
         {
-            for (decimal i = 0M; i < 500; i++)
+            for (decimal i = 0M; i < 500M; i++)
                 await writer.WriteAsync(i);
         }
 
         private static async Task Consume(ChannelReader<decimal> reader)
         {
-            for (decimal i = 0M; i < 500; i++)
+            for (decimal i = 0M; i < 500M; i++)
                 Equal(i, await reader.ReadAsync());
         }
 
-        [Fact]
-        public static async Task ProduceConsumeConcurrently()
+        [Theory]
+        [InlineData(0L)]
+        [InlineData(102400L)]
+        public static async Task ProduceConsumeConcurrently(long initialSize)
         {
-            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { SingleReader = true, SingleWriter = true, RecordsPerPartition = 100 }))
+            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { SingleReader = true, SingleWriter = true, RecordsPerPartition = 100, InitialPartitionSize = initialSize }))
             {
                 var consumer = Consume(channel.Reader);
                 var producer = Produce(channel.Writer);
