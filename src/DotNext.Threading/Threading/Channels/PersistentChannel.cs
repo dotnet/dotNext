@@ -26,7 +26,7 @@ namespace DotNext.Threading.Channels
         /// <param name="options">The options of the channel.</param>
         protected PersistentChannel(PersistentChannelOptions options)
         {
-            maxCount = options.RecordsPerPartition;
+            maxCount = options.PartitionCapacity;
             bufferSize = options.BufferSize;
             location = new DirectoryInfo(options.Location);
             if (!location.Exists)
