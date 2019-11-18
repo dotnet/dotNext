@@ -9,11 +9,11 @@ namespace DotNext.Threading.Channels
     /// </summary>
     public sealed class PersistentChannelOptions : ChannelOptions
     {
-        private const int DefaultRecordsPerPartition = 1000;
+        private const int DefaultCapacity = 1000;
         private const int DefaultBufferSize = 4096;
         private string location;
         private int bufferSize;
-        private int recordsPerPartition;
+        private int capacity;
 
         /// <summary>
         /// Initializes a new options with default settings.
@@ -22,7 +22,7 @@ namespace DotNext.Threading.Channels
         {
             location = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             bufferSize = DefaultBufferSize;
-            recordsPerPartition = DefaultRecordsPerPartition;
+            capacity = DefaultCapacity;
         }
 
         /// <summary>
@@ -44,12 +44,12 @@ namespace DotNext.Threading.Channels
         }
 
         /// <summary>
-        /// Gets or sets maximum number of records per file.
+        /// Gets or sets maximum number of messages per file.
         /// </summary>
-        public int RecordsPerPartition
+        public int PartitionCapacity
         {
-            get => recordsPerPartition;
-            set => recordsPerPartition = value > 0 ? value : DefaultRecordsPerPartition;
+            get => capacity;
+            set => capacity = value > 0 ? value : DefaultCapacity;
         }
 
         /// <summary>

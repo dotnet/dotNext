@@ -84,7 +84,7 @@ namespace DotNext.Threading.Channels
             {
                 SingleReader = true,
                 SingleWriter = true,
-                RecordsPerPartition = 3
+                PartitionCapacity = 3
             };
             Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid(), g4 = Guid.NewGuid();
             using (var channel = new SerializationChannel<Guid>(options))
@@ -107,7 +107,7 @@ namespace DotNext.Threading.Channels
             {
                 SingleReader = true,
                 SingleWriter = true,
-                RecordsPerPartition = 3
+                PartitionCapacity = 3
             };
             Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid(), g4 = Guid.NewGuid();
             using (var channel = new SerializationChannel<Guid>(options))
@@ -143,7 +143,7 @@ namespace DotNext.Threading.Channels
         [InlineData(102400L)]
         public static async Task ProduceConsumeConcurrently(long initialSize)
         {
-            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { SingleReader = true, SingleWriter = true, RecordsPerPartition = 100, InitialPartitionSize = initialSize }))
+            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { SingleReader = true, SingleWriter = true, PartitionCapacity = 100, InitialPartitionSize = initialSize }))
             {
                 var consumer = Consume(channel.Reader);
                 var producer = Produce(channel.Writer);
