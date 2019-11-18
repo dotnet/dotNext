@@ -45,9 +45,8 @@ namespace DotNext.Threading.Channels
         {
             get
             {
-                double output = (Reader as IChannelHandler)?.Position ?? 0L;
-                double input = (Writer as IChannelHandler)?.Position ?? 0L;
-                return output / input;
+                double result = ((Reader as IChannelHandler)?.Position ?? 0D) / ((Writer as IChannelHandler)?.Position ?? 0D);
+                return double.IsNaN(result) ? 1D : result;
             }
         }
 
