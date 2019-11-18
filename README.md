@@ -39,31 +39,11 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-15-2019
+Release Date: 11-18-2019
 
-<a href="https://www.nuget.org/packages/dotnext/1.2.4">DotNext 1.2.4</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.2.4">DotNext.Metaprogramming 1.2.4</a>
-* Fixed NRE
-
-<a href="https://www.nuget.org/packages/dotnext.reflection/1.2.4">DotNext.Reflection 1.2.4</a>
-* Internal cache is optimized to avoid storage of null values
-
-<a href="https://www.nuget.org/packages/dotnext.threading/1.2.4">DotNext.Threading 1.2.4</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.4">DotNext.Unsafe 1.2.4</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.3">DotNext.Net.Cluster 1.2.4</a>
-* Fixed unnecessary boxing of generic log entry value
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.3">DotNext.AspNetCore.Cluster 1.2.3</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.2.3">DotNext.Augmentation.Fody 1.2.4</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.threading/1.3.0">DotNext.Threading 1.3.0</a>
+* [PersistentChannel](https://sakno.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) is added as an extension of *channel* concept from [System.Threading.Channels](https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels). It allows to use disk memory instead of RAM for storing messages passed from producer to consumer.
+* [AsyncCounter](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncCounter.html) allows to simplify asynchronous coordination in producer/consumer scenario
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
