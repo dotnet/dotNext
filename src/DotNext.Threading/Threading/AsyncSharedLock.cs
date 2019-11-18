@@ -122,7 +122,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquire(bool strongLock, TimeSpan timeout, CancellationToken token)
+        public Task<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token)
             => strongLock ? WaitAsync(ref this.strongLock, timeout, token) : WaitAsync(ref weakLock, timeout, token);
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquire(bool strongLock, TimeSpan timeout) => TryAcquire(strongLock, timeout, CancellationToken.None);
+        public Task<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout) => TryAcquireAsync(strongLock, timeout, CancellationToken.None);
 
         /// <summary>
         /// Entres the lock asynchronously.
@@ -144,7 +144,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task Acquire(bool strongLock, TimeSpan timeout) => TryAcquire(strongLock, timeout).CheckOnTimeout();
+        public Task AcquireAsync(bool strongLock, TimeSpan timeout) => TryAcquireAsync(strongLock, timeout).CheckOnTimeout();
 
         /// <summary>
         /// Entres the lock asynchronously.
@@ -153,7 +153,7 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to abort lock acquisition.</param>
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task Acquire(bool strongLock, CancellationToken token) => TryAcquire(strongLock, InfiniteTimeSpan, token);
+        public Task AcquireAsync(bool strongLock, CancellationToken token) => TryAcquireAsync(strongLock, InfiniteTimeSpan, token);
 
         private void ReleasePendingWeakLocks()
         {

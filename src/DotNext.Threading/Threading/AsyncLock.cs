@@ -174,7 +174,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task returning the acquired lock holder.</returns>
-        public Task<Holder> Acquire(CancellationToken token) => TryAcquire(InfiniteTimeSpan, token);
+        public Task<Holder> AcquireAsync(CancellationToken token) => TryAcquireAsync(InfiniteTimeSpan, token);
 
         /// <summary>
         /// Acquires the lock asynchronously.
@@ -182,7 +182,7 @@ namespace DotNext.Threading
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <returns>The task returning the acquired lock holder.</returns>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public readonly async Task<Holder> Acquire(TimeSpan timeout)
+        public readonly async Task<Holder> AcquireAsync(TimeSpan timeout)
         {
             Task task;
             switch (type)
@@ -190,25 +190,25 @@ namespace DotNext.Threading
                 default:
                     return default;
                 case Type.Exclusive:
-                    task = As<AsyncExclusiveLock>(lockedObject).Acquire(timeout);
+                    task = As<AsyncExclusiveLock>(lockedObject).AcquireAsync(timeout);
                     break;
                 case Type.ReadLock:
-                    task = As<AsyncReaderWriterLock>(lockedObject).EnterReadLock(timeout);
+                    task = As<AsyncReaderWriterLock>(lockedObject).EnterReadLockAsync(timeout);
                     break;
                 case Type.UpgradeableReadLock:
-                    task = As<AsyncReaderWriterLock>(lockedObject).EnterUpgradeableReadLock(timeout);
+                    task = As<AsyncReaderWriterLock>(lockedObject).EnterUpgradeableReadLockAsync(timeout);
                     break;
                 case Type.WriteLock:
-                    task = As<AsyncReaderWriterLock>(lockedObject).EnterWriteLock(timeout);
+                    task = As<AsyncReaderWriterLock>(lockedObject).EnterWriteLockAsync(timeout);
                     break;
                 case Type.Semaphore:
                     task = As<SemaphoreSlim>(lockedObject).WaitAsync(timeout).CheckOnTimeout();
                     break;
                 case Type.Strong:
-                    task = As<AsyncSharedLock>(lockedObject).Acquire(true, timeout);
+                    task = As<AsyncSharedLock>(lockedObject).AcquireAsync(true, timeout);
                     break;
                 case Type.Weak:
-                    task = As<AsyncSharedLock>(lockedObject).Acquire(false, timeout);
+                    task = As<AsyncSharedLock>(lockedObject).AcquireAsync(false, timeout);
                     break;
             }
             await task.ConfigureAwait(false);
@@ -220,7 +220,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
-        public readonly Task<Holder> TryAcquire(TimeSpan timeout) => TryAcquire(timeout, default);
+        public readonly Task<Holder> TryAcquireAsync(TimeSpan timeout) => TryAcquireAsync(timeout, default);
 
         /// <summary>
         /// Tries to acquire the lock asynchronously.
@@ -229,17 +229,17 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <param name="suppressCancellation"><see langword="true"/> to return empty lock holder instead of throwing <see cref="OperationCanceledException"/>.</param>
         /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
-        public readonly async Task<Holder> TryAcquire(TimeSpan timeout, CancellationToken token, bool suppressCancellation = false)
+        public readonly async Task<Holder> TryAcquireAsync(TimeSpan timeout, CancellationToken token, bool suppressCancellation = false)
         {
             var task = type switch
             {
-                Type.Exclusive => As<AsyncExclusiveLock>(lockedObject).TryAcquire(timeout, token),
-                Type.ReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLock(timeout, token),
-                Type.UpgradeableReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterUpgradeableReadLock(timeout, token),
-                Type.WriteLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLock(timeout, token),
+                Type.Exclusive => As<AsyncExclusiveLock>(lockedObject).TryAcquireAsync(timeout, token),
+                Type.ReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLockAsync(timeout, token),
+                Type.UpgradeableReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterUpgradeableReadLockAsync(timeout, token),
+                Type.WriteLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLockAsync(timeout, token),
                 Type.Semaphore => As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token),
-                Type.Strong => As<AsyncSharedLock>(lockedObject).TryAcquire(true, timeout, token),
-                Type.Weak => As<AsyncSharedLock>(lockedObject).TryAcquire(false, timeout, token),
+                Type.Strong => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(true, timeout, token),
+                Type.Weak => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(false, timeout, token),
                 _ => CompletedTask<bool, BooleanConst.False>.Task,
             };
             if (suppressCancellation && token.CanBeCanceled)
@@ -252,8 +252,8 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task returning the acquired lock holder; or empty lock holder if operation was canceled.</returns>
-        public readonly Task<Holder> TryAcquire(CancellationToken token)
-            => TryAcquire(InfiniteTimeSpan, token, true);
+        public readonly Task<Holder> TryAcquireAsync(CancellationToken token)
+            => TryAcquireAsync(InfiniteTimeSpan, token, true);
 
         /// <summary>
         /// Destroy this lock and dispose underlying lock object if it is owned by the given lock.

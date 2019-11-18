@@ -15,17 +15,17 @@ namespace DotNext.Threading
             using (var sharedLock = new AsyncSharedLock(3))
             {
                 Equal(3, sharedLock.ConcurrencyLevel);
-                True(await sharedLock.TryAcquire(false, TimeSpan.Zero));
-                True(await sharedLock.TryAcquire(false, TimeSpan.Zero));
+                True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
+                True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
                 Equal(1, sharedLock.RemainingCount);
-                True(await sharedLock.TryAcquire(false, TimeSpan.Zero));
+                True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
                 Equal(0, sharedLock.RemainingCount);
-                False(await sharedLock.TryAcquire(false, TimeSpan.Zero));
-                False(await sharedLock.TryAcquire(true, TimeSpan.Zero));
+                False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
+                False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
                 sharedLock.Release();
                 Equal(1, sharedLock.RemainingCount);
-                False(await sharedLock.TryAcquire(true, TimeSpan.Zero));
-                True(await sharedLock.TryAcquire(false, TimeSpan.Zero));
+                False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
+                True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
             }
         }
 
@@ -34,16 +34,16 @@ namespace DotNext.Threading
         {
             using (var sharedLock = new AsyncSharedLock(3))
             {
-                True(await sharedLock.TryAcquire(true, TimeSpan.Zero));
-                False(await sharedLock.TryAcquire(false, TimeSpan.Zero));
-                False(await sharedLock.TryAcquire(true, TimeSpan.Zero));
+                True(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
+                False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
+                False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
             }
         }
 
         private static async void AcquireWeakLockAndRelease(AsyncSharedLock sharedLock, AsyncCountdownEvent acquireEvent)
         {
             await Task.Delay(100);
-            await sharedLock.Acquire(false, TimeSpan.Zero);
+            await sharedLock.AcquireAsync(false, TimeSpan.Zero);
             acquireEvent.Signal();
             await Task.Delay(100);
             sharedLock.Release();
@@ -59,7 +59,7 @@ namespace DotNext.Threading
                 AcquireWeakLockAndRelease(sharedLock, acquireEvent);
                 AcquireWeakLockAndRelease(sharedLock, acquireEvent);
                 await acquireEvent.Wait();
-                await sharedLock.Acquire(true, TimeSpan.FromMinutes(1));
+                await sharedLock.AcquireAsync(true, TimeSpan.FromMinutes(1));
 
                 Equal(0, sharedLock.RemainingCount);
             }
@@ -67,7 +67,7 @@ namespace DotNext.Threading
 
         private static async void AcquireWeakLock(AsyncSharedLock sharedLock, AsyncCountdownEvent acquireEvent)
         {
-            await sharedLock.Acquire(false, CancellationToken.None);
+            await sharedLock.AcquireAsync(false, CancellationToken.None);
             acquireEvent.Signal();
         }
 
@@ -77,7 +77,7 @@ namespace DotNext.Threading
             using (var acquireEvent = new AsyncCountdownEvent(2L))
             using (var sharedLock = new AsyncSharedLock(3))
             {
-                await sharedLock.Acquire(true, TimeSpan.Zero);
+                await sharedLock.AcquireAsync(true, TimeSpan.Zero);
                 AcquireWeakLock(sharedLock, acquireEvent);
                 AcquireWeakLock(sharedLock, acquireEvent);
                 sharedLock.Release();

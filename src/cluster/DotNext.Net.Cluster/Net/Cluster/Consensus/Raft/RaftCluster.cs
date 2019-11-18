@@ -217,7 +217,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected async Task ChangeMembersAsync(MemberCollectionMutator mutator)
         {
-            using (var holder = await transitionSync.TryAcquire(transitionCancellation.Token).ConfigureAwait(false))
+            using (var holder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
                 if (holder)
                     ChangeMembers(mutator);
         }
@@ -289,7 +289,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             transitionCancellation.Cancel(false);
             members.ForEach(CancelPendingRequests);
             leader = null;
-            using (await transitionSync.Acquire(token).ConfigureAwait(false))
+            using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
             {
                 var currentState = Interlocked.Exchange(ref state, null);
                 await currentState.StopAsync().ConfigureAwait(false);
@@ -348,7 +348,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
         protected async Task<Result<bool>> ReceiveSnapshot(TMember sender, long senderTerm, IRaftLogEntry snapshot, long snapshotIndex)
         {
-            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+            using (await transitionSync.AcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
                 if (snapshot.IsSnapshot && senderTerm >= auditTrail.Term && snapshotIndex > auditTrail.GetLastIndex(true))
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
@@ -374,7 +374,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async Task<Result<bool>> ReceiveEntries<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
             where TEntry : IRaftLogEntry
         {
-            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+            using (await transitionSync.AcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
             {
                 var result = false;
                 if (auditTrail.Term <= senderTerm)
@@ -408,7 +408,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
         protected async Task<Result<bool>> ReceiveVote(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm)
         {
-            using (await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+            using (await transitionSync.AcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
             {
                 if (auditTrail.Term > senderTerm) //currentTerm > term
                     goto reject;
@@ -433,7 +433,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task<bool> ResignAsync(CancellationToken token)
         {
-            using (await transitionSync.Acquire(token).ConfigureAwait(false))
+            using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
                 if (state is LeaderState leaderState)
                 {
                     await leaderState.StopAsync().ConfigureAwait(false);
@@ -468,7 +468,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
-            using (var lockHolder = await transitionSync.TryAcquire(transitionCancellation.Token).ConfigureAwait(false))
+            using (var lockHolder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
                 if (lockHolder)
                 {
                     if (randomizeTimeout)
@@ -480,7 +480,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToCandidateState()
         {
             Logger.TransitionToCandidateStateStarted();
-            using (var lockHolder = await transitionSync.TryAcquire(transitionCancellation.Token).ConfigureAwait(false))
+            using (var lockHolder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
                 if (lockHolder && state is FollowerState followerState)
                 {
                     followerState.Dispose();
@@ -497,7 +497,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
             Logger.TransitionToLeaderStateStarted();
-            using (var lockHolder = await transitionSync.Acquire(transitionCancellation.Token).ConfigureAwait(false))
+            using (var lockHolder = await transitionSync.AcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
                 if (lockHolder && state is CandidateState candidateState && candidateState.Term == auditTrail.Term)
                 {
                     candidateState.Dispose();

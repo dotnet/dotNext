@@ -564,7 +564,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal async ValueTask UpdateTermAsync(long value)
             {
-                using (await syncRoot.Acquire(CancellationToken.None).ConfigureAwait(false))
+                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
                 {
                     stateView.Write(TermOffset, value);
                     stateView.Flush();
@@ -574,7 +574,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal async ValueTask<long> IncrementTermAsync()
             {
-                using (await syncRoot.Acquire(CancellationToken.None).ConfigureAwait(false))
+                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
                 {
                     var result = term.IncrementAndGet();
                     stateView.Write(TermOffset, result);
@@ -591,7 +591,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal async ValueTask UpdateVotedForAsync(IPEndPoint? member)
             {
-                using (await syncRoot.Acquire(CancellationToken.None).ConfigureAwait(false))
+                using (await syncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
                 {
                     if (member is null)
                     {
@@ -934,7 +934,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (endIndex < startIndex)
                 return await reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token).ConfigureAwait(false);
             //obtain weak lock as read lock
-            await syncRoot.Acquire(false, token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(false, token).ConfigureAwait(false);
             var session = sessionManager.OpenSession(bufferSize);
             try
             {
@@ -962,7 +962,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
-            await syncRoot.Acquire(false, token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(false, token).ConfigureAwait(false);
             var session = sessionManager.OpenSession(bufferSize);
             try
             {
@@ -1065,7 +1065,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (entries.RemainingCount == 0L)
                 return;
-            await syncRoot.Acquire(true, CancellationToken.None).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(true, CancellationToken.None).ConfigureAwait(false);
             try
             {
                 await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
@@ -1096,7 +1096,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (entry == null)
                 throw new ArgumentNullException(nameof(entry));
-            await syncRoot.Acquire(true, CancellationToken.None).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(true, CancellationToken.None).ConfigureAwait(false);
             try
             {
                 if (startIndex <= state.CommitIndex)
@@ -1139,7 +1139,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (entries.RemainingCount == 0L)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
-            await syncRoot.Acquire(true, token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(true, token).ConfigureAwait(false);
             var startIndex = state.LastIndex + 1L;
             try
             {
@@ -1162,7 +1162,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public async ValueTask<long> DropAsync(long startIndex, CancellationToken token)
         {
             long count;
-            await syncRoot.Acquire(true, token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(true, token).ConfigureAwait(false);
             try
             {
                 if (startIndex <= state.CommitIndex)
@@ -1262,7 +1262,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
         {
             long count;
-            await syncRoot.Acquire(true, token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(true, token).ConfigureAwait(false);
             var startIndex = state.CommitIndex + 1L;
             try
             {
@@ -1347,7 +1347,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
         public async Task EnsureConsistencyAsync(CancellationToken token)
         {
-            await syncRoot.Acquire(true, token).ConfigureAwait(false);
+            await syncRoot.AcquireAsync(true, token).ConfigureAwait(false);
             try
             {
                 await ApplyAsync(token).ConfigureAwait(false);
