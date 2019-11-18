@@ -123,7 +123,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryAcquire(bool strongLock, TimeSpan timeout, CancellationToken token)
-            => strongLock ? Wait(ref this.strongLock, timeout, token) : Wait(ref weakLock, timeout, token);
+            => strongLock ? WaitAsync(ref this.strongLock, timeout, token) : WaitAsync(ref weakLock, timeout, token);
 
         /// <summary>
         /// Attempts to enter the lock asynchronously, with an optional time-out.

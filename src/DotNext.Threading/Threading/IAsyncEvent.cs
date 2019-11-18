@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -37,6 +38,32 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task<bool> Wait(TimeSpan timeout, CancellationToken token);
+        Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token);
+
+        /// <summary>
+        /// Turns caller into idle state until the current event is set. 
+        /// </summary>
+        /// <param name="timeout">The interval to wait for the signaled state.</param>
+        /// <returns><see langword="true"/> if signaled state was set; otherwise, <see langword="false"/>.</returns>
+        Task<bool> WaitAsync(TimeSpan timeout) => WaitAsync(timeout, CancellationToken.None);
+
+        /// <summary>
+        /// Turns caller into idle state until the current event is set. 
+        /// </summary>
+        /// <remarks>
+        /// This method can potentially blocks execution of async flow infinitely.
+        /// </remarks>
+        /// <param name="token">The token that can be used to abort wait process.</param>
+        /// <returns>A promise of signaled state.</returns>
+        Task WaitAsync(CancellationToken token) => WaitAsync(InfiniteTimeSpan, token);
+
+        /// <summary>
+        /// Turns caller into idle state until the current event is set. 
+        /// </summary>
+        /// <remarks>
+        /// This method can potentially blocks execution of async flow infinitely.
+        /// </remarks>
+        /// <returns>A promise of signaled state.</returns>
+        Task WaitAsync() => WaitAsync(CancellationToken.None);
     }
 }

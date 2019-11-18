@@ -89,7 +89,7 @@ namespace DotNext.Threading
         /// Notifies this barrier that there will be fewer participants.
         /// </summary>
         /// <remarks>
-        /// This method may resume all tasks suspended by <see cref="Wait(TimeSpan, CancellationToken)"/>
+        /// This method may resume all tasks suspended by <see cref="WaitAsync(TimeSpan, CancellationToken)"/>
         /// and <see cref="SignalAndWait(TimeSpan, CancellationToken)"/> methods.
         /// </remarks>
         /// <param name="participantCount">The number of additional participants to remove from the barrier.</param>
@@ -107,7 +107,7 @@ namespace DotNext.Threading
         /// Notifies this barrier that there will be one less participant.
         /// </summary>
         /// <remarks>
-        /// This method may resume all tasks suspended by <see cref="Wait(TimeSpan, CancellationToken)"/>
+        /// This method may resume all tasks suspended by <see cref="WaitAsync(TimeSpan, CancellationToken)"/>
         /// and <see cref="SignalAndWait(TimeSpan, CancellationToken)"/> methods.
         /// </remarks>
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
@@ -131,7 +131,7 @@ namespace DotNext.Threading
                 return true;
             }
             else
-                return await Wait(timeout, token).ConfigureAwait(false);
+                return await WaitAsync(timeout, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace DotNext.Threading
         /// <param name="timeout">The time to wait for phase completion.</param>
         /// <param name="token">The token that can be used to cancel the waiting operation.</param>
         /// <returns><see langword="true"/> if all other participants reached the barrier; otherwise, <see langword="false"/>.</returns>
-        public Task<bool> Wait(TimeSpan timeout, CancellationToken token) => countdown.Wait(timeout, token);
+        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token) => countdown.WaitAsync(timeout, token);
 
         /// <summary>
         /// Releases all resources associated with this barrier.

@@ -47,7 +47,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public Task<bool> Wait(TimeSpan timeout, CancellationToken token)
+        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token)
         {
             ThrowIfDisposed();
             return node is null ? CompletedTask<bool, BooleanConst.True>.Task : node.Task.WaitAsync(timeout, token);

@@ -197,7 +197,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var token = timerCancellation.Token;
             while (await DoHeartbeats(auditTrail, token).ConfigureAwait(false))
-                await forcedReplication.Wait(period, token).ConfigureAwait(false);
+                await forcedReplication.WaitAsync(period, token).ConfigureAwait(false);
         }
 
         internal void ForceReplication() => forcedReplication.Set(true);

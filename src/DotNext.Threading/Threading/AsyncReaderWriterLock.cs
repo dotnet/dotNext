@@ -265,7 +265,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryEnterReadLock(TimeSpan timeout, CancellationToken token)
-            => Wait(ref readLock, timeout, token);
+            => WaitAsync(ref readLock, timeout, token);
 
         /// <summary>
         /// Tries to enter the lock in read mode asynchronously, with an optional time-out.
@@ -304,7 +304,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryEnterWriteLock(TimeSpan timeout, CancellationToken token)
-            => Wait(ref writeLock, timeout, token);
+            => WaitAsync(ref writeLock, timeout, token);
 
         /// <summary>
         /// Attempts to obtain writer lock synchronously without blocking caller thread.
@@ -350,7 +350,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryEnterUpgradeableReadLock(TimeSpan timeout, CancellationToken token)
-            => Wait(ref upgradeableLock, timeout, token);
+            => WaitAsync(ref upgradeableLock, timeout, token);
 
         /// <summary>
         /// Attempts to obtain upgradeable reader lock synchronously without blocking caller thread.

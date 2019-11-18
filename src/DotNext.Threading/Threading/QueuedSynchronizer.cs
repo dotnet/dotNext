@@ -82,7 +82,7 @@ namespace DotNext.Threading
             return inList;
         }
 
-        private async Task<bool> Wait(WaitNode node, TimeSpan timeout, CancellationToken token)
+        private async Task<bool> WaitAsync(WaitNode node, TimeSpan timeout, CancellationToken token)
         {
             //cannot use Task.WaitAsync here because this method contains side effect in the form of RemoveNode method
             using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
@@ -99,7 +99,7 @@ namespace DotNext.Threading
             return await node.Task.ConfigureAwait(false);
         }
 
-        private async Task<bool> Wait(WaitNode node, CancellationToken token)
+        private async Task<bool> WaitAsync(WaitNode node, CancellationToken token)
         {
             if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(InfiniteTimeSpan, token)).ConfigureAwait(false)))
                 return true;
@@ -113,7 +113,7 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private protected Task<bool> Wait<M>(ref M manager, TimeSpan timeout, CancellationToken token)
+        private protected Task<bool> WaitAsync<M>(ref M manager, TimeSpan timeout, CancellationToken token)
             where M : struct, ILockManager<WaitNode>
         {
             ThrowIfDisposed();
@@ -130,8 +130,8 @@ namespace DotNext.Threading
             else
                 tail = manager.CreateNode(tail);
             return timeout == InfiniteTimeSpan ?
-                token.CanBeCanceled ? Wait(tail, token) : tail.Task
-                : Wait(tail, timeout, token);
+                token.CanBeCanceled ? WaitAsync(tail, token) : tail.Task
+                : WaitAsync(tail, timeout, token);
         }
 
         /// <summary>
