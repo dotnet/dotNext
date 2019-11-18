@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipelines;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
@@ -78,7 +79,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding.</exception>
         public static void WriteString(this Stream stream, ReadOnlySpan<char> value, in EncodingContext context, Span<byte> buffer)
         {
-            if (value.Length == 0)
+            if (value.IsEmpty)
                 return;
             var encoder = context.GetEncoder();
             var completed = false;
@@ -89,6 +90,16 @@ namespace DotNext.IO
                 stream.Write(buffer.Slice(0, bytesUsed));
                 value = chars;
             }
+        }
+
+        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding)
+        {
+            if (value.IsEmpty)
+                return;
+            var bytesCount = encoding.GetByteCount(value);
+            using MemoryRental<byte> buffer = bytesCount <= 1024 ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
+            encoding.GetBytes(value, buffer.Span);
+            stream.Write(buffer.Span);
         }
 
         /// <summary>
@@ -106,7 +117,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding.</exception>
         public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, EncodingContext context, Memory<byte> buffer, CancellationToken token = default)
         {
-            if (value.Length == 0)
+            if (value.IsEmpty)
                 return;
             var encoder = context.GetEncoder();
             var completed = false;
@@ -119,6 +130,16 @@ namespace DotNext.IO
             }
         }
 
+        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding)
+        {
+            if (value.IsEmpty)
+                return;
+            var bytesCount = encoding.GetByteCount(value.Span);
+            using var buffer = new ArrayRental<byte>(bytesCount);
+            encoding.GetBytes(value.Span, buffer.Span);
+            await stream.WriteAsync(buffer.Memory).ConfigureAwait(false);
+        }
+
         /// <summary>
         /// Reads the string using the specified encoding.
         /// </summary>
@@ -129,6 +150,8 @@ namespace DotNext.IO
         /// <returns>The string decoded from the log entry content stream.</returns>
         public static string ReadString(this Stream stream, int length, in DecodingContext context, Span<byte> buffer)
         {
+            if (length == 0)
+                return string.Empty;
             var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
             if (maxChars == 0)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
@@ -149,6 +172,18 @@ namespace DotNext.IO
             return new string(result.Span.Slice(0, resultOffset));
         }
 
+        public static string ReadString(this Stream stream, int length, Encoding encoding)
+        {
+            if (length == 0)
+                return string.Empty;
+            using MemoryRental<byte> bytesBuffer = length <= 1024 ? stackalloc byte[length] : new MemoryRental<byte>(length);
+            using MemoryRental<char> charBuffer = length <= 1024 ? stackalloc char[length] : new MemoryRental<char>(length);
+            if (bytesBuffer.Length != stream.Read(bytesBuffer.Span))
+                throw new EndOfStreamException();
+            var charCount = encoding.GetChars(bytesBuffer.Span, charBuffer.Span);
+            return new string(charBuffer.Span.Slice(0, charCount));
+        }
+
         /// <summary>
         /// Reads the string asynchronously using the specified encoding.
         /// </summary>
@@ -160,6 +195,8 @@ namespace DotNext.IO
         /// <returns>The string decoded from the log entry content stream.</returns>
         public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
         {
+            if (length == 0)
+                return string.Empty;
             var maxChars = context.Encoding.GetMaxCharCount(buffer.Length);
             if (maxChars == 0)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
@@ -180,6 +217,18 @@ namespace DotNext.IO
                 resultOffset += charsRead;
             }
             return new string(result.Span.Slice(0, resultOffset));
+        }
+
+        public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, Encoding encoding)
+        {
+            if (length == 0)
+                return string.Empty;
+            using var bytesBuffer = new ArrayRental<byte>(length);
+            using var charBuffer = new ArrayRental<char>(length);
+            if (bytesBuffer.Length != await stream.ReadAsync(bytesBuffer.Memory).ConfigureAwait(false))
+                throw new EndOfStreamException();
+            var charCount = encoding.GetChars(bytesBuffer.Span, charBuffer.Span);
+            return new string(charBuffer.Span.Slice(0, charCount));
         }
 
         /// <summary>
