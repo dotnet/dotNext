@@ -14,7 +14,6 @@ namespace DotNext.Threading.Channels
         private readonly IChannelWriter<T> writer;
         private AsyncLock writeLock;
         private PartitionStream writeTopic;
-        private volatile bool closed;
         private readonly FileCreationOptions fileOptions;
         private ChannelCursor cursor;
 
@@ -31,14 +30,12 @@ namespace DotNext.Threading.Channels
         public override bool TryWrite(T item) => false;
 
         public override ValueTask<bool> WaitToWriteAsync(CancellationToken token = default)
-            => token.IsCancellationRequested ? new ValueTask<bool>(Task.FromCanceled<bool>(token)) : new ValueTask<bool>(!closed);
+            => token.IsCancellationRequested ? new ValueTask<bool>(Task.FromCanceled<bool>(token)) : new ValueTask<bool>(true);
 
         private PartitionStream Partition => writer.GetOrCreatePartition(ref cursor, ref writeTopic, fileOptions, false);
 
         public override async ValueTask WriteAsync(T item, CancellationToken token)
         {
-            if (closed)
-                throw new ChannelClosedException();
             using (await writeLock.Acquire(token).ConfigureAwait(false))
             {
                 var partition = Partition;
@@ -46,14 +43,6 @@ namespace DotNext.Threading.Channels
                 cursor.Advance(partition.Position);
                 writer.MessageReady();
             }
-        }
-
-        public override bool TryComplete(Exception error = null)
-        {
-            var result = writer.TryComplete(error);
-            if (result)
-                closed = true;
-            return result;
         }
 
         private void Dispose(bool disposing)
@@ -65,7 +54,6 @@ namespace DotNext.Threading.Channels
                 cursor.Dispose();
             }
             writeLock.Dispose();
-            closed = true;
         }
 
         void IDisposable.Dispose()

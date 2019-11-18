@@ -83,25 +83,11 @@ namespace DotNext.Threading.Channels
 
         private PartitionStream Partition => reader.GetOrCreatePartition(ref cursor, ref readTopic, fileOptions, true);
 
-        public override Task Completion => reader.CompletionTask;
-
         public override bool TryRead(out T item) => buffer.TryRead(out item);
 
         public override async ValueTask<T> ReadAsync(CancellationToken token)
         {
-            if (reader.CompletionTask.IsCompleted)
-            {
-                await reader.CompletionTask.ConfigureAwait(false);
-                throw new ChannelClosedException();
-            }
             await reader.WaitToReadAsync(token).ConfigureAwait(false);
-            //double check of completion is needed here because read trigger
-            //is used to notify about completion
-            if (reader.CompletionTask.IsCompleted)
-            {
-                await reader.CompletionTask.ConfigureAwait(false);
-                throw new ChannelClosedException();
-            }
             //lock and deserialize
             using (await readLock.Acquire(token).ConfigureAwait(false))
             {
@@ -114,20 +100,7 @@ namespace DotNext.Threading.Channels
 
         public override async ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
         {
-            if (reader.CompletionTask.IsCompleted)
-            {
-                await reader.CompletionTask.ConfigureAwait(false);
-                return false;
-            }
-
             await reader.WaitToReadAsync(token).ConfigureAwait(false);
-            //double check of completion is needed here because read trigger
-            //is used to notify about completion
-            if (reader.CompletionTask.IsCompleted)
-            {
-                await reader.CompletionTask.ConfigureAwait(false);
-                return false;
-            }
             //lock and deserialize
             using (await readLock.Acquire(token).ConfigureAwait(false))
             {

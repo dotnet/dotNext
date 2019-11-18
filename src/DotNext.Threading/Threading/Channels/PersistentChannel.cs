@@ -20,7 +20,6 @@ namespace DotNext.Threading.Channels
         private readonly IAsyncEvent readTrigger;
         private readonly int bufferSize;
         private readonly DirectoryInfo location;
-        private readonly TaskCompletionSource<bool> completion;
 
         /// <summary>
         /// Initializes a new persistent channel with the specified options.
@@ -28,7 +27,6 @@ namespace DotNext.Threading.Channels
         /// <param name="options">The options of the channel.</param>
         protected PersistentChannel(PersistentChannelOptions options)
         {
-            completion = new TaskCompletionSource<bool>(options.AllowSynchronousContinuations ? default : TaskCreationOptions.RunContinuationsAsynchronously);
             maxCount = options.RecordsPerPartition;
             bufferSize = options.BufferSize;
             location = new DirectoryInfo(options.Location);
@@ -54,14 +52,9 @@ namespace DotNext.Threading.Channels
             }
         }
 
-        Task IChannelReader<TOutput>.CompletionTask => completion.Task;
-
         DirectoryInfo IChannel.Location => location;
 
         void IChannelWriter<TInput>.MessageReady() => readTrigger.Signal();
-
-        bool IChannelWriter<TInput>.TryComplete(Exception e)
-            => (e is null ? completion.TrySetResult(true) : completion.TrySetException(e)) && readTrigger.Signal();
 
         ValueTask IChannelWriter<TInput>.SerializeAsync(TInput input, PartitionStream output, CancellationToken token)
             => SerializeAsync(input, output, token);
