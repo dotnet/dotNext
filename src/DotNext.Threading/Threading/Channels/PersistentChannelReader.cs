@@ -89,13 +89,14 @@ namespace DotNext.Threading.Channels
         {
             await reader.WaitToReadAsync(token).ConfigureAwait(false);
             //lock and deserialize
+            T result;
             using (await readLock.Acquire(token).ConfigureAwait(false))
             {
                 var lookup = Partition;
-                var result = await reader.DeserializeAsync(lookup, token).ConfigureAwait(false);
+                result = await reader.DeserializeAsync(lookup, token).ConfigureAwait(false);
                 cursor.Advance(lookup.Position);
-                return result;
             }
+            return result;
         }
 
         public override async ValueTask<bool> WaitToReadAsync(CancellationToken token = default)
@@ -104,9 +105,9 @@ namespace DotNext.Threading.Channels
             //lock and deserialize
             using (await readLock.Acquire(token).ConfigureAwait(false))
             {
-                var partition = Partition;
-                buffer.Add(await reader.DeserializeAsync(partition, token).ConfigureAwait(false));
-                cursor.Advance(partition.Position);
+                var lookup = Partition;
+                buffer.Add(await reader.DeserializeAsync(lookup, token).ConfigureAwait(false));
+                cursor.Advance(lookup.Position);
             }
             return true;
         }
