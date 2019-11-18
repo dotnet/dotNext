@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -10,20 +11,20 @@ namespace DotNext.Threading.Channels
 {
     public sealed class PersistentChannelTests : Assert
     {
-        private sealed class GuidChannel : PersistentChannel<Guid, Guid>
+        private sealed class SerializationChannel<T> : PersistentChannel<T, T>
         {
             private readonly IFormatter formatter;
 
-            internal GuidChannel(PersistentChannelOptions options)
+            internal SerializationChannel(PersistentChannelOptions options)
                 : base(options)
             {
                 formatter = new BinaryFormatter();
             }
 
-            protected override ValueTask<Guid> DeserializeAsync(Stream input, CancellationToken token)
-                => new ValueTask<Guid>((Guid)formatter.Deserialize(input));
+            protected override ValueTask<T> DeserializeAsync(Stream input, CancellationToken token)
+                => new ValueTask<T>((T)formatter.Deserialize(input));
 
-            protected override ValueTask SerializeAsync(Guid input, Stream output, CancellationToken token)
+            protected override ValueTask SerializeAsync(T input, Stream output, CancellationToken token)
             {
                 formatter.Serialize(output, input);
                 return new ValueTask();
@@ -38,7 +39,7 @@ namespace DotNext.Threading.Channels
         public static async Task ReadWrite(bool singleReader, bool singleWriter)
         {
             Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
-            using (var channel = new GuidChannel(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter }))
+            using (var channel = new SerializationChannel<Guid>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter }))
             {
                 False(channel.Writer.TryWrite(g1));
                 await channel.Writer.WriteAsync(g1);
@@ -58,14 +59,14 @@ namespace DotNext.Threading.Channels
         {
             Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
             var options = new PersistentChannelOptions { BufferSize = 1024 };
-            using (var channel = new GuidChannel(options))
+            using (var channel = new SerializationChannel<Guid>(options))
             {
                 await channel.Writer.WriteAsync(g1);
                 await channel.Writer.WriteAsync(g2);
                 await channel.Writer.WriteAsync(g3);
                 Equal(g1, await channel.Reader.ReadAsync());
             }
-            using (var channel = new GuidChannel(options))
+            using (var channel = new SerializationChannel<Guid>(options))
             {
                 Equal(g2, await channel.Reader.ReadAsync());
                 Equal(g3, await channel.Reader.ReadAsync());
@@ -82,7 +83,7 @@ namespace DotNext.Threading.Channels
                 RecordsPerPartition = 3
             };
             Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid(), g4 = Guid.NewGuid();
-            using (var channel = new GuidChannel(options))
+            using (var channel = new SerializationChannel<Guid>(options))
             {
                 await channel.Writer.WriteAsync(g1);
                 await channel.Writer.WriteAsync(g2);
@@ -105,7 +106,7 @@ namespace DotNext.Threading.Channels
                 RecordsPerPartition = 3
             };
             Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid(), g4 = Guid.NewGuid();
-            using (var channel = new GuidChannel(options))
+            using (var channel = new SerializationChannel<Guid>(options))
             {
                 await channel.Writer.WriteAsync(g1);
                 await channel.Writer.WriteAsync(g2);
@@ -113,11 +114,34 @@ namespace DotNext.Threading.Channels
                 await channel.Writer.WriteAsync(g4);
                 Equal(g1, await channel.Reader.ReadAsync());
             }
-            using (var channel = new GuidChannel(options))
+            using (var channel = new SerializationChannel<Guid>(options))
             {
                 Equal(g2, await channel.Reader.ReadAsync());
                 Equal(g3, await channel.Reader.ReadAsync());
                 Equal(g4, await channel.Reader.ReadAsync());
+            }
+        }
+
+        private static async Task Produce(ChannelWriter<decimal> writer)
+        {
+            for (decimal i = 0M; i < 500; i++)
+                await writer.WriteAsync(i);
+        }
+
+        private static async Task Consume(ChannelReader<decimal> reader)
+        {
+            for (decimal i = 0M; i < 500; i++)
+                Equal(i, await reader.ReadAsync());
+        }
+
+        [Fact]
+        public static async Task ProduceConsumeConcurrently()
+        {
+            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { SingleReader = true, SingleWriter = true, RecordsPerPartition = 100 }))
+            {
+                var consumer = Consume(channel.Reader);
+                var producer = Produce(channel.Writer);
+                await Task.WhenAll(consumer, producer);
             }
         }
     }
