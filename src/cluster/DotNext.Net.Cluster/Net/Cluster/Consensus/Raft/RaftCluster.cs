@@ -8,9 +8,11 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using IO.Log;
     using Threading;
     using static Threading.Tasks.ValueTaskSynchronization;
 
@@ -26,7 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents cluster member.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        protected readonly ref struct MemberHolder
+        protected ref struct MemberHolder
         {
             private readonly LinkedListNode<TMember> node;
 
@@ -35,7 +37,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets actual cluster member.
             /// </summary>
-            public TMember Member => node?.Value;
+            /// <exception cref="InvalidOperationException">The member is already removed.</exception>
+            public TMember Member => node is null ? throw new InvalidOperationException() : node.Value;
 
             /// <summary>
             /// Removes the current member from the list.
@@ -44,26 +47,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Removed member is not disposed so it can be reused.
             /// </remarks>
             /// <returns>The removed member.</returns>
-            /// <exception cref="InvalidOperationException">Attempt to remove local node.</exception>
+            /// <exception cref="InvalidOperationException">Attempt to remove local node; or node is already removed.</exception>
             public TMember Remove()
             {
-                if (node is null)
-                    return null;
-                else if (!node.Value.IsRemote)
-                    throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
-                else
+                if (node is null || node.Value is null)
+                    throw new InvalidOperationException();
+                if (node.Value.IsRemote)
                 {
                     node.List.Remove(node);
                     var member = node.Value;
-                    node.Value = null;
+                    node.Value = null!;
                     return member;
                 }
+                throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
             }
 
             /// <summary>
             /// Obtains actual cluster member.
             /// </summary>
-            /// <param name="holder"></param>
+            /// <param name="holder">The holder of cluster member.</param>
             public static implicit operator TMember(MemberHolder holder) => holder.Member;
         }
 
@@ -141,8 +143,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private AsyncLock transitionSync;  //used to synchronize state transitions
 
         [SuppressMessage("Usage", "CA2213", Justification = "It is disposed as a part of members collection")]
-        private volatile RaftState state;
-        private volatile TMember leader;
+        private volatile RaftState? state;
+        private volatile TMember? leader;
         private readonly bool allowPartitioning;
         private readonly ElectionTimeout electionTimeoutProvider;
         private volatile int electionTimeout;
@@ -217,9 +219,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected async Task ChangeMembersAsync(MemberCollectionMutator mutator)
         {
-            using (var holder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
-                if (holder)
-                    ChangeMembers(mutator);
+            using var holder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false);
+            if (holder)
+                ChangeMembers(mutator);
         }
 
         /// <summary>
@@ -235,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Establishes metrics collector.
         /// </summary>
-        public MetricsCollector Metrics
+        public MetricsCollector? Metrics
         {
             protected get;
             set;
@@ -249,14 +251,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// An event raised when leader has been changed.
         /// </summary>
-        public event ClusterLeaderChangedEventHandler LeaderChanged;
+        public event ClusterLeaderChangedEventHandler? LeaderChanged;
 
-        IClusterMember ICluster.Leader => Leader;
+        IClusterMember? ICluster.Leader => Leader;
 
         /// <summary>
         /// Gets leader of the cluster.
         /// </summary>
-        public TMember Leader
+        public TMember? Leader
         {
             get => leader;
             private set
@@ -292,6 +294,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
             {
                 var currentState = Interlocked.Exchange(ref state, null);
+                Assert(currentState != null);
                 await currentState.StopAsync().ConfigureAwait(false);
                 currentState.Dispose();
             }
@@ -449,15 +452,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async Task<bool> ICluster.ResignAsync(CancellationToken token)
         {
             using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token, transitionCancellation.Token))
-            {
                 if (await ResignAsync(tokenSource.Token).ConfigureAwait(false))
                 {
                     var leader = Leader;
                     return !(leader is null) && await leader.ResignAsync(tokenSource.Token).ConfigureAwait(false);
                 }
-
-                return false;
-            }
+            return false;
         }
 
         /// <summary>
@@ -468,45 +468,45 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
-            using (var lockHolder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
-                if (lockHolder)
-                {
-                    if (randomizeTimeout)
-                        electionTimeout = electionTimeoutProvider.RandomTimeout();
-                    await (newTerm.HasValue ? StepDown(newTerm.Value) : StepDown()).ConfigureAwait(false);
-                }
+            using var lockHolder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false);
+            if (lockHolder)
+            {
+                if (randomizeTimeout)
+                    electionTimeout = electionTimeoutProvider.RandomTimeout();
+                await (newTerm.HasValue ? StepDown(newTerm.Value) : StepDown()).ConfigureAwait(false);
+            }
         }
 
         async void IRaftStateMachine.MoveToCandidateState()
         {
             Logger.TransitionToCandidateStateStarted();
-            using (var lockHolder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
-                if (lockHolder && state is FollowerState followerState)
-                {
-                    followerState.Dispose();
-                    Leader = null;
-                    var localMember = FindMember(IsLocalMember);
-                    await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     //vote for self
-                    state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
-                    Metrics?.MovedToCandidateState();
-                    Logger.TransitionToCandidateStateCompleted();
-                }
+            using var lockHolder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false);
+            if (lockHolder && state is FollowerState followerState)
+            {
+                followerState.Dispose();
+                Leader = null;
+                var localMember = FindMember(IsLocalMember);
+                await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     //vote for self
+                state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
+                Metrics?.MovedToCandidateState();
+                Logger.TransitionToCandidateStateCompleted();
+            }
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The instance returned by StartLeading is the same as 'this'")]
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
             Logger.TransitionToLeaderStateStarted();
-            using (var lockHolder = await transitionSync.AcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
-                if (lockHolder && state is CandidateState candidateState && candidateState.Term == auditTrail.Term)
-                {
-                    candidateState.Dispose();
-                    Leader = newLeader as TMember;
-                    state = new LeaderState(this, allowPartitioning, auditTrail.Term) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
-                        auditTrail);
-                    Metrics?.MovedToLeaderState();
-                    Logger.TransitionToLeaderStateCompleted();
-                }
+            using var lockHolder = await transitionSync.AcquireAsync(transitionCancellation.Token).ConfigureAwait(false);
+            if (lockHolder && state is CandidateState candidateState && candidateState.Term == auditTrail.Term)
+            {
+                candidateState.Dispose();
+                Leader = newLeader as TMember;
+                state = new LeaderState(this, allowPartitioning, auditTrail.Term) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
+                    auditTrail);
+                Metrics?.MovedToLeaderState();
+                Logger.TransitionToLeaderStateCompleted();
+            }
         }
 
         private async Task WriteAsync<TEntry>(ILogEntryProducer<TEntry> entries, bool waitForCommit, TimeSpan timeout)
@@ -535,17 +535,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task WriteAsync<TEntry>(ILogEntryProducer<TEntry> entries, WriteConcern concern, TimeSpan timeout)
             where TEntry : IRaftLogEntry
-        {
-            switch (concern)
+            => concern switch
             {
-                case WriteConcern.None:
-                    return WriteAsync(entries, false, timeout);
-                case WriteConcern.LeaderOnly:
-                    return WriteAsync(entries, true, timeout);
-                default:
-                    return Task.FromException(new NotSupportedException());
-            }
-        }
+                WriteConcern.None => WriteAsync(entries, false, timeout),
+                WriteConcern.LeaderOnly => WriteAsync(entries, true, timeout),
+                _ => Task.FromException(new NotSupportedException())
+            };
 
         /// <summary>
         /// Releases managed and unmanaged resources associated with this object.

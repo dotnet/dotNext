@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// <summary>
     /// Represents binary message.
     /// </summary>
-    public class BinaryMessage : BinaryTransferObject, IMessage
+    public class BinaryMessage : IO.BinaryTransferObject, IMessage
     {
         /// <summary>
         /// Initializes a new binary message.

@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Messaging
     /// <seealso cref="TextMessage"/>
     /// <seealso cref="BinaryMessage"/>
     /// <seealso cref="StreamMessage"/>
-    public interface IMessage : IDataTransferObject
+    public interface IMessage : IO.IDataTransferObject
     {
         /// <summary>
         /// Gets name of the message.

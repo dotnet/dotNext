@@ -40,7 +40,7 @@ namespace DotNext
             object ITargetRewriter.Rewrite(Delegate d) => d.Target;
         }
 
-        private static MethodInfo? GetMethod<D>(Expression<D> expression)
+        private static MethodInfo GetMethod<D>(Expression<D> expression)
             where D : Delegate
             => expression.Body switch
             {
@@ -49,7 +49,7 @@ namespace DotNext
                 BinaryExpression expr => expr.Method,
                 IndexExpression expr => expr.Indexer.GetMethod,
                 UnaryExpression expr => expr.Method,
-                _ => null,
+                _ => throw new ArgumentException(ExceptionMessages.InvalidExpressionTree, nameof(expression))
             };
 
         /// <summary>
@@ -59,9 +59,8 @@ namespace DotNext
         /// <typeparam name="D">The type of the delegate describing expression tree.</typeparam>
         /// <param name="expression">The expression tree containing instance method call.</param>
         /// <returns>The open delegate.</returns>
-        public static D? CreateOpenDelegate<D>(Expression<D> expression)
-            where D : Delegate
-            => GetMethod(expression)?.CreateDelegate<D>();
+        /// <exception cref="ArgumentException"><paramref name="expression"/> is not valid expression tree.</exception>
+        public static D CreateOpenDelegate<D>(Expression<D> expression) where D : Delegate => GetMethod(expression).CreateDelegate<D>();
 
         /// <summary>
         /// Creates a factory for closed delegates.

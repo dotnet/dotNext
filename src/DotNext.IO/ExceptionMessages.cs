@@ -12,7 +12,5 @@ namespace DotNext
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
         internal static string BufferTooSmall => Resources.GetString("BufferTooSmall");
-
-        internal static string NoAvailableReadSessions => Resources.GetString("NoAvailableReadSessions");
     }
 }

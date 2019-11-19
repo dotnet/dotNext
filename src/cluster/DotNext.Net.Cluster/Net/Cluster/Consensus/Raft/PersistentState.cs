@@ -20,6 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Collections.Generic;
     using IO;
+    using IO.Log;
     using Replication;
     using Text;
     using Threading;

@@ -5,5 +5,5 @@
     /// </summary>
     /// <param name="cluster">The cluster of nodes.</param>
     /// <param name="leader">A new elected cluster leader; or <see langword="null"/> if there are no cluster-wide consensus.</param>
-    public delegate void ClusterLeaderChangedEventHandler(ICluster cluster, IClusterMember leader);
+    public delegate void ClusterLeaderChangedEventHandler(ICluster cluster, IClusterMember? leader);
 }

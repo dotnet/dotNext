@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// Represents persistent state of local cluster member
     /// required by Raft consensus protocol.
     /// </summary>
-    public interface IPersistentState : Replication.IAuditTrail<IRaftLogEntry>
+    public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     {
         /// <summary>
         /// Determines whether the local member granted its vote for the specified remote member.

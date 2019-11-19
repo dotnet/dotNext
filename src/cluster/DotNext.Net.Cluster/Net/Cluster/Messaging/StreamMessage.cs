@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using IO;
+
     /// <summary>
     /// Represents message which content is represented by <see cref="Stream"/>.
     /// </summary>

@@ -28,5 +28,7 @@ namespace DotNext
         internal static string UnreachableCodeDetected => Resources.GetString("UnreachableCodeDetected");
 
         internal static string ConcreteDelegateExpected => Resources.GetString("ConcreteDelegateExpected");
+
+        internal static string InvalidExpressionTree => Resources.GetString("InvalidExpressionTree");
     }
 }

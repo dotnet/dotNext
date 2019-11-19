@@ -3,7 +3,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents log entry in Raft audit trail.
     /// </summary>
-    public interface IRaftLogEntry : Replication.ILogEntry
+    public interface IRaftLogEntry : IO.Log.ILogEntry
     {
         /// <summary>
         /// Gets Term value associated with this log entry.

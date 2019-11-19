@@ -8,3 +8,4 @@ InvalidMethodSignature=Method has an invalid signature for the creating pointer 
 UnsupportedMethodPointerType=Unsupported method pointer type detected
 UnreachableCodeDetected=Unreachable code is detected
 ConcreteDelegateExpected=Concrete delegate type expected
+InvalidExpressionTree=Expression tree is not supported

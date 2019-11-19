@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using IO;
+    using IO.Log;
     using Replication;
     using Threading;
 

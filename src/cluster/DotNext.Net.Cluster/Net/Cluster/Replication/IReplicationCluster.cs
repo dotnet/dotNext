@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Replication
 {
+    using IO.Log;
+
     /// <summary>
     /// Represents replication cluster.
     /// </summary>

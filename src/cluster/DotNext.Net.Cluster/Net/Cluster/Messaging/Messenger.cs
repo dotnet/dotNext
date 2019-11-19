@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using IO;
+
     /// <summary>
     /// Represents helper methods allow to communicate with remove cluster members
     /// through network.
