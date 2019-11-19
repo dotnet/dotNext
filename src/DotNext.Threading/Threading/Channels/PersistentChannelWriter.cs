@@ -8,7 +8,7 @@ namespace DotNext.Threading.Channels
 {
     using IO;
 
-    internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelHandler, IDisposable
+    internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInfo, IDisposable
     {
         private const string StateFileName = "writer.state";
         private readonly IChannelWriter<T> writer;
@@ -38,9 +38,10 @@ namespace DotNext.Threading.Channels
         {
             using (await writeLock.Acquire(token).ConfigureAwait(false))
             {
-                var partition = Partition;
-                await writer.SerializeAsync(item, partition, token).ConfigureAwait(false);
-                cursor.Advance(partition.Position);
+                var lookup = Partition;
+                await writer.SerializeAsync(item, lookup, token).ConfigureAwait(false);
+                await lookup.FlushAsync(token).ConfigureAwait(false);
+                cursor.Advance(lookup.Position);
             }
             writer.MessageReady();
         }
