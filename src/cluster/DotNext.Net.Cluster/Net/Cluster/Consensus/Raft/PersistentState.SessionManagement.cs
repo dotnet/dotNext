@@ -15,7 +15,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal readonly int SessionId;
             private readonly IMemoryOwner<byte> owner;
 
-
             //read session ctor
             internal DataAccessSession(int sessionId, MemoryPool<byte> bufferPool, int bufferSize)
             {
