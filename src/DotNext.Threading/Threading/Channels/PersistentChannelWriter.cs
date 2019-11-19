@@ -41,6 +41,7 @@ namespace DotNext.Threading.Channels
             {
                 var partition = Partition;
                 await writer.SerializeAsync(item, partition, token).ConfigureAwait(false);
+                await partition.FlushAsync(token).ConfigureAwait(false);
                 cursor.Advance(partition.Position);
             }
             writer.MessageReady();
