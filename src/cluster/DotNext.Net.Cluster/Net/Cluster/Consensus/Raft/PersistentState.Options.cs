@@ -43,6 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Gets memory pool that is used by Write Ahead Log for its I/O operations.
             /// </summary>
+            /// <returns>The instance of memory pool.</returns>
             public virtual MemoryPool<T> CreateMemoryPool<T>() where T : struct => MemoryPool<T>.Shared;
 
             /// <summary>
