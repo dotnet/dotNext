@@ -86,20 +86,6 @@ namespace DotNext.Collections.Generic
             => Indexer<K, V>.Setter.Bind(dictionary);
 
         /// <summary>
-        /// Deconstruct key/value pair.
-        /// </summary>
-        /// <typeparam name="K">Type of key.</typeparam>
-        /// <typeparam name="V">Type of value.</typeparam>
-        /// <param name="pair">A pair to decompose.</param>
-        /// <param name="key">Deconstructed key.</param>
-        /// <param name="value">Deconstructed value.</param>
-        public static void Deconstruct<K, V>(this KeyValuePair<K, V> pair, out K key, out V value)
-        {
-            key = pair.Key;
-            value = pair.Value;
-        }
-
-        /// <summary>
         /// Adds a key-value pair to the dictionary if the key does not exist.
         /// </summary>
         /// <typeparam name="K">The key type of the dictionary.</typeparam>
