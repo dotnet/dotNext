@@ -8,7 +8,7 @@ namespace DotNext.Threading.Channels
 {
     using IO;
 
-    internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelHandler, IDisposable
+    internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInfo, IDisposable
         where T : notnull
     {
         private const string StateFileName = "writer.state";

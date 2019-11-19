@@ -10,7 +10,7 @@ namespace DotNext.Threading.Channels
 {
     using IO;
 
-    internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelHandler, IDisposable
+    internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInfo, IDisposable
         where T : notnull
     {
         private const string StateFileName = "reader.state";
