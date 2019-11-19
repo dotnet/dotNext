@@ -45,12 +45,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 : base(content, leaveOpen, name, type)
             {
             }
-
-            internal InboundMessageContent(HttpRequest request)
-                : this(request.Body, true, ParseHeader<StringValues>(MessageNameHeader, request.Headers.TryGetValue),
-                    new ContentType(request.ContentType))
-            {
-            }
         }
 
         internal new const string MessageType = "CustomMessage";
@@ -75,17 +69,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         }
 
-        private CustomMessage(HeadersReader<StringValues> headers)
+        private CustomMessage(HeadersReader<StringValues> headers, Stream body, ContentType contentType)
             : base(headers)
         {
             Mode = ParseHeader(DeliveryModeHeader, headers, DeliveryModeParser);
             RespectLeadership = ParseHeader(RespectLeadershipHeader, headers, BooleanParser);
+            Message = new InboundMessageContent(body, true, ParseHeader(MessageNameHeader, headers), contentType);
         }
 
         internal CustomMessage(HttpRequest request)
-            : this(request.Headers.TryGetValue)
+            : this(request.Headers.TryGetValue, request.Body, new ContentType(request.ContentType))
         {
-            Message = new InboundMessageContent(request);
         }
 
         internal sealed override void PrepareRequest(HttpRequestMessage request)
@@ -102,7 +96,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             response.ContentType = message.Type.ToString();
             response.ContentLength = message.Length;
             response.Headers.Add(MessageNameHeader, message.Name);
-            return message.CopyToAsync(response.Body, token);
+            return message.CopyToAsync(response.Body, token).AsTask();
         }
 
         //do not parse response because this is one-way message
@@ -112,9 +106,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
             var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
-            using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-            using (var message = new InboundMessageContent(content, true, name, contentType))
-                return await reader(message, token).ConfigureAwait(false);
+            using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            using var message = new InboundMessageContent(content, true, name, contentType);
+            return await reader(message, token).ConfigureAwait(false);
         }
     }
 

@@ -13,7 +13,7 @@ namespace DotNext.Net
     {
         internal static bool IsIn(this IPAddress address, IPNetwork network) => network.Contains(address);
 
-        internal static IPEndPoint ToEndPoint(this Uri memberUri)
+        internal static IPEndPoint? ToEndPoint(this Uri memberUri)
         {
             switch (memberUri.HostNameType)
             {

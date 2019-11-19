@@ -26,7 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// <param name="appBuilder">The builder of consensus protocol processing pipeline. May be <see langword="null"/>.</param>
         /// <returns>The collection of injectable services.</returns>
         public static IServiceCollection BecomeClusterMember(this IServiceCollection services,
-            IConfiguration memberConfig, IWebHostBuilder hostBuilder = null, ApplicationBuilder appBuilder = null)
+            IConfiguration memberConfig, IWebHostBuilder? hostBuilder = null, ApplicationBuilder? appBuilder = null)
         {
             if (appBuilder != null)
                 services = services.AddSingleton(appBuilder);

@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private const string DefaultClientHandlerName = "raftClient";
 
-        private string handlerName;
+        private string? handlerName;
 
         /// <summary>
         /// Gets collection of members.
@@ -31,7 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// <summary>
         /// Gets or sets address of the local node.
         /// </summary>
-        public IPAddress HostAddressHint { get; set; }
+        public IPAddress? HostAddressHint { get; set; }
 
         /// <summary>
         /// Gets or sets HTTP version supported by Raft implementation.

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace DotNext.IO
     /// <summary>
     /// Represents object which content is represented by <see cref="Stream"/>.
     /// </summary>
-    public class StreamTransferObject : Disposable, IDataTransferObject
+    public class StreamTransferObject : Disposable, IDataTransferObject, IAsyncDisposable
     {
         private const int DefaultBufferSize = 1024;
         private readonly bool leaveOpen;
@@ -56,6 +57,16 @@ namespace DotNext.IO
             if (disposing && !leaveOpen)
                 content.Dispose();
             base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Asynchronously releases the resources associated with this object.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous dispose operation.</returns>
+        public virtual ValueTask DisposeAsync()
+        {
+            base.Dispose(false);
+            return content.DisposeAsync();
         }
     }
 }

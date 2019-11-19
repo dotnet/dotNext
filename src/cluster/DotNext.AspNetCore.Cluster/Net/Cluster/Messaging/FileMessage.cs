@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using IO;
+
     internal sealed class FileMessage : FileStream, IDisposableMessage
     {
-        private const int BufferSize = 1024;
         private readonly string messageName;
 
         internal FileMessage(string name, ContentType type)
@@ -18,14 +19,9 @@ namespace DotNext.Net.Cluster.Messaging
             Type = type;
         }
 
-        Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => CopyToAsync(output, BufferSize, token);
+        ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => new ValueTask(CopyToAsync(output, token));
 
-        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
-        {
-            //TODO: Should be rewritten for .NET Standard 2.1
-            using (var message = output.AsStream(true))
-                await CopyToAsync(message, BufferSize, token).ConfigureAwait(false);
-        }
+        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => await this.ReadAsync(output, token: token).ConfigureAwait(false);
 
         long? IDataTransferObject.Length => Length;
 

@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
     <Version>2.0.0</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
@@ -45,8 +46,8 @@
   <ItemGroup>
     <PackageReference Include="IPNetwork2" Version="2.4.0.155" />
     <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="[3, 4)" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="[3, 4)" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="3.0.1" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.7" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.Caching" Version="4.6.0" />
