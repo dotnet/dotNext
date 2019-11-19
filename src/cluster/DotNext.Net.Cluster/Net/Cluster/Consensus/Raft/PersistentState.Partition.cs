@@ -64,11 +64,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     PopulateCache(session.Buffer.Span, lookupCache.Memory.Span);
             }
 
-            private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, Memory<byte> buffer, int index, CancellationToken token)
+            private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, Memory<byte> buffer, int index, bool refreshStream, CancellationToken token)
             {
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
                 //find pointer to the content
                 LogEntryMetadata metadata;
+                if (refreshStream)
+                    await reader.FlushAsync(token).ConfigureAwait(false);
                 if (lookupCache is null)
                 {
                     reader.BaseStream.Position = index * LogEntryMetadata.Size;
@@ -79,14 +81,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return metadata.Offset > 0 ? new LogEntry(reader, buffer, metadata) : new LogEntry?();
             }
 
-
-            internal ValueTask<LogEntry?> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, CancellationToken token)
+            internal ValueTask<LogEntry?> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, bool refreshStream, CancellationToken token)
             {
                 //calculate relative index
                 if (absoluteIndex)
                     index -= FirstIndex;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
-                return ReadAsync(GetReadSessionStream(session), session.Buffer, (int)index, token);
+                return ReadAsync(GetReadSessionStream(session), session.Buffer, (int)index, refreshStream, token);
             }
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, Memory<byte> buffer)
@@ -176,6 +177,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private static async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, CancellationToken token)
             {
                 reader.BaseStream.Position = 0;
+                //snapshot reader stream may be out of sync with writer stream
+                await reader.FlushAsync(token).ConfigureAwait(false);
                 return new LogEntry(reader, buffer, await reader.BaseStream.ReadAsync<SnapshotMetadata>(buffer, token).ConfigureAwait(false));
             }
 
@@ -200,6 +203,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool TryGetPartition(long recordIndex, [NotNullWhen(true)]ref Partition? partition)
             => partition != null && recordIndex >= partition.FirstIndex && recordIndex <= partition.LastIndex || partitionTable.TryGetValue(PartitionOf(recordIndex), out partition);
+
+        private bool TryGetPartition(long recordIndex, [NotNullWhen(true)]ref Partition? partition, out bool switched)
+        {
+            var previous = partition;
+            var result = TryGetPartition(recordIndex, ref partition);
+            switched = partition != previous;
+            return result;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Task FlushAsync(Partition? partition) => partition is null ? Task.CompletedTask : partition.FlushAsync();

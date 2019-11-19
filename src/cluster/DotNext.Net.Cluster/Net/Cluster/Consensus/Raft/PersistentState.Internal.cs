@@ -2,6 +2,8 @@
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -64,6 +66,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private protected StreamSegment GetReadSessionStream(in DataAccessSession session) => readers[session.SessionId];
+
+            internal Task FlushAsync(in DataAccessSession session, CancellationToken token)
+                => GetReadSessionStream(session).FlushAsync(token);
 
             internal abstract void PopulateCache(in DataAccessSession session);
 

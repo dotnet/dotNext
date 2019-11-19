@@ -145,8 +145,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     for (Partition? partition = null; startIndex <= endIndex; list.Memory.Span[listIndex++] = entry, startIndex++)
                         if (startIndex == 0L)   //handle ephemeral entity
                             entry = First;
-                        else if (TryGetPartition(startIndex, ref partition)) //handle regular record
-                            entry = (await partition.ReadAsync(session, startIndex, true, token).ConfigureAwait(false)).Value;
+                        else if (TryGetPartition(startIndex, ref partition, out var switched)) //handle regular record
+                            entry = (await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false)).Value;
                         else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)    //probably the record is snapshotted
                         {
                             entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
@@ -469,10 +469,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var snapshotIndex = 0L;
             foreach (var partition in compactionScope.Values)
             {
+                await partition.FlushAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
                 for (var i = 0; i < partition.Capacity; i++)
                     if (partition.FirstIndex > 0L || i > 0L) //ignore the ephemeral entry
                     {
-                        var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, token).ConfigureAwait(false)).Value;
+                        var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false)).Value;
                         entry.AdjustPosition();
                         await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
                     }
@@ -570,9 +571,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Partition? partition = null;
             for (var i = state.LastApplied + 1L; i <= state.CommitIndex; state.LastApplied = i++)
-                if (TryGetPartition(i, ref partition))
+                if (TryGetPartition(i, ref partition, out var switched))
                 {
-                    var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, true, token).ConfigureAwait(false)).Value;
+                    var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, true, switched, token).ConfigureAwait(false)).Value;
                     entry.AdjustPosition();
                     await ApplyAsync(entry).ConfigureAwait(false);
                 }
