@@ -1,6 +1,6 @@
 ﻿namespace DotNext.Threading.Channels
 {
-    internal interface IChannelHandler
+    internal interface IChannelInfo
     {
         long Position { get; }
     }

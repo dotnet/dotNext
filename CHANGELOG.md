@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 11-20-2019
+<a href="https://www.nuget.org/packages/dotnext.threading/1.3.1">DotNext.Threading 1.3.1</a>
+* Fixed NRE when `Dispose` method of [PersistentChannel](https://sakno.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) class called multiple times
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.5">DotNext.AspNetCore.Cluster 1.2.5</a>
+* Fixed bug when log entry may have invalid content when retrieved from persistent audit trail. Usually this problem can be observed in case of concurrent read/write and caused by invalid synchronization of multiple file streams.
+
 # 11-18-2019
 <a href="https://www.nuget.org/packages/dotnext.threading/1.3.0">DotNext.Threading 1.3.0</a>
 * [PersistentChannel](https://sakno.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) is added as an extension of **channel** concept from [System.Threading.Channels](https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels). It allows to use disk memory instead of RAM for storing messages passed from producer to consumer. Read more [here](https://sakno.github.io/dotNext/features/threading/channel.html)
@@ -22,13 +29,13 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.4">DotNext.Unsafe 1.2.4</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.3">DotNext.Net.Cluster 1.2.4</a>
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.4">DotNext.Net.Cluster 1.2.4</a>
 * Fixed unnecessary boxing of generic log entry value
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.3">DotNext.AspNetCore.Cluster 1.2.3</a>
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.4">DotNext.AspNetCore.Cluster 1.2.4</a>
 * Updated dependencies
 
-<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.2.3">DotNext.Augmentation.Fody 1.2.4</a>
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/1.2.4">DotNext.Augmentation.Fody 1.2.4</a>
 * Updated dependencies
 
 # 11-11-2019
