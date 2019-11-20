@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -234,6 +235,7 @@ namespace DotNext.Reflection
         /// If the object is not <see langword="null"/> and is not assignable to the <paramref name="type"/>; 
         /// or if object is <see langword="null"/> and <paramref name="type"/> is value type.
         /// </exception>
+        [return: NotNullIfNotNull("obj")]
         public static object? Cast(this Type type, object? obj)
         {
             if (obj is null)

@@ -12,20 +12,37 @@ namespace DotNext.IO
         private static void ReadStringUsingEncoding(Encoding encoding, int bufferSize)
         {
             const string helloWorld = "Hello, world! &$@&@()&$YHWORww!";
-            using (var ms = new MemoryStream())
-            {
-                ms.Write(encoding.GetBytes(helloWorld));
-                ms.Position = 0;
-                var buffer = new byte[bufferSize];
-                Equal(helloWorld, ms.ReadString(encoding.GetByteCount(helloWorld), encoding, buffer));
-            }
+            using var ms = new MemoryStream();
+            ms.Write(encoding.GetBytes(helloWorld));
+            ms.Position = 0;
+            var buffer = new byte[bufferSize];
+            Equal(helloWorld, ms.ReadString(encoding.GetByteCount(helloWorld), encoding, buffer));
+        }
+
+        private static void ReadStringUsingEncoding(Encoding encoding)
+        {
+            const string helloWorld = "Hello, world! &$@&@()&$YHWORww!";
+            using var ms = new MemoryStream();
+            ms.Write(encoding.GetBytes(helloWorld));
+            ms.Position = 0;
+            Equal(helloWorld, ms.ReadString(encoding.GetByteCount(helloWorld), encoding));
+        }
+
+        [Fact]
+        public static void ReadString()
+        {
+            ReadStringUsingEncoding(Encoding.UTF8);
+            ReadStringUsingEncoding(Encoding.Unicode);
+            ReadStringUsingEncoding(Encoding.UTF7);
+            ReadStringUsingEncoding(Encoding.UTF32);
+            ReadStringUsingEncoding(Encoding.ASCII);
         }
 
         [Theory]
         [InlineData(4)]
         [InlineData(15)]
         [InlineData(128)]
-        public static void ReadString(int bufferSize)
+        public static void ReadStringBuffered(int bufferSize)
         {
             ReadStringUsingEncoding(Encoding.UTF8, bufferSize);
             ReadStringUsingEncoding(Encoding.Unicode, bufferSize);
