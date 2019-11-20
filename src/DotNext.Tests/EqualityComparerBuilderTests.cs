@@ -40,7 +40,9 @@ namespace DotNext
             private readonly UnsafeClass obj;
             private readonly UnsafeStruct[] array;
             private readonly object[] objArray;
+#pragma warning disable CS0414
             private readonly IEquatable<string>[] nullArray;
+#pragma warning restore CS0414
 
             internal ComplexClass(UnsafeClass obj, params UnsafeStruct[] array)
             {
