@@ -45,8 +45,8 @@ namespace DotNext.Threading.Channels
 
         public void Dispose()
         {
-            stateView.Dispose();
-            stateFile.Dispose();
+            stateView?.Dispose();
+            stateFile?.Dispose();
             this = default;
         }
     }
