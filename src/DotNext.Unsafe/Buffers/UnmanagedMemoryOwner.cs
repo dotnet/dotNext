@@ -5,7 +5,7 @@ using System.IO;
 
 namespace DotNext.Buffers
 {
-    using Runtime.InteropServices;
+    using Runtime;
 
     /// <summary>
     /// Represents unmanaged memory access that allows
@@ -25,7 +25,7 @@ namespace DotNext.Buffers
         object ICloneable.Clone()
         {
             var copy = new UnmanagedMemoryOwner<T>(Length, false, fromPool);
-            Runtime.InteropServices.Memory.Copy(address, copy.address, Size);
+            Intrinsics.Copy(address, copy.address, Size);
             return copy;
         }
 
@@ -55,11 +55,11 @@ namespace DotNext.Buffers
         /// Sets all bits of allocated memory to zero.
         /// </summary>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-        public void Clear()
+        public unsafe void Clear()
         {
             if (address == default)
                 throw new ObjectDisposedException(GetType().Name);
-            Runtime.InteropServices.Memory.ClearBits(address, Size);
+            Runtime.Intrinsics.ClearBits(address.ToPointer(), Size);
         }
 
         /// <summary>

@@ -187,5 +187,14 @@ namespace DotNext.IO
             var buffer = new byte[2];
             Equal(3L, source.CopyTo(destination, buffer));
         }
+
+        [Fact]
+        public static void ReadWriteBlittableType()
+        {
+            using var ms = new MemoryStream();
+            ms.Write(10M);
+            ms.Position = 0;
+            Equal(10M, ms.Read<decimal>());
+        }
     }
 }

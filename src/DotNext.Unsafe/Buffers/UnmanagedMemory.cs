@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
 {
-    using Runtime.InteropServices;
+    using Runtime;
 
     internal class UnmanagedMemory<T> : MemoryManager<T>
         where T : unmanaged
@@ -22,14 +22,14 @@ namespace DotNext.Buffers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private protected unsafe static long SizeOf(int length) => Math.BigMul(length, sizeof(T));
 
-        private protected UnmanagedMemory(int length, bool zeroMem)
+        private protected unsafe UnmanagedMemory(int length, bool zeroMem)
         {
             var size = SizeOf(length);
             address = Marshal.AllocHGlobal(new IntPtr(size));
             GC.AddMemoryPressure(size);
             Length = length;
             if (zeroMem)
-                Runtime.InteropServices.Memory.ClearBits(address, size);
+                Intrinsics.ClearBits(address.ToPointer(), size);
             owner = true;
         }
         public long Size => SizeOf(Length);
@@ -57,7 +57,7 @@ namespace DotNext.Buffers
         {
             if (address == default)
                 throw new ObjectDisposedException(GetType().Name);
-            return new MemoryHandle(address.ToPointer<T>() + elementIndex);
+            return new MemoryHandle((T*)address.ToPointer() + elementIndex);
         }
 
         public sealed override void Unpin()
