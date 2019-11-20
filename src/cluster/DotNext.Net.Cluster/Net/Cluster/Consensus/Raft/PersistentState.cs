@@ -330,6 +330,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             private protected StreamSegment GetReadSessionStream(in DataAccessSession session) => readers[session.SessionId];
 
+            internal Task FlushAsync(in DataAccessSession session, CancellationToken token)
+                => GetReadSessionStream(session).FlushAsync(token);
+
             internal abstract void PopulateCache(in DataAccessSession session);
 
             protected override void Dispose(bool disposing)
@@ -392,12 +395,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     PopulateCache(session.Buffer, lookupCache.Memory.Span);
             }
 
-            private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, byte[] buffer, long index, bool absoluteIndex, CancellationToken token)
+            private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, byte[] buffer, long index, bool absoluteIndex, bool refreshStream, CancellationToken token)
             {
                 //calculate relative index
                 if (absoluteIndex)
                     index -= FirstIndex;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
+                if (refreshStream)
+                    await reader.FlushAsync(token).ConfigureAwait(false);
                 //find pointer to the content
                 LogEntryMetadata metadata;
                 if (lookupCache.IsEmpty)
@@ -410,8 +415,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return metadata.Offset > 0 ? new LogEntry(reader, buffer, metadata) : new LogEntry?();
             }
 
-            internal ValueTask<LogEntry?> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, CancellationToken token)
-                => ReadAsync(GetReadSessionStream(session), session.Buffer, index, absoluteIndex, token);
+            internal ValueTask<LogEntry?> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, bool refreshStream, CancellationToken token)
+                => ReadAsync(GetReadSessionStream(session), session.Buffer, index, absoluteIndex, refreshStream, token);
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, long index, byte[] buffer)
                 where TEntry : IRaftLogEntry
@@ -498,6 +503,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private static async ValueTask<LogEntry> ReadAsync(StreamSegment reader, byte[] buffer, CancellationToken token)
             {
                 reader.BaseStream.Position = 0;
+                //snapshot reader stream may be out of sync with writer stream
+                await reader.FlushAsync(token).ConfigureAwait(false);
                 return new LogEntry(reader, buffer, await reader.BaseStream.ReadAsync<SnapshotMetadata>(buffer, token).ConfigureAwait(false));
             }
 
@@ -875,6 +882,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private bool TryGetPartition(long recordIndex, ref Partition partition)
             => partition != null && recordIndex >= partition.FirstIndex && recordIndex <= partition.LastIndex || partitionTable.TryGetValue(PartitionOf(recordIndex), out partition);
 
+        private bool TryGetPartition(long recordIndex, ref Partition partition, out bool switched)
+        {
+            var previous = partition;
+            var result = TryGetPartition(recordIndex, ref partition);
+            switched = partition != previous;
+            return result;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Task FlushAsync(Partition partition) => partition is null ? Task.CompletedTask : partition.FlushAsync();
 
@@ -927,8 +942,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     for (Partition partition = null; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                         if (startIndex == 0L)   //handle ephemeral entity
                             entry = First;
-                        else if (TryGetPartition(startIndex, ref partition)) //handle regular record
-                            entry = (await partition.ReadAsync(session, startIndex, true, token).ConfigureAwait(false)).Value;
+                        else if (TryGetPartition(startIndex, ref partition, out var switched)) //handle regular record
+                            entry = (await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false)).Value;
                         else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)    //probably the record is snapshotted
                         {
                             entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
@@ -1268,10 +1283,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var snapshotIndex = 0L;
             foreach (var partition in compactionScope.Values)
             {
+                await partition.FlushAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
                 for (var i = 0; i < partition.Capacity; i++)
                     if (partition.FirstIndex > 0L || i > 0L) //ignore the ephemeral entry
                     {
-                        var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, token).ConfigureAwait(false)).Value;
+                        var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false)).Value;
                         entry.AdjustPosition();
                         await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
                     }
@@ -1369,9 +1385,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Partition partition = null;
             for (var i = state.LastApplied + 1L; i <= state.CommitIndex; state.LastApplied = i++)
-                if (TryGetPartition(i, ref partition))
+                if (TryGetPartition(i, ref partition, out var switched))
                 {
-                    var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, true, token).ConfigureAwait(false)).Value;
+                    var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, true, switched, token).ConfigureAwait(false)).Value;
                     entry.AdjustPosition();
                     await ApplyAsync(entry).ConfigureAwait(false);
                 }
