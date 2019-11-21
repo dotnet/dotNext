@@ -127,6 +127,7 @@ namespace DotNext.Threading.Channels
                 readTopic?.Dispose();
                 readTopic = null;
                 cursor.Dispose();
+                buffer.Clear();
             }
             readLock.Dispose();
         }

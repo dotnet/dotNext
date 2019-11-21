@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.IO.MemoryMappedFiles
 {
     using Runtime.InteropServices;
+    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Provides direct access to the memory-mapped file content through pointer
@@ -35,22 +36,13 @@ namespace DotNext.IO.MemoryMappedFiles
         {
             if (accessor is null)
                 return Stream.Null;
-            FileAccess access;
-            switch (accessor.CanRead.ToInt32() + (accessor.CanWrite.ToInt32() << 1))
+            var access = (accessor.CanRead.ToInt32() + (accessor.CanWrite.ToInt32() << 1)) switch
             {
-                default:
-                    access = default;
-                    break;
-                case 1:
-                    access = FileAccess.Read;
-                    break;
-                case 2:
-                    access = FileAccess.Write;
-                    break;
-                case 3:
-                    access = FileAccess.ReadWrite;
-                    break;
-            }
+                1 => FileAccess.Read,
+                2 => FileAccess.Write,
+                3 => FileAccess.ReadWrite,
+                _ => default,
+            };
             return Pointer.AsStream(Size, access);
         }
 
@@ -89,7 +81,7 @@ namespace DotNext.IO.MemoryMappedFiles
         {
             if (ptr == default)
                 throw new ObjectDisposedException(GetType().Name);
-            Memory.ClearBits(new IntPtr(ptr), Size);
+            Intrinsics.ClearBits(ptr, Size);
         }
 
         /// <summary>

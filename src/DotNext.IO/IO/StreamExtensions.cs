@@ -23,6 +23,15 @@ namespace DotNext.IO
     /// </remarks>
     public static class StreamExtensions
     {
+        /// <summary>
+        /// Reads the bytes from stream and writes them to <see cref="PipeWriter"/>.
+        /// </summary>
+        /// <param name="source">The stream to read from.</param>
+        /// <param name="destination">The pipe writer used to write bytes obtained from stream.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used to copy contents.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The number of copied bytes.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<long> ReadAsync(this Stream source, PipeWriter destination, int bufferSize = 0, CancellationToken token = default)
         {
             var total = 0L;
@@ -42,6 +51,14 @@ namespace DotNext.IO
             return total;
         }
 
+        /// <summary>
+        /// Reads the bytes from pipe and writes them to the stream.
+        /// </summary>
+        /// <param name="destination">The stream to which the contents of the given pipe will be copied.</param>
+        /// <param name="source">The pipe reader used to read bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The number of copied bytes.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<long> WriteAsync(this Stream destination, PipeReader source, CancellationToken token = default)
         {
             var total = 0L;
@@ -67,7 +84,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Writes the string into the stream.
+        /// Writes the string to the stream using supplied reusable buffer.
         /// </summary>
         /// <remarks>
         /// This method doesn't encode the length of the string.
@@ -76,7 +93,6 @@ namespace DotNext.IO
         /// <param name="value">The string to be encoded.</param>
         /// <param name="context">The encoding.</param>
         /// <param name="buffer">The buffer allocated by the caller needed for characters encoding.</param>
-        /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding.</exception>
         public static void WriteString(this Stream stream, ReadOnlySpan<char> value, in EncodingContext context, Span<byte> buffer)
         {
             if (value.IsEmpty)
@@ -92,6 +108,15 @@ namespace DotNext.IO
             }
         }
 
+        /// <summary>
+        /// Writes the string to the stream.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't encode the length of the string.
+        /// </remarks>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The string to be encoded.</param>
+        /// <param name="encoding">The encoding.</param>
         public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding)
         {
             if (value.IsEmpty)
@@ -103,7 +128,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Writes the string into the stream asynchronously.
+        /// Writes the string to the stream asynchronously using supplied reusable buffer.
         /// </summary>
         /// <remarks>
         /// This method doesn't encode the length of the string.
@@ -114,7 +139,7 @@ namespace DotNext.IO
         /// <param name="buffer">The buffer allocated by the caller needed for characters encoding.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the operation.</returns>
-        /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, EncodingContext context, Memory<byte> buffer, CancellationToken token = default)
         {
             if (value.IsEmpty)
@@ -130,24 +155,42 @@ namespace DotNext.IO
             }
         }
 
-        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding)
+        /// <summary>
+        /// Writes the string to the stream asynchronously.
+        /// </summary>
+        /// <remarks>
+        /// This method doesn't encode the length of the string.
+        /// </remarks>
+        /// <param name="stream">The stream to write into.</param>
+        /// <param name="value">The string to be encoded.</param>
+        /// <param name="encoding">The encoding context.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of the operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding, CancellationToken token = default)
         {
             if (value.IsEmpty)
                 return;
             var bytesCount = encoding.GetByteCount(value.Span);
             using var buffer = new ArrayRental<byte>(bytesCount);
             encoding.GetBytes(value.Span, buffer.Span);
-            await stream.WriteAsync(buffer.Memory).ConfigureAwait(false);
+            await stream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Reads the string using the specified encoding.
+        /// Reads the string using the specified encoding and supplied reusable buffer.
         /// </summary>
+        /// <remarks>
+        /// <paramref name="buffer"/> length can be less than <paramref name="length"/>
+        /// but should be enough to decode at least one character of the specified encoding.
+        /// </remarks>
         /// <param name="stream">The stream to read from.</param>
         /// <param name="length">The length of the string, in bytes.</param>
         /// <param name="context">The text decoding context.</param>
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <returns>The string decoded from the log entry content stream.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> to small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         public static string ReadString(this Stream stream, int length, in DecodingContext context, Span<byte> buffer)
         {
             if (length == 0)
@@ -172,6 +215,14 @@ namespace DotNext.IO
             return new string(result.Span.Slice(0, resultOffset));
         }
 
+        /// <summary>
+        /// Reads the string using the specified encoding.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="length">The length of the string, in bytes.</param>
+        /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
+        /// <returns>The string decoded from the log entry content stream.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         public static string ReadString(this Stream stream, int length, Encoding encoding)
         {
             if (length == 0)
@@ -185,14 +236,20 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Reads the string asynchronously using the specified encoding.
+        /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
         /// </summary>
+        /// <remarks>
+        /// <paramref name="buffer"/> length can be less than <paramref name="length"/>
+        /// but should be enough to decode at least one character of the specified encoding.
+        /// </remarks>
         /// <param name="stream">The stream to read from.</param>
-        /// <param name="length">The length of the string.</param>
+        /// <param name="length">The length of the string, in bytes.</param>
         /// <param name="context">The text decoding context.</param>
         /// <param name="buffer">The buffer that is allocated by the caller.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The string decoded from the log entry content stream.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> to small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
         {
             if (length == 0)
@@ -219,6 +276,14 @@ namespace DotNext.IO
             return new string(result.Span.Slice(0, resultOffset));
         }
 
+        /// <summary>
+        /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="length">The length of the string, in bytes.</param>
+        /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
+        /// <returns>The string decoded from the log entry content stream.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, Encoding encoding)
         {
             if (length == 0)

@@ -12,6 +12,9 @@ namespace DotNext.IO.Pipelines
     using Buffers;
     using Text;
 
+    /// <summary>
+    /// Represents extension method for parsing data stored in pipe.
+    /// </summary>
     public static class PipeExtensions
     {
         private interface IBufferReader<out T>
@@ -95,14 +98,15 @@ namespace DotNext.IO.Pipelines
         }
 
         /// <summary>
-        /// 
+        /// Decodes string asynchronously from pipe.
         /// </summary>
-        /// <param name="reader"></param>
-        /// <param name="length"></param>
-        /// <param name="context"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="length">The length of the string, in bytes.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded string.</returns>
         /// <exception cref="EndOfStreamException"><paramref name="reader"/> doesn't contain the necessary number of bytes to restore string.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<string> ReadStringAsync(this PipeReader reader, int length, DecodingContext context, CancellationToken token = default)
         {
             if (length == 0)
@@ -111,10 +115,27 @@ namespace DotNext.IO.Pipelines
             return await ReadAsync<string, StringReader>(reader, new StringReader(context, resultBuffer.Memory), token);
         }
 
+        /// <summary>
+        /// Reads value of blittable type from pipe.
+        /// </summary>
+        /// <typeparam name="T">The blittable type to decode.</typeparam>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static ValueTask<T> ReadAsync<T>(this PipeReader reader, CancellationToken token = default)
             where T : unmanaged
             => ReadAsync<T, ValueReader<T>>(reader, new ValueReader<T>(), token);
 
+        /// <summary>
+        /// Encodes value of blittable type.
+        /// </summary>
+        /// <typeparam name="T">The blittable type to encode.</typeparam>
+        /// <param name="writer">The pipe writer.</param>
+        /// <param name="value">The value to be encoded in binary form.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous result of operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask WriteAsync<T>(this PipeWriter writer, T value, CancellationToken token = default)
             where T : unmanaged
         {
@@ -130,6 +151,16 @@ namespace DotNext.IO.Pipelines
                 throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(false));
         }
 
+        /// <summary>
+        /// Encodes the string to bytes and write them to pipe asynchronously.
+        /// </summary>
+        /// <param name="writer">The pipe writer.</param>
+        /// <param name="value">The block of characters to encode.</param>
+        /// <param name="context">The text encoding context.</param>
+        /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The result of operation.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask WriteStringAsync(this PipeWriter writer, ReadOnlyMemory<char> value, EncodingContext context, int bufferSize = 0, CancellationToken token = default)
         {
             if (value.Length == 0)
