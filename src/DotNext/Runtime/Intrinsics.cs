@@ -337,9 +337,9 @@ namespace DotNext.Runtime
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ref readonly byte AddOffset<T>(in byte address, int count = 1)
+        private static ref byte AddOffset<T>(this ref byte address, int count = 1)
         {
-            Ldarg(nameof(address));
+            Push(ref address);
             Push(count);
             Sizeof(typeof(T));
             Conv_I();
@@ -381,15 +381,24 @@ namespace DotNext.Runtime
         [CLSCompliant(false)]
         public static unsafe Span<byte> AsSpan<T>(T* pointer) where T : unmanaged => AsSpan(ref pointer[0]);
 
-        internal static int Compare(in byte first, in byte second, long length)
+        internal static int Compare(ref byte first, ref byte second, long length)
         {
             var comparison = 0;
-            for (int count; length > 0L && comparison == 0; length -= count, first = ref AddOffset<byte>(first, count), second = ref AddOffset<byte>(second, count))
+            for (int count; length > 0L && comparison == 0; length -= count, first = ref Unsafe.Add(ref first, count), second = ref Unsafe.Add(ref second, count))
             {
                 count = length.Truncate();
-                comparison = CreateReadOnlySpan(in first, count).SequenceCompareTo(CreateReadOnlySpan(in second, count));
+                comparison = MemoryMarshal.CreateSpan(ref first, count).SequenceCompareTo(MemoryMarshal.CreateSpan(ref second, count));
             }
             return comparison;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static T Read<T>(this ref byte address)
+            where T : unmanaged
+        {
+            Push(ref address);
+            Ldobj(typeof(T));
+            return Return<T>();
         }
 
         /// <summary>
@@ -401,24 +410,24 @@ namespace DotNext.Runtime
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         [CLSCompliant(false)]
         public static unsafe int Compare(void* first, void* second, long length)
-            => Compare(in Unsafe.AsRef<byte>(first), in Unsafe.AsRef<byte>(second), length);
+            => Compare(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
-        internal unsafe static bool EqualsAligned(in byte first, in byte second, long length)
+        internal unsafe static bool EqualsAligned(ref byte first, ref byte second, long length)
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
-                for (; length >= sizeof(Vector<byte>); first = ref AddOffset<Vector<byte>>(in first), second = ref AddOffset<Vector<byte>>(in second))
-                    if (Load<Vector<byte>>(in first) == Load<Vector<byte>>(in second))
+                for (; length >= sizeof(Vector<byte>); first = ref first.AddOffset<Vector<byte>>(), second = ref second.AddOffset<Vector<byte>>())
+                    if (first.Read<Vector<byte>>() == second.Read<Vector<byte>>())
                         length -= Vector<byte>.Count;
                     else
                         goto exit;
-            for (; length >= sizeof(UIntPtr); first = ref AddOffset<UIntPtr>(in first), second = ref AddOffset<UIntPtr>(in second))
-                if (Load<UIntPtr>(in first) == Load<UIntPtr>(in second))
+            for (; length >= sizeof(UIntPtr); first = ref first.AddOffset<UIntPtr>(), second = ref second.AddOffset<UIntPtr>())
+                if (first.Read<UIntPtr>() == second.Read<UIntPtr>())
                     length -= sizeof(UIntPtr);
                 else
                     goto exit;
-            for (; length > 0; first = ref AddOffset<byte>(in first), second = ref AddOffset<byte>(in second))
-                if (Load<byte>(in first) == Load<byte>(in second))
+            for (; length > 0; first = ref AddOffset<byte>(ref first), second = ref AddOffset<byte>(ref second))
+                if (first == second)
                     length -= sizeof(byte);
                 else
                     goto exit;
@@ -608,26 +617,7 @@ namespace DotNext.Runtime
             return Return<bool>();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static T Load<T>(this in byte address)
-            where T : unmanaged
-        {
-            Ldarg(nameof(address));
-            Ldobj(typeof(T));
-            return Return<T>();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static unsafe T LoadUnaligned<T>(this in byte address)
-            where T : unmanaged
-        {
-            Ldarg(nameof(address));
-            Unaligned(1);
-            Ldobj(typeof(T));
-            return Return<T>();
-        }
-
-        private static unsafe ref readonly byte Advance<T>(this in byte address, [In, Out]long* length)
+        private static unsafe ref byte Advance<T>(this ref byte address, [In, Out]long* length)
             where T : unmanaged
         {
             Push(length);
@@ -638,20 +628,20 @@ namespace DotNext.Runtime
             Sub();
             Stind_I8();
 
-            return ref AddOffset<T>(in address);
+            return ref address.AddOffset<T>();
         }
 
-        private static unsafe bool IsZero(in byte address, long length)
+        private static unsafe bool IsZero(ref byte address, long length)
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
                 while (length >= Vector<byte>.Count)
-                    if (address.Load<Vector<byte>>() == Vector<byte>.Zero)
+                    if (address.Read<Vector<byte>>() == Vector<byte>.Zero)
                         address = ref address.Advance<Vector<byte>>(&length);
                     else
                         goto exit;
             while (length >= sizeof(UIntPtr))
-                if (address.Load<UIntPtr>() == default)
+                if (address.Read<UIntPtr>() == default)
                     address = ref address.Advance<UIntPtr>(&length);
                 else
                     goto exit;
@@ -687,26 +677,26 @@ namespace DotNext.Runtime
 
         #region Bitwise Hash Code
 
-        internal static unsafe long GetHashCode64(in byte source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
+        internal static unsafe long GetHashCode64(ref byte source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
         {
             switch (length)
             {
                 default:
                     for (; length >= sizeof(long); source = ref source.Advance<long>(&length))
-                        hash = hashFunction.Invoke(hash, source.LoadUnaligned<long>());
+                        hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<long>(ref source));
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
-                        hash = hashFunction.Invoke(hash, *(byte*)source);
+                        hash = hashFunction.Invoke(hash, source);
                     break;
                 case sizeof(byte):
                     hash = hashFunction.Invoke(hash, source);
                     break;
                 case sizeof(ushort):
-                    hash = hashFunction.Invoke(hash, source.LoadUnaligned<ushort>());
+                    hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<ushort>(ref source));
                     break;
                 case 3:
                     goto default;
                 case sizeof(uint):
-                    hash = hashFunction.Invoke(hash, source.LoadUnaligned<uint>());
+                    hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<uint>(ref source));
                     break;
                 case 5:
                 case 6:
@@ -716,14 +706,14 @@ namespace DotNext.Runtime
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
-        internal static unsafe long GetHashCode64(in byte source, long length, bool salted)
+        internal static unsafe long GetHashCode64(ref byte source, long length, bool salted)
         {
             var hash = FNV1a64.Offset;
             switch (length)
             {
                 default:
                     for (; length >= sizeof(long); source = ref source.Advance<long>(&length))
-                        hash = FNV1a64.GetHashCode(hash, source.LoadUnaligned<long>());
+                        hash = FNV1a64.GetHashCode(hash, Unsafe.ReadUnaligned<long>(ref source));
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = FNV1a64.GetHashCode(hash, source);
                     break;
@@ -731,12 +721,12 @@ namespace DotNext.Runtime
                     hash = FNV1a64.GetHashCode(hash, source);
                     break;
                 case sizeof(ushort):
-                    hash = FNV1a64.GetHashCode(hash, source.LoadUnaligned<ushort>());
+                    hash = FNV1a64.GetHashCode(hash, Unsafe.ReadUnaligned<ushort>(ref source));
                     break;
                 case 3:
                     goto default;
                 case sizeof(uint):
-                    hash = FNV1a64.GetHashCode(hash, source.LoadUnaligned<uint>());
+                    hash = FNV1a64.GetHashCode(hash, Unsafe.ReadUnaligned<uint>(ref source));
                     break;
                 case 5:
                 case 6:
@@ -778,7 +768,7 @@ namespace DotNext.Runtime
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static unsafe long GetHashCode64(void* source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
-            => GetHashCode64(in Unsafe.AsRef<byte>(source), length, hash, in hashFunction, salted);
+            => GetHashCode64(ref ((byte*)source)[0], length, hash, in hashFunction, salted);
 
         /// <summary>
         /// Computes 64-bit hash code for the block of memory.
@@ -793,7 +783,7 @@ namespace DotNext.Runtime
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
         public static unsafe long GetHashCode64(void* source, long length, bool salted = true)
-            => GetHashCode64(in Unsafe.AsRef<byte>(source), length, salted);
+            => GetHashCode64(ref ((byte*)source)[0], length, salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -812,13 +802,13 @@ namespace DotNext.Runtime
         public static unsafe int GetHashCode32(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
             => GetHashCode32(source, length, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
 
-        internal static unsafe int GetHashCode32(in byte source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
+        internal static unsafe int GetHashCode32(ref byte source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
         {
             switch (length)
             {
                 default:
                     for (; length >= sizeof(int); source = ref source.Advance<int>(&length))
-                        hash = hashFunction.Invoke(hash, LoadUnaligned<int>(source));
+                        hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<int>(ref source));
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = hashFunction.Invoke(hash, source);
                     break;
@@ -826,20 +816,20 @@ namespace DotNext.Runtime
                     hash = hashFunction.Invoke(hash, source);
                     break;
                 case sizeof(ushort):
-                    hash = hashFunction.Invoke(hash, source.LoadUnaligned<ushort>());
+                    hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<ushort>(ref source));
                     break;
             }
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
-        internal static unsafe int GetHashCode32(in byte source, long length, bool salted)
+        internal static unsafe int GetHashCode32(ref byte source, long length, bool salted)
         {
             var hash = FNV1a32.Offset;
             switch (length)
             {
                 default:
                     for (; length >= sizeof(int); source = ref source.Advance<int>(&length))
-                        hash = FNV1a32.GetHashCode(hash, LoadUnaligned<int>(source));
+                        hash = FNV1a32.GetHashCode(hash, Unsafe.ReadUnaligned<int>(ref source));
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = FNV1a32.GetHashCode(hash, source);
                     break;
@@ -847,7 +837,7 @@ namespace DotNext.Runtime
                     hash = FNV1a32.GetHashCode(hash, source);
                     break;
                 case sizeof(ushort):
-                    hash = FNV1a32.GetHashCode(hash, source.LoadUnaligned<ushort>());
+                    hash = FNV1a32.GetHashCode(hash, Unsafe.ReadUnaligned<ushort>(ref source));
                     break;
             }
             return salted ? FNV1a32.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
@@ -868,7 +858,7 @@ namespace DotNext.Runtime
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
         public static unsafe int GetHashCode32(void* source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
-            => GetHashCode32(in Unsafe.AsRef<byte>(source), length, hash, in hashFunction, salted);
+            => GetHashCode32(ref ((byte*)source)[0], length, hash, in hashFunction, salted);
 
         /// <summary>
         /// Computes 32-bit hash code for the block of memory.
@@ -883,7 +873,7 @@ namespace DotNext.Runtime
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
         public static unsafe int GetHashCode32(void* source, long length, bool salted = true)
-            => GetHashCode32(in Unsafe.AsRef<byte>(source), length, salted);
+            => GetHashCode32(ref ((byte*)source)[0], length, salted);
         #endregion
 
         /// <summary>

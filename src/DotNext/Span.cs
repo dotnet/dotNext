@@ -42,7 +42,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? RandomExtensions.BitwiseHashSalt : 0;
-            return Intrinsics.GetHashCode32(in As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), salted);
+            return Intrinsics.GetHashCode32(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), salted);
         }
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
-            return Intrinsics.GetHashCode32(in As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
+            return Intrinsics.GetHashCode32(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
         }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
-            return Intrinsics.GetHashCode64(in As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
+            return Intrinsics.GetHashCode64(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? RandomExtensions.BitwiseHashSalt : 0L;
-            return Intrinsics.GetHashCode64(in As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), salted);
+            return Intrinsics.GetHashCode64(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), salted);
         }
 
         /// <summary>
