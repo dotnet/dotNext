@@ -196,5 +196,14 @@ namespace DotNext.IO
             ms.Position = 0;
             Equal(10M, ms.Read<decimal>());
         }
+
+        [Fact]
+        public static async Task ReadWriteBlittableTypeAsync()
+        {
+            using var ms = new MemoryStream();
+            await ms.WriteAsync(10M);
+            ms.Position = 0;
+            Equal(10M, await ms.ReadAsync<decimal>());
+        }
     }
 }

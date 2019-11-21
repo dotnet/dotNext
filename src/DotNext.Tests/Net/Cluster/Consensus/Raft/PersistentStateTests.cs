@@ -12,8 +12,10 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using IO;
+    using IO.Pipelines;
     using static Messaging.Messenger;
-    using LogEntryList = Replication.LogEntryProducer<IRaftLogEntry>;
+    using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
     [ExcludeFromCodeCoverage]
     public sealed class PersistentStateTests : Assert
@@ -93,21 +95,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private sealed class SimpleSnapshotBuilder : SnapshotBuilder
             {
                 private long currentValue;
-                private readonly byte[] sharedBuffer;
+                private readonly Memory<byte> sharedBuffer;
 
-                internal SimpleSnapshotBuilder(byte[] buffer) => sharedBuffer = buffer;
+                internal SimpleSnapshotBuilder(Memory<byte> buffer) => sharedBuffer = buffer;
 
-                public override Task CopyToAsync(Stream output, CancellationToken token)
+                public override ValueTask CopyToAsync(Stream output, CancellationToken token)
                 {
-                    WriteInt64LittleEndian(sharedBuffer, currentValue);
-                    return output.WriteAsync(sharedBuffer, 0, sizeof(long), token);
+                    return output.WriteAsync(currentValue, sharedBuffer, token);
                 }
 
-                public override async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
-                {
-                    WriteInt64LittleEndian(sharedBuffer, currentValue);
-                    await output.WriteAsync(new ReadOnlyMemory<byte>(sharedBuffer, 0, sizeof(long)), token);
-                }
+                public override ValueTask CopyToAsync(PipeWriter output, CancellationToken token) => output.WriteAsync(currentValue, token);
 
                 protected override async ValueTask ApplyAsync(LogEntry entry) => currentValue = await Decode(entry);
             }
@@ -239,15 +236,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
 
             var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-            using (var state = new PersistentState(dir, RecordsPerPartition))
-            {
-                Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
-                Equal(5L, state.GetLastIndex(false));
-                Equal(0L, state.GetLastIndex(true));
-                Equal(5L, await state.DropAsync(1L, CancellationToken.None));
-                Equal(0L, state.GetLastIndex(false));
-                Equal(0L, state.GetLastIndex(true));
-            }
+            using var state = new PersistentState(dir, RecordsPerPartition);
+            Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
+            Equal(5L, state.GetLastIndex(false));
+            Equal(0L, state.GetLastIndex(true));
+            Equal(5L, await state.DropAsync(1L, CancellationToken.None));
+            Equal(0L, state.GetLastIndex(false));
+            Equal(0L, state.GetLastIndex(true));
         }
 
         [Fact]

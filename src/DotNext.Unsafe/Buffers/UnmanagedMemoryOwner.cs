@@ -6,6 +6,7 @@ using System.IO;
 namespace DotNext.Buffers
 {
     using Runtime;
+    using Runtime.InteropServices;
 
     /// <summary>
     /// Represents unmanaged memory access that allows
@@ -22,14 +23,12 @@ namespace DotNext.Buffers
 
         internal UnmanagedMemoryOwner(int length, bool zeroMem, bool fromPool) : base(length, zeroMem) => this.fromPool = fromPool;
 
-        object ICloneable.Clone()
+        unsafe object ICloneable.Clone()
         {
             var copy = new UnmanagedMemoryOwner<T>(Length, false, fromPool);
-            Intrinsics.Copy(address, copy.address, Size);
+            Buffer.MemoryCopy(address.ToPointer(), copy.address.ToPointer(), Size, Size);
             return copy;
         }
-
-        
 
         Pointer<byte> IUnmanagedMemory.Pointer => new Pointer<byte>(address);
 

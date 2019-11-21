@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using ILogEntry = Replication.ILogEntry;
+    using ILogEntry = IO.Log.ILogEntry;
     using TextMessage = Messaging.TextMessage;
 
     [ExcludeFromCodeCoverage]
