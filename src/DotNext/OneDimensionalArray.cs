@@ -252,7 +252,7 @@ namespace DotNext
                 return false;
             if (first.LongLength == 0)
                 return true;
-            return Intrinsics.Equals(in As<T, byte>(ref first[0]), in As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
+            return Intrinsics.EqualsAligned(in As<T, byte>(ref first[0]), in As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
         }
 
         /// <summary>

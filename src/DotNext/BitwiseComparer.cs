@@ -52,7 +52,7 @@ namespace DotNext
                     Push(ref first);
                     Push(ref second);
                     Push(size);
-                    Call(new M(typeof(Intrinsics), nameof(Intrinsics.Equals), new TR(typeof(byte)).MakeByRefType(), new TR(typeof(byte)).MakeByRefType(), typeof(long)));
+                    Call(new M(typeof(Intrinsics), nameof(Intrinsics.EqualsAligned)));
                     break;
                 case sizeof(byte):
                     Push(ref first);

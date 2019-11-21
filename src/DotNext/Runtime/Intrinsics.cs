@@ -337,33 +337,15 @@ namespace DotNext.Runtime
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ref readonly T AddOffset<T>(in T address, int offset)
+        private static ref readonly byte AddOffset<T>(in byte address, int count = 1)
         {
             Ldarg(nameof(address));
-            Push(offset);
+            Push(count);
             Sizeof(typeof(T));
             Conv_I();
             Mul_Ovf();
             Add_Ovf();
-            return ref ReturnRef<T>();
-        }
-
-        /// <summary>
-        /// Adds offset to the specified pointer.
-        /// </summary>
-        /// <param name="address">The pointer to modify.</param>
-        /// <param name="offset">The address offset.</param>
-        [CLSCompliant(false)]
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void AddOffset(ref void* address, int offset)
-        {
-            Ldarg(nameof(address));
-            Dup();
-            Ldobj(typeof(void*));
-            Push(offset);
-            Conv_U();
-            Add_Ovf_Un();
-            Stobj(typeof(void*));
+            return ref ReturnRef<byte>();
         }
 
         /// <summary>
@@ -402,7 +384,7 @@ namespace DotNext.Runtime
         internal static int Compare(in byte first, in byte second, long length)
         {
             var comparison = 0;
-            for (int count; length > 0L && comparison == 0; length -= count, first = ref AddOffset(first, count), second = ref AddOffset(second, count))
+            for (int count; length > 0L && comparison == 0; length -= count, first = ref AddOffset<byte>(first, count), second = ref AddOffset<byte>(second, count))
             {
                 count = length.Truncate();
                 comparison = CreateReadOnlySpan(in first, count).SequenceCompareTo(CreateReadOnlySpan(in second, count));
@@ -421,16 +403,28 @@ namespace DotNext.Runtime
         public static unsafe int Compare(void* first, void* second, long length)
             => Compare(in Unsafe.AsRef<byte>(first), in Unsafe.AsRef<byte>(second), length);
 
-        internal static bool Equals(in byte first, in byte second, long length)
+        internal unsafe static bool EqualsAligned(in byte first, in byte second, long length)
         {
-            var result = true;
-            for (int count; length > 0L && result; length -= count, first = ref AddOffset(in first, count), second = ref AddOffset(in second, count))
-
-            {
-                count = length.Truncate();
-                result = CreateReadOnlySpan(in first, count).SequenceEqual(CreateReadOnlySpan(in second, count));
-            }
-            return true;
+            var result = false;
+            if (Vector.IsHardwareAccelerated)
+                for (; length >= sizeof(Vector<byte>); first = ref AddOffset<Vector<byte>>(in first), second = ref AddOffset<Vector<byte>>(in second))
+                    if (Load<Vector<byte>>(in first) == Load<Vector<byte>>(in second))
+                        length -= Vector<byte>.Count;
+                    else
+                        goto exit;
+            for (; length >= sizeof(UIntPtr); first = ref AddOffset<UIntPtr>(in first), second = ref AddOffset<UIntPtr>(in second))
+                if (Load<UIntPtr>(in first) == Load<UIntPtr>(in second))
+                    length -= sizeof(UIntPtr);
+                else
+                    goto exit;
+            for (; length > 0; first = ref AddOffset<byte>(in first), second = ref AddOffset<byte>(in second))
+                if (Load<byte>(in first) == Load<byte>(in second))
+                    length -= sizeof(byte);
+                else
+                    goto exit;
+            result = true;
+            exit:
+            return result;
         }
 
         /// <summary>
@@ -442,7 +436,15 @@ namespace DotNext.Runtime
 		/// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
 		[CLSCompliant(false)]
         public static unsafe bool Equals(void* first, void* second, long length)
-            => Equals(in Unsafe.AsRef<byte>(first), in Unsafe.AsRef<byte>(second), length);
+        {
+            var result = true;
+            for (int count; length > 0L && result; length -= count, first = Unsafe.Add<byte>(first, count), second = Unsafe.Add<byte>(first, count))
+            {
+                count = length.Truncate();
+                result = new ReadOnlySpan<byte>(first, count).SequenceEqual(new ReadOnlySpan<byte>(second, count));
+            }
+            return true;
+        }
 
         /// <summary>
         /// Gets a reference to the array element with restricted mutability.
@@ -625,7 +627,7 @@ namespace DotNext.Runtime
             return Return<T>();
         }
 
-        private static unsafe ref readonly byte Adjust<T>(this in byte address, [In, Out]long* length)
+        private static unsafe ref readonly byte Advance<T>(this in byte address, [In, Out]long* length)
             where T : unmanaged
         {
             Push(length);
@@ -636,7 +638,7 @@ namespace DotNext.Runtime
             Sub();
             Stind_I8();
 
-            return ref AddOffset(in address, sizeof(T));
+            return ref AddOffset<T>(in address);
         }
 
         private static unsafe bool IsZero(in byte address, long length)
@@ -645,17 +647,17 @@ namespace DotNext.Runtime
             if (Vector.IsHardwareAccelerated)
                 while (length >= Vector<byte>.Count)
                     if (address.Load<Vector<byte>>() == Vector<byte>.Zero)
-                        address = ref address.Adjust<Vector<byte>>(&length);
+                        address = ref address.Advance<Vector<byte>>(&length);
                     else
                         goto exit;
             while (length >= sizeof(UIntPtr))
                 if (address.Load<UIntPtr>() == default)
-                    address = ref address.Adjust<UIntPtr>(&length);
+                    address = ref address.Advance<UIntPtr>(&length);
                 else
                     goto exit;
             while (length > 0)
                 if (address == 0)
-                    address = ref address.Adjust<byte>(&length);
+                    address = ref address.Advance<byte>(&length);
                 else
                     goto exit;
             result = true;
@@ -671,7 +673,7 @@ namespace DotNext.Runtime
         [CLSCompliant(false)]
         public static unsafe void ClearBits(void* address, long length)
         {
-            for (int count; length > 0L; length -= count, AddOffset(ref address, count))
+            for (int count; length > 0L; length -= count, address = Unsafe.Add<byte>(address, count))
             {
                 count = length.Truncate();
                 Push(address);
@@ -690,9 +692,9 @@ namespace DotNext.Runtime
             switch (length)
             {
                 default:
-                    for (; length >= sizeof(long); source = ref source.Adjust<long>(&length))
+                    for (; length >= sizeof(long); source = ref source.Advance<long>(&length))
                         hash = hashFunction.Invoke(hash, source.LoadUnaligned<long>());
-                    for (; length > 0L; source = ref source.Adjust<byte>(&length))
+                    for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = hashFunction.Invoke(hash, *(byte*)source);
                     break;
                 case sizeof(byte):
@@ -720,9 +722,9 @@ namespace DotNext.Runtime
             switch (length)
             {
                 default:
-                    for (; length >= sizeof(long); source = ref source.Adjust<long>(&length))
+                    for (; length >= sizeof(long); source = ref source.Advance<long>(&length))
                         hash = FNV1a64.GetHashCode(hash, source.LoadUnaligned<long>());
-                    for (; length > 0L; source = ref source.Adjust<byte>(&length))
+                    for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = FNV1a64.GetHashCode(hash, source);
                     break;
                 case sizeof(byte):
@@ -815,9 +817,9 @@ namespace DotNext.Runtime
             switch (length)
             {
                 default:
-                    for (; length >= sizeof(int); source = ref source.Adjust<int>(&length))
+                    for (; length >= sizeof(int); source = ref source.Advance<int>(&length))
                         hash = hashFunction.Invoke(hash, LoadUnaligned<int>(source));
-                    for (; length > 0L; source = ref source.Adjust<byte>(&length))
+                    for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = hashFunction.Invoke(hash, source);
                     break;
                 case sizeof(byte):
@@ -836,9 +838,9 @@ namespace DotNext.Runtime
             switch (length)
             {
                 default:
-                    for (; length >= sizeof(int); source = ref source.Adjust<int>(&length))
+                    for (; length >= sizeof(int); source = ref source.Advance<int>(&length))
                         hash = FNV1a32.GetHashCode(hash, LoadUnaligned<int>(source));
-                    for (; length > 0L; source = ref source.Adjust<byte>(&length))
+                    for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = FNV1a32.GetHashCode(hash, source);
                     break;
                 case sizeof(byte):
