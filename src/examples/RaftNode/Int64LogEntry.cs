@@ -1,11 +1,12 @@
-﻿using DotNext;
+﻿using DotNext.IO;
+using DotNext.IO.Log;
 using DotNext.Net.Cluster.Consensus.Raft;
-using DotNext.Net.Cluster.Replication;
 using System;
 using System.Buffers.Binary;
 
 namespace RaftNode
 {
+
     internal sealed class Int64LogEntry : BinaryTransferObject, IRaftLogEntry
     {
         internal Int64LogEntry(long value)

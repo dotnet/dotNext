@@ -1,4 +1,5 @@
-﻿using DotNext.Net.Cluster.Consensus.Raft;
+﻿using DotNext.IO.Log;
+using DotNext.Net.Cluster.Consensus.Raft;
 using DotNext.Net.Cluster.Replication;
 using Microsoft.Extensions.Hosting;
 using System;

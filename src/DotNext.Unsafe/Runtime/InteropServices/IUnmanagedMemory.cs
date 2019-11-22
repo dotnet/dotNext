@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Runtime.InteropServices
@@ -40,19 +41,38 @@ namespace DotNext.Runtime.InteropServices
         Stream AsStream();
 
         /// <summary>
-        /// Copies bytes from the memory location to the stream asynchronously.
+        /// Copies bytes from the memory location to the stream.
         /// </summary>
         /// <param name="destination">The destination stream.</param>
         /// <returns>The task instance representing asynchronous state of the copying process.</returns>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-        ValueTask WriteToAsync(Stream destination) => Pointer.WriteToAsync(destination, Size);
+        void WriteTo(Stream destination) => Pointer.WriteTo(destination, Size);
+
+        /// <summary>
+        /// Copies bytes from the memory location to the stream asynchronously.
+        /// </summary>
+        /// <param name="destination">The destination stream.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task instance representing asynchronous state of the copying process.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteToAsync(Stream destination, CancellationToken token = default) => Pointer.WriteToAsync(destination, Size, token);
 
         /// <summary>
         /// Copies bytes from the given stream to the memory location identified by this object asynchronously.
         /// </summary>
         /// <param name="source">The source stream.</param>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-        ValueTask<long> ReadFromAsync(Stream source) => Pointer.ReadFromAsync(source, Size);
+        long ReadFrom(Stream source) => Pointer.ReadFrom(source, Size);
+
+        /// <summary>
+        /// Copies bytes from the given stream to the memory location identified by this object asynchronously.
+        /// </summary>
+        /// <param name="source">The source stream.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask<long> ReadFromAsync(Stream source, CancellationToken token = default) => Pointer.ReadFromAsync(source, Size, token);
 
         /// <summary>
         /// Copies elements from the current memory location to the specified memory location.

@@ -17,11 +17,11 @@ namespace RaftNode
 
         private sealed class SimpleSnapshotBuilder : SnapshotBuilder
         {
-            private readonly byte[] value;
+            private readonly Memory<byte> value;
 
             internal SimpleSnapshotBuilder() => value = new byte[sizeof(long)];
 
-            public override Task CopyToAsync(Stream output, CancellationToken token) => output.WriteAsync(value, 0, value.Length);
+            public override ValueTask CopyToAsync(Stream output, CancellationToken token) => output.WriteAsync(value, token);
 
             public override async ValueTask CopyToAsync(PipeWriter output, CancellationToken token) => await output.WriteAsync(value, token).ConfigureAwait(false);
 
@@ -45,7 +45,7 @@ namespace RaftNode
 
         async Task<long> IValueProvider.GetValueAsync()
         {
-            using (await SyncRoot.Acquire(CancellationToken.None).ConfigureAwait(false))
+            using (await SyncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
             {
                 content.Position = 0;
                 return await content.ReadAsync<long>(Buffer).ConfigureAwait(false);

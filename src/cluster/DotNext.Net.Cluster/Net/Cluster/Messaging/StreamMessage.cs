@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +33,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="message">The origin message.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The message which stores the content of the original message in the memory.</returns>
+        [SuppressMessage("Reliability", "CA2000", Justification = "Stream lifetime is controlled by StreamMessage")]
         public static async Task<StreamMessage> CreateBufferedMessageAsync(IMessage message, CancellationToken token = default)
         {
             var content = new MemoryStream(2048);
