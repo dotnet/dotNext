@@ -82,7 +82,7 @@ namespace DotNext.Collections.Generic
         /// This parameter is passed uninitialized.
         /// </param>
         /// <returns><see langword="true"/>, if the dictionary contains the specified key; otherwise, <see langword="false"/>.</returns>
-        public bool TryGetValue(K key, [MaybeNullWhen(false)]out O value)
+        public bool TryGetValue(K key, [NotNullWhen(true)]out O value)
         {
             if (source.TryGetValue(key, out var sourceVal))
             {

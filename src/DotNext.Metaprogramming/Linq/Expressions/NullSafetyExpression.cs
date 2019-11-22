@@ -8,8 +8,8 @@ namespace DotNext.Linq.Expressions
     /// </summary>
     public sealed class NullSafetyExpression : Expression
     {
-        private Expression body;
-        private readonly BinaryExpression assignment;
+        private Expression? body;
+        private readonly BinaryExpression? assignment;
         private readonly bool alwaysNotNull;
 
         internal NullSafetyExpression(Expression target)

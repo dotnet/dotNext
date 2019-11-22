@@ -30,7 +30,7 @@ namespace DotNext.Runtime.CompilerServices
         internal override Expression Reduce(ParameterExpression stateMachine)
         {
             const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
-            var moveNext = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.MoveNext), PublicInstance, 1, null, typeof(uint)).MakeGenericMethod(awaiter.Type);
+            var moveNext = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.MoveNext), PublicInstance, 1, null, typeof(uint))!.MakeGenericMethod(awaiter.Type);
             return stateMachine.Call(moveNext, awaiter, base.StateId);
         }
     }

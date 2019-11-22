@@ -16,7 +16,7 @@ namespace DotNext.Threading.Channels
         private const string StateFileName = "reader.state";
         private interface IReadBuffer
         {
-            bool TryRead([MaybeNullWhen(false)]out T result);
+            bool TryRead([NotNullWhen(true)]out T result);
 
             void Add(T item);
 
@@ -37,7 +37,7 @@ namespace DotNext.Threading.Channels
                 readyToRead.Value = true;
             }
 
-            bool IReadBuffer.TryRead([MaybeNullWhen(false)]out T result)
+            bool IReadBuffer.TryRead([NotNullWhen(true)]out T result)
             {
                 if (readyToRead.CompareAndSet(true, false))
                 {

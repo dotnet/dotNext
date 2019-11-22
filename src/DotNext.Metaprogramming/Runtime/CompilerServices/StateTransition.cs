@@ -7,16 +7,18 @@ namespace DotNext.Runtime.CompilerServices
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct StateTransition : IEquatable<StateTransition>
     {
-        internal readonly LabelTarget Successful;
+        internal readonly LabelTarget? Successful;
         internal readonly LabelTarget? Failure;
 
-        internal StateTransition(LabelTarget successful, LabelTarget? failed)
+        internal StateTransition(LabelTarget? successful, LabelTarget? failed)
         {
+            if (successful is null && failed is null)
+                throw new ArgumentNullException(nameof(successful));
             Successful = successful;
             Failure = failed;
         }
 
-        internal void Deconstruct(out LabelTarget successful, out LabelTarget? failed)
+        internal void Deconstruct(out LabelTarget? successful, out LabelTarget? failed)
         {
             successful = Successful;
             failed = Failure;

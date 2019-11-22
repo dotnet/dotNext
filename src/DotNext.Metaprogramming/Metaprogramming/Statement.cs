@@ -4,6 +4,6 @@ namespace DotNext.Metaprogramming
     {
         private protected Statement() : base(true) { }
 
-        internal new ILexicalScope Parent => base.Parent;
+        internal new ILexicalScope? Parent => base.Parent;
     }
 }

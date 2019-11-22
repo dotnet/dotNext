@@ -93,7 +93,7 @@ namespace DotNext
             return true;
         }
 
-        private static bool ElementAt<T>(this IList<T> list, int index, [MaybeNullWhen(false)]out T element)
+        private static bool ElementAt<T>(this IList<T> list, int index, [NotNullWhen(true)]out T element)
         {
             if (index >= 0 && index < list.Count)
             {
@@ -107,7 +107,7 @@ namespace DotNext
             }
         }
 
-        private static bool ElementAt<T>(this IReadOnlyList<T> list, int index, [MaybeNullWhen(false)]out T element)
+        private static bool ElementAt<T>(this IReadOnlyList<T> list, int index, [NotNullWhen(true)]out T element)
         {
             if (index >= 0 && index < list.Count)
             {
@@ -133,7 +133,7 @@ namespace DotNext
         /// <param name="index">Index of the element to read.</param>
         /// <param name="element">Obtained element.</param>
         /// <returns><see langword="true"/>, if element is available in the collection and obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public static bool ElementAt<T>(this IEnumerable<T> collection, int index, [MaybeNullWhen(false)]out T element)
+        public static bool ElementAt<T>(this IEnumerable<T> collection, int index, [NotNullWhen(true)]out T element)
         {
             switch (collection)
             {

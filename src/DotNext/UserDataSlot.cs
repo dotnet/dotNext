@@ -36,7 +36,7 @@ namespace DotNext
         internal V GetUserData(IDictionary<long, object?> storage, V defaultValue)
             => storage.TryGetValue(id, out var userData) && userData is V result ? result : defaultValue;
 
-        internal bool GetUserData(IDictionary<long, object?> storage, [MaybeNullWhen(false)]out V userData)
+        internal bool GetUserData(IDictionary<long, object?> storage, [NotNullWhen(true)]out V userData)
         {
             if (storage.TryGetValue(id, out var value) && value is V typedValue)
             {

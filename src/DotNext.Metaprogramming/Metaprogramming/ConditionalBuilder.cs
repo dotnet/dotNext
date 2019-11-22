@@ -8,7 +8,7 @@ namespace DotNext.Metaprogramming
     public sealed class ConditionalBuilder : ExpressionBuilder<ConditionalExpression>
     {
         private readonly Expression test;
-        private Expression ifTrue, ifFalse;
+        private Expression? ifTrue, ifFalse;
 
         internal ConditionalBuilder(Expression test, ILexicalScope currentScope) : base(currentScope) => this.test = test;
 
