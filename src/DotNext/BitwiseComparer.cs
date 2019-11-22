@@ -68,6 +68,8 @@ namespace DotNext
                     Ldind_I2();
                     Ceq();
                     break;
+                case 3:
+                    goto default;
                 case sizeof(int):
                     Push(ref first);
                     Ldind_I4();
@@ -75,6 +77,10 @@ namespace DotNext
                     Ldind_I4();
                     Ceq();
                     break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
                 case sizeof(long):
                     Push(ref first);
                     Ldind_I8();
@@ -136,12 +142,18 @@ namespace DotNext
                     Ldind_U2();
                     Call(new M(typeof(ushort), nameof(ushort.CompareTo), typeof(ushort)));
                     break;
+                case 3:
+                    goto default;
                 case sizeof(uint):
                     Push(ref first);
                     Push(ref second);
                     Ldind_U4();
                     Call(new M(typeof(uint), nameof(uint.CompareTo), typeof(uint)));
                     break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
                 case sizeof(ulong):
                     Push(ref first);
                     Push(ref second);
@@ -186,10 +198,16 @@ namespace DotNext
                     Push(ref value);
                     Ldind_I2();
                     break;
+                case 3:
+                    goto default;
                 case sizeof(int):
                     Push(ref value);
                     Ldind_I4();
                     break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
                 case sizeof(long):
                     Push(ref value);
                     Call(new M(typeof(ulong), nameof(GetHashCode)));
