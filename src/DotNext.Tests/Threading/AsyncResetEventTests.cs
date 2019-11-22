@@ -17,7 +17,7 @@ namespace DotNext.Threading
                 False(resetEvent.IsSet);
                 var t = new Thread(() =>
                 {
-                    resetEvent.Wait().Wait();
+                    resetEvent.WaitAsync().Wait();
                 })
                 {
                     IsBackground = true
@@ -29,7 +29,7 @@ namespace DotNext.Threading
                 False(resetEvent.IsSet);
                 t = new Thread(() =>
                 {
-                    resetEvent.Wait().Wait();
+                    resetEvent.WaitAsync().Wait();
                 })
                 {
                     IsBackground = true
@@ -46,14 +46,14 @@ namespace DotNext.Threading
         {
             using (var mre = new AsyncManualResetEvent(false))
             {
-                False(await mre.Wait(TimeSpan.Zero));
+                False(await mre.WaitAsync(TimeSpan.Zero));
                 True(mre.Set());
-                True(await mre.Wait(TimeSpan.Zero));
-                True(await mre.Wait(TimeSpan.Zero));
+                True(await mre.WaitAsync(TimeSpan.Zero));
+                True(await mre.WaitAsync(TimeSpan.Zero));
                 False(mre.Set());
-                True(await mre.Wait(TimeSpan.Zero));
+                True(await mre.WaitAsync(TimeSpan.Zero));
                 True(mre.Reset());
-                False(await mre.Wait(TimeSpan.Zero));
+                False(await mre.WaitAsync(TimeSpan.Zero));
             }
         }
 
@@ -65,7 +65,7 @@ namespace DotNext.Threading
                 False(resetEvent.IsSet);
                 var t = new Thread(() =>
                 {
-                    resetEvent.Wait().Wait();
+                    resetEvent.WaitAsync().Wait();
                 })
                 {
                     IsBackground = true
@@ -77,7 +77,7 @@ namespace DotNext.Threading
                 True(resetEvent.Set(true));
                 t.Join();
                 False(resetEvent.IsSet);
-                False(await resetEvent.Wait(TimeSpan.Zero));
+                False(await resetEvent.WaitAsync(TimeSpan.Zero));
             }
         }
 
@@ -98,13 +98,13 @@ namespace DotNext.Threading
         {
             using (var are = new AsyncAutoResetEvent(false))
             {
-                False(await are.Wait(TimeSpan.Zero));
+                False(await are.WaitAsync(TimeSpan.Zero));
                 True(are.Set());
-                True(await are.Wait(TimeSpan.Zero));
-                False(await are.Wait(TimeSpan.Zero));
+                True(await are.WaitAsync(TimeSpan.Zero));
+                False(await are.WaitAsync(TimeSpan.Zero));
                 True(are.Set());
                 True(are.Reset());
-                False(await are.Wait(TimeSpan.FromMilliseconds(100)));
+                False(await are.WaitAsync(TimeSpan.FromMilliseconds(100)));
             }
         }
     }

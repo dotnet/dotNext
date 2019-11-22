@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext.Runtime.CompilerServices
@@ -18,7 +19,7 @@ namespace DotNext.Runtime.CompilerServices
         bool HasNoException { get; }
         void EnterGuardedCode(uint newState);
         void ExitGuardedCode(uint previousState);
-        bool TryRecover<E>(out E exception)
+        bool TryRecover<E>([NotNullWhen(true)] out E? exception)
             where E : Exception;
     }
 }

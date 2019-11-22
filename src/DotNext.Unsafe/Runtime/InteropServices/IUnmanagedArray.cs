@@ -42,7 +42,7 @@ namespace DotNext.Runtime.InteropServices
         /// <param name="destination">The destination array.</param>
         /// <returns>The actual number of copied elements.</returns>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-        long WriteTo(T[] destination) => Pointer.WriteTo(destination, 0, destination.LongLength.Min(Length));
+        long WriteTo(T[] destination) => Pointer.WriteTo(destination, 0, Math.Min(destination.LongLength, Length));
 
         /// <summary>
         /// Copies elements from the unmanaged array into managed heap. 

@@ -202,7 +202,7 @@ namespace DotNext.Runtime.CompilerServices
             //generate new state and label for it
             var (stateId, transition) = context.NewTransition(stateSwitchTable);
             //convert await expression into TAwaiter.GetResult() expression
-            return node.Reduce(awaiterSlot, stateId, transition.Successful, AsyncMethodEnd, prologue);
+            return node.Reduce(awaiterSlot, stateId, transition.Successful ?? throw new InvalidOperationException(), AsyncMethodEnd, prologue);
         }
 
         private Expression VisitAsyncResult(AsyncResultExpression expr)

@@ -14,15 +14,15 @@ namespace DotNext.Threading
             using (var countdown = new AsyncCountdownEvent(4))
             {
                 False(countdown.IsSet);
-                False(await countdown.Wait(TimeSpan.FromMilliseconds(100)));
+                False(await countdown.WaitAsync(TimeSpan.FromMilliseconds(100)));
 
                 False(countdown.Signal()); //count == 3
                 False(countdown.IsSet);
-                False(await countdown.Wait(TimeSpan.FromMilliseconds(100)));
+                False(await countdown.WaitAsync(TimeSpan.FromMilliseconds(100)));
 
                 True(countdown.Signal(3));
                 True(countdown.IsSet);
-                True(await countdown.Wait(TimeSpan.FromMilliseconds(40)));
+                True(await countdown.WaitAsync(TimeSpan.FromMilliseconds(40)));
             }
         }
 

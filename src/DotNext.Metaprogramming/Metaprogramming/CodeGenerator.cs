@@ -16,7 +16,7 @@ namespace DotNext.Metaprogramming
         private static void Place<D, S>(this S statement, D scope)
             where D : MulticastDelegate
             where S : Statement, ILexicalScope<Expression, D>
-            => statement.Parent.AddStatement(statement.Build(scope));
+            => statement.Parent?.AddStatement(statement.Build(scope));
 
         /// <summary>
         /// Obtains local variable declared in the current or outer lexical scope.

@@ -74,7 +74,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             if (target is null)
                 return;
-            ExpressionAttributes.Get(CurrentStatement).Labels.Add(target);
+            ExpressionAttributes.Get(CurrentStatement)?.Labels.Add(target);
             target.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId;
         }
 
@@ -139,7 +139,7 @@ namespace DotNext.Runtime.CompilerServices
             //iterate through snapshot of statements because collection can be modified
             var statements = this.statements.Clone();
             foreach (var lookup in statements)
-                if (ExpressionAttributes.Get(lookup).Labels.Contains(@goto.Target))
+                if (ExpressionAttributes.Get(lookup)?.Labels.Contains(@goto.Target) ?? false)
                     break;
                 else if (lookup is TryCatchFinallyStatement statement)
                     result.AddLast(statement.InlineFinally(visitor, state));

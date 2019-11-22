@@ -240,7 +240,9 @@ namespace DotNext
         private struct StructForTest
         {
             internal long Value;
+#pragma warning disable CS0649
             internal int Field1, Field2, Field3;
+#pragma warning restore CS0649
 
             public void Add(long value) => Value += value;
         }
