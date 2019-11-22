@@ -126,6 +126,12 @@ article h4 {
     font-size: 90%
 }
 
+.toc-filter>.clear-icon {
+    position: absolute;
+    top: 17px;
+    right: 15px;
+}
+
 .toc-filter>input:focus {
     color: #ccd5dc;
     transition: all ease 0.25s;
@@ -328,7 +334,7 @@ blockquote {
     .sideaffix {
         width: 11.5%;
     }
-    
+
     .affix ul > li.active > a{
         white-space: initial;
     }
