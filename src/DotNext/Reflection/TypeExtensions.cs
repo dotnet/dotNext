@@ -112,51 +112,6 @@ namespace DotNext.Reflection
             return null;
         }
 
-        /// <summary>
-        /// Searches for the generic method in the specified type.
-        /// </summary>
-        /// <param name="type">The type in which search should be performed.</param>
-        /// <param name="methodName">The name of the method to get.</param>
-        /// <param name="flags">A bitmask that specify how the search is conducted.</param>
-        /// <param name="genericParamCount">Number of generic parameters in the method signature.</param>
-        /// <param name="parameters">An array representing the number, order, and type of the parameters for the method to get.</param>
-        /// <returns>Search result; or <see langword="null"/> if search criteria is invalid or method doesn't exist.</returns>
-        /// <remarks>
-        /// Element of the array <paramref name="parameters"/> should be <see langword="null"/> if this parameter of generic type.
-        /// </remarks>
-        public static MethodInfo? GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type?[] parameters)
-        {
-            //TODO: Should be deprecated for .NET Standard 2.1 and replaced with native implementation
-            foreach (var method in type.GetMethods(flags))
-                if (method.Name == methodName && method.GetGenericArguments().LongLength == genericParamCount)
-                {
-                    bool success;
-                    //check signature
-                    var actualParams = method.GetParameterTypes();
-                    if (success = (actualParams.LongLength == parameters.LongLength))
-                        for (var i = 0L; success && i < actualParams.LongLength; i++)
-                        {
-                            var actual = actualParams[i];
-                            var expected = parameters[i];
-                            success = IsGenericParameter(actual) && expected is null || actual == expected || actual.IsConstructedGenericType && actual.GetGenericTypeDefinition() == expected;
-                        }
-                    if (success)
-                        return method;
-                }
-            return null;
-        }
-
-        /// <summary>
-        /// Searches for the specified method whose parameters match the specified argument types, using the specified binding constraints.
-        /// </summary>
-        /// <param name="type">The type in which search should be performed.</param>
-        /// <param name="name">The name of the method to get.</param>
-        /// <param name="flags">A bitmask that specify how the search is conducted.</param>
-        /// <param name="parameters">An array representing the number, order, and type of the parameters for the method to get.</param>
-        /// <returns>Search result; or <see langword="null"/> if search criteria is invalid or method doesn't exist.</returns>
-		public static MethodInfo GetMethod(this Type type, string name, BindingFlags flags, params Type[] parameters)
-            => type.GetMethod(name, flags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
-
         internal static Type? FindGenericInstance(this Type type, Type genericDefinition)
         {
             bool IsGenericInstanceOf(Type candidate)

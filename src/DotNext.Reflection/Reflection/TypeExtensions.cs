@@ -5,10 +5,10 @@ namespace DotNext.Reflection
 {
     internal static class TypeExtensions
     {
-        private const BindingFlags PublicInstance = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
+        private const BindingFlags PublicInstanceFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
         internal static MethodInfo GetHashCodeMethod(this Type type)
-            => type.GetMethod(nameof(GetHashCode), PublicInstance, Array.Empty<Type>());
+            => type.GetMethod(nameof(GetHashCode), PublicInstanceFlags, null, Array.Empty<Type>(), Array.Empty<ParameterModifier>());
 
         internal static string ToGetterName(this string propertyName) => string.Concat("get_", propertyName);
 

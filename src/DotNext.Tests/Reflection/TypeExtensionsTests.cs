@@ -40,22 +40,6 @@ namespace DotNext.Reflection
             Equal(typeof(IEnumerable<string>), enumerable);
         }
 
-        private static void GenericMethod<T>(T arg, int i)
-        {
-
-        }
-
-        [Fact]
-        public static void GetGenericMethod()
-        {
-            var method = typeof(Task).GetMethod(nameof(Task.FromException), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 0, typeof(Exception));
-            NotNull(method);
-            method = typeof(Task).GetMethod(nameof(Task.FromException), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, typeof(Exception));
-            NotNull(method);
-            method = typeof(TypeExtensionsTests).GetMethod(nameof(GenericMethod), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, typeof(int));
-            NotNull(method);
-        }
-
         private struct ManagedStruct
         {
             internal int value;
