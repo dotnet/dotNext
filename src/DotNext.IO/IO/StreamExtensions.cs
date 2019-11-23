@@ -98,13 +98,14 @@ namespace DotNext.IO
             if (value.IsEmpty)
                 return;
             var encoder = context.GetEncoder();
-            var completed = false;
-            for (int offset = 0, charsUsed; !completed; offset += charsUsed)
+            var maxChars = buffer.Length / context.Encoding.GetMaxByteCount(1);
+            if (maxChars == 0)
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            for (int charsLeft = value.Length, charsUsed; charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)
             {
-                var chars = value.Slice(offset);
-                encoder.Convert(chars, buffer, chars.Length == 0, out charsUsed, out var bytesUsed, out completed);
+                charsUsed = Math.Min(maxChars, charsLeft);
+                encoder.Convert(value.Slice(0, charsUsed), buffer, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
                 stream.Write(buffer.Slice(0, bytesUsed));
-                value = chars;
             }
         }
 
@@ -145,13 +146,14 @@ namespace DotNext.IO
             if (value.IsEmpty)
                 return;
             var encoder = context.GetEncoder();
-            var completed = false;
-            for (int offset = 0, charsUsed; !completed; offset += charsUsed)
+            var maxChars = buffer.Length / context.Encoding.GetMaxByteCount(1);
+            if (maxChars == 0)
+                throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
+            for (int charsLeft = value.Length, charsUsed; charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)
             {
-                var chars = value.Slice(offset);
-                encoder.Convert(chars.Span, buffer.Span, chars.Length == 0, out charsUsed, out var bytesUsed, out completed);
+                charsUsed = Math.Min(maxChars, charsLeft);
+                encoder.Convert(value.Span.Slice(0, charsUsed), buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
                 await stream.WriteAsync(buffer.Slice(0, bytesUsed), token).ConfigureAwait(false);
-                value = chars;
             }
         }
 
