@@ -452,7 +452,7 @@ namespace DotNext.Runtime
                 count = length.Truncate();
                 result = new ReadOnlySpan<byte>(first, count).SequenceEqual(new ReadOnlySpan<byte>(second, count));
             }
-            return true;
+            return result;
         }
 
         /// <summary>
