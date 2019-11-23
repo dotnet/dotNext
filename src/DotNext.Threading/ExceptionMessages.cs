@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Resources;
 using Assembly = System.Reflection.Assembly;
 
-namespace DotNext.Threading
+namespace DotNext
 {
     [SuppressMessage("Globalization", "CA1304", Justification = "This is culture-specific resource strings")]
     [SuppressMessage("Globalization", "CA1305", Justification = "This is culture-specific resource strings")]
