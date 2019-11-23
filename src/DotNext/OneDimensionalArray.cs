@@ -368,7 +368,7 @@ namespace DotNext
                 return 1;
             else if (first.LongLength != second.LongLength)
                 return first.LongLength.CompareTo(second.LongLength);
-            return Intrinsics.Compare(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength);
+            return Intrinsics.Compare(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
         }
     }
 }
