@@ -39,13 +39,23 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-20-2019
+Release Date: 11-24-2019
 
-<a href="https://www.nuget.org/packages/dotnext.threading/1.3.1">DotNext.Threading 1.3.1</a>
-* Fixed NRE when `Dispose` method of [PersistentChannel](https://sakno.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) class called multiple times
+<a href="https://www.nuget.org/packages/dotnext/1.2.6">DotNext.Threading 1.2.6</a>
+* Fixed typos in XML documentation
+* Updated *InlineIL.Fody* dependency
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.5">DotNext.AspNetCore.Cluster 1.2.5</a>
-* Fixed bug when log entry may have invalid content when retrieved from persistent audit trail. Usually this problem can be observed in case of concurrent read/write and caused by invalid synchronization of multiple file streams.
+<a href="https://www.nuget.org/packages/dotnext.threading/1.3.2">DotNext.Threading 1.3.2</a>
+* Fixed `MissingManifestResourceException` caused by `AsyncLock` value type on .NET Core 3.x
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.6">DotNext.Unsafe 1.2.6</a>
+* Updated *InlineIL.Fody* dependency
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.6">DotNext.Net.Cluster 1.2.6</a>
+* Fixed NRE when `RaftCluster.StopAsync` called multiple times
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.6">DotNext.AspNetCore.Cluster 1.2.6</a>
+* Migration to patched `RaftCluster` class
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
