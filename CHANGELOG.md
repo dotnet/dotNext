@@ -2,7 +2,7 @@ Release Notes
 ====
 
 # 11-24-2019
-<a href="https://www.nuget.org/packages/dotnext/1.2.6">DotNext.Threading 1.2.6</a>
+<a href="https://www.nuget.org/packages/dotnext/1.2.6">DotNext 1.2.6</a>
 * Fixed typos in XML documentation
 * Updated *InlineIL.Fody* dependency
 
