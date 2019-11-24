@@ -7,6 +7,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     /// <summary>
     /// Allows to configure separated web host for Raft.
     /// </summary>
+    /// <remarks>
+    /// The service implementing this interface should be registered
+    /// as singleton service in DI container.
+    /// </remarks>
     [CLSCompliant(false)]
     public interface IDedicatedHostBuilder
     {
