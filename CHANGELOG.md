@@ -1,6 +1,23 @@
 Release Notes
 ====
 
+# 11-24-2019
+<a href="https://www.nuget.org/packages/dotnext/1.2.6">DotNext.Threading 1.2.6</a>
+* Fixed typos in XML documentation
+* Updated *InlineIL.Fody* dependency
+
+<a href="https://www.nuget.org/packages/dotnext.threading/1.3.2">DotNext.Threading 1.3.2</a>
+* Fixed `MissingManifestResourceException` caused by `AsyncLock` value type on .NET Core 3.x
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.6">DotNext.Unsafe 1.2.6</a>
+* Updated *InlineIL.Fody* dependency
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.6">DotNext.Net.Cluster 1.2.6</a>
+* Fixed NRE when `RaftCluster.StopAsync` called multiple times
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.6">DotNext.AspNetCore.Cluster 1.2.6</a>
+* Migration to patched `RaftCluster` class
+
 # 11-20-2019
 <a href="https://www.nuget.org/packages/dotnext.threading/1.3.1">DotNext.Threading 1.3.1</a>
 * Fixed NRE when `Dispose` method of [PersistentChannel](https://sakno.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) class called multiple times
