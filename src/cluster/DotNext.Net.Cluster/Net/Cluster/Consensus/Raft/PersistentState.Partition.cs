@@ -61,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal override void PopulateCache(in DataAccessSession session)
             {
                 if (lookupCache != null)
-                    PopulateCache(session.Buffer.Span, lookupCache.Memory.Span);
+                    PopulateCache(session.Buffer.Span, lookupCache.Memory.Span.Slice(0, Capacity));
             }
 
             private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, Memory<byte> buffer, int index, bool refreshStream, CancellationToken token)
