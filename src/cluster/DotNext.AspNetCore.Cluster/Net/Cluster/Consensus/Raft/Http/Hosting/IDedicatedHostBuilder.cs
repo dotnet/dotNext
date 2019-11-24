@@ -23,14 +23,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         void Configure(IApplicationBuilder builder);
     }
 
-    internal sealed class ClusterMemberHostBuilder
+    internal static class DedicatedHostBuilder
     {
-        private readonly IDedicatedHostBuilder? builder;
-
-        internal ClusterMemberHostBuilder(IDedicatedHostBuilder? builder)
-            => this.builder = builder;
-
-        internal void Configure(IWebHostBuilder webHost, RaftHostedClusterMemberConfiguration config)
+        internal void Configure( IWebHostBuilder webHost, RaftHostedClusterMemberConfiguration config)
         {
             if (builder is null)
                 webHost.UseKestrel(config.ConfigureKestrel);

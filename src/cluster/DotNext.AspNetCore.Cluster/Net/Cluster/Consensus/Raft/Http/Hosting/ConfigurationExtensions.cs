@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     {
         private static void ConfigureClusterMember(Func<IConfiguration, IDedicatedHostBuilder>? builderFactory, IConfiguration memberConfig, IServiceCollection services)
             => services
-                  .AddSingleton(new ClusterMemberHostBuilder(builderFactory?.Invoke(memberConfig)))
+                  .AddSingleton(new DedicatedHostBuilder(builderFactory?.Invoke(memberConfig)))
                     .AddClusterAsSingleton<RaftHostedCluster, RaftHostedClusterMemberConfiguration>(memberConfig);
 
         private static void ConfigureClusterMember(this Func<IConfiguration, IDedicatedHostBuilder>? builderFactory, HostBuilderContext context, IServiceCollection services)
