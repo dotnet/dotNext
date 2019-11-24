@@ -46,5 +46,14 @@ namespace DotNext
             Equal(0M, r.OrDefault());
             Null(r.OrNull());
         }
+
+        [Fact]
+        public static void Serialization()
+        {
+            Result<decimal> r = 10M;
+            Equal(10M, SerializationTestHelper.SerializeDeserialize(r).Value);
+            r = new Result<decimal>(new ArithmeticException());
+            IsType<ArithmeticException>(SerializationTestHelper.SerializeDeserialize(r).Error);
+        }
     }
 }

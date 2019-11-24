@@ -82,5 +82,14 @@ namespace DotNext
             opt2 = default;
             Equal(opt1, opt2);
         }
+
+        [Fact]
+        public static void Serialization()
+        {
+            Optional<string> opt = default;
+            False(SerializationTestHelper.SerializeDeserialize(opt).IsPresent);
+            opt = "Hello";
+            Equal("Hello", SerializationTestHelper.SerializeDeserialize(opt).Value);
+        }
     }
 }

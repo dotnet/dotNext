@@ -230,20 +230,20 @@ namespace DotNext.Runtime
             Two = 2L,
         }
 
-        private static void HasFlagTest<T>(T value, T validFlag, T invalidFlag)
-            where T : struct, Enum
-        {
-            True(Intrinsics.HasFlag(value, validFlag));
-            False(Intrinsics.HasFlag(value, invalidFlag));
-        }
-
         [Fact]
         public static void HasFlag()
         {
-            HasFlagTest(BindingFlags.Public | BindingFlags.Instance, BindingFlags.Public, BindingFlags.Static);
-            HasFlagTest(ByteEnum.Two, ByteEnum.Two, ByteEnum.One);
-            HasFlagTest(ShortEnum.Two, ShortEnum.Two, ShortEnum.One);
-            HasFlagTest(LongEnum.Two, LongEnum.Two, LongEnum.One);
+            static void HasFlag<T>(T value, T validFlag, T invalidFlag)
+                where T : struct, Enum
+                {
+                    True(Intrinsics.HasFlag(value, validFlag));
+                    False(Intrinsics.HasFlag(value, invalidFlag));
+                }
+
+            HasFlag(BindingFlags.Public | BindingFlags.Instance, BindingFlags.Public, BindingFlags.Static);
+            HasFlag(ByteEnum.Two, ByteEnum.Two, ByteEnum.One);
+            HasFlag(ShortEnum.Two, ShortEnum.Two, ShortEnum.One);
+            HasFlag(LongEnum.Two, LongEnum.Two, LongEnum.One);
         }
     }
 }

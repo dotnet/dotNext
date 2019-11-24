@@ -449,11 +449,7 @@ namespace DotNext.Threading
         /// Computes hash code for the stored value.
         /// </summary>
         /// <returns>The hash code of the stored value.</returns>
-		public readonly override int GetHashCode()
-        {
-            var value = Value;
-            return value is null ? 0 : value.GetHashCode();
-        }
+		public readonly override int GetHashCode() => Value?.GetHashCode() ?? 0;
 
         /// <summary>
         /// Modifies value of the container atomically.

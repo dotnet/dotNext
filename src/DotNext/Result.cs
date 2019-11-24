@@ -98,7 +98,9 @@ namespace DotNext
         private Result(SerializationInfo info, StreamingContext context)
         {
             value = (T)info.GetValue(ValueSerData, typeof(T));
-            exception = ExceptionDispatchInfo.Capture((Exception)info.GetValue(ExceptionSerData, typeof(Exception)));
+            exception = info.GetValue(ExceptionSerData, typeof(Exception)) is Exception e ?
+                ExceptionDispatchInfo.Capture(e) :
+                null;
         }
 
         /// <summary>
