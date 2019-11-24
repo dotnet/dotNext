@@ -298,6 +298,12 @@ namespace DotNext.Threading
         /// <returns>The hash code of the stored boolean value.</returns>
         public readonly override int GetHashCode() => Unsafe.AsRef(in value).VolatileRead().GetHashCode();
 
+        /// <summary>
+        /// Converts the value in this container to its textual representation.
+        /// </summary>
+        /// <returns>The value in this container converted to string.</returns>
+        public readonly override string ToString() => Value.ToString();
+
         readonly void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
             => info.AddValue(ValueSerData, value);
     }
