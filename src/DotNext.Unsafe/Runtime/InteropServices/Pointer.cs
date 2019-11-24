@@ -114,6 +114,12 @@ namespace DotNext.Runtime.InteropServices
         }
 
         /// <summary>
+        /// Determines whether this pointer is aligned
+        /// to the size of <typeparamref name="T"/>.
+        /// </summary>
+        public unsafe bool IsAligned => (long) value % sizeof(T) == 0;
+
+        /// <summary>
         /// Fills the elements of the array with a specified value.
         /// </summary>
         /// <param name="value">The value to assign to each element of the array.</param>

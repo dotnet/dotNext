@@ -288,5 +288,18 @@ namespace DotNext.Runtime.InteropServices
             Equal(3, array[2]);
             NotEqual(Pointer<byte>.Null, ptr);
         }
+
+        [Fact]
+        public static unsafe void Alignment()
+        {
+            Pointer<int> ptr = default;
+            True(ptr.IsAligned);
+            var a = 20;
+            ptr = &a;
+            True(ptr.IsAligned);
+            decimal d = 20;
+            ptr = (int*)(((byte*)&d) + 1);
+            False(ptr.IsAligned);
+        }
     }
 }
