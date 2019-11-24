@@ -286,6 +286,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public virtual async Task StopAsync(CancellationToken token)
         {
+            if (transitionCancellation.IsCancellationRequested)
+                return;
             transitionCancellation.Cancel(false);
             members.ForEach(CancelPendingRequests);
             leader = null;

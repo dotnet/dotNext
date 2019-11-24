@@ -43,7 +43,7 @@ namespace DotNext.Threading.Channels
         public static async Task ReadWrite(bool singleReader, bool singleWriter, long initialSize)
         {
             Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
-            using (var channel = new SerializationChannel<Guid>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter }))
+            using (var channel = new SerializationChannel<Guid>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter, InitialPartitionSize = initialSize }))
             {
                 False(channel.Writer.TryWrite(g1));
                 await channel.Writer.WriteAsync(g1);

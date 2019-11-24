@@ -39,11 +39,23 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-18-2019
+Release Date: 11-24-2019
 
-<a href="https://www.nuget.org/packages/dotnext.threading/1.3.0">DotNext.Threading 1.3.0</a>
-* [PersistentChannel](https://sakno.github.io/dotNext/api/DotNext.Threading.Channels.PersistentChannel-2.html) is added as an extension of **channel** concept from [System.Threading.Channels](https://docs.microsoft.com/en-us/dotnet/api/system.threading.channels). It allows to use disk memory instead of RAM for storing messages passed from producer to consumer. Read more [here](https://sakno.github.io/dotNext/features/threading/channel.html)
-* [AsyncCounter](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncCounter.html) allows to simplify asynchronous coordination in producer/consumer scenario
+<a href="https://www.nuget.org/packages/dotnext/1.2.6">DotNext.Threading 1.2.6</a>
+* Fixed typos in XML documentation
+* Updated *InlineIL.Fody* dependency
+
+<a href="https://www.nuget.org/packages/dotnext.threading/1.3.2">DotNext.Threading 1.3.2</a>
+* Fixed `MissingManifestResourceException` caused by `AsyncLock` value type on .NET Core 3.x
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.6">DotNext.Unsafe 1.2.6</a>
+* Updated *InlineIL.Fody* dependency
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.6">DotNext.Net.Cluster 1.2.6</a>
+* Fixed NRE when `RaftCluster.StopAsync` called multiple times
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.6">DotNext.AspNetCore.Cluster 1.2.6</a>
+* Migration to patched `RaftCluster` class
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
