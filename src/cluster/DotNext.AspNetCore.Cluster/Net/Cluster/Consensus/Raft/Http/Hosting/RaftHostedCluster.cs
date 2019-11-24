@@ -33,8 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                     });
                 })
                 .Build();
-            var webHost = host.Services.GetRequiredService<IWebHost>();
-            config.SetupHostAddressHint(webHost.ServerFeatures);
+            config.SetupHostAddressHint(host.Services.GetRequiredService<IServer>().Features);
             foreach (var memberUri in config.Members)
                 members.Add(CreateMember(memberUri));
         }

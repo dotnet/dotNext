@@ -41,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal void SetupHostAddressHint(IFeatureCollection features)
         {
             var address = HostAddressHint;
-            if (!(address is null))
+            if (!(address is null) && !features.IsReadOnly)
                 features.Set(new HostAddressHintFeature(address));
         }
 
