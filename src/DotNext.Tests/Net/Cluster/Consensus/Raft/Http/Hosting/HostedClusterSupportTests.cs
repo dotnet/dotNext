@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     [ExcludeFromCodeCoverage]
     public sealed class HostedClusterSupportTests : Assert
     {
-        private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IRaftClusterConfigurator configurator = null)
+        private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null)
             where TStartup : class
         {
             return new HostBuilder()

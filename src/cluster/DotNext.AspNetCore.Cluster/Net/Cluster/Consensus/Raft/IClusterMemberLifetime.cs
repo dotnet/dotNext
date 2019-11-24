@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Provides additional control over <see cref="IRaftCluster"/> lifecycle.
     /// </summary>
-    public interface IRaftClusterConfigurator
+    public interface IClusterMemberLifetime
     {
         /// <summary>
         /// Configures instance of <see cref="IRaftCluster"/> after its construction.

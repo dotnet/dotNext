@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
     [ExcludeFromCodeCoverage]
     public sealed class EmbeddedClusterSupportTests : Assert
     {
-        private sealed class LeaderChangedEvent : EventWaitHandle, IRaftClusterConfigurator
+        private sealed class LeaderChangedEvent : EventWaitHandle, IClusterMemberLifetime
         {
             internal volatile IClusterMember Leader;
 
@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             {
             }
 
-            void IRaftClusterConfigurator.Initialize(IRaftCluster cluster, IDictionary<string, string> metadata)
+            void IClusterMemberLifetime.Initialize(IRaftCluster cluster, IDictionary<string, string> metadata)
             {
                 cluster.LeaderChanged += OnLeaderChanged;
             }
@@ -40,13 +40,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 Set();
             }
 
-            void IRaftClusterConfigurator.Shutdown(IRaftCluster cluster)
+            void IClusterMemberLifetime.Shutdown(IRaftCluster cluster)
             {
                 cluster.LeaderChanged -= OnLeaderChanged;
             }
         }
 
-        private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IRaftClusterConfigurator configurator = null)
+        private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null)
             where TStartup : class
         {
             return new HostBuilder()

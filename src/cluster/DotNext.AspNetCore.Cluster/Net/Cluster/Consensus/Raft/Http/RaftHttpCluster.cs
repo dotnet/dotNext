@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
-        private readonly IRaftClusterConfigurator configurator;
+        private readonly IClusterMemberLifetime configurator;
         private readonly IMessageHandler messageHandler;
 
         private readonly IDisposable configurationTracker;
@@ -48,7 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;
             //dependencies
-            configurator = dependencies.GetService<IRaftClusterConfigurator>();
+            configurator = dependencies.GetService<IClusterMemberLifetime>();
             messageHandler = dependencies.GetService<IMessageHandler>();
             AuditTrail = dependencies.GetService<IPersistentState>() ?? new InMemoryAuditTrail();
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
