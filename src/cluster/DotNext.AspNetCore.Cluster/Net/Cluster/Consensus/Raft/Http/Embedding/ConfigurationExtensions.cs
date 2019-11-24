@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -7,13 +6,9 @@ using System;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
     /// <summary>
-    /// Allows to configure Raft-related stuff and turns
-    /// the web application into cluster member.
+    /// Configure ASP.NET Core application to reuse application's
+    /// web host and port for Raft endpoint.
     /// </summary>
-    /// <remarks>
-    /// Raft-related endpoint handler is embedded into
-    /// request processing pipeline of existing application.
-    /// </remarks>
     [CLSCompliant(false)]
     public static class ConfigurationExtensions
     {

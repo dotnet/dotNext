@@ -1,38 +1,27 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
     /// <summary>
-    /// Allows to configure Raft-related stuff and turns
-    /// the web application into cluster member.
+    /// Configure ASP.NET Core application to use
+    /// dedicated web host and separated port for Raft endpoint.
     /// </summary>
-    /// <remarks>
-    /// Raft-related endpoint handler is hosted on dedicated port and
-    /// separated from existing application.
-    /// </remarks>
+    /// <seealso cref="IDedicatedHostBuilder"/>
     [CLSCompliant(false)]
     public static class ConfigurationExtensions
     {
-        private static void ConfigureClusterMember(Func<IConfiguration, IDedicatedHostBuilder>? builderFactory, IConfiguration memberConfig, IServiceCollection services)
-            => services
-                  .AddSingleton(new DedicatedHostBuilder(builderFactory?.Invoke(memberConfig)))
-                    .AddClusterAsSingleton<RaftHostedCluster, RaftHostedClusterMemberConfiguration>(memberConfig);
-
-        private static void ConfigureClusterMember(this Func<IConfiguration, IDedicatedHostBuilder>? builderFactory, HostBuilderContext context, IServiceCollection services)
-            => ConfigureClusterMember(builderFactory, context.Configuration, services);
+        private static void ConfigureClusterMember(HostBuilderContext context, IServiceCollection services)
+            => services.AddClusterAsSingleton<RaftHostedCluster, RaftHostedClusterMemberConfiguration>(context.Configuration);
 
         /// <summary>
         /// Allows to inject <see cref="ICluster"/>, <see cref="IRaftCluster"/>, <see cref="IExpandableCluster"/>
         /// to application services and establishes network communication with other cluster members.
         /// </summary>
         /// <param name="builder">The builder of main application host.</param>
-        /// <param name="memberHostFactory">The factory of the dedicated host.</param>
         /// <returns>The builder of main application host.</returns>
-        public static IHostBuilder BecomeClusterMember(this IHostBuilder builder, Func<IConfiguration, IDedicatedHostBuilder>? memberHostFactory = null)
-            => builder.ConfigureServices(memberHostFactory.ConfigureClusterMember);
+        public static IHostBuilder BecomeClusterMember(this IHostBuilder builder)
+            => builder.ConfigureServices(ConfigureClusterMember);
     }
 }
