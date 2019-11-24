@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
@@ -12,24 +13,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     internal sealed class RaftHostedCluster : RaftHttpCluster
     {
         private static readonly Uri Root = new Uri("/", UriKind.Relative);
-        private readonly IWebHost host;
+        private readonly IHost host;
 
         public RaftHostedCluster(IServiceProvider services)
             : base(services, out var members)
         {
             var config = services.GetRequiredService<IOptions<RaftHostedClusterMemberConfiguration>>().Value;
-            var appConfigurer = services.GetService<ApplicationBuilder>();
-            host = services.GetRequiredService<WebHostBuilder>()
-                .Configure(config)
-                .Configure(app =>
+            var hostConfigurer = services.GetService<ClusterMemberHostBuilder>();
+            host = new HostBuilder()
+                .ConfigureWebHost(webHost =>
                 {
-                    appConfigurer?.Invoke(app);
-                    app
-                        .UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent })
-                        .Run(ProcessRequest);
+                    hostConfigurer.Configure(webHost, config);
+                    webHost.Configure(app =>
+                    {
+                        hostConfigurer.Configure(app);
+                        app
+                            .UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent })
+                            .Run(ProcessRequest);
+                    });
                 })
                 .Build();
-            config.SetupHostAddressHint(host.ServerFeatures);
+            var webHost = host.Services.GetRequiredService<IWebHost>();
+            config.SetupHostAddressHint(webHost.ServerFeatures);
             foreach (var memberUri in config.Members)
                 members.Add(CreateMember(memberUri));
         }

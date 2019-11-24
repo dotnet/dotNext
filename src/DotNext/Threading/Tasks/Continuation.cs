@@ -28,7 +28,7 @@ namespace DotNext.Threading.Tasks
 
         /// <summary>
         /// Allows to obtain original <see cref="Task"/> in its final state after <c>await</c> without
-        /// throwing exception produced this task.
+        /// throwing exception produced by this task.
         /// </summary>
         /// <param name="task">The task to await.</param>
         /// <returns><paramref name="task"/> in final state.</returns>
@@ -38,7 +38,7 @@ namespace DotNext.Threading.Tasks
 
         /// <summary>
         /// Allows to obtain original <see cref="Task{R}"/> in its final state after <c>await</c> without
-        /// throwing exception produced this task.
+        /// throwing exception produced by this task.
         /// </summary>
         /// <typeparam name="R">The type of the task result.</typeparam>
         /// <param name="task">The task to await.</param>

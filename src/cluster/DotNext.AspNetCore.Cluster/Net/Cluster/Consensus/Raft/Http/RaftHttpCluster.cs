@@ -185,7 +185,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         private protected abstract Predicate<RaftClusterMember> LocalMemberFinder { get; }
 
-
         public override Task StartAsync(CancellationToken token)
         {
             //detect local member

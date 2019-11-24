@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
@@ -16,22 +17,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     [CLSCompliant(false)]
     public static class ConfigurationExtensions
     {
+        private static void ConfigureClusterMember(Func<IConfiguration, IClusterMemberHostBuilder>? builderFactory, IConfiguration memberConfig, IServiceCollection services)
+            => services
+                  .AddSingleton(new ClusterMemberHostBuilder(builderFactory?.Invoke(memberConfig)))
+                    .AddClusterAsSingleton<RaftHostedCluster, RaftHostedClusterMemberConfiguration>(memberConfig);
+
+        private static void ConfigureClusterMember(this Func<IConfiguration, IClusterMemberHostBuilder>? builderFactory, HostBuilderContext context, IServiceCollection services)
+            => ConfigureClusterMember(builderFactory, context.Configuration, services);
+
         /// <summary>
         /// Allows to inject <see cref="ICluster"/>, <see cref="IRaftCluster"/>, <see cref="IExpandableCluster"/>
-        /// to application services and establishes network communication with other cluster member.
+        /// to application services and establishes network communication with other cluster members.
         /// </summary>
-        /// <param name="services">The registry of services.</param>
-        /// <param name="memberConfig">The configuration of cluster member.</param>
-        /// <param name="hostBuilder">The builder of the host for the consensus protocol handler. May be <see langword="null"/> to use Kestrel-based host.</param>
-        /// <param name="appBuilder">The builder of consensus protocol processing pipeline. May be <see langword="null"/>.</param>
-        /// <returns>The collection of injectable services.</returns>
-        public static IServiceCollection BecomeClusterMember(this IServiceCollection services,
-            IConfiguration memberConfig, IWebHostBuilder? hostBuilder = null, ApplicationBuilder? appBuilder = null)
-        {
-            if (appBuilder != null)
-                services = services.AddSingleton(appBuilder);
-            return services.AddSingleton(hostBuilder is null ? new WebHostBuilder() : new WebHostBuilder(hostBuilder))
-                .AddClusterAsSingleton<RaftHostedCluster, RaftHostedClusterMemberConfiguration>(memberConfig);
-        }
+        /// <param name="builder">The builder of main application host.</param>
+        /// <param name="memberHostFactory">The factory of the dedicated host.</param>
+        /// <returns>The builder of main application host.</returns>
+        public static IHostBuilder BecomeClusterMember(this IHostBuilder builder, Func<IConfiguration, IClusterMemberHostBuilder>? memberHostFactory = null)
+            => builder.ConfigureServices(memberHostFactory.ConfigureClusterMember);
     }
 }
