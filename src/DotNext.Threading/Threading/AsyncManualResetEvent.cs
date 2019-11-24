@@ -15,7 +15,7 @@ namespace DotNext.Threading
         /// <param name="initialState"><see langword="true"/> to set the initial state signaled; <see langword="false"/> to set the initial state to non signaled.</param>
         public AsyncManualResetEvent(bool initialState)
         {
-            node = initialState ? null : new WaitNode();
+            node = initialState ? null : new ISynchronizer.WaitNode();
         }
 
         EventResetMode IAsyncResetEvent.ResetMode => EventResetMode.ManualReset;
@@ -39,7 +39,7 @@ namespace DotNext.Threading
         {
             ThrowIfDisposed();
             var result = node?.TrySetResult(true) ?? false;
-            node = autoReset ? new WaitNode() : null;
+            node = autoReset ? new ISynchronizer.WaitNode() : null;
             return result;
         }
 
@@ -54,7 +54,7 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             if (node is null)
             {
-                node = new WaitNode();
+                node = new ISynchronizer.WaitNode();
                 return true;
             }
             else

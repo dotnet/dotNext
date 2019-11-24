@@ -18,7 +18,7 @@ namespace DotNext.Threading
     /// </remarks>
     public abstract class QueuedSynchronizer : Disposable, ISynchronizer
     {
-        private protected class WaitNode : Synchronizer.WaitNode
+        private protected class WaitNode : ISynchronizer.WaitNode
         {
             private WaitNode? previous;
             private WaitNode? next;

@@ -11,7 +11,7 @@ namespace DotNext.Threading
     /// </remarks>
     public class AsyncCountdownEvent : Synchronizer, IAsyncEvent
     {
-        private sealed class CounterNode : WaitNode
+        private sealed class CounterNode : ISynchronizer.WaitNode
         {
             private long count;
 

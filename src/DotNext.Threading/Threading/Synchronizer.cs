@@ -17,14 +17,7 @@ namespace DotNext.Threading
     /// </remarks>
     public abstract class Synchronizer : Disposable, ISynchronizer
     {
-        internal class WaitNode : TaskCompletionSource<bool>
-        {
-            internal WaitNode() : base(TaskCreationOptions.RunContinuationsAsynchronously) { }
-
-            internal void Complete() => SetResult(true);
-        }
-
-        private protected volatile WaitNode? node;//null means signaled state
+        private protected volatile ISynchronizer.WaitNode? node;//null means signaled state
 
         private protected Synchronizer()
         {
