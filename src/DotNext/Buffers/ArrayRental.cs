@@ -106,16 +106,6 @@ namespace DotNext.Buffers
         public ref T GetPinnableReference() => ref array[0];
 
         /// <summary>
-        /// Returns a slice of the rented array.
-        /// </summary>
-        /// <param name="offset">The zero-based index of the first element in the array.</param>
-        /// <param name="count">The number of elements in the range.</param>
-        /// <returns>The segment of the rented array.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than <see cref="Length"/>.</exception>
-        public ArraySegment<T> Slice(int offset, int count)
-            => count <= Length ? new ArraySegment<T>(array, offset, count) : throw new ArgumentOutOfRangeException(nameof(count));
-
-        /// <summary>
         /// Obtains rented array.
         /// </summary>
         /// <remarks>
@@ -123,7 +113,7 @@ namespace DotNext.Buffers
         /// the returned array may differs from <see cref="Length"/>.
         /// </remarks>
         /// <param name="rental">Array rental.</param>
-        public static explicit operator T[]?(in ArrayRental<T> rental) => rental.array;
+        public static explicit operator T[](in ArrayRental<T> rental) => rental.array ?? Array.Empty<T>();
 
         /// <summary>
         /// Gets textual representation of the rented memory.
