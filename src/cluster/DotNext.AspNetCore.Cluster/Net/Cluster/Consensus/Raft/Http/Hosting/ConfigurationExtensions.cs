@@ -17,12 +17,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     [CLSCompliant(false)]
     public static class ConfigurationExtensions
     {
-        private static void ConfigureClusterMember(Func<IConfiguration, IClusterMemberHostBuilder>? builderFactory, IConfiguration memberConfig, IServiceCollection services)
+        private static void ConfigureClusterMember(Func<IConfiguration, IDedicatedHostBuilder>? builderFactory, IConfiguration memberConfig, IServiceCollection services)
             => services
                   .AddSingleton(new ClusterMemberHostBuilder(builderFactory?.Invoke(memberConfig)))
                     .AddClusterAsSingleton<RaftHostedCluster, RaftHostedClusterMemberConfiguration>(memberConfig);
 
-        private static void ConfigureClusterMember(this Func<IConfiguration, IClusterMemberHostBuilder>? builderFactory, HostBuilderContext context, IServiceCollection services)
+        private static void ConfigureClusterMember(this Func<IConfiguration, IDedicatedHostBuilder>? builderFactory, HostBuilderContext context, IServiceCollection services)
             => ConfigureClusterMember(builderFactory, context.Configuration, services);
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// <param name="builder">The builder of main application host.</param>
         /// <param name="memberHostFactory">The factory of the dedicated host.</param>
         /// <returns>The builder of main application host.</returns>
-        public static IHostBuilder BecomeClusterMember(this IHostBuilder builder, Func<IConfiguration, IClusterMemberHostBuilder>? memberHostFactory = null)
+        public static IHostBuilder BecomeClusterMember(this IHostBuilder builder, Func<IConfiguration, IDedicatedHostBuilder>? memberHostFactory = null)
             => builder.ConfigureServices(memberHostFactory.ConfigureClusterMember);
     }
 }
