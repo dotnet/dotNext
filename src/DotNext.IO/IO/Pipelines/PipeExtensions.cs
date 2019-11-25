@@ -117,7 +117,7 @@ namespace DotNext.IO.Pipelines
         public static async ValueTask<string> ReadStringAsync(this PipeReader reader, int length, DecodingContext context, CancellationToken token = default)
         {
             if (length == 0)
-                return "";
+                return string.Empty;
             using var resultBuffer = new ArrayRental<char>(context.Encoding.GetMaxCharCount(length));
             return await ReadAsync<string, StringReader>(reader, new StringReader(context, resultBuffer.Memory), token);
         }
