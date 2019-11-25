@@ -77,6 +77,33 @@ namespace DotNext.IO.Pipelines
             }
         }
 
+        /// <summary>
+        /// Reads the bytes from pipe and writes them to the stream.
+        /// </summary>
+        /// <param name="destination">The stream to which the contents of the given pipe will be copied.</param>
+        /// <param name="source">The pipe reader used to read bytes.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The number of copied bytes.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async ValueTask<long> CopyToAsync(this PipeReader source, Stream destination, CancellationToken token = default)
+        {
+            var total = 0L;
+            var completed = false;
+            for (SequencePosition consumed; !completed; source.AdvanceTo(consumed))
+            {
+                var result = await source.ReadAsync(token).ConfigureAwait(false);
+                var buffer = result.Buffer;
+                if (result.IsCanceled)
+                    throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
+                for (consumed = buffer.Start; buffer.TryGet(ref consumed, out var block); total += block.Length)
+                    await destination.WriteAsync(block, token).ConfigureAwait(false);
+                if (consumed.Equals(default))
+                    consumed = buffer.End;
+                completed = result.IsCompleted;
+            }
+            return total;
+        }
+
         private static void Append<TResult, TParser>(this ref TParser parser, in ReadOnlySequence<byte> input, out SequencePosition consumed)
             where TParser : struct, IBufferReader<TResult>
         {

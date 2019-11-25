@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.Pipelines;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,66 +22,6 @@ namespace DotNext.IO
     /// </remarks>
     public static class StreamExtensions
     {
-        /// <summary>
-        /// Reads the bytes from stream and writes them to <see cref="PipeWriter"/>.
-        /// </summary>
-        /// <param name="source">The stream to read from.</param>
-        /// <param name="destination">The pipe writer used to write bytes obtained from stream.</param>
-        /// <param name="bufferSize">The buffer size (in bytes) used to copy contents.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The number of copied bytes.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask<long> ReadAsync(this Stream source, PipeWriter destination, int bufferSize = 0, CancellationToken token = default)
-        {
-            var total = 0L;
-            for (int bytesRead; ; token.ThrowIfCancellationRequested())
-            {
-                bytesRead = await source.ReadAsync(destination.GetMemory(bufferSize), token).ConfigureAwait(false);
-                destination.Advance(bytesRead);
-                if (bytesRead == 0)
-                    break;
-                total += bytesRead;
-                var result = await destination.FlushAsync().ConfigureAwait(false);
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
-                if (result.IsCompleted)
-                    break;
-            }
-            return total;
-        }
-
-        /// <summary>
-        /// Reads the bytes from pipe and writes them to the stream.
-        /// </summary>
-        /// <param name="destination">The stream to which the contents of the given pipe will be copied.</param>
-        /// <param name="source">The pipe reader used to read bytes.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The number of copied bytes.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask<long> WriteAsync(this Stream destination, PipeReader source, CancellationToken token = default)
-        {
-            var total = 0L;
-            for (SequencePosition consumed = default; ; consumed = default)
-                try
-                {
-                    var result = await source.ReadAsync(token).ConfigureAwait(false);
-                    var buffer = result.Buffer;
-                    if (result.IsCanceled)
-                        throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
-                    for (var position = buffer.Start; buffer.TryGet(ref position, out var block); consumed = position, total += block.Length)
-                        await destination.WriteAsync(block, token).ConfigureAwait(false);
-                    if (consumed.Equals(default))
-                        consumed = buffer.End;
-                    if (result.IsCompleted)
-                        break;
-                }
-                finally
-                {
-                    source.AdvanceTo(consumed);
-                }
-            return total;
-        }
-
         /// <summary>
         /// Writes the string to the stream using supplied reusable buffer.
         /// </summary>
