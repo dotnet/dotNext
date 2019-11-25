@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using Xunit;
@@ -42,6 +43,19 @@ namespace DotNext.IO.Pipelines
             var pipe = new Pipe();
             WriteValueAsync(pipe.Writer);
             Equal(20M, await pipe.Reader.ReadAsync<decimal>());
+        }
+
+        [Fact]
+        public static async Task EndOfStream()
+        {
+            static async void WriteValueAsync(PipeWriter writer)
+            {
+                await writer.WriteAsync(0L);
+                await writer.CompleteAsync();
+            }
+            var pipe = new Pipe();
+            WriteValueAsync(pipe.Writer);
+            await ThrowsAsync<EndOfStreamException>(pipe.Reader.ReadAsync<decimal>().AsTask);
         }
     }
 }
