@@ -77,38 +77,13 @@ namespace DotNext.IO.Pipelines
             }
         }
 
-        /// <summary>
-        /// Reads the bytes from pipe and writes them to the stream.
-        /// </summary>
-        /// <param name="destination">The stream to which the contents of the given pipe will be copied.</param>
-        /// <param name="source">The pipe reader used to read bytes.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The number of copied bytes.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask<long> CopyToAsync(this PipeReader source, Stream destination, CancellationToken token = default)
-        {
-            var total = 0L;
-            var completed = false;
-            for (SequencePosition consumed; !completed; source.AdvanceTo(consumed))
-            {
-                var result = await source.ReadAsync(token).ConfigureAwait(false);
-                var buffer = result.Buffer;
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
-                for (consumed = buffer.Start; buffer.TryGet(ref consumed, out var block); total += block.Length)
-                    await destination.WriteAsync(block, token).ConfigureAwait(false);
-                if (consumed.Equals(default))
-                    consumed = buffer.End;
-                completed = result.IsCompleted;
-            }
-            return total;
-        }
-
         private static void Append<TResult, TParser>(this ref TParser parser, in ReadOnlySequence<byte> input, out SequencePosition consumed)
             where TParser : struct, IBufferReader<TResult>
         {
+            if (input.IsEmpty)
+                throw new EndOfStreamException();
             int bytesToConsume;
-            for (consumed = input.Start; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false); consumed = input.GetPosition(bytesToConsume, consumed))
+            for (consumed = input.Start; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false) && block.Length > 0; consumed = input.GetPosition(bytesToConsume, consumed))
             {
                 bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
                 block = block.Slice(0, bytesToConsume);
@@ -124,8 +99,6 @@ namespace DotNext.IO.Pipelines
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
                 if (readResult.IsCanceled)
                     throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
-                if (readResult.IsCompleted)
-                    throw new EndOfStreamException();
                 parser.Append<TResult, TParser>(readResult.Buffer, out consumed);
             }
             return parser.Complete();
