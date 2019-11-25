@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using Xunit;
@@ -51,6 +52,7 @@ namespace DotNext
             var value1 = Guid.NewGuid();
             var value2 = value1;
             True(BitwiseComparer<Guid>.Equals(value1, value2));
+            Equal(value1, value2, BitwiseComparer<Guid>.Instance);
             value2 = default;
             False(BitwiseComparer<Guid>.Equals(value1, value2));
         }
