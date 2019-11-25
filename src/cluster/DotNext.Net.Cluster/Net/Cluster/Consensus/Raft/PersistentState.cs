@@ -204,20 +204,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="output">The writer.</param>
             /// <param name="token">The token that can be used to cancel operation.</param>
             /// <returns>The task representing asynchronous execution of this method.</returns>
-            public async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
-            {
-                //TODO: Should be rewritten for .NET Standard 2.1
-                var source = AdjustPosition();
-                int count;
-                while ((count = await source.ReadAsync(buffer, 0, buffer.Length, token).ConfigureAwait(false)) > 0)
-                {
-                    var result = await output.WriteAsync(new ReadOnlyMemory<byte>(buffer, 0, count), token).ConfigureAwait(false);
-                    if (result.IsCompleted)
-                        break;
-                    if (result.IsCanceled)
-                        throw new OperationCanceledException(token);
-                }
-            }
+            public ValueTask CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask(AdjustPosition().CopyToAsync(output, token));
 
             long? IDataTransferObject.Length => Length;
             bool IDataTransferObject.IsReusable => false;
