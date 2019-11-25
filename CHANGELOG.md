@@ -1,6 +1,13 @@
 Release Notes
 ====
 
+# 11-25-2019
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.7">DotNext.Net.Cluster 1.2.7</a>
+* Improved performance of copying log entry content when `PersistentState` is used as persistent audit trail
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.7">DotNext.AspNetCore.Cluster 1.2.7</a>
+* Improved performance of message exchange between cluster members
+
 # 11-24-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.6">DotNext 1.2.6</a>
 * Fixed typos in XML documentation
