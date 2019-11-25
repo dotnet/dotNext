@@ -11,6 +11,7 @@ namespace DotNext.IO.Pipelines
     using Intrinsics = Runtime.Intrinsics;
     using Buffers;
     using Text;
+    using System.Buffers;
 
     /// <summary>
     /// Represents extension method for parsing data stored in pipe.
@@ -76,23 +77,29 @@ namespace DotNext.IO.Pipelines
             }
         }
 
+        private static void Append<TResult, TParser>(this ref TParser parser, in ReadOnlySequence<byte> input, out SequencePosition consumed)
+            where TParser : struct, IBufferReader<TResult>
+        {
+            int bytesToConsume;
+            for (consumed = input.Start; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false); consumed = input.GetPosition(bytesToConsume, consumed))
+            {
+                bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
+                block = block.Slice(0, bytesToConsume);
+                parser.Append(block.Span);
+            }
+        }
+
         private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token = default)
             where TParser : struct, IBufferReader<TResult>
         {
-            for (SequencePosition consumed = default; parser.RemainingBytes > 0; reader.AdvanceTo(consumed), consumed = default)
+            for (SequencePosition consumed; parser.RemainingBytes > 0; reader.AdvanceTo(consumed))
             {
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
                 if (readResult.IsCanceled)
                     throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
                 if (readResult.IsCompleted)
                     throw new EndOfStreamException();
-                var buffer = readResult.Buffer;
-                int bytesToConsume;
-                for (var position = buffer.Start; parser.RemainingBytes > 0 && buffer.TryGet(ref position, out var block); consumed = buffer.GetPosition(bytesToConsume, position))
-                {
-                    bytesToConsume = Math.Min(parser.RemainingBytes, block.Length);
-                    parser.Append(block.Slice(0, bytesToConsume).Span);
-                }
+                parser.Append<TResult, TParser>(readResult.Buffer, out consumed);
             }
             return parser.Complete();
         }
