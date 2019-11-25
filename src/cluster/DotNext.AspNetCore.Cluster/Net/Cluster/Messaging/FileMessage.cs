@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Messaging
 
         ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => new ValueTask(CopyToAsync(output, token));
 
-        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => await this.CopyToAsync(output, token).ConfigureAwait(false);
+        ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask(this.CopyToAsync(output, token));
 
         long? IDataTransferObject.Length => Length;
 
