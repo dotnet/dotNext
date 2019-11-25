@@ -29,7 +29,7 @@ namespace DotNext
         /// or <see cref="IComparer{T}"/> interface. Otherwise, use static methods.
         /// </remarks>
         /// <returns>The instance of this comparer.</returns>
-        public BitwiseComparer<T> Instance { get; } = new BitwiseComparer<T>();
+        public static BitwiseComparer<T> Instance { get; } = new BitwiseComparer<T>();
 
         private static bool Equals<G>(ref T first, ref G second)
             where G : struct
