@@ -43,7 +43,7 @@ namespace DotNext.IO
 
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
-            await content.ReadAsync(output, DefaultBufferSize, token).ConfigureAwait(false);
+            await content.CopyToAsync(output, token).ConfigureAwait(false);
             if (content.CanSeek)
                 content.Seek(0, SeekOrigin.Begin);
         }

@@ -16,7 +16,7 @@ namespace DotNext.IO.Pipelines
 
             var pipe = new Pipe();
             WriteValueAsync(20M, pipe.Writer);
-            Equal(10M, await pipe.Reader.ReadAsync<decimal>());
+            Equal(20M, await pipe.Reader.ReadAsync<decimal>());
         }
     }
 }

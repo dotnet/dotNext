@@ -128,7 +128,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="output">The writer.</param>
             /// <param name="token">The token that can be used to cancel operation.</param>
             /// <returns>The task representing asynchronous execution of this method.</returns>
-            public async ValueTask CopyToAsync(PipeWriter output, CancellationToken token) => await AdjustPosition().ReadAsync(output, 1024, token).ConfigureAwait(false);
+            public async ValueTask CopyToAsync(PipeWriter output, CancellationToken token) => await AdjustPosition().CopyToAsync(output, token).ConfigureAwait(false);
 
             long? IDataTransferObject.Length => Length;
             bool IDataTransferObject.IsReusable => false;
