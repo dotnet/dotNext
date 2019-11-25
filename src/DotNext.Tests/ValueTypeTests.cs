@@ -51,8 +51,10 @@ namespace DotNext
             var value1 = Guid.NewGuid();
             var value2 = value1;
             True(BitwiseComparer<Guid>.Equals(value1, value2));
+            Equal(value1, value2, BitwiseComparer<Guid>.Instance);
             value2 = default;
             False(BitwiseComparer<Guid>.Equals(value1, value2));
+            NotEqual(value1, value2, BitwiseComparer<Guid>.Instance);
         }
 
         [Fact]
@@ -61,8 +63,10 @@ namespace DotNext
             var value1 = 10L;
             var value2 = 20L;
             False(BitwiseComparer<long>.Equals(value1, value2));
+            NotEqual(value1, value2, BitwiseComparer<long>.Instance);
             value2 = 10L;
             True(BitwiseComparer<long>.Equals(value1, value2));
+            Equal(value1, value2, BitwiseComparer<long>.Instance);
         }
 
         [Fact]

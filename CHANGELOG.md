@@ -2,6 +2,9 @@ Release Notes
 ====
 
 # 11-25-2019
+<a href="https://www.nuget.org/packages/dotnext/1.2.7">DotNext 1.2.7</a>
+* `BitwiseComparer` now available as singleton instance
+
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.7">DotNext.Net.Cluster 1.2.7</a>
 * Improved performance of copying log entry content when `PersistentState` is used as persistent audit trail
 
