@@ -7,7 +7,7 @@ This chapter gives quick overview of these libraries. Read [articles](./features
 
 Prerequisites:
 * Runtime: any .NET implementation compatible with .NET Standard 2.0
-* OS: Linux, Windows, macOS
+* OS: Linux, Windows, MacOS
 * Architecture: any if supported by underlying .NET Runtime
 
 # DotNext
