@@ -13,6 +13,11 @@ namespace DotNext.Generic
         {
             False(CompletedTask<bool, BooleanConst.False>.Task.Result);
             True(CompletedTask<bool, BooleanConst.True>.Task.Result);
+            var value = new BooleanConst.False();
+            True(value.Equals(false));
+            False(value.Equals(null));
+            Equal(bool.FalseString, value.ToString());
+            Equal(false.GetHashCode(), value.GetHashCode());
         }
 
         [Fact]

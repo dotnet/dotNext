@@ -27,28 +27,20 @@ namespace DotNext.Generic
         /// Returns textual representation of the constant value.
         /// </summary>
         /// <returns>The textual representation of the constant value.</returns>
-        public sealed override string ToString()
-        {
-            object? boxed = Value;
-            return boxed is null ? "NULL" : boxed.ToString();
-        }
+        public sealed override string ToString() => Value?.ToString() ?? "NULL";
 
         /// <summary>
         /// Computes hash code for the constant.
         /// </summary>
         /// <returns>The hash code of the constant.</returns>
-        public sealed override int GetHashCode()
-        {
-            object? boxed = Value;
-            return boxed?.GetHashCode() ?? 0;
-        }
+        public sealed override int GetHashCode() => Value?.GetHashCode() ?? 0;
 
         /// <summary>
         /// Determines whether two constant values are equal.
         /// </summary>
         /// <param name="other">Other constant value to compare.</param>
         /// <returns><see langword="true"/>, this object represents the same constant value as other; otherwise, <see langword="false"/>.</returns>
-        public sealed override bool Equals(object other) => other switch
+        public sealed override bool Equals(object? other) => other switch
             {
                 T obj => Equals(obj, Value),
                 Constant<T> @const => Equals(Value, @const.Value),
