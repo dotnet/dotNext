@@ -1,9 +1,11 @@
-﻿using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace DotNext
 {
+    [ExcludeFromCodeCoverage]
     internal static class SerializationTestHelper
     {
         internal static T SerializeDeserialize<T>(T value)
