@@ -47,16 +47,11 @@ namespace DotNext.IO.Pipelines
 
             string IBufferReader<string>.Complete() => new string(result.Span.Slice(0, resultOffset));
 
-            private static void GetChars(Decoder decoder, ReadOnlySpan<byte> bytes, int charCount, Span<char> output, ref int outputOffset, ref int length)
+            void IBufferReader<string>.Append(ReadOnlySpan<byte> bytes)
             {
-                using MemoryRental<char> charBuffer = charCount <= 1024 ? stackalloc char[charCount] : new MemoryRental<char>(charCount);
                 length -= bytes.Length;
-                charCount = decoder.GetChars(bytes, charBuffer.Span, length == 0);
-                Intrinsics.Copy(ref charBuffer[0], ref output[outputOffset], charCount);
-                outputOffset += charCount;
+                resultOffset += decoder.GetChars(bytes, result.Span.Slice(resultOffset), length == 0);
             }
-
-            void IBufferReader<string>.Append(ReadOnlySpan<byte> bytes) => GetChars(decoder, bytes, encoding.GetMaxCharCount(bytes.Length), result.Span, ref resultOffset, ref length);
         }
 
         [StructLayout(LayoutKind.Auto)]

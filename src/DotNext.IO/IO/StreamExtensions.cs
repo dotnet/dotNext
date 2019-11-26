@@ -140,7 +140,6 @@ namespace DotNext.IO
             if (maxChars == 0)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
             var decoder = context.GetDecoder();
-            using var charBuffer = maxChars <= 1024 ? stackalloc char[maxChars] : new MemoryRental<char>(maxChars);
             using var result = length <= 1024 ? stackalloc char[length] : new MemoryRental<char>(length);
             int resultOffset;
             for (resultOffset = 0; length > 0;)
@@ -149,9 +148,7 @@ namespace DotNext.IO
                 if (n == 0)
                     throw new EndOfStreamException();
                 length -= n;
-                var charsRead = decoder.GetChars(buffer.Slice(0, n), charBuffer.Span, length == 0);
-                Intrinsics.Copy(ref charBuffer[0], ref result[resultOffset], charsRead);
-                resultOffset += charsRead;
+                resultOffset += decoder.GetChars(buffer.Slice(0, n), result.Span.Slice(resultOffset), length == 0);
             }
             return new string(result.Span.Slice(0, resultOffset));
         }
@@ -200,7 +197,6 @@ namespace DotNext.IO
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
             var decoder = context.GetDecoder();
             using var continuousBuffer = new ArrayRental<char>(maxChars + length);
-            var charBuffer = continuousBuffer.Memory.Slice(0, maxChars);
             var result = continuousBuffer.Memory.Slice(maxChars);
             Assert(result.Length == length);
             int resultOffset;
@@ -210,9 +206,7 @@ namespace DotNext.IO
                 if (n == 0)
                     throw new EndOfStreamException();
                 length -= n;
-                var charsRead = decoder.GetChars(buffer.Span.Slice(0, n), charBuffer.Span, length == 0);
-                Intrinsics.Copy(ref charBuffer.Span[0], ref result.Span[resultOffset], charsRead);
-                resultOffset += charsRead;
+                resultOffset += decoder.GetChars(buffer.Span.Slice(0, n), result.Span.Slice(resultOffset), length == 0);
             }
             return new string(result.Span.Slice(0, resultOffset));
         }
