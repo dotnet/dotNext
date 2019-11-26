@@ -59,22 +59,25 @@ namespace DotNext.IO.Pipelines
             await ThrowsAsync<EndOfStreamException>(pipe.Reader.ReadAsync<decimal>().AsTask);
         }
 
-        private static async Task EncodeDecodeStringAsync(Encoding encoding, string value)
+        private static async Task EncodeDecodeStringAsync(Encoding encoding, string value, int bufferSize)
         {
             var pipe = new Pipe();
-            await pipe.Writer.WriteStringAsync(value.AsMemory(), encoding);
+            await pipe.Writer.WriteStringAsync(value.AsMemory(), encoding, bufferSize);
             Equal(value, await pipe.Reader.ReadStringAsync(encoding.GetByteCount(value), encoding));
         }
 
-        [Fact]
-        public static async Task EncodeDecodeString()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(10)]
+        [InlineData(1024)]
+        public static async Task EncodeDecodeString(int bufferSize)
         {
             const string testString = "abc^$&@^$&@)(_+~";
-            await EncodeDecodeStringAsync(Encoding.UTF8, testString);
-            await EncodeDecodeStringAsync(Encoding.Unicode, testString);
-            await EncodeDecodeStringAsync(Encoding.UTF32, testString);
-            await EncodeDecodeStringAsync(Encoding.UTF7, testString);
-            await EncodeDecodeStringAsync(Encoding.ASCII, testString);
+            await EncodeDecodeStringAsync(Encoding.UTF8, testString, bufferSize);
+            await EncodeDecodeStringAsync(Encoding.Unicode, testString, bufferSize);
+            await EncodeDecodeStringAsync(Encoding.UTF32, testString, bufferSize);
+            await EncodeDecodeStringAsync(Encoding.UTF7, testString, bufferSize);
+            await EncodeDecodeStringAsync(Encoding.ASCII, testString, bufferSize);
         }
     }
 }
