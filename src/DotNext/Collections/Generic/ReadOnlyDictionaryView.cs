@@ -118,7 +118,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="other">Other dictionary to compare.</param>
         /// <returns><see langword="true"/> if this view wraps the same source dictionary and contains the same converter as other view; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other)
             => other is ReadOnlyDictionaryView<K, I, O> view ? Equals(view) : Equals(source, other);
 
         /// <summary>

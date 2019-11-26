@@ -377,7 +377,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other container to compare.</param>
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other switch
+        public override bool Equals(object? other) => other switch
         {
             null => IsPresent == false,
             Optional<T> optional => Equals(optional),
@@ -392,7 +392,7 @@ namespace DotNext
         /// <param name="other">Other object to compare with <see cref="Value"/>.</param>
         /// <param name="comparer">The comparer implementing custom equality check.</param>
         /// <returns><see langword="true"/> if <paramref name="other"/> is equal to <see cref="Value"/> using custom check; otherwise, <see langword="false"/>.</returns>
-		public bool Equals(object other, IEqualityComparer comparer)
+		public bool Equals(object? other, IEqualityComparer comparer)
             => other is T && IsPresent && comparer.Equals(value, other);
 
         /// <summary>

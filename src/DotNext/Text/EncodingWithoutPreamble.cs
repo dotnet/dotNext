@@ -123,7 +123,7 @@ namespace DotNext.Text
         public override string ToString() => encoding.ToString();
 
 
-        public override bool Equals(object other)
+        public override bool Equals(object? other)
             => other is EncodingWithoutPreamble wrapper ? encoding.Equals(wrapper.encoding) : encoding.Equals(other);
 
         public override int GetHashCode() => encoding.GetHashCode();

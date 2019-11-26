@@ -267,7 +267,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other lock to compare.</param>
         /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-        public readonly override bool Equals(object other) => other is Lock @lock && Equals(@lock);
+        public readonly override bool Equals(object? other) => other is Lock @lock && Equals(@lock);
 
         /// <summary>
         /// Computes hash code of this lock.

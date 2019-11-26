@@ -38,7 +38,7 @@ namespace DotNext
             public bool Equals(Tuple other)
                 => Name is null ? other.Name is null && EqualityComparer<E>.Default.Equals(Value, other.Value) : Name == other.Name;
 
-            public override bool Equals(object other) => other is Tuple t && Equals(t);
+            public override bool Equals(object? other) => other is Tuple t && Equals(t);
             public override int GetHashCode() => Name is null ? Value.GetHashCode() : Name.GetHashCode(StringComparison.Ordinal);
         }
 
@@ -230,7 +230,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns>Equality check result.</returns>
-        public override bool Equals(object other) => other switch
+        public override bool Equals(object? other) => other switch
         {
             Enum<E> en => Equals(en),
             E en => Equals(en),

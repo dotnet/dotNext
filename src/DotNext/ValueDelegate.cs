@@ -173,7 +173,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -377,7 +377,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -577,7 +577,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<T, R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<T, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -753,7 +753,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction<T> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -932,7 +932,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<T1, T2, R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<T1, T2, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -1112,7 +1112,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T1, T2> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction<T1, T2> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -1295,7 +1295,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<T1, T2, T3, R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<T1, T2, T3, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -1479,7 +1479,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T1, T2, T3> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction<T1, T2, T3> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -1666,7 +1666,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<T1, T2, T3, T4, R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<T1, T2, T3, T4, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -1854,7 +1854,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T1, T2, T3, T4> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction<T1, T2, T3, T4> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -2041,7 +2041,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<T1, T2, T3, T4, T5, R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<T1, T2, T3, T4, T5, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -2229,7 +2229,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T1, T2, T3, T4, T5> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction<T1, T2, T3, T4, T5> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -2411,7 +2411,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueRefAction<T, TArgs> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueRefAction<T, TArgs> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -2594,7 +2594,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueRefFunc<T, TArgs, TResult> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueRefFunc<T, TArgs, TResult> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.

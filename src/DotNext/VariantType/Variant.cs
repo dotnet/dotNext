@@ -225,7 +225,7 @@ namespace DotNext.VariantType
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other)
             => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
 
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
@@ -421,7 +421,7 @@ namespace DotNext.VariantType
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other)
             => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
 
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)
@@ -647,7 +647,7 @@ namespace DotNext.VariantType
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other)
             => other is IVariant variant ? Equals(value, variant.Value) : Equals(value, other);
 
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)

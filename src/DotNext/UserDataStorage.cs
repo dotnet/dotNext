@@ -337,7 +337,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other object to check.</param>
         /// <returns><see langword="true"/>, if this storage is attached to <paramref name="other"/> object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => ReferenceEquals(owner, other);
+        public override bool Equals(object? other) => ReferenceEquals(owner, other);
 
         /// <summary>
         /// Returns textual representation of this storage.
