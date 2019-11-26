@@ -141,8 +141,8 @@ namespace DotNext.IO
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
             var decoder = context.GetDecoder();
             using var result = length <= 1024 ? stackalloc char[length] : new MemoryRental<char>(length);
-            int resultOffset;
-            for (resultOffset = 0; length > 0;)
+            var resultOffset = 0;
+            while (length > 0)
             {
                 var n = stream.Read(buffer.Slice(0, Math.Min(length, buffer.Length)));
                 if (n == 0)
@@ -199,8 +199,8 @@ namespace DotNext.IO
             using var continuousBuffer = new ArrayRental<char>(maxChars + length);
             var result = continuousBuffer.Memory.Slice(maxChars);
             Assert(result.Length == length);
-            int resultOffset;
-            for (resultOffset = 0; length > 0;)
+            var resultOffset = 0;
+            while (length > 0)
             {
                 var n = await stream.ReadAsync(buffer.Slice(0, Math.Min(length, buffer.Length)), token).ConfigureAwait(false);
                 if (n == 0)
