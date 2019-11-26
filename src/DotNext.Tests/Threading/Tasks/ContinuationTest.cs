@@ -38,20 +38,20 @@ namespace DotNext.Threading.Tasks
         public static async Task OnFaulted()
         {
             var task = Task.FromException<int>(new Exception());
-            Equal(int.MinValue, await task.OnFaulted<int, IntConst.Min>());
+            Equal(int.MinValue, await task.OnFaulted<int, Int32Const.Min>());
             task = Task.FromResult(10);
-            Equal(10, await task.OnFaulted<int, IntConst.Min>());
+            Equal(10, await task.OnFaulted<int, Int32Const.Min>());
         }
 
         [Fact]
         public static async Task OnFaultedOrCanceled()
         {
             var task = Task.FromException<int>(new Exception());
-            Equal(int.MinValue, await task.OnFaultedOrCanceled<int, IntConst.Min>());
+            Equal(int.MinValue, await task.OnFaultedOrCanceled<int, Int32Const.Min>());
             task = Task.FromResult(10);
-            Equal(10, await task.OnFaultedOrCanceled<int, IntConst.Min>());
+            Equal(10, await task.OnFaultedOrCanceled<int, Int32Const.Min>());
             task = Task.FromCanceled<int>(new CancellationToken(true));
-            Equal(int.MinValue, await task.OnFaultedOrCanceled<int, IntConst.Min>());
+            Equal(int.MinValue, await task.OnFaultedOrCanceled<int, Int32Const.Min>());
         }
     }
 }

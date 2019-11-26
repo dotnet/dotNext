@@ -3,13 +3,13 @@ namespace DotNext.Generic
     /// <summary>
     /// Represents <see cref="int"/> constant as type.
     /// </summary>
-    public abstract class IntConst : Constant<int>
+    public abstract class Int32Const : Constant<int>
     {
         /// <summary>
         /// Associated <see cref="int"/> value with this type.
         /// </summary>
         /// <param name="value">A value to be associated with this type.</param>
-        protected IntConst(int value)
+        protected Int32Const(int value)
             : base(value)
         {
         }
@@ -17,7 +17,7 @@ namespace DotNext.Generic
         /// <summary>
         /// Represents zero value as type.
         /// </summary>
-        public sealed class Zero : IntConst
+        public sealed class Zero : Int32Const
         {
             /// <summary>
             /// Represents constant value.
@@ -36,7 +36,7 @@ namespace DotNext.Generic
         /// <summary>
         /// Represents max integer value as type.
         /// </summary>
-        public sealed class Max : IntConst
+        public sealed class Max : Int32Const
         {
             /// <summary>
             /// Represents constant value.
@@ -55,7 +55,7 @@ namespace DotNext.Generic
         /// <summary>
         /// Represents min integer value as type.
         /// </summary>
-        public sealed class Min : IntConst
+        public sealed class Min : Int32Const
         {
             /// <summary>
             /// Represents constant value.

@@ -33,17 +33,17 @@ namespace DotNext.Generic
         [Fact]
         public static void IntGenericConst()
         {
-            Equal(0, CompletedTask<int, IntConst.Zero>.Task.Result);
-            Equal(int.MaxValue, CompletedTask<int, IntConst.Max>.Task.Result);
-            Equal(int.MinValue, CompletedTask<int, IntConst.Min>.Task.Result);
+            Equal(0, CompletedTask<int, Int32Const.Zero>.Task.Result);
+            Equal(int.MaxValue, CompletedTask<int, Int32Const.Max>.Task.Result);
+            Equal(int.MinValue, CompletedTask<int, Int32Const.Min>.Task.Result);
         }
 
         [Fact]
         public static void LongGenericConst()
         {
-            Equal(0L, CompletedTask<long, LongConst.Zero>.Task.Result);
-            Equal(long.MaxValue, CompletedTask<long, LongConst.Max>.Task.Result);
-            Equal(long.MinValue, CompletedTask<long, LongConst.Min>.Task.Result);
+            Equal(0L, CompletedTask<long, Int64Const.Zero>.Task.Result);
+            Equal(long.MaxValue, CompletedTask<long, Int64Const.Max>.Task.Result);
+            Equal(long.MinValue, CompletedTask<long, Int64Const.Min>.Task.Result);
         }
     }
 }

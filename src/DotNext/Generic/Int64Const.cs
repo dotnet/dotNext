@@ -3,13 +3,13 @@
     /// <summary>
     /// Represents <see cref="long"/> constant as type.
     /// </summary>
-    public abstract class LongConst : Constant<long>
+    public abstract class Int64Const : Constant<long>
     {
         /// <summary>
         /// Associated <see cref="long"/> value with this type.
         /// </summary>
         /// <param name="value">A value to be associated with this type.</param>
-        protected LongConst(long value)
+        protected Int64Const(long value)
             : base(value)
         {
         }
@@ -17,7 +17,7 @@
         /// <summary>
         /// Represents zero value as type.
         /// </summary>
-        public sealed class Zero : LongConst
+        public sealed class Zero : Int64Const
         {
             /// <summary>
             /// Represents constant value.
@@ -36,7 +36,7 @@
         /// <summary>
         /// Represents max long value as type.
         /// </summary>
-        public sealed class Max : LongConst
+        public sealed class Max : Int64Const
         {
             /// <summary>
             /// Represents constant value.
@@ -55,7 +55,7 @@
         /// <summary>
         /// Represents min long value as type.
         /// </summary>
-        public sealed class Min : LongConst
+        public sealed class Min : Int64Const
         {
             /// <summary>
             /// Represents constant value.
