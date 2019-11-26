@@ -173,12 +173,11 @@ namespace DotNext.IO.Pipelines
             if (value.Length == 0)
                 return;
             var encoder = context.GetEncoder();
-            var completed = false;
-            for (int offset = 0, charsUsed; !completed; offset += charsUsed)
+            for (int offset = 0, charsUsed; offset < value.Length; offset += charsUsed)
             {
                 var buffer = writer.GetMemory(bufferSize);
                 var chars = value.Slice(offset);
-                encoder.Convert(chars.Span, buffer.Span, chars.Length == 0, out charsUsed, out var bytesUsed, out completed);
+                encoder.Convert(chars.Span, buffer.Span, chars.Length == 0, out charsUsed, out var bytesUsed, out _);
                 writer.Advance(bytesUsed);
                 value = chars;
                 var result = await writer.FlushAsync(token).ConfigureAwait(false);

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipelines;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -56,6 +57,24 @@ namespace DotNext.IO.Pipelines
             var pipe = new Pipe();
             WriteValueAsync(pipe.Writer);
             await ThrowsAsync<EndOfStreamException>(pipe.Reader.ReadAsync<decimal>().AsTask);
+        }
+
+        private static async Task EncodeDecodeStringAsync(Encoding encoding, string value)
+        {
+            var pipe = new Pipe();
+            await pipe.Writer.WriteStringAsync(value.AsMemory(), encoding);
+            Equal(value, await pipe.Reader.ReadStringAsync(encoding.GetByteCount(value), encoding));
+        }
+
+        [Fact]
+        public static async Task EncodeDecodeString()
+        {
+            const string testString = "abc^$&@^$&@)(_+~";
+            await EncodeDecodeStringAsync(Encoding.UTF8, testString);
+            await EncodeDecodeStringAsync(Encoding.Unicode, testString);
+            await EncodeDecodeStringAsync(Encoding.UTF32, testString);
+            await EncodeDecodeStringAsync(Encoding.UTF7, testString);
+            await EncodeDecodeStringAsync(Encoding.ASCII, testString);
         }
     }
 }
