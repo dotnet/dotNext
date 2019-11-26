@@ -118,7 +118,7 @@ namespace DotNext.IO.Pipelines
         {
             if (length == 0)
                 return string.Empty;
-            using var resultBuffer = new ArrayRental<char>(context.Encoding.GetMaxCharCount(length));
+            using var resultBuffer = new ArrayRental<char>(length);
             return await ReadAsync<string, StringReader>(reader, new StringReader(context, resultBuffer.Memory), token);
         }
 
@@ -173,13 +173,13 @@ namespace DotNext.IO.Pipelines
             if (value.Length == 0)
                 return;
             var encoder = context.GetEncoder();
-            for (int offset = 0, charsUsed; offset < value.Length; offset += charsUsed)
+            for (int charsLeft = value.Length, charsUsed, maxChars, bytesPerChar = context.Encoding.GetMaxByteCount(1); charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)
             {
                 var buffer = writer.GetMemory(bufferSize);
-                var chars = value.Slice(offset);
-                encoder.Convert(chars.Span, buffer.Span, chars.Length == 0, out charsUsed, out var bytesUsed, out _);
+                maxChars = buffer.Length / bytesPerChar;
+                charsUsed = Math.Min(maxChars, charsLeft);
+                encoder.Convert(value.Span.Slice(0, charsUsed), buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
                 writer.Advance(bytesUsed);
-                value = chars;
                 var result = await writer.FlushAsync(token).ConfigureAwait(false);
                 if (result.IsCompleted)
                     break;
