@@ -71,9 +71,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 }
             }
 
-            Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token = default) => requestStream.CopyToAsync(output, 1024, token);
+            Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => requestStream.CopyToAsync(output, 1024, token);
 
-            ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token = default) => new ValueTask(requestStream.CopyToAsync(output, token));
+            ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask(requestStream.CopyToAsync(output, token));
         }
 
         internal new const string MessageType = "CustomMessage";
