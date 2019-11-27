@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 11-27-2019
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.8">DotNext.AspNetCore.Cluster 1.2.8</a>
+* Improved performance of one-way no-ack messages that can be passed using `ISubscriber.SendSignalAsync` method
+
 # 11-25-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.7">DotNext 1.2.7</a>
 * `BitwiseComparer` now available as singleton instance

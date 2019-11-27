@@ -3,6 +3,7 @@ using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -39,18 +40,40 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private sealed class InboundMessageContent : StreamMessage
+        private sealed class InboundMessageContent : IMessage
         {
-            internal InboundMessageContent(Stream content, bool leaveOpen, string name, ContentType type)
-                : base(content, leaveOpen, name, type)
+            private readonly Stream requestStream;
+            private readonly long? length;
+
+            internal InboundMessageContent(Stream content, string name, ContentType type, long? length)
             {
+                requestStream = content;
+                Name = name;
+                Type = type;
+                this.length = length;
             }
 
-            internal InboundMessageContent(HttpRequest request)
-                : this(request.Body, true, ParseHeader<StringValues>(MessageNameHeader, request.Headers.TryGetValue),
-                    new ContentType(request.ContentType))
+            public string Name { get; }
+
+            public ContentType Type { get; }
+
+            bool IDataTransferObject.IsReusable => false;
+
+            long? IDataTransferObject.Length
             {
+                get
+                {
+                    if (length.HasValue)
+                        return length;
+                    if (requestStream.CanSeek)
+                        return requestStream.Length;
+                    return null;
+                }
             }
+
+            Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => requestStream.CopyToAsync(output, 1024, token);
+
+            ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask(requestStream.CopyToAsync(output, token));
         }
 
         internal new const string MessageType = "CustomMessage";
@@ -75,17 +98,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         }
 
-        private CustomMessage(HeadersReader<StringValues> headers)
+        private CustomMessage(HeadersReader<StringValues> headers, Stream body, ContentType contentType, long? length)
             : base(headers)
         {
             Mode = ParseHeader(DeliveryModeHeader, headers, DeliveryModeParser);
             RespectLeadership = ParseHeader(RespectLeadershipHeader, headers, BooleanParser);
+            Message = new InboundMessageContent(body, ParseHeader(MessageNameHeader, headers), contentType, length);
         }
 
         internal CustomMessage(HttpRequest request)
-            : this(request.Headers.TryGetValue)
+            : this(request.Headers.TryGetValue, request.Body, new ContentType(request.ContentType), request.ContentLength)
         {
-            Message = new InboundMessageContent(request);
         }
 
         internal sealed override void PrepareRequest(HttpRequestMessage request)
@@ -113,8 +136,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
             var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
             using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-            using (var message = new InboundMessageContent(content, true, name, contentType))
-                return await reader(message, token).ConfigureAwait(false);
+                return await reader(new InboundMessageContent(content, name, contentType, response.Content.Headers.ContentLength), token).ConfigureAwait(false);
         }
     }
 
