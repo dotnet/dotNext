@@ -176,7 +176,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             //one-way large message ~ 1Mb
             await client.SendSignalAsync(new BinaryMessage(new byte[10 * 1024], "OneWayMessage"), false);
             //wait for response
-            while (!messageBox.TryDequeue(out response))
+            for (var timeout = new Threading.Timeout(TimeSpan.FromMinutes(1)); !messageBox.TryDequeue(out response); timeout.ThrowIfExpired())
                 await Task.Delay(10);
             Equal(10 * 1024, ((IMessage)response).Length);
 
