@@ -1,0 +1,4 @@
+﻿{
+  "diagnosticMessages": true,
+  "longRunningTestSeconds": 60
+}
