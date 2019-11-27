@@ -249,10 +249,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
         private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IMessageHandler handler, HttpResponse response, CancellationToken token)
         {
-            const long maxSize = 10 * 1024;   //10 KB
             var length = message.Length;
             IDisposableMessage buffered;
-            if (length.HasValue && length.Value < maxSize)
+            if (length.HasValue && length.Value < FileMessage.MinSize)
                 buffered = await StreamMessage.CreateBufferedMessageAsync(message, token).ConfigureAwait(false);
             else
             {

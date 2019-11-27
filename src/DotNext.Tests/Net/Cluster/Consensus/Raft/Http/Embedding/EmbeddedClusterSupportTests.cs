@@ -173,6 +173,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             NotNull(response);
             Equal("Hello, world", await response.ReadAsTextAsync());
 
+            //one-way large message ~ 1Mb
+            await client.SendSignalAsync(new BinaryMessage(new byte[10 * 1024], "OneWayMessage"), false);
+            //wait for response
+            while (!messageBox.TryDequeue(out response))
+            {
+            }
+            Equal(10 * 1024, ((IMessage)response).Length);
+
             await host1.StopAsync();
             await host2.StopAsync();
         }
