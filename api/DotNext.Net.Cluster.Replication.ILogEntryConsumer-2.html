@@ -81,6 +81,7 @@
   <h5 id="DotNext_Net_Cluster_Replication_ILogEntryConsumer_2_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public interface ILogEntryConsumer&lt;TEntry, TResult&gt;
+
     where TEntry : class, ILogEntry</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
@@ -125,6 +126,7 @@ and avoid memory allocations.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; ReadAsync&lt;TEntryImpl, TList&gt;(TList entries, long? snapshotIndex, CancellationToken token)
+
     where TEntryImpl : TEntry where TList : IReadOnlyList&lt;TEntryImpl&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

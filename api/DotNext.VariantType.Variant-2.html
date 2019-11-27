@@ -439,6 +439,7 @@ keyword and late binding.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Variant&lt;U1, U2&gt; Convert&lt;U1, U2&gt;(Converter&lt;T1, U1&gt; mapper1, Converter&lt;T2, U2&gt; mapper2)
+
     where U1 : class where U2 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -517,6 +518,7 @@ keyword and late binding.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Variant&lt;U1, U2&gt; Convert&lt;U1, U2&gt;(in ValueFunc&lt;T1, U1&gt; mapper1, in ValueFunc&lt;T2, U2&gt; mapper2)
+
     where U1 : class where U2 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -691,6 +693,7 @@ container.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool Equals&lt;V&gt;(V other)
+
     where V : IVariant</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

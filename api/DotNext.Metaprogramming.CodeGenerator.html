@@ -476,6 +476,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Expression&lt;D&gt; AsyncLambda&lt;D&gt;(Action&lt;LambdaContext&gt; body)
+
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1996,6 +1997,7 @@ and action to be executed if matching is successful.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TryBuilder Catch&lt;E&gt;(this TryBuilder builder, Action handler)
+
     where E : Exception</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2069,6 +2071,7 @@ and action to be executed if matching is successful.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static TryBuilder Catch&lt;E&gt;(this TryBuilder builder, Action&lt;ParameterExpression&gt; handler)
+
     where E : Exception</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2665,6 +2668,7 @@ doesn't match any other cases.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Embed&lt;D&gt;(Expression&lt;D&gt; lambda, params Expression[] arguments)
+
     where D : MulticastDelegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -3569,6 +3573,7 @@ of any exception.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Expression&lt;D&gt; Lambda&lt;D&gt;(Action&lt;LambdaContext, ParameterExpression&gt; body)
+
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -3636,6 +3641,7 @@ of any exception.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Expression&lt;D&gt; Lambda&lt;D&gt;(Action&lt;LambdaContext&gt; body)
+
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -3703,6 +3709,7 @@ of any exception.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Expression&lt;D&gt; Lambda&lt;D&gt;(Func&lt;LambdaContext, Expression&gt; body)
+
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -3770,6 +3777,7 @@ of any exception.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Expression&lt;D&gt; Lambda&lt;D&gt;(bool tailCall, Action&lt;LambdaContext, ParameterExpression&gt; body)
+
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -3843,6 +3851,7 @@ of any exception.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Expression&lt;D&gt; Lambda&lt;D&gt;(bool tailCall, Action&lt;LambdaContext&gt; body)
+
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -3916,6 +3925,7 @@ of any exception.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Expression&lt;D&gt; Lambda&lt;D&gt;(bool tailCall, Func&lt;LambdaContext, Expression&gt; body)
+
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -5035,6 +5045,7 @@ return type.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Throw&lt;E&gt;()
+
     where E : Exception, new()</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>

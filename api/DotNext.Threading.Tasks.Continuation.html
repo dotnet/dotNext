@@ -104,6 +104,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OnCanceled&lt;T, C&gt;(this Task&lt;T&gt; task, TaskScheduler scheduler = null)
+
     where C : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -304,6 +305,7 @@ throwing exception produced by this task.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OnFaulted&lt;T, C&gt;(this Task&lt;T&gt; task, TaskScheduler scheduler = null)
+
     where C : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -386,6 +388,7 @@ continuation is cached for future reuse as well as constant value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OnFaultedOrCanceled&lt;T, C&gt;(this Task&lt;T&gt; task, TaskScheduler scheduler = null)
+
     where C : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

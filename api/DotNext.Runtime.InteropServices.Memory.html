@@ -318,6 +318,7 @@ into <see cref="!:Span&lt;T>"></see>.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Span&lt;byte&gt; AsSpan&lt;T&gt;(T*pointer)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -685,6 +686,7 @@ without restriction on <see cref="!:System.UInt32"></see> data type for the leng
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(T*input, T*output)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -742,6 +744,7 @@ without restriction on <see cref="!:System.UInt32"></see> data type for the leng
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(in T input, out T output)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -799,6 +802,7 @@ without restriction on <see cref="!:System.UInt32"></see> data type for the leng
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(ref T source, ref T destination, uint count)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2025,6 +2029,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(ref IntPtr source)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2144,6 +2149,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T ReadUnaligned&lt;T&gt;(ref IntPtr source)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2211,6 +2217,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Swap&lt;T&gt;(T*first, T*second)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2374,6 +2381,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T*ToPointer&lt;T&gt;(this IntPtr source)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2441,6 +2449,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T*ToPointer&lt;T&gt;(this UIntPtr source)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2510,6 +2519,7 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(ref IntPtr destination, T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2652,6 +2662,7 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteUnaligned&lt;T&gt;(ref IntPtr destination, T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
