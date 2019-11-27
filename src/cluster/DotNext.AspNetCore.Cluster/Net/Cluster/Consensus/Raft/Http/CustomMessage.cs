@@ -59,11 +59,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             bool IDataTransferObject.IsReusable => false;
 
-            public long? Length => length ?? (requestStream.CanSeek ? requestStream.Length : new long?());
+            long? IDataTransferObject.Length
+            {
+                get
+                {
+                    if (length.HasValue)
+                        return length;
+                    if (requestStream.CanSeek)
+                        return requestStream.Length;
+                    return null;
+                }
+            }
 
-            public Task CopyToAsync(Stream output, CancellationToken token = default) => requestStream.CopyToAsync(output, 1024, token);
+            Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token = default) => requestStream.CopyToAsync(output, 1024, token);
 
-            public ValueTask CopyToAsync(PipeWriter output, CancellationToken token = default) => new ValueTask(requestStream.CopyToAsync(output, token));
+            ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token = default) => new ValueTask(requestStream.CopyToAsync(output, token));
         }
 
         internal new const string MessageType = "CustomMessage";
