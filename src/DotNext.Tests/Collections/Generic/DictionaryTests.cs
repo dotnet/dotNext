@@ -69,5 +69,43 @@ namespace DotNext.Collections.Generic
                 if (!value.Between(0, 2, BoundType.Closed))
                     throw new Exception();
         }
+
+        [Fact]
+        public static void ForEachPair()
+        {
+            var dict = new Dictionary<string, int>
+            {
+                {"1", 1 },
+                {"2", 2 }
+            };
+            dict.ForEach((key, value) =>
+            {
+                switch (key)
+                {
+                    case "1":
+                        Equal(1, value);
+                        break;
+                    case "2":
+                        Equal(2, value);
+                        break;
+                }
+            });
+        }
+
+        [Fact]
+        public static void GetOrAddPair()
+        {
+            var dict = new Dictionary<int, string>
+            {
+                {1, "One" },
+                {2, "Two" }
+            };
+            Equal("One", dict.GetOrAdd(1, "Three"));
+            Equal("Three", dict.GetOrAdd(3, "Three"));
+            Equal("Two", dict.GetOrAdd(2, key => "Three"));
+            Equal("Four", dict.GetOrAdd(4, key => "Four"));
+            Equal("One", dict.GetOrInvoke(1, () => "Two"));
+            Equal("Alt", dict.GetOrInvoke(10, () => "Alt"));
+        }
     }
 }
