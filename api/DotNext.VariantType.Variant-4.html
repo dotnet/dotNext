@@ -79,20 +79,8 @@
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.VariantType.IVariant.html">IVariant</a></div>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.dynamic.idynamicmetaobjectprovider">IDynamicMetaObjectProvider</a></div>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.VariantType.Variant-4.html">Variant</a>&lt;T1, T2, T3, T4&gt;&gt;</div>
-  </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
+    <div><span class="xref">IDynamicMetaObjectProvider</span></div>
+    <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.VariantType.Variant-4.html">Variant</a>&lt;T1, T2, T3, T4&gt;&gt;</div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.VariantType.html">DotNext.VariantType</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
@@ -414,8 +402,6 @@ or positional pattern matching.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_4_Equals__1___0_.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%604.Equals%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -433,7 +419,6 @@ container.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool Equals&lt;V&gt;(V other)
-
     where V : IVariant</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -520,8 +505,6 @@ container; otherwise, <span class="xref">false</span>.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_4_Permute.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%604.Permute%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -586,10 +569,8 @@ container; otherwise, <span class="xref">false</span>.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a></div>
   <h5 id="DotNext_VariantType_Variant_4_ToString_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method calls virtual method <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">ToString()</a>
+  <div class="markdown level1 remarks"><p>This method calls virtual method <see cref="!:object.ToString()"></see>
 for the stored value.</p>
 </div>
   <h3 id="operators">Operators
@@ -651,7 +632,7 @@ for the stored value.</p>
     </tbody>
   </table>
   <h5 id="DotNext_VariantType_Variant_4_op_Equality_DotNext_VariantType_Variant__0__1__2__3__DotNext_VariantType_Variant__0__1__2__3___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This operator uses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Equals(Object, Object)</a>
+  <div class="markdown level1 remarks"><p>This operator uses <see cref="!:object.Equals(object, object)"></see>
 to compare stored values.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -1251,7 +1232,7 @@ of four possibles types.</p>
     </tbody>
   </table>
   <h5 id="DotNext_VariantType_Variant_4_op_Inequality_DotNext_VariantType_Variant__0__1__2__3__DotNext_VariantType_Variant__0__1__2__3___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This operator uses <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Equals(Object, Object)</a>
+  <div class="markdown level1 remarks"><p>This operator uses <see cref="!:object.Equals(object, object)"></see>
 to compare stored values.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -1334,119 +1315,19 @@ to compare stored values.</p>
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_4_System_Dynamic_IDynamicMetaObjectProvider_GetMetaObject_System_Linq_Expressions_Expression_.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%604.System%23Dynamic%23IDynamicMetaObjectProvider%23GetMetaObject(System.Linq.Expressions.Expression)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L658">View Source</a>
-  </span>
-  <a id="DotNext_VariantType_Variant_4_System_Dynamic_IDynamicMetaObjectProvider_GetMetaObject_" data-uid="DotNext.VariantType.Variant`4.System#Dynamic#IDynamicMetaObjectProvider#GetMetaObject*"></a>
-  <h4 id="DotNext_VariantType_Variant_4_System_Dynamic_IDynamicMetaObjectProvider_GetMetaObject_System_Linq_Expressions_Expression_" data-uid="DotNext.VariantType.Variant`4.System#Dynamic#IDynamicMetaObjectProvider#GetMetaObject(System.Linq.Expressions.Expression)">IDynamicMetaObjectProvider.GetMetaObject(Expression)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression">Expression</a></td>
-        <td><span class="parametername">parameter</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.dynamic.dynamicmetaobject">DynamicMetaObject</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_VariantType_Variant_4_System_IEquatable_DotNext_VariantType_Variant_T1_T2_T3_T4___Equals_DotNext_VariantType_Variant__0__1__2__3__.md&amp;value=---%0Auid%3A%20DotNext.VariantType.Variant%604.System%23IEquatable%7BDotNext%23VariantType%23Variant%7BT1%2CT2%2CT3%2CT4%7D%7D%23Equals(DotNext.VariantType.Variant%7B%600%2C%601%2C%602%2C%603%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/VariantType/Variant.cs/#L534">View Source</a>
-  </span>
-  <a id="DotNext_VariantType_Variant_4_System_IEquatable_DotNext_VariantType_Variant_T1_T2_T3_T4___Equals_" data-uid="DotNext.VariantType.Variant`4.System#IEquatable{DotNext#VariantType#Variant{T1,T2,T3,T4}}#Equals*"></a>
-  <h4 id="DotNext_VariantType_Variant_4_System_IEquatable_DotNext_VariantType_Variant_T1_T2_T3_T4___Equals_DotNext_VariantType_Variant__0__1__2__3__" data-uid="DotNext.VariantType.Variant`4.System#IEquatable{DotNext#VariantType#Variant{T1,T2,T3,T4}}#Equals(DotNext.VariantType.Variant{`0,`1,`2,`3})">IEquatable&lt;Variant&lt;T1, T2, T3, T4&gt;&gt;.Equals(Variant&lt;T1, T2, T3, T4&gt;)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">bool IEquatable&lt;Variant&lt;T1, T2, T3, T4&gt;&gt;.Equals(Variant&lt;T1, T2, T3, T4&gt; other)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.VariantType.Variant-4.html">Variant</a>&lt;T1, T2, T3, T4&gt;</td>
-        <td><span class="parametername">other</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="DotNext.VariantType.IVariant.html">IVariant</a>
   </div>
   <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.dynamic.idynamicmetaobjectprovider">System.Dynamic.IDynamicMetaObjectProvider</a>
+      <span class="xref">IDynamicMetaObjectProvider</span>
   </div>
   <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+      <span class="xref">IEquatable&lt;&gt;</span>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
-  </div>
-  <div>
-      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0___0___">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
 </article>
           </div>

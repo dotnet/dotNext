@@ -82,47 +82,23 @@ task types.</p>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">TaskType</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Reflection.html">DotNext.Reflection</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Reflection_TaskType_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class TaskType</code></pre>
+    <pre><code class="lang-csharp hljs">public static class TaskType : object</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TaskType_GetTaskType_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TaskType.GetTaskType(System.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TaskType_GetTaskType_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TaskType.GetTaskType(Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TaskType.cs/#L32">View Source</a>
   </span>
   <a id="DotNext_Reflection_TaskType_GetTaskType_" data-uid="DotNext.Reflection.TaskType.GetTaskType*"></a>
-  <h4 id="DotNext_Reflection_TaskType_GetTaskType_System_Type_" data-uid="DotNext.Reflection.TaskType.GetTaskType(System.Type)">GetTaskType(Type)</h4>
+  <h4 id="DotNext_Reflection_TaskType_GetTaskType_Type_" data-uid="DotNext.Reflection.TaskType.GetTaskType(Type)">GetTaskType(Type)</h4>
   <div class="markdown level1 summary"><p>Obtains result type from task type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -141,9 +117,9 @@ task types.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="xref">Type</span></td>
         <td><span class="parametername">taskType</span></td>
-        <td><p>A type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a> or <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task&lt;TResult&gt;</a>.</p>
+        <td><p>A type of <see cref="!:Task"></see> or <see cref="!:Task&lt;TResult>"></see>.</p>
 </td>
       </tr>
     </tbody>
@@ -158,7 +134,7 @@ task types.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="xref">Type</span></td>
         <td><p>Task result type; or <span class="xref">null</span> if <code data-dev-comment-type="paramref" class="paramref">taskType</code> is not a task type.</p>
 </td>
       </tr>
@@ -166,13 +142,13 @@ task types.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TaskType_MakeTaskType_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TaskType.MakeTaskType(System.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_TaskType_MakeTaskType_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.TaskType.MakeTaskType(Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/TaskType.cs/#L23">View Source</a>
   </span>
   <a id="DotNext_Reflection_TaskType_MakeTaskType_" data-uid="DotNext.Reflection.TaskType.MakeTaskType*"></a>
-  <h4 id="DotNext_Reflection_TaskType_MakeTaskType_System_Type_" data-uid="DotNext.Reflection.TaskType.MakeTaskType(System.Type)">MakeTaskType(Type)</h4>
+  <h4 id="DotNext_Reflection_TaskType_MakeTaskType_Type_" data-uid="DotNext.Reflection.TaskType.MakeTaskType(Type)">MakeTaskType(Type)</h4>
   <div class="markdown level1 summary"><p>Returns task type for the specified result type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -191,7 +167,7 @@ task types.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="xref">Type</span></td>
         <td><span class="parametername">taskResult</span></td>
         <td><p>Task result type.</p>
 </td>
@@ -208,22 +184,12 @@ task types.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
-        <td><p>Returns <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a> if <code data-dev-comment-type="paramref" class="paramref">taskResult</code> is <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>; or <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task&lt;TResult&gt;</a> with actual generic argument equals to <code data-dev-comment-type="paramref" class="paramref">taskResult</code>.</p>
+        <td><span class="xref">Type</span></td>
+        <td><p>Returns <see cref="!:Task"></see> if <code data-dev-comment-type="paramref" class="paramref">taskResult</code> is <see cref="!:Void"></see>; or <see cref="!:Task&lt;TResult>"></see> with actual generic argument equals to <code data-dev-comment-type="paramref" class="paramref">taskResult</code>.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Reflection_TaskType_MakeTaskType_System_Type__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></div>
-      <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TResult&gt;</div>
-  </div>
-  <h3 id="seealso">See Also</h3>
-  <div class="seealso">
-      <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></div>
-      <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TResult&gt;</div>
-  </div>
 </article>
           </div>
           

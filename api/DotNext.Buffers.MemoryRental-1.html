@@ -77,24 +77,6 @@
 on the stack or heap.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Buffers.html">DotNext.Buffers</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_MemoryRental_1_syntax">Syntax</h5>
@@ -121,13 +103,47 @@ on the stack or heap.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_DotNext_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(DotNext.Span%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L24">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
+  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_DotNext_Span__0__" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(DotNext.Span{`0})">MemoryRental(Span&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Rents the memory referenced by the span.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public MemoryRental(Span&lt;T&gt; span)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
+        <td><span class="parametername">span</span></td>
+        <td><p>The span that references the memory to rent.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_MemoryPool__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(MemoryPool%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L37">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
-  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Buffers_MemoryPool__0__System_Int32_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Buffers.MemoryPool{`0},System.Int32)">MemoryRental(MemoryPool&lt;T&gt;, Int32)</h4>
+  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_MemoryPool__0__System_Int32_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(MemoryPool{`0},System.Int32)">MemoryRental(MemoryPool&lt;T&gt;, Int32)</h4>
   <div class="markdown level1 summary"><p>Rents the memory from the pool.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -146,7 +162,7 @@ on the stack or heap.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.memorypool-1">MemoryPool</a>&lt;T&gt;</td>
+        <td><span class="xref">MemoryPool</span>&lt;T&gt;</td>
         <td><span class="parametername">pool</span></td>
         <td><p>The memory pool.</p>
 </td>
@@ -155,22 +171,6 @@ on the stack or heap.</p>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><span class="parametername">minBufferSize</span></td>
         <td><p>The minimum size of the memory to rent.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">pool</code> is <span class="xref">null</span>.</p>
 </td>
       </tr>
     </tbody>
@@ -184,7 +184,7 @@ on the stack or heap.</p>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Int32_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Int32)">MemoryRental(Int32)</h4>
-  <div class="markdown level1 summary"><p>Rents the memory from <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.memorypool-1.shared#System_Buffers_MemoryPool_1_Shared">Shared</a>.</p>
+  <div class="markdown level1 summary"><p>Rents the memory from <see cref="!:MemoryPool&lt;T>.Shared"></see>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -205,40 +205,6 @@ on the stack or heap.</p>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><span class="parametername">minBufferSize</span></td>
         <td><p>The minimum size of the memory to rent.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.%23ctor(System.Span%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L24">View Source</a>
-  </span>
-  <a id="DotNext_Buffers_MemoryRental_1__ctor_" data-uid="DotNext.Buffers.MemoryRental`1.#ctor*"></a>
-  <h4 id="DotNext_Buffers_MemoryRental_1__ctor_System_Span__0__" data-uid="DotNext.Buffers.MemoryRental`1.#ctor(System.Span{`0})">MemoryRental(Span&lt;T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Rents the memory referenced by the span.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public MemoryRental(Span&lt;T&gt; span)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
-        <td><span class="parametername">span</span></td>
-        <td><p>The span that references the memory to rent.</p>
 </td>
       </tr>
     </tbody>
@@ -384,7 +350,7 @@ doesn't reference rented memory.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -407,6 +373,38 @@ doesn't reference rented memory.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
   </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_GetPinnableReference.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.GetPinnableReference%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L90">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_MemoryRental_1_GetPinnableReference_" data-uid="DotNext.Buffers.MemoryRental`1.GetPinnableReference*"></a>
+  <h4 id="DotNext_Buffers_MemoryRental_1_GetPinnableReference" data-uid="DotNext.Buffers.MemoryRental`1.GetPinnableReference">GetPinnableReference()</h4>
+  <div class="markdown level1 summary"><p>Obtains managed pointer to the first element of the rented array.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T GetPinnableReference()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The managed pointer to the first element of the rented array.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -439,19 +437,17 @@ doesn't reference rented memory.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a></div>
   <h3 id="operators">Operators
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_op_Implicit_System_Span__0___DotNext_Buffers_MemoryRental__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.op_Implicit(System.Span%7B%600%7D)~DotNext.Buffers.MemoryRental%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryRental_1_op_Implicit_DotNext_Span__0___DotNext_Buffers_MemoryRental__0_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryRental%601.op_Implicit(DotNext.Span%7B%600%7D)~DotNext.Buffers.MemoryRental%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Buffers/MemoryRental.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryRental_1_op_Implicit_" data-uid="DotNext.Buffers.MemoryRental`1.op_Implicit*"></a>
-  <h4 id="DotNext_Buffers_MemoryRental_1_op_Implicit_System_Span__0___DotNext_Buffers_MemoryRental__0_" data-uid="DotNext.Buffers.MemoryRental`1.op_Implicit(System.Span{`0})~DotNext.Buffers.MemoryRental{`0}">Implicit(Span&lt;T&gt; to MemoryRental&lt;T&gt;)</h4>
+  <h4 id="DotNext_Buffers_MemoryRental_1_op_Implicit_DotNext_Span__0___DotNext_Buffers_MemoryRental__0_" data-uid="DotNext.Buffers.MemoryRental`1.op_Implicit(DotNext.Span{`0})~DotNext.Buffers.MemoryRental{`0}">Implicit(Span&lt;T&gt; to MemoryRental&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts the reference to the already allocated memory
 into the rental object.</p>
 </div>
@@ -471,7 +467,7 @@ into the rental object.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;T&gt;</td>
+        <td><span class="xref">DotNext.Span</span>&lt;T&gt;</td>
         <td><span class="parametername">span</span></td>
         <td><p>The allocated memory to convert.</p>
 </td>

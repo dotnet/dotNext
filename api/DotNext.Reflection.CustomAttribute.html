@@ -81,54 +81,29 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">CustomAttribute</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Reflection.html">DotNext.Reflection</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Reflection_CustomAttribute_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class CustomAttribute</code></pre>
+    <pre><code class="lang-csharp hljs">public static class CustomAttribute : object</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_Assembly_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.CustomAttribute.IsDefined%60%601(System.Reflection.Assembly)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_CustomAttribute_IsDefined__1_Assembly_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.CustomAttribute.IsDefined%60%601(Assembly)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/CustomAttribute.cs/#L34">View Source</a>
   </span>
   <a id="DotNext_Reflection_CustomAttribute_IsDefined_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined*"></a>
-  <h4 id="DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_Assembly_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.Assembly)">IsDefined&lt;A&gt;(Assembly)</h4>
+  <h4 id="DotNext_Reflection_CustomAttribute_IsDefined__1_Assembly_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined``1(Assembly)">IsDefined&lt;A&gt;(Assembly)</h4>
   <div class="markdown level1 summary"><p>Returns a value that indicates whether the specified attribute type has been applied to the assembly.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool IsDefined&lt;A&gt;(this Assembly assembly)
-
     where A : Attribute</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -142,7 +117,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.assembly">Assembly</a></td>
+        <td><span class="xref">Assembly</span></td>
         <td><span class="parametername">assembly</span></td>
         <td><p>The assembly to inspect.</p>
 </td>
@@ -183,20 +158,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_MemberInfo_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.CustomAttribute.IsDefined%60%601(System.Reflection.MemberInfo%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_CustomAttribute_IsDefined__1_MemberInfo_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.CustomAttribute.IsDefined%60%601(MemberInfo%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/CustomAttribute.cs/#L18">View Source</a>
   </span>
   <a id="DotNext_Reflection_CustomAttribute_IsDefined_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined*"></a>
-  <h4 id="DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_MemberInfo_System_Boolean_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.MemberInfo,System.Boolean)">IsDefined&lt;A&gt;(MemberInfo, Boolean)</h4>
+  <h4 id="DotNext_Reflection_CustomAttribute_IsDefined__1_MemberInfo_System_Boolean_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined``1(MemberInfo,System.Boolean)">IsDefined&lt;A&gt;(MemberInfo, Boolean)</h4>
   <div class="markdown level1 summary"><p>Indicates whether one or more attributes of the specified type or of its derived types is applied to the member.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool IsDefined&lt;A&gt;(this MemberInfo member, bool inherit = false)
-
     where A : Attribute</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -210,7 +184,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.memberinfo">MemberInfo</a></td>
+        <td><span class="xref">MemberInfo</span></td>
         <td><span class="parametername">member</span></td>
         <td><p>The member to inspect.</p>
 </td>
@@ -257,20 +231,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_Module_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.CustomAttribute.IsDefined%60%601(System.Reflection.Module)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_CustomAttribute_IsDefined__1_Module_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.CustomAttribute.IsDefined%60%601(Module)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/CustomAttribute.cs/#L26">View Source</a>
   </span>
   <a id="DotNext_Reflection_CustomAttribute_IsDefined_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined*"></a>
-  <h4 id="DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_Module_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.Module)">IsDefined&lt;A&gt;(Module)</h4>
+  <h4 id="DotNext_Reflection_CustomAttribute_IsDefined__1_Module_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined``1(Module)">IsDefined&lt;A&gt;(Module)</h4>
   <div class="markdown level1 summary"><p>Returns a value that indicates whether the specified attribute type has been applied to the module.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool IsDefined&lt;A&gt;(this Module module)
-
     where A : Attribute</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -284,7 +257,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.module">Module</a></td>
+        <td><span class="xref">Module</span></td>
         <td><span class="parametername">module</span></td>
         <td><p>The module to inspect.</p>
 </td>
@@ -325,20 +298,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_ParameterInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.CustomAttribute.IsDefined%60%601(System.Reflection.ParameterInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_CustomAttribute_IsDefined__1_ParameterInfo_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.CustomAttribute.IsDefined%60%601(ParameterInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/CustomAttribute.cs/#L42">View Source</a>
   </span>
   <a id="DotNext_Reflection_CustomAttribute_IsDefined_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined*"></a>
-  <h4 id="DotNext_Reflection_CustomAttribute_IsDefined__1_System_Reflection_ParameterInfo_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined``1(System.Reflection.ParameterInfo)">IsDefined&lt;A&gt;(ParameterInfo)</h4>
+  <h4 id="DotNext_Reflection_CustomAttribute_IsDefined__1_ParameterInfo_" data-uid="DotNext.Reflection.CustomAttribute.IsDefined``1(ParameterInfo)">IsDefined&lt;A&gt;(ParameterInfo)</h4>
   <div class="markdown level1 summary"><p>Returns a value that indicates whether the specified attribute type has been applied to the parameter.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool IsDefined&lt;A&gt;(this ParameterInfo parameter)
-
     where A : Attribute</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -352,7 +324,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.parameterinfo">ParameterInfo</a></td>
+        <td><span class="xref">ParameterInfo</span></td>
         <td><span class="parametername">parameter</span></td>
         <td><p>The parameter to inspect.</p>
 </td>

@@ -81,54 +81,29 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">Continuation</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.Tasks.html">DotNext.Threading.Tasks</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Threading_Tasks_Continuation_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Continuation</code></pre>
+    <pre><code class="lang-csharp hljs">public static class Continuation : object</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Continuation_OnCanceled__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_TaskScheduler_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Continuation.OnCanceled%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.Tasks.TaskScheduler)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Continuation_OnCanceled__2_Task___0__TaskScheduler_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Continuation.OnCanceled%60%602(Task%7B%60%600%7D%2CTaskScheduler)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Continuation.cs/#L96">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Continuation_OnCanceled_" data-uid="DotNext.Threading.Tasks.Continuation.OnCanceled*"></a>
-  <h4 id="DotNext_Threading_Tasks_Continuation_OnCanceled__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_TaskScheduler_" data-uid="DotNext.Threading.Tasks.Continuation.OnCanceled``2(System.Threading.Tasks.Task{``0},System.Threading.Tasks.TaskScheduler)">OnCanceled&lt;T, C&gt;(Task&lt;T&gt;, TaskScheduler)</h4>
+  <h4 id="DotNext_Threading_Tasks_Continuation_OnCanceled__2_Task___0__TaskScheduler_" data-uid="DotNext.Threading.Tasks.Continuation.OnCanceled``2(Task{``0},TaskScheduler)">OnCanceled&lt;T, C&gt;(Task&lt;T&gt;, TaskScheduler)</h4>
   <div class="markdown level1 summary"><p>Returns constant value if underlying task is canceled.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OnCanceled&lt;T, C&gt;(this Task&lt;T&gt; task, TaskScheduler scheduler = null)
-
     where C : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -142,13 +117,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to check.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.taskscheduler">TaskScheduler</a></td>
+        <td><span class="xref">TaskScheduler</span></td>
         <td><span class="parametername">scheduler</span></td>
         <td><p>Optional scheduler used to schedule continuation.</p>
 </td>
@@ -165,7 +140,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>The task representing continuation.</p>
 </td>
       </tr>
@@ -192,20 +167,20 @@
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_Tasks_Continuation_OnCanceled__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_TaskScheduler__remarks">Remarks</h5>
+  <h5 id="DotNext_Threading_Tasks_Continuation_OnCanceled__2_Task___0__TaskScheduler__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This continuation doesn't produce memory pressure. The delegate representing
 continuation is cached for future reuse as well as constant value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Continuation_OnCompleted_System_Threading_Tasks_Task_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Continuation.OnCompleted(System.Threading.Tasks.Task)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Continuation_OnCompleted_Task_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Continuation.OnCompleted(Task)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Continuation.cs/#L35">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Continuation_OnCompleted_" data-uid="DotNext.Threading.Tasks.Continuation.OnCompleted*"></a>
-  <h4 id="DotNext_Threading_Tasks_Continuation_OnCompleted_System_Threading_Tasks_Task_" data-uid="DotNext.Threading.Tasks.Continuation.OnCompleted(System.Threading.Tasks.Task)">OnCompleted(Task)</h4>
-  <div class="markdown level1 summary"><p>Allows to obtain original <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a> in its final state after <code>await</code> without
+  <h4 id="DotNext_Threading_Tasks_Continuation_OnCompleted_Task_" data-uid="DotNext.Threading.Tasks.Continuation.OnCompleted(Task)">OnCompleted(Task)</h4>
+  <div class="markdown level1 summary"><p>Allows to obtain original <see cref="!:Task"></see> in its final state after <code>await</code> without
 throwing exception produced by this task.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -224,7 +199,7 @@ throwing exception produced by this task.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><span class="xref">Task</span></td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to await.</p>
 </td>
@@ -241,7 +216,7 @@ throwing exception produced by this task.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a>&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">Task</span>&gt;</td>
         <td><p><code data-dev-comment-type="paramref" class="paramref">task</code> in final state.</p>
 </td>
       </tr>
@@ -249,14 +224,14 @@ throwing exception produced by this task.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Continuation_OnCompleted__1_System_Threading_Tasks_Task___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Continuation.OnCompleted%60%601(System.Threading.Tasks.Task%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Continuation_OnCompleted__1_Task___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Continuation.OnCompleted%60%601(Task%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Continuation.cs/#L46">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Continuation_OnCompleted_" data-uid="DotNext.Threading.Tasks.Continuation.OnCompleted*"></a>
-  <h4 id="DotNext_Threading_Tasks_Continuation_OnCompleted__1_System_Threading_Tasks_Task___0__" data-uid="DotNext.Threading.Tasks.Continuation.OnCompleted``1(System.Threading.Tasks.Task{``0})">OnCompleted&lt;R&gt;(Task&lt;R&gt;)</h4>
-  <div class="markdown level1 summary"><p>Allows to obtain original <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task&lt;TResult&gt;</a> in its final state after <code>await</code> without
+  <h4 id="DotNext_Threading_Tasks_Continuation_OnCompleted__1_Task___0__" data-uid="DotNext.Threading.Tasks.Continuation.OnCompleted``1(Task{``0})">OnCompleted&lt;R&gt;(Task&lt;R&gt;)</h4>
+  <div class="markdown level1 summary"><p>Allows to obtain original <see cref="!:Task&lt;R>"></see> in its final state after <code>await</code> without
 throwing exception produced by this task.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -275,7 +250,7 @@ throwing exception produced by this task.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;R&gt;</td>
+        <td><span class="xref">Task</span>&lt;R&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to await.</p>
 </td>
@@ -292,7 +267,7 @@ throwing exception produced by this task.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;R&gt;&gt;</td>
+        <td><span class="xref">Task</span>&lt;<span class="xref">Task</span>&lt;R&gt;&gt;</td>
         <td><p><code data-dev-comment-type="paramref" class="paramref">task</code> in final state.</p>
 </td>
       </tr>
@@ -316,20 +291,19 @@ throwing exception produced by this task.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Continuation_OnFaulted__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_TaskScheduler_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Continuation.OnFaulted%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.Tasks.TaskScheduler)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Continuation_OnFaulted__2_Task___0__TaskScheduler_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Continuation.OnFaulted%60%602(Task%7B%60%600%7D%2CTaskScheduler)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Continuation.cs/#L62">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Continuation_OnFaulted_" data-uid="DotNext.Threading.Tasks.Continuation.OnFaulted*"></a>
-  <h4 id="DotNext_Threading_Tasks_Continuation_OnFaulted__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_TaskScheduler_" data-uid="DotNext.Threading.Tasks.Continuation.OnFaulted``2(System.Threading.Tasks.Task{``0},System.Threading.Tasks.TaskScheduler)">OnFaulted&lt;T, C&gt;(Task&lt;T&gt;, TaskScheduler)</h4>
+  <h4 id="DotNext_Threading_Tasks_Continuation_OnFaulted__2_Task___0__TaskScheduler_" data-uid="DotNext.Threading.Tasks.Continuation.OnFaulted``2(Task{``0},TaskScheduler)">OnFaulted&lt;T, C&gt;(Task&lt;T&gt;, TaskScheduler)</h4>
   <div class="markdown level1 summary"><p>Returns constant value if underlying task is failed.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OnFaulted&lt;T, C&gt;(this Task&lt;T&gt; task, TaskScheduler scheduler = null)
-
     where C : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -343,13 +317,13 @@ throwing exception produced by this task.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to check.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.taskscheduler">TaskScheduler</a></td>
+        <td><span class="xref">TaskScheduler</span></td>
         <td><span class="parametername">scheduler</span></td>
         <td><p>Optional scheduler used to schedule continuation.</p>
 </td>
@@ -366,7 +340,7 @@ throwing exception produced by this task.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>The task representing continuation.</p>
 </td>
       </tr>
@@ -393,26 +367,25 @@ throwing exception produced by this task.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_Tasks_Continuation_OnFaulted__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_TaskScheduler__remarks">Remarks</h5>
+  <h5 id="DotNext_Threading_Tasks_Continuation_OnFaulted__2_Task___0__TaskScheduler__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This continuation doesn't produce memory pressure. The delegate representing
 continuation is cached for future reuse as well as constant value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Continuation_OnFaultedOrCanceled__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_TaskScheduler_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Continuation.OnFaultedOrCanceled%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Threading.Tasks.TaskScheduler)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Continuation_OnFaultedOrCanceled__2_Task___0__TaskScheduler_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Continuation.OnFaultedOrCanceled%60%602(Task%7B%60%600%7D%2CTaskScheduler)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Continuation.cs/#L79">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Continuation_OnFaultedOrCanceled_" data-uid="DotNext.Threading.Tasks.Continuation.OnFaultedOrCanceled*"></a>
-  <h4 id="DotNext_Threading_Tasks_Continuation_OnFaultedOrCanceled__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_TaskScheduler_" data-uid="DotNext.Threading.Tasks.Continuation.OnFaultedOrCanceled``2(System.Threading.Tasks.Task{``0},System.Threading.Tasks.TaskScheduler)">OnFaultedOrCanceled&lt;T, C&gt;(Task&lt;T&gt;, TaskScheduler)</h4>
+  <h4 id="DotNext_Threading_Tasks_Continuation_OnFaultedOrCanceled__2_Task___0__TaskScheduler_" data-uid="DotNext.Threading.Tasks.Continuation.OnFaultedOrCanceled``2(Task{``0},TaskScheduler)">OnFaultedOrCanceled&lt;T, C&gt;(Task&lt;T&gt;, TaskScheduler)</h4>
   <div class="markdown level1 summary"><p>Returns constant value if underlying task is failed or canceled.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; OnFaultedOrCanceled&lt;T, C&gt;(this Task&lt;T&gt; task, TaskScheduler scheduler = null)
-
     where C : Constant&lt;T&gt;, new()</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -426,13 +399,13 @@ continuation is cached for future reuse as well as constant value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to check.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.taskscheduler">TaskScheduler</a></td>
+        <td><span class="xref">TaskScheduler</span></td>
         <td><span class="parametername">scheduler</span></td>
         <td><p>Optional scheduler used to schedule continuation.</p>
 </td>
@@ -449,7 +422,7 @@ continuation is cached for future reuse as well as constant value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><p>The task representing continuation.</p>
 </td>
       </tr>
@@ -476,7 +449,7 @@ continuation is cached for future reuse as well as constant value.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_Tasks_Continuation_OnFaultedOrCanceled__2_System_Threading_Tasks_Task___0__System_Threading_Tasks_TaskScheduler__remarks">Remarks</h5>
+  <h5 id="DotNext_Threading_Tasks_Continuation_OnFaultedOrCanceled__2_Task___0__TaskScheduler__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This continuation doesn't produce memory pressure. The delegate representing
 continuation is cached for future reuse as well as constant value.</p>
 </div>

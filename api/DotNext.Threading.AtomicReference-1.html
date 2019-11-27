@@ -79,27 +79,14 @@ for the reference type.</p>
   <div class="markdown level0 conceptual"></div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;T&gt;</div>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">ISerializable</a></div>
-  </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
+    <div><span class="xref">IEquatable</span>&lt;T&gt;</div>
+    <div><span class="xref">ISerializable</span></div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.html">DotNext.Threading</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Threading_AtomicReference_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[Serializable]
-public struct AtomicReference&lt;T&gt; : IEquatable&lt;T&gt;, ISerializable where T : class</code></pre>
+    <pre><code class="lang-csharp hljs">public struct AtomicReference&lt;T&gt; : IEquatable&lt;T&gt;, ISerializable where T : class</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -198,6 +185,66 @@ for the reference type.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_AccumulateAndGet__0_DotNext_Func__0__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.AccumulateAndGet(%600%2CDotNext.Func%7B%600%2C%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicReference.cs/#L487">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicReference_1_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicReference`1.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicReference_1_AccumulateAndGet__0_DotNext_Func__0__0__0__" data-uid="DotNext.Threading.AtomicReference`1.AccumulateAndGet(`0,DotNext.Func{`0,`0,`0})">AccumulateAndGet(T, Func&lt;T, T, T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T AccumulateAndGet(T x, Func&lt;T, T, T&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;T, T, T&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicReference_1_AccumulateAndGet__0_DotNext_Func__0__0__0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_AccumulateAndGet__0_DotNext_ValueFunc__0__0__0___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.AccumulateAndGet(%600%2CDotNext.ValueFunc%7B%600%2C%600%2C%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -254,66 +301,6 @@ to the current and given values, returning the updated value.</p>
     </tbody>
   </table>
   <h5 id="DotNext_Threading_AtomicReference_1_AccumulateAndGet__0_DotNext_ValueFunc__0__0__0____remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_AccumulateAndGet__0_System_Func__0__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.AccumulateAndGet(%600%2CSystem.Func%7B%600%2C%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicReference.cs/#L487">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicReference_1_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicReference`1.AccumulateAndGet*"></a>
-  <h4 id="DotNext_Threading_AtomicReference_1_AccumulateAndGet__0_System_Func__0__0__0__" data-uid="DotNext.Threading.AtomicReference`1.AccumulateAndGet(`0,System.Func{`0,`0,`0})">AccumulateAndGet(T, Func&lt;T, T, T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
-to the current and given values, returning the updated value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T AccumulateAndGet(T x, Func&lt;T, T, T&gt; accumulator)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">x</span></td>
-        <td><p>Accumulator operand.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T, T, T&gt;</td>
-        <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The updated value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Threading_AtomicReference_1_AccumulateAndGet__0_System_Func__0__0__0___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
@@ -530,8 +517,66 @@ replaces the stored value.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_GetAndAccumulate__0_DotNext_Func__0__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.GetAndAccumulate(%600%2CDotNext.Func%7B%600%2C%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicReference.cs/#L513">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicReference_1_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicReference`1.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicReference_1_GetAndAccumulate__0_DotNext_Func__0__0__0__" data-uid="DotNext.Threading.AtomicReference`1.GetAndAccumulate(`0,DotNext.Func{`0,`0,`0})">GetAndAccumulate(T, Func&lt;T, T, T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T GetAndAccumulate(T x, Func&lt;T, T, T&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;T, T, T&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicReference_1_GetAndAccumulate__0_DotNext_Func__0__0__0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_GetAndAccumulate__0_DotNext_ValueFunc__0__0__0___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.GetAndAccumulate(%600%2CDotNext.ValueFunc%7B%600%2C%600%2C%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -594,66 +639,6 @@ to the current and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_GetAndAccumulate__0_System_Func__0__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.GetAndAccumulate(%600%2CSystem.Func%7B%600%2C%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicReference.cs/#L513">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicReference_1_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicReference`1.GetAndAccumulate*"></a>
-  <h4 id="DotNext_Threading_AtomicReference_1_GetAndAccumulate__0_System_Func__0__0__0__" data-uid="DotNext.Threading.AtomicReference`1.GetAndAccumulate(`0,System.Func{`0,`0,`0})">GetAndAccumulate(T, Func&lt;T, T, T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
-to the current and given values, returning the original value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T GetAndAccumulate(T x, Func&lt;T, T, T&gt; accumulator)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><span class="parametername">x</span></td>
-        <td><p>Accumulator operand.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T, T, T&gt;</td>
-        <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The original value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Threading_AtomicReference_1_GetAndAccumulate__0_System_Func__0__0__0___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_GetAndSet__0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.GetAndSet(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -698,6 +683,57 @@ to the current and given values, returning the original value.</p>
       <tr>
         <td><span class="xref">T</span></td>
         <td><p>Original value before modification.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_GetAndUpdate_DotNext_Func__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.GetAndUpdate(DotNext.Func%7B%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicReference.cs/#L553">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicReference_1_GetAndUpdate_" data-uid="DotNext.Threading.AtomicReference`1.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicReference_1_GetAndUpdate_DotNext_Func__0__0__" data-uid="DotNext.Threading.AtomicReference`1.GetAndUpdate(DotNext.Func{`0,`0})">GetAndUpdate(Func&lt;T, T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T GetAndUpdate(Func&lt;T, T&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;T, T&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The original value.</p>
 </td>
       </tr>
     </tbody>
@@ -755,57 +791,6 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_GetAndUpdate_System_Func__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.GetAndUpdate(System.Func%7B%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicReference.cs/#L553">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicReference_1_GetAndUpdate_" data-uid="DotNext.Threading.AtomicReference`1.GetAndUpdate*"></a>
-  <h4 id="DotNext_Threading_AtomicReference_1_GetAndUpdate_System_Func__0__0__" data-uid="DotNext.Threading.AtomicReference`1.GetAndUpdate(System.Func{`0,`0})">GetAndUpdate(Func&lt;T, T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
-of applying the given function, returning the original value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T GetAndUpdate(Func&lt;T, T&gt; updater)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, T&gt;</td>
-        <td><span class="parametername">updater</span></td>
-        <td><p>A side-effect-free function</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The original value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -836,8 +821,6 @@ of applying the given function, returning the original value.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_SetAndGet__0_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.SetAndGet(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -890,13 +873,13 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_SetIfNull_System_Func__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.SetIfNull(System.Func%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_SetIfNull_DotNext_Func__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.SetIfNull(DotNext.Func%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicReference.cs/#L588">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicReference_1_SetIfNull_" data-uid="DotNext.Threading.AtomicReference`1.SetIfNull*"></a>
-  <h4 id="DotNext_Threading_AtomicReference_1_SetIfNull_System_Func__0__" data-uid="DotNext.Threading.AtomicReference`1.SetIfNull(System.Func{`0})">SetIfNull(Func&lt;T&gt;)</h4>
+  <h4 id="DotNext_Threading_AtomicReference_1_SetIfNull_DotNext_Func__0__" data-uid="DotNext.Threading.AtomicReference`1.SetIfNull(DotNext.Func{`0})">SetIfNull(Func&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Modifies stored value if it is null.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -915,7 +898,7 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;T&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T&gt;</td>
         <td><span class="parametername">supplier</span></td>
         <td><p>Supplier of a new value.</p>
 </td>
@@ -953,7 +936,6 @@ of applying the given function, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T SetIfNull&lt;G&gt;()
-
     where G : T, new()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -1020,8 +1002,57 @@ of applying the given function, returning the original value.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a></div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_UpdateAndGet_DotNext_Func__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.UpdateAndGet(DotNext.Func%7B%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicReference.cs/#L535">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicReference_1_UpdateAndGet_" data-uid="DotNext.Threading.AtomicReference`1.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicReference_1_UpdateAndGet_DotNext_Func__0__0__" data-uid="DotNext.Threading.AtomicReference`1.UpdateAndGet(DotNext.Func{`0,`0})">UpdateAndGet(Func&lt;T, T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T UpdateAndGet(Func&lt;T, T&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;T, T&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_UpdateAndGet_DotNext_ValueFunc__0__0___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.UpdateAndGet(DotNext.ValueFunc%7B%600%2C%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -1073,102 +1104,12 @@ of applying the given function, returning the updated value.</p>
       </tr>
     </tbody>
   </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_UpdateAndGet_System_Func__0__0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.UpdateAndGet(System.Func%7B%600%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicReference.cs/#L535">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicReference_1_UpdateAndGet_" data-uid="DotNext.Threading.AtomicReference`1.UpdateAndGet*"></a>
-  <h4 id="DotNext_Threading_AtomicReference_1_UpdateAndGet_System_Func__0__0__" data-uid="DotNext.Threading.AtomicReference`1.UpdateAndGet(System.Func{`0,`0})">UpdateAndGet(Func&lt;T, T&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
-of applying the given function, returning the updated value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public T UpdateAndGet(Func&lt;T, T&gt; updater)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, T&gt;</td>
-        <td><span class="parametername">updater</span></td>
-        <td><p>A side-effect-free function</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">T</span></td>
-        <td><p>The updated value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h3 id="eii">Explicit Interface Implementations
-  </h3>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicReference_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicReference%601.System%23Runtime%23Serialization%23ISerializable%23GetObjectData(System.Runtime.Serialization.SerializationInfo%2CSystem.Runtime.Serialization.StreamingContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicReference.cs/#L600">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicReference_1_System_Runtime_Serialization_ISerializable_GetObjectData_" data-uid="DotNext.Threading.AtomicReference`1.System#Runtime#Serialization#ISerializable#GetObjectData*"></a>
-  <h4 id="DotNext_Threading_AtomicReference_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_" data-uid="DotNext.Threading.AtomicReference`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">ISerializable.GetObjectData(SerializationInfo, StreamingContext)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.serializationinfo">SerializationInfo</a></td>
-        <td><span class="parametername">info</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.streamingcontext">StreamingContext</a></td>
-        <td><span class="parametername">context</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
+      <span class="xref">IEquatable&lt;&gt;</span>
   </div>
   <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">System.Runtime.Serialization.ISerializable</a>
+      <span class="xref">ISerializable</span>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

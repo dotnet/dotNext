@@ -70,6 +70,10 @@
 <h1 id="calling-function-by-pointer">Calling Function by Pointer</h1>
 
 <p>Unmanaged library can be loaded dynamically and its functions can be called by pointer. This approach is widely used by C programming language. .NET platform allows this using delegates marked with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.unmanagedfunctionpointerattribute">UnmanagedFunctionPointerAttribute</a> attribute. In this case, the pointer to the unmanaged function is wrapped into delegate instance, plus overhead caused by marshalling of managed world into unmanaged. Another way is <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.nativelibrary">NativeLibrary</a> class which exposes pointers to the unmanaged functions. How to be closer to bare metal and call functions by pointer like in C? The answer is <a href="../../api/DotNext.Runtime.InteropServices.UnmanagedFunction.html">UnmanagedFunction</a> for calling <strong>void</strong> functions and <a href="../../api/DotNext.Runtime.InteropServices.UnmanagedFunction-1.html">UnmanagedFunction&lt;R&gt;</a> for calling functions with return types.</p>
+<div class="IMPORTANT">
+<h5>Important</h5>
+<p>API described in this article is supported on Mono platform. JIT compiler for .NET Core 2.x or 3.x doesn't support generic parameters  for unmanaged calling conventions. See <a href="https://github.com/dotnet/coreclr/issues/14524">this</a> issue for more information. It is expected that .NET 5 will support this feature.</p>
+</div>
 <p>Static methods inside of these classes accept raw pointer to the unmanaged function in the form of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.intptr">IntPtr</a> data and arguments of blittable types. There are two supported unmanaged calling conventions:</p>
 <ul>
 <li><em>Cdecl</em> is widely used by Linux OS</li>

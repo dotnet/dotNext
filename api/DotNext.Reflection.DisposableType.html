@@ -82,47 +82,23 @@ types implementing dispose pattern.</p>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">DisposableType</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Reflection.html">DotNext.Reflection</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Reflection_DisposableType_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class DisposableType</code></pre>
+    <pre><code class="lang-csharp hljs">public static class DisposableType : object</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_DisposableType_GetDisposeMethod_System_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.DisposableType.GetDisposeMethod(System.Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_DisposableType_GetDisposeMethod_Type_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.DisposableType.GetDisposeMethod(Type)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Reflection/DisposableType.cs/#L22">View Source</a>
   </span>
   <a id="DotNext_Reflection_DisposableType_GetDisposeMethod_" data-uid="DotNext.Reflection.DisposableType.GetDisposeMethod*"></a>
-  <h4 id="DotNext_Reflection_DisposableType_GetDisposeMethod_System_Type_" data-uid="DotNext.Reflection.DisposableType.GetDisposeMethod(System.Type)">GetDisposeMethod(Type)</h4>
+  <h4 id="DotNext_Reflection_DisposableType_GetDisposeMethod_Type_" data-uid="DotNext.Reflection.DisposableType.GetDisposeMethod(Type)">GetDisposeMethod(Type)</h4>
   <div class="markdown level1 summary"><p>Gets Dispose method which implements dispose pattern.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -141,7 +117,7 @@ types implementing dispose pattern.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a></td>
+        <td><span class="xref">Type</span></td>
         <td><span class="parametername">type</span></td>
         <td><p>The type to inspect.</p>
 </td>
@@ -158,15 +134,15 @@ types implementing dispose pattern.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
+        <td><span class="xref">MethodInfo</span></td>
         <td><p>Dispose method; or <span class="xref">null</span>, if this method doesn't exist.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Reflection_DisposableType_GetDisposeMethod_System_Type__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method checks whether the type implements <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a>.
-If it is then return <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable.dispose#System_IDisposable_Dispose">Dispose()</a> method. Otherwise,
+  <h5 id="DotNext_Reflection_DisposableType_GetDisposeMethod_Type__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method checks whether the type implements <see cref="!:IDisposable"></see>.
+If it is then return <see cref="!:IDisposable.Dispose"></see> method. Otherwise,
 return public instance method with name Dispose.</p>
 </div>
 </article>

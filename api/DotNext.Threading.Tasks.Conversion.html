@@ -81,54 +81,29 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">Conversion</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.Tasks.html">DotNext.Threading.Tasks</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Threading_Tasks_Conversion_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Conversion</code></pre>
+    <pre><code class="lang-csharp hljs">public static class Conversion : object</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.Convert%60%602(System.Threading.Tasks.Task%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_Convert__2_Task___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.Convert%60%602(Task%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L25">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_Convert_" data-uid="DotNext.Threading.Tasks.Conversion.Convert*"></a>
-  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0})">Convert&lt;I, O&gt;(Task&lt;I&gt;)</h4>
+  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_Task___0__" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(Task{``0})">Convert&lt;I, O&gt;(Task&lt;I&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts one type of task into another.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;O&gt; Convert&lt;I, O&gt;(this Task&lt;I&gt; task)
-
     where I : O</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -142,7 +117,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;I&gt;</td>
+        <td><span class="xref">Task</span>&lt;I&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to convert.</p>
 </td>
@@ -159,7 +134,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;O&gt;</td>
+        <td><span class="xref">Task</span>&lt;O&gt;</td>
         <td><p>The converted task.</p>
 </td>
       </tr>
@@ -188,13 +163,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.Convert%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Converter%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_Convert__2_Task___0__DotNext_Converter___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.Convert%60%602(Task%7B%60%600%7D%2CDotNext.Converter%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L35">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_Convert_" data-uid="DotNext.Threading.Tasks.Conversion.Convert*"></a>
-  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0___1__" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0},System.Converter{``0,``1})">Convert&lt;I, O&gt;(Task&lt;I&gt;, Converter&lt;I, O&gt;)</h4>
+  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_Task___0__DotNext_Converter___0___1__" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(Task{``0},DotNext.Converter{``0,``1})">Convert&lt;I, O&gt;(Task&lt;I&gt;, Converter&lt;I, O&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts one type of task into another.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -213,13 +188,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;I&gt;</td>
+        <td><span class="xref">Task</span>&lt;I&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to convert.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;I, O&gt;</td>
+        <td><span class="xref">DotNext.Converter</span>&lt;I, O&gt;</td>
         <td><span class="parametername">converter</span></td>
         <td><p>Non-blocking conversion function.</p>
 </td>
@@ -236,7 +211,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;O&gt;</td>
+        <td><span class="xref">Task</span>&lt;O&gt;</td>
         <td><p>The converted task.</p>
 </td>
       </tr>
@@ -265,13 +240,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0_System_Threading_Tasks_Task___1___.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.Convert%60%602(System.Threading.Tasks.Task%7B%60%600%7D%2CSystem.Converter%7B%60%600%2CSystem.Threading.Tasks.Task%7B%60%601%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_Convert__2_Task___0__DotNext_Converter___0_Task___1___.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.Convert%60%602(Task%7B%60%600%7D%2CDotNext.Converter%7B%60%600%2CTask%7B%60%601%7D%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L57">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_Convert_" data-uid="DotNext.Threading.Tasks.Conversion.Convert*"></a>
-  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_System_Threading_Tasks_Task___0__System_Converter___0_System_Threading_Tasks_Task___1___" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(System.Threading.Tasks.Task{``0},System.Converter{``0,System.Threading.Tasks.Task{``1}})">Convert&lt;I, O&gt;(Task&lt;I&gt;, Converter&lt;I, Task&lt;O&gt;&gt;)</h4>
+  <h4 id="DotNext_Threading_Tasks_Conversion_Convert__2_Task___0__DotNext_Converter___0_Task___1___" data-uid="DotNext.Threading.Tasks.Conversion.Convert``2(Task{``0},DotNext.Converter{``0,Task{``1}})">Convert&lt;I, O&gt;(Task&lt;I&gt;, Converter&lt;I, Task&lt;O&gt;&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts one type of task into another.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -290,13 +265,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;I&gt;</td>
+        <td><span class="xref">Task</span>&lt;I&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to convert.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;I, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;O&gt;&gt;</td>
+        <td><span class="xref">DotNext.Converter</span>&lt;I, <span class="xref">Task</span>&lt;O&gt;&gt;</td>
         <td><span class="parametername">converter</span></td>
         <td><p>Asynchronous conversion function.</p>
 </td>
@@ -313,7 +288,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;O&gt;</td>
+        <td><span class="xref">Task</span>&lt;O&gt;</td>
         <td><p>The converted task.</p>
 </td>
       </tr>
@@ -342,20 +317,19 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_ToNullable__1_System_Threading_Tasks_Task___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.ToNullable%60%601(System.Threading.Tasks.Task%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_Conversion_ToNullable__1_Task___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.Conversion.ToNullable%60%601(Task%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/Tasks/Conversion.cs/#L44">View Source</a>
   </span>
   <a id="DotNext_Threading_Tasks_Conversion_ToNullable_" data-uid="DotNext.Threading.Tasks.Conversion.ToNullable*"></a>
-  <h4 id="DotNext_Threading_Tasks_Conversion_ToNullable__1_System_Threading_Tasks_Task___0__" data-uid="DotNext.Threading.Tasks.Conversion.ToNullable``1(System.Threading.Tasks.Task{``0})">ToNullable&lt;T&gt;(Task&lt;T&gt;)</h4>
+  <h4 id="DotNext_Threading_Tasks_Conversion_ToNullable__1_Task___0__" data-uid="DotNext.Threading.Tasks.Conversion.ToNullable``1(Task{``0})">ToNullable&lt;T&gt;(Task&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts value type into nullable value type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Task&lt;T?&gt; ToNullable&lt;T&gt;(this Task&lt;T&gt; task)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -369,7 +343,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;T&gt;</td>
+        <td><span class="xref">Task</span>&lt;T&gt;</td>
         <td><span class="parametername">task</span></td>
         <td><p>The task to convert.</p>
 </td>
@@ -386,7 +360,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;T&gt;&gt;</td>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;T&gt;&gt;</td>
         <td><p>The converted task.</p>
 </td>
       </tr>

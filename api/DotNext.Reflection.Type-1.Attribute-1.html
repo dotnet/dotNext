@@ -81,37 +81,11 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">Type&lt;T&gt;.Attribute&lt;A&gt;</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Reflection.html">DotNext.Reflection</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_Type_1_Attribute_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Attribute&lt;A&gt;
-
-    where A : Attribute</code></pre>
+    <pre><code class="lang-csharp hljs">public static class Attribute&lt;A&gt; : object where A : Type&lt;T&gt;.Attribute</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -133,13 +107,13 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Attribute_1_Get_System_Boolean_System_Predicate__1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Attribute%601.Get(System.Boolean%2CSystem.Predicate%7B%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Attribute_1_Get_System_Boolean_Predicate__1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Attribute%601.Get(System.Boolean%2CPredicate%7B%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Attributes.cs/#L23">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Attribute_1_Get_" data-uid="DotNext.Reflection.Type`1.Attribute`1.Get*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Attribute_1_Get_System_Boolean_System_Predicate__1__" data-uid="DotNext.Reflection.Type`1.Attribute`1.Get(System.Boolean,System.Predicate{`1})">Get(Boolean, Predicate&lt;A&gt;)</h4>
+  <h4 id="DotNext_Reflection_Type_1_Attribute_1_Get_System_Boolean_Predicate__1__" data-uid="DotNext.Reflection.Type`1.Attribute`1.Get(System.Boolean,Predicate{`1})">Get(Boolean, Predicate&lt;A&gt;)</h4>
   <div class="markdown level1 summary"><p>Returns attribute associated with the type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -164,7 +138,7 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.predicate-1">Predicate</a>&lt;A&gt;</td>
+        <td><span class="xref">Predicate</span>&lt;A&gt;</td>
         <td><span class="parametername">condition</span></td>
         <td><p>Optional predicate to check attribute properties.</p>
 </td>
@@ -189,13 +163,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Attribute_1_GetAll_System_Boolean_System_Predicate__1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Attribute%601.GetAll(System.Boolean%2CSystem.Predicate%7B%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Attribute_1_GetAll_System_Boolean_Predicate__1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Attribute%601.GetAll(System.Boolean%2CPredicate%7B%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Attributes.cs/#L45">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Attribute_1_GetAll_" data-uid="DotNext.Reflection.Type`1.Attribute`1.GetAll*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Attribute_1_GetAll_System_Boolean_System_Predicate__1__" data-uid="DotNext.Reflection.Type`1.Attribute`1.GetAll(System.Boolean,System.Predicate{`1})">GetAll(Boolean, Predicate&lt;A&gt;)</h4>
+  <h4 id="DotNext_Reflection_Type_1_Attribute_1_GetAll_System_Boolean_Predicate__1__" data-uid="DotNext.Reflection.Type`1.Attribute`1.GetAll(System.Boolean,Predicate{`1})">GetAll(Boolean, Predicate&lt;A&gt;)</h4>
   <div class="markdown level1 summary"><p>Get all custom attributes of type <code data-dev-comment-type="typeparamref" class="typeparamref">A</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -220,7 +194,7 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.predicate-1">Predicate</a>&lt;A&gt;</td>
+        <td><span class="xref">Predicate</span>&lt;A&gt;</td>
         <td><span class="parametername">condition</span></td>
         <td><p>Optional predicate to check attribute properties.</p>
 </td>
@@ -237,7 +211,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a>&lt;A&gt;</td>
+        <td><span class="xref">IEnumerable</span>&lt;A&gt;</td>
         <td><p>All attributes associated with type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </td>
       </tr>
@@ -245,13 +219,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Attribute_1_Require_System_Boolean_System_Predicate__1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Attribute%601.Require(System.Boolean%2CSystem.Predicate%7B%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Attribute_1_Require_System_Boolean_Predicate__1__.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Attribute%601.Require(System.Boolean%2CPredicate%7B%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Attributes.cs/#L36">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Attribute_1_Require_" data-uid="DotNext.Reflection.Type`1.Attribute`1.Require*"></a>
-  <h4 id="DotNext_Reflection_Type_1_Attribute_1_Require_System_Boolean_System_Predicate__1__" data-uid="DotNext.Reflection.Type`1.Attribute`1.Require(System.Boolean,System.Predicate{`1})">Require(Boolean, Predicate&lt;A&gt;)</h4>
+  <h4 id="DotNext_Reflection_Type_1_Attribute_1_Require_System_Boolean_Predicate__1__" data-uid="DotNext.Reflection.Type`1.Attribute`1.Require(System.Boolean,Predicate{`1})">Require(Boolean, Predicate&lt;A&gt;)</h4>
   <div class="markdown level1 summary"><p>Returns attribute associated with the type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -276,7 +250,7 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.predicate-1">Predicate</a>&lt;A&gt;</td>
+        <td><span class="xref">Predicate</span>&lt;A&gt;</td>
         <td><span class="parametername">condition</span></td>
         <td><p>Optional predicate to check attribute properties.</p>
 </td>

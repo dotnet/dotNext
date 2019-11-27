@@ -79,63 +79,19 @@
   <div class="inheritance">
     <h5>Inheritance</h5>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
-    <div class="level1"><a class="xref" href="DotNext.Disposable.html">Disposable</a></div>
-    <div class="level2"><span class="xref">InMemoryAuditTrail</span></div>
+    <div class="level1"><span class="xref">InMemoryAuditTrail</span></div>
   </div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a></div>
     <div><a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrail-1.html">IAuditTrail</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a>&gt;</div>
     <div><a class="xref" href="DotNext.Net.Cluster.Replication.IAuditTrail.html">IAuditTrail</a></div>
-  </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_IsDisposed">Disposable.IsDisposed</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_ThrowIfDisposed">Disposable.ThrowIfDisposed()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose">Disposable.Dispose()</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_QueueDispose_System_IDisposable_">Disposable.QueueDispose(IDisposable)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Collections_Generic_IEnumerable_System_IDisposable__">Disposable.Dispose(IEnumerable&lt;IDisposable&gt;)</a>
-    </div>
-    <div>
-      <a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_IDisposable___">Disposable.Dispose(IDisposable[])</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">DotNext.Net.Cluster.Consensus.Raft</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class InMemoryAuditTrail : Disposable, IDisposable, IPersistentState, IAuditTrail&lt;IRaftLogEntry&gt;, IAuditTrail</code></pre>
+    <pre><code class="lang-csharp hljs">public class InMemoryAuditTrail : Disposable, IPersistentState, IAuditTrail&lt;IRaftLogEntry&gt;, IAuditTrail</code></pre>
   </div>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>In-memory audit trail doesn't support compaction.
@@ -238,7 +194,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><span class="xref">ValueTask</span></td>
         <td><p>The task representing asynchronous execution of this method.</p>
 </td>
       </tr>
@@ -278,8 +234,6 @@ It is recommended to use this audit trail for testing purposes only.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="overrides">Overrides</h5>
-  <div><a class="xref" href="DotNext.Disposable.html#DotNext_Disposable_Dispose_System_Boolean_">Disposable.Dispose(Boolean)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_FlushAsync.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.FlushAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -306,7 +260,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><span class="xref">ValueTask</span></td>
         <td><p>The task representing asynchronous execution of this method.</p>
 </td>
       </tr>
@@ -389,7 +343,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -513,7 +467,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><span class="xref">ValueTask</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -560,20 +514,67 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><span class="xref">ValueTask</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_CommitAsync_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%23CommitAsync(System.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_CommitAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%23CommitAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L277">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_CommitAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#CommitAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_CommitAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#CommitAsync(CancellationToken)">IAuditTrail.CommitAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; IAuditTrail.CommitAsync(CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_CommitAsync_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%23CommitAsync(System.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L274">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_CommitAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#CommitAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_CommitAsync_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#CommitAsync(System.Int64,System.Threading.CancellationToken)">IAuditTrail.CommitAsync(Int64, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_CommitAsync_System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#CommitAsync(System.Int64,CancellationToken)">IAuditTrail.CommitAsync(Int64, CancellationToken)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -596,7 +597,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
         <td></td>
       </tr>
@@ -612,67 +613,20 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_CommitAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%23CommitAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L277">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_CommitAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#CommitAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_CommitAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#CommitAsync(System.Threading.CancellationToken)">IAuditTrail.CommitAsync(CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; IAuditTrail.CommitAsync(CancellationToken token)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_EnsureConsistencyAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%23EnsureConsistencyAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_EnsureConsistencyAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%23EnsureConsistencyAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L303">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_EnsureConsistencyAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#EnsureConsistencyAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_EnsureConsistencyAsync_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#EnsureConsistencyAsync(System.Threading.CancellationToken)">IAuditTrail.EnsureConsistencyAsync(CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_EnsureConsistencyAsync_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#EnsureConsistencyAsync(CancellationToken)">IAuditTrail.EnsureConsistencyAsync(CancellationToken)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -690,7 +644,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
         <td></td>
       </tr>
@@ -706,20 +660,20 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><span class="xref">Task</span></td>
         <td></td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_WaitForCommitAsync_System_Int64_System_TimeSpan_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%23WaitForCommitAsync(System.Int64%2CSystem.TimeSpan%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_WaitForCommitAsync_System_Int64_TimeSpan_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%23WaitForCommitAsync(System.Int64%2CTimeSpan%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L309">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_WaitForCommitAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#WaitForCommitAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_WaitForCommitAsync_System_Int64_System_TimeSpan_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#WaitForCommitAsync(System.Int64,System.TimeSpan,System.Threading.CancellationToken)">IAuditTrail.WaitForCommitAsync(Int64, TimeSpan, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_WaitForCommitAsync_System_Int64_TimeSpan_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail#WaitForCommitAsync(System.Int64,TimeSpan,CancellationToken)">IAuditTrail.WaitForCommitAsync(Int64, TimeSpan, CancellationToken)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -742,12 +696,12 @@ It is recommended to use this audit trail for testing purposes only.</p>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="xref">TimeSpan</span></td>
         <td><span class="parametername">timeout</span></td>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
         <td></td>
       </tr>
@@ -763,7 +717,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><span class="xref">Task</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -782,7 +736,6 @@ It is recommended to use this audit trail for testing purposes only.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask IAuditTrail&lt;IRaftLogEntry&gt;.AppendAsync&lt;TEntry&gt;(TEntry entry, long startIndex)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -817,7 +770,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><span class="xref">ValueTask</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -839,19 +792,86 @@ It is recommended to use this audit trail for testing purposes only.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Int64_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%7D%23AppendAsync%60%601(DotNext.Net.Cluster.Replication.ILogEntryProducer%7B%60%600%7D%2CSystem.Int64%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%7D%23AppendAsync%60%601(DotNext.Net.Cluster.Replication.ILogEntryProducer%7B%60%600%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L227">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AppendAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#AppendAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#AppendAsync``1(DotNext.Net.Cluster.Replication.ILogEntryProducer{``0},CancellationToken)">IAuditTrail&lt;IRaftLogEntry&gt;.AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; IAuditTrail&lt;IRaftLogEntry&gt;.AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; entries, CancellationToken token)
+    where TEntry : IRaftLogEntry</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntryProducer-1.html">ILogEntryProducer</a>&lt;TEntry&gt;</td>
+        <td><span class="parametername">entries</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TEntry</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Int64_System_Boolean_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%7D%23AppendAsync%60%601(DotNext.Net.Cluster.Replication.ILogEntryProducer%7B%60%600%7D%2CSystem.Int64%2CSystem.Boolean%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L219">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AppendAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#AppendAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Int64_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#AppendAsync``1(DotNext.Net.Cluster.Replication.ILogEntryProducer{``0},System.Int64,System.Boolean,System.Threading.CancellationToken)">IAuditTrail&lt;IRaftLogEntry&gt;.AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt;, Int64, Boolean, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Int64_System_Boolean_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#AppendAsync``1(DotNext.Net.Cluster.Replication.ILogEntryProducer{``0},System.Int64,System.Boolean,CancellationToken)">IAuditTrail&lt;IRaftLogEntry&gt;.AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt;, Int64, Boolean, CancellationToken)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask IAuditTrail&lt;IRaftLogEntry&gt;.AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; entries, long startIndex, bool skipCommitted, CancellationToken token)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -880,7 +900,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
         <td></td>
       </tr>
@@ -896,7 +916,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><span class="xref">ValueTask</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -918,82 +938,13 @@ It is recommended to use this audit trail for testing purposes only.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%7D%23AppendAsync%60%601(DotNext.Net.Cluster.Replication.ILogEntryProducer%7B%60%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L227">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AppendAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#AppendAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__AppendAsync__1_DotNext_Net_Cluster_Replication_ILogEntryProducer___0__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#AppendAsync``1(DotNext.Net.Cluster.Replication.ILogEntryProducer{``0},System.Threading.CancellationToken)">IAuditTrail&lt;IRaftLogEntry&gt;.AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; IAuditTrail&lt;IRaftLogEntry&gt;.AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; entries, CancellationToken token)
-
-    where TEntry : IRaftLogEntry</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Replication.ILogEntryProducer-1.html">ILogEntryProducer</a>&lt;TEntry&gt;</td>
-        <td><span class="parametername">entries</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TEntry</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__DropAsync_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%7D%23DropAsync(System.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__DropAsync_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%7D%23DropAsync(System.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L260">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__DropAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#DropAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__DropAsync_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#DropAsync(System.Int64,System.Threading.CancellationToken)">IAuditTrail&lt;IRaftLogEntry&gt;.DropAsync(Int64, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__DropAsync_System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#DropAsync(System.Int64,CancellationToken)">IAuditTrail&lt;IRaftLogEntry&gt;.DropAsync(Int64, CancellationToken)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -1016,7 +967,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
         <td></td>
       </tr>
@@ -1032,7 +983,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -1069,19 +1020,95 @@ It is recommended to use this audit trail for testing purposes only.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%7D%23ReadAsync%60%602(%60%600%2CSystem.Int64%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync__2___0_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%7D%23ReadAsync%60%602(%60%600%2CSystem.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L155">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync__2___0_System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync``2(``0,System.Int64,CancellationToken)">IAuditTrail&lt;IRaftLogEntry&gt;.ReadAsync&lt;TReader, TResult&gt;(TReader, Int64, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; IAuditTrail&lt;IRaftLogEntry&gt;.ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, CancellationToken token)
+    where TReader : ILogEntryConsumer&lt;IRaftLogEntry, TResult&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">TReader</span></td>
+        <td><span class="parametername">reader</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">startIndex</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;TResult&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">TReader</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync__2___0_System_Int64_System_Int64_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%7D%23ReadAsync%60%602(%60%600%2CSystem.Int64%2CSystem.Int64%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L163">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync__2___0_System_Int64_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync``2(``0,System.Int64,System.Int64,System.Threading.CancellationToken)">IAuditTrail&lt;IRaftLogEntry&gt;.ReadAsync&lt;TReader, TResult&gt;(TReader, Int64, Int64, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync__2___0_System_Int64_System_Int64_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync``2(``0,System.Int64,System.Int64,CancellationToken)">IAuditTrail&lt;IRaftLogEntry&gt;.ReadAsync&lt;TReader, TResult&gt;(TReader, Int64, Int64, CancellationToken)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; IAuditTrail&lt;IRaftLogEntry&gt;.ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, long endIndex, CancellationToken token)
-
     where TReader : ILogEntryConsumer&lt;IRaftLogEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1110,7 +1137,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
         <td></td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
         <td></td>
       </tr>
@@ -1126,85 +1153,7 @@ It is recommended to use this audit trail for testing purposes only.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TReader</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><span class="parametername">TResult</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync__2___0_System_Int64_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext%23Net%23Cluster%23Replication%23IAuditTrail%7BDotNext%23Net%23Cluster%23Consensus%23Raft%23IRaftLogEntry%7D%23ReadAsync%60%602(%60%600%2CSystem.Int64%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/InMemoryAuditTrail.cs/#L155">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_InMemoryAuditTrail_DotNext_Net_Cluster_Replication_IAuditTrail_DotNext_Net_Cluster_Consensus_Raft_IRaftLogEntry__ReadAsync__2___0_System_Int64_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.DotNext#Net#Cluster#Replication#IAuditTrail{DotNext#Net#Cluster#Consensus#Raft#IRaftLogEntry}#ReadAsync``2(``0,System.Int64,System.Threading.CancellationToken)">IAuditTrail&lt;IRaftLogEntry&gt;.ReadAsync&lt;TReader, TResult&gt;(TReader, Int64, CancellationToken)</h4>
-  <div class="markdown level1 summary"></div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; IAuditTrail&lt;IRaftLogEntry&gt;.ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, CancellationToken token)
-
-    where TReader : ILogEntryConsumer&lt;IRaftLogEntry, TResult&gt;</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">TReader</span></td>
-        <td><span class="parametername">reader</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">startIndex</span></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;TResult&gt;</td>
+        <td><span class="xref">ValueTask</span>&lt;TResult&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -1230,9 +1179,6 @@ It is recommended to use this audit trail for testing purposes only.</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
-  </div>
-  <div>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a>
   </div>
   <div>
@@ -1243,28 +1189,28 @@ It is recommended to use this audit trail for testing purposes only.</p>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
@@ -1273,19 +1219,19 @@ It is recommended to use this audit trail for testing purposes only.</p>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
@@ -1294,19 +1240,19 @@ It is recommended to use this audit trail for testing purposes only.</p>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
 </article>
           </div>

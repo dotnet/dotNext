@@ -82,7 +82,7 @@
       <a class="xref" href="DotNext.Net.Cluster.ICluster.html#DotNext_Net_Cluster_ICluster_LeaderChanged">ICluster.LeaderChanged</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.ICluster.html#DotNext_Net_Cluster_ICluster_ResignAsync_System_Threading_CancellationToken_">ICluster.ResignAsync(CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.ICluster.html#DotNext_Net_Cluster_ICluster_ResignAsync_CancellationToken_">ICluster.ResignAsync(CancellationToken)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Messaging.html">DotNext.Net.Cluster.Messaging</a></h6>
@@ -150,7 +150,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.ireadonlycollection-1">IReadOnlyCollection</a>&lt;<a class="xref" href="DotNext.Net.Cluster.Messaging.ISubscriber.html">ISubscriber</a>&gt;</td>
+        <td><span class="xref">IReadOnlyCollection</span>&lt;<a class="xref" href="DotNext.Net.Cluster.Messaging.ISubscriber.html">ISubscriber</a>&gt;</td>
         <td></td>
       </tr>
     </tbody>
@@ -159,19 +159,19 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_IMessageBus_SendMessageToLeaderAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.IMessageBus.SendMessageToLeaderAsync%60%601(DotNext.Net.Cluster.Messaging.IMessage%2CDotNext.Net.Cluster.Messaging.MessageReader%7B%60%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_IMessageBus_SendMessageToLeaderAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.IMessageBus.SendMessageToLeaderAsync%60%601(DotNext.Net.Cluster.Messaging.IMessage%2CDotNext.Net.Cluster.Messaging.MessageReader%7B%60%600%7D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/IMessageBus.cs/#L36">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_IMessageBus_SendMessageToLeaderAsync_" data-uid="DotNext.Net.Cluster.Messaging.IMessageBus.SendMessageToLeaderAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_IMessageBus_SendMessageToLeaderAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.IMessageBus.SendMessageToLeaderAsync``1(DotNext.Net.Cluster.Messaging.IMessage,DotNext.Net.Cluster.Messaging.MessageReader{``0},System.Threading.CancellationToken)">SendMessageToLeaderAsync&lt;TResponse&gt;(IMessage, MessageReader&lt;TResponse&gt;, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Messaging_IMessageBus_SendMessageToLeaderAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.IMessageBus.SendMessageToLeaderAsync``1(DotNext.Net.Cluster.Messaging.IMessage,DotNext.Net.Cluster.Messaging.MessageReader{``0},CancellationToken)">SendMessageToLeaderAsync&lt;TResponse&gt;(IMessage, MessageReader&lt;TResponse&gt;, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Sends a message to the cluster leader.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;TResponse&gt; SendMessageToLeaderAsync&lt;TResponse&gt;(IMessage message, MessageReader&lt;TResponse&gt; responseReader, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">Task&lt;TResponse&gt; SendMessageToLeaderAsync&lt;TResponse&gt;(IMessage message, MessageReader&lt;TResponse&gt; responseReader, CancellationToken token = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -196,7 +196,7 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel asynchronous operation.</p>
 </td>
@@ -213,7 +213,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TResponse&gt;</td>
+        <td><span class="xref">Task</span>&lt;TResponse&gt;</td>
         <td><p>The message representing response; or <span class="xref">null</span> if request message in one-way.</p>
 </td>
       </tr>
@@ -235,41 +235,25 @@
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Messaging_IMessageBus_SendMessageToLeaderAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p><code data-dev-comment-type="paramref" class="paramref">message</code> should be reusable because <a class="xref" href="DotNext.IDataTransferObject.html#DotNext_IDataTransferObject_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_">CopyToAsync(Stream, CancellationToken)</a> or
-<a class="xref" href="DotNext.IDataTransferObject.html#DotNext_IDataTransferObject_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_">CopyToAsync(PipeWriter, CancellationToken)</a> can be called multiple times.</p>
+  <h5 id="DotNext_Net_Cluster_Messaging_IMessageBus_SendMessageToLeaderAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p><code data-dev-comment-type="paramref" class="paramref">message</code> should be reusable because <see cref="!:IDataTransferObject.CopyToAsync(System.IO.Stream, CancellationToken)"></see> or
+<see cref="!:IDataTransferObject.CopyToAsync(System.IO.Pipelines.PipeWriter, CancellationToken)"></see> can be called multiple times.</p>
 </div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Leader node is not present in the cluster.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_IMessageBus_SendSignalToLeaderAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.IMessageBus.SendSignalToLeaderAsync(DotNext.Net.Cluster.Messaging.IMessage%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_IMessageBus_SendSignalToLeaderAsync_DotNext_Net_Cluster_Messaging_IMessage_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.IMessageBus.SendSignalToLeaderAsync(DotNext.Net.Cluster.Messaging.IMessage%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/IMessageBus.cs/#L49">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_IMessageBus_SendSignalToLeaderAsync_" data-uid="DotNext.Net.Cluster.Messaging.IMessageBus.SendSignalToLeaderAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_IMessageBus_SendSignalToLeaderAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.IMessageBus.SendSignalToLeaderAsync(DotNext.Net.Cluster.Messaging.IMessage,System.Threading.CancellationToken)">SendSignalToLeaderAsync(IMessage, CancellationToken)</h4>
+  <h4 id="DotNext_Net_Cluster_Messaging_IMessageBus_SendSignalToLeaderAsync_DotNext_Net_Cluster_Messaging_IMessage_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.IMessageBus.SendSignalToLeaderAsync(DotNext.Net.Cluster.Messaging.IMessage,CancellationToken)">SendSignalToLeaderAsync(IMessage, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Sends one-way message to the cluster leader.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task SendSignalToLeaderAsync(IMessage message, CancellationToken token = default(CancellationToken))</code></pre>
+    <pre><code class="lang-csharp hljs">Task SendSignalToLeaderAsync(IMessage message, CancellationToken token = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -288,7 +272,7 @@
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel asynchronous operation.</p>
 </td>
@@ -305,56 +289,40 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td><span class="xref">Task</span></td>
         <td><p>The task representing execution of this method.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Net_Cluster_Messaging_IMessageBus_SendSignalToLeaderAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p><code data-dev-comment-type="paramref" class="paramref">message</code> should be reusable because <a class="xref" href="DotNext.IDataTransferObject.html#DotNext_IDataTransferObject_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_">CopyToAsync(Stream, CancellationToken)</a> or
-<a class="xref" href="DotNext.IDataTransferObject.html#DotNext_IDataTransferObject_CopyToAsync_System_IO_Pipelines_PipeWriter_System_Threading_CancellationToken_">CopyToAsync(PipeWriter, CancellationToken)</a> can be called multiple times.</p>
+  <h5 id="DotNext_Net_Cluster_Messaging_IMessageBus_SendSignalToLeaderAsync_DotNext_Net_Cluster_Messaging_IMessage_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p><code data-dev-comment-type="paramref" class="paramref">message</code> should be reusable because <see cref="!:IDataTransferObject.CopyToAsync(System.IO.Stream, CancellationToken)"></see> or
+<see cref="!:IDataTransferObject.CopyToAsync(System.IO.Pipelines.PipeWriter, CancellationToken)"></see> can be called multiple times.</p>
 </div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Leader node is not present in the cluster.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Net.Cluster.Messaging.Messenger.html#DotNext_Net_Cluster_Messaging_Messenger_SendBroadcastSignalAsync_DotNext_Net_Cluster_Messaging_IMessageBus_DotNext_Net_Cluster_Messaging_IMessage_System_Boolean_">Messenger.SendBroadcastSignalAsync(IMessageBus, IMessage, Boolean)</a>
@@ -366,19 +334,19 @@
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
@@ -387,19 +355,19 @@
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
   </div>
   <div>
-      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
   </div>
 </article>
           </div>

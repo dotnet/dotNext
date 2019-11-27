@@ -81,54 +81,29 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">DelegateHelpers</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_DelegateHelpers_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class DelegateHelpers</code></pre>
+    <pre><code class="lang-csharp hljs">public static class DelegateHelpers : object</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__1_System_Action___0____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%601(System.Action%7B%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__1_Action___0____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%601(Action%7B%60%600%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Bind__1_System_Action___0____0_" data-uid="DotNext.DelegateHelpers.Bind``1(System.Action{``0},``0)">Bind&lt;T&gt;(Action&lt;T&gt;, T)</h4>
+  <h4 id="DotNext_DelegateHelpers_Bind__1_Action___0____0_" data-uid="DotNext.DelegateHelpers.Bind``1(Action{``0},``0)">Bind&lt;T&gt;(Action&lt;T&gt;, T)</h4>
   <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action Bind&lt;T&gt;(this Action&lt;T&gt; action, T obj)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -142,7 +117,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;</td>
+        <td><span class="xref">Action</span>&lt;T&gt;</td>
         <td><span class="parametername">action</span></td>
         <td><p>The action to bind.</p>
 </td>
@@ -165,7 +140,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a></td>
+        <td><span class="xref">Action</span></td>
         <td><p>The delegate targeting the specified object.</p>
 </td>
       </tr>
@@ -187,43 +162,21 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">obj</code> is <span class="xref">null</span>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">action</code> is not <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__2_System_Action___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%602(System.Action%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__2_Action___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%602(Action%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L207">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Bind__2_System_Action___0___1____0_" data-uid="DotNext.DelegateHelpers.Bind``2(System.Action{``0,``1},``0)">Bind&lt;T1, T2&gt;(Action&lt;T1, T2&gt;, T1)</h4>
+  <h4 id="DotNext_DelegateHelpers_Bind__2_Action___0___1____0_" data-uid="DotNext.DelegateHelpers.Bind``2(Action{``0,``1},``0)">Bind&lt;T1, T2&gt;(Action&lt;T1, T2&gt;, T1)</h4>
   <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T2&gt; Bind&lt;T1, T2&gt;(this Action&lt;T1, T2&gt; action, T1 obj)
-
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -237,7 +190,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;T1, T2&gt;</td>
+        <td><span class="xref">Action</span>&lt;T1, T2&gt;</td>
         <td><span class="parametername">action</span></td>
         <td><p>The action to bind.</p>
 </td>
@@ -260,7 +213,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T2&gt;</td>
+        <td><span class="xref">Action</span>&lt;T2&gt;</td>
         <td><p>The delegate targeting the specified object.</p>
 </td>
       </tr>
@@ -287,43 +240,21 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">obj</code> is <span class="xref">null</span>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">action</code> is not <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__2_System_Func___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%602(System.Func%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__2_DotNext_Func___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%602(DotNext.Func%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L178">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Bind__2_System_Func___0___1____0_" data-uid="DotNext.DelegateHelpers.Bind``2(System.Func{``0,``1},``0)">Bind&lt;T, R&gt;(Func&lt;T, R&gt;, T)</h4>
+  <h4 id="DotNext_DelegateHelpers_Bind__2_DotNext_Func___0___1____0_" data-uid="DotNext.DelegateHelpers.Bind``2(DotNext.Func{``0,``1},``0)">Bind&lt;T, R&gt;(Func&lt;T, R&gt;, T)</h4>
   <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;R&gt; Bind&lt;T, R&gt;(this Func&lt;T, R&gt; func, T obj)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -337,7 +268,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T, R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The action to bind.</p>
 </td>
@@ -360,7 +291,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;R&gt;</td>
         <td><p>The delegate targeting the specified object.</p>
 </td>
       </tr>
@@ -387,43 +318,21 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">obj</code> is <span class="xref">null</span>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">func</code> is not <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__3_System_Action___0___1___2____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%603(System.Action%7B%60%600%2C%60%601%2C%60%602%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__3_Action___0___1___2____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%603(Action%7B%60%600%2C%60%601%2C%60%602%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L238">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Bind__3_System_Action___0___1___2____0_" data-uid="DotNext.DelegateHelpers.Bind``3(System.Action{``0,``1,``2},``0)">Bind&lt;T1, T2, T3&gt;(Action&lt;T1, T2, T3&gt;, T1)</h4>
+  <h4 id="DotNext_DelegateHelpers_Bind__3_Action___0___1___2____0_" data-uid="DotNext.DelegateHelpers.Bind``3(Action{``0,``1,``2},``0)">Bind&lt;T1, T2, T3&gt;(Action&lt;T1, T2, T3&gt;, T1)</h4>
   <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T2, T3&gt; Bind&lt;T1, T2, T3&gt;(this Action&lt;T1, T2, T3&gt; action, T1 obj)
-
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -437,7 +346,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-3">Action</a>&lt;T1, T2, T3&gt;</td>
+        <td><span class="xref">Action</span>&lt;T1, T2, T3&gt;</td>
         <td><span class="parametername">action</span></td>
         <td><p>The action to bind.</p>
 </td>
@@ -460,7 +369,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;T2, T3&gt;</td>
+        <td><span class="xref">Action</span>&lt;T2, T3&gt;</td>
         <td><p>The delegate targeting the specified object.</p>
 </td>
       </tr>
@@ -492,43 +401,21 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">obj</code> is <span class="xref">null</span>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">action</code> is not <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__3_System_Func___0___1___2____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%603(System.Func%7B%60%600%2C%60%601%2C%60%602%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__3_DotNext_Func___0___1___2____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%603(DotNext.Func%7B%60%600%2C%60%601%2C%60%602%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L193">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Bind__3_System_Func___0___1___2____0_" data-uid="DotNext.DelegateHelpers.Bind``3(System.Func{``0,``1,``2},``0)">Bind&lt;T1, T2, R&gt;(Func&lt;T1, T2, R&gt;, T1)</h4>
+  <h4 id="DotNext_DelegateHelpers_Bind__3_DotNext_Func___0___1___2____0_" data-uid="DotNext.DelegateHelpers.Bind``3(DotNext.Func{``0,``1,``2},``0)">Bind&lt;T1, T2, R&gt;(Func&lt;T1, T2, R&gt;, T1)</h4>
   <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T2, R&gt; Bind&lt;T1, T2, R&gt;(this Func&lt;T1, T2, R&gt; func, T1 obj)
-
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -542,7 +429,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T1, T2, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The action to bind.</p>
 </td>
@@ -565,7 +452,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T2, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T2, R&gt;</td>
         <td><p>The delegate targeting the specified object.</p>
 </td>
       </tr>
@@ -597,43 +484,21 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">obj</code> is <span class="xref">null</span>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">func</code> is not <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__4_System_Action___0___1___2___3____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%604(System.Action%7B%60%600%2C%60%601%2C%60%602%2C%60%603%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__4_Action___0___1___2___3____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%604(Action%7B%60%600%2C%60%601%2C%60%602%2C%60%603%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L271">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Bind__4_System_Action___0___1___2___3____0_" data-uid="DotNext.DelegateHelpers.Bind``4(System.Action{``0,``1,``2,``3},``0)">Bind&lt;T1, T2, T3, T4&gt;(Action&lt;T1, T2, T3, T4&gt;, T1)</h4>
+  <h4 id="DotNext_DelegateHelpers_Bind__4_Action___0___1___2___3____0_" data-uid="DotNext.DelegateHelpers.Bind``4(Action{``0,``1,``2,``3},``0)">Bind&lt;T1, T2, T3, T4&gt;(Action&lt;T1, T2, T3, T4&gt;, T1)</h4>
   <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T2, T3, T4&gt; Bind&lt;T1, T2, T3, T4&gt;(this Action&lt;T1, T2, T3, T4&gt; action, T1 obj)
-
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -647,7 +512,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-4">Action</a>&lt;T1, T2, T3, T4&gt;</td>
+        <td><span class="xref">Action</span>&lt;T1, T2, T3, T4&gt;</td>
         <td><span class="parametername">action</span></td>
         <td><p>The action to bind.</p>
 </td>
@@ -670,7 +535,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-3">Action</a>&lt;T2, T3, T4&gt;</td>
+        <td><span class="xref">Action</span>&lt;T2, T3, T4&gt;</td>
         <td><p>The delegate targeting the specified object.</p>
 </td>
       </tr>
@@ -707,43 +572,21 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">obj</code> is <span class="xref">null</span>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">action</code> is not <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__4_System_Func___0___1___2___3____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%604(System.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__4_DotNext_Func___0___1___2___3____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%604(DotNext.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L223">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Bind__4_System_Func___0___1___2___3____0_" data-uid="DotNext.DelegateHelpers.Bind``4(System.Func{``0,``1,``2,``3},``0)">Bind&lt;T1, T2, T3, R&gt;(Func&lt;T1, T2, T3, R&gt;, T1)</h4>
+  <h4 id="DotNext_DelegateHelpers_Bind__4_DotNext_Func___0___1___2___3____0_" data-uid="DotNext.DelegateHelpers.Bind``4(DotNext.Func{``0,``1,``2,``3},``0)">Bind&lt;T1, T2, T3, R&gt;(Func&lt;T1, T2, T3, R&gt;, T1)</h4>
   <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T2, T3, R&gt; Bind&lt;T1, T2, T3, R&gt;(this Func&lt;T1, T2, T3, R&gt; func, T1 obj)
-
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -757,7 +600,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;T1, T2, T3, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, T3, R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The action to bind.</p>
 </td>
@@ -780,7 +623,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T2, T3, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T2, T3, R&gt;</td>
         <td><p>The delegate targeting the specified object.</p>
 </td>
       </tr>
@@ -817,43 +660,21 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">obj</code> is <span class="xref">null</span>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">func</code> is not <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__5_System_Action___0___1___2___3___4____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%605(System.Action%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__5_Action___0___1___2___3___4____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%605(Action%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L306">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Bind__5_System_Action___0___1___2___3___4____0_" data-uid="DotNext.DelegateHelpers.Bind``5(System.Action{``0,``1,``2,``3,``4},``0)">Bind&lt;T1, T2, T3, T4, T5&gt;(Action&lt;T1, T2, T3, T4, T5&gt;, T1)</h4>
+  <h4 id="DotNext_DelegateHelpers_Bind__5_Action___0___1___2___3___4____0_" data-uid="DotNext.DelegateHelpers.Bind``5(Action{``0,``1,``2,``3,``4},``0)">Bind&lt;T1, T2, T3, T4, T5&gt;(Action&lt;T1, T2, T3, T4, T5&gt;, T1)</h4>
   <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T2, T3, T4, T5&gt; Bind&lt;T1, T2, T3, T4, T5&gt;(this Action&lt;T1, T2, T3, T4, T5&gt; action, T1 obj)
-
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -867,7 +688,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-5">Action</a>&lt;T1, T2, T3, T4, T5&gt;</td>
+        <td><span class="xref">Action</span>&lt;T1, T2, T3, T4, T5&gt;</td>
         <td><span class="parametername">action</span></td>
         <td><p>The action to bind.</p>
 </td>
@@ -890,7 +711,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-4">Action</a>&lt;T2, T3, T4, T5&gt;</td>
+        <td><span class="xref">Action</span>&lt;T2, T3, T4, T5&gt;</td>
         <td><p>The delegate targeting the specified object.</p>
 </td>
       </tr>
@@ -932,43 +753,21 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">obj</code> is <span class="xref">null</span>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">action</code> is not <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__5_System_Func___0___1___2___3___4____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%605(System.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__5_DotNext_Func___0___1___2___3___4____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%605(DotNext.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L255">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Bind__5_System_Func___0___1___2___3___4____0_" data-uid="DotNext.DelegateHelpers.Bind``5(System.Func{``0,``1,``2,``3,``4},``0)">Bind&lt;T1, T2, T3, T4, R&gt;(Func&lt;T1, T2, T3, T4, R&gt;, T1)</h4>
+  <h4 id="DotNext_DelegateHelpers_Bind__5_DotNext_Func___0___1___2___3___4____0_" data-uid="DotNext.DelegateHelpers.Bind``5(DotNext.Func{``0,``1,``2,``3,``4},``0)">Bind&lt;T1, T2, T3, T4, R&gt;(Func&lt;T1, T2, T3, T4, R&gt;, T1)</h4>
   <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T2, T3, T4, R&gt; Bind&lt;T1, T2, T3, T4, R&gt;(this Func&lt;T1, T2, T3, T4, R&gt; func, T1 obj)
-
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -982,7 +781,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;T1, T2, T3, T4, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, T3, T4, R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The action to bind.</p>
 </td>
@@ -1005,7 +804,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;T2, T3, T4, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T2, T3, T4, R&gt;</td>
         <td><p>The delegate targeting the specified object.</p>
 </td>
       </tr>
@@ -1047,43 +846,21 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">obj</code> is <span class="xref">null</span>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">func</code> is not <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__6_System_Func___0___1___2___3___4___5____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%606(System.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Bind__6_DotNext_Func___0___1___2___3___4___5____0_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Bind%60%606(DotNext.Func%7B%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L289">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Bind_" data-uid="DotNext.DelegateHelpers.Bind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Bind__6_System_Func___0___1___2___3___4___5____0_" data-uid="DotNext.DelegateHelpers.Bind``6(System.Func{``0,``1,``2,``3,``4,``5},``0)">Bind&lt;T1, T2, T3, T4, T5, R&gt;(Func&lt;T1, T2, T3, T4, T5, R&gt;, T1)</h4>
+  <h4 id="DotNext_DelegateHelpers_Bind__6_DotNext_Func___0___1___2___3___4___5____0_" data-uid="DotNext.DelegateHelpers.Bind``6(DotNext.Func{``0,``1,``2,``3,``4,``5},``0)">Bind&lt;T1, T2, T3, T4, T5, R&gt;(Func&lt;T1, T2, T3, T4, T5, R&gt;, T1)</h4>
   <div class="markdown level1 summary"><p>Produces delegate which first parameter is implicitly bound to the given object.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T2, T3, T4, T5, R&gt; Bind&lt;T1, T2, T3, T4, T5, R&gt;(this Func&lt;T1, T2, T3, T4, T5, R&gt; func, T1 obj)
-
     where T1 : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1097,7 +874,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-6">Func</a>&lt;T1, T2, T3, T4, T5, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, T3, T4, T5, R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The action to bind.</p>
 </td>
@@ -1120,7 +897,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;T2, T3, T4, T5, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T2, T3, T4, T5, R&gt;</td>
         <td><p>The delegate targeting the specified object.</p>
 </td>
       </tr>
@@ -1167,36 +944,15 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">obj</code> is <span class="xref">null</span>.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">func</code> is not <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_ChangeType__1_System_Delegate_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.ChangeType%60%601(System.Delegate)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_ChangeType__1_Delegate_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.ChangeType%60%601(Delegate)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L142">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_ChangeType_" data-uid="DotNext.DelegateHelpers.ChangeType*"></a>
-  <h4 id="DotNext_DelegateHelpers_ChangeType__1_System_Delegate_" data-uid="DotNext.DelegateHelpers.ChangeType``1(System.Delegate)">ChangeType&lt;D&gt;(Delegate)</h4>
+  <h4 id="DotNext_DelegateHelpers_ChangeType__1_Delegate_" data-uid="DotNext.DelegateHelpers.ChangeType``1(Delegate)">ChangeType&lt;D&gt;(Delegate)</h4>
   <div class="markdown level1 summary"><p>Returns a new delegate of different type which
 points to the same method as original delegate.</p>
 </div>
@@ -1204,7 +960,6 @@ points to the same method as original delegate.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static D ChangeType&lt;D&gt;(this Delegate d)
-
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1218,7 +973,7 @@ points to the same method as original delegate.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate">Delegate</a></td>
+        <td><span class="xref">Delegate</span></td>
         <td><span class="parametername">d</span></td>
         <td><p>Delegate to convert.</p>
 </td>
@@ -1257,40 +1012,23 @@ points to the same method as original delegate.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p>Cannot convert delegate type.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Contravariant__2_System_EventHandler___0__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Contravariant%60%602(System.EventHandler%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Contravariant__2_EventHandler___0__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Contravariant%60%602(EventHandler%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L102">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Contravariant_" data-uid="DotNext.DelegateHelpers.Contravariant*"></a>
-  <h4 id="DotNext_DelegateHelpers_Contravariant__2_System_EventHandler___0__" data-uid="DotNext.DelegateHelpers.Contravariant``2(System.EventHandler{``0})">Contravariant&lt;I, O&gt;(EventHandler&lt;I&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Contravariant__2_EventHandler___0__" data-uid="DotNext.DelegateHelpers.Contravariant``2(EventHandler{``0})">Contravariant&lt;I, O&gt;(EventHandler&lt;I&gt;)</h4>
   <div class="markdown level1 summary"><p>Performs contravariant conversion
 of actual generic argument specified
-for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventhandler-1">EventHandler&lt;TEventArgs&gt;</a> type.</p>
+for <see cref="!:EventHandler&lt;TEventArgs>"></see> type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static EventHandler&lt;O&gt; Contravariant&lt;I, O&gt;(this EventHandler&lt;I&gt; handler)
-
     where I : class where O : class, I</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1304,7 +1042,7 @@ for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventhand
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventhandler-1">EventHandler</a>&lt;I&gt;</td>
+        <td><span class="xref">EventHandler</span>&lt;I&gt;</td>
         <td><span class="parametername">handler</span></td>
         <td><p>The handler to convert.</p>
 </td>
@@ -1321,7 +1059,7 @@ for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventhand
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventhandler-1">EventHandler</a>&lt;O&gt;</td>
+        <td><span class="xref">EventHandler</span>&lt;O&gt;</td>
         <td><p>The delegate referencing the same method as original delegate.</p>
 </td>
       </tr>
@@ -1348,28 +1086,27 @@ for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventhand
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_DelegateHelpers_Contravariant__2_System_EventHandler___0___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>Generic parameter of delegate <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.eventhandler-1">EventHandler&lt;TEventArgs&gt;</a>
+  <h5 id="DotNext_DelegateHelpers_Contravariant__2_EventHandler___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Generic parameter of delegate <see cref="!:EventHandler&lt;TEventArgs>"></see>
 is not marked as <span class="xref">langword_csharp_in</span> so compiler doesn't
 support contravariant conversion for it. This method
 provides contravariant conversion for this delegate type.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_CreateClosedDelegateFactory__1_System_Linq_Expressions_Expression___0__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.CreateClosedDelegateFactory%60%601(System.Linq.Expressions.Expression%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_CreateClosedDelegateFactory__1_Expression___0__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.CreateClosedDelegateFactory%60%601(Expression%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L80">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_CreateClosedDelegateFactory_" data-uid="DotNext.DelegateHelpers.CreateClosedDelegateFactory*"></a>
-  <h4 id="DotNext_DelegateHelpers_CreateClosedDelegateFactory__1_System_Linq_Expressions_Expression___0__" data-uid="DotNext.DelegateHelpers.CreateClosedDelegateFactory``1(System.Linq.Expressions.Expression{``0})">CreateClosedDelegateFactory&lt;D&gt;(Expression&lt;D&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_CreateClosedDelegateFactory__1_Expression___0__" data-uid="DotNext.DelegateHelpers.CreateClosedDelegateFactory``1(Expression{``0})">CreateClosedDelegateFactory&lt;D&gt;(Expression&lt;D&gt;)</h4>
   <div class="markdown level1 summary"><p>Creates a factory for closed delegates.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;object, D&gt; CreateClosedDelegateFactory&lt;D&gt;(Expression&lt;D&gt; expression)
-
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1383,7 +1120,7 @@ provides contravariant conversion for this delegate type.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1">Expression</a>&lt;D&gt;</td>
+        <td><span class="xref">Expression</span>&lt;D&gt;</td>
         <td><span class="parametername">expression</span></td>
         <td><p>The expression tree containing instance method, property, operator call.</p>
 </td>
@@ -1400,7 +1137,7 @@ provides contravariant conversion for this delegate type.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>, D&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>, D&gt;</td>
         <td><p>The factory of closed delegate.</p>
 </td>
       </tr>
@@ -1424,20 +1161,19 @@ provides contravariant conversion for this delegate type.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_CreateDelegate__1_System_Reflection_MethodInfo_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.CreateDelegate%60%601(System.Reflection.MethodInfo%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_CreateDelegate__1_MethodInfo_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.CreateDelegate%60%601(MethodInfo%2CSystem.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L116">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_CreateDelegate_" data-uid="DotNext.DelegateHelpers.CreateDelegate*"></a>
-  <h4 id="DotNext_DelegateHelpers_CreateDelegate__1_System_Reflection_MethodInfo_System_Object_" data-uid="DotNext.DelegateHelpers.CreateDelegate``1(System.Reflection.MethodInfo,System.Object)">CreateDelegate&lt;D&gt;(MethodInfo, Object)</h4>
+  <h4 id="DotNext_DelegateHelpers_CreateDelegate__1_MethodInfo_System_Object_" data-uid="DotNext.DelegateHelpers.CreateDelegate``1(MethodInfo,System.Object)">CreateDelegate&lt;D&gt;(MethodInfo, Object)</h4>
   <div class="markdown level1 summary"><p>Creates a delegate of the specified type with the specified target from this method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static D CreateDelegate&lt;D&gt;(this MethodInfo method, object target = null)
-
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1451,7 +1187,7 @@ provides contravariant conversion for this delegate type.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
+        <td><span class="xref">MethodInfo</span></td>
         <td><span class="parametername">method</span></td>
         <td><p>The method to be wrapped into delegate.</p>
 </td>
@@ -1496,19 +1232,15 @@ provides contravariant conversion for this delegate type.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_DelegateHelpers_CreateDelegate__1_System_Reflection_MethodInfo_System_Object__seealso">See Also</h5>
-  <div class="seealso">
-      <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo.createdelegate#System_Reflection_MethodInfo_CreateDelegate_System_Type_System_Object_">CreateDelegate</a>(<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.type">Type</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a>)</div>
-  </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_CreateOpenDelegate__1_System_Linq_Expressions_Expression___0__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.CreateOpenDelegate%60%601(System.Linq.Expressions.Expression%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_CreateOpenDelegate__1_Expression___0__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.CreateOpenDelegate%60%601(Expression%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_CreateOpenDelegate_" data-uid="DotNext.DelegateHelpers.CreateOpenDelegate*"></a>
-  <h4 id="DotNext_DelegateHelpers_CreateOpenDelegate__1_System_Linq_Expressions_Expression___0__" data-uid="DotNext.DelegateHelpers.CreateOpenDelegate``1(System.Linq.Expressions.Expression{``0})">CreateOpenDelegate&lt;D&gt;(Expression&lt;D&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_CreateOpenDelegate__1_Expression___0__" data-uid="DotNext.DelegateHelpers.CreateOpenDelegate``1(Expression{``0})">CreateOpenDelegate&lt;D&gt;(Expression&lt;D&gt;)</h4>
   <div class="markdown level1 summary"><p>Creates open delegate for the instance method, property, operator referenced
 in expression tree.</p>
 </div>
@@ -1516,7 +1248,6 @@ in expression tree.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static D CreateOpenDelegate&lt;D&gt;(Expression&lt;D&gt; expression)
-
     where D : Delegate</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1530,7 +1261,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1">Expression</a>&lt;D&gt;</td>
+        <td><span class="xref">Expression</span>&lt;D&gt;</td>
         <td><span class="parametername">expression</span></td>
         <td><p>The expression tree containing instance method call.</p>
 </td>
@@ -1571,20 +1302,19 @@ in expression tree.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__1_System_Action_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%601(System.Action)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__1_Action_.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%601(Action)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L321">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__1_System_Action_" data-uid="DotNext.DelegateHelpers.Unbind``1(System.Action)">Unbind&lt;T&gt;(Action)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__1_Action_" data-uid="DotNext.DelegateHelpers.Unbind``1(Action)">Unbind&lt;T&gt;(Action)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;T&gt; Unbind&lt;T&gt;(this Action action)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1598,7 +1328,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action">Action</a></td>
+        <td><span class="xref">Action</span></td>
         <td><span class="parametername">action</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -1615,7 +1345,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;</td>
+        <td><span class="xref">Action</span>&lt;T&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -1632,43 +1362,26 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">action</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__2_System_Action___1__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%602(System.Action%7B%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__2_Action___1__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%602(Action%7B%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L354">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__2_System_Action___1__" data-uid="DotNext.DelegateHelpers.Unbind``2(System.Action{``1})">Unbind&lt;G, T&gt;(Action&lt;T&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__2_Action___1__" data-uid="DotNext.DelegateHelpers.Unbind``2(Action{``1})">Unbind&lt;G, T&gt;(Action&lt;T&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;G, T&gt; Unbind&lt;G, T&gt;(this Action&lt;T&gt; action)
-
     where G : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1682,7 +1395,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-1">Action</a>&lt;T&gt;</td>
+        <td><span class="xref">Action</span>&lt;T&gt;</td>
         <td><span class="parametername">action</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -1699,7 +1412,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;G, T&gt;</td>
+        <td><span class="xref">Action</span>&lt;G, T&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -1716,7 +1429,7 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">G</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
       <tr>
@@ -1726,38 +1439,21 @@ in expression tree.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">action</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">G</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__2_System_Func___1__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%602(System.Func%7B%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__2_DotNext_Func___1__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%602(DotNext.Func%7B%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L331">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__2_System_Func___1__" data-uid="DotNext.DelegateHelpers.Unbind``2(System.Func{``1})">Unbind&lt;T, R&gt;(Func&lt;R&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__2_DotNext_Func___1__" data-uid="DotNext.DelegateHelpers.Unbind``2(DotNext.Func{``1})">Unbind&lt;T, R&gt;(Func&lt;R&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;T, R&gt; Unbind&lt;T, R&gt;(this Func&lt;R&gt; func)
-
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1771,7 +1467,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-1">Func</a>&lt;R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -1788,7 +1484,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T, R&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -1805,7 +1501,7 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">T</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
       <tr>
@@ -1815,38 +1511,21 @@ in expression tree.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">func</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__3_System_Action___1___2__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%603(System.Action%7B%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__3_Action___1___2__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%603(Action%7B%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L381">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__3_System_Action___1___2__" data-uid="DotNext.DelegateHelpers.Unbind``3(System.Action{``1,``2})">Unbind&lt;G, T1, T2&gt;(Action&lt;T1, T2&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__3_Action___1___2__" data-uid="DotNext.DelegateHelpers.Unbind``3(Action{``1,``2})">Unbind&lt;G, T1, T2&gt;(Action&lt;T1, T2&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;G, T1, T2&gt; Unbind&lt;G, T1, T2&gt;(this Action&lt;T1, T2&gt; action)
-
     where G : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1860,7 +1539,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-2">Action</a>&lt;T1, T2&gt;</td>
+        <td><span class="xref">Action</span>&lt;T1, T2&gt;</td>
         <td><span class="parametername">action</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -1877,7 +1556,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-3">Action</a>&lt;G, T1, T2&gt;</td>
+        <td><span class="xref">Action</span>&lt;G, T1, T2&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -1894,7 +1573,7 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">G</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
       <tr>
@@ -1909,38 +1588,21 @@ in expression tree.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">action</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">G</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__3_System_Func___1___2__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%603(System.Func%7B%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__3_DotNext_Func___1___2__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%603(DotNext.Func%7B%60%601%2C%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L342">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__3_System_Func___1___2__" data-uid="DotNext.DelegateHelpers.Unbind``3(System.Func{``1,``2})">Unbind&lt;G, T, R&gt;(Func&lt;T, R&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__3_DotNext_Func___1___2__" data-uid="DotNext.DelegateHelpers.Unbind``3(DotNext.Func{``1,``2})">Unbind&lt;G, T, R&gt;(Func&lt;T, R&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;G, T, R&gt; Unbind&lt;G, T, R&gt;(this Func&lt;T, R&gt; func)
-
     where G : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1954,7 +1616,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T, R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -1971,7 +1633,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;G, T, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;G, T, R&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -1988,7 +1650,7 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">G</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
       <tr>
@@ -2003,38 +1665,21 @@ in expression tree.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">func</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">G</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__4_System_Action___1___2___3__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%604(System.Action%7B%60%601%2C%60%602%2C%60%603%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__4_Action___1___2___3__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%604(Action%7B%60%601%2C%60%602%2C%60%603%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L410">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__4_System_Action___1___2___3__" data-uid="DotNext.DelegateHelpers.Unbind``4(System.Action{``1,``2,``3})">Unbind&lt;G, T1, T2, T3&gt;(Action&lt;T1, T2, T3&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__4_Action___1___2___3__" data-uid="DotNext.DelegateHelpers.Unbind``4(Action{``1,``2,``3})">Unbind&lt;G, T1, T2, T3&gt;(Action&lt;T1, T2, T3&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;G, T1, T2, T3&gt; Unbind&lt;G, T1, T2, T3&gt;(this Action&lt;T1, T2, T3&gt; action)
-
     where G : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2048,7 +1693,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-3">Action</a>&lt;T1, T2, T3&gt;</td>
+        <td><span class="xref">Action</span>&lt;T1, T2, T3&gt;</td>
         <td><span class="parametername">action</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -2065,7 +1710,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-4">Action</a>&lt;G, T1, T2, T3&gt;</td>
+        <td><span class="xref">Action</span>&lt;G, T1, T2, T3&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -2082,7 +1727,7 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">G</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
       <tr>
@@ -2102,38 +1747,21 @@ in expression tree.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">action</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">G</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__4_System_Func___1___2___3__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%604(System.Func%7B%60%601%2C%60%602%2C%60%603%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__4_DotNext_Func___1___2___3__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%604(DotNext.Func%7B%60%601%2C%60%602%2C%60%603%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L368">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__4_System_Func___1___2___3__" data-uid="DotNext.DelegateHelpers.Unbind``4(System.Func{``1,``2,``3})">Unbind&lt;G, T1, T2, R&gt;(Func&lt;T1, T2, R&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__4_DotNext_Func___1___2___3__" data-uid="DotNext.DelegateHelpers.Unbind``4(DotNext.Func{``1,``2,``3})">Unbind&lt;G, T1, T2, R&gt;(Func&lt;T1, T2, R&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;G, T1, T2, R&gt; Unbind&lt;G, T1, T2, R&gt;(this Func&lt;T1, T2, R&gt; func)
-
     where G : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2147,7 +1775,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T1, T2, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -2164,7 +1792,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;G, T1, T2, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;G, T1, T2, R&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -2181,7 +1809,7 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">G</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
       <tr>
@@ -2201,38 +1829,21 @@ in expression tree.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">func</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">G</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__5_System_Action___1___2___3___4__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%605(System.Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__5_Action___1___2___3___4__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%605(Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L441">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__5_System_Action___1___2___3___4__" data-uid="DotNext.DelegateHelpers.Unbind``5(System.Action{``1,``2,``3,``4})">Unbind&lt;G, T1, T2, T3, T4&gt;(Action&lt;T1, T2, T3, T4&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__5_Action___1___2___3___4__" data-uid="DotNext.DelegateHelpers.Unbind``5(Action{``1,``2,``3,``4})">Unbind&lt;G, T1, T2, T3, T4&gt;(Action&lt;T1, T2, T3, T4&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;G, T1, T2, T3, T4&gt; Unbind&lt;G, T1, T2, T3, T4&gt;(this Action&lt;T1, T2, T3, T4&gt; action)
-
     where G : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2246,7 +1857,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-4">Action</a>&lt;T1, T2, T3, T4&gt;</td>
+        <td><span class="xref">Action</span>&lt;T1, T2, T3, T4&gt;</td>
         <td><span class="parametername">action</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -2263,7 +1874,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-5">Action</a>&lt;G, T1, T2, T3, T4&gt;</td>
+        <td><span class="xref">Action</span>&lt;G, T1, T2, T3, T4&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -2280,7 +1891,7 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">G</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
       <tr>
@@ -2305,38 +1916,21 @@ in expression tree.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">action</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">G</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__5_System_Func___1___2___3___4__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%605(System.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__5_DotNext_Func___1___2___3___4__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%605(DotNext.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L396">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__5_System_Func___1___2___3___4__" data-uid="DotNext.DelegateHelpers.Unbind``5(System.Func{``1,``2,``3,``4})">Unbind&lt;G, T1, T2, T3, R&gt;(Func&lt;T1, T2, T3, R&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__5_DotNext_Func___1___2___3___4__" data-uid="DotNext.DelegateHelpers.Unbind``5(DotNext.Func{``1,``2,``3,``4})">Unbind&lt;G, T1, T2, T3, R&gt;(Func&lt;T1, T2, T3, R&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;G, T1, T2, T3, R&gt; Unbind&lt;G, T1, T2, T3, R&gt;(this Func&lt;T1, T2, T3, R&gt; func)
-
     where G : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2350,7 +1944,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-4">Func</a>&lt;T1, T2, T3, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, T3, R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -2367,7 +1961,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;G, T1, T2, T3, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;G, T1, T2, T3, R&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -2384,7 +1978,7 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">G</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
       <tr>
@@ -2409,38 +2003,21 @@ in expression tree.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">func</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">G</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__6_System_Action___1___2___3___4___5__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%606(System.Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__6_Action___1___2___3___4___5__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%606(Action%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L474">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__6_System_Action___1___2___3___4___5__" data-uid="DotNext.DelegateHelpers.Unbind``6(System.Action{``1,``2,``3,``4,``5})">Unbind&lt;G, T1, T2, T3, T4, T5&gt;(Action&lt;T1, T2, T3, T4, T5&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__6_Action___1___2___3___4___5__" data-uid="DotNext.DelegateHelpers.Unbind``6(Action{``1,``2,``3,``4,``5})">Unbind&lt;G, T1, T2, T3, T4, T5&gt;(Action&lt;T1, T2, T3, T4, T5&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Action&lt;G, T1, T2, T3, T4, T5&gt; Unbind&lt;G, T1, T2, T3, T4, T5&gt;(this Action&lt;T1, T2, T3, T4, T5&gt; action)
-
     where G : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2454,7 +2031,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-5">Action</a>&lt;T1, T2, T3, T4, T5&gt;</td>
+        <td><span class="xref">Action</span>&lt;T1, T2, T3, T4, T5&gt;</td>
         <td><span class="parametername">action</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -2471,7 +2048,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.action-6">Action</a>&lt;G, T1, T2, T3, T4, T5&gt;</td>
+        <td><span class="xref">Action</span>&lt;G, T1, T2, T3, T4, T5&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -2488,7 +2065,7 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">G</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
       <tr>
@@ -2518,38 +2095,21 @@ in expression tree.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">action</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">G</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__6_System_Func___1___2___3___4___5__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%606(System.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__6_DotNext_Func___1___2___3___4___5__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%606(DotNext.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L426">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__6_System_Func___1___2___3___4___5__" data-uid="DotNext.DelegateHelpers.Unbind``6(System.Func{``1,``2,``3,``4,``5})">Unbind&lt;G, T1, T2, T3, T4, R&gt;(Func&lt;T1, T2, T3, T4, R&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__6_DotNext_Func___1___2___3___4___5__" data-uid="DotNext.DelegateHelpers.Unbind``6(DotNext.Func{``1,``2,``3,``4,``5})">Unbind&lt;G, T1, T2, T3, T4, R&gt;(Func&lt;T1, T2, T3, T4, R&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;G, T1, T2, T3, T4, R&gt; Unbind&lt;G, T1, T2, T3, T4, R&gt;(this Func&lt;T1, T2, T3, T4, R&gt; func)
-
     where G : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2563,7 +2123,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;T1, T2, T3, T4, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, T3, T4, R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -2580,7 +2140,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-6">Func</a>&lt;G, T1, T2, T3, T4, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;G, T1, T2, T3, T4, R&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -2597,7 +2157,7 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">G</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
       <tr>
@@ -2627,38 +2187,21 @@ in expression tree.</p>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">func</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">G</code>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__7_System_Func___1___2___3___4___5___6__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%607(System.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_DelegateHelpers_Unbind__7_DotNext_Func___1___2___3___4___5___6__.md&amp;value=---%0Auid%3A%20DotNext.DelegateHelpers.Unbind%60%607(DotNext.Func%7B%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/DelegateHelpers.cs/#L458">View Source</a>
   </span>
   <a id="DotNext_DelegateHelpers_Unbind_" data-uid="DotNext.DelegateHelpers.Unbind*"></a>
-  <h4 id="DotNext_DelegateHelpers_Unbind__7_System_Func___1___2___3___4___5___6__" data-uid="DotNext.DelegateHelpers.Unbind``7(System.Func{``1,``2,``3,``4,``5,``6})">Unbind&lt;G, T1, T2, T3, T4, T5, R&gt;(Func&lt;T1, T2, T3, T4, T5, R&gt;)</h4>
+  <h4 id="DotNext_DelegateHelpers_Unbind__7_DotNext_Func___1___2___3___4___5___6__" data-uid="DotNext.DelegateHelpers.Unbind``7(DotNext.Func{``1,``2,``3,``4,``5,``6})">Unbind&lt;G, T1, T2, T3, T4, T5, R&gt;(Func&lt;T1, T2, T3, T4, T5, R&gt;)</h4>
   <div class="markdown level1 summary"><p>Converts implicitly bound delegate into its unbound version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Func&lt;G, T1, T2, T3, T4, T5, R&gt; Unbind&lt;G, T1, T2, T3, T4, T5, R&gt;(this Func&lt;T1, T2, T3, T4, T5, R&gt; func)
-
     where G : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2672,7 +2215,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-6">Func</a>&lt;T1, T2, T3, T4, T5, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, T3, T4, T5, R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The delegate to unbind.</p>
 </td>
@@ -2689,7 +2232,7 @@ in expression tree.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-7">Func</a>&lt;G, T1, T2, T3, T4, T5, R&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;G, T1, T2, T3, T4, T5, R&gt;</td>
         <td><p>Unbound version of the delegate.</p>
 </td>
       </tr>
@@ -2706,7 +2249,7 @@ in expression tree.</p>
     <tbody>
       <tr>
         <td><span class="parametername">G</span></td>
-        <td><p>The expected type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a>.</p>
+        <td><p>The expected type of <see cref="!:Delegate.Target"></see>.</p>
 </td>
       </tr>
       <tr>
@@ -2737,22 +2280,6 @@ in expression tree.</p>
       <tr>
         <td><span class="parametername">R</span></td>
         <td><p>The type of the return value of the method that the delegate encapsulates.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.delegate.target#System_Delegate_Target">Target</a> of <code data-dev-comment-type="paramref" class="paramref">func</code> is not contravarient to type <code data-dev-comment-type="typeparamref" class="typeparamref">G</code>.</p>
 </td>
       </tr>
     </tbody>

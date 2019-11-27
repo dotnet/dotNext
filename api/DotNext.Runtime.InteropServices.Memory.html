@@ -81,35 +81,11 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">Memory</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.InteropServices.html">DotNext.Runtime.InteropServices</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Runtime_InteropServices_Memory_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Memory</code></pre>
+    <pre><code class="lang-csharp hljs">public static class Memory : object</code></pre>
   </div>
   <h5 id="DotNext_Runtime_InteropServices_Memory_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>Methods in this class doesn't perform
@@ -162,7 +138,7 @@ Common Language Runtime.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><p>The address for the managed pointer.</p>
 </td>
       </tr>
@@ -262,20 +238,19 @@ not the address of the object itself.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_AsRef__1_System_TypedReference_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.AsRef%60%601(System.TypedReference)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_AsRef__1_TypedReference_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.AsRef%60%601(TypedReference)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L818">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_AsRef_" data-uid="DotNext.Runtime.InteropServices.Memory.AsRef*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_AsRef__1_System_TypedReference_" data-uid="DotNext.Runtime.InteropServices.Memory.AsRef``1(System.TypedReference)">AsRef&lt;T&gt;(TypedReference)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_AsRef__1_TypedReference_" data-uid="DotNext.Runtime.InteropServices.Memory.AsRef``1(TypedReference)">AsRef&lt;T&gt;(TypedReference)</h4>
   <div class="markdown level1 summary"><p>Converts typed reference into managed pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static T AsRef&lt;T&gt;(this TypedReference reference)</code></pre>
+    <pre><code class="lang-csharp hljs">public static T AsRef&lt;T&gt;(this TypedReference reference)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -288,7 +263,7 @@ public static T AsRef&lt;T&gt;(this TypedReference reference)</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.typedreference">TypedReference</a></td>
+        <td><span class="xref">TypedReference</span></td>
         <td><span class="parametername">reference</span></td>
         <td><p>The typed reference.</p>
 </td>
@@ -327,22 +302,6 @@ public static T AsRef&lt;T&gt;(this TypedReference reference)</code></pre>
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidcastexception">InvalidCastException</a></td>
-        <td><p><code data-dev-comment-type="typeparamref" class="typeparamref">T</code> is not identical to the type stored in the typed reference.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_AsSpan__1___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.AsSpan%60%601(%60%600*)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
@@ -353,14 +312,12 @@ public static T AsRef&lt;T&gt;(this TypedReference reference)</code></pre>
   <a id="DotNext_Runtime_InteropServices_Memory_AsSpan_" data-uid="DotNext.Runtime.InteropServices.Memory.AsSpan*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_AsSpan__1___0__" data-uid="DotNext.Runtime.InteropServices.Memory.AsSpan``1(``0*)">AsSpan&lt;T&gt;(T*)</h4>
   <div class="markdown level1 summary"><p>Converts contiguous memory identified by the specified pointer
-into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span&lt;T&gt;</a>.</p>
+into <see cref="!:Span&lt;T>"></see>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static Span&lt;byte&gt; AsSpan&lt;T&gt;(T*pointer)
-
+    <pre><code class="lang-csharp hljs">public static Span&lt;byte&gt; AsSpan&lt;T&gt;(T*pointer)
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -391,7 +348,7 @@ public static Span&lt;byte&gt; AsSpan&lt;T&gt;(T*pointer)
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="xref">DotNext.Span</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><p>The span of contiguous memory.</p>
 </td>
       </tr>
@@ -415,13 +372,13 @@ public static Span&lt;byte&gt; AsSpan&lt;T&gt;(T*pointer)
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ClearBits_System_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ClearBits(System.IntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ClearBits_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ClearBits(IntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L505">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_ClearBits_" data-uid="DotNext.Runtime.InteropServices.Memory.ClearBits*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_ClearBits_System_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.ClearBits(System.IntPtr,System.Int64)">ClearBits(IntPtr, Int64)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_ClearBits_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.ClearBits(IntPtr,System.Int64)">ClearBits(IntPtr, Int64)</h4>
   <div class="markdown level1 summary"><p>Sets all bits of allocated memory to zero.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -440,7 +397,7 @@ public static Span&lt;byte&gt; AsSpan&lt;T&gt;(T*pointer)
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">address</span></td>
         <td><p>The pointer to the memory to be cleared.</p>
 </td>
@@ -453,9 +410,9 @@ public static Span&lt;byte&gt; AsSpan&lt;T&gt;(T*pointer)
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_ClearBits_System_IntPtr_System_Int64__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method has the same behavior as <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.unsafe.initblockunaligned#System_Runtime_CompilerServices_Unsafe_InitBlockUnaligned_System_Byte__System_Byte_System_UInt32_">InitBlockUnaligned(Byte, Byte, UInt32)</a> but
-without restriction on <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uint32">UInt32</a> data type for the length of the memory block.</p>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_ClearBits_IntPtr_System_Int64__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method has the same behavior as <see cref="!:Unsafe.InitBlockUnaligned(ref byte,byte,uint)"></see> but
+without restriction on <see cref="!:System.UInt32"></see> data type for the length of the memory block.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
@@ -471,8 +428,7 @@ without restriction on <a class="xref" href="https://docs.microsoft.com/dotnet/a
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static void ClearBits(void *address, long length)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void ClearBits(void *address, long length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -500,13 +456,13 @@ public static void ClearBits(void *address, long length)</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Compare_System_IntPtr_System_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Compare(System.IntPtr%2CSystem.IntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Compare_IntPtr_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Compare(IntPtr%2CIntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L629">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Compare_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_Compare_System_IntPtr_System_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare(System.IntPtr,System.IntPtr,System.Int64)">Compare(IntPtr, IntPtr, Int64)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_Compare_IntPtr_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Compare(IntPtr,IntPtr,System.Int64)">Compare(IntPtr, IntPtr, Int64)</h4>
   <div class="markdown level1 summary"><p>Bitwise comparison of two memory blocks.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -525,13 +481,13 @@ public static void ClearBits(void *address, long length)</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">first</span></td>
         <td><p>The pointer to the first memory block.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">second</span></td>
         <td><p>The pointer to the second memory block.</p>
 </td>
@@ -555,7 +511,7 @@ public static void ClearBits(void *address, long length)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><p>Comparison result which has the semantics as return type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.icomparable.compareto#System_IComparable_CompareTo_System_Object_">CompareTo(Object)</a>.</p>
+        <td><p>Comparison result which has the semantics as return type of <see cref="!:IComparable.CompareTo(object)"></see>.</p>
 </td>
       </tr>
     </tbody>
@@ -574,8 +530,7 @@ public static void ClearBits(void *address, long length)</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static int Compare(void *first, void *second, long length)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int Compare(void *first, void *second, long length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -618,20 +573,20 @@ public static int Compare(void *first, void *second, long length)</code></pre>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><p>Comparison result which has the semantics as return type of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.icomparable.compareto#System_IComparable_CompareTo_System_Object_">CompareTo(Object)</a>.</p>
+        <td><p>Comparison result which has the semantics as return type of <see cref="!:IComparable.CompareTo(object)"></see>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Copy_System_IntPtr_System_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Copy(System.IntPtr%2CSystem.IntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Copy_IntPtr_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Copy(IntPtr%2CIntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L197">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Copy_" data-uid="DotNext.Runtime.InteropServices.Memory.Copy*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_Copy_System_IntPtr_System_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Copy(System.IntPtr,System.IntPtr,System.Int64)">Copy(IntPtr, IntPtr, Int64)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_Copy_IntPtr_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Copy(IntPtr,IntPtr,System.Int64)">Copy(IntPtr, IntPtr, Int64)</h4>
   <div class="markdown level1 summary"><p>Copies the specified number of bytes from one address in memory to another.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -650,13 +605,13 @@ public static int Compare(void *first, void *second, long length)</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">source</span></td>
         <td><p>The address of the bytes to copy.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">destination</span></td>
         <td><p>The target address.</p>
 </td>
@@ -683,8 +638,7 @@ public static int Compare(void *first, void *second, long length)</code></pre>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static void Copy(void *source, void *destination, long length)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Copy(void *source, void *destination, long length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -730,9 +684,7 @@ public static void Copy(void *source, void *destination, long length)</code></pr
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static void Copy&lt;T&gt;(T*input, T*output)
-
+    <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(T*input, T*output)
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -790,7 +742,6 @@ public static void Copy&lt;T&gt;(T*input, T*output)
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(in T input, out T output)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -847,9 +798,7 @@ public static void Copy&lt;T&gt;(T*input, T*output)
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static void Copy&lt;T&gt;(ref T source, ref T destination, uint count)
-
+    <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(ref T source, ref T destination, uint count)
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -900,13 +849,13 @@ public static void Copy&lt;T&gt;(ref T source, ref T destination, uint count)
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Equals_System_IntPtr_System_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Equals(System.IntPtr%2CSystem.IntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Equals_IntPtr_IntPtr_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Equals(IntPtr%2CIntPtr%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L558">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Equals_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_Equals_System_IntPtr_System_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals(System.IntPtr,System.IntPtr,System.Int64)">Equals(IntPtr, IntPtr, Int64)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_Equals_IntPtr_IntPtr_System_Int64_" data-uid="DotNext.Runtime.InteropServices.Memory.Equals(IntPtr,IntPtr,System.Int64)">Equals(IntPtr, IntPtr, Int64)</h4>
   <div class="markdown level1 summary"><p>Computes equality between two blocks of memory.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -925,13 +874,13 @@ public static void Copy&lt;T&gt;(ref T source, ref T destination, uint count)
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">first</span></td>
         <td><p>A pointer to the first memory block.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">second</span></td>
         <td><p>A pointer to the second memory block.</p>
 </td>
@@ -974,8 +923,7 @@ public static void Copy&lt;T&gt;(ref T source, ref T destination, uint count)
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static bool Equals(void *first, void *second, long length)</code></pre>
+    <pre><code class="lang-csharp hljs">public static bool Equals(void *first, void *second, long length)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1025,13 +973,13 @@ public static bool Equals(void *first, void *second, long length)</code></pre>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_IntPtr_System_Int64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.IntPtr%2CSystem.Int64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode32_IntPtr_System_Int64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode32(IntPtr%2CSystem.Int64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L431">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_IntPtr_System_Int64_System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.IntPtr,System.Int64,System.Boolean)">GetHashCode32(IntPtr, Int64, Boolean)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_IntPtr_System_Int64_System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32(IntPtr,System.Int64,System.Boolean)">GetHashCode32(IntPtr, Int64, Boolean)</h4>
   <div class="markdown level1 summary"><p>Computes 32-bit hash code for the block of memory.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1050,7 +998,7 @@ public static bool Equals(void *first, void *second, long length)</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">source</span></td>
         <td><p>A pointer to the block of memory.</p>
 </td>
@@ -1085,22 +1033,100 @@ public static bool Equals(void *first, void *second, long length)</code></pre>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_IntPtr_System_Int64_System_Boolean__remarks">Remarks</h5>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_IntPtr_System_Int64_System_Boolean__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method uses FNV-1a hash algorithm.</p>
 </div>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_IntPtr_System_Int64_System_Boolean__seealso">See Also</h5>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_IntPtr_System_Int64_System_Boolean__seealso">See Also</h5>
   <div class="seealso">
       <div><span><a href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</a></span></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_IntPtr_System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.IntPtr%2CSystem.Int64%2CSystem.Int32%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode32_IntPtr_System_Int64_System_Int32_DotNext_Func_System_Int32_System_Int32_System_Int32__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode32(IntPtr%2CSystem.Int64%2CSystem.Int32%2CDotNext.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L350">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_IntPtr_System_Int64_System_Int32_DotNext_Func_System_Int32_System_Int32_System_Int32__System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32(IntPtr,System.Int64,System.Int32,DotNext.Func{System.Int32,System.Int32,System.Int32},System.Boolean)">GetHashCode32(IntPtr, Int64, Int32, Func&lt;Int32, Int32, Int32&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Computes 32-bit hash code for the block of memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int GetHashCode32(IntPtr source, long length, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">source</span></td>
+        <td><p>A pointer to the block of memory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>Length of memory block to be hashed, in bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">hash</span></td>
+        <td><p>Initial value of the hash.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">hashFunction</span></td>
+        <td><p>Hashing function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">salted</span></td>
+        <td><p><span class="xref">true</span> to include randomized salt data into hashing; <span class="xref">false</span> to use data from memory only.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>Hash code of the memory block.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_IntPtr_System_Int64_System_Int32_DotNext_Func_System_Int32_System_Int32_System_Int32__System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method may give different value each time you run the program for
+the same data. To disable this behavior, pass false to <code data-dev-comment-type="paramref" class="paramref">salted</code>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode32_IntPtr_System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode32(IntPtr%2CSystem.Int64%2CSystem.Int32%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L366">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_IntPtr_System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.IntPtr,System.Int64,System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32}@,System.Boolean)">GetHashCode32(IntPtr, Int64, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;, Boolean)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_IntPtr_System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32(IntPtr,System.Int64,System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32}@,System.Boolean)">GetHashCode32(IntPtr, Int64, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;, Boolean)</h4>
   <div class="markdown level1 summary"><p>Computes 32-bit hash code for the block of memory.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1119,7 +1145,7 @@ public static bool Equals(void *first, void *second, long length)</code></pre>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">source</span></td>
         <td><p>A pointer to the block of memory.</p>
 </td>
@@ -1166,85 +1192,7 @@ public static bool Equals(void *first, void *second, long length)</code></pre>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_IntPtr_System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method may give different value each time you run the program for
-the same data. To disable this behavior, pass false to <code data-dev-comment-type="paramref" class="paramref">salted</code>.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_IntPtr_System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.IntPtr%2CSystem.Int64%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L350">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_IntPtr_System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.IntPtr,System.Int64,System.Int32,System.Func{System.Int32,System.Int32,System.Int32},System.Boolean)">GetHashCode32(IntPtr, Int64, Int32, Func&lt;Int32, Int32, Int32&gt;, Boolean)</h4>
-  <div class="markdown level1 summary"><p>Computes 32-bit hash code for the block of memory.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static int GetHashCode32(IntPtr source, long length, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
-        <td><span class="parametername">source</span></td>
-        <td><p>A pointer to the block of memory.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>Length of memory block to be hashed, in bytes.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">hash</span></td>
-        <td><p>Initial value of the hash.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
-        <td><span class="parametername">hashFunction</span></td>
-        <td><p>Hashing function.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">salted</span></td>
-        <td><p><span class="xref">true</span> to include randomized salt data into hashing; <span class="xref">false</span> to use data from memory only.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><p>Hash code of the memory block.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_IntPtr_System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean__remarks">Remarks</h5>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_IntPtr_System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method may give different value each time you run the program for
 the same data. To disable this behavior, pass false to <code data-dev-comment-type="paramref" class="paramref">salted</code>.</p>
 </div>
@@ -1262,8 +1210,7 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static int GetHashCode32(void *source, long length, bool salted = true)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int GetHashCode32(void *source, long length, bool salted = true)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1320,6 +1267,84 @@ public static int GetHashCode32(void *source, long length, bool salted = true)</
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_Void__System_Int64_System_Int32_DotNext_Func_System_Int32_System_Int32_System_Int32__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.Void*%2CSystem.Int64%2CSystem.Int32%2CDotNext.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L399">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_Void__System_Int64_System_Int32_DotNext_Func_System_Int32_System_Int32_System_Int32__System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.Void*,System.Int64,System.Int32,DotNext.Func{System.Int32,System.Int32,System.Int32},System.Boolean)">GetHashCode32(Void*, Int64, Int32, Func&lt;Int32, Int32, Int32&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Computes 32-bit hash code for the block of memory.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int GetHashCode32(void *source, long length, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>*</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>A pointer to the block of memory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>Length of memory block to be hashed, in bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">hash</span></td>
+        <td><p>Initial value of the hash.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">hashFunction</span></td>
+        <td><p>Hashing function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">salted</span></td>
+        <td><p><span class="xref">true</span> to include randomized salt data into hashing; <span class="xref">false</span> to use data from memory only.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>Hash code of the memory block.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_Void__System_Int64_System_Int32_DotNext_Func_System_Int32_System_Int32_System_Int32__System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method may give different value each time you run the program for
+the same data. To disable this behavior, pass false to <code data-dev-comment-type="paramref" class="paramref">salted</code>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_Void__System_Int64_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.Void*%2CSystem.Int64%2CSystem.Int32%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -1332,8 +1357,7 @@ public static int GetHashCode32(void *source, long length, bool salted = true)</
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static int GetHashCode32(void *source, long length, int hash, in ValueFunc&lt;int, int, int&gt; hashFunction, bool salted = true)</code></pre>
+    <pre><code class="lang-csharp hljs">public static int GetHashCode32(void *source, long length, int hash, in ValueFunc&lt;int, int, int&gt; hashFunction, bool salted = true)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1399,92 +1423,13 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_Void__System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.Void*%2CSystem.Int64%2CSystem.Int32%2CSystem.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L399">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_Void__System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode32(System.Void*,System.Int64,System.Int32,System.Func{System.Int32,System.Int32,System.Int32},System.Boolean)">GetHashCode32(Void*, Int64, Int32, Func&lt;Int32, Int32, Int32&gt;, Boolean)</h4>
-  <div class="markdown level1 summary"><p>Computes 32-bit hash code for the block of memory.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static int GetHashCode32(void *source, long length, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>*</td>
-        <td><span class="parametername">source</span></td>
-        <td><p>A pointer to the block of memory.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>Length of memory block to be hashed, in bytes.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">hash</span></td>
-        <td><p>Initial value of the hash.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
-        <td><span class="parametername">hashFunction</span></td>
-        <td><p>Hashing function.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">salted</span></td>
-        <td><p><span class="xref">true</span> to include randomized salt data into hashing; <span class="xref">false</span> to use data from memory only.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><p>Hash code of the memory block.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode32_System_Void__System_Int64_System_Int32_System_Func_System_Int32_System_Int32_System_Int32__System_Boolean__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method may give different value each time you run the program for
-the same data. To disable this behavior, pass false to <code data-dev-comment-type="paramref" class="paramref">salted</code>.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_IntPtr_System_Int64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode64(System.IntPtr%2CSystem.Int64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode64_IntPtr_System_Int64_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode64(IntPtr%2CSystem.Int64%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L318">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_IntPtr_System_Int64_System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64(System.IntPtr,System.Int64,System.Boolean)">GetHashCode64(IntPtr, Int64, Boolean)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_IntPtr_System_Int64_System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64(IntPtr,System.Int64,System.Boolean)">GetHashCode64(IntPtr, Int64, Boolean)</h4>
   <div class="markdown level1 summary"><p>Computes 64-bit hash code for the block of memory.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1503,7 +1448,7 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">source</span></td>
         <td><p>A pointer to the block of memory.</p>
 </td>
@@ -1538,22 +1483,100 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_IntPtr_System_Int64_System_Boolean__remarks">Remarks</h5>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_IntPtr_System_Int64_System_Boolean__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method uses FNV-1a hash algorithm.</p>
 </div>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_IntPtr_System_Int64_System_Boolean__seealso">See Also</h5>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_IntPtr_System_Int64_System_Boolean__seealso">See Also</h5>
   <div class="seealso">
       <div><span><a href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</a></span></div>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_IntPtr_System_Int64_System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode64(System.IntPtr%2CSystem.Int64%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode64_IntPtr_System_Int64_System_Int64_DotNext_Func_System_Int64_System_Int64_System_Int64__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode64(IntPtr%2CSystem.Int64%2CSystem.Int64%2CDotNext.Func%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L234">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_IntPtr_System_Int64_System_Int64_DotNext_Func_System_Int64_System_Int64_System_Int64__System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64(IntPtr,System.Int64,System.Int64,DotNext.Func{System.Int64,System.Int64,System.Int64},System.Boolean)">GetHashCode64(IntPtr, Int64, Int64, Func&lt;Int64, Int64, Int64&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Computes 64-bit hash code for the block of memory, 64-bit version.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static long GetHashCode64(IntPtr source, long length, long hash, Func&lt;long, long, long&gt; hashFunction, bool salted = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">source</span></td>
+        <td><p>A pointer to the block of memory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>Length of memory block to be hashed, in bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">hash</span></td>
+        <td><p>Initial value of the hash.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><span class="parametername">hashFunction</span></td>
+        <td><p>Hashing function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">salted</span></td>
+        <td><p><span class="xref">true</span> to include randomized salt data into hashing; <span class="xref">false</span> to use data from memory only.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>Hash code of the memory block.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_IntPtr_System_Int64_System_Int64_DotNext_Func_System_Int64_System_Int64_System_Int64__System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method may give different value each time you run the program for
+the same data. To disable this behavior, pass false to <code data-dev-comment-type="paramref" class="paramref">salted</code>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode64_IntPtr_System_Int64_System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode64(IntPtr%2CSystem.Int64%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L250">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_IntPtr_System_Int64_System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64___System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64(System.IntPtr,System.Int64,System.Int64,DotNext.ValueFunc{System.Int64,System.Int64,System.Int64}@,System.Boolean)">GetHashCode64(IntPtr, Int64, Int64, ValueFunc&lt;Int64, Int64, Int64&gt;, Boolean)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_IntPtr_System_Int64_System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64___System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64(IntPtr,System.Int64,System.Int64,DotNext.ValueFunc{System.Int64,System.Int64,System.Int64}@,System.Boolean)">GetHashCode64(IntPtr, Int64, Int64, ValueFunc&lt;Int64, Int64, Int64&gt;, Boolean)</h4>
   <div class="markdown level1 summary"><p>Computes 64-bit hash code for the block of memory, 64-bit version.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1572,7 +1595,7 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">source</span></td>
         <td><p>A pointer to the block of memory.</p>
 </td>
@@ -1619,85 +1642,7 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_IntPtr_System_Int64_System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64___System_Boolean__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method may give different value each time you run the program for
-the same data. To disable this behavior, pass false to <code data-dev-comment-type="paramref" class="paramref">salted</code>.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_IntPtr_System_Int64_System_Int64_System_Func_System_Int64_System_Int64_System_Int64__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode64(System.IntPtr%2CSystem.Int64%2CSystem.Int64%2CSystem.Func%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L234">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_IntPtr_System_Int64_System_Int64_System_Func_System_Int64_System_Int64_System_Int64__System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64(System.IntPtr,System.Int64,System.Int64,System.Func{System.Int64,System.Int64,System.Int64},System.Boolean)">GetHashCode64(IntPtr, Int64, Int64, Func&lt;Int64, Int64, Int64&gt;, Boolean)</h4>
-  <div class="markdown level1 summary"><p>Computes 64-bit hash code for the block of memory, 64-bit version.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long GetHashCode64(IntPtr source, long length, long hash, Func&lt;long, long, long&gt; hashFunction, bool salted = true)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
-        <td><span class="parametername">source</span></td>
-        <td><p>A pointer to the block of memory.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>Length of memory block to be hashed, in bytes.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">hash</span></td>
-        <td><p>Initial value of the hash.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
-        <td><span class="parametername">hashFunction</span></td>
-        <td><p>Hashing function.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">salted</span></td>
-        <td><p><span class="xref">true</span> to include randomized salt data into hashing; <span class="xref">false</span> to use data from memory only.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><p>Hash code of the memory block.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_IntPtr_System_Int64_System_Int64_System_Func_System_Int64_System_Int64_System_Int64__System_Boolean__remarks">Remarks</h5>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_IntPtr_System_Int64_System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64___System_Boolean__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method may give different value each time you run the program for
 the same data. To disable this behavior, pass false to <code data-dev-comment-type="paramref" class="paramref">salted</code>.</p>
 </div>
@@ -1715,8 +1660,7 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static long GetHashCode64(void *source, long length, bool salted = true)</code></pre>
+    <pre><code class="lang-csharp hljs">public static long GetHashCode64(void *source, long length, bool salted = true)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1773,6 +1717,84 @@ public static long GetHashCode64(void *source, long length, bool salted = true)<
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_Void__System_Int64_System_Int64_DotNext_Func_System_Int64_System_Int64_System_Int64__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode64(System.Void*%2CSystem.Int64%2CSystem.Int64%2CDotNext.Func%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L286">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64*"></a>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_Void__System_Int64_System_Int64_DotNext_Func_System_Int64_System_Int64_System_Int64__System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64(System.Void*,System.Int64,System.Int64,DotNext.Func{System.Int64,System.Int64,System.Int64},System.Boolean)">GetHashCode64(Void*, Int64, Int64, Func&lt;Int64, Int64, Int64&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Computes 64-bit hash code for the block of memory, 64-bit version.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static long GetHashCode64(void *source, long length, long hash, Func&lt;long, long, long&gt; hashFunction, bool salted = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>*</td>
+        <td><span class="parametername">source</span></td>
+        <td><p>A pointer to the block of memory.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>Length of memory block to be hashed, in bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">hash</span></td>
+        <td><p>Initial value of the hash.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><span class="parametername">hashFunction</span></td>
+        <td><p>Hashing function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">salted</span></td>
+        <td><p><span class="xref">true</span> to include randomized salt data into hashing; <span class="xref">false</span> to use data from memory only.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>Hash code of the memory block.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_Void__System_Int64_System_Int64_DotNext_Func_System_Int64_System_Int64_System_Int64__System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method may give different value each time you run the program for
+the same data. To disable this behavior, pass false to <code data-dev-comment-type="paramref" class="paramref">salted</code>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_Void__System_Int64_System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode64(System.Void*%2CSystem.Int64%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -1785,8 +1807,7 @@ public static long GetHashCode64(void *source, long length, bool salted = true)<
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static long GetHashCode64(void *source, long length, long hash, in ValueFunc&lt;long, long, long&gt; hashFunction, bool salted = true)</code></pre>
+    <pre><code class="lang-csharp hljs">public static long GetHashCode64(void *source, long length, long hash, in ValueFunc&lt;long, long, long&gt; hashFunction, bool salted = true)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1847,85 +1868,6 @@ public static long GetHashCode64(void *source, long length, long hash, in ValueF
     </tbody>
   </table>
   <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_Void__System_Int64_System_Int64_DotNext_ValueFunc_System_Int64_System_Int64_System_Int64___System_Boolean__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>This method may give different value each time you run the program for
-the same data. To disable this behavior, pass false to <code data-dev-comment-type="paramref" class="paramref">salted</code>.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_Void__System_Int64_System_Int64_System_Func_System_Int64_System_Int64_System_Int64__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.GetHashCode64(System.Void*%2CSystem.Int64%2CSystem.Int64%2CSystem.Func%7BSystem.Int64%2CSystem.Int64%2CSystem.Int64%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L286">View Source</a>
-  </span>
-  <a id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_Void__System_Int64_System_Int64_System_Func_System_Int64_System_Int64_System_Int64__System_Boolean_" data-uid="DotNext.Runtime.InteropServices.Memory.GetHashCode64(System.Void*,System.Int64,System.Int64,System.Func{System.Int64,System.Int64,System.Int64},System.Boolean)">GetHashCode64(Void*, Int64, Int64, Func&lt;Int64, Int64, Int64&gt;, Boolean)</h4>
-  <div class="markdown level1 summary"><p>Computes 64-bit hash code for the block of memory, 64-bit version.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static long GetHashCode64(void *source, long length, long hash, Func&lt;long, long, long&gt; hashFunction, bool salted = true)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.void">Void</a>*</td>
-        <td><span class="parametername">source</span></td>
-        <td><p>A pointer to the block of memory.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>Length of memory block to be hashed, in bytes.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">hash</span></td>
-        <td><p>Initial value of the hash.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
-        <td><span class="parametername">hashFunction</span></td>
-        <td><p>Hashing function.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
-        <td><span class="parametername">salted</span></td>
-        <td><p><span class="xref">true</span> to include randomized salt data into hashing; <span class="xref">false</span> to use data from memory only.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><p>Hash code of the memory block.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_GetHashCode64_System_Void__System_Int64_System_Int64_System_Func_System_Int64_System_Int64_System_Int64__System_Boolean__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method may give different value each time you run the program for
 the same data. To disable this behavior, pass false to <code data-dev-comment-type="paramref" class="paramref">salted</code>.</p>
 </div>
@@ -2069,13 +2011,13 @@ the same data. To disable this behavior, pass false to <code data-dev-comment-ty
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Read__1_System_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Read%60%601(System.IntPtr%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Read__1_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Read%60%601(IntPtr%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L77">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Read_" data-uid="DotNext.Runtime.InteropServices.Memory.Read*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_Read__1_System_IntPtr__" data-uid="DotNext.Runtime.InteropServices.Memory.Read``1(System.IntPtr@)">Read&lt;T&gt;(ref IntPtr)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_Read__1_IntPtr__" data-uid="DotNext.Runtime.InteropServices.Memory.Read``1(IntPtr@)">Read&lt;T&gt;(ref IntPtr)</h4>
   <div class="markdown level1 summary"><p>Reads a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> from the given location
 and adjust pointer according with size of type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </div>
@@ -2083,7 +2025,6 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(ref IntPtr source)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2097,7 +2038,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">source</span></td>
         <td><p>A pointer to block of memory.</p>
 </td>
@@ -2138,13 +2079,13 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ReadString_System_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ReadString(System.IntPtr%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ReadString_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ReadString(IntPtr%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L115">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_ReadString_" data-uid="DotNext.Runtime.InteropServices.Memory.ReadString*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_ReadString_System_IntPtr__" data-uid="DotNext.Runtime.InteropServices.Memory.ReadString(System.IntPtr@)">ReadString(ref IntPtr)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_ReadString_IntPtr__" data-uid="DotNext.Runtime.InteropServices.Memory.ReadString(IntPtr@)">ReadString(ref IntPtr)</h4>
   <div class="markdown level1 summary"><p>Reads UTF-16 encoded string from the specified memory location and adjust the pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -2163,7 +2104,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">source</span></td>
         <td><p>The pointer to the memory location containing null-terminated characters.</p>
 </td>
@@ -2188,13 +2129,13 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ReadUnaligned__1_System_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ReadUnaligned%60%601(System.IntPtr%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ReadUnaligned__1_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ReadUnaligned%60%601(IntPtr%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L139">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_ReadUnaligned_" data-uid="DotNext.Runtime.InteropServices.Memory.ReadUnaligned*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_ReadUnaligned__1_System_IntPtr__" data-uid="DotNext.Runtime.InteropServices.Memory.ReadUnaligned``1(System.IntPtr@)">ReadUnaligned&lt;T&gt;(ref IntPtr)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_ReadUnaligned__1_IntPtr__" data-uid="DotNext.Runtime.InteropServices.Memory.ReadUnaligned``1(IntPtr@)">ReadUnaligned&lt;T&gt;(ref IntPtr)</h4>
   <div class="markdown level1 summary"><p>Reads a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> from the given location
 without assuming architecture dependent alignment of the addresses;
 and adjust pointer according with size of type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
@@ -2203,7 +2144,6 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T ReadUnaligned&lt;T&gt;(ref IntPtr source)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2217,7 +2157,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">source</span></td>
         <td><p>A pointer to block of memory.</p>
 </td>
@@ -2270,9 +2210,7 @@ and adjust pointer according with size of type <code data-dev-comment-type="type
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static void Swap&lt;T&gt;(T*first, T*second)
-
+    <pre><code class="lang-csharp hljs">public static void Swap&lt;T&gt;(T*first, T*second)
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2380,7 +2318,7 @@ public static void Swap&lt;T&gt;(T*first, T*second)
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_ThrowIfNull_" data-uid="DotNext.Runtime.InteropServices.Memory.ThrowIfNull*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Memory_ThrowIfNull__1___0__" data-uid="DotNext.Runtime.InteropServices.Memory.ThrowIfNull``1(``0@)">ThrowIfNull&lt;T&gt;(T)</h4>
-  <div class="markdown level1 summary"><p>Throws <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullreferenceexception">NullReferenceException</a> if given managed pointer is <span class="xref">null</span>.</p>
+  <div class="markdown level1 summary"><p>Throws <see cref="!:NullReferenceException"></see> if given managed pointer is <span class="xref">null</span>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -2421,39 +2359,21 @@ public static void Swap&lt;T&gt;(T*first, T*second)
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullreferenceexception">NullReferenceException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">value</code> pointer is <span class="xref">null</span>.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ToPointer__1_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ToPointer%60%601(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ToPointer__1_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ToPointer%60%601(IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L46">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_ToPointer_" data-uid="DotNext.Runtime.InteropServices.Memory.ToPointer*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_ToPointer__1_System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.Memory.ToPointer``1(System.IntPtr)">ToPointer&lt;T&gt;(IntPtr)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_ToPointer__1_IntPtr_" data-uid="DotNext.Runtime.InteropServices.Memory.ToPointer``1(IntPtr)">ToPointer&lt;T&gt;(IntPtr)</h4>
   <div class="markdown level1 summary"><p>Converts the value of this instance to a pointer of the specified type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static T*ToPointer&lt;T&gt;(this IntPtr source)
-
+    <pre><code class="lang-csharp hljs">public static T*ToPointer&lt;T&gt;(this IntPtr source)
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2467,7 +2387,7 @@ public static T*ToPointer&lt;T&gt;(this IntPtr source)
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">source</span></td>
         <td><p>The value to be converted into pointer.</p>
 </td>
@@ -2508,21 +2428,19 @@ public static T*ToPointer&lt;T&gt;(this IntPtr source)
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ToPointer__1_System_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ToPointer%60%601(System.UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_ToPointer__1_UIntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.ToPointer%60%601(UIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L61">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_ToPointer_" data-uid="DotNext.Runtime.InteropServices.Memory.ToPointer*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_ToPointer__1_System_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Memory.ToPointer``1(System.UIntPtr)">ToPointer&lt;T&gt;(UIntPtr)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_ToPointer__1_UIntPtr_" data-uid="DotNext.Runtime.InteropServices.Memory.ToPointer``1(UIntPtr)">ToPointer&lt;T&gt;(UIntPtr)</h4>
   <div class="markdown level1 summary"><p>Converts the value of this instance to a pointer of the specified type.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static T*ToPointer&lt;T&gt;(this UIntPtr source)
-
+    <pre><code class="lang-csharp hljs">public static T*ToPointer&lt;T&gt;(this UIntPtr source)
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2536,7 +2454,7 @@ public static T*ToPointer&lt;T&gt;(this UIntPtr source)
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a></td>
+        <td><span class="xref">UIntPtr</span></td>
         <td><span class="parametername">source</span></td>
         <td><p>The value to be converted into pointer.</p>
 </td>
@@ -2577,13 +2495,13 @@ public static T*ToPointer&lt;T&gt;(this UIntPtr source)
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Write__1_System_IntPtr____0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Write%60%601(System.IntPtr%40%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_Write__1_IntPtr____0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.Write%60%601(IntPtr%40%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L156">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_Write_" data-uid="DotNext.Runtime.InteropServices.Memory.Write*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_Write__1_System_IntPtr____0_" data-uid="DotNext.Runtime.InteropServices.Memory.Write``1(System.IntPtr@,``0)">Write&lt;T&gt;(ref IntPtr, T)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_Write__1_IntPtr____0_" data-uid="DotNext.Runtime.InteropServices.Memory.Write``1(IntPtr@,``0)">Write&lt;T&gt;(ref IntPtr, T)</h4>
   <div class="markdown level1 summary"><p>Writes a value into the address using aligned access
 and adjust address according with size of
 type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
@@ -2592,7 +2510,6 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(ref IntPtr destination, T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2606,7 +2523,7 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">destination</span></td>
         <td><p>Destination address.</p>
 </td>
@@ -2637,13 +2554,13 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_WriteString_System_IntPtr__System_ReadOnlySpan_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.WriteString(System.IntPtr%40%2CSystem.ReadOnlySpan%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_WriteString_IntPtr__ReadOnlySpan_System_Char__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.WriteString(IntPtr%40%2CReadOnlySpan%7BSystem.Char%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L94">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_WriteString_" data-uid="DotNext.Runtime.InteropServices.Memory.WriteString*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_WriteString_System_IntPtr__System_ReadOnlySpan_System_Char__" data-uid="DotNext.Runtime.InteropServices.Memory.WriteString(System.IntPtr@,System.ReadOnlySpan{System.Char})">WriteString(ref IntPtr, ReadOnlySpan&lt;Char&gt;)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_WriteString_IntPtr__ReadOnlySpan_System_Char__" data-uid="DotNext.Runtime.InteropServices.Memory.WriteString(IntPtr@,ReadOnlySpan{System.Char})">WriteString(ref IntPtr, ReadOnlySpan&lt;Char&gt;)</h4>
   <div class="markdown level1 summary"><p>Writes the characters in UTF-16 encoding to the specified address in the memory and adjust the pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -2662,31 +2579,31 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">destination</span></td>
         <td><p>The location of in the memory.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
         <td><span class="parametername">str</span></td>
         <td><p>The characters to be written into the memory.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Runtime_InteropServices_Memory_WriteString_System_IntPtr__System_ReadOnlySpan_System_Char___remarks">Remarks</h5>
+  <h5 id="DotNext_Runtime_InteropServices_Memory_WriteString_IntPtr__ReadOnlySpan_System_Char___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method encodes the characters as null-terminated string.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_WriteString_System_IntPtr__System_String_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.WriteString(System.IntPtr%40%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_WriteString_IntPtr__System_String_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.WriteString(IntPtr%40%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L108">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_WriteString_" data-uid="DotNext.Runtime.InteropServices.Memory.WriteString*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_WriteString_System_IntPtr__System_String_" data-uid="DotNext.Runtime.InteropServices.Memory.WriteString(System.IntPtr@,System.String)">WriteString(ref IntPtr, String)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_WriteString_IntPtr__System_String_" data-uid="DotNext.Runtime.InteropServices.Memory.WriteString(IntPtr@,System.String)">WriteString(ref IntPtr, String)</h4>
   <div class="markdown level1 summary"><p>Writes the string in UTF-16 encoding to the specified address in the memory and adjust the pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -2705,7 +2622,7 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">destination</span></td>
         <td><p>The location of in the memory.</p>
 </td>
@@ -2720,13 +2637,13 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_WriteUnaligned__1_System_IntPtr____0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.WriteUnaligned%60%601(System.IntPtr%40%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Memory_WriteUnaligned__1_IntPtr____0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Memory.WriteUnaligned%60%601(IntPtr%40%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/InteropServices/Memory.cs/#L172">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Memory_WriteUnaligned_" data-uid="DotNext.Runtime.InteropServices.Memory.WriteUnaligned*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_Memory_WriteUnaligned__1_System_IntPtr____0_" data-uid="DotNext.Runtime.InteropServices.Memory.WriteUnaligned``1(System.IntPtr@,``0)">WriteUnaligned&lt;T&gt;(ref IntPtr, T)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_Memory_WriteUnaligned__1_IntPtr____0_" data-uid="DotNext.Runtime.InteropServices.Memory.WriteUnaligned``1(IntPtr@,``0)">WriteUnaligned&lt;T&gt;(ref IntPtr, T)</h4>
   <div class="markdown level1 summary"><p>Writes a value into the address using unaligned access
 and adjust address according with size of
 type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
@@ -2735,7 +2652,6 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void WriteUnaligned&lt;T&gt;(ref IntPtr destination, T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2749,7 +2665,7 @@ type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
+        <td><span class="xref">IntPtr</span></td>
         <td><span class="parametername">destination</span></td>
         <td><p>Destination address.</p>
 </td>

@@ -73,7 +73,7 @@
   
   <h1 id="DotNext_Threading_AsyncBridge" data-uid="DotNext.Threading.AsyncBridge" class="text-break">Class AsyncBridge
   </h1>
-  <div class="markdown level0 summary"><p>Allows to turn <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.waithandle">WaitHandle</a> and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a> into task.</p>
+  <div class="markdown level0 summary"><p>Allows to turn <see cref="!:WaitHandle"></see> and <see cref="!:CancellationToken"></see> into task.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -81,47 +81,23 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">AsyncBridge</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.html">DotNext.Threading</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
   <h5 id="DotNext_Threading_AsyncBridge_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class AsyncBridge</code></pre>
+    <pre><code class="lang-csharp hljs">public static class AsyncBridge : object</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncBridge_WaitAsync_System_Threading_CancellationToken_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.CancellationToken%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncBridge_WaitAsync_CancellationToken_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBridge.WaitAsync(CancellationToken%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBridge.cs/#L22">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBridge_WaitAsync_" data-uid="DotNext.Threading.AsyncBridge.WaitAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncBridge_WaitAsync_System_Threading_CancellationToken_System_Boolean_" data-uid="DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.CancellationToken,System.Boolean)">WaitAsync(CancellationToken, Boolean)</h4>
+  <h4 id="DotNext_Threading_AsyncBridge_WaitAsync_CancellationToken_System_Boolean_" data-uid="DotNext.Threading.AsyncBridge.WaitAsync(CancellationToken,System.Boolean)">WaitAsync(CancellationToken, Boolean)</h4>
   <div class="markdown level1 summary"><p>Obtains a task that can be used to await token cancellation.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -140,7 +116,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="xref">CancellationToken</span></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token to be converted into task.</p>
 </td>
@@ -148,7 +124,7 @@
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">completeAsCanceled</span></td>
-        <td><p><span class="xref">true</span> to complete task in <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.taskstatus#System_Threading_Tasks_TaskStatus_Canceled">Canceled</a> state; <span class="xref">false</span> to complete task in <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.taskstatus#System_Threading_Tasks_TaskStatus_RanToCompletion">RanToCompletion</a> state.</p>
+        <td><p><span class="xref">true</span> to complete task in <see cref="!:TaskStatus.Canceled"></see> state; <span class="xref">false</span> to complete task in <see cref="!:TaskStatus.RanToCompletion"></see> state.</p>
 </td>
       </tr>
     </tbody>
@@ -169,31 +145,15 @@
       </tr>
     </tbody>
   </table>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
-        <td><p><code data-dev-comment-type="paramref" class="paramref">token</code> doesn't support cancellation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncBridge_WaitAsync_System_Threading_WaitHandle_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncBridge_WaitAsync_WaitHandle_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBridge.WaitAsync(WaitHandle)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBridge.cs/#L53">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBridge_WaitAsync_" data-uid="DotNext.Threading.AsyncBridge.WaitAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncBridge_WaitAsync_System_Threading_WaitHandle_" data-uid="DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle)">WaitAsync(WaitHandle)</h4>
+  <h4 id="DotNext_Threading_AsyncBridge_WaitAsync_WaitHandle_" data-uid="DotNext.Threading.AsyncBridge.WaitAsync(WaitHandle)">WaitAsync(WaitHandle)</h4>
   <div class="markdown level1 summary"><p>Obtains a task that can be used to await handle completion.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -212,7 +172,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.waithandle">WaitHandle</a></td>
+        <td><span class="xref">WaitHandle</span></td>
         <td><span class="parametername">handle</span></td>
         <td><p>The handle to await.</p>
 </td>
@@ -237,13 +197,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncBridge_WaitAsync_System_Threading_WaitHandle_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle%2CSystem.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncBridge_WaitAsync_WaitHandle_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncBridge.WaitAsync(WaitHandle%2CTimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncBridge.cs/#L38">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncBridge_WaitAsync_" data-uid="DotNext.Threading.AsyncBridge.WaitAsync*"></a>
-  <h4 id="DotNext_Threading_AsyncBridge_WaitAsync_System_Threading_WaitHandle_System_TimeSpan_" data-uid="DotNext.Threading.AsyncBridge.WaitAsync(System.Threading.WaitHandle,System.TimeSpan)">WaitAsync(WaitHandle, TimeSpan)</h4>
+  <h4 id="DotNext_Threading_AsyncBridge_WaitAsync_WaitHandle_TimeSpan_" data-uid="DotNext.Threading.AsyncBridge.WaitAsync(WaitHandle,TimeSpan)">WaitAsync(WaitHandle, TimeSpan)</h4>
   <div class="markdown level1 summary"><p>Obtains a task that can be used to await handle completion.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -262,13 +222,13 @@
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.waithandle">WaitHandle</a></td>
+        <td><span class="xref">WaitHandle</span></td>
         <td><span class="parametername">handle</span></td>
         <td><p>The handle to await.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
+        <td><span class="xref">TimeSpan</span></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The timeout used to await completion.</p>
 </td>

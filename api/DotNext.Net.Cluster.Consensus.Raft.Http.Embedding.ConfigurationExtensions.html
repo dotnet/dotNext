@@ -82,36 +82,11 @@ the web application into cluster member.</p>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">ConfigurationExtensions</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.html">DotNext.Net.Cluster.Consensus.Raft.Http.Embedding</a></h6>
   <h6><strong>Assembly</strong>: DotNext.AspNetCore.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public static class ConfigurationExtensions</code></pre>
+    <pre><code class="lang-csharp hljs">public static class ConfigurationExtensions : object</code></pre>
   </div>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>Raft-related endpoint handler is embedded into
@@ -121,13 +96,13 @@ request processing pipeline of existing application.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_BecomeClusterMember_Microsoft_Extensions_DependencyInjection_IServiceCollection_Microsoft_Extensions_Configuration_IConfiguration_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.BecomeClusterMember(Microsoft.Extensions.DependencyInjection.IServiceCollection%2CMicrosoft.Extensions.Configuration.IConfiguration)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_BecomeClusterMember_IServiceCollection_IConfiguration_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.BecomeClusterMember(IServiceCollection%2CIConfiguration)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/Embedding/ConfigurationExtensions.cs/#L26">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_BecomeClusterMember_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.BecomeClusterMember*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_BecomeClusterMember_Microsoft_Extensions_DependencyInjection_IServiceCollection_Microsoft_Extensions_Configuration_IConfiguration_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.BecomeClusterMember(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)">BecomeClusterMember(IServiceCollection, IConfiguration)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_BecomeClusterMember_IServiceCollection_IConfiguration_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.BecomeClusterMember(IServiceCollection,IConfiguration)">BecomeClusterMember(IServiceCollection, IConfiguration)</h4>
   <div class="markdown level1 summary"><p>Allows to inject <see cref="!:ICluster"></see>, <see cref="!:IRaftCluster"></see>, <see cref="!:IExpandableCluster"></see>
 to application services and establishes network communication with other cluster member.</p>
 </div>
@@ -147,13 +122,13 @@ to application services and establishes network communication with other cluster
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection">IServiceCollection</a></td>
+        <td><span class="xref">IServiceCollection</span></td>
         <td><span class="parametername">services</span></td>
         <td><p>The registry of services.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.configuration.iconfiguration">IConfiguration</a></td>
+        <td><span class="xref">IConfiguration</span></td>
         <td><span class="parametername">memberConfig</span></td>
         <td><p>The configuration of cluster member.</p>
 </td>
@@ -170,7 +145,7 @@ to application services and establishes network communication with other cluster
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection">IServiceCollection</a></td>
+        <td><span class="xref">IServiceCollection</span></td>
         <td><p>The collection of injectable services.</p>
 </td>
       </tr>
@@ -178,13 +153,13 @@ to application services and establishes network communication with other cluster
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_UseConsensusProtocolHandler_Microsoft_AspNetCore_Builder_IApplicationBuilder_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.UseConsensusProtocolHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_UseConsensusProtocolHandler_IApplicationBuilder_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.UseConsensusProtocolHandler(IApplicationBuilder)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/Embedding/ConfigurationExtensions.cs/#L38">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_UseConsensusProtocolHandler_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.UseConsensusProtocolHandler*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_UseConsensusProtocolHandler_Microsoft_AspNetCore_Builder_IApplicationBuilder_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.UseConsensusProtocolHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)">UseConsensusProtocolHandler(IApplicationBuilder)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_UseConsensusProtocolHandler_IApplicationBuilder_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.UseConsensusProtocolHandler(IApplicationBuilder)">UseConsensusProtocolHandler(IApplicationBuilder)</h4>
   <div class="markdown level1 summary"><p>Setup Raft protocol handler as middleware for the specified application.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -203,7 +178,7 @@ to application services and establishes network communication with other cluster
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.builder.iapplicationbuilder">IApplicationBuilder</a></td>
+        <td><span class="xref">IApplicationBuilder</span></td>
         <td><span class="parametername">builder</span></td>
         <td><p>The application builder.</p>
 </td>
@@ -220,7 +195,7 @@ to application services and establishes network communication with other cluster
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.builder.iapplicationbuilder">IApplicationBuilder</a></td>
+        <td><span class="xref">IApplicationBuilder</span></td>
         <td><p>The configured application builder.</p>
 </td>
       </tr>

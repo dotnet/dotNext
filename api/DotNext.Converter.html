@@ -73,7 +73,7 @@
   
   <h1 id="DotNext_Converter" data-uid="DotNext.Converter" class="text-break">Class Converter
   </h1>
-  <div class="markdown level0 summary"><p>Provides extension methods for delegate <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter&lt;TInput,TOutput&gt;</a> and
+  <div class="markdown level0 summary"><p>Provides extension methods for delegate <see cref="!:Converter&lt;TInput, TOutput>"></see> and
 predefined converters.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
@@ -82,48 +82,24 @@ predefined converters.</p>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">Converter</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Converter_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Converter</code></pre>
+    <pre><code class="lang-csharp hljs">public static class Converter : object</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Converter_AsFunc__2_System_Converter___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Converter.AsFunc%60%602(System.Converter%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Converter_AsFunc__2_DotNext_Converter___0___1__.md&amp;value=---%0Auid%3A%20DotNext.Converter.AsFunc%60%602(DotNext.Converter%7B%60%600%2C%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Converter.cs/#L52">View Source</a>
   </span>
   <a id="DotNext_Converter_AsFunc_" data-uid="DotNext.Converter.AsFunc*"></a>
-  <h4 id="DotNext_Converter_AsFunc__2_System_Converter___0___1__" data-uid="DotNext.Converter.AsFunc``2(System.Converter{``0,``1})">AsFunc&lt;I, O&gt;(Converter&lt;I, O&gt;)</h4>
-  <div class="markdown level1 summary"><p>Converts <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter&lt;TInput,TOutput&gt;</a> into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func&lt;T,TResult&gt;</a>.</p>
+  <h4 id="DotNext_Converter_AsFunc__2_DotNext_Converter___0___1__" data-uid="DotNext.Converter.AsFunc``2(DotNext.Converter{``0,``1})">AsFunc&lt;I, O&gt;(Converter&lt;I, O&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts <see cref="!:Converter&lt;I, O>"></see> into <see cref="!:Func&lt;I, O>"></see>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -141,7 +117,7 @@ predefined converters.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;I, O&gt;</td>
+        <td><span class="xref">DotNext.Converter</span>&lt;I, O&gt;</td>
         <td><span class="parametername">converter</span></td>
         <td><p>The converted delegate.</p>
 </td>
@@ -158,8 +134,8 @@ predefined converters.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;I, O&gt;</td>
-        <td><p>A delegate of type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func&lt;T,TResult&gt;</a> referencing the same method as original delegate.</p>
+        <td><span class="xref">DotNext.Func</span>&lt;I, O&gt;</td>
+        <td><p>A delegate of type <see cref="!:Func&lt;I, O>"></see> referencing the same method as original delegate.</p>
 </td>
       </tr>
     </tbody>
@@ -187,14 +163,14 @@ predefined converters.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Converter_AsPredicate__1_System_Converter___0_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Converter.AsPredicate%60%601(System.Converter%7B%60%600%2CSystem.Boolean%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Converter_AsPredicate__1_DotNext_Converter___0_System_Boolean__.md&amp;value=---%0Auid%3A%20DotNext.Converter.AsPredicate%60%601(DotNext.Converter%7B%60%600%2CSystem.Boolean%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Converter.cs/#L61">View Source</a>
   </span>
   <a id="DotNext_Converter_AsPredicate_" data-uid="DotNext.Converter.AsPredicate*"></a>
-  <h4 id="DotNext_Converter_AsPredicate__1_System_Converter___0_System_Boolean__" data-uid="DotNext.Converter.AsPredicate``1(System.Converter{``0,System.Boolean})">AsPredicate&lt;T&gt;(Converter&lt;T, Boolean&gt;)</h4>
-  <div class="markdown level1 summary"><p>Converts <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter&lt;TInput,TOutput&gt;</a> into predicate.</p>
+  <h4 id="DotNext_Converter_AsPredicate__1_DotNext_Converter___0_System_Boolean__" data-uid="DotNext.Converter.AsPredicate``1(DotNext.Converter{``0,System.Boolean})">AsPredicate&lt;T&gt;(Converter&lt;T, Boolean&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts <see cref="!:Converter&lt;T, Boolean>"></see> into predicate.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -212,7 +188,7 @@ predefined converters.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="xref">DotNext.Converter</span>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
         <td><span class="parametername">converter</span></td>
         <td><p>A delegate to convert.</p>
 </td>
@@ -229,8 +205,8 @@ predefined converters.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.predicate-1">Predicate</a>&lt;T&gt;</td>
-        <td><p>A delegate of type <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.predicate-1">Predicate&lt;T&gt;</a> referencing the same method as original delegate.</p>
+        <td><span class="xref">DotNext.Predicate</span>&lt;T&gt;</td>
+        <td><p>A delegate of type <see cref="!:Predicate&lt;T>"></see> referencing the same method as original delegate.</p>
 </td>
       </tr>
     </tbody>
@@ -253,14 +229,14 @@ predefined converters.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Converter_AsValueFunc__2_System_Converter___0___1__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Converter.AsValueFunc%60%602(System.Converter%7B%60%600%2C%60%601%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Converter_AsValueFunc__2_DotNext_Converter___0___1__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Converter.AsValueFunc%60%602(DotNext.Converter%7B%60%600%2C%60%601%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Converter.cs/#L95">View Source</a>
   </span>
   <a id="DotNext_Converter_AsValueFunc_" data-uid="DotNext.Converter.AsValueFunc*"></a>
-  <h4 id="DotNext_Converter_AsValueFunc__2_System_Converter___0___1__System_Boolean_" data-uid="DotNext.Converter.AsValueFunc``2(System.Converter{``0,``1},System.Boolean)">AsValueFunc&lt;I, O&gt;(Converter&lt;I, O&gt;, Boolean)</h4>
-  <div class="markdown level1 summary"><p>Converts <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter&lt;TInput,TOutput&gt;</a> into <a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc&lt;T, R&gt;</a>.</p>
+  <h4 id="DotNext_Converter_AsValueFunc__2_DotNext_Converter___0___1__System_Boolean_" data-uid="DotNext.Converter.AsValueFunc``2(DotNext.Converter{``0,``1},System.Boolean)">AsValueFunc&lt;I, O&gt;(Converter&lt;I, O&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Converts <see cref="!:Converter&lt;TInput, TOutput>"></see> into <a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc&lt;T, R&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -278,7 +254,7 @@ predefined converters.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;I, O&gt;</td>
+        <td><span class="xref">DotNext.Converter</span>&lt;I, O&gt;</td>
         <td><span class="parametername">converter</span></td>
         <td><p>The type the input object is to be converted to.</p>
 </td>
@@ -354,7 +330,7 @@ without any modifications.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;T, T&gt;</td>
+        <td><span class="xref">DotNext.Converter</span>&lt;T, T&gt;</td>
         <td><p>The identity function.</p>
 </td>
       </tr>
@@ -395,7 +371,6 @@ without any modifications.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Converter&lt;I, O&gt; Identity&lt;I, O&gt;()
-
     where I : O</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -408,7 +383,7 @@ without any modifications.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;I, O&gt;</td>
+        <td><span class="xref">DotNext.Converter</span>&lt;I, O&gt;</td>
         <td><p>The identity function.</p>
 </td>
       </tr>
@@ -440,13 +415,13 @@ without any modifications.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Converter_TryInvoke__2_System_Converter___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Converter.TryInvoke%60%602(System.Converter%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Converter_TryInvoke__2_DotNext_Converter___0___1____0_.md&amp;value=---%0Auid%3A%20DotNext.Converter.TryInvoke%60%602(DotNext.Converter%7B%60%600%2C%60%601%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Converter.cs/#L72">View Source</a>
   </span>
   <a id="DotNext_Converter_TryInvoke_" data-uid="DotNext.Converter.TryInvoke*"></a>
-  <h4 id="DotNext_Converter_TryInvoke__2_System_Converter___0___1____0_" data-uid="DotNext.Converter.TryInvoke``2(System.Converter{``0,``1},``0)">TryInvoke&lt;I, O&gt;(Converter&lt;I, O&gt;, I)</h4>
+  <h4 id="DotNext_Converter_TryInvoke__2_DotNext_Converter___0___1____0_" data-uid="DotNext.Converter.TryInvoke``2(DotNext.Converter{``0,``1},``0)">TryInvoke&lt;I, O&gt;(Converter&lt;I, O&gt;, I)</h4>
   <div class="markdown level1 summary"><p>Converts the input value without throwing exception.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -465,7 +440,7 @@ without any modifications.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.converter-2">Converter</a>&lt;I, O&gt;</td>
+        <td><span class="xref">DotNext.Converter</span>&lt;I, O&gt;</td>
         <td><span class="parametername">converter</span></td>
         <td><p>The converter to invoke.</p>
 </td>

@@ -76,27 +76,6 @@
   <div class="markdown level0 summary"><p>Generates hash code and equality check functions for the particular type.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_EqualityComparerBuilder_1_syntax">Syntax</h5>
@@ -121,7 +100,7 @@
   </table>
   <h5 id="DotNext_EqualityComparerBuilder_1_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>Automatically generated hash code and equality check functions can be used
-instead of manually written implementation of overridden <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">GetHashCode()</a> and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Equals(Object)</a> methods.</p>
+instead of manually written implementation of overridden <see cref="!:object.GetHashCode"></see> and <see cref="!:object.Equals(object)"></see> methods.</p>
 </div>
   <h3 id="properties">Properties
   </h3>
@@ -217,7 +196,7 @@ instead of manually written implementation of overridden <a class="xref" href="h
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.collections.generic.iequalitycomparer-1">IEqualityComparer</a>&lt;T&gt;</td>
+        <td><span class="xref">IEqualityComparer</span>&lt;T&gt;</td>
         <td><p>The generated equality comparer.</p>
 </td>
       </tr>
@@ -225,14 +204,14 @@ instead of manually written implementation of overridden <a class="xref" href="h
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_EqualityComparerBuilder_1_Build_System_Func__0__0_System_Boolean___System_Func__0_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.EqualityComparerBuilder%601.Build(System.Func%7B%600%2C%600%2CSystem.Boolean%7D%40%2CSystem.Func%7B%600%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_EqualityComparerBuilder_1_Build_DotNext_Func__0__0_System_Boolean___DotNext_Func__0_System_Int32___.md&amp;value=---%0Auid%3A%20DotNext.EqualityComparerBuilder%601.Build(DotNext.Func%7B%600%2C%600%2CSystem.Boolean%7D%40%2CDotNext.Func%7B%600%2CSystem.Int32%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/EqualityComparerBuilder.cs/#L200">View Source</a>
   </span>
   <a id="DotNext_EqualityComparerBuilder_1_Build_" data-uid="DotNext.EqualityComparerBuilder`1.Build*"></a>
-  <h4 id="DotNext_EqualityComparerBuilder_1_Build_System_Func__0__0_System_Boolean___System_Func__0_System_Int32___" data-uid="DotNext.EqualityComparerBuilder`1.Build(System.Func{`0,`0,System.Boolean}@,System.Func{`0,System.Int32}@)">Build(out Func&lt;T, T, Boolean&gt;, out Func&lt;T, Int32&gt;)</h4>
-  <div class="markdown level1 summary"><p>Generates implementation of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">GetHashCode()</a> and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Equals(Object)</a> methods
+  <h4 id="DotNext_EqualityComparerBuilder_1_Build_DotNext_Func__0__0_System_Boolean___DotNext_Func__0_System_Int32___" data-uid="DotNext.EqualityComparerBuilder`1.Build(DotNext.Func{`0,`0,System.Boolean}@,DotNext.Func{`0,System.Int32}@)">Build(out Func&lt;T, T, Boolean&gt;, out Func&lt;T, Int32&gt;)</h4>
+  <div class="markdown level1 summary"><p>Generates implementation of <see cref="!:object.GetHashCode"></see> and <see cref="!:object.Equals(object)"></see> methods
 for particular type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -251,13 +230,13 @@ for particular type <code data-dev-comment-type="typeparamref" class="typeparamr
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;T, T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T, T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a>&gt;</td>
         <td><span class="parametername">equals</span></td>
         <td><p>The implementation of equality check.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="xref">DotNext.Func</span>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
         <td><span class="parametername">hashCode</span></td>
         <td><p>The implementation of hash code.</p>
 </td>

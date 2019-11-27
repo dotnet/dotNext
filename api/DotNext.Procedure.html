@@ -81,35 +81,11 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">Procedure</span></div>
   </div>
-  <div class="inheritedMembers">
-    <h5>Inherited Members</h5>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
-    </div>
-    <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
-    </div>
-  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Procedure_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Procedure</code></pre>
+    <pre><code class="lang-csharp hljs">public static class Procedure : object</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
@@ -128,7 +104,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static A ArgList&lt;A&gt;(this Procedure&lt;A&gt; procedure)
-
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -196,7 +171,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static A ArgList&lt;T, A&gt;(this Procedure&lt;T, A&gt; procedure)
-
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -270,7 +244,6 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Procedure&lt;A&gt; Capture&lt;T, A&gt;(this Procedure&lt;T, A&gt; procedure, T this)
-
     where A : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -336,13 +309,13 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke_DotNext_Procedure_System_ValueTuple__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke(DotNext.Procedure%7BSystem.ValueTuple%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke_DotNext_Procedure_ValueTuple__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke(DotNext.Procedure%7BValueTuple%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L88">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke_DotNext_Procedure_System_ValueTuple__" data-uid="DotNext.Procedure.Invoke(DotNext.Procedure{System.ValueTuple})">Invoke(Procedure&lt;ValueTuple&gt;)</h4>
+  <h4 id="DotNext_Procedure_Invoke_DotNext_Procedure_ValueTuple__" data-uid="DotNext.Procedure.Invoke(DotNext.Procedure{ValueTuple})">Invoke(Procedure&lt;ValueTuple&gt;)</h4>
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -361,7 +334,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple">ValueTuple</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;<span class="xref">ValueTuple</span>&gt;</td>
         <td><span class="parametername">procedure</span></td>
         <td><p>The function to be invoked.</p>
 </td>
@@ -370,13 +343,13 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__1_DotNext_Procedure___0_System_ValueTuple____0__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%601(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7D%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__1_DotNext_Procedure___0_ValueTuple____0__.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%601(DotNext.Procedure%7B%60%600%2CValueTuple%7D%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L81">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__1_DotNext_Procedure___0_System_ValueTuple____0__" data-uid="DotNext.Procedure.Invoke``1(DotNext.Procedure{``0,System.ValueTuple},``0@)">Invoke&lt;T&gt;(Procedure&lt;T, ValueTuple&gt;, T)</h4>
+  <h4 id="DotNext_Procedure_Invoke__1_DotNext_Procedure___0_ValueTuple____0__" data-uid="DotNext.Procedure.Invoke``1(DotNext.Procedure{``0,ValueTuple},``0@)">Invoke&lt;T&gt;(Procedure&lt;T, ValueTuple&gt;, T)</h4>
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -395,7 +368,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple">ValueTuple</a>&gt;</td>
+        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, <span class="xref">ValueTuple</span>&gt;</td>
         <td><span class="parametername">procedure</span></td>
         <td><p>The procedure to be invoked.</p>
 </td>
@@ -426,19 +399,19 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__1_DotNext_Procedure_System_ValueTuple___0_____0_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%601(DotNext.Procedure%7BSystem.ValueTuple%7B%60%600%7D%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__1_DotNext_Procedure_ValueTuple___0_____0_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%601(DotNext.Procedure%7BValueTuple%7B%60%600%7D%7D%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L108">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__1_DotNext_Procedure_System_ValueTuple___0_____0_" data-uid="DotNext.Procedure.Invoke``1(DotNext.Procedure{System.ValueTuple{``0}},``0)">Invoke&lt;P&gt;(Procedure&lt;(P)&gt;, P)</h4>
+  <h4 id="DotNext_Procedure_Invoke__1_DotNext_Procedure_ValueTuple___0_____0_" data-uid="DotNext.Procedure.Invoke``1(DotNext.Procedure{ValueTuple{``0}},``0)">Invoke&lt;P&gt;(Procedure&lt;ValueTuple&lt;P&gt;&gt;, P)</h4>
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;P&gt;(this Procedure&lt;(P)&gt; procedure, P arg)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;P&gt;(this Procedure&lt;ValueTuple&lt;P&gt;&gt; procedure, P arg)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -451,7 +424,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-1">ValueTuple</a>&lt;P&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Procedure-1.html">Procedure</a>&lt;<span class="xref">ValueTuple</span>&lt;P&gt;&gt;</td>
         <td><span class="parametername">procedure</span></td>
         <td><p>The procedure to be invoked.</p>
 </td>
@@ -958,19 +931,19 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__2_DotNext_Procedure___0_System_ValueTuple___1_____0____1_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%602(DotNext.Procedure%7B%60%600%2CSystem.ValueTuple%7B%60%601%7D%7D%2C%60%600%40%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Procedure_Invoke__2_DotNext_Procedure___0_ValueTuple___1_____0____1_.md&amp;value=---%0Auid%3A%20DotNext.Procedure.Invoke%60%602(DotNext.Procedure%7B%60%600%2CValueTuple%7B%60%601%7D%7D%2C%60%600%40%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
     <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Procedure.cs/#L99">View Source</a>
   </span>
   <a id="DotNext_Procedure_Invoke_" data-uid="DotNext.Procedure.Invoke*"></a>
-  <h4 id="DotNext_Procedure_Invoke__2_DotNext_Procedure___0_System_ValueTuple___1_____0____1_" data-uid="DotNext.Procedure.Invoke``2(DotNext.Procedure{``0,System.ValueTuple{``1}},``0@,``1)">Invoke&lt;T, P&gt;(Procedure&lt;T, (P)&gt;, T, P)</h4>
+  <h4 id="DotNext_Procedure_Invoke__2_DotNext_Procedure___0_ValueTuple___1_____0____1_" data-uid="DotNext.Procedure.Invoke``2(DotNext.Procedure{``0,ValueTuple{``1}},``0@,``1)">Invoke&lt;T, P&gt;(Procedure&lt;T, ValueTuple&lt;P&gt;&gt;, T, P)</h4>
   <div class="markdown level1 summary"><p>Invokes procedure.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, P&gt;(this Procedure&lt;T, (P)&gt; procedure, in T instance, P arg)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void Invoke&lt;T, P&gt;(this Procedure&lt;T, ValueTuple&lt;P&gt;&gt; procedure, in T instance, P arg)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -983,7 +956,7 @@ capturing of the first argument of <a class="xref" href="DotNext.Procedure-2.htm
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-1">ValueTuple</a>&lt;P&gt;&gt;</td>
+        <td><a class="xref" href="DotNext.Procedure-2.html">Procedure</a>&lt;T, <span class="xref">ValueTuple</span>&lt;P&gt;&gt;</td>
         <td><span class="parametername">procedure</span></td>
         <td><p>The procedure to be invoked.</p>
 </td>
