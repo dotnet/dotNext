@@ -39,16 +39,10 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 11-25-2019
+Release Date: 11-27-2019
 
-<a href="https://www.nuget.org/packages/dotnext/1.2.7">DotNext 1.2.7</a>
-* `BitwiseComparer` now available as singleton instance
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.7">DotNext.Net.Cluster 1.2.7</a>
-* Improved performance of copying log entry content when `PersistentState` is used as persistent audit trail
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.7">DotNext.AspNetCore.Cluster 1.2.7</a>
-* Improved performance of message exchange between cluster members
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.8">DotNext.AspNetCore.Cluster 1.2.8</a>
+* Improved performance of one-way no-ack messages that can be passed using `ISubscriber.SendSignalAsync` method
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
