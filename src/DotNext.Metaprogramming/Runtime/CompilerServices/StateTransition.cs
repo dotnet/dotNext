@@ -39,7 +39,7 @@ namespace DotNext.Runtime.CompilerServices
 
         bool IEquatable<StateTransition>.Equals(StateTransition other) => Equals(in other);
 
-        public override bool Equals(object other) => other is StateTransition transition && Equals(transition);
+        public override bool Equals(object? other) => other is StateTransition transition && Equals(transition);
 
         public override int GetHashCode() => HashCode.Combine(Successful, Failure);
 

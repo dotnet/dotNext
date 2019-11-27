@@ -72,7 +72,7 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="other">The lock stamp to compare.</param>
             /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public override bool Equals(object other) => other is LockStamp stamp && Equals(stamp);
+            public override bool Equals(object? other) => other is LockStamp stamp && Equals(stamp);
 
             /// <summary>
             /// Computes hash code for this stamp.

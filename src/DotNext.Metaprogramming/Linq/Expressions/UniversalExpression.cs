@@ -787,7 +787,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="other">Other expression to compare.</param>
         /// <returns><see langword="true"/>, if both expressions are equal; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other switch
+        public override bool Equals(object? other) => other switch
         {
             Expression expr => Equals(expression, expr),
             UniversalExpression view => Equals(view),

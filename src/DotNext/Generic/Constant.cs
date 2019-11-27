@@ -52,6 +52,6 @@ namespace DotNext.Generic
         /// </summary>
         /// <param name="const">The constant value holder.</param>
         [return: MaybeNull]
-        public static implicit operator T(Constant<T> @const) => @const.Value;
+        public static implicit operator T(Constant<T>? @const) => @const is null ? default : @const.Value;
     }
 }

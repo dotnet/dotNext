@@ -338,7 +338,7 @@ namespace DotNext
 		/// <param name="first">The first array to compare.</param>
 		/// <param name="second">The second array to compare.</param>
 		/// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
-        public static bool SequenceEqual(this object[]? first, object[]? second)
+        public static bool SequenceEqual(this object?[]? first, object?[]? second)
         {
             if (ReferenceEquals(first, second))
                 return true;

@@ -43,7 +43,7 @@ namespace DotNext.Reflection
             }
 
             public bool Equals(Kind other) => operatorType == other.operatorType && overloaded == other.overloaded;
-            public override bool Equals(object other)
+            public override bool Equals(object? other)
                 => other is Kind key && Equals(key);
             public override int GetHashCode() => overloaded ? (int)operatorType + 100 : (int)operatorType;
 

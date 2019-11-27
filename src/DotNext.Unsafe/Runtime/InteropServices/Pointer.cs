@@ -866,7 +866,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="other">The object of type <see cref="Pointer{T}"/> to be compared.</param>
         /// <returns><see langword="true"/>, if this pointer represents the same memory location as other pointer; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is Pointer<T> ptr && Equals(ptr);
+        public override bool Equals(object? other) => other is Pointer<T> ptr && Equals(ptr);
 
         /// <summary>
         /// Returns hexadecimal address represented by this pointer.

@@ -107,7 +107,7 @@ namespace DotNext.Reflection
         /// </remarks>
         /// <param name="other">Other object to compare.</param>
         /// <returns>Always <see langword="false"/>.</returns>
-        public override bool Equals(object other) => false;
+        public override bool Equals(object? other) => false;
 
         bool IEquatable<Ref<T>>.Equals(Ref<T> other) => false;
     }
