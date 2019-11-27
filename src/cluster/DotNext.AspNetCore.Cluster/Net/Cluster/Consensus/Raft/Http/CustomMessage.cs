@@ -3,6 +3,7 @@ using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -13,8 +14,8 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using System.IO.Pipelines;
     using Messaging;
+    using IDataTransferObject = IO.IDataTransferObject;
     using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage, Generic.DefaultConst<Messaging.IMessage>>;
 
     internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage>
@@ -57,13 +58,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             public ContentType Type { get; }
 
-            bool IO.IDataTransferObject.IsReusable => false;
+            bool IDataTransferObject.IsReusable => false;
 
-            public long? Length => length ?? (requestStream.CanSeek ? requestStream.Length : new long?());
+            long? IDataTransferObject.Length
+            {
+                get
+                {
+                    if (length.HasValue)
+                        return length;
+                    if (requestStream.CanSeek)
+                        return requestStream.Length;
+                    return null;
+                }
+            }
 
-            public ValueTask CopyToAsync(Stream output, CancellationToken token = default) => new ValueTask(requestStream.CopyToAsync(output, token));
+            ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token = default) => new ValueTask(requestStream.CopyToAsync(output, token));
 
-            public ValueTask CopyToAsync(PipeWriter output, CancellationToken token = default) => new ValueTask(requestStream.CopyToAsync(output, token));
+            ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token = default) => new ValueTask(requestStream.CopyToAsync(output, token));
         }
 
         internal new const string MessageType = "CustomMessage";
