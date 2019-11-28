@@ -116,13 +116,13 @@ namespace DotNext
         {
             var e = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.Machine);
             object value = EnvironmentVariableTarget.Machine;
-            Equal(e, value);
+            True(e.Equals(value));
             value = EnvironmentVariableTarget.Process;
-            NotEqual(e, value);
+            False(e.Equals(value));
             value = e;
-            Equal(e, value);
+            True(e.Equals(value));
             value = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.Process);
-            NotEqual(e, value);
+            False(e.Equals(value));
         }
     }
 }
