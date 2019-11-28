@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using Xunit;
 
 namespace DotNext
@@ -63,6 +64,56 @@ namespace DotNext
             foreach (var member in Enum<EnvironmentVariableTarget>.Members)
                 True(Enum<EnvironmentVariableTarget>.IsDefined(member.Value));
             False(Enum<EnvironmentVariableTarget>.IsDefined((EnvironmentVariableTarget)int.MaxValue));
+        }
+
+        [Fact]
+        public static void HasFlag()
+        {
+            var flags = BindingFlags.CreateInstance | BindingFlags.Public;
+            True(Enum<BindingFlags>.GetMember(BindingFlags.CreateInstance).IsFlag(flags));
+            False(Enum<BindingFlags>.GetMember(BindingFlags.NonPublic).IsFlag(flags));
+        }
+
+        [Fact]
+        public static void Serialization()
+        {
+            var e = Enum<BindingFlags>.GetMember(BindingFlags.Public);
+            Equal(Enum<BindingFlags>.GetMember(BindingFlags.Public), SerializationTestHelper.SerializeDeserialize(e));
+        }
+
+        [Fact]
+        public static void TryGet()
+        {
+            True(Enum<BindingFlags>.TryGetMember(nameof(BindingFlags.CreateInstance), out var member));
+            Equal(BindingFlags.CreateInstance, member.Value);
+            Equal(nameof(BindingFlags.CreateInstance), member.Name);
+            False(Enum<BindingFlags>.TryGetMember("!!!!", out _));
+            True(Enum<BindingFlags>.TryGetMember(BindingFlags.InvokeMethod, out member));
+            Equal(BindingFlags.InvokeMethod, member.Value);
+            Equal(nameof(BindingFlags.InvokeMethod), member.Name);
+            False(Enum<BindingFlags>.TryGetMember(BindingFlags.Public | BindingFlags.NonPublic, out _));
+        }
+
+        [Fact]
+        public static void Comparison()
+        {
+            var e = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.Process);
+            Equal(0, e.CompareTo(EnvironmentVariableTarget.Process));
+            True(e.CompareTo(EnvironmentVariableTarget.Machine) < 0);
+        }
+
+        [Fact]
+        public static void Equality()
+        {
+            var e = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.Machine);
+            object value = EnvironmentVariableTarget.Machine;
+            Equal(e, value);
+            value = EnvironmentVariableTarget.Process;
+            NotEqual(e, value);
+            value = e;
+            Equal(e, value);
+            value = Enum<EnvironmentVariableTarget>.GetMember(EnvironmentVariableTarget.Process);
+            NotEqual(e, value);
         }
     }
 }
