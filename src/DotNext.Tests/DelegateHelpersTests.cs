@@ -102,5 +102,16 @@ namespace DotNext
             nullChecker = Func.IsNotNull<object>().AsPredicate();
             False(nullChecker(null));
         }
+
+        [Fact]
+        public static void Conversion()
+        {
+            var conv = new Converter<string, int>(int.Parse);
+            Equal(42, conv.AsFunc().Invoke("42"));
+            Converter<int, bool> odd = i => i % 2 != 0;
+            True(odd.AsPredicate().Invoke(3));
+            Equal(42, conv.TryInvoke("42"));
+            NotNull(conv.TryInvoke("abc").Error);
+        }
     }
 }
