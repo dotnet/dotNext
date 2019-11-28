@@ -56,5 +56,13 @@ namespace DotNext
             False(pred1.Xor(pred2).Invoke(1));
             True(pred1.Xor(pred2).Invoke(19));
         }
+
+        [Fact]
+        public static void TryInvoke()
+        {
+            Predicate<int> pred = i => i > 10 ? true : throw new ArithmeticException();
+            Equal(true, pred.TryInvoke(11));
+            IsType<ArithmeticException>(pred.TryInvoke(9).Error);
+        }
     }
 }
