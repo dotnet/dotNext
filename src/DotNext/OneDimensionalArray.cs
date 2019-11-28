@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
@@ -329,6 +330,23 @@ namespace DotNext
             where T : unmanaged
             => array.LongLength > 0L ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0L;
 
+        private sealed class ArrayEqualityComparer
+        {
+            private readonly object?[] first, second;
+
+            internal ArrayEqualityComparer(object?[] first, object?[] second)
+            {
+                this.first = first;
+                this.second = second;
+            }
+
+            internal void Iteration(long index, ParallelLoopState state)
+            {
+                if (!(state.ShouldExitCurrentIteration || Equals(first[index], second[index])))
+                    state.Break();
+            }
+        }
+
         /// <summary>
 		/// Determines whether two arrays contain the same set of elements.
 		/// </summary>
@@ -337,19 +355,28 @@ namespace DotNext
 		/// </remarks>
 		/// <param name="first">The first array to compare.</param>
 		/// <param name="second">The second array to compare.</param>
+        /// <param name="parallel"><see langword="true"/> to perform parallel iteration over array elements; <see langword="false"/> to perform sequential iteration.</param>
 		/// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
-        public static bool SequenceEqual(this object?[]? first, object?[]? second)
+        public static bool SequenceEqual(this object?[]? first, object?[]? second, bool parallel = false)
         {
+            static bool EqualsSequential(object?[] first, object?[] second)
+            {
+                for (var i = 0L; i < first.LongLength; i++)
+                    if (!Equals(first[i], second[i]))
+                        return false;
+                return true;
+            }
+
+            static bool EqualsParallel(object?[] first, object?[] second)
+                => Parallel.For(0L, first.LongLength, new ArrayEqualityComparer(first, second).Iteration).IsCompleted;
+
             if (ReferenceEquals(first, second))
                 return true;
             if (first is null)
                 return second is null;
             if (second is null || first.LongLength != second.LongLength)
                 return false;
-            for (var i = 0L; i < first.LongLength; i++)
-                if (!Equals(first[i], second[i]))
-                    return false;
-            return true;
+            return parallel ? EqualsParallel(first, second) : EqualsSequential(first, second);
         }
 
         /// <summary>

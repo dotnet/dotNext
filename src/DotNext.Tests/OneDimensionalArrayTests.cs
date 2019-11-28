@@ -25,7 +25,11 @@ namespace DotNext
             var array1 = new[] { new Equatable("a"), new Equatable("b") };
             var array2 = new[] { new Equatable("a"), new Equatable("b") };
             True(array1.SequenceEqual(array2));
+            True(array1.SequenceEqual(array2, true));
             Equal(array1.SequenceHashCode(), array2.SequenceHashCode());
+            array2[0] = new Equatable("c");
+            False(array1.SequenceEqual(array2));
+            False(array1.SequenceEqual(array2, true));
         }
 
         [Fact]
