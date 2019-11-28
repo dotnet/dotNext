@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
@@ -90,6 +91,25 @@ namespace DotNext
             False(SerializationTestHelper.SerializeDeserialize(opt).IsPresent);
             opt = "Hello";
             Equal("Hello", SerializationTestHelper.SerializeDeserialize(opt).Value);
+        }
+
+        [Fact]
+        public static void OrDefault()
+        {
+            var opt = new Optional<int>(10);
+            Equal(10, opt.OrDefault());
+            True(opt.Equals(10));
+            True(opt.Equals((object)10));
+            True(opt.Equals(10, EqualityComparer<int>.Default));
+            opt = default;
+            Equal(0, opt.OrDefault());
+            False(opt.Equals(0));
+            False(opt.Equals((object)0));
+            False(opt.Equals(0, EqualityComparer<int>.Default));
+
+            Equal(10, opt.OrInvoke(() => 10));
+            opt = 20;
+            Equal(20, opt.OrInvoke(() => 10));
         }
     }
 }
