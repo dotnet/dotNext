@@ -93,5 +93,14 @@ namespace DotNext
             NotNull(result.Error);
             Throws<FormatException>(() => result.Value);
         }
+
+        [Fact]
+        public static void FuncNullNotNull()
+        {
+            var nullChecker = Func.IsNull<object>().AsPredicate();
+            False(nullChecker(new object()));
+            nullChecker = Func.IsNotNull<object>().AsPredicate();
+            False(nullChecker(null));
+        }
     }
 }

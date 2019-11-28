@@ -28,11 +28,20 @@ namespace DotNext
             Equal(1, member.Value.ToInt32());
             Equal(1, member.Value.ToInt16());
             Equal(1, member.Value.ToByte());
+            Equal(1, member.Value.ToSByte());
+            Equal(1U, member.Value.ToUInt16());
+            Equal(1U, member.Value.ToUInt32());
+            Equal(1UL, member.Value.ToUInt64());
         }
 
         [Fact]
         public static void ConversionFromPrimitive()
         {
+            Equal(EnvironmentVariableTarget.User, ((sbyte)1).ToEnum<EnvironmentVariableTarget>());
+            Equal(EnvironmentVariableTarget.User, ((short)1).ToEnum<EnvironmentVariableTarget>());
+            Equal(EnvironmentVariableTarget.User, 1U.ToEnum<EnvironmentVariableTarget>());
+            Equal(EnvironmentVariableTarget.User, 1UL.ToEnum<EnvironmentVariableTarget>());
+            Equal(EnvironmentVariableTarget.User, ((ushort)1).ToEnum<EnvironmentVariableTarget>());
             Equal(EnvironmentVariableTarget.User, 1.ToEnum<EnvironmentVariableTarget>());
             Equal(EnvironmentVariableTarget.User, 1L.ToEnum<EnvironmentVariableTarget>());
             Equal(EnvironmentVariableTarget.Machine, ((byte)2).ToEnum<EnvironmentVariableTarget>());
