@@ -83,7 +83,12 @@ namespace DotNext.Threading
                 var result = (AsyncDelegateFuture)method.Invoke(null, args);
                 await result;
                 await result.AsTask();
+                //check cancellation
+                args[args.LongLength - 1L] = new CancellationToken(true);
+                result = (AsyncDelegateFuture)method.Invoke(null, args);
+                await ThrowsAsync<TaskCanceledException>(result.AsTask);
                 //check failure
+                args[args.LongLength - 1L] = new CancellationToken(false);
                 args[0] = Expression.Lambda(actionType, failedValue, parameters).Compile();
                 result = (AsyncDelegateFuture)method.Invoke(null, args);
                 await ThrowsAsync<AggregateException>(result.AsTask);
