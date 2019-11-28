@@ -110,7 +110,7 @@ namespace DotNext
                 var method = GetMethod(argCount).MakeGenericMethod(types);
                 //check success scenario
                 args[0] = Expression.Lambda(funcType, successValue, parameters).Compile();
-                Result<int> result = (Result<int>)method.Invoke(null, args);
+                var result = (Result<int>)method.Invoke(null, args);
                 Equal(42, result);
                 //check failure
                 args[0] = Expression.Lambda(funcType, failedValue, parameters).Compile();
