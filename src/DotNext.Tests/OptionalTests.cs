@@ -12,15 +12,15 @@ namespace DotNext
         [Fact]
         public static void NullableTest()
         {
-            False(new Optional<int?>(null).IsPresent);
-            True(new Optional<long?>(10L).IsPresent);
+            False(new Optional<int?>(null).HasValue);
+            True(new Optional<long?>(10L).HasValue);
         }
 
         [Fact]
         public static void OptionalTypeTest()
         {
             var intOptional = new int?(10).ToOptional();
-            True(intOptional.IsPresent);
+            True(intOptional.HasValue);
             Equal(10, (int)intOptional);
             Equal(10, intOptional.Or(20));
             Equal(10, intOptional.Value);
@@ -28,7 +28,7 @@ namespace DotNext
             Equal(typeof(int), Optional.GetUnderlyingType(intOptional.GetType()));
 
             intOptional = default(int?).ToOptional();
-            False(intOptional.IsPresent);
+            False(intOptional.HasValue);
             Equal(20, intOptional.Or(20));
             True(Nullable.Equals(null, intOptional.OrNull()));
             Equal(30, intOptional.Coalesce(new int?(30).ToOptional()).Value);
@@ -36,7 +36,7 @@ namespace DotNext
             Throws<InvalidOperationException>(() => intOptional.Value);
 
             Optional<string> strOptional = null;
-            False(strOptional.IsPresent);
+            False(strOptional.HasValue);
             Equal("Hello, world", strOptional.Or("Hello, world"));
             Throws<InvalidOperationException>(() => strOptional.Value);
             Equal(typeof(string), Optional.GetUnderlyingType(strOptional.GetType()));
@@ -45,31 +45,31 @@ namespace DotNext
         [Fact]
         public static void StructTest()
         {
-            False(new Optional<ValueTuple>(default).IsPresent);
-            True(new Optional<long>(default).IsPresent);
-            True(new Optional<Base64FormattingOptions>(Base64FormattingOptions.InsertLineBreaks).IsPresent);
+            False(new Optional<ValueTuple>(default).HasValue);
+            True(new Optional<long>(default).HasValue);
+            True(new Optional<Base64FormattingOptions>(Base64FormattingOptions.InsertLineBreaks).HasValue);
         }
 
         [Fact]
         public static void ClassTest()
         {
-            True(new Optional<Optional<string>>("").IsPresent);
-            False(new Optional<Optional<string>>(null).IsPresent);
-            False(new Optional<string>(default).IsPresent);
-            True(new Optional<string>("").IsPresent);
-            False(new Optional<Delegate>(default).IsPresent);
-            True(new Optional<EventHandler>((sender, args) => { }).IsPresent);
+            True(new Optional<Optional<string>>("").HasValue);
+            False(new Optional<Optional<string>>(null).HasValue);
+            False(new Optional<string>(default).HasValue);
+            True(new Optional<string>("").HasValue);
+            False(new Optional<Delegate>(default).HasValue);
+            True(new Optional<EventHandler>((sender, args) => { }).HasValue);
         }
 
         [Fact]
         public static void OrElse()
         {
             var result = new Optional<int>(10) || Optional<int>.Empty;
-            True(result.IsPresent);
+            True(result.HasValue);
             Equal(10, result.Value);
 
             result = Optional<int>.Empty || new Optional<int>(20);
-            True(result.IsPresent);
+            True(result.HasValue);
             Equal(20, result.Value);
         }
 
@@ -93,7 +93,7 @@ namespace DotNext
         public static void Serialization()
         {
             Optional<string> opt = default;
-            False(SerializationTestHelper.SerializeDeserialize(opt).IsPresent);
+            False(SerializationTestHelper.SerializeDeserialize(opt).HasValue);
             opt = "Hello";
             Equal("Hello", SerializationTestHelper.SerializeDeserialize(opt).Value);
         }

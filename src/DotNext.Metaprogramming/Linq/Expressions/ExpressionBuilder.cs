@@ -261,7 +261,7 @@ namespace DotNext.Linq.Expressions
             //handle optional type
             underlyingType = Optional.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
-                return operand.Property(nameof(Optional<int>.IsPresent)).Not();
+                return operand.Property(nameof(Optional<int>.HasValue)).Not();
             //handle reference type or value type
             return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression)Const<bool>(false) : Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
         }
@@ -283,7 +283,7 @@ namespace DotNext.Linq.Expressions
             //handle optional type
             underlyingType = Optional.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
-                return operand.Property(nameof(Optional<int>.IsPresent));
+                return operand.Property(nameof(Optional<int>.HasValue));
             //handle reference type or value type
             return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression)Const<bool>(true) : Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type));
         }

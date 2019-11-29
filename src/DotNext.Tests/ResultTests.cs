@@ -70,7 +70,7 @@ namespace DotNext
             result = new Result<int>(new Exception());
             Equal(20, result.OrInvoke(() => 20));
             opt = result;
-            False(opt.IsPresent);
+            False(opt.HasValue);
         }
     }
 }
