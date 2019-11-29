@@ -122,9 +122,11 @@ namespace DotNext
         {
             var opt = new Optional<int>(10);
             Equal(10, await Task.FromResult(opt).OrDefault());
+            Equal(10, await Task.FromResult(opt).OrNull());
             opt = default;
             Equal(0, await Task.FromResult(opt).OrDefault());
             Equal(10, await Task.FromResult(opt).OrInvoke(() => 10));
+            Null(await Task.FromResult(opt).OrNull());
             opt = 20;
             Equal(20, await Task.FromResult(opt).OrInvoke(() => 10));
             Equal(20, await Task.FromResult(opt).OrThrow<int, ArithmeticException>());
