@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext
@@ -110,6 +111,21 @@ namespace DotNext
             Equal(10, opt.OrInvoke(() => 10));
             opt = 20;
             Equal(20, opt.OrInvoke(() => 10));
+        }
+
+        [Fact]
+        public static async Task TaskInterop()
+        {
+            var opt = new Optional<int>(10);
+            Equal(10, await Task.FromResult(opt).OrDefault());
+            opt = default;
+            Equal(0, await Task.FromResult(opt).OrDefault());
+            Equal(10, await Task.FromResult(opt).OrInvoke(() => 10));
+            opt = 20;
+            Equal(20, await Task.FromResult(opt).OrInvoke(() => 10));
+            Equal(20, await Task.FromResult(opt).OrThrow<int, ArithmeticException>());
+            opt = default;
+            await ThrowsAsync<ArithmeticException>(Task.FromResult(opt).OrThrow<int, ArithmeticException>);
         }
     }
 }
