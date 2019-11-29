@@ -79,10 +79,14 @@ namespace DotNext
             Optional<string> opt1 = "1";
             Optional<string> opt2 = "1";
             Equal(opt1, opt2);
+            True(opt1 == opt2);
             opt1 = default;
             NotEqual(opt1, opt2);
+            True(opt1 != opt2);
             opt2 = default;
             Equal(opt1, opt2);
+            True(opt1 == opt2);
+            False(opt1 != opt2);
         }
 
         [Fact]
