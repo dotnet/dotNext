@@ -34,6 +34,14 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        public static void IncompletedFuture()
+        {
+            using var ev = new ManualResetEvent(false);
+            var future = ev.WaitAsync().GetAwaiter();
+            ThrowsAny<InvalidOperationException>(() => future.GetResult());
+        }
+
+        [Fact]
         public static void AlreadySignaled()
         {
             using var ev = new ManualResetEvent(true);
