@@ -32,44 +32,40 @@ namespace DotNext.Runtime.InteropServices
         public static void StreamInterop()
         {
             var array = new ushort[] { 1, 2, 3 }.AsMemory();
-            using (var pinned = array.Pin())
-            using (var ms = new MemoryStream())
+            using var pinned = array.Pin();
+            using var ms = new MemoryStream();
+            var ptr = (Pointer<ushort>)pinned;
+            ptr.WriteTo(ms, array.Length);
+            Equal(6L, ms.Length);
+            True(ms.TryGetBuffer(out var buffer));
+            buffer.Array.ForEach((ref byte value, long index) =>
             {
-                var ptr = (Pointer<ushort>)pinned;
-                ptr.WriteTo(ms, array.Length);
-                Equal(6L, ms.Length);
-                True(ms.TryGetBuffer(out var buffer));
-                buffer.Array.ForEach((ref byte value, long index) =>
-                {
-                    if (value == 1)
-                        value = 20;
-                });
-                ms.Position = 0;
-                Equal(6, ptr.ReadFrom(ms, array.Length));
-                Equal(20, ptr[0]);
-            }
+                if (value == 1)
+                    value = 20;
+            });
+            ms.Position = 0;
+            Equal(6, ptr.ReadFrom(ms, array.Length));
+            Equal(20, ptr[0]);
         }
 
         [Fact]
         public static async Task StreamInteropAsync()
         {
             var array = new ushort[] { 1, 2, 3 }.AsMemory();
-            using (var pinned = array.Pin())
-            using (var ms = new MemoryStream())
+            using var pinned = array.Pin();
+            using var ms = new MemoryStream();
+            var ptr = (Pointer<ushort>)pinned;
+            await ptr.WriteToAsync(ms, array.Length);
+            Equal(6L, ms.Length);
+            True(ms.TryGetBuffer(out var buffer));
+            buffer.Array.ForEach((ref byte value, long index) =>
             {
-                var ptr = (Pointer<ushort>)pinned;
-                await ptr.WriteToAsync(ms, array.Length);
-                Equal(6L, ms.Length);
-                True(ms.TryGetBuffer(out var buffer));
-                buffer.Array.ForEach((ref byte value, long index) =>
-                {
-                    if (value == 1)
-                        value = 20;
-                });
-                ms.Position = 0;
-                Equal(6, await ptr.ReadFromAsync(ms, array.Length));
-                Equal(20, ptr[0]);
-            }
+                if (value == 1)
+                    value = 20;
+            });
+            ms.Position = 0;
+            Equal(6, await ptr.ReadFromAsync(ms, array.Length));
+            Equal(20, ptr[0]);
         }
 
         [Fact]
@@ -254,14 +250,12 @@ namespace DotNext.Runtime.InteropServices
         public static unsafe void ToStreamConversion()
         {
             Pointer<byte> ptr = stackalloc byte[] { 10, 20, 30 };
-            using (var stream = ptr.AsStream(3))
-            {
-                var bytes = new byte[3];
-                Equal(3, stream.Read(bytes, 0, 3));
-                Equal(10, bytes[0]);
-                Equal(20, bytes[1]);
-                Equal(30, bytes[2]);
-            }
+            using var stream = ptr.AsStream(3);
+            var bytes = new byte[3];
+            Equal(3, stream.Read(bytes, 0, 3));
+            Equal(10, bytes[0]);
+            Equal(20, bytes[1]);
+            Equal(30, bytes[2]);
         }
 
         [Fact]

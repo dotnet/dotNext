@@ -22,11 +22,9 @@ namespace DotNext.Threading.Tasks
         [Fact]
         public static async Task WaitAsyncWithToken()
         {
-            using (var source = new CancellationTokenSource(100))
-            {
-                var task = new TaskCompletionSource<bool>().Task;
-                await ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(InfiniteTimeSpan, source.Token));
-            }
+            using var source = new CancellationTokenSource(100);
+            var task = new TaskCompletionSource<bool>().Task;
+            await ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(InfiniteTimeSpan, source.Token));
         }
 
         [Fact]

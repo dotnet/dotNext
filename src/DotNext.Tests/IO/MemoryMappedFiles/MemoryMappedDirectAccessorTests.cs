@@ -41,15 +41,13 @@ namespace DotNext.IO.MemoryMappedFiles
                 ptr += 1;
                 ptr.Value = 5;
                 da.Flush();
-                using (var stream = da.AsStream())
-                {
-                    var data = new byte[4];
-                    Equal(4, stream.Read(data, 0, data.Length));
-                    Equal(1, data[0]);
-                    Equal(2, data[1]);
-                    Equal(3, data[2]);
-                    Equal(5, data[3]);
-                }
+                using var stream = da.AsStream();
+                var data = new byte[4];
+                Equal(4, stream.Read(data, 0, data.Length));
+                Equal(1, data[0]);
+                Equal(2, data[1]);
+                Equal(3, data[2]);
+                Equal(5, data[3]);
             }
             using (var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Read))
             {
@@ -79,16 +77,14 @@ namespace DotNext.IO.MemoryMappedFiles
                 span[3] = 18;
                 da.Flush();
             }
-            using (var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Read))
-            {
-                fs.Position = 10;
-                var data = new byte[4];
-                Equal(4, fs.Read(data, 0, data.Length));
-                Equal(5, data[0]);
-                Equal(7, data[1]);
-                Equal(12, data[2]);
-                Equal(18, data[3]);
-            }
+            using var fs = new FileStream(tempFile, FileMode.Open, FileAccess.Read);
+            fs.Position = 10;
+            var data = new byte[4];
+            Equal(4, fs.Read(data, 0, data.Length));
+            Equal(5, data[0]);
+            Equal(7, data[1]);
+            Equal(12, data[2]);
+            Equal(18, data[3]);
         }
     }
 }

@@ -12,32 +12,28 @@ namespace DotNext.Threading
         [Fact]
         public static async Task WeakLocks()
         {
-            using (var sharedLock = new AsyncSharedLock(3))
-            {
-                Equal(3, sharedLock.ConcurrencyLevel);
-                True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
-                True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
-                Equal(1, sharedLock.RemainingCount);
-                True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
-                Equal(0, sharedLock.RemainingCount);
-                False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
-                False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
-                sharedLock.Release();
-                Equal(1, sharedLock.RemainingCount);
-                False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
-                True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
-            }
+            using var sharedLock = new AsyncSharedLock(3);
+            Equal(3, sharedLock.ConcurrencyLevel);
+            True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
+            True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
+            Equal(1, sharedLock.RemainingCount);
+            True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
+            Equal(0, sharedLock.RemainingCount);
+            False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
+            False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
+            sharedLock.Release();
+            Equal(1, sharedLock.RemainingCount);
+            False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
+            True(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
         }
 
         [Fact]
         public static async Task StrongLocks()
         {
-            using (var sharedLock = new AsyncSharedLock(3))
-            {
-                True(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
-                False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
-                False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
-            }
+            using var sharedLock = new AsyncSharedLock(3);
+            True(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
+            False(await sharedLock.TryAcquireAsync(false, TimeSpan.Zero));
+            False(await sharedLock.TryAcquireAsync(true, TimeSpan.Zero));
         }
 
         private static async void AcquireWeakLockAndRelease(AsyncSharedLock sharedLock, AsyncCountdownEvent acquireEvent)
@@ -52,17 +48,15 @@ namespace DotNext.Threading
         [Fact]
         public static async Task WeakToStrongLockTransition()
         {
-            using (var acquireEvent = new AsyncCountdownEvent(3L))
-            using (var sharedLock = new AsyncSharedLock(3))
-            {
-                AcquireWeakLockAndRelease(sharedLock, acquireEvent);
-                AcquireWeakLockAndRelease(sharedLock, acquireEvent);
-                AcquireWeakLockAndRelease(sharedLock, acquireEvent);
-                await acquireEvent.WaitAsync();
-                await sharedLock.AcquireAsync(true, TimeSpan.FromMinutes(1));
+            using var acquireEvent = new AsyncCountdownEvent(3L);
+            using var sharedLock = new AsyncSharedLock(3);
+            AcquireWeakLockAndRelease(sharedLock, acquireEvent);
+            AcquireWeakLockAndRelease(sharedLock, acquireEvent);
+            AcquireWeakLockAndRelease(sharedLock, acquireEvent);
+            await acquireEvent.WaitAsync();
+            await sharedLock.AcquireAsync(true, TimeSpan.FromMinutes(1));
 
-                Equal(0, sharedLock.RemainingCount);
-            }
+            Equal(0, sharedLock.RemainingCount);
         }
 
         private static async void AcquireWeakLock(AsyncSharedLock sharedLock, AsyncCountdownEvent acquireEvent)
@@ -74,49 +68,43 @@ namespace DotNext.Threading
         [Fact]
         public static async Task StrongToWeakLockTransition()
         {
-            using (var acquireEvent = new AsyncCountdownEvent(2L))
-            using (var sharedLock = new AsyncSharedLock(3))
-            {
-                await sharedLock.AcquireAsync(true, TimeSpan.Zero);
-                AcquireWeakLock(sharedLock, acquireEvent);
-                AcquireWeakLock(sharedLock, acquireEvent);
-                sharedLock.Release();
-                True(await acquireEvent.WaitAsync(TimeSpan.FromMinutes(1)));
-                Equal(1, sharedLock.RemainingCount);
-            }
+            using var acquireEvent = new AsyncCountdownEvent(2L);
+            using var sharedLock = new AsyncSharedLock(3);
+            await sharedLock.AcquireAsync(true, TimeSpan.Zero);
+            AcquireWeakLock(sharedLock, acquireEvent);
+            AcquireWeakLock(sharedLock, acquireEvent);
+            sharedLock.Release();
+            True(await acquireEvent.WaitAsync(TimeSpan.FromMinutes(1)));
+            Equal(1, sharedLock.RemainingCount);
         }
 
         [Fact]
         public static void FailFastLock()
         {
-            using (var sharedLock = new AsyncSharedLock(3))
-            {
-                True(sharedLock.TryAcquire(false));
-                True(sharedLock.TryAcquire(false));
-                True(sharedLock.TryAcquire(false));
-                False(sharedLock.TryAcquire(true));
-                False(sharedLock.TryAcquire(false));
-                sharedLock.Release();
-                sharedLock.Release();
-                sharedLock.Release();
-                True(sharedLock.TryAcquire(true));
-                False(sharedLock.TryAcquire(false));
-            }
+            using var sharedLock = new AsyncSharedLock(3);
+            True(sharedLock.TryAcquire(false));
+            True(sharedLock.TryAcquire(false));
+            True(sharedLock.TryAcquire(false));
+            False(sharedLock.TryAcquire(true));
+            False(sharedLock.TryAcquire(false));
+            sharedLock.Release();
+            sharedLock.Release();
+            sharedLock.Release();
+            True(sharedLock.TryAcquire(true));
+            False(sharedLock.TryAcquire(false));
         }
 
         [Fact]
         public void DowngradeFromStrongToWeakLock()
         {
-            using (var sharedLock = new AsyncSharedLock(3))
-            {
-                True(sharedLock.TryAcquire(true));
-                Equal(0, sharedLock.RemainingCount);
-                False(sharedLock.TryAcquire(false));
-                sharedLock.Downgrade();
-                Equal(2, sharedLock.RemainingCount);
-                sharedLock.Release();
-                Equal(3, sharedLock.RemainingCount);
-            }
+            using var sharedLock = new AsyncSharedLock(3);
+            True(sharedLock.TryAcquire(true));
+            Equal(0, sharedLock.RemainingCount);
+            False(sharedLock.TryAcquire(false));
+            sharedLock.Downgrade();
+            Equal(2, sharedLock.RemainingCount);
+            sharedLock.Release();
+            Equal(3, sharedLock.RemainingCount);
         }
     }
 }

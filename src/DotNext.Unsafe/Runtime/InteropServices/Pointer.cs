@@ -288,12 +288,12 @@ namespace DotNext.Runtime.InteropServices
         private static async ValueTask WriteToSteamAsync(IntPtr source, long length, Stream destination, CancellationToken token)
         {
             while (length > 0L)
-                using (var manager = new MemorySource(source, (int)Math.Min(int.MaxValue, length)))
-                {
-                    await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
-                    length -= manager.Length;
-                    source += manager.Length;
-                }
+            {
+                using var manager = new MemorySource(source, (int)Math.Min(int.MaxValue, length));
+                await destination.WriteAsync(manager.Memory, token).ConfigureAwait(false);
+                length -= manager.Length;
+                source += manager.Length;
+            }
         }
 
         /// <summary>
@@ -385,15 +385,15 @@ namespace DotNext.Runtime.InteropServices
         {
             var total = 0L;
             while (length > 0L)
-                using (var manager = new MemorySource(destination, (int)Math.Min(int.MaxValue, length)))
-                {
-                    var bytesRead = await source.ReadAsync(manager.Memory, token).ConfigureAwait(false);
-                    if (bytesRead == 0)
-                        break;
-                    length -= bytesRead;
-                    destination += bytesRead;
-                    total += bytesRead;
-                }
+            {
+                using var manager = new MemorySource(destination, (int)Math.Min(int.MaxValue, length));
+                var bytesRead = await source.ReadAsync(manager.Memory, token).ConfigureAwait(false);
+                if (bytesRead == 0)
+                    break;
+                length -= bytesRead;
+                destination += bytesRead;
+                total += bytesRead;
+            }
             return total;
         }
 
@@ -435,7 +435,7 @@ namespace DotNext.Runtime.InteropServices
             if (IsNull)
                 return Stream.Null;
             count *= sizeof(T);
-            return new UnmanagedMemoryStream(As<byte>().value, count, count, access);
+            return new UnmanagedMemoryStream((byte*)value, count, count, access);
         }
 
         /// <summary>
