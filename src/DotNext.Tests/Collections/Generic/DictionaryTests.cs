@@ -107,5 +107,32 @@ namespace DotNext.Collections.Generic
             Equal("One", dict.GetOrInvoke(1, () => "Two"));
             Equal("Alt", dict.GetOrInvoke(10, () => "Alt"));
         }
+
+        [Fact]
+        public static void OptionalExtensions()
+        {
+            var dict = new Dictionary<int, string>
+            {
+                {1, "One" },
+                {2, "Two" }
+            };
+            var opt = dict.TryGetValue(1);
+            True(opt.HasValue);
+            Equal("One", opt);
+            opt = dict.TryGetValue(10);
+            False(opt.HasValue);
+            IReadOnlyDictionary<int, string> readOnly = dict;
+            opt = Dictionary.TryGetValue(readOnly, 1);
+            True(opt.HasValue);
+            Equal("One", opt);
+            opt = Dictionary.TryGetValue(readOnly, 10);
+            False(opt.HasValue);
+            opt = dict.TryRemove(1);
+            True(opt.HasValue);
+            Equal("One", opt);
+            Single(dict);
+            opt = dict.TryRemove(10);
+            False(opt.HasValue);
+        }
     }
 }
