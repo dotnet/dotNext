@@ -24,6 +24,7 @@ namespace DotNext
             Equal(10, (int)intOptional);
             Equal(10, intOptional.Or(20));
             Equal(10, intOptional.Value);
+            Equal(10, intOptional.OrThrow(() => new ArithmeticException()));
             True(Nullable.Equals(10, intOptional.OrNull()));
             Equal(typeof(int), Optional.GetUnderlyingType(intOptional.GetType()));
 
@@ -39,6 +40,7 @@ namespace DotNext
             False(strOptional.HasValue);
             Equal("Hello, world", strOptional.Or("Hello, world"));
             Throws<InvalidOperationException>(() => strOptional.Value);
+            Throws<ArithmeticException>(() => strOptional.OrThrow(() => new ArithmeticException()));
             Equal(typeof(string), Optional.GetUnderlyingType(strOptional.GetType()));
         }
 
@@ -130,8 +132,10 @@ namespace DotNext
             opt = 20;
             Equal(20, await Task.FromResult(opt).OrInvoke(() => 10));
             Equal(20, await Task.FromResult(opt).OrThrow<int, ArithmeticException>());
+            Equal(20, await Task.FromResult(opt).OrThrow(() => new ArithmeticException()));
             opt = default;
             await ThrowsAsync<ArithmeticException>(Task.FromResult(opt).OrThrow<int, ArithmeticException>);
+            await ThrowsAsync<ArithmeticException>(() => Task.FromResult(opt).OrThrow(() => new ArithmeticException()));
         }
     }
 }
