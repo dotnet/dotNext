@@ -5,7 +5,6 @@ using System.IO;
 
 namespace DotNext.Buffers
 {
-    using Runtime;
     using Runtime.InteropServices;
 
     /// <summary>

@@ -11,7 +11,7 @@ namespace DotNext.Threading.Tasks
             var t = Task.FromResult(10).ToNullable();
             Equal(10, t.Result);
         }
-        
+
         [Fact]
         public static void TypeConversion()
         {

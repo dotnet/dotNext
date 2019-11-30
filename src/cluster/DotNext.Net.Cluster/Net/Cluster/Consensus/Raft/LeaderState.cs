@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
-    using Replication;
     using Threading;
     using static Threading.Tasks.Continuation;
     using Timestamp = Diagnostics.Timestamp;

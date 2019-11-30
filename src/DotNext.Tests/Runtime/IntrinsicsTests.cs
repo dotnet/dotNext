@@ -235,10 +235,10 @@ namespace DotNext.Runtime
         {
             static void HasFlag<T>(T value, T validFlag, T invalidFlag)
                 where T : struct, Enum
-                {
-                    True(Intrinsics.HasFlag(value, validFlag));
-                    False(Intrinsics.HasFlag(value, invalidFlag));
-                }
+            {
+                True(Intrinsics.HasFlag(value, validFlag));
+                False(Intrinsics.HasFlag(value, invalidFlag));
+            }
 
             HasFlag(BindingFlags.Public | BindingFlags.Instance, BindingFlags.Public, BindingFlags.Static);
             HasFlag(ByteEnum.Two, ByteEnum.Two, ByteEnum.One);

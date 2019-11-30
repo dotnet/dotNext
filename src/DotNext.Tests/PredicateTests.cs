@@ -39,7 +39,7 @@ namespace DotNext
             True(pred(10));
             False(pred(null));
         }
-        
+
         [Fact]
         public static void OrAndXor()
         {

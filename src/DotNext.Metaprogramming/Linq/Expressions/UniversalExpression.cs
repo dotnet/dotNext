@@ -553,7 +553,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="targetType">The target type.</param>
         /// <returns>The type test expression.</returns>
-        public UniversalExpression InstanceOf(Type targetType) 
+        public UniversalExpression InstanceOf(Type targetType)
             => new UniversalExpression(expression is null ? (Expression)ExpressionBuilder.Const(false) : expression.InstanceOf(targetType));
 
         /// <summary>

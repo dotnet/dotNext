@@ -12,7 +12,7 @@ namespace DotNext.Reflection
     public static class TypeExtensions
     {
         private const string IsUnmanagedAttributeName = "System.Runtime.CompilerServices.IsUnmanagedAttribute";
-        
+
         private static bool IsGenericParameter(Type type)
         {
             if (type.IsByRef || type.IsArray)

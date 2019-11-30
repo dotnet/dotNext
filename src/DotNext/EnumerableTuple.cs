@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using ITuple = System.Runtime.CompilerServices.ITuple;
 using static System.Runtime.CompilerServices.Unsafe;
+using ITuple = System.Runtime.CompilerServices.ITuple;
 
 namespace DotNext
 {
@@ -28,7 +28,7 @@ namespace DotNext
             private T tuple;
             private readonly ValueRefFunc<T, int, I> accessor;
             private int currentIndex;
-        
+
             internal Enumerator(T tuple, in ValueRefFunc<T, int, I> accessor)
             {
                 this.tuple = tuple;

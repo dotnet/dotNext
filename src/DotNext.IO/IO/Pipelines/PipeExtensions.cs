@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO.Pipelines
 {
-    using Intrinsics = Runtime.Intrinsics;
     using Buffers;
-    using Text;
     using System.Buffers;
+    using Text;
+    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Represents extension method for parsing data stored in pipe.

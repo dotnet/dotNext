@@ -75,7 +75,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             private void Dispose(bool disposing)
             {
-                if(disposing)
+                if (disposing)
                 {
                     current?.Dispose();
                     current = null;

@@ -15,7 +15,7 @@ namespace DotNext.Reflection
         /// <param name="method">The method to reflect.</param>
         /// <returns>The array of parameter types.</returns>
         [return: NotNullIfNotNull("method")]
-		public static Type[]? GetParameterTypes(this MethodBase? method)
+        public static Type[]? GetParameterTypes(this MethodBase? method)
             => method is null ? null : Array.ConvertAll(method.GetParameters(), p => p.ParameterType);
 
         /// <summary>
