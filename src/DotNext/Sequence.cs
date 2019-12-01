@@ -69,12 +69,37 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="T">Type of elements in the sequence.</typeparam>
         /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
-        /// <returns>First element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
+        /// <returns>The first element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq)
         {
             using var enumerator = seq.GetEnumerator();
             return enumerator.MoveNext() ? enumerator.Current : Optional<T>.Empty;
         }
+
+        /// <summary>
+        /// Returns the first element in a sequence that satisfies a specified condition.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="seq">A collection to return an element from.</param>
+        /// <param name="filter">A function to test each element for a condition.</param>
+        /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
+        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, in ValueFunc<T, bool> filter)
+        {
+            foreach (var item in seq)
+                if (filter.Invoke(item))
+                    return item;
+            return Optional<T>.Empty;
+        }
+
+        /// <summary>
+        /// Returns the first element in a sequence that satisfies a specified condition.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="seq">A collection to return an element from.</param>
+        /// <param name="filter">A function to test each element for a condition.</param>
+        /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
+        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
+            => FirstOrEmpty(seq, filter.AsValueFunc(true));
 
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.
@@ -165,7 +190,7 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
         /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
-        public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T> collection)
+        public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T?> collection)
             where T : class
             => collection.Where(Func.IsNotNull<T>());
 
