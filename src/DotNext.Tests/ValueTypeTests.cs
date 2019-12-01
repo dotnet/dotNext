@@ -70,6 +70,42 @@ namespace DotNext
         }
 
         [Fact]
+        public static void IntPtrBitwiseOperations()
+        {
+            Equal(default, new IntPtr(1).And(default));
+            Equal(new IntPtr(1), new IntPtr(1).Or(default));
+            Equal(default, new IntPtr().Or(default));
+            Equal(new IntPtr(1), new IntPtr(1).Xor(default));
+            Equal(default, new IntPtr().Xor(default));
+            Equal(default, new IntPtr(1).Xor(new IntPtr(1)));
+        }
+
+        [Fact]
+        public static void UIntPtrBitwiseOperations()
+        {
+            Equal(default, new UIntPtr(1U).And(default));
+            Equal(new UIntPtr(1U), new UIntPtr(1U).Or(default));
+            Equal(default, new UIntPtr().Or(default));
+            Equal(new UIntPtr(1U), new UIntPtr(1U).Xor(default));
+            Equal(default, new UIntPtr().Xor(default));
+            Equal(default, new UIntPtr(1U).Xor(new UIntPtr(1U)));
+        }
+
+        [Require64BitProcess]
+        public static void OnesComplement()
+        {
+            Equal(new UIntPtr(ulong.MaxValue), new UIntPtr().OnesComplement());
+            Equal(new IntPtr(-1L), new IntPtr().OnesComplement());
+        }
+
+        [Fact]
+        public static void IntPtrConversion()
+        {
+            Equal(new UIntPtr(42U), new IntPtr(42).ToUIntPtr());
+            Equal(new IntPtr(42), new UIntPtr(42U).ToIntPtr());
+        }
+
+        [Fact]
         public static void BoolToIntConversion()
         {
             Equal(1, true.ToInt32());
@@ -209,6 +245,13 @@ namespace DotNext
             Equal(4, result);
             result = BitwiseComparer<Guid>.GetHashCode(new Guid(), 0, (hash, data) => hash + 1, true);
             Equal(5, result);
+        }
+
+        [Fact]
+        public static void OneOfValues()
+        {
+            True(2.IsOneOf(2, 5, 7));
+            False(2.IsOneOf(3, 5, 7));
         }
     }
 }
