@@ -13,13 +13,6 @@ namespace DotNext.Reflection
     {
         private const string IsUnmanagedAttributeName = "System.Runtime.CompilerServices.IsUnmanagedAttribute";
 
-        private static bool IsGenericParameter(Type type)
-        {
-            if (type.IsByRef || type.IsArray)
-                type = type.GetElementType();
-            return type?.IsGenericParameter ?? false;
-        }
-
         /// <summary>
         /// Determines whether the type is read-only (immutable) value type.
         /// </summary>
