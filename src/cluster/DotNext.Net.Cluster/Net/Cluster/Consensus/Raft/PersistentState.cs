@@ -104,16 +104,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Gets the lock that can be used to synchronize access to this object.
+        /// Gets the lock used by this object for write operations.
         /// </summary>
-        protected AsyncLock SyncRoot => AsyncLock.Exclusive(syncRoot);
+        protected AsyncLock WriteLock => AsyncLock.Exclusive(syncRoot);
+
+        /// <summary>
+        /// Gets the lock used by this object for read operations.
+        /// </summary>
+        protected AsyncLock ReadLock => AsyncLock.Weak(syncRoot);
 
         /// <summary>
         /// Gets the buffer that can be used to perform I/O operations.
         /// </summary>
         /// <remarks>
         /// The buffer cannot be used concurrently. Access to it should be synchronized
-        /// using <see cref="SyncRoot"/> property.
+        /// using <see cref="WriteLock"/> property.
         /// </remarks>
         protected Memory<byte> Buffer => sessionManager.WriteSession.Buffer;
 
