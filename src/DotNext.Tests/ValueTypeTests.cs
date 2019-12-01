@@ -30,6 +30,23 @@ namespace DotNext
             Equal(new IntPtr(20), value.Divide(new IntPtr(2)));
             Equal(new IntPtr(40 ^ 234), value.Xor(new IntPtr(234)));
             Equal(new IntPtr(-40), value.Negate());
+            Equal(new IntPtr(60), value.Add(new IntPtr(20)));
+            Equal(new IntPtr(39), value.Decrement());
+            Equal(new IntPtr(41), value.Increment());
+        }
+
+        [Require64BitProcess]
+        public static void UIntPtrArithmetic()
+        {
+            var value = new UIntPtr(40U);
+            Equal(new UIntPtr(800U), value.Multiply(new UIntPtr(20U)));
+            Equal(new UIntPtr(800U), value.MultiplyChecked(new UIntPtr(20U)));
+            Equal(uint.MaxValue * 2UL, new UIntPtr(uint.MaxValue).Multiply(new UIntPtr(2U)).ToUInt64());
+            Equal(new UIntPtr(20U), value.Divide(new UIntPtr(2L)));
+            Equal(new UIntPtr(40U ^ 234U), value.Xor(new UIntPtr(234U)));
+            Equal(new UIntPtr(60U), value.Add(new UIntPtr(20U)));
+            Equal(new UIntPtr(39U), value.Decrement());
+            Equal(new UIntPtr(41U), value.Increment());
         }
 
         [Require64BitProcess]
@@ -37,6 +54,19 @@ namespace DotNext
         {
             var value = new IntPtr(long.MaxValue);
             Throws<OverflowException>(() => value.AddChecked(new IntPtr(1)));
+            value = new IntPtr(long.MinValue);
+            Throws<OverflowException>(() => value.SubtractChecked(new IntPtr(1)));
+            Equal(new IntPtr(long.MaxValue), value.Subtract(new IntPtr(1)));
+        }
+
+        [Require64BitProcess]
+        public static void UIntPtrArithmeticOverflow()
+        {
+            var value = new UIntPtr(ulong.MaxValue);
+            Throws<OverflowException>(() => value.AddChecked(new UIntPtr(1U)));
+            value = new UIntPtr(0U);
+            Throws<OverflowException>(() => value.SubtractChecked(new UIntPtr(1U)));
+            Equal(new UIntPtr(ulong.MaxValue), value.Subtract(new UIntPtr(1U)));
         }
 
         [Fact]
