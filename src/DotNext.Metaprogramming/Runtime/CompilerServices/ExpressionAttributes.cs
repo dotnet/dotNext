@@ -10,12 +10,10 @@ namespace DotNext.Runtime.CompilerServices
     {
         private static readonly UserDataSlot<ExpressionAttributes?> AttributesSlot = UserDataSlot<ExpressionAttributes?>.Allocate();
 
-        private readonly HashSet<LabelTarget> labels = new HashSet<LabelTarget>();
-
         /// <summary>
         /// A set of labels owner by expression.
         /// </summary>
-        internal ISet<LabelTarget> Labels => labels;
+        internal readonly ISet<LabelTarget> Labels = new HashSet<LabelTarget>();
 
         /// <summary>
         /// Indicates that expression contains await expression.
