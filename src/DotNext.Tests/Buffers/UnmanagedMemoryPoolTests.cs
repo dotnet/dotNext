@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
@@ -257,6 +258,28 @@ namespace DotNext.Buffers
             memory2.Span[0] = int.MaxValue;
             Equal(int.MaxValue, memory2.Span[0]);
             Equal(10, memory1.Span[0]);
+        }
+
+        [Fact]
+        public static unsafe void Pinning()
+        {
+            using var memory = UnmanagedMemoryPool<int>.Allocate(3) as MemoryManager<int>;
+            NotNull(memory);
+            memory.GetSpan()[0] = 10;
+            memory.GetSpan()[1] = 20;
+            memory.GetSpan()[2] = 30;
+            var handle = memory.Pin();
+            Equal(10, *(int*)handle.Pointer);
+            memory.Unpin();
+            handle.Dispose();
+            handle = memory.Pin(1);
+            Equal(20, *(int*)handle.Pointer);
+            memory.Unpin();
+            handle.Dispose();
+            handle = memory.Pin(2);
+            Equal(30, *(int*)handle.Pointer);
+            memory.Unpin();
+            handle.Dispose();
         }
     }
 }
