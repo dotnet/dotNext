@@ -137,5 +137,16 @@ namespace DotNext
             await ThrowsAsync<ArithmeticException>(Task.FromResult(opt).OrThrow<int, ArithmeticException>);
             await ThrowsAsync<ArithmeticException>(() => Task.FromResult(opt).OrThrow(() => new ArithmeticException()));
         }
+
+        [Fact]
+        public static void Boxing()
+        {
+            Null(Optional<string>.Empty.Box());
+            Null(Optional<int>.Empty.Box());
+            Null(Optional<int?>.Empty.Box());
+            Equal("123", new Optional<string>("123").Box());
+            Equal(42, new Optional<int>(42).Box());
+            Equal(42, new Optional<int?>(42).Box());
+        }
     }
 }

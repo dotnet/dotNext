@@ -205,6 +205,12 @@ namespace DotNext
         public bool HasValue { get; }
 
         /// <summary>
+        /// Boxes value encapsulated by this object.
+        /// </summary>
+        /// <returns>The boxed value; or <see langword="null"/> if <see cref="HasValue"/> is <see langword="false"/>.</returns>
+        public object? Box() => HasValue ? (object?)value : null;
+
+        /// <summary>
         /// Attempts to extract value from container if it is present.
         /// </summary>
         /// <param name="value">Extracted value.</param>
