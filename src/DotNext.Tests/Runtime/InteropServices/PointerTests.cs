@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -244,6 +245,13 @@ namespace DotNext.Runtime.InteropServices
             ptr.Fill(42, 10L);
             Equal(42, ptr[0]);
             Equal(42, ptr[9]);
+            Pointer<int> ptr2 = stackalloc int[10];
+            ptr.WriteTo(ptr2, 10);
+            Equal(42, ptr2[0]);
+            Equal(42, ptr2[9]);
+            ptr.Clear(10);
+            Equal(0, ptr[0]);
+            Equal(0, ptr[8]);
         }
 
         [Fact]
@@ -294,6 +302,53 @@ namespace DotNext.Runtime.InteropServices
             decimal d = 20;
             ptr = (int*)(((byte*)&d) + 1);
             False(ptr.IsAligned);
+        }
+
+        [Fact]
+        public static unsafe void Operators()
+        {
+            var ptr1 = new Pointer<int>(new IntPtr(42));
+            var ptr2 = new Pointer<int>(new IntPtr(43));
+            True(ptr1 != ptr2);
+            False(ptr1 == ptr2);
+            ptr2 -= new IntPtr(1);
+            Equal(new IntPtr(42), ptr2);
+            False(ptr1 != ptr2);
+            Equal(new IntPtr(42), ptr1);
+            True(new IntPtr(42).ToPointer() == ptr1);
+            if (ptr1) { }
+            else throw new Xunit.Sdk.XunitException();
+            ptr2 = default;
+            if (ptr2) throw new Xunit.Sdk.XunitException();
+
+            ptr1 += 2U;
+            Equal(new IntPtr(50), ptr1);
+            ptr1 += 1L;
+            Equal(new IntPtr(54), ptr1);
+            ptr1 += new IntPtr(2);
+            Equal(new IntPtr(56), ptr1);
+
+            ptr1 = new Pointer<int>(new UIntPtr(56U));
+            Equal(new UIntPtr(56U), ptr1);
+        }
+
+        [Fact]
+        public static unsafe void Boxing()
+        {
+            var value = 10;
+            IStrongBox box = new Pointer<int>(&value);
+            Equal(10, box.Value);
+            box.Value = 42;
+            Equal(42, box.Value);
+        }
+
+        [Fact]
+        public static unsafe void Conversion()
+        {
+            var value = 10;
+            Pointer<uint> ptr = new Pointer<int>(&value).As<uint>();
+            ptr.Value = 42U;
+            Equal(42, value);
         }
     }
 }
