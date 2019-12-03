@@ -659,7 +659,7 @@ namespace DotNext.Runtime
         /// Sets all bits of allocated memory to zero.
         /// </summary>
         /// <param name="address">The pointer to the memory to be cleared.</param>
-        /// <param name="length">The length of the memory to be cleared.</param>
+        /// <param name="length">The length of the memory to be cleared, in bytes.</param>
         [CLSCompliant(false)]
         public static unsafe void ClearBits(void* address, long length)
         {

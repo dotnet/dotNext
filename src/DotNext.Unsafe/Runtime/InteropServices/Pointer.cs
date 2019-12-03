@@ -212,7 +212,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new NullPointerException();
             if (count <= 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            Intrinsics.ClearBits(value, count);
+            Intrinsics.ClearBits(value, sizeof(T) * count);
         }
 
         /// <summary>
