@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -10,6 +11,54 @@ namespace DotNext
     /// </summary>
     public static class Sequence
     {
+        private sealed class NotNullEnumerable<T> : IEnumerable<T>
+            where T : class
+        {
+            private sealed class Enumerator : IEnumerator<T>
+            {
+                private readonly IEnumerator<T?> enumerator;
+                private T? current;
+
+                internal Enumerator(IEnumerable<T?> enumerable)
+                    => enumerator = enumerable.GetEnumerator();
+
+                public T Current => current ?? throw new InvalidOperationException();
+
+                object IEnumerator.Current => Current;
+
+                public bool MoveNext()
+                {
+                    for (T? current; enumerator.MoveNext();)
+                    {
+                        current = enumerator.Current;
+                        if (current != null)
+                        {
+                            this.current = current;
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                public void Reset() => enumerator.Reset();
+
+                void IDisposable.Dispose()
+                {
+                    current = null;
+                    enumerator.Dispose();
+                }
+            }
+
+            private readonly IEnumerable<T?> enumerable;
+
+            internal NotNullEnumerable(IEnumerable<T?> enumerable)
+                => this.enumerable = enumerable;
+
+            public IEnumerator<T> GetEnumerator() => new Enumerator(enumerable);
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
         private const int HashSalt = -1521134295;
 
         private static int GetHashCode(int hash, object obj) => hash * HashSalt + obj?.GetHashCode() ?? 0;
@@ -192,7 +241,7 @@ namespace DotNext
         /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
         public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T?> collection)
             where T : class
-            => collection.Where(Func.IsNotNull<T>());
+            => new NotNullEnumerable<T>(collection);
 
         /// <summary>
         /// Concatenates each element from the collection into single string.
