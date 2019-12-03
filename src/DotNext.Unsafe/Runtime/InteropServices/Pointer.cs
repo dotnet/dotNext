@@ -30,6 +30,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         public unsafe struct Enumerator : IEnumerator<T>
         {
+            private const long InitialPosition = -1L;
             private readonly long count;
             private long index;
             private readonly T* ptr;
@@ -40,7 +41,7 @@ namespace DotNext.Runtime.InteropServices
             {
                 this.count = count;
                 this.ptr = ptr;
-                index = -1L;
+                index = InitialPosition;
             }
 
             /// <summary>
@@ -70,15 +71,13 @@ namespace DotNext.Runtime.InteropServices
             /// <summary>
             /// Sets the enumerator to its initial position.
             /// </summary>
-            public void Reset() => index = -1L;
+            public void Reset() => index = InitialPosition;
 
             /// <summary>
             /// Releases all resources with this enumerator.
             /// </summary>
             public void Dispose() => this = default;
         }
-
-        private const int BufferSize = 1024;
 
         /// <summary>
         /// Represents zero pointer.
