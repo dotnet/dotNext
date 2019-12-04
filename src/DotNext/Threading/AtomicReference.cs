@@ -96,6 +96,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull("value")]
         public static T GetAndAccumulate<T>(ref T value, T x, Func<T, T, T> accumulator)
             where T : class?
             => GetAndAccumulate(ref value, x, new ValueFunc<T, T, T>(accumulator, true));
@@ -113,6 +114,7 @@ namespace DotNext.Threading
         /// <param name="accumulator">A side-effect-free function of two arguments</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull("value")]
         public static T GetAndAccumulate<T>(ref T value, T x, in ValueFunc<T, T, T> accumulator)
             where T : class?
             => Accumulate(ref value, x, accumulator).OldValue;
@@ -152,6 +154,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull("value")]
         public static T GetAndUpdate<T>(ref T value, Func<T, T> updater)
             where T : class?
             => GetAndUpdate(ref value, new ValueFunc<T, T>(updater, true));
@@ -165,6 +168,7 @@ namespace DotNext.Threading
         /// <param name="updater">A side-effect-free function</param>
         /// <returns>The original value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull("value")]
         public static T GetAndUpdate<T>(ref T value, in ValueFunc<T, T> updater)
             where T : class?
             => Update(ref value, updater).OldValue;
@@ -177,7 +181,7 @@ namespace DotNext.Threading
         /// <returns>The array element.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T VolatileRead<T>(this T[] array, long index)
-            where T : class
+            where T : class?
             => Volatile.Read(ref array[index]);
 
         /// <summary>
@@ -236,6 +240,7 @@ namespace DotNext.Threading
 		/// <param name="update">A new value to be stored as array element.</param>
 		/// <returns>The array element after modification.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull("update")]
         public static T SetAndGet<T>(this T[] array, long index, T update)
             where T : class?
         {
@@ -561,10 +566,11 @@ namespace DotNext.Threading
             => AtomicReference.GetAndUpdate(ref value, updater);
 
         /// <summary>
-        /// Modifies stored value if it is null.
+        /// Modifies stored value if it is <see langword="null"/>.
         /// </summary>
         /// <typeparam name="G">A derived type with default constructor.</typeparam>
         /// <returns>Modified value.</returns>
+        [return: NotNull]
         public T SetIfNull<G>()
             where G : notnull, T, new()
         {
@@ -579,7 +585,7 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-        /// Modifies stored value if it is null.
+        /// Modifies stored value if it is <see langword="null"/>.
         /// </summary>
         /// <param name="supplier">Supplier of a new value.</param>
         /// <returns>Modified value.</returns>
