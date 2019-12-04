@@ -157,6 +157,7 @@ namespace DotNext
 		/// <param name="slot">The slot identifying user data.</param>
 		/// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
 		/// <returns>User data.</returns>
+        [return: NotNullIfNotNull("defaultValue")]
         public V Get<V>(UserDataSlot<V> slot, V defaultValue)
         {
             var storage = GetStorage();
