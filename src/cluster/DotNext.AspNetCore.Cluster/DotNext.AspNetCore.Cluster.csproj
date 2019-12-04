@@ -3,8 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
-    <LangVersion>latest</LangVersion>
-    <Version>1.2.8</Version>
+    <Version>1.2.9</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Framework for fault-tolerant clustered microservices based on ASP.NET Core</Description>
@@ -43,15 +42,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IPNetwork2" Version="2.4.0.155" />
+    <PackageReference Include="IPNetwork2" Version="2.4.0.159" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics" Version="[2.2.0, 3)" />
     <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="[2.2.0, 3)" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="[2.2.0, 3)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="[2.2.0, 3)" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
+    <PackageReference Include="System.Runtime.Caching" Version="4.7.0" />
     <ProjectReference Include="..\DotNext.Net.Cluster\DotNext.Net.Cluster.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Net.Cluster" Version="[1.2.7, 2)" Condition="'$(Configuration)'=='Release'" />
+    <PackageReference Include="DotNext.Net.Cluster" Version="[1.2.9, 2)" Condition="'$(Configuration)'=='Release'" />
   </ItemGroup>
 </Project>

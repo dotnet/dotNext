@@ -87,7 +87,9 @@ namespace DotNext
                 else
                     try
                     {
-                        slot.SetUserData(this, userData = valueFactory.Invoke());
+                        userData = valueFactory.Invoke();
+                        if (userData != null)
+                            slot.SetUserData(this, userData);
                     }
                     finally
                     {
