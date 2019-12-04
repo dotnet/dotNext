@@ -248,6 +248,9 @@ namespace DotNext.Runtime.InteropServices
             ptr.Fill(42, 10L);
             Equal(42, ptr[0]);
             Equal(42, ptr[9]);
+            ptr.Clear(10);
+            Equal(0, ptr[0]);
+            Equal(0, ptr[9]);
         }
 
         [Fact]

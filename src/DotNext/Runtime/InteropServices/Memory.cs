@@ -517,7 +517,7 @@ namespace DotNext.Runtime.InteropServices
         /// Sets all bits of allocated memory to zero.
         /// </summary>
         /// <param name="address">The pointer to the memory to be cleared.</param>
-        /// <param name="length">The length of the memory to be cleared.</param>
+        /// <param name="length">The length of the memory to be cleared, in bytes.</param>
         [CLSCompliant(false)]
         public static void ClearBits(void* address, long length) => ClearBits(new IntPtr(address), length);
 
