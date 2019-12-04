@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
     <RootNamespace>DotNext</RootNamespace>
     <Authors>Roman Sakno</Authors>
     <Company />

@@ -42,6 +42,7 @@ All these things are implemented in 100% managed code on top of existing .NET St
 Release Date: 12-04-2019
 
 <a href="https://www.nuget.org/packages/dotnext/1.2.9">DotNext 1.2.9</a>
+* Fixed possible NRE in `UserDataStorage.GetOrSet` when factory returns **null** 
 * Updated dependencies
 * Migration to SourceLink 1.0.0
 

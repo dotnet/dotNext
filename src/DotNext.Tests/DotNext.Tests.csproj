@@ -3,7 +3,6 @@
   <PropertyGroup>
 	  <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
-    <LangVersion>latest</LangVersion>
     <Version>1.2.9</Version>
     <IsPackable>false</IsPackable>
     <Authors>Roman Sakno</Authors>
