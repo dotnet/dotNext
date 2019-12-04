@@ -8,4 +8,3 @@ InvalidMethodSignature=Method has an invalid signature for the creating pointer 
 UnsupportedMethodPointerType=Unsupported method pointer type detected
 UnreachableCodeDetected=Unreachable code is detected
 BufferTooSmall=The buffer is too small for buffered stream operations
-FactoryReturnsNull=Factory should not return null

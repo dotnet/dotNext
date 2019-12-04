@@ -28,7 +28,5 @@ namespace DotNext
         internal static string UnreachableCodeDetected => Resources.GetString("UnreachableCodeDetected");
 
         internal static string BufferTooSmall => Resources.GetString("BufferTooSmall");
-
-        internal static string FactoryReturnsNull => Resources.GetString("FactoryReturnsNull");
     }
 }

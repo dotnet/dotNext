@@ -88,9 +88,7 @@ namespace DotNext
                     try
                     {
                         userData = valueFactory.Invoke();
-                        if (userData == null)
-                            throw new InvalidOperationException(ExceptionMessages.FactoryReturnsNull);
-                        else
+                        if (userData != null)
                             slot.SetUserData(this, userData);
                     }
                     finally
