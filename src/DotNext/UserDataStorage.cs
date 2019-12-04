@@ -87,7 +87,11 @@ namespace DotNext
                 else
                     try
                     {
-                        slot.SetUserData(this, userData = valueFactory.Invoke());
+                        userData = valueFactory.Invoke();
+                        if(userData is null)
+                            throw new InvalidOperationException(ExceptionMessages.FactoryReturnsNull);
+                        else
+                            slot.SetUserData(this, userData);
                     }
                     finally
                     {
@@ -231,6 +235,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
+        [return: NotNull]
         public V GetOrSet<V>(UserDataSlot<V> slot, in ValueFunc<V> valueFactory)
             => GetOrCreateStorage().GetOrSet(slot, ref Unsafe.AsRef(valueFactory));
 
@@ -243,6 +248,7 @@ namespace DotNext
         /// <param name="arg">The argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
+        [return: NotNull]
         public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, in ValueFunc<T, V> valueFactory)
         {
             var supplier = new Supplier<T, V>(arg, valueFactory);
@@ -260,6 +266,7 @@ namespace DotNext
         /// <param name="arg2">The second argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
+        [return: NotNull]
         public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, in ValueFunc<T1, T2, V> valueFactory)
         {
             var supplier = new Supplier<T1, T2, V>(arg1, arg2, valueFactory);
@@ -291,7 +298,7 @@ namespace DotNext
         /// <typeparam name="V">Type of data.</typeparam>
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">User data to be saved in this collection.</param>
-        public void Set<V>(UserDataSlot<V> slot, V userData)
+        public void Set<V>(UserDataSlot<V> slot, [DisallowNull]V userData)
             => GetOrCreateStorage().Set(slot, userData);
 
         /// <summary>
