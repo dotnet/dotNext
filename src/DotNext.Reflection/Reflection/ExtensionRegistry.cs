@@ -14,8 +14,8 @@ namespace DotNext.Reflection
     [SuppressMessage("Design", "CA1010", Justification = "The registry cannot be instantiated directly from external code")]
     public sealed class ExtensionRegistry : ConcurrentBag<MethodInfo>
     {
-        private static readonly UserDataSlot<ExtensionRegistry?> InstanceMethods = UserDataSlot<ExtensionRegistry?>.Allocate();
-        private static readonly UserDataSlot<ExtensionRegistry?> StaticMethods = UserDataSlot<ExtensionRegistry?>.Allocate();
+        private static readonly UserDataSlot<ExtensionRegistry> InstanceMethods = UserDataSlot<ExtensionRegistry>.Allocate();
+        private static readonly UserDataSlot<ExtensionRegistry> StaticMethods = UserDataSlot<ExtensionRegistry>.Allocate();
 
         private ExtensionRegistry()
         {
@@ -24,7 +24,7 @@ namespace DotNext.Reflection
 
         private static ExtensionRegistry Create() => new ExtensionRegistry();
 
-        private static IEnumerable<MethodInfo> GetMethods(IEnumerable<Type> types, UserDataSlot<ExtensionRegistry?> registrySlot)
+        private static IEnumerable<MethodInfo> GetMethods(IEnumerable<Type> types, UserDataSlot<ExtensionRegistry> registrySlot)
         {
             foreach (var type in types)
                 foreach (var method in type.GetUserData().Get(registrySlot) ?? Enumerable.Empty<MethodInfo>())
@@ -61,7 +61,7 @@ namespace DotNext.Reflection
                 MethodLookup.Static => StaticMethods,
                 _ => throw new ArgumentOutOfRangeException(nameof(lookup)),
             };
-            return target.GetUserData().GetOrSet(registrySlot, new ValueFunc<ExtensionRegistry?>(Create));
+            return target.GetUserData().GetOrSet(registrySlot, new ValueFunc<ExtensionRegistry>(Create));
         }
 
         /// <summary>

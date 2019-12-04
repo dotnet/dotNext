@@ -30,7 +30,5 @@ namespace DotNext
         internal static string ConcreteDelegateExpected => Resources.GetString("ConcreteDelegateExpected");
 
         internal static string InvalidExpressionTree => Resources.GetString("InvalidExpressionTree");
-    
-        internal static string FactoryReturnsNull => Resources.GetString("FactoryReturnsNull");
     }
 }
