@@ -5,7 +5,6 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <StartupObject>DotNext.Program</StartupObject>
-    <LangVersion>latest</LangVersion>
     <IsPackable>false</IsPackable>
     <Version>2.0.0</Version>
     <Authors>Roman Sakno</Authors>
