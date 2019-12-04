@@ -1,6 +1,33 @@
 Release Notes
 ====
 
+# 12-04-2019
+<a href="https://www.nuget.org/packages/dotnext/1.2.9">DotNext 1.2.9</a>
+* Updated dependencies
+* Migration to SourceLink 1.0.0
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.2.9">DotNext.Metaprogramming 1.2.9</a>
+* Updated dependencies
+* Migration to SourceLink 1.0.0
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/1.2.9">DotNext.Reflection 1.2.9</a>
+* Updated dependencies
+* Migration to SourceLink 1.0.0
+
+<a href="https://www.nuget.org/packages/dotnext.threading/1.3.3">DotNext.Threading 1.3.3</a>
+* Updated dependencies
+* Migration to SourceLink 1.0.0
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.9">DotNext.Unsafe 1.2.9</a>
+* Updated dependencies
+* Fixed invalid calculation of byte length in `Pointer.Clear` method
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.9">DotNext.Net.Cluster 1.2.9</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.9">DotNext.AspNetCore.Cluster 1.2.9</a>
+* Updated dependencies
+
 # 11-27-2019
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.8">DotNext.AspNetCore.Cluster 1.2.8</a>
 * Improved performance of one-way no-ack messages that can be passed using `ISubscriber.SendSignalAsync` method
