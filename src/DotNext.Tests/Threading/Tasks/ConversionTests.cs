@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Reflection;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Threading.Tasks
@@ -17,6 +18,27 @@ namespace DotNext.Threading.Tasks
         {
             var t = Task.FromResult("12").Convert(int.Parse);
             Equal(12, t.Result);
+        }
+
+        [Fact]
+        public static async Task DynamicTask()
+        {
+            object result = await Task.CompletedTask.AsDynamic();
+            Equal(Missing.Value, result);
+            result = await Task.FromResult("Hello").AsDynamic();
+            Equal("Hello", result);
+            //check for caching
+            result = await Task.CompletedTask.AsDynamic();
+            Equal(Missing.Value, result);
+            result = await Task.FromResult("Hello2").AsDynamic();
+            Equal("Hello2", result);
+        }
+
+        [Fact]
+        public static async Task DynamicTaskValueType()
+        {
+            int result = await Task.FromResult(42).AsDynamic();
+            Equal(42, result);
         }
     }
 }

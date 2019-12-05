@@ -1,27 +1,41 @@
 ﻿using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
 {
     internal sealed class TaskResultBinder : CallSiteBinder
     {
-        private const string PropertyName = nameof(System.Threading.Tasks.Task<int>.Result);
+        private const string PropertyName = nameof(Task<int>.Result);
         private const BindingFlags PropertyFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 
-        private Expression Bind(object targetValue, Expression target, LabelTarget returnLabel)
+        private static MemberExpression BindMissingProperty(Expression target, out Expression restrictions)
+        {
+            restrictions = Expression.TypeEqual(target, typeof(Task));
+            return Expression.Field(null, typeof(Missing), nameof(Missing.Value));
+        }
+
+        private static Expression BindProperty(PropertyInfo resultProperty, Expression target, out Expression restrictions)
+        {
+            restrictions = Expression.TypeIs(target, resultProperty.DeclaringType);
+            //reinterpret reference type without casting because it is protected by restriction
+            target = Expression.Call(typeof(Unsafe), nameof(Unsafe.As), new[] { resultProperty.DeclaringType }, target);
+            target = Expression.Property(target, resultProperty);
+            return target.Type.IsValueType ? Expression.Convert(target, typeof(object)) : target;
+        }
+
+        private static Expression Bind(object targetValue, Expression target, LabelTarget returnLabel)
         {
             PropertyInfo? property = targetValue.GetType().GetProperty(PropertyName, PropertyFlags);
-            if (property is null)
-                target = Expression.Field(null, typeof(Missing), nameof(Missing.Value));
-            else
-            {
-                if (property.PropertyType != target.Type)
-                    target = Expression.Convert(target, property.PropertyType);
-                target = Expression.Property(target, property);
-            }
+            target = property is null ?
+                BindMissingProperty(target, out var restrictions) :
+                BindProperty(property, target, out restrictions);
+
             target = Expression.Return(returnLabel, target);
+            target = Expression.Condition(restrictions, target, Expression.Goto(UpdateLabel));
             return target;
         }
 

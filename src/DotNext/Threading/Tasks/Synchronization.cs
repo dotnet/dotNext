@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
@@ -13,8 +14,6 @@ namespace DotNext.Threading.Tasks
     public static class Synchronization
     {
         private static readonly Func<Task, bool> TrueContinuation = task => true;
-
-        public static DynamicTaskAwaitable AsDynamic(this Task task) => new DynamicTaskAwaitable(task);
 
         /// <summary>
         /// Gets task result synchronously.
@@ -56,6 +55,56 @@ namespace DotNext.Threading.Tasks
             {
                 return new Result<R>(e);
             }
+        }
+
+        /// <summary>
+        /// Gets task result synchronously.
+        /// </summary>
+        /// <param name="task">The task to synchronize.</param>
+        /// <param name="token">Cancellation token.</param>
+        /// <returns>Task result.</returns>
+        public static Result<dynamic> GetResult(this Task task, CancellationToken token)
+        {
+            Result<object> result;
+            try
+            {
+                task.Wait(token);
+                var value = DynamicTaskAwaitable.GetResult(task);
+                result = new Result<object>(Unsafe.As<dynamic, object>(ref value));
+            }
+            catch (Exception e)
+            {
+                return new Result<object>(e);
+            }
+            return Unsafe.As<Result<object>, Result<dynamic>>(ref result);
+        }
+
+        /// <summary>
+        /// Gets task result synchronously.
+        /// </summary>
+        /// <param name="task">The task to synchronize.</param>
+        /// <param name="timeout">Synchronization timeout.</param>
+        /// <typeparam name="R">Type of task result.</typeparam>
+        /// <returns>Task result.</returns>
+        /// <exception cref="TimeoutException">Task is not completed.</exception>
+        public static Result<dynamic> GetResult(this Task task, TimeSpan timeout)
+        {
+            Result<object> result;
+            try
+            {
+                if (task.Wait(timeout))
+                {
+                    var value = DynamicTaskAwaitable.GetResult(task);
+                    result = new Result<object>(Unsafe.As<dynamic, object>(ref value));
+                }
+                else
+                    result = new Result<object>(new TimeoutException());
+            }
+            catch (Exception e)
+            {
+                result = new Result<object>(e);
+            }
+            return Unsafe.As<Result<object>, Result<dynamic>>(ref result);
         }
 
         /// <summary>

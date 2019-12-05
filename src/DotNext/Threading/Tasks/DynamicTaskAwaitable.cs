@@ -8,9 +8,10 @@ namespace DotNext.Threading.Tasks
 
     public readonly struct DynamicTaskAwaitable
     {
+        private static readonly CallSite<Func<CallSite, Task, object>> GetResultCallSite = CallSite<Func<CallSite, Task, object>>.Create(new TaskResultBinder());
+
         public readonly struct Awaiter : IFuture
         {
-            private static readonly CallSite<Func<CallSite, Task, object>> GetResultCallSite = CallSite<Func<CallSite, Task, object>>.Create(new TaskResultBinder());
             private readonly Task task;
             private readonly ConfiguredTaskAwaitable.ConfiguredTaskAwaiter awaiter;
 
@@ -24,7 +25,7 @@ namespace DotNext.Threading.Tasks
 
             public void OnCompleted(Action continuation) => awaiter.OnCompleted(continuation);
 
-            public dynamic GetResult() => GetResultCallSite.Target.Invoke(GetResultCallSite, task);
+            public dynamic GetResult() => DynamicTaskAwaitable.GetResult(task);
         }
 
         private readonly Task task;
@@ -40,5 +41,6 @@ namespace DotNext.Threading.Tasks
 
         public Awaiter GetAwaiter() => new Awaiter(task, continueOnCaptureContext);
 
+        internal static dynamic GetResult(Task task) => GetResultCallSite.Target.Invoke(GetResultCallSite, task);
     }
 }

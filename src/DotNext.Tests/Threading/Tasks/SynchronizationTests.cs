@@ -50,12 +50,18 @@ namespace DotNext.Threading.Tasks
         }
 
         [Fact]
-        public static async Task DynamicTask()
+        public static void GetDynamicResult()
         {
-            object result = await Task.CompletedTask.AsDynamic();
+            Task task = Task.FromResult(42);
+            Result<dynamic> result = task.GetResult(CancellationToken.None);
+            Equal(42, result);
+            result = task.GetResult(TimeSpan.Zero);
+            Equal(42, result);
+            task = Task.CompletedTask;
+            result = task.GetResult(CancellationToken.None);
             Equal(Missing.Value, result);
-            result = await Task.FromResult("Hello").AsDynamic();
-            Equal("Hello", result);
+            result = task.GetResult(TimeSpan.Zero);
+            Equal(Missing.Value, result);
         }
     }
 }

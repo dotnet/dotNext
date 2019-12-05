@@ -56,5 +56,14 @@ namespace DotNext.Threading.Tasks
         /// <returns>The converted task.</returns>
         public static async Task<O> Convert<I, O>(this Task<I> task, Converter<I, Task<O>> converter)
             => await converter(await task.ConfigureAwait(false)).ConfigureAwait(false);
+
+        /// <summary>
+        /// Allows to convert <see cref="Task{TResult}"/> of unknown result type into dynamically
+        /// typed task which result can be obtained as <see cref="object"/>
+        /// or any other data type using <c>dynamic</c> approach.
+        /// </summary>
+        /// <param name="task">The arbitrary task of type <see cref="Task{TResult}"/>.</param>
+        /// <returns>The dynamically typed task.</returns>
+        public static DynamicTaskAwaitable AsDynamic(this Task task) => new DynamicTaskAwaitable(task);
     }
 }
