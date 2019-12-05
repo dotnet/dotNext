@@ -48,7 +48,7 @@ namespace DotNext.Buffers
             if (diff > 0L)
                 GC.AddMemoryPressure(diff);
             else if (diff < 0L)
-                GC.RemoveMemoryPressure(diff & long.MaxValue);
+                GC.RemoveMemoryPressure(Math.Abs(diff));
         }
 
         public unsafe sealed override Span<T> GetSpan() => new Span<T>(address.ToPointer(), Length);

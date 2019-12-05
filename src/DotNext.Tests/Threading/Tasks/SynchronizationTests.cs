@@ -62,6 +62,9 @@ namespace DotNext.Threading.Tasks
             Equal(Missing.Value, result);
             result = task.GetResult(TimeSpan.Zero);
             Equal(Missing.Value, result);
+            task = Task.FromCanceled(new CancellationToken(true));
+            result = task.GetResult(CancellationToken.None);
+            IsType<AggregateException>(result.Error);
         }
     }
 }

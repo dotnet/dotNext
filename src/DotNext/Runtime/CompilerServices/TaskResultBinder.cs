@@ -1,5 +1,5 @@
-﻿using System.Collections.ObjectModel;
-using System.Dynamic;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -7,15 +7,18 @@ using System.Threading.Tasks;
 
 namespace DotNext.Runtime.CompilerServices
 {
+    [RuntimeFeatures(DynamicCodeCompilation = true, RuntimeGenericInstantiation = true)]
     internal sealed class TaskResultBinder : CallSiteBinder
     {
         private const string PropertyName = nameof(Task<int>.Result);
         private const BindingFlags PropertyFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy;
 
-        private static MemberExpression BindMissingProperty(Expression target, out Expression restrictions)
+        private static Expression BindMissingProperty(Expression target, out Expression restrictions)
         {
             restrictions = Expression.TypeEqual(target, typeof(Task));
-            return Expression.Field(null, typeof(Missing), nameof(Missing.Value));
+            target = Expression.Call(target, nameof(Task.GetAwaiter), Type.EmptyTypes);
+            target = Expression.Call(target, nameof(TaskAwaiter.GetResult), Type.EmptyTypes);
+            return Expression.Block(typeof(object), target, Expression.Field(null, typeof(Missing), nameof(Missing.Value)));
         }
 
         private static Expression BindProperty(PropertyInfo resultProperty, Expression target, out Expression restrictions)
@@ -40,10 +43,5 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         public override Expression Bind(object[] args, ReadOnlyCollection<ParameterExpression> parameters, LabelTarget returnLabel) => Bind(args[0], parameters[0], returnLabel);
-
-        public override T BindDelegate<T>(CallSite<T> site, object[] args)
-        {
-            return base.BindDelegate(site, args);
-        }
     }
 }

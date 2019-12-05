@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -32,6 +34,7 @@ namespace DotNext.Threading.Tasks
             Equal(Missing.Value, result);
             result = await Task.FromResult("Hello2").AsDynamic();
             Equal("Hello2", result);
+            await ThrowsAnyAsync<OperationCanceledException>(async () => await Task.FromCanceled(new CancellationToken(true)).AsDynamic());
         }
 
         [Fact]

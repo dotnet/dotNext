@@ -45,7 +45,7 @@ namespace RaftNode
 
         async Task<long> IValueProvider.GetValueAsync()
         {
-            using (await SyncRoot.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
+            using (await WriteLock.AcquireAsync(CancellationToken.None).ConfigureAwait(false))
             {
                 content.Position = 0;
                 return await content.ReadAsync<long>(Buffer).ConfigureAwait(false);
