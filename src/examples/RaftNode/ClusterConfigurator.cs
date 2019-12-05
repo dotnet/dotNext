@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace RaftNode
 {
-    internal sealed class ClusterConfigurator : IRaftClusterConfigurator
+    internal sealed class ClusterConfigurator : IClusterMemberLifetime
     {
         private static void LeaderChanged(ICluster cluster, IClusterMember leader)
         {

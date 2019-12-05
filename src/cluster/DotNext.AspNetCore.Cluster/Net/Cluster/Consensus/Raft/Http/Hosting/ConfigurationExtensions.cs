@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// </summary>
         /// <param name="builder">The builder of main application host.</param>
         /// <returns>The builder of main application host.</returns>
-        public static IHostBuilder BecomeClusterMember(this IHostBuilder builder)
+        public static IHostBuilder JoinCluster(this IHostBuilder builder)
             => builder.ConfigureServices(ConfigureClusterMember);
     }
 }

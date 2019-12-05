@@ -23,10 +23,9 @@ namespace RaftNode
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IRaftClusterConfigurator, ClusterConfigurator>()
+            services.AddSingleton<IClusterMemberLifetime, ClusterConfigurator>()
                 .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
-                .AddOptions()
-                .BecomeClusterMember(configuration);
+                .AddOptions();
             var path = configuration[SimplePersistentState.LogLocation];
             if (!string.IsNullOrWhiteSpace(path))
             {

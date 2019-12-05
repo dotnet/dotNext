@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
     [CLSCompliant(false)]
     public static class ConfigurationExtensions
     {
-        private static void BecomeClusterMember(HostBuilderContext context, IServiceCollection services)
+        private static void JoinCluster(HostBuilderContext context, IServiceCollection services)
             => services.AddClusterAsSingleton<RaftEmbeddedCluster, RaftEmbeddedClusterMemberConfiguration>(context.Configuration);
 
         /// <summary>
@@ -25,8 +25,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
         /// </remarks>
         /// <param name="builder">The host builder.</param>
         /// <returns>The modified host builder.</returns>
-        public static IHostBuilder BecomeClusterMember(this IHostBuilder builder)
-            => builder.ConfigureServices(BecomeClusterMember);
+        public static IHostBuilder JoinCluster(this IHostBuilder builder)
+            => builder.ConfigureServices(JoinCluster);
 
         private static void ConfigureConsensusProtocolHandler(this RaftHttpCluster cluster, IApplicationBuilder builder)
             => builder.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent }).Run(cluster.ProcessRequest);

@@ -58,8 +58,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                         options.ListenAnyIP(port);
                 })
                     .UseShutdownTimeout(TimeSpan.FromMinutes(2))
-                    .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
-                    .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
                     .ConfigureServices(services =>
                     {
                         if (configurator != null)
@@ -67,7 +65,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                     })
                     .UseStartup<TStartup>()
                 )
-                .BecomeClusterMember()
+                .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
+                .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
+                .JoinCluster()
                 .Build();
         }
 

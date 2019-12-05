@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                     })
                     .UseStartup<TStartup>()
                 )
-                .BecomeClusterMember()
+                .JoinCluster()
                 .Build();
         }
 
