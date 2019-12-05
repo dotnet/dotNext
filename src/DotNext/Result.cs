@@ -213,6 +213,12 @@ namespace DotNext
         public Exception? Error => exception?.SourceException;
 
         /// <summary>
+        /// Gets boxed representation of the result.
+        /// </summary>
+        /// <returns>The boxed representation of the result.</returns>
+        public Result<object?> Box() => exception is null ? new Result<object?>(value) : new Result<object?>(exception);
+
+        /// <summary>
         /// Extracts actual result.
         /// </summary>
         /// <param name="result">The result object.</param>

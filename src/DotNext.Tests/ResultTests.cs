@@ -72,5 +72,13 @@ namespace DotNext
             opt = result;
             False(opt.HasValue);
         }
+
+        [Fact]
+        public static void Boxing()
+        {
+            Equal("Hello", new Result<string>("Hello").Box());
+            Null(new Result<string>(default(string)).Box().Value);
+            IsType<ArithmeticException>(new Result<int>(new ArithmeticException()).Box().Error);
+        }
     }
 }

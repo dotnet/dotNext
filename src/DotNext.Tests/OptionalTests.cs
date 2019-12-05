@@ -141,9 +141,9 @@ namespace DotNext
         [Fact]
         public static void Boxing()
         {
-            Null(Optional<string>.Empty.Box());
-            Null(Optional<int>.Empty.Box());
-            Null(Optional<int?>.Empty.Box());
+            False(Optional<string>.Empty.Box().HasValue);
+            False(Optional<int>.Empty.Box().HasValue);
+            False(Optional<int?>.Empty.Box().HasValue);
             Equal("123", new Optional<string>("123").Box());
             Equal(42, new Optional<int>(42).Box());
             Equal(42, new Optional<int?>(42).Box());
