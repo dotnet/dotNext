@@ -39,34 +39,10 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 12-04-2019
+Release Date: 12-06-2019
 
-<a href="https://www.nuget.org/packages/dotnext/1.2.9">DotNext 1.2.9</a>
-* `UserDataStorage` no longer stores **null** values in its internal dictionary
-* Updated dependencies
-* Migration to SourceLink 1.0.0
-
-<a href="https://www.nuget.org/packages/dotnext.metaprogramming/1.2.9">DotNext.Metaprogramming 1.2.9</a>
-* Updated dependencies
-* Migration to SourceLink 1.0.0
-
-<a href="https://www.nuget.org/packages/dotnext.reflection/1.2.9">DotNext.Reflection 1.2.9</a>
-* Updated dependencies
-* Migration to SourceLink 1.0.0
-
-<a href="https://www.nuget.org/packages/dotnext.threading/1.3.3">DotNext.Threading 1.3.3</a>
-* Updated dependencies
-* Migration to SourceLink 1.0.0
-
-<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.9">DotNext.Unsafe 1.2.9</a>
-* Updated dependencies
-* Fixed invalid calculation of byte length in `Pointer.Clear` method
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.9">DotNext.Net.Cluster 1.2.9</a>
-* Updated dependencies
-
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/1.2.9">DotNext.AspNetCore.Cluster 1.2.9</a>
-* Updated dependencies
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.10">DotNext.Unsafe 1.2.10</a>
+* Fixed invalid usage of `GC.RemoveMemoryPressure` in `Reallocate` methods
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 12-06-2019
+<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.10">DotNext.Unsafe 1.2.10</a>
+* Fixed invalid usage of `GC.RemoveMemoryPressure` in `Reallocate` methods
+
 # 12-04-2019
 <a href="https://www.nuget.org/packages/dotnext/1.2.9">DotNext 1.2.9</a>
 * `UserDataStorage` no longer stores **null** values in its internal dictionary
