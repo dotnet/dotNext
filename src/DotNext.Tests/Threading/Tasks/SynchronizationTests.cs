@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -46,6 +47,15 @@ namespace DotNext.Threading.Tasks
             NotNull(result.Error);
             False(result.IsSuccessful);
             Throws<AggregateException>(() => result.Value);
+        }
+
+        [Fact]
+        public static async Task DynamicTask()
+        {
+            object result = await Task.CompletedTask.AsDynamic();
+            Equal(Missing.Value, result);
+            result = await Task.FromResult("Hello").AsDynamic();
+            Equal("Hello", result);
         }
     }
 }

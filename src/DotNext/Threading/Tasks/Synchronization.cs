@@ -14,6 +14,8 @@ namespace DotNext.Threading.Tasks
     {
         private static readonly Func<Task, bool> TrueContinuation = task => true;
 
+        public static DynamicTaskAwaitable AsDynamic(this Task task) => new DynamicTaskAwaitable(task);
+
         /// <summary>
         /// Gets task result synchronously.
         /// </summary>
