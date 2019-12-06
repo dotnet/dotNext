@@ -44,7 +44,7 @@ namespace DotNext.Threading.Tasks
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<T?> ToNullable<T>(this Task<T> task)
             where T : struct
-            => Convert<T, T?>(task, NullableConverter<T>.Value);
+            => Convert(task, NullableConverter<T>.Value);
 
         /// <summary>
         /// Converts one type of task into another.
