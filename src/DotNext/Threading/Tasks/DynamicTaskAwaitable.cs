@@ -15,7 +15,6 @@ namespace DotNext.Threading.Tasks
     /// is not known.
     /// Note that this type uses dynamic code compilation via DLR infrastructure.
     /// </remarks>
-    [RuntimeFeatures(DynamicCodeCompilation = true)]
     [StructLayout(LayoutKind.Auto)]
     public readonly struct DynamicTaskAwaitable
     {
@@ -76,6 +75,7 @@ namespace DotNext.Threading.Tasks
         /// <returns>An awaiter instance.</returns>
         public Awaiter GetAwaiter() => new Awaiter(task, continueOnCaptureContext);
 
+        [RuntimeFeatures(DynamicCodeCompilation = true)]
         internal static dynamic GetResult(Task task) => GetResultCallSite.Target.Invoke(GetResultCallSite, task);
     }
 }
