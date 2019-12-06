@@ -3,7 +3,7 @@
     /// <summary>
     /// Represents common interface for objects that support explicit conversion to the particular type.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of conversion result.</typeparam>
     public interface IConvertible<out T>
     {
         /// <summary>
