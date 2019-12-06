@@ -74,9 +74,9 @@ namespace DotNext.Threading.Tasks
             }
             catch (Exception e)
             {
-                return new Result<object>(e);
+                result = new Result<object>(e);
             }
-            return Unsafe.As<Result<object>, Result<dynamic>>(ref result);
+            return result;
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace DotNext.Threading.Tasks
             {
                 result = new Result<object>(e);
             }
-            return Unsafe.As<Result<object>, Result<dynamic>>(ref result);
+            return result;
         }
 
         /// <summary>
