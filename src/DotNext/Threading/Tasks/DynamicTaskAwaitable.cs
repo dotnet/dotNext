@@ -50,7 +50,7 @@ namespace DotNext.Threading.Tasks
             /// <summary>
             /// Gets dynamically typed task result.
             /// </summary>
-            /// <returns>The result of the completed task.</returns>
+            /// <returns>The result of the completed task; or <see cref="System.Reflection.Missing.Value"/> if underlying task is not of type <see cref="Task{TResult}"/>.</returns>
             public dynamic GetResult() => DynamicTaskAwaitable.GetResult(task);
         }
 

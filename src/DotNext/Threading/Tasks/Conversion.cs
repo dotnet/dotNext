@@ -62,6 +62,10 @@ namespace DotNext.Threading.Tasks
         /// typed task which result can be obtained as <see cref="object"/>
         /// or any other data type using <c>dynamic</c> approach.
         /// </summary>
+        /// <remarks>
+        /// The type of the returned task is not known at compile time and therefore treated as <c>dynamic</c>. The result value returned 
+        /// by <c>await</c> operator is equal to <see cref="System.Reflection.Missing.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.
+        /// </remarks>
         /// <param name="task">The arbitrary task of type <see cref="Task{TResult}"/>.</param>
         /// <returns>The dynamically typed task.</returns>
         public static DynamicTaskAwaitable AsDynamic(this Task task) => new DynamicTaskAwaitable(task);

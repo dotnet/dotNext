@@ -62,7 +62,7 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="task">The task to synchronize.</param>
         /// <param name="token">Cancellation token.</param>
-        /// <returns>Task result.</returns>
+        /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.</returns>
         public static Result<dynamic> GetResult(this Task task, CancellationToken token)
         {
             Result<object> result;
@@ -84,8 +84,7 @@ namespace DotNext.Threading.Tasks
         /// </summary>
         /// <param name="task">The task to synchronize.</param>
         /// <param name="timeout">Synchronization timeout.</param>
-        /// <typeparam name="R">Type of task result.</typeparam>
-        /// <returns>Task result.</returns>
+        /// <returns>Task result; or <see cref="System.Reflection.Missing.Value"/> returned from <see cref="Result{T}.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.</returns>
         /// <exception cref="TimeoutException">Task is not completed.</exception>
         public static Result<dynamic> GetResult(this Task task, TimeSpan timeout)
         {
