@@ -30,6 +30,7 @@ namespace DotNext.Threading
         /// <remarks>
         /// The lock can be released by calling <see cref="Dispose()"/>.
         /// </remarks>
+        [StructLayout(LayoutKind.Auto)]
         public ref struct Holder
         {
             private readonly object lockedObject;
