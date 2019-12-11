@@ -9,9 +9,11 @@ namespace DotNext.Text
     /// </summary>
     /// <remarks>
     /// The context represents an encoding cache to avoid memory allocations for each round of string encoding caused by methods of <see cref="IO.StreamExtensions"/> class.
+    /// It cannot be shared across parallel flows or threads. However, you can call <see cref="Copy"/> method to create
+    /// an independent copy of this context for separated async flow or thread.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct EncodingContext
+    public readonly struct EncodingContext : ICloneable
     {
         private readonly Encoding encoding;
         private readonly Encoder? encoder;
@@ -27,6 +29,15 @@ namespace DotNext.Text
             this.encoding = encoding ?? throw new ArgumentNullException(nameof(encoding));
             encoder = reuseEncoder ? encoding.GetEncoder() : null;
         }
+
+        /// <summary>
+        /// Creates independent copy of this context that can be used
+        /// in separated async flow or thread.
+        /// </summary>
+        /// <returns>The independent copy of this context.</returns>
+        public EncodingContext Copy() => new EncodingContext(encoding, encoder != null);
+
+        object ICloneable.Clone() => Copy();
 
         /// <summary>
         /// Sets the encapsulated encoder to its initial state.
