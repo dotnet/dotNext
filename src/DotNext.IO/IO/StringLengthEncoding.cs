@@ -8,11 +8,17 @@
         /// <summary>
         /// Use 4-byte to represent string length.
         /// </summary>
+        /// <remarks>
+        /// This format provides the best performance.
+        /// </remarks>
         Plain,
 
         /// <summary>
         /// Use 7-bit encoding compressed format.
         /// </summary>
-        SevenBitEncoded
+        /// <remarks>
+        /// This format provides optimized binary size.
+        /// </remarks>
+        Compressed
     }
 }

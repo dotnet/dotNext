@@ -112,7 +112,7 @@ namespace DotNext.IO
                 case StringLengthEncoding.Plain:
                     stream.Write(context.Encoding.GetByteCount(value));
                     break;
-                case StringLengthEncoding.SevenBitEncoded:
+                case StringLengthEncoding.Compressed:
                     stream.Write7BitEncodedInt(context.Encoding.GetByteCount(value));
                     break;
             }
@@ -153,7 +153,7 @@ namespace DotNext.IO
                 case StringLengthEncoding.Plain:
                     stream.Write(bytesCount);
                     break;
-                case StringLengthEncoding.SevenBitEncoded:
+                case StringLengthEncoding.Compressed:
                     stream.Write7BitEncodedInt(bytesCount);
                     break;
             }
@@ -191,7 +191,7 @@ namespace DotNext.IO
                 case StringLengthEncoding.Plain:
                     await stream.WriteAsync(context.Encoding.GetByteCount(value.Span), token).ConfigureAwait(false);
                     break;
-                case StringLengthEncoding.SevenBitEncoded:
+                case StringLengthEncoding.Compressed:
                     await stream.Write7BitEncodedIntAsync(context.Encoding.GetByteCount(value.Span), buffer, token);
                     break;
             }
@@ -236,7 +236,7 @@ namespace DotNext.IO
                 case StringLengthEncoding.Plain:
                     await stream.WriteAsync(bytesCount, token).ConfigureAwait(false);
                     break;
-                case StringLengthEncoding.SevenBitEncoded:
+                case StringLengthEncoding.Compressed:
                     await stream.Write7BitEncodedIntAsync(bytesCount, buffer.Memory, token).ConfigureAwait(false);
                     break;
             }
@@ -285,14 +285,14 @@ namespace DotNext.IO
         private static int ReadStringLength(this Stream stream, StringLengthEncoding lengthFormat) => lengthFormat switch
         {
             StringLengthEncoding.Plain => stream.Read<int>(),
-            StringLengthEncoding.SevenBitEncoded => stream.Read7BitEncodedInt(),
+            StringLengthEncoding.Compressed => stream.Read7BitEncodedInt(),
             _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat))
         };
 
         private static ValueTask<int> ReadStringLengthAsync(this Stream stream, StringLengthEncoding lengthFormat, Memory<byte> buffer, CancellationToken token) => lengthFormat switch
         {
             StringLengthEncoding.Plain => stream.ReadAsync<int>(buffer, token),
-            StringLengthEncoding.SevenBitEncoded => stream.Read7BitEncodedIntAsync(buffer, token),
+            StringLengthEncoding.Compressed => stream.Read7BitEncodedIntAsync(buffer, token),
             _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat))
         };
 
