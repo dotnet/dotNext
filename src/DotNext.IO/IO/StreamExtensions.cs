@@ -22,6 +22,44 @@ namespace DotNext.IO
     /// </remarks>
     public static class StreamExtensions
     {
+        private readonly struct StreamWriter : SevenBitEncodedInt.IWriter
+        {
+            private readonly Stream stream;
+
+            internal StreamWriter(Stream stream) => this.stream = stream;
+
+            void SevenBitEncodedInt.IWriter.WriteByte(byte value) => stream.WriteByte(value);
+        }
+
+        private struct MemoryWriter : SevenBitEncodedInt.IWriter
+        {
+            private readonly Memory<byte> buffer;
+            private int offset;
+
+            internal MemoryWriter(Memory<byte> output)
+            {
+                buffer = output;
+                offset = 0;
+            }
+
+            internal Memory<byte> Result => buffer.Slice(0, offset);
+
+            void SevenBitEncodedInt.IWriter.WriteByte(byte value) => buffer.Span[offset++] = value;
+        }
+
+        private static void Write7BitEncodedInt(this Stream stream, int value)
+        {
+            var writer = new StreamWriter(stream);
+            SevenBitEncodedInt.Encode(ref writer, (uint)value);
+        }
+
+        private static ValueTask Write7BitEncodedIntAsync(this Stream stream, int value, Memory<byte> buffer, CancellationToken token)
+        {
+            var writer = new MemoryWriter(buffer);
+            SevenBitEncodedInt.Encode(ref writer, (uint)value);
+            return stream.WriteAsync(writer.Result, token);
+        }
+
         /// <summary>
         /// Writes the string to the stream using supplied reusable buffer.
         /// </summary>
@@ -32,8 +70,24 @@ namespace DotNext.IO
         /// <param name="value">The string to be encoded.</param>
         /// <param name="context">The encoding.</param>
         /// <param name="buffer">The buffer allocated by the caller needed for characters encoding.</param>
-        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, in EncodingContext context, Span<byte> buffer)
+        /// <param name="lengthFormat">Represents string length encoding format.</param>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of <paramref name="value"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, in EncodingContext context, Span<byte> buffer, StringLengthEncoding lengthFormat = StringLengthEncoding.None)
         {
+            switch (lengthFormat)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case StringLengthEncoding.None:
+                    break;
+                case StringLengthEncoding.Plain:
+                    stream.Write(context.Encoding.GetByteCount(value));
+                    break;
+                case StringLengthEncoding.SevenBitEncoded:
+                    stream.Write7BitEncodedInt(context.Encoding.GetByteCount(value));
+                    break;
+            }
             if (value.IsEmpty)
                 return;
             var encoder = context.GetEncoder();
@@ -57,11 +111,26 @@ namespace DotNext.IO
         /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The string to be encoded.</param>
         /// <param name="encoding">The encoding.</param>
-        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding)
+        /// <param name="lengthFormat">Represents string length encoding format.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding lengthFormat = StringLengthEncoding.None)
         {
-            if (value.IsEmpty)
-                return;
             var bytesCount = encoding.GetByteCount(value);
+            switch (lengthFormat)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case StringLengthEncoding.None:
+                    break;
+                case StringLengthEncoding.Plain:
+                    stream.Write(bytesCount);
+                    break;
+                case StringLengthEncoding.SevenBitEncoded:
+                    stream.Write7BitEncodedInt(bytesCount);
+                    break;
+            }
+            if (bytesCount == 0)
+                return;
             using MemoryRental<byte> buffer = bytesCount <= 1024 ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
             encoding.GetBytes(value, buffer.Span);
             stream.Write(buffer.Span);
@@ -77,11 +146,27 @@ namespace DotNext.IO
         /// <param name="value">The string to be encoded.</param>
         /// <param name="context">The encoding context.</param>
         /// <param name="buffer">The buffer allocated by the caller needed for characters encoding.</param>
+        /// <param name="lengthFormat">Represents string length encoding format.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, EncodingContext context, Memory<byte> buffer, CancellationToken token = default)
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of <paramref name="value"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, EncodingContext context, Memory<byte> buffer, StringLengthEncoding lengthFormat = StringLengthEncoding.None, CancellationToken token = default)
         {
+            switch (lengthFormat)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case StringLengthEncoding.None:
+                    break;
+                case StringLengthEncoding.Plain:
+                    await stream.WriteAsync(context.Encoding.GetByteCount(value.Span), token).ConfigureAwait(false);
+                    break;
+                case StringLengthEncoding.SevenBitEncoded:
+                    await stream.Write7BitEncodedIntAsync(context.Encoding.GetByteCount(value.Span), buffer, token);
+                    break;
+            }
             if (value.IsEmpty)
                 return;
             var encoder = context.GetEncoder();
@@ -105,15 +190,30 @@ namespace DotNext.IO
         /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The string to be encoded.</param>
         /// <param name="encoding">The encoding context.</param>
+        /// <param name="lengthFormat">Represents string length encoding format.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding, CancellationToken token = default)
+        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding lengthFormat = StringLengthEncoding.None, CancellationToken token = default)
         {
-            if (value.IsEmpty)
-                return;
             var bytesCount = encoding.GetByteCount(value.Span);
             using var buffer = new ArrayRental<byte>(bytesCount);
+            switch (lengthFormat)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case StringLengthEncoding.None:
+                    break;
+                case StringLengthEncoding.Plain:
+                    await stream.WriteAsync(bytesCount, token).ConfigureAwait(false);
+                    break;
+                case StringLengthEncoding.SevenBitEncoded:
+                    await stream.Write7BitEncodedIntAsync(bytesCount, buffer.Memory, token).ConfigureAwait(false);
+                    break;
+            }
+            if (bytesCount == 0)
+                return;
+            
             encoding.GetBytes(value.Span, buffer.Span);
             await stream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
         }
