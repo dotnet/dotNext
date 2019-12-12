@@ -115,103 +115,133 @@ namespace DotNext.IO
             await ReadStringUsingEncodingAsync(testString2, Encoding.UTF32, bufferSize);
         }
 
-        private static void ReadWriteStringUsingEncoding(Encoding encoding, int bufferSize)
+        private static void ReadWriteStringUsingEncoding(Encoding encoding, int bufferSize, StringLengthEncoding? lengthEnc)
         {
             const string helloWorld = "Hello, world!&*(@&*(fghjwgfwffgw";
             using var ms = new MemoryStream();
             var buffer = new byte[bufferSize];
-            ms.WriteString(helloWorld, encoding, buffer);
+            ms.WriteString(helloWorld, encoding, buffer, lengthEnc);
             ms.Position = 0;
-            Equal(helloWorld, ms.ReadString(encoding.GetByteCount(helloWorld), encoding, buffer));
+            var result = lengthEnc is null ?
+                ms.ReadString(encoding.GetByteCount(helloWorld), encoding, buffer) :
+                ms.ReadString(lengthEnc.Value, encoding, buffer);
+            Equal(helloWorld, result);
         }
 
-        private static void ReadWriteStringUsingEncoding(string value, Encoding encoding)
+        private static void ReadWriteStringUsingEncoding(string value, Encoding encoding, StringLengthEncoding? lengthEnc)
         {
             using var ms = new MemoryStream();
-            ms.WriteString(value, encoding);
+            ms.WriteString(value, encoding, lengthEnc);
             ms.Position = 0;
-            Equal(value, ms.ReadString(encoding.GetByteCount(value), encoding));
-        }
-
-        [Fact]
-        public static void ReadWriteString()
-        {
-            const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
-            ReadWriteStringUsingEncoding(testString1, Encoding.UTF8);
-            ReadWriteStringUsingEncoding(testString1, Encoding.Unicode);
-            ReadWriteStringUsingEncoding(testString1, Encoding.UTF7);
-            ReadWriteStringUsingEncoding(testString1, Encoding.UTF32);
-            ReadWriteStringUsingEncoding(testString1, Encoding.ASCII);
-            const string testString2 = "Привет, мир!";
-            ReadWriteStringUsingEncoding(testString2, Encoding.UTF8);
-            ReadWriteStringUsingEncoding(testString2, Encoding.Unicode);
-            ReadWriteStringUsingEncoding(testString2, Encoding.UTF7);
-            ReadWriteStringUsingEncoding(testString2, Encoding.UTF32);
+            var result = lengthEnc is null ?
+                ms.ReadString(encoding.GetByteCount(value), encoding) :
+                ms.ReadString(lengthEnc.Value, encoding);
+            Equal(value, result);
         }
 
         [Theory]
-        [InlineData(10)]
-        [InlineData(15)]
-        [InlineData(1024)]
-        public static void ReadWriteBufferedString(int bufferSize)
+        [InlineData(null)]
+        [InlineData(StringLengthEncoding.Compressed)]
+        [InlineData(StringLengthEncoding.Plain)]
+        public static void ReadWriteString(StringLengthEncoding? lengthEnc)
         {
-            ReadWriteStringUsingEncoding(Encoding.UTF8, bufferSize);
-            ReadWriteStringUsingEncoding(Encoding.Unicode, bufferSize);
-            ReadWriteStringUsingEncoding(Encoding.UTF7, bufferSize);
-            ReadWriteStringUsingEncoding(Encoding.UTF32, bufferSize);
-            ReadWriteStringUsingEncoding(Encoding.ASCII, bufferSize);
+            const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
+            ReadWriteStringUsingEncoding(testString1, Encoding.UTF8, lengthEnc);
+            ReadWriteStringUsingEncoding(testString1, Encoding.Unicode, lengthEnc);
+            ReadWriteStringUsingEncoding(testString1, Encoding.UTF7, lengthEnc);
+            ReadWriteStringUsingEncoding(testString1, Encoding.UTF32, lengthEnc);
+            ReadWriteStringUsingEncoding(testString1, Encoding.ASCII, lengthEnc);
+            const string testString2 = "Привет, мир!";
+            ReadWriteStringUsingEncoding(testString2, Encoding.UTF8, lengthEnc);
+            ReadWriteStringUsingEncoding(testString2, Encoding.Unicode, lengthEnc);
+            ReadWriteStringUsingEncoding(testString2, Encoding.UTF7, lengthEnc);
+            ReadWriteStringUsingEncoding(testString2, Encoding.UTF32, lengthEnc);
         }
 
-        private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, int bufferSize)
+        [Theory]
+        [InlineData(10, null)]
+        [InlineData(15, null)]
+        [InlineData(1024, null)]
+        [InlineData(10, StringLengthEncoding.Plain)]
+        [InlineData(15, StringLengthEncoding.Plain)]
+        [InlineData(1024, StringLengthEncoding.Plain)]
+        [InlineData(10, StringLengthEncoding.Compressed)]
+        [InlineData(15, StringLengthEncoding.Compressed)]
+        [InlineData(1024, StringLengthEncoding.Compressed)]
+        public static void ReadWriteBufferedString(int bufferSize, StringLengthEncoding? lengthEnc)
+        {
+            ReadWriteStringUsingEncoding(Encoding.UTF8, bufferSize, lengthEnc);
+            ReadWriteStringUsingEncoding(Encoding.Unicode, bufferSize, lengthEnc);
+            ReadWriteStringUsingEncoding(Encoding.UTF7, bufferSize, lengthEnc);
+            ReadWriteStringUsingEncoding(Encoding.UTF32, bufferSize, lengthEnc);
+            ReadWriteStringUsingEncoding(Encoding.ASCII, bufferSize, lengthEnc);
+        }
+
+        private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, int bufferSize, StringLengthEncoding? lengthEnc)
         {
             using var ms = new MemoryStream();
             var buffer = new byte[bufferSize];
-            await ms.WriteStringAsync(value.AsMemory(), encoding, buffer);
+            await ms.WriteStringAsync(value.AsMemory(), encoding, buffer, lengthEnc);
             ms.Position = 0;
-            Equal(value, await ms.ReadStringAsync(encoding.GetByteCount(value), encoding, buffer));
+            var result = await (lengthEnc is null ?
+                ms.ReadStringAsync(encoding.GetByteCount(value), encoding, buffer) :
+                ms.ReadStringAsync(lengthEnc.Value, encoding, buffer));
+            Equal(value, result);
         }
 
-        private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding)
+        private static async Task ReadWriteStringUsingEncodingAsync(string value, Encoding encoding, StringLengthEncoding? lengthEnc)
         {
             using var ms = new MemoryStream();
-            await ms.WriteStringAsync(value.AsMemory(), encoding);
+            await ms.WriteStringAsync(value.AsMemory(), encoding, lengthEnc);
             ms.Position = 0;
-            Equal(value, await ms.ReadStringAsync(encoding.GetByteCount(value), encoding));
-        }
-
-        [Fact]
-        public static async Task ReadWriteStringAsync()
-        {
-            const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.Unicode);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF7);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF32);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.ASCII);
-            const string testString2 = "Привет, мир!";
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8);
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode);
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF7);
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32);
+            var result = await (lengthEnc is null ?
+                ms.ReadStringAsync(encoding.GetByteCount(value), encoding) :
+                ms.ReadStringAsync(lengthEnc.Value, encoding));
+            Equal(value, result);
         }
 
         [Theory]
-        [InlineData(10)]
-        [InlineData(15)]
-        [InlineData(1024)]
-        public static async Task ReadWriteBufferedStringAsync(int bufferSize)
+        [InlineData(null)]
+        [InlineData(StringLengthEncoding.Compressed)]
+        [InlineData(StringLengthEncoding.Plain)]
+        public static async Task ReadWriteStringAsync(StringLengthEncoding? lengthEnc)
         {
             const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8, bufferSize);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.Unicode, bufferSize);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF7, bufferSize);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF32, bufferSize);
-            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.ASCII, bufferSize);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.Unicode, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF7, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF32, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.ASCII, lengthEnc);
             const string testString2 = "Привет, мир!";
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8, bufferSize);
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, bufferSize);
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF7, bufferSize);
-            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, bufferSize);
+            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF7, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, lengthEnc);
+        }
+
+        [Theory]
+        [InlineData(10, null)]
+        [InlineData(15, null)]
+        [InlineData(1024, null)]
+        [InlineData(10, StringLengthEncoding.Compressed)]
+        [InlineData(15, StringLengthEncoding.Compressed)]
+        [InlineData(1024, StringLengthEncoding.Compressed)]
+        [InlineData(10, StringLengthEncoding.Plain)]
+        [InlineData(15, StringLengthEncoding.Plain)]
+        [InlineData(1024, StringLengthEncoding.Plain)]
+        public static async Task ReadWriteBufferedStringAsync(int bufferSize, StringLengthEncoding? lengthEnc)
+        {
+            const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF8, bufferSize, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.Unicode, bufferSize, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF7, bufferSize, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF32, bufferSize, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString1, Encoding.ASCII, bufferSize, lengthEnc);
+            const string testString2 = "Привет, мир!";
+            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8, bufferSize, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, bufferSize, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF7, bufferSize, lengthEnc);
+            await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF32, bufferSize, lengthEnc);
         }
 
         [Fact]
