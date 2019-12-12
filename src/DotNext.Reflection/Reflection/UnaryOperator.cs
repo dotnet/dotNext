@@ -9,6 +9,7 @@ namespace DotNext.Reflection
     /// <summary>
     /// Represents unary operator.
     /// </summary>
+    [Serializable]
     public enum UnaryOperator : int
     {
         /// <summary>

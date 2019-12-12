@@ -1,8 +1,11 @@
-﻿namespace DotNext.IO
+﻿using System;
+
+namespace DotNext.IO
 {
     /// <summary>
     /// Describes how string length should be encoded in binary form.
     /// </summary>
+    [Serializable]
     public enum StringLengthEncoding : byte
     {
         /// <summary>
