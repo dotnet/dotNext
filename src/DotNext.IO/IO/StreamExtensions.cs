@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
 using static System.Runtime.CompilerServices.Unsafe;
-using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO
 {
@@ -22,6 +22,7 @@ namespace DotNext.IO
     /// </remarks>
     public static class StreamExtensions
     {
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct StreamWriter : SevenBitEncodedInt.IWriter
         {
             private readonly Stream stream;
@@ -31,18 +32,19 @@ namespace DotNext.IO
             void SevenBitEncodedInt.IWriter.WriteByte(byte value) => stream.WriteByte(value);
         }
 
-        private struct MemoryWriter : SevenBitEncodedInt.IWriter
+        [StructLayout(LayoutKind.Auto)]
+        private struct BufferedMemoryWriter : SevenBitEncodedInt.IWriter
         {
             private readonly Memory<byte> buffer;
             private int offset;
 
-            internal MemoryWriter(Memory<byte> output)
+            internal BufferedMemoryWriter(Memory<byte> output)
             {
                 buffer = output;
                 offset = 0;
             }
 
-            internal Memory<byte> Result => buffer.Slice(0, offset);
+            internal readonly Memory<byte> Result => buffer.Slice(0, offset);
 
             void SevenBitEncodedInt.IWriter.WriteByte(byte value) => buffer.Span[offset++] = value;
         }
@@ -55,9 +57,35 @@ namespace DotNext.IO
 
         private static ValueTask Write7BitEncodedIntAsync(this Stream stream, int value, Memory<byte> buffer, CancellationToken token)
         {
-            var writer = new MemoryWriter(buffer);
+            var writer = new BufferedMemoryWriter(buffer);
             SevenBitEncodedInt.Encode(ref writer, (uint)value);
             return stream.WriteAsync(writer.Result, token);
+        }
+
+        private static int Read7BitEncodedInt(this Stream stream)
+        {
+            var reader = new SevenBitEncodedInt.Reader();
+            bool moveNext;
+            do
+            {
+                var b = stream.ReadByte();
+                moveNext = b >= 0 ? reader.Append((byte)b) : throw new EndOfStreamException();
+            }
+            while (moveNext);
+            return (int)reader.Result;
+        }
+
+        private static async ValueTask<int> Read7BitEncodedIntAsync(this Stream stream, Memory<byte> buffer, CancellationToken token)
+        {
+            buffer = buffer.Slice(0, 1);
+            var reader = new SevenBitEncodedInt.Reader();
+            for (var moveNext = true; moveNext; moveNext = reader.Append(buffer.Span[0]))
+            {
+                var count = await stream.ReadAsync(buffer, token).ConfigureAwait(false);
+                if (count == 0)
+                    throw new EndOfStreamException();
+            }
+            return (int)reader.Result;
         }
 
         /// <summary>
@@ -73,13 +101,13 @@ namespace DotNext.IO
         /// <param name="lengthFormat">Represents string length encoding format.</param>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of <paramref name="value"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, in EncodingContext context, Span<byte> buffer, StringLengthEncoding lengthFormat = StringLengthEncoding.None)
+        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, in EncodingContext context, Span<byte> buffer, StringLengthEncoding? lengthFormat = null)
         {
             switch (lengthFormat)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case StringLengthEncoding.None:
+                case null:
                     break;
                 case StringLengthEncoding.Plain:
                     stream.Write(context.Encoding.GetByteCount(value));
@@ -113,14 +141,14 @@ namespace DotNext.IO
         /// <param name="encoding">The encoding.</param>
         /// <param name="lengthFormat">Represents string length encoding format.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding lengthFormat = StringLengthEncoding.None)
+        public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat = null)
         {
             var bytesCount = encoding.GetByteCount(value);
             switch (lengthFormat)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case StringLengthEncoding.None:
+                case null:
                     break;
                 case StringLengthEncoding.Plain:
                     stream.Write(bytesCount);
@@ -152,13 +180,13 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of <paramref name="value"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, EncodingContext context, Memory<byte> buffer, StringLengthEncoding lengthFormat = StringLengthEncoding.None, CancellationToken token = default)
+        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, EncodingContext context, Memory<byte> buffer, StringLengthEncoding? lengthFormat = null, CancellationToken token = default)
         {
             switch (lengthFormat)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case StringLengthEncoding.None:
+                case null:
                     break;
                 case StringLengthEncoding.Plain:
                     await stream.WriteAsync(context.Encoding.GetByteCount(value.Span), token).ConfigureAwait(false);
@@ -194,7 +222,8 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding lengthFormat = StringLengthEncoding.None, CancellationToken token = default)
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding? lengthFormat = null, CancellationToken token = default)
         {
             var bytesCount = encoding.GetByteCount(value.Span);
             using var buffer = new ArrayRental<byte>(bytesCount);
@@ -202,7 +231,7 @@ namespace DotNext.IO
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case StringLengthEncoding.None:
+                case null:
                     break;
                 case StringLengthEncoding.Plain:
                     await stream.WriteAsync(bytesCount, token).ConfigureAwait(false);
@@ -253,6 +282,38 @@ namespace DotNext.IO
             return new string(result.Span.Slice(0, resultOffset));
         }
 
+        private static int ReadStringLength(this Stream stream, StringLengthEncoding lengthFormat) => lengthFormat switch
+        {
+            StringLengthEncoding.Plain => stream.Read<int>(),
+            StringLengthEncoding.SevenBitEncoded => stream.Read7BitEncodedInt(),
+            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat))
+        };
+
+        private static ValueTask<int> ReadStringLengthAsync(this Stream stream, StringLengthEncoding lengthFormat, Memory<byte> buffer, CancellationToken token) => lengthFormat switch
+        {
+            StringLengthEncoding.Plain => stream.ReadAsync<int>(buffer, token),
+            StringLengthEncoding.SevenBitEncoded => stream.Read7BitEncodedIntAsync(buffer, token),
+            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat))
+        };
+
+        /// <summary>
+        /// Reads the string using the specified encoding and supplied reusable buffer.
+        /// </summary>
+        /// <remarks>
+        /// This method decodes string length (in bytes) from 
+        /// stream in contrast to <see cref="ReadString(Stream, int, in DecodingContext, Span{byte})"/>
+        /// </remarks>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <returns>The string decoded from the log entry content stream.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> to small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static string ReadString(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer)
+            => ReadString(stream, stream.ReadStringLength(lengthFormat), in context, buffer);
+
         /// <summary>
         /// Reads the string using the specified encoding.
         /// </summary>
@@ -274,6 +335,22 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Reads the string using the specified encoding.
+        /// </summary>
+        /// <remarks>
+        /// This method decodes string length (in bytes) from 
+        /// stream in contrast to <see cref="ReadString(Stream, int, Encoding)"/>.
+        /// </remarks>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
+        /// <returns>The string decoded from the log entry content stream.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static string ReadString(this Stream stream, StringLengthEncoding lengthFormat, Encoding encoding)
+            => ReadString(stream, stream.ReadStringLength(lengthFormat), encoding);
+
+        /// <summary>
         /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
         /// </summary>
         /// <remarks>
@@ -288,6 +365,7 @@ namespace DotNext.IO
         /// <returns>The string decoded from the log entry content stream.</returns>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> to small for decoding characters.</exception>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
         {
             if (length == 0)
@@ -314,21 +392,64 @@ namespace DotNext.IO
         /// <summary>
         /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
         /// </summary>
+        /// <remarks>
+        /// This method decodes string length (in bytes) from 
+        /// stream in contrast to <see cref="ReadStringAsync(Stream, int, DecodingContext, Memory{byte}, CancellationToken)"/>.
+        /// </remarks>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The text decoding context.</param>
+        /// <param name="buffer">The buffer that is allocated by the caller.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The string decoded from the log entry content stream.</returns>
+        /// <exception cref="ArgumentException"><paramref name="buffer"/> to small for decoding characters.</exception>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static async ValueTask<string> ReadStringAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
+            => await ReadStringAsync(stream, await stream.ReadStringLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false), context, buffer, token).ConfigureAwait(false);
+
+        /// <summary>
+        /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
+        /// </summary>
         /// <param name="stream">The stream to read from.</param>
         /// <param name="length">The length of the string, in bytes.</param>
         /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The string decoded from the log entry content stream.</returns>
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
-        public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, Encoding encoding)
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async ValueTask<string> ReadStringAsync(this Stream stream, int length, Encoding encoding, CancellationToken token = default)
         {
             if (length == 0)
                 return string.Empty;
             using var bytesBuffer = new ArrayRental<byte>(length);
             using var charBuffer = new ArrayRental<char>(length);
-            if (bytesBuffer.Length != await stream.ReadAsync(bytesBuffer.Memory).ConfigureAwait(false))
+            if (bytesBuffer.Length != await stream.ReadAsync(bytesBuffer.Memory, token).ConfigureAwait(false))
                 throw new EndOfStreamException();
             var charCount = encoding.GetChars(bytesBuffer.Span, charBuffer.Span);
             return new string(charBuffer.Span.Slice(0, charCount));
+        }
+
+        /// <summary>
+        /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
+        /// </summary>
+        /// <remarks>
+        /// This method decodes string length (in bytes) from 
+        /// stream in contrast to <see cref="ReadStringAsync(Stream, int, Encoding, CancellationToken)"/>.
+        /// </remarks>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="encoding">The encoding used to decode bytes from stream into characters.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The string decoded from the log entry content stream.</returns>
+        /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        public static async ValueTask<string> ReadStringAsync(this Stream stream, StringLengthEncoding lengthFormat, Encoding encoding, CancellationToken token = default)
+        {
+            using var lengthDecodingBuffer = new ArrayRental<byte>(5);
+            return await ReadStringAsync(stream, await stream.ReadStringLengthAsync(lengthFormat, lengthDecodingBuffer.Memory, token).ConfigureAwait(false), encoding, token);
         }
 
         /// <summary>

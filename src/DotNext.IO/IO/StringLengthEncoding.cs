@@ -6,11 +6,6 @@
     public enum StringLengthEncoding : byte
     {
         /// <summary>
-        /// Do not read or write string length.
-        /// </summary>
-        None = 0,
-
-        /// <summary>
         /// Use 4-byte to represent string length.
         /// </summary>
         Plain,

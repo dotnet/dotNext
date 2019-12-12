@@ -59,7 +59,7 @@ namespace DotNext.Net.Cluster.Messaging
         async ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
             using var buffer = new ArrayRental<byte>(DefaultBufferSize);
-            await output.WriteStringAsync(Content.AsMemory(), Type.GetEncoding(), buffer.Memory, token).ConfigureAwait(false);
+            await output.WriteStringAsync(Content.AsMemory(), Type.GetEncoding(), buffer.Memory, null, token).ConfigureAwait(false);
         }
 
         ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => output.WriteStringAsync(Content.AsMemory(), Type.GetEncoding(), DefaultBufferSize, token);
