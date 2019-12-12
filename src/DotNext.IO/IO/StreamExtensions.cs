@@ -1,11 +1,11 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
-using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO
 {
@@ -282,6 +282,7 @@ namespace DotNext.IO
             return new string(result.Span.Slice(0, resultOffset));
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int ReadStringLength(this Stream stream, StringLengthEncoding lengthFormat) => lengthFormat switch
         {
             StringLengthEncoding.Plain => stream.Read<int>(),
@@ -289,6 +290,7 @@ namespace DotNext.IO
             _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat))
         };
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ValueTask<int> ReadStringLengthAsync(this Stream stream, StringLengthEncoding lengthFormat, Memory<byte> buffer, CancellationToken token) => lengthFormat switch
         {
             StringLengthEncoding.Plain => stream.ReadAsync<int>(buffer, token),
@@ -478,8 +480,8 @@ namespace DotNext.IO
         public static async ValueTask<T> ReadAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
             where T : unmanaged
         {
-            var bytesRead = await stream.ReadAsync(buffer.Slice(0, SizeOf<T>()), token).ConfigureAwait(false);
-            return bytesRead == SizeOf<T>() ? MemoryMarshal.Read<T>(buffer.Span) : throw new EndOfStreamException();
+            var bytesRead = await stream.ReadAsync(buffer.Slice(0, Unsafe.SizeOf<T>()), token).ConfigureAwait(false);
+            return bytesRead == Unsafe.SizeOf<T>() ? MemoryMarshal.Read<T>(buffer.Span) : throw new EndOfStreamException();
         }
 
         /// <summary>
@@ -493,7 +495,7 @@ namespace DotNext.IO
         public static async ValueTask<T> ReadAsync<T>(this Stream stream, CancellationToken token = default)
             where T : unmanaged
         {
-            using var buffer = new ArrayRental<byte>(SizeOf<T>());
+            using var buffer = new ArrayRental<byte>(Unsafe.SizeOf<T>());
             return await ReadAsync<T>(stream, buffer.Memory, token);
         }
 
@@ -518,7 +520,7 @@ namespace DotNext.IO
             where T : unmanaged
         {
             MemoryMarshal.Write(buffer.Span, ref value);
-            return stream.WriteAsync(buffer.Slice(0, SizeOf<T>()), token);
+            return stream.WriteAsync(buffer.Slice(0, Unsafe.SizeOf<T>()), token);
         }
 
         /// <summary>
@@ -532,7 +534,7 @@ namespace DotNext.IO
         public static async ValueTask WriteAsync<T>(this Stream stream, T value, CancellationToken token = default)
             where T : unmanaged
         {
-            using var buffer = new ArrayRental<byte>(SizeOf<T>());
+            using var buffer = new ArrayRental<byte>(Unsafe.SizeOf<T>());
             await WriteAsync(stream, value, buffer.Memory, token).ConfigureAwait(false);
         }
 

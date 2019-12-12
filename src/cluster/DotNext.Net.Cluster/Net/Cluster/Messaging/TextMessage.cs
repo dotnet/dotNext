@@ -62,7 +62,7 @@ namespace DotNext.Net.Cluster.Messaging
             await output.WriteStringAsync(Content.AsMemory(), Type.GetEncoding(), buffer.Memory, null, token).ConfigureAwait(false);
         }
 
-        ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => output.WriteStringAsync(Content.AsMemory(), Type.GetEncoding(), DefaultBufferSize, token);
+        ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => output.WriteStringAsync(Content.AsMemory(), Type.GetEncoding(), DefaultBufferSize, null, token);
 
         /// <summary>
         /// MIME type of the message.
