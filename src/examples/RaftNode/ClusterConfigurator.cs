@@ -8,7 +8,7 @@ namespace RaftNode
 {
     internal sealed class ClusterConfigurator : IClusterMemberLifetime
     {
-        private static void LeaderChanged(ICluster cluster, IClusterMember leader)
+        private static void LeaderChanged(ICluster cluster, IClusterMember? leader)
         {
             Debug.Assert(cluster is IRaftCluster);
             var term = ((IRaftCluster)cluster).Term;
