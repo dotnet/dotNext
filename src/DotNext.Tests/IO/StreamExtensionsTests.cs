@@ -270,5 +270,27 @@ namespace DotNext.IO
             ms.Position = 0;
             Equal(10M, await ms.ReadAsync<decimal>());
         }
+
+        [Fact]
+        public static async Task BinaryReaderInterop()
+        {
+            using var ms = new MemoryStream();
+            await ms.WriteStringAsync("ABC".AsMemory(), Encoding.UTF8, StringLengthEncoding.Compressed);
+            ms.Position = 0;
+            using var reader = new BinaryReader(ms, Encoding.UTF8, true);
+            Equal("ABC", reader.ReadString());
+        }
+
+        [Fact]
+        public static async Task BinaryWriterInterop()
+        {
+            using var ms = new MemoryStream();
+            using(var writer = new BinaryWriter(ms, Encoding.UTF8, true))
+            {
+                writer.Write("ABC");
+            }
+            ms.Position = 0;
+            Equal("ABC", await ms.ReadStringAsync(StringLengthEncoding.Compressed, Encoding.UTF8));
+        }
     }
 }
