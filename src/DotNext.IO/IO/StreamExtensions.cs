@@ -89,7 +89,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Writes the string to the stream using supplied reusable buffer.
+        /// Writes a length-prefixed or raw string to the stream using supplied reusable buffer.
         /// </summary>
         /// <remarks>
         /// This method doesn't encode the length of the string.
@@ -131,7 +131,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Writes the string to the stream.
+        /// Writes a length-prefixed or raw string to the stream.
         /// </summary>
         /// <remarks>
         /// This method doesn't encode the length of the string.
@@ -165,7 +165,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Writes the string to the stream asynchronously using supplied reusable buffer.
+        /// Writes a length-prefixed or raw string to the stream asynchronously using supplied reusable buffer.
         /// </summary>
         /// <remarks>
         /// This method doesn't encode the length of the string.
@@ -210,7 +210,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Writes the string to the stream asynchronously.
+        /// Writes a length-prefixed or raw string to the stream asynchronously.
         /// </summary>
         /// <remarks>
         /// This method doesn't encode the length of the string.
@@ -299,7 +299,7 @@ namespace DotNext.IO
         };
 
         /// <summary>
-        /// Reads the string using the specified encoding and supplied reusable buffer.
+        /// Reads a length-prefixed string using the specified encoding and supplied reusable buffer.
         /// </summary>
         /// <remarks>
         /// This method decodes string length (in bytes) from 
@@ -337,7 +337,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Reads the string using the specified encoding.
+        /// Reads a length-prefixed string using the specified encoding.
         /// </summary>
         /// <remarks>
         /// This method decodes string length (in bytes) from 
@@ -392,7 +392,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
+        /// Reads a length-prefixed string asynchronously using the specified encoding and supplied reusable buffer.
         /// </summary>
         /// <remarks>
         /// This method decodes string length (in bytes) from 
@@ -434,7 +434,7 @@ namespace DotNext.IO
         }
 
         /// <summary>
-        /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
+        /// Reads a length-prefixed string asynchronously using the specified encoding and supplied reusable buffer.
         /// </summary>
         /// <remarks>
         /// This method decodes string length (in bytes) from 
