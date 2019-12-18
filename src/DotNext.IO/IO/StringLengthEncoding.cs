@@ -21,18 +21,12 @@ namespace DotNext.IO
         /// Use 32-bit integer value to represent string length
         /// using little-endian byte order.
         /// </summary>
-        /// <remarks>
-        /// This format provides the best performance.
-        /// </remarks>
         PlainLittleEndian,
 
         /// <summary>
         /// Use 32-bit integer value to represent string length
         /// using big-endian byte order.
         /// </summary>
-        /// <remarks>
-        /// This format provides the best performance.
-        /// </remarks>
         PlainBigEndian,
 
         /// <summary>
