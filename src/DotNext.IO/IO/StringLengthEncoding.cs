@@ -19,7 +19,7 @@ namespace DotNext.IO
 
         /// <summary>
         /// Use 32-bit integer value to represent string length
-        /// using little-endian bytes order.
+        /// using little-endian byte order.
         /// </summary>
         /// <remarks>
         /// This format provides the best performance.
@@ -28,7 +28,7 @@ namespace DotNext.IO
 
         /// <summary>
         /// Use 32-bit integer value to represent string length
-        /// using big-endian bytes order.
+        /// using big-endian byte order.
         /// </summary>
         /// <remarks>
         /// This format provides the best performance.
