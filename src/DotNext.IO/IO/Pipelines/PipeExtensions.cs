@@ -95,29 +95,15 @@ namespace DotNext.IO.Pipelines
         {
             private T result;
             private int offset;
-            private readonly bool reverse;
-
-            internal ValueReader(bool reverse)
-            {
-                this.reverse = reverse;
-                result = default;
-                offset = 0;
-            }
 
             unsafe readonly int IBufferReader<T>.RemainingBytes => sizeof(T) - offset;
 
-            T IBufferReader<T>.Complete()
-            {
-                if(reverse)
-                    Intrinsics.Reverse(ref result);
-                return result;
-            }
+            readonly T IBufferReader<T>.Complete() => result;
 
             void IBufferReader<T>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
             {
                 block.CopyTo(Intrinsics.AsSpan(ref result).Slice(offset));
                 offset += block.Length;
-
             }
         }
 
