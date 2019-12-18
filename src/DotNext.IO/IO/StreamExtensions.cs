@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
+using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.IO
 {
@@ -87,6 +88,37 @@ namespace DotNext.IO
             }
             return (int)reader.Result;
         }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void ReverseIfNeeded(this ref int value, bool littleEndian)
+        {
+            if(BitConverter.IsLittleEndian != littleEndian)
+                value = BinaryPrimitives.ReverseEndianness(value);
+        }
+
+        private static void WriteLength(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat)
+        {
+            if(lengthFormat is null)
+                return;
+            var length = encoding.GetByteCount(value);
+            switch(lengthFormat.Value)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case StringLengthEncoding.Plain:
+                    stream.Write(length);
+                    break;
+                case StringLengthEncoding.PlainLittleEndian:
+                    length.ReverseIfNeeded(true);
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.PlainBigEndian:
+                    length.ReverseIfNeeded(false);
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.Compressed:
+                    stream.Write7BitEncodedInt(length);
+                    break;
+            }
+        }
 
         /// <summary>
         /// Writes a length-prefixed or raw string to the stream using supplied reusable buffer.
@@ -103,19 +135,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static void WriteString(this Stream stream, ReadOnlySpan<char> value, in EncodingContext context, Span<byte> buffer, StringLengthEncoding? lengthFormat = null)
         {
-            switch (lengthFormat)
-            {
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case null:
-                    break;
-                case StringLengthEncoding.Plain:
-                    stream.Write(context.Encoding.GetByteCount(value));
-                    break;
-                case StringLengthEncoding.Compressed:
-                    stream.Write7BitEncodedInt(context.Encoding.GetByteCount(value));
-                    break;
-            }
+            stream.WriteLength(value, context.Encoding, lengthFormat);
             if (value.IsEmpty)
                 return;
             var encoder = context.GetEncoder();
@@ -127,6 +147,30 @@ namespace DotNext.IO
                 charsUsed = Math.Min(maxChars, charsLeft);
                 encoder.Convert(value.Slice(0, charsUsed), buffer, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
                 stream.Write(buffer.Slice(0, bytesUsed));
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void WriteLength(this Stream stream, int length, StringLengthEncoding? lengthFormat)
+        {
+            switch (lengthFormat)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case null:
+                    break;
+                case StringLengthEncoding.Plain:
+                    stream.Write(length);
+                    break;
+                case StringLengthEncoding.PlainLittleEndian:
+                    length.ReverseIfNeeded(true);
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.PlainBigEndian:
+                    length.ReverseIfNeeded(false);
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.Compressed:
+                    stream.Write7BitEncodedInt(length);
+                    break;
             }
         }
 
@@ -144,24 +188,34 @@ namespace DotNext.IO
         public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat = null)
         {
             var bytesCount = encoding.GetByteCount(value);
-            switch (lengthFormat)
-            {
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case null:
-                    break;
-                case StringLengthEncoding.Plain:
-                    stream.Write(bytesCount);
-                    break;
-                case StringLengthEncoding.Compressed:
-                    stream.Write7BitEncodedInt(bytesCount);
-                    break;
-            }
+            stream.WriteLength(bytesCount, lengthFormat);
             if (bytesCount == 0)
                 return;
             using MemoryRental<byte> buffer = bytesCount <= 1024 ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
             encoding.GetBytes(value, buffer.Span);
             stream.Write(buffer.Span);
+        }
+
+        private static ValueTask WriteLengthAsync(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, Memory<byte> buffer, CancellationToken token)
+        {
+            if(lengthFormat is null)
+                return new ValueTask();
+            var length = encoding.GetByteCount(value);
+            switch(lengthFormat.Value)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case StringLengthEncoding.Plain:
+                    return stream.WriteAsync(length, token);
+                case StringLengthEncoding.PlainLittleEndian:
+                    length.ReverseIfNeeded(true);
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.PlainBigEndian:
+                    length.ReverseIfNeeded(false);
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.Compressed:
+                    return stream.Write7BitEncodedIntAsync(length, buffer, token);
+            }
         }
 
         /// <summary>
@@ -182,19 +236,7 @@ namespace DotNext.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static async ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory<char> value, EncodingContext context, Memory<byte> buffer, StringLengthEncoding? lengthFormat = null, CancellationToken token = default)
         {
-            switch (lengthFormat)
-            {
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case null:
-                    break;
-                case StringLengthEncoding.Plain:
-                    await stream.WriteAsync(context.Encoding.GetByteCount(value.Span), token).ConfigureAwait(false);
-                    break;
-                case StringLengthEncoding.Compressed:
-                    await stream.Write7BitEncodedIntAsync(context.Encoding.GetByteCount(value.Span), buffer, token);
-                    break;
-            }
+            await stream.WriteLengthAsync(value.Span, context.Encoding, lengthFormat, buffer, token).ConfigureAwait(false);
             if (value.IsEmpty)
                 return;
             var encoder = context.GetEncoder();
@@ -206,6 +248,28 @@ namespace DotNext.IO
                 charsUsed = Math.Min(maxChars, charsLeft);
                 encoder.Convert(value.Span.Slice(0, charsUsed), buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
                 await stream.WriteAsync(buffer.Slice(0, bytesUsed), token).ConfigureAwait(false);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ValueTask WriteLengthAsync(this Stream stream, int length, StringLengthEncoding? lengthFormat, Memory<byte> buffer, CancellationToken token)
+        {
+            switch(lengthFormat)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case null:
+                    return new ValueTask();
+                case StringLengthEncoding.Plain: 
+                    return stream.WriteAsync(length, token);
+                case StringLengthEncoding.PlainLittleEndian: 
+                    length.ReverseIfNeeded(true);
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.PlainBigEndian:
+                    length.ReverseIfNeeded(false);
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.Compressed: 
+                    return stream.Write7BitEncodedIntAsync(length, buffer, token);
             }
         }
 
@@ -227,19 +291,7 @@ namespace DotNext.IO
         {
             var bytesCount = encoding.GetByteCount(value.Span);
             using var buffer = new ArrayRental<byte>(bytesCount);
-            switch (lengthFormat)
-            {
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case null:
-                    break;
-                case StringLengthEncoding.Plain:
-                    await stream.WriteAsync(bytesCount, token).ConfigureAwait(false);
-                    break;
-                case StringLengthEncoding.Compressed:
-                    await stream.Write7BitEncodedIntAsync(bytesCount, buffer.Memory, token).ConfigureAwait(false);
-                    break;
-            }
+            await stream.WriteLengthAsync(bytesCount, lengthFormat, buffer.Memory, token).ConfigureAwait(false);
             if (bytesCount == 0)
                 return;
             
@@ -282,21 +334,56 @@ namespace DotNext.IO
             return new string(result.Span.Slice(0, resultOffset));
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int ReadStringLength(this Stream stream, StringLengthEncoding lengthFormat) => lengthFormat switch
+        private static int ReadLength(this Stream stream, StringLengthEncoding lengthFormat)
         {
-            StringLengthEncoding.Plain => stream.Read<int>(),
-            StringLengthEncoding.Compressed => stream.Read7BitEncodedInt(),
-            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat))
-        };
+            int result;
+            var littleEndian = BitConverter.IsLittleEndian;
+            switch(lengthFormat)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case StringLengthEncoding.Plain:
+                    result = stream.Read<int>();
+                    break;
+                case StringLengthEncoding.PlainLittleEndian:
+                    littleEndian = true;
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.PlainBigEndian:
+                    littleEndian = false;
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.Compressed:
+                    result = stream.Read7BitEncodedInt();
+                    break;
+            }
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ValueTask<int> ReadStringLengthAsync(this Stream stream, StringLengthEncoding lengthFormat, Memory<byte> buffer, CancellationToken token) => lengthFormat switch
+        private static async ValueTask<int> ReadLengthAsync(this Stream stream, StringLengthEncoding lengthFormat, Memory<byte> buffer, CancellationToken token)
         {
-            StringLengthEncoding.Plain => stream.ReadAsync<int>(buffer, token),
-            StringLengthEncoding.Compressed => stream.Read7BitEncodedIntAsync(buffer, token),
-            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat))
-        };
+            ValueTask<int> result;
+            var littleEndian = BitConverter.IsLittleEndian;
+            switch(lengthFormat)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case StringLengthEncoding.Plain:
+                    result = stream.ReadAsync<int>(buffer, token);
+                    break;
+                case StringLengthEncoding.PlainLittleEndian:
+                    littleEndian = true;
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.PlainBigEndian:
+                    littleEndian = false;
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.Compressed:
+                    result = stream.Read7BitEncodedIntAsync(buffer, token);
+                    break;
+            }
+            var length = await result.ConfigureAwait(false);
+            length.ReverseIfNeeded(littleEndian);
+            return length;
+        }
 
         /// <summary>
         /// Reads a length-prefixed string using the specified encoding and supplied reusable buffer.
@@ -314,7 +401,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static string ReadString(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span<byte> buffer)
-            => ReadString(stream, stream.ReadStringLength(lengthFormat), in context, buffer);
+            => ReadString(stream, stream.ReadLength(lengthFormat), in context, buffer);
 
         /// <summary>
         /// Reads the string using the specified encoding.
@@ -350,7 +437,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">Unexpected end of stream.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static string ReadString(this Stream stream, StringLengthEncoding lengthFormat, Encoding encoding)
-            => ReadString(stream, stream.ReadStringLength(lengthFormat), encoding);
+            => ReadString(stream, stream.ReadLength(lengthFormat), encoding);
 
         /// <summary>
         /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
@@ -409,7 +496,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static async ValueTask<string> ReadStringAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory<byte> buffer, CancellationToken token = default)
-            => await ReadStringAsync(stream, await stream.ReadStringLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false), context, buffer, token).ConfigureAwait(false);
+            => await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, buffer, token).ConfigureAwait(false), context, buffer, token).ConfigureAwait(false);
 
         /// <summary>
         /// Reads the string asynchronously using the specified encoding and supplied reusable buffer.
@@ -451,7 +538,7 @@ namespace DotNext.IO
         public static async ValueTask<string> ReadStringAsync(this Stream stream, StringLengthEncoding lengthFormat, Encoding encoding, CancellationToken token = default)
         {
             using var lengthDecodingBuffer = new ArrayRental<byte>(5);
-            return await ReadStringAsync(stream, await stream.ReadStringLengthAsync(lengthFormat, lengthDecodingBuffer.Memory, token).ConfigureAwait(false), encoding, token);
+            return await ReadStringAsync(stream, await stream.ReadLengthAsync(lengthFormat, lengthDecodingBuffer.Memory, token).ConfigureAwait(false), encoding, token);
         }
 
         /// <summary>

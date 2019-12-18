@@ -104,7 +104,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return output.WriteAsync(currentValue, sharedBuffer, token);
                 }
 
-                public override ValueTask CopyToAsync(PipeWriter output, CancellationToken token) => output.WriteAsync(currentValue, token);
+                public override async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
+                    => (await output.WriteAsync(currentValue, token)).ThrowIfCancellationRequested(token);
 
                 protected override async ValueTask ApplyAsync(LogEntry entry) => currentValue = await Decode(entry);
             }

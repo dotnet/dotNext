@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
@@ -10,7 +11,6 @@ using System.Threading.Tasks;
 namespace DotNext.IO.Pipelines
 {
     using Buffers;
-    using System.Buffers;
     using Text;
     using Intrinsics = Runtime.Intrinsics;
 
@@ -95,10 +95,23 @@ namespace DotNext.IO.Pipelines
         {
             private T result;
             private int offset;
+            private readonly bool reverse;
+
+            internal ValueReader(bool reverse)
+            {
+                this.reverse = reverse;
+                result = default;
+                offset = 0;
+            }
 
             unsafe readonly int IBufferReader<T>.RemainingBytes => sizeof(T) - offset;
 
-            readonly T IBufferReader<T>.Complete() => result;
+            T IBufferReader<T>.Complete()
+            {
+                if(reverse)
+                    Intrinsics.Reverse(ref result);
+                return result;
+            }
 
             void IBufferReader<T>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
             {
@@ -148,8 +161,7 @@ namespace DotNext.IO.Pipelines
             for (SequencePosition consumed; parser.RemainingBytes > 0; reader.AdvanceTo(consumed))
             {
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
-                if (readResult.IsCanceled)
-                    throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
+                readResult.ThrowIfCancellationRequested(token);
                 parser.Append<TResult, TParser>(readResult.Buffer, out consumed);
             }
             return parser.Complete();
@@ -177,13 +189,31 @@ namespace DotNext.IO.Pipelines
             return await ReadAsync<string, StringReader>(reader, new StringReader(context, resultBuffer.Memory), token);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ValueTask<int> ReadStringLengthAsync(this PipeReader reader, StringLengthEncoding lengthFormat, CancellationToken token) => lengthFormat switch
+        private static async ValueTask<int> ReadLengthAsync(this PipeReader reader, StringLengthEncoding lengthFormat, CancellationToken token)
         {
-            StringLengthEncoding.Plain => reader.ReadAsync<int>(token),
-            StringLengthEncoding.Compressed => reader.Read7BitEncodedIntAsync(token),
-            _ => throw new ArgumentOutOfRangeException(nameof(lengthFormat))
-        };
+            ValueTask<int> result;
+            var littleEndian = BitConverter.IsLittleEndian;
+            switch(lengthFormat)
+            {
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                case StringLengthEncoding.Plain:
+                    result = reader.ReadAsync<int>(token);
+                    break;
+                case StringLengthEncoding.PlainLittleEndian:
+                    littleEndian = true;
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.PlainBigEndian:
+                    littleEndian = false;
+                    goto case StringLengthEncoding.Plain;
+                case StringLengthEncoding.Compressed:
+                    result = reader.Read7BitEncodedIntAsync(token);
+                    break;
+            }
+            var length = await result.ConfigureAwait(false);
+            length.ReverseIfNeeded(littleEndian);
+            return length;
+        }
 
         /// <summary>
         /// Decodes string asynchronously from pipe.
@@ -197,7 +227,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static async ValueTask<string> ReadStringAsync(this PipeReader reader, StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
-            => await ReadStringAsync(reader, await reader.ReadStringLengthAsync(lengthFormat, token).ConfigureAwait(false), context, token).ConfigureAwait(false);
+            => await ReadStringAsync(reader, await reader.ReadLengthAsync(lengthFormat, token).ConfigureAwait(false), context, token).ConfigureAwait(false);
 
         /// <summary>
         /// Reads value of blittable type from pipe.
@@ -219,14 +249,11 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The value to be encoded in binary form.</param>
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The task representing asynchronous result of operation.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask WriteAsync<T>(this PipeWriter writer, T value, CancellationToken token = default)
+        public static ValueTask<FlushResult> WriteAsync<T>(this PipeWriter writer, T value, CancellationToken token = default)
             where T : unmanaged
         {
             writer.Write(Intrinsics.AsReadOnlySpan(in value));
-            var result = await writer.FlushAsync(token).ConfigureAwait(false);
-            if (result.IsCanceled)
-                throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(false));
+            return writer.FlushAsync(token);
         }
 
         private static void Write7BitEncodedInt(this IBufferWriter<byte> output, int value)
@@ -234,6 +261,36 @@ namespace DotNext.IO.Pipelines
             var writer = new LengthWriter(output);
             SevenBitEncodedInt.Encode(ref writer, (uint)value);
             output.Advance(writer.Count);
+        }
+
+        private static ValueTask<FlushResult> WriteLengthAsync(this PipeWriter writer, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, CancellationToken token)
+        {
+            ValueTask<FlushResult> result;
+            if(lengthFormat is null)
+                result = new ValueTask<FlushResult>(new FlushResult(false, false));
+            else
+            {
+                var length = encoding.GetByteCount(value.Span);
+                switch(lengthFormat.Value)
+                {
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(lengthFormat));
+                    case StringLengthEncoding.PlainLittleEndian:
+                        length.ReverseIfNeeded(true);
+                        goto case StringLengthEncoding.Plain;
+                    case StringLengthEncoding.PlainBigEndian:
+                        length.ReverseIfNeeded(false);
+                        goto case StringLengthEncoding.Plain;
+                    case StringLengthEncoding.Plain:
+                        result = writer.WriteAsync(length, token);
+                        break;
+                    case StringLengthEncoding.Compressed:
+                        writer.Write7BitEncodedInt(length);
+                        result = writer.FlushAsync(token);
+                        break;
+                }
+            }
+            return result;
         }
 
         /// <summary>
@@ -250,27 +307,10 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static async ValueTask WriteStringAsync(this PipeWriter writer, ReadOnlyMemory<char> value, EncodingContext context, int bufferSize = 0, StringLengthEncoding? lengthFormat = null, CancellationToken token = default)
         {
-            FlushResult result;
-            switch (lengthFormat)
-            {
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(lengthFormat));
-                case null:
-                    break;
-                case StringLengthEncoding.Plain:
-                    await writer.WriteAsync(context.Encoding.GetByteCount(value.Span), token).ConfigureAwait(false);
-                    break;
-                case StringLengthEncoding.Compressed:
-                    writer.Write7BitEncodedInt(context.Encoding.GetByteCount(value.Span));
-                    result = await writer.FlushAsync(token).ConfigureAwait(false);
-                    if (result.IsCompleted)
-                        return;
-                    if (result.IsCanceled)
-                        throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(false));
-                    break;
-            }
-            if (value.Length == 0)
+            var result = await writer.WriteLengthAsync(value, context.Encoding, lengthFormat, token).ConfigureAwait(false);
+            if (result.IsCompleted || value.Length == 0)
                 return;
+            result.ThrowIfCancellationRequested(token);
             var encoder = context.GetEncoder();
             for (int charsLeft = value.Length, charsUsed, maxChars, bytesPerChar = context.Encoding.GetMaxByteCount(1); charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)
             {
@@ -282,8 +322,7 @@ namespace DotNext.IO.Pipelines
                 result = await writer.FlushAsync(token).ConfigureAwait(false);
                 if (result.IsCompleted)
                     break;
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(false));
+                result.ThrowIfCancellationRequested(token);
             }
         }
     }

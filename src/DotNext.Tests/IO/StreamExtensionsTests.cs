@@ -36,7 +36,7 @@ namespace DotNext.IO
             ReadStringUsingEncoding(testString1, Encoding.UTF7);
             ReadStringUsingEncoding(testString1, Encoding.UTF32);
             ReadStringUsingEncoding(testString1, Encoding.ASCII);
-            const string testString2 = "Привет, мир!";
+            const string testString2 = "пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ!";
             ReadStringUsingEncoding(testString2, Encoding.UTF8);
             ReadStringUsingEncoding(testString2, Encoding.Unicode);
             ReadStringUsingEncoding(testString2, Encoding.UTF7);
@@ -55,7 +55,7 @@ namespace DotNext.IO
             ReadStringUsingEncoding(testString1, Encoding.UTF7, bufferSize);
             ReadStringUsingEncoding(testString1, Encoding.UTF32, bufferSize);
             ReadStringUsingEncoding(testString1, Encoding.ASCII, bufferSize);
-            const string testString2 = "Привет, мир!";
+            const string testString2 = "пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ!";
             ReadStringUsingEncoding(testString2, Encoding.UTF8, bufferSize);
             ReadStringUsingEncoding(testString2, Encoding.Unicode, bufferSize);
             ReadStringUsingEncoding(testString2, Encoding.UTF7, bufferSize);
@@ -88,7 +88,7 @@ namespace DotNext.IO
             await ReadStringUsingEncodingAsync(testString1, Encoding.UTF7);
             await ReadStringUsingEncodingAsync(testString1, Encoding.UTF32);
             await ReadStringUsingEncodingAsync(testString1, Encoding.ASCII);
-            const string testString2 = "Привет, мир!";
+            const string testString2 = "пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ!";
             await ReadStringUsingEncodingAsync(testString2, Encoding.UTF8);
             await ReadStringUsingEncodingAsync(testString2, Encoding.Unicode);
             await ReadStringUsingEncodingAsync(testString2, Encoding.UTF7);
@@ -108,7 +108,7 @@ namespace DotNext.IO
             await ReadStringUsingEncodingAsync(testString1, Encoding.UTF7, bufferSize);
             await ReadStringUsingEncodingAsync(testString1, Encoding.UTF32, bufferSize);
             await ReadStringUsingEncodingAsync(testString1, Encoding.ASCII, bufferSize);
-            const string testString2 = "Привет, мир!";
+            const string testString2 = "пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ!";
             await ReadStringUsingEncodingAsync(testString2, Encoding.UTF8, bufferSize);
             await ReadStringUsingEncodingAsync(testString2, Encoding.Unicode, bufferSize);
             await ReadStringUsingEncodingAsync(testString2, Encoding.UTF7, bufferSize);
@@ -143,6 +143,8 @@ namespace DotNext.IO
         [InlineData(null)]
         [InlineData(StringLengthEncoding.Compressed)]
         [InlineData(StringLengthEncoding.Plain)]
+        [InlineData(StringLengthEncoding.PlainBigEndian)]
+        [InlineData(StringLengthEncoding.PlainLittleEndian)]
         public static void ReadWriteString(StringLengthEncoding? lengthEnc)
         {
             const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
@@ -151,7 +153,7 @@ namespace DotNext.IO
             ReadWriteStringUsingEncoding(testString1, Encoding.UTF7, lengthEnc);
             ReadWriteStringUsingEncoding(testString1, Encoding.UTF32, lengthEnc);
             ReadWriteStringUsingEncoding(testString1, Encoding.ASCII, lengthEnc);
-            const string testString2 = "Привет, мир!";
+            const string testString2 = "пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ!";
             ReadWriteStringUsingEncoding(testString2, Encoding.UTF8, lengthEnc);
             ReadWriteStringUsingEncoding(testString2, Encoding.Unicode, lengthEnc);
             ReadWriteStringUsingEncoding(testString2, Encoding.UTF7, lengthEnc);
@@ -168,6 +170,12 @@ namespace DotNext.IO
         [InlineData(10, StringLengthEncoding.Compressed)]
         [InlineData(15, StringLengthEncoding.Compressed)]
         [InlineData(1024, StringLengthEncoding.Compressed)]
+        [InlineData(10, StringLengthEncoding.PlainLittleEndian)]
+        [InlineData(15, StringLengthEncoding.PlainLittleEndian)]
+        [InlineData(1024, StringLengthEncoding.PlainLittleEndian)]
+        [InlineData(10, StringLengthEncoding.PlainBigEndian)]
+        [InlineData(15, StringLengthEncoding.PlainBigEndian)]
+        [InlineData(1024, StringLengthEncoding.PlainBigEndian)]
         public static void ReadWriteBufferedString(int bufferSize, StringLengthEncoding? lengthEnc)
         {
             ReadWriteStringUsingEncoding(Encoding.UTF8, bufferSize, lengthEnc);
@@ -204,6 +212,8 @@ namespace DotNext.IO
         [InlineData(null)]
         [InlineData(StringLengthEncoding.Compressed)]
         [InlineData(StringLengthEncoding.Plain)]
+        [InlineData(StringLengthEncoding.PlainLittleEndian)]
+        [InlineData(StringLengthEncoding.PlainBigEndian)]
         public static async Task ReadWriteStringAsync(StringLengthEncoding? lengthEnc)
         {
             const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
@@ -212,7 +222,7 @@ namespace DotNext.IO
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF7, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF32, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.ASCII, lengthEnc);
-            const string testString2 = "Привет, мир!";
+            const string testString2 = "пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ!";
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF7, lengthEnc);
@@ -229,6 +239,12 @@ namespace DotNext.IO
         [InlineData(10, StringLengthEncoding.Plain)]
         [InlineData(15, StringLengthEncoding.Plain)]
         [InlineData(1024, StringLengthEncoding.Plain)]
+        [InlineData(10, StringLengthEncoding.PlainLittleEndian)]
+        [InlineData(15, StringLengthEncoding.PlainLittleEndian)]
+        [InlineData(1024, StringLengthEncoding.PlainLittleEndian)]
+        [InlineData(10, StringLengthEncoding.PlainBigEndian)]
+        [InlineData(15, StringLengthEncoding.PlainBigEndian)]
+        [InlineData(1024, StringLengthEncoding.PlainBigEndian)]
         public static async Task ReadWriteBufferedStringAsync(int bufferSize, StringLengthEncoding? lengthEnc)
         {
             const string testString1 = "Hello, world!&*(@&*(fghjwgfwffgw";
@@ -237,7 +253,7 @@ namespace DotNext.IO
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF7, bufferSize, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.UTF32, bufferSize, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString1, Encoding.ASCII, bufferSize, lengthEnc);
-            const string testString2 = "Привет, мир!";
+            const string testString2 = "пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ!";
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF8, bufferSize, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.Unicode, bufferSize, lengthEnc);
             await ReadWriteStringUsingEncodingAsync(testString2, Encoding.UTF7, bufferSize, lengthEnc);

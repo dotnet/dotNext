@@ -81,6 +81,12 @@ namespace DotNext.IO.Pipelines
         [InlineData(0, StringLengthEncoding.Plain)]
         [InlineData(10, StringLengthEncoding.Plain)]
         [InlineData(1024, StringLengthEncoding.Plain)]
+        [InlineData(0, StringLengthEncoding.PlainLittleEndian)]
+        [InlineData(10, StringLengthEncoding.PlainLittleEndian)]
+        [InlineData(1024, StringLengthEncoding.PlainLittleEndian)]
+        [InlineData(0, StringLengthEncoding.PlainBigEndian)]
+        [InlineData(10, StringLengthEncoding.PlainBigEndian)]
+        [InlineData(1024, StringLengthEncoding.PlainBigEndian)]
         public static async Task EncodeDecodeString(int bufferSize, StringLengthEncoding? lengthEnc)
         {
             const string testString = "abc^$&@^$&@)(_+~";
