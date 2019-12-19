@@ -321,6 +321,23 @@ namespace DotNext.Runtime
         }
 
         /// <summary>
+        /// Determines whether the address of the value is aligned with its size.
+        /// </summary>
+        /// <typeparam name="T">The type of the value.</typeparam>
+        /// <param name="value">The address of the value.</param>
+        /// <returns><see langword="true"/> if address of <paramref name="value"/> is aligned; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static bool IsAligned<T>(in T value)
+        {
+            Ldarg(nameof(value));
+            Sizeof(typeof(T));
+            Rem_Un();
+            Ldc_I4_0();
+            Ceq();
+            return Return<bool>();
+        }
+
+        /// <summary>
         /// Converts typed reference into managed pointer.
         /// </summary>
         /// <typeparam name="T">The type of the value.</typeparam>
