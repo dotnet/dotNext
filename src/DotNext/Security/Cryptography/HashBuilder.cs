@@ -120,11 +120,11 @@ namespace DotNext.Security.Cryptography
         /// <summary>
         /// Calculates the final hash.
         /// </summary>
-        /// <param name="result">The buffer used to write the final hash.</param>
-        /// <returns>The total number of bytes written into <paramref name="result"/>.</returns>
-        /// <exception cref="InvalidOperationException">Length of <paramref name="result"/> is not enough to place the final hash.</exception>
-        public int Build(Span<byte> result)
-            => TryHashFinal(algorithm, result, out int bytesWritten) ? bytesWritten : throw new InvalidOperationException(ExceptionMessages.NotEnoughMemory);
+        /// <param name="hash">The buffer used to write the final hash.</param>
+        /// <returns>The total number of bytes written into <paramref name="hash"/>.</returns>
+        /// <exception cref="InvalidOperationException">Length of <paramref name="hash"/> is not enough to place the final hash.</exception>
+        public int Build(Span<byte> hash)
+            => TryHashFinal(algorithm, hash, out int bytesWritten) ? bytesWritten : throw new InvalidOperationException(ExceptionMessages.NotEnoughMemory);
 
         /// <summary>
         /// Releases all resources associated with underlying hash algorithm.

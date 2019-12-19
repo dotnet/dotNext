@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 namespace DotNext.IO.Pipelines
 {
     using Buffers;
+    using Security.Cryptography;
     using Text;
     using Intrinsics = Runtime.Intrinsics;
 
@@ -26,6 +28,8 @@ namespace DotNext.IO.Pipelines
             void Append(ReadOnlySpan<byte> block, ref int consumedBytes);
 
             T Complete();
+
+            bool ThrowIfEos => true;
         }
 
         [StructLayout(LayoutKind.Auto)]
@@ -89,6 +93,41 @@ namespace DotNext.IO.Pipelines
             readonly int IBufferReader<int>.Complete() => (int)reader.Result;
         }
 
+        private struct HashReader : IBufferReader<HashBuilder>
+        {
+            private readonly HashBuilder builder;
+            private int remainingBytes;
+            private readonly bool limited;
+
+            internal HashReader(HashAlgorithm algorithm, int? count)
+            {
+                builder = new HashBuilder(algorithm);
+                if(count.HasValue)
+                {
+                    limited = true;
+                    remainingBytes = count.Value;
+                }
+                else
+                {
+                    limited = false;
+                    remainingBytes = 4096;
+                }
+            }
+
+            readonly int IBufferReader<HashBuilder>.RemainingBytes => remainingBytes;
+        
+            readonly HashBuilder IBufferReader<HashBuilder>.Complete() => builder;
+
+            readonly bool IBufferReader<HashBuilder>.ThrowIfEos => limited;
+
+            void IBufferReader<HashBuilder>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
+            {
+                builder.Add(block);
+                if(limited)
+                    remainingBytes -= block.Length;
+            }
+        }
+    
         [StructLayout(LayoutKind.Auto)]
         private struct ValueReader<T> : IBufferReader<T>
             where T : unmanaged
@@ -131,26 +170,37 @@ namespace DotNext.IO.Pipelines
             where TParser : struct, IBufferReader<TResult>
         {
             if (input.IsEmpty)
-                throw new EndOfStreamException();
-            int bytesToConsume;
-            for (consumed = input.Start; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false) && block.Length > 0; consumed = input.GetPosition(bytesToConsume, consumed))
+                consumed = parser.ThrowIfEos ? throw new EndOfStreamException() : input.End;
+            else
             {
-                bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
-                block = block.Slice(0, bytesToConsume);
-                parser.Append(block.Span, ref bytesToConsume);
+                int bytesToConsume;
+                for (consumed = input.Start; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false) && block.Length > 0; consumed = input.GetPosition(bytesToConsume, consumed))
+                {
+                    bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
+                    block = block.Slice(0, bytesToConsume);
+                    parser.Append(block.Span, ref bytesToConsume);
+                }
             }
         }
 
-        private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token = default)
+        private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token)
             where TParser : struct, IBufferReader<TResult>
         {
-            for (SequencePosition consumed; parser.RemainingBytes > 0; reader.AdvanceTo(consumed))
+            var incompleted = true;
+            for (SequencePosition consumed; parser.RemainingBytes > 0 && incompleted; reader.AdvanceTo(consumed))
             {
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
                 readResult.ThrowIfCancellationRequested(token);
                 parser.Append<TResult, TParser>(readResult.Buffer, out consumed);
+                incompleted = !readResult.IsCompleted;
             }
             return parser.Complete();
+        }
+
+        internal static async ValueTask ComputeHashAsync(this PipeReader reader, HashAlgorithm algorithm, int? count, Memory<byte> output, CancellationToken token)
+        {
+            using var builder = await reader.ReadAsync<HashBuilder, HashReader>(new HashReader(algorithm, count), token).ConfigureAwait(false);
+            builder.Build(output.Span);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
