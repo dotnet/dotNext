@@ -30,5 +30,9 @@ namespace DotNext
         internal static string ConcreteDelegateExpected => Resources.GetString("ConcreteDelegateExpected");
 
         internal static string InvalidExpressionTree => Resources.GetString("InvalidExpressionTree");
+    
+        internal static string UnknownHashAlgorithm => Resources.GetString("UnknownHashAlgorithm");
+
+        internal static string NotEnoughMemory => Resources.GetString("NotEnoughMemory");
     }
 }

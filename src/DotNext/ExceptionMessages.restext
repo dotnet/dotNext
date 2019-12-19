@@ -9,3 +9,5 @@ UnsupportedMethodPointerType=Unsupported method pointer type detected
 UnreachableCodeDetected=Unreachable code is detected
 ConcreteDelegateExpected=Concrete delegate type expected
 InvalidExpressionTree=Expression tree is not supported
+UnknownHashAlgorithm=Unknown name of hash algorithm
+NotEnoughMemory=Memory block is not enough to place data
