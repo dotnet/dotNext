@@ -8,6 +8,10 @@
         },
         {
           "files": [ "**.csproj" ],
+          "src": "../src/DotNext.IO/"
+        },
+        {
+          "files": [ "**.csproj" ],
           "src": "../src/DotNext.Reflection/"
         },
         {
