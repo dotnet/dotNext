@@ -1,0 +1,13 @@
+﻿NullSource=Source pointer is null
+NullDestination=Destination pointer is null
+WrongTargetTypeSize=Target type should be the same size or less than original type
+NullPtr=Zero pointer detected
+HandleClosed=Handle is closed
+ArrayNegativeLength=Length of the array should not be less than zero
+InvalidIndexValue=Index should be in range [0, {0})
+InvalidOffsetValue=Offset should be in range [0, {0})
+TargetSizeMustBeMultipleOf=Target element size must be a multiple of the original element size
+ExpectedType=Value must be of type {0}
+StreamNotReadable=Stream is not readable
+StreamNotWritable=Stream is not writable
+ArrayTooLong=Unmanaged array is too long to be converted into Span
