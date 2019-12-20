@@ -46,7 +46,7 @@ namespace DotNext.Security.Cryptography
         /// <param name="leaveOpen"><see langword="true"/> to keep <paramref name="algorithm"/> alive after the builder is disposed; otherwise, <see langword="false"/>.</param>
         public HashBuilder(HashAlgorithm algorithm, bool leaveOpen = true)
         {
-            this.algorithm = algorithm;
+            this.algorithm = algorithm ?? throw new ArgumentNullException(nameof(algorithm));
             this.disposeAlg = !leaveOpen;
         }
 
@@ -91,6 +91,7 @@ namespace DotNext.Security.Cryptography
         /// Adds a series of bytes to the hash code.
         /// </summary>
         /// <param name="bytes">The bytes to add to the hash code.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Add(ReadOnlySpan<byte> bytes) => HashCore(algorithm, bytes);
 
         /// <summary>
@@ -123,6 +124,7 @@ namespace DotNext.Security.Cryptography
         /// <param name="hash">The buffer used to write the final hash.</param>
         /// <returns>The total number of bytes written into <paramref name="hash"/>.</returns>
         /// <exception cref="InvalidOperationException">Length of <paramref name="hash"/> is not enough to place the final hash.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int Build(Span<byte> hash)
             => TryHashFinal(algorithm, hash, out int bytesWritten) ? bytesWritten : throw new InvalidOperationException(ExceptionMessages.NotEnoughMemory);
 
