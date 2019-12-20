@@ -1,0 +1,2074 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class AtomicIntPtr
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class AtomicIntPtr
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.AtomicIntPtr">
+  
+  
+  <h1 id="DotNext_Threading_AtomicIntPtr" data-uid="DotNext.Threading.AtomicIntPtr" class="text-break">Class AtomicIntPtr
+  </h1>
+  <div class="markdown level0 summary"><p>Various atomic operations for <see cref="!:IntPtr"></see> data type
+accessible as extension methods.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">AtomicIntPtr</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.html">DotNext.Threading</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Threading_AtomicIntPtr_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class AtomicIntPtr : object</code></pre>
+  </div>
+  <h5 id="DotNext_Threading_AtomicIntPtr_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Methods exposed by this class provide volatile read/write
+of the field even if it is not declared as volatile field.</p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr__IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.AccumulateAndGet(IntPtr%40%2CIntPtr%2CDotNext.Func%7BIntPtr%2CIntPtr%2CIntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L159">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr__IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr__" data-uid="DotNext.Threading.AtomicIntPtr.AccumulateAndGet(IntPtr@,IntPtr,DotNext.Func{IntPtr,IntPtr,IntPtr})">AccumulateAndGet(ref IntPtr, IntPtr, Func&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr AccumulateAndGet(this ref IntPtr value, IntPtr x, Func&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr__IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr__IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.AccumulateAndGet(IntPtr%40%2CIntPtr%2CDotNext.ValueFunc%7BIntPtr%2CIntPtr%2CIntPtr%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L174">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr__IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr___" data-uid="DotNext.Threading.AtomicIntPtr.AccumulateAndGet(IntPtr@,IntPtr,DotNext.ValueFunc{IntPtr,IntPtr,IntPtr}@)">AccumulateAndGet(ref IntPtr, IntPtr, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr AccumulateAndGet(this ref IntPtr value, IntPtr x, in ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr__IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr___System_Int64_IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.AccumulateAndGet(IntPtr%5B%5D%2CSystem.Int64%2CIntPtr%2CDotNext.Func%7BIntPtr%2CIntPtr%2CIntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L353">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr___System_Int64_IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr__" data-uid="DotNext.Threading.AtomicIntPtr.AccumulateAndGet(IntPtr[],System.Int64,IntPtr,DotNext.Func{IntPtr,IntPtr,IntPtr})">AccumulateAndGet(IntPtr[], Int64, IntPtr, Func&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
+to the array element and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr AccumulateAndGet(this IntPtr[] array, long index, IntPtr x, Func&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr___System_Int64_IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr___System_Int64_IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.AccumulateAndGet(IntPtr%5B%5D%2CSystem.Int64%2CIntPtr%2CDotNext.ValueFunc%7BIntPtr%2CIntPtr%2CIntPtr%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L368">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr___System_Int64_IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr___" data-uid="DotNext.Threading.AtomicIntPtr.AccumulateAndGet(IntPtr[],System.Int64,IntPtr,DotNext.ValueFunc{IntPtr,IntPtr,IntPtr}@)">AccumulateAndGet(IntPtr[], Int64, IntPtr, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
+to the array element and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr AccumulateAndGet(this IntPtr[] array, long index, IntPtr x, in ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicIntPtr_AccumulateAndGet_IntPtr___System_Int64_IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_Add_IntPtr__IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.Add(IntPtr%40%2CIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L89">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_Add_" data-uid="DotNext.Threading.AtomicIntPtr.Add*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_Add_IntPtr__IntPtr_" data-uid="DotNext.Threading.AtomicIntPtr.Add(IntPtr@,IntPtr)">Add(ref IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Adds two native integers and replaces referenced storage with the sum,
+as an atomic operation.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr Add(this ref IntPtr value, IntPtr operand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">operand</span></td>
+        <td><p>The value to be added to the currently stored integer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>Result of sum operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_CompareAndSet_IntPtr__IntPtr_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.CompareAndSet(IntPtr%40%2CIntPtr%2CIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L99">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_CompareAndSet_" data-uid="DotNext.Threading.AtomicIntPtr.CompareAndSet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_CompareAndSet_IntPtr__IntPtr_IntPtr_" data-uid="DotNext.Threading.AtomicIntPtr.CompareAndSet(IntPtr@,IntPtr,IntPtr)">CompareAndSet(ref IntPtr, IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Atomically sets the referenced value to the given updated value if the current value == the expected value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool CompareAndSet(this ref IntPtr value, IntPtr expected, IntPtr update)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">expected</span></td>
+        <td><p>The expected value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>The new value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if successful. <span class="xref">false</span> return indicates that the actual value was not equal to the expected value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_CompareAndSet_IntPtr___System_Int64_IntPtr_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.CompareAndSet(IntPtr%5B%5D%2CSystem.Int64%2CIntPtr%2CIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L312">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_CompareAndSet_" data-uid="DotNext.Threading.AtomicIntPtr.CompareAndSet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_CompareAndSet_IntPtr___System_Int64_IntPtr_IntPtr_" data-uid="DotNext.Threading.AtomicIntPtr.CompareAndSet(IntPtr[],System.Int64,IntPtr,IntPtr)">CompareAndSet(IntPtr[], Int64, IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Atomically sets array element to the given updated value if the array element == the expected value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool CompareAndSet(this IntPtr[] array, long index, IntPtr expected, IntPtr update)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">expected</span></td>
+        <td><p>The expected value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>The new value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if successful. <span class="xref">false</span> return indicates that the actual value was not equal to the expected value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_CompareExchange_IntPtr___System_Int64_IntPtr_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.CompareExchange(IntPtr%5B%5D%2CSystem.Int64%2CIntPtr%2CIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L300">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_CompareExchange_" data-uid="DotNext.Threading.AtomicIntPtr.CompareExchange*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_CompareExchange_IntPtr___System_Int64_IntPtr_IntPtr_" data-uid="DotNext.Threading.AtomicIntPtr.CompareExchange(IntPtr[],System.Int64,IntPtr,IntPtr)">CompareExchange(IntPtr[], Int64, IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Atomically sets array element to the given updated value if the array element == the expected value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr CompareExchange(this IntPtr[] array, long index, IntPtr update, IntPtr comparand)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>The new value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">comparand</span></td>
+        <td><p>The expected value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The original value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_DecrementAndGet_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.DecrementAndGet(IntPtr%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L78">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_DecrementAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.DecrementAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_DecrementAndGet_IntPtr__" data-uid="DotNext.Threading.AtomicIntPtr.DecrementAndGet(IntPtr@)">DecrementAndGet(ref IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Atomically decrements the referenced value by one.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr DecrementAndGet(this ref IntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>Decremented value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_DecrementAndGet_IntPtr___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.DecrementAndGet(IntPtr%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L288">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_DecrementAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.DecrementAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_DecrementAndGet_IntPtr___System_Int64_" data-uid="DotNext.Threading.AtomicIntPtr.DecrementAndGet(IntPtr[],System.Int64)">DecrementAndGet(IntPtr[], Int64)</h4>
+  <div class="markdown level1 summary"><p>Atomically decrements the array element by one.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr DecrementAndGet(this IntPtr[] array, long index)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to write into.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to decrement atomically.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>Decremented array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr__IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.GetAndAccumulate(IntPtr%40%2CIntPtr%2CDotNext.Func%7BIntPtr%2CIntPtr%2CIntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L189">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr__IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr__" data-uid="DotNext.Threading.AtomicIntPtr.GetAndAccumulate(IntPtr@,IntPtr,DotNext.Func{IntPtr,IntPtr,IntPtr})">GetAndAccumulate(ref IntPtr, IntPtr, Func&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndAccumulate(this ref IntPtr value, IntPtr x, Func&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr__IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr__IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.GetAndAccumulate(IntPtr%40%2CIntPtr%2CDotNext.ValueFunc%7BIntPtr%2CIntPtr%2CIntPtr%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L204">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr__IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr___" data-uid="DotNext.Threading.AtomicIntPtr.GetAndAccumulate(IntPtr@,IntPtr,DotNext.ValueFunc{IntPtr,IntPtr,IntPtr}@)">GetAndAccumulate(ref IntPtr, IntPtr, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndAccumulate(this ref IntPtr value, IntPtr x, in ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr__IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr___System_Int64_IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.GetAndAccumulate(IntPtr%5B%5D%2CSystem.Int64%2CIntPtr%2CDotNext.Func%7BIntPtr%2CIntPtr%2CIntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L383">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr___System_Int64_IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr__" data-uid="DotNext.Threading.AtomicIntPtr.GetAndAccumulate(IntPtr[],System.Int64,IntPtr,DotNext.Func{IntPtr,IntPtr,IntPtr})">GetAndAccumulate(IntPtr[], Int64, IntPtr, Func&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
+to the array element and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndAccumulate(this IntPtr[] array, long index, IntPtr x, Func&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The original value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr___System_Int64_IntPtr_DotNext_Func_IntPtr_IntPtr_IntPtr___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr___System_Int64_IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.GetAndAccumulate(IntPtr%5B%5D%2CSystem.Int64%2CIntPtr%2CDotNext.ValueFunc%7BIntPtr%2CIntPtr%2CIntPtr%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L398">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr___System_Int64_IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr___" data-uid="DotNext.Threading.AtomicIntPtr.GetAndAccumulate(IntPtr[],System.Int64,IntPtr,DotNext.ValueFunc{IntPtr,IntPtr,IntPtr}@)">GetAndAccumulate(IntPtr[], Int64, IntPtr, ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
+to the array element and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndAccumulate(this IntPtr[] array, long index, IntPtr x, in ValueFunc&lt;IntPtr, IntPtr, IntPtr&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The original value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicIntPtr_GetAndAccumulate_IntPtr___System_Int64_IntPtr_DotNext_ValueFunc_IntPtr_IntPtr_IntPtr____remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_GetAndSet_IntPtr__IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.GetAndSet(IntPtr%40%2CIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L109">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_GetAndSet_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndSet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_GetAndSet_IntPtr__IntPtr_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndSet(IntPtr@,IntPtr)">GetAndSet(ref IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Modifies the referenced value atomically.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndSet(this ref IntPtr value, IntPtr update)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>A new value to be stored into managed pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>Original value before modification.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_GetAndSet_IntPtr___System_Int64_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.GetAndSet(IntPtr%5B%5D%2CSystem.Int64%2CIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L323">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_GetAndSet_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndSet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_GetAndSet_IntPtr___System_Int64_IntPtr_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndSet(IntPtr[],System.Int64,IntPtr)">GetAndSet(IntPtr[], Int64, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Modifies the array element atomically.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndSet(this IntPtr[] array, long index, IntPtr update)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>A new value to be stored as array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>Original array element before modification.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_GetAndUpdate_IntPtr__DotNext_Func_IntPtr_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.GetAndUpdate(IntPtr%40%2CDotNext.Func%7BIntPtr%2CIntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L237">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_GetAndUpdate_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_GetAndUpdate_IntPtr__DotNext_Func_IntPtr_IntPtr__" data-uid="DotNext.Threading.AtomicIntPtr.GetAndUpdate(IntPtr@,DotNext.Func{IntPtr,IntPtr})">GetAndUpdate(ref IntPtr, Func&lt;IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndUpdate(this ref IntPtr value, Func&lt;IntPtr, IntPtr&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_GetAndUpdate_IntPtr__DotNext_ValueFunc_IntPtr_IntPtr___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.GetAndUpdate(IntPtr%40%2CDotNext.ValueFunc%7BIntPtr%2CIntPtr%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L248">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_GetAndUpdate_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_GetAndUpdate_IntPtr__DotNext_ValueFunc_IntPtr_IntPtr___" data-uid="DotNext.Threading.AtomicIntPtr.GetAndUpdate(IntPtr@,DotNext.ValueFunc{IntPtr,IntPtr}@)">GetAndUpdate(ref IntPtr, ValueFunc&lt;IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndUpdate(this ref IntPtr value, in ValueFunc&lt;IntPtr, IntPtr&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The original value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_GetAndUpdate_IntPtr___System_Int64_DotNext_Func_IntPtr_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.GetAndUpdate(IntPtr%5B%5D%2CSystem.Int64%2CDotNext.Func%7BIntPtr%2CIntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L431">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_GetAndUpdate_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_GetAndUpdate_IntPtr___System_Int64_DotNext_Func_IntPtr_IntPtr__" data-uid="DotNext.Threading.AtomicIntPtr.GetAndUpdate(IntPtr[],System.Int64,DotNext.Func{IntPtr,IntPtr})">GetAndUpdate(IntPtr[], Int64, Func&lt;IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndUpdate(this IntPtr[] array, long index, Func&lt;IntPtr, IntPtr&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The original value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_GetAndUpdate_IntPtr___System_Int64_DotNext_ValueFunc_IntPtr_IntPtr___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.GetAndUpdate(IntPtr%5B%5D%2CSystem.Int64%2CDotNext.ValueFunc%7BIntPtr%2CIntPtr%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L442">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_GetAndUpdate_" data-uid="DotNext.Threading.AtomicIntPtr.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_GetAndUpdate_IntPtr___System_Int64_DotNext_ValueFunc_IntPtr_IntPtr___" data-uid="DotNext.Threading.AtomicIntPtr.GetAndUpdate(IntPtr[],System.Int64,DotNext.ValueFunc{IntPtr,IntPtr}@)">GetAndUpdate(IntPtr[], Int64, ValueFunc&lt;IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr GetAndUpdate(this IntPtr[] array, long index, in ValueFunc&lt;IntPtr, IntPtr&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The original value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_IncrementAndGet_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.IncrementAndGet(IntPtr%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L69">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_IncrementAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.IncrementAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_IncrementAndGet_IntPtr__" data-uid="DotNext.Threading.AtomicIntPtr.IncrementAndGet(IntPtr@)">IncrementAndGet(ref IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Atomically increments the referenced value by one.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr IncrementAndGet(this ref IntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>Incremented value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_IncrementAndGet_IntPtr___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.IncrementAndGet(IntPtr%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L278">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_IncrementAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.IncrementAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_IncrementAndGet_IntPtr___System_Int64_" data-uid="DotNext.Threading.AtomicIntPtr.IncrementAndGet(IntPtr[],System.Int64)">IncrementAndGet(IntPtr[], Int64)</h4>
+  <div class="markdown level1 summary"><p>Atomically increments the array element by one.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr IncrementAndGet(this IntPtr[] array, long index)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to write into.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the element to increment atomically.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>Incremented value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_SetAndGet_IntPtr__IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.SetAndGet(IntPtr%40%2CIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L119">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_SetAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.SetAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_SetAndGet_IntPtr__IntPtr_" data-uid="DotNext.Threading.AtomicIntPtr.SetAndGet(IntPtr@,IntPtr)">SetAndGet(ref IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Modifies the referenced value atomically.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr SetAndGet(this ref IntPtr value, IntPtr update)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>A new value to be stored into managed pointer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>A new value passed as argument.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_SetAndGet_IntPtr___System_Int64_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.SetAndGet(IntPtr%5B%5D%2CSystem.Int64%2CIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L334">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_SetAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.SetAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_SetAndGet_IntPtr___System_Int64_IntPtr_" data-uid="DotNext.Threading.AtomicIntPtr.SetAndGet(IntPtr[],System.Int64,IntPtr)">SetAndGet(IntPtr[], Int64, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Modifies the array element atomically.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr SetAndGet(this IntPtr[] array, long index, IntPtr update)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">update</span></td>
+        <td><p>A new value to be stored as array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The array element after modification.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_UpdateAndGet_IntPtr__DotNext_Func_IntPtr_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.UpdateAndGet(IntPtr%40%2CDotNext.Func%7BIntPtr%2CIntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L215">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_UpdateAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_UpdateAndGet_IntPtr__DotNext_Func_IntPtr_IntPtr__" data-uid="DotNext.Threading.AtomicIntPtr.UpdateAndGet(IntPtr@,DotNext.Func{IntPtr,IntPtr})">UpdateAndGet(ref IntPtr, Func&lt;IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr UpdateAndGet(this ref IntPtr value, Func&lt;IntPtr, IntPtr&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_UpdateAndGet_IntPtr__DotNext_ValueFunc_IntPtr_IntPtr___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.UpdateAndGet(IntPtr%40%2CDotNext.ValueFunc%7BIntPtr%2CIntPtr%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L226">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_UpdateAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_UpdateAndGet_IntPtr__DotNext_ValueFunc_IntPtr_IntPtr___" data-uid="DotNext.Threading.AtomicIntPtr.UpdateAndGet(IntPtr@,DotNext.ValueFunc{IntPtr,IntPtr}@)">UpdateAndGet(ref IntPtr, ValueFunc&lt;IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr UpdateAndGet(this ref IntPtr value, in ValueFunc&lt;IntPtr, IntPtr&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_UpdateAndGet_IntPtr___System_Int64_DotNext_Func_IntPtr_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.UpdateAndGet(IntPtr%5B%5D%2CSystem.Int64%2CDotNext.Func%7BIntPtr%2CIntPtr%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L409">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_UpdateAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_UpdateAndGet_IntPtr___System_Int64_DotNext_Func_IntPtr_IntPtr__" data-uid="DotNext.Threading.AtomicIntPtr.UpdateAndGet(IntPtr[],System.Int64,DotNext.Func{IntPtr,IntPtr})">UpdateAndGet(IntPtr[], Int64, Func&lt;IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr UpdateAndGet(this IntPtr[] array, long index, Func&lt;IntPtr, IntPtr&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_UpdateAndGet_IntPtr___System_Int64_DotNext_ValueFunc_IntPtr_IntPtr___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.UpdateAndGet(IntPtr%5B%5D%2CSystem.Int64%2CDotNext.ValueFunc%7BIntPtr%2CIntPtr%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L420">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_UpdateAndGet_" data-uid="DotNext.Threading.AtomicIntPtr.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_UpdateAndGet_IntPtr___System_Int64_DotNext_ValueFunc_IntPtr_IntPtr___" data-uid="DotNext.Threading.AtomicIntPtr.UpdateAndGet(IntPtr[],System.Int64,DotNext.ValueFunc{IntPtr,IntPtr}@)">UpdateAndGet(IntPtr[], Int64, ValueFunc&lt;IntPtr, IntPtr&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr UpdateAndGet(this IntPtr[] array, long index, in ValueFunc&lt;IntPtr, IntPtr&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<span class="xref">IntPtr</span>, <span class="xref">IntPtr</span>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_VolatileRead_IntPtr__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.VolatileRead(IntPtr%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L34">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_VolatileRead_" data-uid="DotNext.Threading.AtomicIntPtr.VolatileRead*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_VolatileRead_IntPtr__" data-uid="DotNext.Threading.AtomicIntPtr.VolatileRead(IntPtr@)">VolatileRead(ref IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Reads the value of the specified field. On systems that require it, inserts a
+memory barrier that prevents the processor from reordering memory operations
+as follows: If a read or write appears after this method in the code, the processor
+cannot move it before this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr VolatileRead(this ref IntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The field to read.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The value that was read. This value is the latest written by any processor in
+the computer, regardless of the number of processors or the state of processor
+cache.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_VolatileRead_IntPtr___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.VolatileRead(IntPtr%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L258">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_VolatileRead_" data-uid="DotNext.Threading.AtomicIntPtr.VolatileRead*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_VolatileRead_IntPtr___System_Int64_" data-uid="DotNext.Threading.AtomicIntPtr.VolatileRead(IntPtr[],System.Int64)">VolatileRead(IntPtr[], Int64)</h4>
+  <div class="markdown level1 summary"><p>Performs volatile read of the array element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IntPtr VolatileRead(this IntPtr[] array, long index)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The array element index.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><p>The array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_VolatileWrite_IntPtr__IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.VolatileWrite(IntPtr%40%2CIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L54">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_VolatileWrite_" data-uid="DotNext.Threading.AtomicIntPtr.VolatileWrite*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_VolatileWrite_IntPtr__IntPtr_" data-uid="DotNext.Threading.AtomicIntPtr.VolatileWrite(IntPtr@,IntPtr)">VolatileWrite(ref IntPtr, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Writes the specified value to the specified field. On systems that require it,
+inserts a memory barrier that prevents the processor from reordering memory operations
+as follows: If a read or write appears before this method in the code, the processor
+cannot move it after this method.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void VolatileWrite(this ref IntPtr value, IntPtr newValue)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The field where the value is written.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">newValue</span></td>
+        <td><p>The value to write. The value is written immediately so that it is visible to
+all processors in the computer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr_VolatileWrite_IntPtr___System_Int64_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr.VolatileWrite(IntPtr%5B%5D%2CSystem.Int64%2CIntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L268">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicIntPtr_VolatileWrite_" data-uid="DotNext.Threading.AtomicIntPtr.VolatileWrite*"></a>
+  <h4 id="DotNext_Threading_AtomicIntPtr_VolatileWrite_IntPtr___System_Int64_IntPtr_" data-uid="DotNext.Threading.AtomicIntPtr.VolatileWrite(IntPtr[],System.Int64,IntPtr)">VolatileWrite(IntPtr[], Int64, IntPtr)</h4>
+  <div class="markdown level1 summary"><p>Performs volatile write to the array element.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void VolatileWrite(this IntPtr[] array, long index, IntPtr value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IntPtr</span>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to write into.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The array element index.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">IntPtr</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The new value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicIntPtr.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicIntPtr%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicIntPtr.cs/#L18" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

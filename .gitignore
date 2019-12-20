@@ -1,0 +1,12 @@
+﻿bin/
+obj/
+.vs/
+.vscode/
+.nuget/
+logo.svg
+favicon.ico
+manifest.json
+BenchmarkDotNet.Artifacts/
+FodyWeavers.xsd
+launchSettings.json
+*.csproj.user
