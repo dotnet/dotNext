@@ -10,7 +10,8 @@
   href: https://github.com/sakno/dotNext
 - name: Changelog
   href: https://github.com/sakno/dotNext/blob/master/CHANGELOG.md
-- name: Old Verisons
+- name: Old Versions
+  dropdown: true
   items:
     - name: 1.x
       href: ./versions/1.x/index.html
