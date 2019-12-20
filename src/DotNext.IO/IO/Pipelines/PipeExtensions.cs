@@ -93,6 +93,7 @@ namespace DotNext.IO.Pipelines
             readonly int IBufferReader<int>.Complete() => (int)reader.Result;
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private struct HashReader : IBufferReader<HashBuilder>
         {
             private readonly HashBuilder builder;
