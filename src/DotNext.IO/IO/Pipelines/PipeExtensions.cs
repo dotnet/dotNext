@@ -29,7 +29,7 @@ namespace DotNext.IO.Pipelines
 
             T Complete();
 
-            bool ThrowIfEos => true;
+            void EndOfStream() => throw new EndOfStreamException();
         }
 
         [StructLayout(LayoutKind.Auto)]
@@ -118,7 +118,8 @@ namespace DotNext.IO.Pipelines
         
             readonly HashBuilder IBufferReader<HashBuilder>.Complete() => builder;
 
-            readonly bool IBufferReader<HashBuilder>.ThrowIfEos => limited;
+            void IBufferReader<HashBuilder>.EndOfStream()
+                => remainingBytes = limited ? throw new EndOfStreamException() : 0;
 
             void IBufferReader<HashBuilder>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
             {
@@ -169,30 +170,26 @@ namespace DotNext.IO.Pipelines
         private static void Append<TResult, TParser>(this ref TParser parser, in ReadOnlySequence<byte> input, out SequencePosition consumed)
             where TParser : struct, IBufferReader<TResult>
         {
-            if (input.IsEmpty)
-                consumed = parser.ThrowIfEos ? throw new EndOfStreamException() : input.End;
-            else
-            {
-                int bytesToConsume;
-                for (consumed = input.Start; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false) && block.Length > 0; consumed = input.GetPosition(bytesToConsume, consumed))
+            consumed = input.Start;
+            if(input.Length > 0)
+                for (int bytesToConsume; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false) && block.Length > 0; consumed = input.GetPosition(bytesToConsume, consumed))
                 {
                     bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
                     block = block.Slice(0, bytesToConsume);
                     parser.Append(block.Span, ref bytesToConsume);
                 }
-            }
+            else
+                parser.EndOfStream();
         }
 
         private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token)
             where TParser : struct, IBufferReader<TResult>
         {
-            var incompleted = true;
-            for (SequencePosition consumed; parser.RemainingBytes > 0 && incompleted; reader.AdvanceTo(consumed))
+            for (SequencePosition consumed; parser.RemainingBytes > 0; reader.AdvanceTo(consumed))
             {
                 var readResult = await reader.ReadAsync(token).ConfigureAwait(false);
                 readResult.ThrowIfCancellationRequested(token);
                 parser.Append<TResult, TParser>(readResult.Buffer, out consumed);
-                incompleted = !readResult.IsCompleted;
             }
             return parser.Complete();
         }

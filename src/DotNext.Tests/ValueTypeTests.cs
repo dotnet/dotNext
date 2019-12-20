@@ -33,7 +33,7 @@ namespace DotNext
             Equal(new IntPtr(60), value.Add(new IntPtr(20)));
             Equal(new IntPtr(39), value.Decrement());
             Equal(new IntPtr(41), value.Increment());
-            Equal(new IntPtr(1), value.Remainder(new IntPtr(1)));
+            Equal(new IntPtr(1), value.Remainder(new IntPtr(3)));
         }
 
         [Require64BitProcess]
@@ -48,7 +48,7 @@ namespace DotNext
             Equal(new UIntPtr(60U), value.Add(new UIntPtr(20U)));
             Equal(new UIntPtr(39U), value.Decrement());
             Equal(new UIntPtr(41U), value.Increment());
-            Equal(new UIntPtr(1), value.Remainder(new UIntPtr(1)));
+            Equal(new UIntPtr(1), value.Remainder(new UIntPtr(3)));
         }
 
         [Require64BitProcess]

@@ -62,13 +62,6 @@ namespace DotNext.Runtime
         }
 
         [Fact]
-        public static void AddressAlignment()
-        {
-            var i = 42;
-            True(Intrinsics.IsAligned(in i));
-        }
-
-        [Fact]
         public static unsafe void BitwiseEqualityForByte()
         {
             byte value1 = 10;
