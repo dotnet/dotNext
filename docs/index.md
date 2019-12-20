@@ -1,12 +1,15 @@
-.NEXT
+.NEXT 2.x
 ====
 
-.NEXT (dotNext) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime. 
+.NEXT (dotNext) is the family of powerful libaries aimed to improve development productivity and extend .NET API with unique features which potentially will be implemented in the next versions of C# compiler or .NET Runtime.
+
+> [!NOTE]
+> Use menu _Old Versions_ in navigation bar to choose documentation for previous versions of .NEXT. Migration guides are [here](migration/index.md).
 
 This chapter gives quick overview of these libraries. Read [articles](./features/core/index.md) for closer look at all available features.
 
 Prerequisites:
-* Runtime: any .NET implementation compatible with .NET Standard 2.0
+* Runtime: any .NET implementation compatible with .NET Standard 2.1
 * OS: Linux, Windows, MacOS
 * Architecture: any if supported by underlying .NET Runtime
 
@@ -35,10 +38,10 @@ This library provides a rich API to write and execute code on-the-fly. It extend
 
 # DotNext.Unsafe
 <a href="https://www.nuget.org/packages/dotnext.unsafe/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.unsafe.svg?logo=NuGet"></a><br/>
-This library provides a special types to work with unmanaged memory in type-safe manner:
+This library provides a special types to work with unmanaged memory in safe manner:
 * Structured access to unmanaged memory
-* Unstructured access to unmanaged memory
-* Typed unmanaged array and list
+* Unmanaged [memory pool](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1)
+* Interop with unmanaged memory via [Memory](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1) value type
 * CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.
 * Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc, volatile access
 * Calling unmanaged functions by pointer
@@ -60,11 +63,13 @@ The following code describes these alternative implementations of synchronizatio
 
 But this is not all features of this library. Read more [here](./features/threading/index.md).
 
+# DotNext.IO
+<a href="https://www.nuget.org/packages/dotnext.io/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.io.svg?logo=NuGet"></a><br/>
+Extending streams and I/O pipelines with methods for reading and writing typed values including strings asynchronously. Arbitrary character encodings are supported. Now encoding or decoding data using [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe) is much easier and comparable with [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter) or [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader).
+
 # DotNext.Net.Cluster
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?logo=NuGet"></a><br/>
-Provides basic framework for building [clustered microservices](https://en.wikipedia.org/wiki/Computer_cluster) based on network consensus and distributed messaging. Additionally, the libarary provides transport-agnostic implementation of [Raft Consensus Algoritm](https://raft.github.io/) that can be adopted for any communication protocol.
-
-Additionally, the library contains high-performance Write Ahead Log used for log replication by Raft algorithm. However, it can be used as general-purpose log.
+Provides rich framework for building [clustered microservices](https://en.wikipedia.org/wiki/Computer_cluster) based on network consensus and distributed messaging. It includes transport-agnostic implementation of [Raft Consensus Algoritm](https://raft.github.io/) that can be adopted for any communication protocol and high-performance persistent Write Ahead Log suitable for general-purpose usage.
 
 # DotNext.AspNetCore.Cluster
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?logo=NuGet"></a><br/>

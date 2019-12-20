@@ -13,5 +13,7 @@
 - name: Old Versions
   dropdown: true
   items:
+    - name: Migration
+      href: migration/
     - name: 1.x
       href: ./versions/1.x/index.html
