@@ -1,0 +1,46 @@
+{
+  "build": {
+    "content": [
+      {
+        "files": [
+          "articles/**.md",
+          "articles/**/toc.yml",
+          "toc.yml",
+          "*.md",
+          "api/**.md",
+          "api/**/toc.yml"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**"
+        ]
+      }
+    ],
+    "dest": "_site",
+    "globalMetadataFiles": [],
+    "fileMetadataFiles": [],
+    "template": [
+      "default",
+      "../darkFX"
+    ],
+    "postProcessors": [
+      "ExtractSearchIndex"
+    ],
+    "globalMetadata": {
+      "_appFooter": "<span>Copyright © Steffen Wilke<br>Generated with <strong>DocFX</strong></span>",
+      "_appTitle": "darkFX",
+      "_enableSearch": "true",
+      "_gitContribute": {
+        "repo": "https://github.com/steffen-wilke/docfx-dark"
+      },
+      "_gitUrlPattern": "github"
+    },
+    "noLangKeyword": false,
+    "keepFileLink": false,
+    "cleanupCacheHistory": false,
+    "disableGitFeatures": false
+  }
+}

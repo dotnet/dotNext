@@ -1,0 +1,1127 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Struct Result&lt;T&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Struct Result&lt;T&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Result`1">
+  
+  
+  <h1 id="DotNext_Result_1" data-uid="DotNext.Result`1" class="text-break">Struct Result&lt;T&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents a result of operation which can be actual result or exception.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">ISerializable</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Result_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public struct Result&lt;T&gt; : ISerializable</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1__ctor__0_.md&amp;value=---%0Auid%3A%20DotNext.Result%601.%23ctor(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L66">View Source</a>
+  </span>
+  <a id="DotNext_Result_1__ctor_" data-uid="DotNext.Result`1.#ctor*"></a>
+  <h4 id="DotNext_Result_1__ctor__0_" data-uid="DotNext.Result`1.#ctor(`0)">Result(T)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new successful result.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Result(T value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to be stored as result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1__ctor_Exception_.md&amp;value=---%0Auid%3A%20DotNext.Result%601.%23ctor(Exception)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L84">View Source</a>
+  </span>
+  <a id="DotNext_Result_1__ctor_" data-uid="DotNext.Result`1.#ctor*"></a>
+  <h4 id="DotNext_Result_1__ctor_Exception_" data-uid="DotNext.Result`1.#ctor(Exception)">Result(Exception)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new unsuccessful result.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Result(Exception error)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Exception</span></td>
+        <td><span class="parametername">error</span></td>
+        <td><p>The exception representing error. Cannot be <span class="xref">null</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_Error.md&amp;value=---%0Auid%3A%20DotNext.Result%601.Error%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L210">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_Error_" data-uid="DotNext.Result`1.Error*"></a>
+  <h4 id="DotNext_Result_1_Error" data-uid="DotNext.Result`1.Error">Error</h4>
+  <div class="markdown level1 summary"><p>Gets exception associated with this result.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Exception Error { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Exception</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_IsSuccessful.md&amp;value=---%0Auid%3A%20DotNext.Result%601.IsSuccessful%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L107">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_IsSuccessful_" data-uid="DotNext.Result`1.IsSuccessful*"></a>
+  <h4 id="DotNext_Result_1_IsSuccessful" data-uid="DotNext.Result`1.IsSuccessful">IsSuccessful</h4>
+  <div class="markdown level1 summary"><p>Indicates that the result is successful.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool IsSuccessful { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if this result is successful; <span class="xref">false</span> if this result represents exception.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_Value.md&amp;value=---%0Auid%3A%20DotNext.Result%601.Value%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L113">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_Value_" data-uid="DotNext.Result`1.Value*"></a>
+  <h4 id="DotNext_Result_1_Value" data-uid="DotNext.Result`1.Value">Value</h4>
+  <div class="markdown level1 summary"><p>Extracts actual result.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T Value { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_Convert__1_DotNext_Converter__0___0__.md&amp;value=---%0Auid%3A%20DotNext.Result%601.Convert%60%601(DotNext.Converter%7B%600%2C%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L153">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_Convert_" data-uid="DotNext.Result`1.Convert*"></a>
+  <h4 id="DotNext_Result_1_Convert__1_DotNext_Converter__0___0__" data-uid="DotNext.Result`1.Convert``1(DotNext.Converter{`0,``0})">Convert&lt;U&gt;(Converter&lt;T, U&gt;)</h4>
+  <div class="markdown level1 summary"><p>If successful result is present, apply the provided mapping function hiding any exception
+caused by the converter.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Result&lt;U&gt; Convert&lt;U&gt;(Converter&lt;T, U&gt; converter)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Converter</span>&lt;T, U&gt;</td>
+        <td><span class="parametername">converter</span></td>
+        <td><p>A mapping function to be applied to the value, if present.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;U&gt;</td>
+        <td><p>The conversion result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">U</span></td>
+        <td><p>The type of the result of the mapping function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_Convert__1_DotNext_ValueFunc__0___0___.md&amp;value=---%0Auid%3A%20DotNext.Result%601.Convert%60%601(DotNext.ValueFunc%7B%600%2C%60%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L129">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_Convert_" data-uid="DotNext.Result`1.Convert*"></a>
+  <h4 id="DotNext_Result_1_Convert__1_DotNext_ValueFunc__0___0___" data-uid="DotNext.Result`1.Convert``1(DotNext.ValueFunc{`0,``0}@)">Convert&lt;U&gt;(ValueFunc&lt;T, U&gt;)</h4>
+  <div class="markdown level1 summary"><p>If successful result is present, apply the provided mapping function hiding any exception
+caused by the converter.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Result&lt;U&gt; Convert&lt;U&gt;(in ValueFunc&lt;T, U&gt; converter)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;T, U&gt;</td>
+        <td><span class="parametername">converter</span></td>
+        <td><p>A mapping function to be applied to the value, if present.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;U&gt;</td>
+        <td><p>The conversion result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">U</span></td>
+        <td><p>The type of the result of the mapping function.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_Or__0_.md&amp;value=---%0Auid%3A%20DotNext.Result%601.Or(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L171">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_Or_" data-uid="DotNext.Result`1.Or*"></a>
+  <h4 id="DotNext_Result_1_Or__0_" data-uid="DotNext.Result`1.Or(`0)">Or(T)</h4>
+  <div class="markdown level1 summary"><p>Returns the value if present; otherwise return default value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T Or(T defaultValue)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">defaultValue</span></td>
+        <td><p>The value to be returned if this result is unsuccessful.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The value, if present, otherwise <code data-dev-comment-type="paramref" class="paramref">defaultValue</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_OrDefault.md&amp;value=---%0Auid%3A%20DotNext.Result%601.OrDefault%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L177">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_OrDefault_" data-uid="DotNext.Result`1.OrDefault*"></a>
+  <h4 id="DotNext_Result_1_OrDefault" data-uid="DotNext.Result`1.OrDefault">OrDefault()</h4>
+  <div class="markdown level1 summary"><p>Returns the value if present; otherwise return default value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T OrDefault()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The value, if present, otherwise <code>default</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_OrInvoke_DotNext_Func__0__.md&amp;value=---%0Auid%3A%20DotNext.Result%601.OrInvoke(DotNext.Func%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L191">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_OrInvoke_" data-uid="DotNext.Result`1.OrInvoke*"></a>
+  <h4 id="DotNext_Result_1_OrInvoke_DotNext_Func__0__" data-uid="DotNext.Result`1.OrInvoke(DotNext.Func{`0})">OrInvoke(Func&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Returns the value if present; otherwise invoke delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T OrInvoke(Func&lt;T&gt; defaultFunc)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;T&gt;</td>
+        <td><span class="parametername">defaultFunc</span></td>
+        <td><p>A delegate to be invoked if value is not present.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The value, if present, otherwise returned from delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_OrInvoke_DotNext_Func_Exception__0__.md&amp;value=---%0Auid%3A%20DotNext.Result%601.OrInvoke(DotNext.Func%7BException%2C%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L205">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_OrInvoke_" data-uid="DotNext.Result`1.OrInvoke*"></a>
+  <h4 id="DotNext_Result_1_OrInvoke_DotNext_Func_Exception__0__" data-uid="DotNext.Result`1.OrInvoke(DotNext.Func{Exception,`0})">OrInvoke(Func&lt;Exception, T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Returns the value if present; otherwise invoke delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T OrInvoke(Func&lt;Exception, T&gt; defaultFunc)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<span class="xref">Exception</span>, T&gt;</td>
+        <td><span class="parametername">defaultFunc</span></td>
+        <td><p>A delegate to be invoked if value is not present.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The value, if present, otherwise returned from delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_OrInvoke_DotNext_ValueFunc__0___.md&amp;value=---%0Auid%3A%20DotNext.Result%601.OrInvoke(DotNext.ValueFunc%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L184">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_OrInvoke_" data-uid="DotNext.Result`1.OrInvoke*"></a>
+  <h4 id="DotNext_Result_1_OrInvoke_DotNext_ValueFunc__0___" data-uid="DotNext.Result`1.OrInvoke(DotNext.ValueFunc{`0}@)">OrInvoke(ValueFunc&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Returns the value if present; otherwise invoke delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T OrInvoke(in ValueFunc&lt;T&gt; defaultFunc)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-1.html">ValueFunc</a>&lt;T&gt;</td>
+        <td><span class="parametername">defaultFunc</span></td>
+        <td><p>A delegate to be invoked if value is not present.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The value, if present, otherwise returned from delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_OrInvoke_DotNext_ValueFunc_Exception__0___.md&amp;value=---%0Auid%3A%20DotNext.Result%601.OrInvoke(DotNext.ValueFunc%7BException%2C%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L198">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_OrInvoke_" data-uid="DotNext.Result`1.OrInvoke*"></a>
+  <h4 id="DotNext_Result_1_OrInvoke_DotNext_ValueFunc_Exception__0___" data-uid="DotNext.Result`1.OrInvoke(DotNext.ValueFunc{Exception,`0}@)">OrInvoke(ValueFunc&lt;Exception, T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Returns the value if present; otherwise invoke delegate.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public T OrInvoke(in ValueFunc&lt;Exception, T&gt; defaultFunc)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-2.html">ValueFunc</a>&lt;<span class="xref">Exception</span>, T&gt;</td>
+        <td><span class="parametername">defaultFunc</span></td>
+        <td><p>A delegate to be invoked if value is not present.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The value, if present, otherwise returned from delegate.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Result%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L263">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_ToString_" data-uid="DotNext.Result`1.ToString*"></a>
+  <h4 id="DotNext_Result_1_ToString" data-uid="DotNext.Result`1.ToString">ToString()</h4>
+  <div class="markdown level1 summary"><p>Returns textual representation of this object.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override string ToString()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><p>The textual representation of this object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_TryGet__0__.md&amp;value=---%0Auid%3A%20DotNext.Result%601.TryGet(%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L160">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_TryGet_" data-uid="DotNext.Result`1.TryGet*"></a>
+  <h4 id="DotNext_Result_1_TryGet__0__" data-uid="DotNext.Result`1.TryGet(`0@)">TryGet(out T)</h4>
+  <div class="markdown level1 summary"><p>Attempts to extract value from container if it is present.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public bool TryGet(out T value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Extracted value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if value is present; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="operators">Operators
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_op_BitwiseAnd_DotNext_Result__0___DotNext_Result__0___.md&amp;value=---%0Auid%3A%20DotNext.Result%601.op_BitwiseAnd(DotNext.Result%7B%600%7D%40%2CDotNext.Result%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L236">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_op_BitwiseAnd_" data-uid="DotNext.Result`1.op_BitwiseAnd*"></a>
+  <h4 id="DotNext_Result_1_op_BitwiseAnd_DotNext_Result__0___DotNext_Result__0___" data-uid="DotNext.Result`1.op_BitwiseAnd(DotNext.Result{`0}@,DotNext.Result{`0}@)">BitwiseAnd(Result&lt;T&gt;, Result&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Indicates that both results are successful.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator &amp;(in Result&lt;T&gt; left, in Result&lt;T&gt; right)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;</td>
+        <td><span class="parametername">left</span></td>
+        <td><p>The first result to check.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;</td>
+        <td><span class="parametername">right</span></td>
+        <td><p>The second result to check.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if both results are successful; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_op_Explicit_DotNext_Result__0_____0.md&amp;value=---%0Auid%3A%20DotNext.Result%601.op_Explicit(DotNext.Result%7B%600%7D%40)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L216">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_op_Explicit_" data-uid="DotNext.Result`1.op_Explicit*"></a>
+  <h4 id="DotNext_Result_1_op_Explicit_DotNext_Result__0_____0" data-uid="DotNext.Result`1.op_Explicit(DotNext.Result{`0}@)~`0">Explicit(Result&lt;T&gt; to T)</h4>
+  <div class="markdown level1 summary"><p>Extracts actual result.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static explicit operator T(in Result&lt;T&gt; result)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;</td>
+        <td><span class="parametername">result</span></td>
+        <td><p>The result object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_op_False_DotNext_Result__0___.md&amp;value=---%0Auid%3A%20DotNext.Result%601.op_False(DotNext.Result%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L250">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_op_False_" data-uid="DotNext.Result`1.op_False*"></a>
+  <h4 id="DotNext_Result_1_op_False_DotNext_Result__0___" data-uid="DotNext.Result`1.op_False(DotNext.Result{`0}@)">False(Result&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Indicates that the result represents error.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator false (in Result&lt;T&gt; result)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;</td>
+        <td><span class="parametername">result</span></td>
+        <td><p>The result to check.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">false</span> if this result is successful; <span class="xref">true</span> if this result represents exception.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_op_Implicit__0__DotNext_Result__0_.md&amp;value=---%0Auid%3A%20DotNext.Result%601.op_Implicit(%600)~DotNext.Result%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L228">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_op_Implicit_" data-uid="DotNext.Result`1.op_Implicit*"></a>
+  <h4 id="DotNext_Result_1_op_Implicit__0__DotNext_Result__0_" data-uid="DotNext.Result`1.op_Implicit(`0)~DotNext.Result{`0}">Implicit(T to Result&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts value into the result.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator Result&lt;T&gt;(T result)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">result</span></td>
+        <td><p>The result to be converted.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_op_Implicit_DotNext_Result__0____DotNext_Optional__0_.md&amp;value=---%0Auid%3A%20DotNext.Result%601.op_Implicit(DotNext.Result%7B%600%7D%40)~DotNext.Optional%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L222">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_op_Implicit_" data-uid="DotNext.Result`1.op_Implicit*"></a>
+  <h4 id="DotNext_Result_1_op_Implicit_DotNext_Result__0____DotNext_Optional__0_" data-uid="DotNext.Result`1.op_Implicit(DotNext.Result{`0}@)~DotNext.Optional{`0}">Implicit(Result&lt;T&gt; to Optional&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts the result into <a class="xref" href="DotNext.Optional-1.html">Optional&lt;T&gt;</a>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static implicit operator Optional&lt;T&gt;(in Result&lt;T&gt; result)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;</td>
+        <td><span class="parametername">result</span></td>
+        <td><p>The result to be converted.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Optional-1.html">Optional</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1_op_True_DotNext_Result__0___.md&amp;value=---%0Auid%3A%20DotNext.Result%601.op_True(DotNext.Result%7B%600%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L243">View Source</a>
+  </span>
+  <a id="DotNext_Result_1_op_True_" data-uid="DotNext.Result`1.op_True*"></a>
+  <h4 id="DotNext_Result_1_op_True_DotNext_Result__0___" data-uid="DotNext.Result`1.op_True(DotNext.Result{`0}@)">True(Result&lt;T&gt;)</h4>
+  <div class="markdown level1 summary"><p>Indicates that the result is successful.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool operator true (in Result&lt;T&gt; result)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Result-1.html">Result</a>&lt;T&gt;</td>
+        <td><span class="parametername">result</span></td>
+        <td><p>The result to check.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if this result is successful; <span class="xref">false</span> if this result represents exception.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">ISerializable</span>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Result.html#DotNext_Result_Coalesce__1_DotNext_Result___0___DotNext_Result___0___">Result.Coalesce&lt;T&gt;(Result&lt;T&gt;, Result&lt;T&gt;)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Result_1.md&amp;value=---%0Auid%3A%20DotNext.Result%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Result.cs/#L52" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

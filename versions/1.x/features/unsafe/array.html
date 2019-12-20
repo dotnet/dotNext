@@ -1,0 +1,259 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Unmanaged Array | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Unmanaged Array | .NEXT ">
+    <meta name="generator" content="docfx 2.42.0.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="unmanaged-array">Unmanaged Array</h1>
+
+<p><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedArray-1.html">UnmanagedArray</a> is a safe way to allocate array in the unmanaged memory. This type provides bound check for each element access as well as typical features of managed array such as sorting and searching.</p>
+<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
+
+var array = new UnmanagedArray&lt;double&gt;(10); //array of 10 elements
+
+try
+{
+    //element set
+    array[0] = 10;
+    array[1] = 30;
+    //obtains a pointer to the array element with index 1
+    Pointer&lt;double&gt; ptr = array.ElementAt(1);
+    ptr.Value = 30;
+    //copy to managed heap
+    double[] managedArray = array.CopyToManagedHeap();
+}
+finally
+{
+    array.Dispose();    //free unmanaged memory
+}
+</code></pre>
+<p>Unmanaged array supports interoperation with managed arrays and streams.</p>
+<p><strong>foreach</strong> loop is also supported because array implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ienumerable-1">IEnumerable</a> interface:</p>
+<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
+
+using(var array = new UnmanagedArray&lt;double&gt;(10))
+{
+    array[0] = 10;
+    array[1] = 30;
+    foreach(var item in array)
+        Console.WriteLine(item);
+}
+</code></pre>
+<p>The array can be resized on-the-fly. Resizing causes re-allocation of the memory with the copying of the elements from the original location. The new size of the array can be defined through <code>Length</code> property.</p>
+<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
+
+var array = new UnmanagedArray&lt;double&gt;(10); //array.Length == 10L
+array[0] = 10;
+array[1] = 30;
+array.Length = 20;  //causes re-allocation of the array
+var i = array[0] + array[1];    //i == 40
+array.Dispose();
+</code></pre>
+<p>Most of the methods typical to managed arrays such as searching(binary and linear search), filling and sorting are present in an unmanaged array.</p>
+<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
+
+var array = new UnmanagedArray&lt;long&gt;(10);
+array.Fill(42L);    //set all elements of the array to 42L
+array[3] = 19L;
+array.IndexOf(19L); // == 3
+array.Sort();   //sort array
+array.Dispose();
+</code></pre>
+<h1 id="atomic-array-access">Atomic array access</h1>
+<p>It is possible to perform volatile reads/writes of array elements as well as more complex atomic operations. To do that, a pointer to array element should be obtained using <code>ElementAt</code> method in the array.</p>
+<pre><code class="lang-csharp">var array = new UnmanagedArray&lt;long&gt;(10);
+array.Fill(42L);
+var i = array.ElementAt(0).IncrementAndGetValue();  //i == 43L
+array.ElementAt(0).CompareAndSet(0L, 1L);   //false because array[0] == 43L
+</code></pre>
+<p>A set of atomic operations are similar to the atomic operations for primitive types described <a href="../core/atomic.html">here</a>. All supported atomic operations for pointer type located in <a href="../../api/DotNext.Threading.AtomicPointer.html">AtomicPointer</a> class.</p>
+<h1 id="span-and-unmanagedarray">Span and UnmanagedArray</h1>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type from .NET allows to work with managed arrays as well as stack-allocated memory. It is possible to work with unmanaged heap but with some boilerplate code. The following table shows differences between unmanaged array and span:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>UnmanagedArray</th>
+<th>Span</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Managed array as backing store</td>
+<td>-</td>
+<td>+</td>
+</tr>
+<tr>
+<td>Random element access</td>
+<td>+</td>
+<td>+</td>
+</tr>
+<tr>
+<td>Sort</td>
+<td>+</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Search</td>
+<td>+</td>
+<td>+</td>
+</tr>
+<tr>
+<td>Copy</td>
+<td>+</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Interop with stream</td>
+<td>+</td>
+<td>- (+ since .NET Standard 2.1)</td>
+</tr>
+<tr>
+<td>Filling with zeroes</td>
+<td>+</td>
+<td>+</td>
+</tr>
+<tr>
+<td>Slicing</td>
+<td>+</td>
+<td>+</td>
+</tr>
+<tr>
+<td>Bitwise comparsion</td>
+<td>+</td>
+<td>± (only for data types implementing <em>IEquatable</em>)</td>
+</tr>
+<tr>
+<td>Bitwise hash code</td>
+<td>+</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Enumeration</td>
+<td>+</td>
+<td>+</td>
+</tr>
+<tr>
+<td>64-bit sized unmanaged array</td>
+<td>+</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Can be stored in the field</td>
+<td>+</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Volatile read/write</td>
+<td>+</td>
+<td>-</td>
+</tr>
+<tr>
+<td>Atomic operations</td>
+<td>+</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/unsafe/array.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

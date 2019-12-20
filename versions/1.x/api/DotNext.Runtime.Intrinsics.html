@@ -1,0 +1,495 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class Intrinsics
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class Intrinsics
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Runtime.Intrinsics">
+  
+  
+  <h1 id="DotNext_Runtime_Intrinsics" data-uid="DotNext.Runtime.Intrinsics" class="text-break">Class Intrinsics
+  </h1>
+  <div class="markdown level0 summary"><p>Represents highly optimized runtime intrinsic methods.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">Intrinsics</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.html">DotNext.Runtime</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_Runtime_Intrinsics_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class Intrinsics : object</code></pre>
+  </div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_Bitcast__2___0____1__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.Bitcast%60%602(%60%600%40%2C%60%601%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L73">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Intrinsics_Bitcast_" data-uid="DotNext.Runtime.Intrinsics.Bitcast*"></a>
+  <h4 id="DotNext_Runtime_Intrinsics_Bitcast__2___0____1__" data-uid="DotNext.Runtime.Intrinsics.Bitcast``2(``0@,``1@)">Bitcast&lt;T, TResult&gt;(T, out TResult)</h4>
+  <div class="markdown level1 summary"><p>Obtain a value of type <code data-dev-comment-type="typeparamref" class="typeparamref">TResult</code> by
+reinterpreting the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void Bitcast&lt;T, TResult&gt;(in T input, out TResult output)
+
+    where T : struct where TResult : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">input</span></td>
+        <td><p>A value to convert.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">TResult</span></td>
+        <td><span class="parametername">output</span></td>
+        <td><p>Conversion result.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The value type to be converted.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">TResult</span></td>
+        <td><p>The type of output struct.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Intrinsics_Bitcast__2___0____1___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Every bit in the value representation of the returned <code data-dev-comment-type="typeparamref" class="typeparamref">TResult</code> object
+is equal to the corresponding bit in the object representation of <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.
+The values of padding bits in the returned <code data-dev-comment-type="typeparamref" class="typeparamref">TResult</code> object are unspecified.
+The method takes into account size of <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> and <code data-dev-comment-type="typeparamref" class="typeparamref">TResult</code> types
+and able to provide conversion between types of different size. However, the result may very between
+CPU architectures if size of types is different.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_DefaultOf__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.DefaultOf%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L49">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Intrinsics_DefaultOf_" data-uid="DotNext.Runtime.Intrinsics.DefaultOf*"></a>
+  <h4 id="DotNext_Runtime_Intrinsics_DefaultOf__1" data-uid="DotNext.Runtime.Intrinsics.DefaultOf``1">DefaultOf&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Returns default value of the given type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static T DefaultOf&lt;T&gt;()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><p>The default value of type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type for which default value should be obtained.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Intrinsics_DefaultOf__1_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method helps to avoid generation of temporary variables
+necessary for <code>default</code> keyword implementation.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_HasFlag__1___0___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.HasFlag%60%601(%60%600%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L179">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Intrinsics_HasFlag_" data-uid="DotNext.Runtime.Intrinsics.HasFlag*"></a>
+  <h4 id="DotNext_Runtime_Intrinsics_HasFlag__1___0___0_" data-uid="DotNext.Runtime.Intrinsics.HasFlag``1(``0,``0)">HasFlag&lt;T&gt;(T, T)</h4>
+  <div class="markdown level1 summary"><p>Determines whether one or more bit fields are set in the given value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool HasFlag&lt;T&gt;(T value, T flag)
+
+    where T : struct, Enum</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to check.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">flag</span></td>
+        <td><p>An enumeration value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the bit field or bit fields that are set in <code data-dev-comment-type="paramref" class="paramref">flag</code> are also set in <code data-dev-comment-type="paramref" class="paramref">value</code>; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_IsDefault__1___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.IsDefault%60%601(%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L105">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Intrinsics_IsDefault_" data-uid="DotNext.Runtime.Intrinsics.IsDefault*"></a>
+  <h4 id="DotNext_Runtime_Intrinsics_IsDefault__1___0_" data-uid="DotNext.Runtime.Intrinsics.IsDefault``1(``0)">IsDefault&lt;T&gt;(T)</h4>
+  <div class="markdown level1 summary"><p>Indicates that specified value type is the default value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool IsDefault&lt;T&gt;(T value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Value to check.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if value is default value; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_IsNullable__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.IsNullable%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L28">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Intrinsics_IsNullable_" data-uid="DotNext.Runtime.Intrinsics.IsNullable*"></a>
+  <h4 id="DotNext_Runtime_Intrinsics_IsNullable__1" data-uid="DotNext.Runtime.Intrinsics.IsNullable``1">IsNullable&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Provides the fast way to check whether the specified type accepts  <span class="xref">null</span> value as valid value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool IsNullable&lt;T&gt;()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if <code data-dev-comment-type="typeparamref" class="typeparamref">T</code> is nullable type; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type to check.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Runtime_Intrinsics_IsNullable__1_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method always returns <span class="xref">true</span> for all reference types and <see cref="!:Nullable&lt;T>"></see>.
+On mainstream implementations of .NET CLR, this method is replaced by constant value by JIT compiler with zero runtime overhead.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics_TypeOf__1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics.TypeOf%60%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L150">View Source</a>
+  </span>
+  <a id="DotNext_Runtime_Intrinsics_TypeOf_" data-uid="DotNext.Runtime.Intrinsics.TypeOf*"></a>
+  <h4 id="DotNext_Runtime_Intrinsics_TypeOf__1" data-uid="DotNext.Runtime.Intrinsics.TypeOf``1">TypeOf&lt;T&gt;()</h4>
+  <div class="markdown level1 summary"><p>Returns the runtime handle associated with type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static RuntimeTypeHandle TypeOf&lt;T&gt;()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">RuntimeTypeHandle</span></td>
+        <td><p>The runtime handle representing type <code data-dev-comment-type="typeparamref" class="typeparamref">T</code>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The type which runtime handle should be obtained.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_Intrinsics.md&amp;value=---%0Auid%3A%20DotNext.Runtime.Intrinsics%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Runtime/Intrinsics.cs/#L17" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

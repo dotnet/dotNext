@@ -1,0 +1,614 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class BitwiseComparer&lt;T&gt;
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class BitwiseComparer&lt;T&gt;
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.BitwiseComparer`1">
+  
+  
+  <h1 id="DotNext_BitwiseComparer_1" data-uid="DotNext.BitwiseComparer`1" class="text-break">Class BitwiseComparer&lt;T&gt;
+  </h1>
+  <div class="markdown level0 summary"><p>Represents bitwise comparer for the arbitrary value type.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">BitwiseComparer&lt;T&gt;</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><span class="xref">IComparer</span>&lt;T&gt;</div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_BitwiseComparer_1_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class BitwiseComparer&lt;T&gt; : IEqualityComparer&lt;T&gt;, IComparer&lt;T&gt; where T : struct</code></pre>
+  </div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The value type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1_Instance.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.Instance%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L32">View Source</a>
+  </span>
+  <a id="DotNext_BitwiseComparer_1_Instance_" data-uid="DotNext.BitwiseComparer`1.Instance*"></a>
+  <h4 id="DotNext_BitwiseComparer_1_Instance" data-uid="DotNext.BitwiseComparer`1.Instance">Instance</h4>
+  <div class="markdown level1 summary"><p>Gets instance of this comparer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static BitwiseComparer&lt;T&gt; Instance { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.BitwiseComparer-1.html">BitwiseComparer</a>&lt;T&gt;</td>
+        <td><p>The instance of this comparer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_BitwiseComparer_1_Instance_remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Use this property only if you need object implementing <see cref="!:IEqualityComparer&lt;T>"></see>
+or <see cref="!:IComparer&lt;T>"></see> interface. Otherwise, use static methods.</p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1_Compare__1__0___0_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.Compare%60%601(%600%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L162">View Source</a>
+  </span>
+  <a id="DotNext_BitwiseComparer_1_Compare_" data-uid="DotNext.BitwiseComparer`1.Compare*"></a>
+  <h4 id="DotNext_BitwiseComparer_1_Compare__1__0___0_" data-uid="DotNext.BitwiseComparer`1.Compare``1(`0,``0)">Compare&lt;G&gt;(T, G)</h4>
+  <div class="markdown level1 summary"><p>Compares bits of two values of the different type.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int Compare&lt;G&gt;(T first, G second)
+
+    where G : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first value to compare.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">G</span></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second value to compare.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>A value that indicates the relative order of the objects being compared.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">G</span></td>
+        <td><p>Type of the second value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1_Equals__1__0___0_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.Equals%60%601(%600%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L100">View Source</a>
+  </span>
+  <a id="DotNext_BitwiseComparer_1_Equals_" data-uid="DotNext.BitwiseComparer`1.Equals*"></a>
+  <h4 id="DotNext_BitwiseComparer_1_Equals__1__0___0_" data-uid="DotNext.BitwiseComparer`1.Equals``1(`0,``0)">Equals&lt;G&gt;(T, G)</h4>
+  <div class="markdown level1 summary"><p>Checks bitwise equality between two values of different value types.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool Equals&lt;G&gt;(T first, G second)
+
+    where G : struct</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">first</span></td>
+        <td><p>The first value to check.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">G</span></td>
+        <td><span class="parametername">second</span></td>
+        <td><p>The second value to check.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if both values are equal; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">G</span></td>
+        <td><p>Type of second value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_BitwiseComparer_1_Equals__1__0___0__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method doesn't use <see cref="!:object.Equals(object)"></see>
+even if it is overridden by value type.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1_GetHashCode__0_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.GetHashCode(%600%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L211">View Source</a>
+  </span>
+  <a id="DotNext_BitwiseComparer_1_GetHashCode_" data-uid="DotNext.BitwiseComparer`1.GetHashCode*"></a>
+  <h4 id="DotNext_BitwiseComparer_1_GetHashCode__0_System_Boolean_" data-uid="DotNext.BitwiseComparer`1.GetHashCode(`0,System.Boolean)">GetHashCode(T, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Computes hash code for the structure content.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int GetHashCode(T value, bool salted = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Value to be hashed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">salted</span></td>
+        <td><p><span class="xref">true</span> to include randomized salt data into hashing; <span class="xref">false</span> to use data from memory only.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>Content hash code.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1_GetHashCode__0_System_Int32_DotNext_Func_System_Int32_System_Int32_System_Int32__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.GetHashCode(%600%2CSystem.Int32%2CDotNext.Func%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L237">View Source</a>
+  </span>
+  <a id="DotNext_BitwiseComparer_1_GetHashCode_" data-uid="DotNext.BitwiseComparer`1.GetHashCode*"></a>
+  <h4 id="DotNext_BitwiseComparer_1_GetHashCode__0_System_Int32_DotNext_Func_System_Int32_System_Int32_System_Int32__System_Boolean_" data-uid="DotNext.BitwiseComparer`1.GetHashCode(`0,System.Int32,DotNext.Func{System.Int32,System.Int32,System.Int32},System.Boolean)">GetHashCode(T, Int32, Func&lt;Int32, Int32, Int32&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Computes bitwise hash code for the specified value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int GetHashCode(T value, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>A value to be hashed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">hash</span></td>
+        <td><p>Initial value of the hash.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">hashFunction</span></td>
+        <td><p>Hashing function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">salted</span></td>
+        <td><p><span class="xref">true</span> to include randomized salt data into hashing; <span class="xref">false</span> to use data from memory only.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>Bitwise hash code.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_BitwiseComparer_1_GetHashCode__0_System_Int32_DotNext_Func_System_Int32_System_Int32_System_Int32__System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method doesn't use <see cref="!:object.GetHashCode"></see>
+even if it is overridden by value type.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1_GetHashCode__0_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601.GetHashCode(%600%2CSystem.Int32%2CDotNext.ValueFunc%7BSystem.Int32%2CSystem.Int32%2CSystem.Int32%7D%40%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L253">View Source</a>
+  </span>
+  <a id="DotNext_BitwiseComparer_1_GetHashCode_" data-uid="DotNext.BitwiseComparer`1.GetHashCode*"></a>
+  <h4 id="DotNext_BitwiseComparer_1_GetHashCode__0_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean_" data-uid="DotNext.BitwiseComparer`1.GetHashCode(`0,System.Int32,DotNext.ValueFunc{System.Int32,System.Int32,System.Int32}@,System.Boolean)">GetHashCode(T, Int32, ValueFunc&lt;Int32, Int32, Int32&gt;, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Computes bitwise hash code for the specified value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static int GetHashCode(T value, int hash, in ValueFunc&lt;int, int, int&gt; hashFunction, bool salted = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>A value to be hashed.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">hash</span></td>
+        <td><p>Initial value of the hash.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.ValueFunc-3.html">ValueFunc</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><span class="parametername">hashFunction</span></td>
+        <td><p>Hashing function.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">salted</span></td>
+        <td><p><span class="xref">true</span> to include randomized salt data into hashing; <span class="xref">false</span> to use data from memory only.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>Bitwise hash code.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_BitwiseComparer_1_GetHashCode__0_System_Int32_DotNext_ValueFunc_System_Int32_System_Int32_System_Int32___System_Boolean__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method doesn't use <see cref="!:object.GetHashCode"></see>
+even if it is overridden by value type.</p>
+</div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <span class="xref">IComparer&lt;&gt;</span>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_BitwiseComparer_1.md&amp;value=---%0Auid%3A%20DotNext.BitwiseComparer%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/BitwiseComparer.cs/#L16" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

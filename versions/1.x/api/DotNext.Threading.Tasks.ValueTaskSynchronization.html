@@ -1,0 +1,1404 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class ValueTaskSynchronization
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class ValueTaskSynchronization
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization">
+  
+  
+  <h1 id="DotNext_Threading_Tasks_ValueTaskSynchronization" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization" class="text-break">Class ValueTaskSynchronization
+  </h1>
+  <div class="markdown level0 summary"><p>Provides a set of methods for synchronization and combination of multiple <see cref="!:ValueTask"></see>s.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">ValueTaskSynchronization</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.Tasks.html">DotNext.Threading.Tasks</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static class ValueTaskSynchronization : object</code></pre>
+  </div>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>Methods in this class exist for architectural symmetry with <code>WhenAll</code> and <code>WhenAny</code> methods
+from <see cref="!:Task"></see> class when you have to work with tasks implemented as value types.
+Don't use these methods just to avoid allocation of memory inside of managed heap.</p>
+</div>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(ValueTask%2CValueTask)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L24">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(ValueTask,ValueTask)">WhenAll(ValueTask, ValueTask)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when all of the passed tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask WhenAll(ValueTask task1, ValueTask task2)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to await.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><p>A task that represents the completion of all of the supplied tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(ValueTask%2CValueTask%2CValueTask)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L53">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask_ValueTask_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(ValueTask,ValueTask,ValueTask)">WhenAll(ValueTask, ValueTask, ValueTask)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when all of the passed tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to await.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><p>A task that represents the completion of all of the supplied tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask_ValueTask__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask_ValueTask_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(ValueTask%2CValueTask%2CValueTask%2CValueTask)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L86">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask_ValueTask_ValueTask_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(ValueTask,ValueTask,ValueTask,ValueTask)">WhenAll(ValueTask, ValueTask, ValueTask, ValueTask)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when all of the passed tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task4</span></td>
+        <td><p>The fourth task to await.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><p>A task that represents the completion of all of the supplied tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask_ValueTask_ValueTask__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask_ValueTask_ValueTask_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(ValueTask%2CValueTask%2CValueTask%2CValueTask%2CValueTask)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L123">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask_ValueTask_ValueTask_ValueTask_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll(ValueTask,ValueTask,ValueTask,ValueTask,ValueTask)">WhenAll(ValueTask, ValueTask, ValueTask, ValueTask, ValueTask)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when all of the passed tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask WhenAll(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4, ValueTask task5)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task4</span></td>
+        <td><p>The third task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task5</span></td>
+        <td><p>The fifth task to await.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><p>A task that represents the completion of all of the supplied tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_ValueTask_ValueTask_ValueTask_ValueTask_ValueTask__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__2_ValueTask___0__ValueTask___1__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll%60%602(ValueTask%7B%60%600%7D%2CValueTask%7B%60%601%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L41">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__2_ValueTask___0__ValueTask___1__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``2(ValueTask{``0},ValueTask{``1})">WhenAll&lt;T1, T2&gt;(ValueTask&lt;T1&gt;, ValueTask&lt;T2&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when all of the passed tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;(T1, T2)&gt; WhenAll&lt;T1, T2&gt;(ValueTask&lt;T1&gt; task1, ValueTask&lt;T2&gt; task2)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T1&gt;</td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T2&gt;</td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to await.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-2">ValueTuple</a>&lt;T1, T2&gt;&gt;</td>
+        <td><p>A task containing results of both tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__2_ValueTask___0__ValueTask___1___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__3_ValueTask___0__ValueTask___1__ValueTask___2__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll%60%603(ValueTask%7B%60%600%7D%2CValueTask%7B%60%601%7D%2CValueTask%7B%60%602%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L73">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__3_ValueTask___0__ValueTask___1__ValueTask___2__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``3(ValueTask{``0},ValueTask{``1},ValueTask{``2})">WhenAll&lt;T1, T2, T3&gt;(ValueTask&lt;T1&gt;, ValueTask&lt;T2&gt;, ValueTask&lt;T3&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when all of the passed tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;(T1, T2, T3)&gt; WhenAll&lt;T1, T2, T3&gt;(ValueTask&lt;T1&gt; task1, ValueTask&lt;T2&gt; task2, ValueTask&lt;T3&gt; task3)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T1&gt;</td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T2&gt;</td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T3&gt;</td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to await.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-3">ValueTuple</a>&lt;T1, T2, T3&gt;&gt;</td>
+        <td><p>A task containing results of all tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__3_ValueTask___0__ValueTask___1__ValueTask___2___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__4_ValueTask___0__ValueTask___1__ValueTask___2__ValueTask___3__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll%60%604(ValueTask%7B%60%600%7D%2CValueTask%7B%60%601%7D%2CValueTask%7B%60%602%7D%2CValueTask%7B%60%603%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L109">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__4_ValueTask___0__ValueTask___1__ValueTask___2__ValueTask___3__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``4(ValueTask{``0},ValueTask{``1},ValueTask{``2},ValueTask{``3})">WhenAll&lt;T1, T2, T3, T4&gt;(ValueTask&lt;T1&gt;, ValueTask&lt;T2&gt;, ValueTask&lt;T3&gt;, ValueTask&lt;T4&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when all of the passed tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;(T1, T2, T3, T4)&gt; WhenAll&lt;T1, T2, T3, T4&gt;(ValueTask&lt;T1&gt; task1, ValueTask&lt;T2&gt; task2, ValueTask&lt;T3&gt; task3, ValueTask&lt;T4&gt; task4)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T1&gt;</td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T2&gt;</td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T3&gt;</td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T4&gt;</td>
+        <td><span class="parametername">task4</span></td>
+        <td><p>The fourth task to await.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-4">ValueTuple</a>&lt;T1, T2, T3, T4&gt;&gt;</td>
+        <td><p>A task containing results of all tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__4_ValueTask___0__ValueTask___1__ValueTask___2__ValueTask___3___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__5_ValueTask___0__ValueTask___1__ValueTask___2__ValueTask___3__ValueTask___4__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll%60%605(ValueTask%7B%60%600%7D%2CValueTask%7B%60%601%7D%2CValueTask%7B%60%602%7D%2CValueTask%7B%60%603%7D%2CValueTask%7B%60%604%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L149">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__5_ValueTask___0__ValueTask___1__ValueTask___2__ValueTask___3__ValueTask___4__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAll``5(ValueTask{``0},ValueTask{``1},ValueTask{``2},ValueTask{``3},ValueTask{``4})">WhenAll&lt;T1, T2, T3, T4, T5&gt;(ValueTask&lt;T1&gt;, ValueTask&lt;T2&gt;, ValueTask&lt;T3&gt;, ValueTask&lt;T4&gt;, ValueTask&lt;T5&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when all of the passed tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;(T1, T2, T3, T4, T5)&gt; WhenAll&lt;T1, T2, T3, T4, T5&gt;(ValueTask&lt;T1&gt; task1, ValueTask&lt;T2&gt; task2, ValueTask&lt;T3&gt; task3, ValueTask&lt;T4&gt; task4, ValueTask&lt;T5&gt; task5)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T1&gt;</td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T2&gt;</td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T3&gt;</td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T4&gt;</td>
+        <td><span class="parametername">task4</span></td>
+        <td><p>The fourth task to await.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;T5&gt;</td>
+        <td><span class="parametername">task5</span></td>
+        <td><p>The fifth task to await.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetuple-5">ValueTuple</a>&lt;T1, T2, T3, T4, T5&gt;&gt;</td>
+        <td><p>A task containing results of all tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T1</span></td>
+        <td><p>The type of the first task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T2</span></td>
+        <td><p>The type of the second task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T3</span></td>
+        <td><p>The type of the third task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T4</span></td>
+        <td><p>The type of the fourth task.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="parametername">T5</span></td>
+        <td><p>The type of the fifth task.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAll__5_ValueTask___0__ValueTask___1__ValueTask___2__ValueTask___3__ValueTask___4___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(ValueTask%2CValueTask)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L160">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(ValueTask,ValueTask)">WhenAny(ValueTask, ValueTask)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&gt; WhenAny(ValueTask task1, ValueTask task2)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to wait on for completion.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<span class="xref">ValueTask</span>&gt;</td>
+        <td><p>A task that represents the completion of one of the supplied tasks. The return task's <see cref="!:ValueTask&lt;TResult>.Result"></see> is the task that completed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(ValueTask%2CValueTask%2CValueTask)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L204">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask_ValueTask_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(ValueTask,ValueTask,ValueTask)">WhenAny(ValueTask, ValueTask, ValueTask)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&gt; WhenAny(ValueTask task1, ValueTask task2, ValueTask task3)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to wait on for completion.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<span class="xref">ValueTask</span>&gt;</td>
+        <td><p>A task that represents the completion of one of the supplied tasks. The return task's <see cref="!:ValueTask&lt;TResult>.Result"></see> is the task that completed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask_ValueTask__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask_ValueTask_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(ValueTask%2CValueTask%2CValueTask%2CValueTask)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L256">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask_ValueTask_ValueTask_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(ValueTask,ValueTask,ValueTask,ValueTask)">WhenAny(ValueTask, ValueTask, ValueTask, ValueTask)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&gt; WhenAny(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task4</span></td>
+        <td><p>The fourth task to wait on for completion.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<span class="xref">ValueTask</span>&gt;</td>
+        <td><p>A task that represents the completion of one of the supplied tasks. The return task's <see cref="!:ValueTask&lt;TResult>.Result"></see> is the task that completed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask_ValueTask_ValueTask__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask_ValueTask_ValueTask_ValueTask_.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(ValueTask%2CValueTask%2CValueTask%2CValueTask%2CValueTask)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L316">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask_ValueTask_ValueTask_ValueTask_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny(ValueTask,ValueTask,ValueTask,ValueTask,ValueTask)">WhenAny(ValueTask, ValueTask, ValueTask, ValueTask, ValueTask)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&gt; WhenAny(ValueTask task1, ValueTask task2, ValueTask task3, ValueTask task4, ValueTask task5)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task4</span></td>
+        <td><p>The fourth task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span></td>
+        <td><span class="parametername">task5</span></td>
+        <td><p>The fifth task to wait on for completion.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<span class="xref">ValueTask</span>&gt;</td>
+        <td><p>A task that represents the completion of one of the supplied tasks. The return task's <see cref="!:ValueTask&lt;TResult>.Result"></see> is the task that completed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_ValueTask_ValueTask_ValueTask_ValueTask_ValueTask__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny%60%601(ValueTask%7B%60%600%7D%2CValueTask%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L182">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(ValueTask{``0},ValueTask{``0})">WhenAny&lt;R&gt;(ValueTask&lt;R&gt;, ValueTask&lt;R&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;R&gt;&gt; WhenAny&lt;R&gt;(ValueTask&lt;R&gt; task1, ValueTask&lt;R&gt; task2)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to wait on for completion.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<span class="xref">ValueTask</span>&lt;R&gt;&gt;</td>
+        <td><p>A task that represents the completion of one of the supplied tasks. The return task's <see cref="!:ValueTask&lt;TResult>.Result"></see> is the task that completed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">R</span></td>
+        <td><p>The type of the result produced by the tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0__ValueTask___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny%60%601(ValueTask%7B%60%600%7D%2CValueTask%7B%60%600%7D%2CValueTask%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L230">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0__ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(ValueTask{``0},ValueTask{``0},ValueTask{``0})">WhenAny&lt;R&gt;(ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;R&gt;&gt; WhenAny&lt;R&gt;(ValueTask&lt;R&gt; task1, ValueTask&lt;R&gt; task2, ValueTask&lt;R&gt; task3)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to wait on for completion.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<span class="xref">ValueTask</span>&lt;R&gt;&gt;</td>
+        <td><p>A task that represents the completion of one of the supplied tasks. The return task's <see cref="!:ValueTask&lt;TResult>.Result"></see> is the task that completed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">R</span></td>
+        <td><p>The type of the result produced by the tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0__ValueTask___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0__ValueTask___0__ValueTask___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny%60%601(ValueTask%7B%60%600%7D%2CValueTask%7B%60%600%7D%2CValueTask%7B%60%600%7D%2CValueTask%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L286">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0__ValueTask___0__ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(ValueTask{``0},ValueTask{``0},ValueTask{``0},ValueTask{``0})">WhenAny&lt;R&gt;(ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;R&gt;&gt; WhenAny&lt;R&gt;(ValueTask&lt;R&gt; task1, ValueTask&lt;R&gt; task2, ValueTask&lt;R&gt; task3, ValueTask&lt;R&gt; task4)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task4</span></td>
+        <td><p>The fourth task to wait on for completion.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<span class="xref">ValueTask</span>&lt;R&gt;&gt;</td>
+        <td><p>A task that represents the completion of one of the supplied tasks. The return task's <see cref="!:ValueTask&lt;TResult>.Result"></see> is the task that completed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">R</span></td>
+        <td><p>The type of the result produced by the tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0__ValueTask___0__ValueTask___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0__ValueTask___0__ValueTask___0__ValueTask___0__.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny%60%601(ValueTask%7B%60%600%7D%2CValueTask%7B%60%600%7D%2CValueTask%7B%60%600%7D%2CValueTask%7B%60%600%7D%2CValueTask%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L350">View Source</a>
+  </span>
+  <a id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny_" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny*"></a>
+  <h4 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0__ValueTask___0__ValueTask___0__ValueTask___0__" data-uid="DotNext.Threading.Tasks.ValueTaskSynchronization.WhenAny``1(ValueTask{``0},ValueTask{``0},ValueTask{``0},ValueTask{``0},ValueTask{``0})">WhenAny&lt;R&gt;(ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;, ValueTask&lt;R&gt;)</h4>
+  <div class="markdown level1 summary"><p>Creates a task that will complete when any of the supplied tasks have completed.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;ValueTask&lt;R&gt;&gt; WhenAny&lt;R&gt;(ValueTask&lt;R&gt; task1, ValueTask&lt;R&gt; task2, ValueTask&lt;R&gt; task3, ValueTask&lt;R&gt; task4, ValueTask&lt;R&gt; task5)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task1</span></td>
+        <td><p>The first task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task2</span></td>
+        <td><p>The second task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task3</span></td>
+        <td><p>The third task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task4</span></td>
+        <td><p>The fourth task to wait on for completion.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;R&gt;</td>
+        <td><span class="parametername">task5</span></td>
+        <td><p>The fourth task to wait on for completion.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ValueTask</span>&lt;<span class="xref">ValueTask</span>&lt;R&gt;&gt;</td>
+        <td><p>A task that represents the completion of one of the supplied tasks. The return task's <see cref="!:ValueTask&lt;TResult>.Result"></see> is the task that completed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">R</span></td>
+        <td><p>The type of the result produced by the tasks.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_Tasks_ValueTaskSynchronization_WhenAny__1_ValueTask___0__ValueTask___0__ValueTask___0__ValueTask___0__ValueTask___0___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method avoid memory allocation in the managed heap if all tasks are completed (or will be soon) at the time of calling this method.</p>
+</div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_Tasks_ValueTaskSynchronization.md&amp;value=---%0Auid%3A%20DotNext.Threading.Tasks.ValueTaskSynchronization%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/Tasks/ValueTaskSynchronization.cs/#L13" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

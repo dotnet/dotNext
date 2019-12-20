@@ -1,0 +1,1067 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class StreamSegment
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class StreamSegment
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.0.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.IO.StreamSegment">
+  
+  
+  <h1 id="DotNext_IO_StreamSegment" data-uid="DotNext.IO.StreamSegment" class="text-break">Class StreamSegment
+  </h1>
+  <div class="markdown level0 summary"><p>Represents a portion of the underlying stream in the its of the read-onyl view.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><span class="xref">StreamSegment</span></div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.IO.html">DotNext.IO</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h5 id="DotNext_IO_StreamSegment_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class StreamSegment : Stream</code></pre>
+  </div>
+  <h5 id="DotNext_IO_StreamSegment_remarks"><strong>Remarks</strong></h5>
+  <div class="markdown level0 remarks"><p>The segmentation is supported only for seekable streams.</p>
+</div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment__ctor_Stream_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.%23ctor(Stream%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L25">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment__ctor_" data-uid="DotNext.IO.StreamSegment.#ctor*"></a>
+  <h4 id="DotNext_IO_StreamSegment__ctor_Stream_System_Boolean_" data-uid="DotNext.IO.StreamSegment.#ctor(Stream,System.Boolean)">StreamSegment(Stream, Boolean)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new segment of the specified stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public StreamSegment(Stream stream, bool leaveOpen = true)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Stream</span></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The underlying stream represented by the segment.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">leaveOpen</span></td>
+        <td><p><span class="xref">true</span> to leave <code data-dev-comment-type="paramref" class="paramref">stream</code> open after the object is disposed; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="properties">Properties
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_BaseStream.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.BaseStream%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L36">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_BaseStream_" data-uid="DotNext.IO.StreamSegment.BaseStream*"></a>
+  <h4 id="DotNext_IO_StreamSegment_BaseStream" data-uid="DotNext.IO.StreamSegment.BaseStream">BaseStream</h4>
+  <div class="markdown level1 summary"><p>Gets underlying stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Stream BaseStream { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Stream</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_CanRead.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.CanRead%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L62">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_CanRead_" data-uid="DotNext.IO.StreamSegment.CanRead*"></a>
+  <h4 id="DotNext_IO_StreamSegment_CanRead" data-uid="DotNext.IO.StreamSegment.CanRead">CanRead</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the current stream supports reading.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool CanRead { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the stream supports reading; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_CanSeek.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.CanSeek%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L68">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_CanSeek_" data-uid="DotNext.IO.StreamSegment.CanSeek*"></a>
+  <h4 id="DotNext_IO_StreamSegment_CanSeek" data-uid="DotNext.IO.StreamSegment.CanSeek">CanSeek</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the current stream supports seeking.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool CanSeek { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span> if the stream supports seeking; otherwise, <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_CanTimeout.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.CanTimeout%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L111">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_CanTimeout_" data-uid="DotNext.IO.StreamSegment.CanTimeout*"></a>
+  <h4 id="DotNext_IO_StreamSegment_CanTimeout" data-uid="DotNext.IO.StreamSegment.CanTimeout">CanTimeout</h4>
+  <div class="markdown level1 summary"><p>Gets a value that determines whether the current stream can time out.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool CanTimeout { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>A value that determines whether the current stream can time out.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_CanWrite.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.CanWrite%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L74">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_CanWrite_" data-uid="DotNext.IO.StreamSegment.CanWrite*"></a>
+  <h4 id="DotNext_IO_StreamSegment_CanWrite" data-uid="DotNext.IO.StreamSegment.CanWrite">CanWrite</h4>
+  <div class="markdown level1 summary"><p>Gets a value indicating whether the current stream supports writing.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override bool CanWrite { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p>Always <span class="xref">false</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_Length.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Length%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L79">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_Length_" data-uid="DotNext.IO.StreamSegment.Length*"></a>
+  <h4 id="DotNext_IO_StreamSegment_Length" data-uid="DotNext.IO.StreamSegment.Length">Length</h4>
+  <div class="markdown level1 summary"><p>Gets the length in bytes of the stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override long Length { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_Position.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Position%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L84">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_Position_" data-uid="DotNext.IO.StreamSegment.Position*"></a>
+  <h4 id="DotNext_IO_StreamSegment_Position" data-uid="DotNext.IO.StreamSegment.Position">Position</h4>
+  <div class="markdown level1 summary"><p>Gets or sets relative position from the beginning of this segment.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override long Position { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_ReadTimeout.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.ReadTimeout%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L224">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_ReadTimeout_" data-uid="DotNext.IO.StreamSegment.ReadTimeout*"></a>
+  <h4 id="DotNext_IO_StreamSegment_ReadTimeout" data-uid="DotNext.IO.StreamSegment.ReadTimeout">ReadTimeout</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value, in miliseconds, that determines how long the stream will attempt to read before timing out.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int ReadTimeout { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>A value, in miliseconds, that determines how long the stream will attempt to read before timing out.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_WriteTimeout.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.WriteTimeout%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L234">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_WriteTimeout_" data-uid="DotNext.IO.StreamSegment.WriteTimeout*"></a>
+  <h4 id="DotNext_IO_StreamSegment_WriteTimeout" data-uid="DotNext.IO.StreamSegment.WriteTimeout">WriteTimeout</h4>
+  <div class="markdown level1 summary"><p>Gets or sets a value, in miliseconds, that determines how long the stream will attempt to write before timing out.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int WriteTimeout { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>A value, in miliseconds, that determines how long the stream will attempt to write before timing out.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_Adjust_System_Int64_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Adjust(System.Int64%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L47">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_Adjust_" data-uid="DotNext.IO.StreamSegment.Adjust*"></a>
+  <h4 id="DotNext_IO_StreamSegment_Adjust_System_Int64_System_Int64_" data-uid="DotNext.IO.StreamSegment.Adjust(System.Int64,System.Int64)">Adjust(Int64, Int64)</h4>
+  <div class="markdown level1 summary"><p>Establishes segment bounds.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public void Adjust(long offset, long length)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>The offset in the underlying stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the segment.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_StreamSegment_Adjust_System_Int64_System_Int64__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method modifies <see cref="!:Stream.Position"></see> property of the underlying stream.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L244">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_Dispose_" data-uid="DotNext.IO.StreamSegment.Dispose*"></a>
+  <h4 id="DotNext_IO_StreamSegment_Dispose_System_Boolean_" data-uid="DotNext.IO.StreamSegment.Dispose(System.Boolean)">Dispose(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Releases the unmanaged resources used by this stream and optionally releases the managed resources.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p><span class="xref">true</span> to release both managed and unmanaged resources; <span class="xref">false</span> to release only unmanaged resources.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_Flush.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Flush%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L98">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_Flush_" data-uid="DotNext.IO.StreamSegment.Flush*"></a>
+  <h4 id="DotNext_IO_StreamSegment_Flush" data-uid="DotNext.IO.StreamSegment.Flush">Flush()</h4>
+  <div class="markdown level1 summary"><p>Clears all buffers for this stream and causes any buffered data to be written to the underlying device.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void Flush()</code></pre>
+  </div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_FlushAsync_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.FlushAsync(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L105">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_FlushAsync_" data-uid="DotNext.IO.StreamSegment.FlushAsync*"></a>
+  <h4 id="DotNext_IO_StreamSegment_FlushAsync_CancellationToken_" data-uid="DotNext.IO.StreamSegment.FlushAsync(CancellationToken)">FlushAsync(CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Asynchronously clears all buffers for this stream, causes any buffered data to  be written to the underlying device, and monitors cancellation requests.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Task FlushAsync(CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token to monitor for cancellation requests.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td><p>A task that represents the asynchronous flush operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_Read_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Read(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L139">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_Read_" data-uid="DotNext.IO.StreamSegment.Read*"></a>
+  <h4 id="DotNext_IO_StreamSegment_Read_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.StreamSegment.Read(System.Byte[],System.Int32,System.Int32)">Read(Byte[], Int32, Int32)</h4>
+  <div class="markdown level1 summary"><p>Reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int Read(byte[] buffer, int offset, int count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>Contains the specified byte array with the values between <code data-dev-comment-type="paramref" class="paramref">offset</code> and <code>(offset + count - 1)</code> replaced by the bytes read from the current source.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>The zero-based byte offset in buffer at which to begin storing the data read from the current stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The maximum number of bytes to be read from the current stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The total number of bytes read into the buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_ReadAsync_System_Byte___System_Int32_System_Int32_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.ReadAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L154">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_ReadAsync_" data-uid="DotNext.IO.StreamSegment.ReadAsync*"></a>
+  <h4 id="DotNext_IO_StreamSegment_ReadAsync_System_Byte___System_Int32_System_Int32_CancellationToken_" data-uid="DotNext.IO.StreamSegment.ReadAsync(System.Byte[],System.Int32,System.Int32,CancellationToken)">ReadAsync(Byte[], Int32, Int32, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Asynchronously reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Task&lt;int&gt; ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>Contains the specified byte array with the values between <code data-dev-comment-type="paramref" class="paramref">offset</code> and <code>(offset + count - 1)</code> replaced by the bytes read from the current source.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>The zero-based byte offset in buffer at which to begin storing the data read from the current stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">count</span></td>
+        <td><p>The maximum number of bytes to be read from the current stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token to monitor for cancellation requests.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a>&gt;</td>
+        <td><p>The total number of bytes read into the buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_ReadByte.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.ReadByte%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L117">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_ReadByte_" data-uid="DotNext.IO.StreamSegment.ReadByte*"></a>
+  <h4 id="DotNext_IO_StreamSegment_ReadByte" data-uid="DotNext.IO.StreamSegment.ReadByte">ReadByte()</h4>
+  <div class="markdown level1 summary"><p>Reads a byte from the stream and advances the position within the stream by one byte, or returns -1 if at the end of the stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override int ReadByte()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><p>The unsigned byte cast to an Int32, or -1 if at the end of the stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_Seek_System_Int64_SeekOrigin_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Seek(System.Int64%2CSeekOrigin)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L167">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_Seek_" data-uid="DotNext.IO.StreamSegment.Seek*"></a>
+  <h4 id="DotNext_IO_StreamSegment_Seek_System_Int64_SeekOrigin_" data-uid="DotNext.IO.StreamSegment.Seek(System.Int64,SeekOrigin)">Seek(Int64, SeekOrigin)</h4>
+  <div class="markdown level1 summary"><p>Sets the position within the current stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override long Seek(long offset, SeekOrigin origin)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>A byte offset relative to the origin parameter.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">SeekOrigin</span></td>
+        <td><span class="parametername">origin</span></td>
+        <td><p>The reference point used to obtain the new position.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><p>The new position within the current stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_SetLength_System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.SetLength(System.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L193">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_SetLength_" data-uid="DotNext.IO.StreamSegment.SetLength*"></a>
+  <h4 id="DotNext_IO_StreamSegment_SetLength_System_Int64_" data-uid="DotNext.IO.StreamSegment.SetLength(System.Int64)">SetLength(Int64)</h4>
+  <div class="markdown level1 summary"><p>Sets the length of the current stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void SetLength(long value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The desired length of the current stream in bytes.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_Write_System_Byte___System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.Write(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L207">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_Write_" data-uid="DotNext.IO.StreamSegment.Write*"></a>
+  <h4 id="DotNext_IO_StreamSegment_Write_System_Byte___System_Int32_System_Int32_" data-uid="DotNext.IO.StreamSegment.Write(System.Byte[],System.Int32,System.Int32)">Write(Byte[], Int32, Int32)</h4>
+  <div class="markdown level1 summary"><p>This method is not supported.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void Write(byte[] buffer, int offset, int count)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">buffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">count</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_WriteAsync_System_Byte___System_Int32_System_Int32_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.WriteAsync(System.Byte%5B%5D%2CSystem.Int32%2CSystem.Int32%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L218">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_WriteAsync_" data-uid="DotNext.IO.StreamSegment.WriteAsync*"></a>
+  <h4 id="DotNext_IO_StreamSegment_WriteAsync_System_Byte___System_Int32_System_Int32_CancellationToken_" data-uid="DotNext.IO.StreamSegment.WriteAsync(System.Byte[],System.Int32,System.Int32,CancellationToken)">WriteAsync(Byte[], Int32, Int32, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>This method is not supported.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token = null)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><span class="parametername">buffer</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">count</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><span class="xref">CancellationToken</span></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment_WriteByte_System_Byte_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment.WriteByte(System.Byte)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L130">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamSegment_WriteByte_" data-uid="DotNext.IO.StreamSegment.WriteByte*"></a>
+  <h4 id="DotNext_IO_StreamSegment_WriteByte_System_Byte_" data-uid="DotNext.IO.StreamSegment.WriteByte(System.Byte)">WriteByte(Byte)</h4>
+  <div class="markdown level1 summary"><p>This method is not supported.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public override void WriteByte(byte value)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The byte to write to the stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_Func___0___1__DotNext_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamSegment.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamSegment%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamSegment.cs/#L14" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
