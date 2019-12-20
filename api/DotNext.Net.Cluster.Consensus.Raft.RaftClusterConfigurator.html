@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class RaftClusterConfigurator
    | .NEXT ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,23 +81,48 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">RaftClusterConfigurator</span></div>
   </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.html">DotNext.Net.Cluster.Consensus.Raft</a></h6>
   <h6><strong>Assembly</strong>: DotNext.AspNetCore.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfigurator_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class RaftClusterConfigurator : object</code></pre>
+    <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
+public static class RaftClusterConfigurator</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfigurator_ConfigureCluster__1_IServiceCollection_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfigurator.ConfigureCluster%60%601(IServiceCollection)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfigurator_ConfigureCluster__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfigurator.ConfigureCluster%60%601(Microsoft.Extensions.DependencyInjection.IServiceCollection)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfigurator.cs/#L19">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfigurator.cs/#L19">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfigurator_ConfigureCluster_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfigurator.ConfigureCluster*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfigurator_ConfigureCluster__1_IServiceCollection_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfigurator.ConfigureCluster``1(IServiceCollection)">ConfigureCluster&lt;TConfig&gt;(IServiceCollection)</h4>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfigurator_ConfigureCluster__1_Microsoft_Extensions_DependencyInjection_IServiceCollection_" data-uid="DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfigurator.ConfigureCluster``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">ConfigureCluster&lt;TConfig&gt;(IServiceCollection)</h4>
   <div class="markdown level1 summary"><p>Registers configurator of <see cref="!:ICluster"></see> service registered as a service
 in DI container.</p>
 </div>
@@ -106,7 +131,7 @@ in DI container.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static IServiceCollection ConfigureCluster&lt;TConfig&gt;(this IServiceCollection services)
 
-    where TConfig : class, IRaftClusterConfigurator</code></pre>
+    where TConfig : class, IClusterMemberLifetime</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -119,7 +144,7 @@ in DI container.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection">IServiceCollection</a></td>
         <td><span class="parametername">services</span></td>
         <td><p>A collection of services provided by DI container.</p>
 </td>
@@ -136,7 +161,7 @@ in DI container.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IServiceCollection</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.dependencyinjection.iservicecollection">IServiceCollection</a></td>
         <td><p>A collection of services provided by DI container.</p>
 </td>
       </tr>
@@ -153,7 +178,7 @@ in DI container.</p>
     <tbody>
       <tr>
         <td><span class="parametername">TConfig</span></td>
-        <td><p>The type implementing <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.html">IRaftClusterConfigurator</a>.</p>
+        <td><p>The type implementing <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.html">IClusterMemberLifetime</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -166,10 +191,10 @@ in DI container.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfigurator.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfigurator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_RaftClusterConfigurator.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.RaftClusterConfigurator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfigurator.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/RaftClusterConfigurator.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

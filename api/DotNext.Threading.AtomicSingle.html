@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class AtomicSingle
    | .NEXT ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -73,7 +73,7 @@
   
   <h1 id="DotNext_Threading_AtomicSingle" data-uid="DotNext.Threading.AtomicSingle" class="text-break">Class AtomicSingle
   </h1>
-  <div class="markdown level0 summary"><p>Various atomic operations for <see cref="!:System.Single"></see> data type
+  <div class="markdown level0 summary"><p>Various atomic operations for <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a> data type
 accessible as extension methods.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
@@ -82,11 +82,35 @@ accessible as extension methods.</p>
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">AtomicSingle</span></div>
   </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.html">DotNext.Threading</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Threading_AtomicSingle_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class AtomicSingle : object</code></pre>
+    <pre><code class="lang-csharp hljs">public static class AtomicSingle</code></pre>
   </div>
   <h5 id="DotNext_Threading_AtomicSingle_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>Methods exposed by this class provide volatile read/write
@@ -96,76 +120,10 @@ of the field even if it is not declared as volatile field.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single__System_Single_DotNext_Func_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single%40%2CSystem.Single%2CDotNext.Func%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single%40%2CSystem.Single%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L163">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicSingle_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicSingle.AccumulateAndGet*"></a>
-  <h4 id="DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single__System_Single_DotNext_Func_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single@,System.Single,DotNext.Func{System.Single,System.Single,System.Single})">AccumulateAndGet(ref Single, Single, Func&lt;Single, Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
-to the current and given values, returning the updated value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float AccumulateAndGet(this ref float value, float x, Func&lt;float, float, float&gt; accumulator)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>Reference to a value to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><span class="parametername">x</span></td>
-        <td><p>Accumulator operand.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><p>The updated value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single__System_Single_DotNext_Func_System_Single_System_Single_System_Single___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single%40%2CSystem.Single%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L178">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L178">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicSingle.AccumulateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___" data-uid="DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single@,System.Single,DotNext.ValueFunc{System.Single,System.Single,System.Single}@)">AccumulateAndGet(ref Single, Single, ValueFunc&lt;Single, Single, Single&gt;)</h4>
@@ -228,20 +186,20 @@ to the current and given values, returning the updated value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single___System_Int64_System_Single_DotNext_Func_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CDotNext.Func%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single__System_Single_System_Func_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single%40%2CSystem.Single%2CSystem.Func%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L369">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L163">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicSingle.AccumulateAndGet*"></a>
-  <h4 id="DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single___System_Int64_System_Single_DotNext_Func_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single[],System.Int64,System.Single,DotNext.Func{System.Single,System.Single,System.Single})">AccumulateAndGet(Single[], Int64, Single, Func&lt;Single, Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
-to the array element and given values, returning the updated value.</p>
+  <h4 id="DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single__System_Single_System_Func_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single@,System.Single,System.Func{System.Single,System.Single,System.Single})">AccumulateAndGet(ref Single, Single, Func&lt;Single, Single, Single&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float AccumulateAndGet(this float[] array, long index, float x, Func&lt;float, float, float&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public static float AccumulateAndGet(this ref float value, float x, Func&lt;float, float, float&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -254,15 +212,9 @@ to the array element and given values, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>[]</td>
-        <td><span class="parametername">array</span></td>
-        <td><p>The array to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">index</span></td>
-        <td><p>The index of the array element to be modified.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
 </td>
       </tr>
       <tr>
@@ -272,9 +224,9 @@ to the array element and given values, returning the updated value.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments.</p>
+        <td><p>A side-effect-free function of two arguments</p>
 </td>
       </tr>
     </tbody>
@@ -295,15 +247,15 @@ to the array element and given values, returning the updated value.</p>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single___System_Int64_System_Single_DotNext_Func_System_Single_System_Single_System_Single___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+  <h5 id="DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single__System_Single_System_Func_System_Single_System_Single_System_Single___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single___System_Int64_System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single___System_Int64_System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L384">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L384">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicSingle.AccumulateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single___System_Int64_System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___" data-uid="DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single[],System.Int64,System.Single,DotNext.ValueFunc{System.Single,System.Single,System.Single}@)">AccumulateAndGet(Single[], Int64, Single, ValueFunc&lt;Single, Single, Single&gt;)</h4>
@@ -372,10 +324,82 @@ to the array element and given values, returning the updated value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_Add_System_Single__System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.Add(System.Single%40%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single___System_Int64_System_Single_System_Func_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CSystem.Func%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L89">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L369">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicSingle_AccumulateAndGet_" data-uid="DotNext.Threading.AtomicSingle.AccumulateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single___System_Int64_System_Single_System_Func_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.AccumulateAndGet(System.Single[],System.Int64,System.Single,System.Func{System.Single,System.Single,System.Single})">AccumulateAndGet(Single[], Int64, Single, Func&lt;Single, Single, Single&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
+to the array element and given values, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static float AccumulateAndGet(this float[] array, long index, float x, Func&lt;float, float, float&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicSingle_AccumulateAndGet_System_Single___System_Int64_System_Single_System_Func_System_Single_System_Single_System_Single___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_Add_System_Single__System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.Add(System.Single%40%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L89">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_Add_" data-uid="DotNext.Threading.AtomicSingle.Add*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_Add_System_Single__System_Single_" data-uid="DotNext.Threading.AtomicSingle.Add(System.Single@,System.Single)">Add(ref Single, Single)</h4>
@@ -429,10 +453,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_Add_System_Single___System_Int64_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.Add(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_Add_System_Single___System_Int64_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.Add(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L328">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L328">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_Add_" data-uid="DotNext.Threading.AtomicSingle.Add*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_Add_System_Single___System_Int64_System_Single_" data-uid="DotNext.Threading.AtomicSingle.Add(System.Single[],System.Int64,System.Single)">Add(Single[], Int64, Single)</h4>
@@ -492,10 +516,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_CompareAndSet_System_Single__System_Single_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.CompareAndSet(System.Single%40%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_CompareAndSet_System_Single__System_Single_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.CompareAndSet(System.Single%40%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L103">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L103">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_CompareAndSet_" data-uid="DotNext.Threading.AtomicSingle.CompareAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_CompareAndSet_System_Single__System_Single_System_Single_" data-uid="DotNext.Threading.AtomicSingle.CompareAndSet(System.Single@,System.Single,System.Single)">CompareAndSet(ref Single, Single, Single)</h4>
@@ -554,10 +578,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_CompareAndSet_System_Single___System_Int64_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.CompareAndSet(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_CompareAndSet_System_Single___System_Int64_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.CompareAndSet(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L316">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L316">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_CompareAndSet_" data-uid="DotNext.Threading.AtomicSingle.CompareAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_CompareAndSet_System_Single___System_Int64_System_Single_System_Single_" data-uid="DotNext.Threading.AtomicSingle.CompareAndSet(System.Single[],System.Int64,System.Single,System.Single)">CompareAndSet(Single[], Int64, Single, Single)</h4>
@@ -622,10 +646,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_CompareExchange_System_Single___System_Int64_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.CompareExchange(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_CompareExchange_System_Single___System_Int64_System_Single_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.CompareExchange(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L304">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L304">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_CompareExchange_" data-uid="DotNext.Threading.AtomicSingle.CompareExchange*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_CompareExchange_System_Single___System_Int64_System_Single_System_Single_" data-uid="DotNext.Threading.AtomicSingle.CompareExchange(System.Single[],System.Int64,System.Single,System.Single)">CompareExchange(Single[], Int64, Single, Single)</h4>
@@ -690,10 +714,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_DecrementAndGet_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.DecrementAndGet(System.Single%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_DecrementAndGet_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.DecrementAndGet(System.Single%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L79">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L79">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_DecrementAndGet_" data-uid="DotNext.Threading.AtomicSingle.DecrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_DecrementAndGet_System_Single__" data-uid="DotNext.Threading.AtomicSingle.DecrementAndGet(System.Single@)">DecrementAndGet(ref Single)</h4>
@@ -740,10 +764,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_DecrementAndGet_System_Single___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.DecrementAndGet(System.Single%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_DecrementAndGet_System_Single___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.DecrementAndGet(System.Single%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L292">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L292">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_DecrementAndGet_" data-uid="DotNext.Threading.AtomicSingle.DecrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_DecrementAndGet_System_Single___System_Int64_" data-uid="DotNext.Threading.AtomicSingle.DecrementAndGet(System.Single[],System.Int64)">DecrementAndGet(Single[], Int64)</h4>
@@ -796,76 +820,10 @@ as an atomic operation.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single__System_Single_DotNext_Func_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single%40%2CSystem.Single%2CDotNext.Func%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single%40%2CSystem.Single%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L193">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicSingle_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicSingle.GetAndAccumulate*"></a>
-  <h4 id="DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single__System_Single_DotNext_Func_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single@,System.Single,DotNext.Func{System.Single,System.Single,System.Single})">GetAndAccumulate(ref Single, Single, Func&lt;Single, Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
-to the current and given values, returning the original value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float GetAndAccumulate(this ref float value, float x, Func&lt;float, float, float&gt; accumulator)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>Reference to a value to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><span class="parametername">x</span></td>
-        <td><p>Accumulator operand.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><p>The original value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single__System_Single_DotNext_Func_System_Single_System_Single_System_Single___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single%40%2CSystem.Single%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L208">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L208">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicSingle.GetAndAccumulate*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single__System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___" data-uid="DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single@,System.Single,DotNext.ValueFunc{System.Single,System.Single,System.Single}@)">GetAndAccumulate(ref Single, Single, ValueFunc&lt;Single, Single, Single&gt;)</h4>
@@ -928,20 +886,20 @@ to the current and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single___System_Int64_System_Single_DotNext_Func_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CDotNext.Func%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single__System_Single_System_Func_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single%40%2CSystem.Single%2CSystem.Func%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L399">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L193">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicSingle.GetAndAccumulate*"></a>
-  <h4 id="DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single___System_Int64_System_Single_DotNext_Func_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single[],System.Int64,System.Single,DotNext.Func{System.Single,System.Single,System.Single})">GetAndAccumulate(Single[], Int64, Single, Func&lt;Single, Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
-to the array element and given values, returning the original value.</p>
+  <h4 id="DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single__System_Single_System_Func_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single@,System.Single,System.Func{System.Single,System.Single,System.Single})">GetAndAccumulate(ref Single, Single, Func&lt;Single, Single, Single&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the current value with the results of applying the given function
+to the current and given values, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float GetAndAccumulate(this float[] array, long index, float x, Func&lt;float, float, float&gt; accumulator)</code></pre>
+    <pre><code class="lang-csharp hljs">public static float GetAndAccumulate(this ref float value, float x, Func&lt;float, float, float&gt; accumulator)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -954,15 +912,9 @@ to the array element and given values, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>[]</td>
-        <td><span class="parametername">array</span></td>
-        <td><p>The array to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">index</span></td>
-        <td><p>The index of the array element to be modified.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
 </td>
       </tr>
       <tr>
@@ -972,9 +924,9 @@ to the array element and given values, returning the original value.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">accumulator</span></td>
-        <td><p>A side-effect-free function of two arguments.</p>
+        <td><p>A side-effect-free function of two arguments</p>
 </td>
       </tr>
     </tbody>
@@ -990,20 +942,20 @@ to the array element and given values, returning the original value.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><p>The original value of the array element.</p>
+        <td><p>The original value.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single___System_Int64_System_Single_DotNext_Func_System_Single_System_Single_System_Single___remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+  <h5 id="DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single__System_Single_System_Func_System_Single_System_Single_System_Single___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the current value as its first argument, and the given update as the second argument.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single___System_Int64_System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single___System_Int64_System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L414">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L414">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicSingle.GetAndAccumulate*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single___System_Int64_System_Single_DotNext_ValueFunc_System_Single_System_Single_System_Single___" data-uid="DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single[],System.Int64,System.Single,DotNext.ValueFunc{System.Single,System.Single,System.Single}@)">GetAndAccumulate(Single[], Int64, Single, ValueFunc&lt;Single, Single, Single&gt;)</h4>
@@ -1072,10 +1024,82 @@ to the array element and given values, returning the original value.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndSet_System_Single__System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndSet(System.Single%40%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single___System_Int64_System_Single_System_Func_System_Single_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single%2CSystem.Func%7BSystem.Single%2CSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L113">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L399">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicSingle_GetAndAccumulate_" data-uid="DotNext.Threading.AtomicSingle.GetAndAccumulate*"></a>
+  <h4 id="DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single___System_Int64_System_Single_System_Func_System_Single_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.GetAndAccumulate(System.Single[],System.Int64,System.Single,System.Func{System.Single,System.Single,System.Single})">GetAndAccumulate(Single[], Int64, Single, Func&lt;Single, Single, Single&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results of applying the given function
+to the array element and given values, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static float GetAndAccumulate(this float[] array, long index, float x, Func&lt;float, float, float&gt; accumulator)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td><span class="parametername">x</span></td>
+        <td><p>Accumulator operand.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
+        <td><span class="parametername">accumulator</span></td>
+        <td><p>A side-effect-free function of two arguments.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td><p>The original value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Threading_AtomicSingle_GetAndAccumulate_System_Single___System_Int64_System_Single_System_Func_System_Single_System_Single_System_Single___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>The function is applied with the array element as its first argument, and the given update as the second argument.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndSet_System_Single__System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndSet(System.Single%40%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L113">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_GetAndSet_" data-uid="DotNext.Threading.AtomicSingle.GetAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_GetAndSet_System_Single__System_Single_" data-uid="DotNext.Threading.AtomicSingle.GetAndSet(System.Single@,System.Single)">GetAndSet(ref Single, Single)</h4>
@@ -1128,10 +1152,10 @@ to the array element and given values, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndSet_System_Single___System_Int64_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndSet(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndSet_System_Single___System_Int64_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndSet(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L339">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L339">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_GetAndSet_" data-uid="DotNext.Threading.AtomicSingle.GetAndSet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_GetAndSet_System_Single___System_Int64_System_Single_" data-uid="DotNext.Threading.AtomicSingle.GetAndSet(System.Single[],System.Int64,System.Single)">GetAndSet(Single[], Int64, Single)</h4>
@@ -1190,67 +1214,10 @@ to the array element and given values, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single__DotNext_Func_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single%40%2CDotNext.Func%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single__DotNext_ValueFunc_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single%40%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L241">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicSingle_GetAndUpdate_" data-uid="DotNext.Threading.AtomicSingle.GetAndUpdate*"></a>
-  <h4 id="DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single__DotNext_Func_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single@,DotNext.Func{System.Single,System.Single})">GetAndUpdate(ref Single, Func&lt;Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
-of applying the given function, returning the original value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float GetAndUpdate(this ref float value, Func&lt;float, float&gt; updater)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>Reference to a value to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">updater</span></td>
-        <td><p>A side-effect-free function</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><p>The original value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single__DotNext_ValueFunc_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single%40%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L252">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L252">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_GetAndUpdate_" data-uid="DotNext.Threading.AtomicSingle.GetAndUpdate*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single__DotNext_ValueFunc_System_Single_System_Single___" data-uid="DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single@,DotNext.ValueFunc{System.Single,System.Single}@)">GetAndUpdate(ref Single, ValueFunc&lt;Single, Single&gt;)</h4>
@@ -1304,20 +1271,20 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single___System_Int64_DotNext_Func_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single%5B%5D%2CSystem.Int64%2CDotNext.Func%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single__System_Func_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single%40%2CSystem.Func%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L447">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L241">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_GetAndUpdate_" data-uid="DotNext.Threading.AtomicSingle.GetAndUpdate*"></a>
-  <h4 id="DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single___System_Int64_DotNext_Func_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single[],System.Int64,DotNext.Func{System.Single,System.Single})">GetAndUpdate(Single[], Int64, Func&lt;Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+  <h4 id="DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single__System_Func_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single@,System.Func{System.Single,System.Single})">GetAndUpdate(ref Single, Func&lt;Single, Single&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
 of applying the given function, returning the original value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float GetAndUpdate(this float[] array, long index, Func&lt;float, float&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public static float GetAndUpdate(this ref float value, Func&lt;float, float&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1330,19 +1297,13 @@ of applying the given function, returning the original value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>[]</td>
-        <td><span class="parametername">array</span></td>
-        <td><p>The array to be modified.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">index</span></td>
-        <td><p>The index of the array element to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>
@@ -1360,17 +1321,17 @@ of applying the given function, returning the original value.</p>
     <tbody>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><p>The original value of the array element.</p>
+        <td><p>The original value.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single___System_Int64_DotNext_ValueFunc_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single%5B%5D%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single___System_Int64_DotNext_ValueFunc_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single%5B%5D%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L458">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L458">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_GetAndUpdate_" data-uid="DotNext.Threading.AtomicSingle.GetAndUpdate*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single___System_Int64_DotNext_ValueFunc_System_Single_System_Single___" data-uid="DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single[],System.Int64,DotNext.ValueFunc{System.Single,System.Single}@)">GetAndUpdate(Single[], Int64, ValueFunc&lt;Single, Single&gt;)</h4>
@@ -1430,10 +1391,73 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_IncrementAndGet_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.IncrementAndGet(System.Single%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single___System_Int64_System_Func_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single%5B%5D%2CSystem.Int64%2CSystem.Func%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L71">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L447">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicSingle_GetAndUpdate_" data-uid="DotNext.Threading.AtomicSingle.GetAndUpdate*"></a>
+  <h4 id="DotNext_Threading_AtomicSingle_GetAndUpdate_System_Single___System_Int64_System_Func_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.GetAndUpdate(System.Single[],System.Int64,System.Func{System.Single,System.Single})">GetAndUpdate(Single[], Int64, Func&lt;Single, Single&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+of applying the given function, returning the original value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static float GetAndUpdate(this float[] array, long index, Func&lt;float, float&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td><p>The original value of the array element.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_IncrementAndGet_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.IncrementAndGet(System.Single%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L71">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_IncrementAndGet_" data-uid="DotNext.Threading.AtomicSingle.IncrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_IncrementAndGet_System_Single__" data-uid="DotNext.Threading.AtomicSingle.IncrementAndGet(System.Single@)">IncrementAndGet(ref Single)</h4>
@@ -1480,10 +1504,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_IncrementAndGet_System_Single___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.IncrementAndGet(System.Single%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_IncrementAndGet_System_Single___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.IncrementAndGet(System.Single%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L282">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L282">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_IncrementAndGet_" data-uid="DotNext.Threading.AtomicSingle.IncrementAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_IncrementAndGet_System_Single___System_Int64_" data-uid="DotNext.Threading.AtomicSingle.IncrementAndGet(System.Single[],System.Int64)">IncrementAndGet(Single[], Int64)</h4>
@@ -1536,10 +1560,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_SetAndGet_System_Single__System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.SetAndGet(System.Single%40%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_SetAndGet_System_Single__System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.SetAndGet(System.Single%40%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L123">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L123">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_SetAndGet_" data-uid="DotNext.Threading.AtomicSingle.SetAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_SetAndGet_System_Single__System_Single_" data-uid="DotNext.Threading.AtomicSingle.SetAndGet(System.Single@,System.Single)">SetAndGet(ref Single, Single)</h4>
@@ -1592,10 +1616,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_SetAndGet_System_Single___System_Int64_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.SetAndGet(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_SetAndGet_System_Single___System_Int64_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.SetAndGet(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L350">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L350">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_SetAndGet_" data-uid="DotNext.Threading.AtomicSingle.SetAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_SetAndGet_System_Single___System_Int64_System_Single_" data-uid="DotNext.Threading.AtomicSingle.SetAndGet(System.Single[],System.Int64,System.Single)">SetAndGet(Single[], Int64, Single)</h4>
@@ -1654,67 +1678,10 @@ of applying the given function, returning the original value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single__DotNext_Func_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single%40%2CDotNext.Func%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single__DotNext_ValueFunc_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single%40%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L219">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AtomicSingle_UpdateAndGet_" data-uid="DotNext.Threading.AtomicSingle.UpdateAndGet*"></a>
-  <h4 id="DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single__DotNext_Func_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single@,DotNext.Func{System.Single,System.Single})">UpdateAndGet(ref Single, Func&lt;Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
-of applying the given function, returning the updated value.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float UpdateAndGet(this ref float value, Func&lt;float, float&gt; updater)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><span class="parametername">value</span></td>
-        <td><p>Reference to a value to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
-        <td><span class="parametername">updater</span></td>
-        <td><p>A side-effect-free function</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
-        <td><p>The updated value.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single__DotNext_ValueFunc_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single%40%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L230">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L230">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_UpdateAndGet_" data-uid="DotNext.Threading.AtomicSingle.UpdateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single__DotNext_ValueFunc_System_Single_System_Single___" data-uid="DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single@,DotNext.ValueFunc{System.Single,System.Single}@)">UpdateAndGet(ref Single, ValueFunc&lt;Single, Single&gt;)</h4>
@@ -1768,20 +1735,20 @@ of applying the given function, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single___System_Int64_DotNext_Func_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single%5B%5D%2CSystem.Int64%2CDotNext.Func%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single__System_Func_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single%40%2CSystem.Func%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L425">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L219">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_UpdateAndGet_" data-uid="DotNext.Threading.AtomicSingle.UpdateAndGet*"></a>
-  <h4 id="DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single___System_Int64_DotNext_Func_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single[],System.Int64,DotNext.Func{System.Single,System.Single})">UpdateAndGet(Single[], Int64, Func&lt;Single, Single&gt;)</h4>
-  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+  <h4 id="DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single__System_Func_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single@,System.Func{System.Single,System.Single})">UpdateAndGet(ref Single, Func&lt;Single, Single&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the stored value with the results
 of applying the given function, returning the updated value.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static float UpdateAndGet(this float[] array, long index, Func&lt;float, float&gt; updater)</code></pre>
+    <pre><code class="lang-csharp hljs">public static float UpdateAndGet(this ref float value, Func&lt;float, float&gt; updater)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -1794,19 +1761,13 @@ of applying the given function, returning the updated value.</p>
     </thead>
     <tbody>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>[]</td>
-        <td><span class="parametername">array</span></td>
-        <td><p>The array to be modified.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Reference to a value to be modified.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
-        <td><span class="parametername">index</span></td>
-        <td><p>The index of the array element to be modified.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">DotNext.Func</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
         <td><span class="parametername">updater</span></td>
         <td><p>A side-effect-free function</p>
 </td>
@@ -1831,10 +1792,10 @@ of applying the given function, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single___System_Int64_DotNext_ValueFunc_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single%5B%5D%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single___System_Int64_DotNext_ValueFunc_System_Single_System_Single___.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single%5B%5D%2CSystem.Int64%2CDotNext.ValueFunc%7BSystem.Single%2CSystem.Single%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L436">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L436">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_UpdateAndGet_" data-uid="DotNext.Threading.AtomicSingle.UpdateAndGet*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single___System_Int64_DotNext_ValueFunc_System_Single_System_Single___" data-uid="DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single[],System.Int64,DotNext.ValueFunc{System.Single,System.Single}@)">UpdateAndGet(Single[], Int64, ValueFunc&lt;Single, Single&gt;)</h4>
@@ -1894,10 +1855,73 @@ of applying the given function, returning the updated value.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_VolatileRead_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.VolatileRead(System.Single%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single___System_Int64_System_Func_System_Single_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single%5B%5D%2CSystem.Int64%2CSystem.Func%7BSystem.Single%2CSystem.Single%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L36">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L425">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AtomicSingle_UpdateAndGet_" data-uid="DotNext.Threading.AtomicSingle.UpdateAndGet*"></a>
+  <h4 id="DotNext_Threading_AtomicSingle_UpdateAndGet_System_Single___System_Int64_System_Func_System_Single_System_Single__" data-uid="DotNext.Threading.AtomicSingle.UpdateAndGet(System.Single[],System.Int64,System.Func{System.Single,System.Single})">UpdateAndGet(Single[], Int64, Func&lt;Single, Single&gt;)</h4>
+  <div class="markdown level1 summary"><p>Atomically updates the array element with the results
+of applying the given function, returning the updated value.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static float UpdateAndGet(this float[] array, long index, Func&lt;float, float&gt; updater)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>[]</td>
+        <td><span class="parametername">array</span></td>
+        <td><p>The array to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">index</span></td>
+        <td><p>The index of the array element to be modified.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-2">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a>&gt;</td>
+        <td><span class="parametername">updater</span></td>
+        <td><p>A side-effect-free function</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.single">Single</a></td>
+        <td><p>The updated value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_VolatileRead_System_Single__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.VolatileRead(System.Single%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L36">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_VolatileRead_" data-uid="DotNext.Threading.AtomicSingle.VolatileRead*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_VolatileRead_System_Single__" data-uid="DotNext.Threading.AtomicSingle.VolatileRead(System.Single@)">VolatileRead(ref Single)</h4>
@@ -1949,10 +1973,10 @@ cache.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_VolatileRead_System_Single___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.VolatileRead(System.Single%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_VolatileRead_System_Single___System_Int64_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.VolatileRead(System.Single%5B%5D%2CSystem.Int64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L262">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L262">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_VolatileRead_" data-uid="DotNext.Threading.AtomicSingle.VolatileRead*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_VolatileRead_System_Single___System_Int64_" data-uid="DotNext.Threading.AtomicSingle.VolatileRead(System.Single[],System.Int64)">VolatileRead(Single[], Int64)</h4>
@@ -2005,10 +2029,10 @@ cache.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_VolatileWrite_System_Single__System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.VolatileWrite(System.Single%40%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_VolatileWrite_System_Single__System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.VolatileWrite(System.Single%40%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L56">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L56">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_VolatileWrite_" data-uid="DotNext.Threading.AtomicSingle.VolatileWrite*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_VolatileWrite_System_Single__System_Single_" data-uid="DotNext.Threading.AtomicSingle.VolatileWrite(System.Single@,System.Single)">VolatileWrite(ref Single, Single)</h4>
@@ -2049,10 +2073,10 @@ all processors in the computer.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle_VolatileWrite_System_Single___System_Int64_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.VolatileWrite(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle_VolatileWrite_System_Single___System_Int64_System_Single_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle.VolatileWrite(System.Single%5B%5D%2CSystem.Int64%2CSystem.Single)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L272">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L272">View Source</a>
   </span>
   <a id="DotNext_Threading_AtomicSingle_VolatileWrite_" data-uid="DotNext.Threading.AtomicSingle.VolatileWrite*"></a>
   <h4 id="DotNext_Threading_AtomicSingle_VolatileWrite_System_Single___System_Int64_System_Single_" data-uid="DotNext.Threading.AtomicSingle.VolatileWrite(System.Single[],System.Int64,System.Single)">VolatileWrite(Single[], Int64, Single)</h4>
@@ -2093,6 +2117,10 @@ all processors in the computer.</p>
       </tr>
     </tbody>
   </table>
+  <h3 id="seealso">See Also</h3>
+  <div class="seealso">
+      <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.interlocked">Interlocked</a></div>
+  </div>
 </article>
           </div>
           
@@ -2101,10 +2129,10 @@ all processors in the computer.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AtomicSingle.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AtomicSingle.md&amp;value=---%0Auid%3A%20DotNext.Threading.AtomicSingle%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Threading/AtomicSingle.cs/#L18" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Threading/AtomicSingle.cs/#L18" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

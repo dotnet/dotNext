@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct ValueFunc&lt;T1, T2, T3, T4, R&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -78,15 +78,28 @@
   <div class="markdown level0 conceptual"></div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><a class="xref" href="DotNext.ICallable-1.html">ICallable</a>&lt;<span class="xref">DotNext.Func</span>&lt;T1, T2, T3, T4, R&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.ICallable-1.html">ICallable</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;T1, T2, T3, T4, R&gt;&gt;</div>
     <div><a class="xref" href="DotNext.ICallable.html">ICallable</a></div>
-    <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.ValueFunc-5.html">ValueFunc</a>&lt;T1, T2, T3, T4, R&gt;&gt;</div>
+    <div><a class="xref" href="DotNext.IConvertible-1.html">IConvertible</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;T1, T2, T3, T4, R&gt;&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.ValueFunc-5.html">ValueFunc</a>&lt;T1, T2, T3, T4, R&gt;&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.html">DotNext</a></h6>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_ValueFunc_5_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct ValueFunc&lt;T1, T2, T3, T4, R&gt; : ICallable&lt;Func&lt;T1, T2, T3, T4, R&gt;&gt;, ICallable, IEquatable&lt;ValueFunc&lt;T1, T2, T3, T4, R&gt;&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public struct ValueFunc&lt;T1, T2, T3, T4, R&gt; : IValueDelegate&lt;Func&lt;T1, T2, T3, T4, R&gt;&gt;, ICallable&lt;Func&lt;T1, T2, T3, T4, R&gt;&gt;, ICallable, IConvertible&lt;Func&lt;T1, T2, T3, T4, R&gt;&gt;, ISupplier&lt;Func&lt;T1, T2, T3, T4, R&gt;&gt;, IEquatable&lt;ValueFunc&lt;T1, T2, T3, T4, R&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -131,13 +144,13 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5__ctor_DotNext_Func__0__1__2__3__4__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.%23ctor(DotNext.Func%7B%600%2C%601%2C%602%2C%603%2C%604%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5__ctor_System_Func__0__1__2__3__4__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.%23ctor(System.Func%7B%600%2C%601%2C%602%2C%603%2C%604%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1536">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1549">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5__ctor_" data-uid="DotNext.ValueFunc`5.#ctor*"></a>
-  <h4 id="DotNext_ValueFunc_5__ctor_DotNext_Func__0__1__2__3__4__System_Boolean_" data-uid="DotNext.ValueFunc`5.#ctor(DotNext.Func{`0,`1,`2,`3,`4},System.Boolean)">ValueFunc(Func&lt;T1, T2, T3, T4, R&gt;, Boolean)</h4>
+  <h4 id="DotNext_ValueFunc_5__ctor_System_Func__0__1__2__3__4__System_Boolean_" data-uid="DotNext.ValueFunc`5.#ctor(System.Func{`0,`1,`2,`3,`4},System.Boolean)">ValueFunc(Func&lt;T1, T2, T3, T4, R&gt;, Boolean)</h4>
   <div class="markdown level1 summary"><p>Initializes a new pointer based on extracted pointer from the delegate.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -156,7 +169,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, T3, T4, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;T1, T2, T3, T4, R&gt;</td>
         <td><span class="parametername">func</span></td>
         <td><p>The delegate representing method.</p>
 </td>
@@ -169,53 +182,35 @@
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_ValueFunc_5__ctor_DotNext_Func__0__1__2__3__4__System_Boolean__remarks">Remarks</h5>
+  <h5 id="DotNext_ValueFunc_5__ctor_System_Func__0__1__2__3__4__System_Boolean__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>You can use this constructor to create value delegate once and cache it using <code>static readonly</code> field
 for subsequent calls.</p>
 </div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5__ctor_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.%23ctor(IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1556">View Source</a>
-  </span>
-  <a id="DotNext_ValueFunc_5__ctor_" data-uid="DotNext.ValueFunc`5.#ctor*"></a>
-  <h4 id="DotNext_ValueFunc_5__ctor_IntPtr_" data-uid="DotNext.ValueFunc`5.#ctor(IntPtr)">ValueFunc(IntPtr)</h4>
-  <div class="markdown level1 summary"><p>Initializes a new delegate using pointer to the static managed method.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ValueFunc(IntPtr methodPtr)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
+  <h5 class="exceptions">Exceptions</h5>
   <table class="table table-bordered table-striped table-condensed">
     <thead>
       <tr>
         <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
+        <th>Condition</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
-        <td><span class="parametername">methodPtr</span></td>
-        <td><p>The pointer to the static managed method.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">func</code> is <span class="xref">null</span>.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5__ctor_MethodInfo_.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.%23ctor(MethodInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5__ctor_System_Reflection_MethodInfo_.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.%23ctor(System.Reflection.MethodInfo)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1521">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1534">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5__ctor_" data-uid="DotNext.ValueFunc`5.#ctor*"></a>
-  <h4 id="DotNext_ValueFunc_5__ctor_MethodInfo_" data-uid="DotNext.ValueFunc`5.#ctor(MethodInfo)">ValueFunc(MethodInfo)</h4>
+  <h4 id="DotNext_ValueFunc_5__ctor_System_Reflection_MethodInfo_" data-uid="DotNext.ValueFunc`5.#ctor(System.Reflection.MethodInfo)">ValueFunc(MethodInfo)</h4>
   <div class="markdown level1 summary"><p>Initializes a new pointer to the method.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -234,25 +229,46 @@ for subsequent calls.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">MethodInfo</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.reflection.methodinfo">MethodInfo</a></td>
         <td><span class="parametername">method</span></td>
         <td><p>The method to convert into pointer.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_ValueFunc_5__ctor_MethodInfo__remarks">Remarks</h5>
+  <h5 id="DotNext_ValueFunc_5__ctor_System_Reflection_MethodInfo__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This constructor causes heap allocations because Reflection is needed to check compatibility of method's signature
 with the delegate type.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">method</code> is <span class="xref">null</span>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p>Signature of <code data-dev-comment-type="paramref" class="paramref">method</code> doesn't match to this pointer type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1569">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1582">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_IsEmpty_" data-uid="DotNext.ValueFunc`5.IsEmpty*"></a>
   <h4 id="DotNext_ValueFunc_5_IsEmpty" data-uid="DotNext.ValueFunc`5.IsEmpty">IsEmpty</h4>
@@ -280,10 +296,10 @@ with the delegate type.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_Target.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.Target%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_Target.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.Target%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1574">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1587">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_Target_" data-uid="DotNext.ValueFunc`5.Target*"></a>
   <h4 id="DotNext_ValueFunc_5_Target" data-uid="DotNext.ValueFunc`5.Target">Target</h4>
@@ -313,10 +329,10 @@ with the delegate type.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_Equals_DotNext_ValueFunc__0__1__2__3__4__.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.Equals(DotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_Equals_DotNext_ValueFunc__0__1__2__3__4__.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.Equals(DotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1648">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1662">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_Equals_" data-uid="DotNext.ValueFunc`5.Equals*"></a>
   <h4 id="DotNext_ValueFunc_5_Equals_DotNext_ValueFunc__0__1__2__3__4__" data-uid="DotNext.ValueFunc`5.Equals(DotNext.ValueFunc{`0,`1,`2,`3,`4})">Equals(ValueFunc&lt;T1, T2, T3, T4, R&gt;)</h4>
@@ -363,10 +379,10 @@ with the delegate type.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1655">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1669">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_Equals_" data-uid="DotNext.ValueFunc`5.Equals*"></a>
   <h4 id="DotNext_ValueFunc_5_Equals_System_Object_" data-uid="DotNext.ValueFunc`5.Equals(System.Object)">Equals(Object)</h4>
@@ -411,12 +427,14 @@ with the delegate type.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1641">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1655">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_GetHashCode_" data-uid="DotNext.ValueFunc`5.GetHashCode*"></a>
   <h4 id="DotNext_ValueFunc_5_GetHashCode" data-uid="DotNext.ValueFunc`5.GetHashCode">GetHashCode()</h4>
@@ -443,12 +461,14 @@ with the delegate type.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_Invoke__0__1__2__3_.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.Invoke(%600%2C%601%2C%602%2C%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_Invoke__0__1__2__3_.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.Invoke(%600%2C%601%2C%602%2C%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1604">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1617">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_Invoke_" data-uid="DotNext.ValueFunc`5.Invoke*"></a>
   <h4 id="DotNext_ValueFunc_5_Invoke__0__1__2__3_" data-uid="DotNext.ValueFunc`5.Invoke(`0,`1,`2,`3)">Invoke(T1, T2, T3, T4)</h4>
@@ -513,14 +533,14 @@ with the delegate type.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_ToDelegate.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.ToDelegate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_ToDelegate.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.ToDelegate%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1580">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1593">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_ToDelegate_" data-uid="DotNext.ValueFunc`5.ToDelegate*"></a>
   <h4 id="DotNext_ValueFunc_5_ToDelegate" data-uid="DotNext.ValueFunc`5.ToDelegate">ToDelegate()</h4>
-  <div class="markdown level1 summary"><p>Converts this pointer into <see cref="!:Func&lt;T1, T2, T3, T4, TResult>"></see>.</p>
+  <div class="markdown level1 summary"><p>Converts this pointer into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func&lt;T1,T2,T3,T4,TResult&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -537,7 +557,7 @@ with the delegate type.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, T3, T4, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;T1, T2, T3, T4, R&gt;</td>
         <td><p>The delegate created from this method pointer; or <span class="xref">null</span> if this pointer is zero.</p>
 </td>
       </tr>
@@ -545,10 +565,10 @@ with the delegate type.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_ToString.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_ToString.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1661">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1675">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_ToString_" data-uid="DotNext.ValueFunc`5.ToString*"></a>
   <h4 id="DotNext_ValueFunc_5_ToString" data-uid="DotNext.ValueFunc`5.ToString">ToString()</h4>
@@ -575,14 +595,16 @@ with the delegate type.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a></div>
   <h3 id="operators">Operators
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_op_Equality_DotNext_ValueFunc__0__1__2__3__4___DotNext_ValueFunc__0__1__2__3__4___.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.op_Equality(DotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D%40%2CDotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_op_Equality_DotNext_ValueFunc__0__1__2__3__4___DotNext_ValueFunc__0__1__2__3__4___.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.op_Equality(DotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D%40%2CDotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1669">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1683">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_op_Equality_" data-uid="DotNext.ValueFunc`5.op_Equality*"></a>
   <h4 id="DotNext_ValueFunc_5_op_Equality_DotNext_ValueFunc__0__1__2__3__4___DotNext_ValueFunc__0__1__2__3__4___" data-uid="DotNext.ValueFunc`5.op_Equality(DotNext.ValueFunc{`0,`1,`2,`3,`4}@,DotNext.ValueFunc{`0,`1,`2,`3,`4}@)">Equality(ValueFunc&lt;T1, T2, T3, T4, R&gt;, ValueFunc&lt;T1, T2, T3, T4, R&gt;)</h4>
@@ -635,14 +657,14 @@ with the delegate type.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_op_Explicit_DotNext_ValueFunc__0__1__2__3__4____DotNext_Func__0__1__2__3__4_.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.op_Explicit(DotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D%40)~DotNext.Func%7B%600%2C%601%2C%602%2C%603%2C%604%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_op_Explicit_DotNext_ValueFunc__0__1__2__3__4____System_Func__0__1__2__3__4_.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.op_Explicit(DotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D%40)~System.Func%7B%600%2C%601%2C%602%2C%603%2C%604%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1635">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1649">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_op_Explicit_" data-uid="DotNext.ValueFunc`5.op_Explicit*"></a>
-  <h4 id="DotNext_ValueFunc_5_op_Explicit_DotNext_ValueFunc__0__1__2__3__4____DotNext_Func__0__1__2__3__4_" data-uid="DotNext.ValueFunc`5.op_Explicit(DotNext.ValueFunc{`0,`1,`2,`3,`4}@)~DotNext.Func{`0,`1,`2,`3,`4}">Explicit(ValueFunc&lt;T1, T2, T3, T4, R&gt; to Func&lt;T1, T2, T3, T4, R&gt;)</h4>
-  <div class="markdown level1 summary"><p>Converts this pointer into <see cref="!:Func&lt;T1, T2, T3, T4, TResult>"></see>.</p>
+  <h4 id="DotNext_ValueFunc_5_op_Explicit_DotNext_ValueFunc__0__1__2__3__4____System_Func__0__1__2__3__4_" data-uid="DotNext.ValueFunc`5.op_Explicit(DotNext.ValueFunc{`0,`1,`2,`3,`4}@)~System.Func{`0,`1,`2,`3,`4}">Explicit(ValueFunc&lt;T1, T2, T3, T4, R&gt; to Func&lt;T1, T2, T3, T4, R&gt;)</h4>
+  <div class="markdown level1 summary"><p>Converts this pointer into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func&lt;T1,T2,T3,T4,TResult&gt;</a>.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -677,7 +699,7 @@ with the delegate type.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">DotNext.Func</span>&lt;T1, T2, T3, T4, R&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-5">Func</a>&lt;T1, T2, T3, T4, R&gt;</td>
         <td><p>The delegate created from this method pointer.</p>
 </td>
       </tr>
@@ -685,10 +707,10 @@ with the delegate type.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_op_Inequality_DotNext_ValueFunc__0__1__2__3__4___DotNext_ValueFunc__0__1__2__3__4___.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.op_Inequality(DotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D%40%2CDotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_op_Inequality_DotNext_ValueFunc__0__1__2__3__4___DotNext_ValueFunc__0__1__2__3__4___.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.op_Inequality(DotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D%40%2CDotNext.ValueFunc%7B%600%2C%601%2C%602%2C%603%2C%604%7D%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1677">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1691">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_op_Inequality_" data-uid="DotNext.ValueFunc`5.op_Inequality*"></a>
   <h4 id="DotNext_ValueFunc_5_op_Inequality_DotNext_ValueFunc__0__1__2__3__4___DotNext_ValueFunc__0__1__2__3__4___" data-uid="DotNext.ValueFunc`5.op_Inequality(DotNext.ValueFunc{`0,`1,`2,`3,`4}@,DotNext.ValueFunc{`0,`1,`2,`3,`4}@)">Inequality(ValueFunc&lt;T1, T2, T3, T4, R&gt;, ValueFunc&lt;T1, T2, T3, T4, R&gt;)</h4>
@@ -743,10 +765,10 @@ with the delegate type.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5_DotNext_ICallable_DynamicInvoke_System_Object___.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.DotNext%23ICallable%23DynamicInvoke(System.Object%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5_DotNext_ICallable_DynamicInvoke_System_Object___.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605.DotNext%23ICallable%23DynamicInvoke(System.Object%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1628">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1641">View Source</a>
   </span>
   <a id="DotNext_ValueFunc_5_DotNext_ICallable_DynamicInvoke_" data-uid="DotNext.ValueFunc`5.DotNext#ICallable#DynamicInvoke*"></a>
   <h4 id="DotNext_ValueFunc_5_DotNext_ICallable_DynamicInvoke_System_Object___" data-uid="DotNext.ValueFunc`5.DotNext#ICallable#DynamicInvoke(System.Object[])">ICallable.DynamicInvoke(Object[])</h4>
@@ -796,11 +818,20 @@ with the delegate type.</p>
       <a class="xref" href="DotNext.ICallable.html">ICallable</a>
   </div>
   <div>
-      <span class="xref">IEquatable&lt;&gt;</span>
+      <a class="xref" href="DotNext.IConvertible-1.html">IConvertible&lt;T&gt;</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0___0___">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
 </article>
           </div>
@@ -810,10 +841,10 @@ with the delegate type.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_ValueFunc_5.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_ValueFunc_5.md&amp;value=---%0Auid%3A%20DotNext.ValueFunc%605%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/ValueDelegate.cs/#L1505" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/ValueDelegate.cs/#L1518" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

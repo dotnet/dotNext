@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct AsyncLock
    | .NEXT ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -78,8 +78,20 @@
   <div class="markdown level0 conceptual"></div>
   <div classs="implements">
     <h5>Implements</h5>
-    <div><span class="xref">IDisposable</span></div>
-    <div><span class="xref">IEquatable</span>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>&gt;</div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a>&gt;</div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Threading.html">DotNext.Threading</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Threading.dll</h6>
@@ -96,19 +108,19 @@ prevent acquisition of asynchronous lock obtained in non-blocking manner.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_Acquire_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Acquire(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_AcquireAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.AcquireAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L177">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L178">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncLock_Acquire_" data-uid="DotNext.Threading.AsyncLock.Acquire*"></a>
-  <h4 id="DotNext_Threading_AsyncLock_Acquire_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.Acquire(CancellationToken)">Acquire(CancellationToken)</h4>
+  <a id="DotNext_Threading_AsyncLock_AcquireAsync_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_AcquireAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync(System.Threading.CancellationToken)">AcquireAsync(CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Acquires the lock asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;AsyncLock.Holder&gt; Acquire(CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">public Task&lt;AsyncLock.Holder&gt; AcquireAsync(CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -121,7 +133,7 @@ prevent acquisition of asynchronous lock obtained in non-blocking manner.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort acquisition operation.</p>
 </td>
@@ -138,7 +150,7 @@ prevent acquisition of asynchronous lock obtained in non-blocking manner.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
         <td><p>The task returning the acquired lock holder.</p>
 </td>
       </tr>
@@ -146,19 +158,19 @@ prevent acquisition of asynchronous lock obtained in non-blocking manner.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_Acquire_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Acquire(TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_AcquireAsync_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.AcquireAsync(System.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L185">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L186">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncLock_Acquire_" data-uid="DotNext.Threading.AsyncLock.Acquire*"></a>
-  <h4 id="DotNext_Threading_AsyncLock_Acquire_TimeSpan_" data-uid="DotNext.Threading.AsyncLock.Acquire(TimeSpan)">Acquire(TimeSpan)</h4>
+  <a id="DotNext_Threading_AsyncLock_AcquireAsync_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_AcquireAsync_System_TimeSpan_" data-uid="DotNext.Threading.AsyncLock.AcquireAsync(System.TimeSpan)">AcquireAsync(TimeSpan)</h4>
   <div class="markdown level1 summary"><p>Acquires the lock asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;AsyncLock.Holder&gt; Acquire(TimeSpan timeout)</code></pre>
+    <pre><code class="lang-csharp hljs">public Task&lt;AsyncLock.Holder&gt; AcquireAsync(TimeSpan timeout)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -171,7 +183,7 @@ prevent acquisition of asynchronous lock obtained in non-blocking manner.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TimeSpan</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The interval to wait for the lock.</p>
 </td>
@@ -188,18 +200,34 @@ prevent acquisition of asynchronous lock obtained in non-blocking manner.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
         <td><p>The task returning the acquired lock holder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timeoutexception">TimeoutException</a></td>
+        <td><p>The lock cannot be acquired during the specified amount of time.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L283">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L267">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_Dispose_" data-uid="DotNext.Threading.AsyncLock.Dispose*"></a>
   <h4 id="DotNext_Threading_AsyncLock_Dispose" data-uid="DotNext.Threading.AsyncLock.Dispose">Dispose()</h4>
@@ -211,16 +239,16 @@ prevent acquisition of asynchronous lock obtained in non-blocking manner.</p>
     <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
   </div>
   <h5 id="DotNext_Threading_AsyncLock_Dispose_remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>If the given lock is an owner of the underlying lock object then this method will call <see cref="!:IDisposable.Dispose()"></see> on it;
+  <div class="markdown level1 remarks"><p>If the given lock is an owner of the underlying lock object then this method will call <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable.dispose#System_IDisposable_Dispose">Dispose()</a> on it;
 otherwise, the underlying lock object will not be destroyed.
 As a result, this lock is not usable after calling of this method.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_Equals_DotNext_Threading_AsyncLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Equals(DotNext.Threading.AsyncLock)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_Equals_DotNext_Threading_AsyncLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Equals(DotNext.Threading.AsyncLock)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L295">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L279">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_Equals_" data-uid="DotNext.Threading.AsyncLock.Equals*"></a>
   <h4 id="DotNext_Threading_AsyncLock_Equals_DotNext_Threading_AsyncLock_" data-uid="DotNext.Threading.AsyncLock.Equals(DotNext.Threading.AsyncLock)">Equals(AsyncLock)</h4>
@@ -267,10 +295,10 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L302">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L286">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_Equals_" data-uid="DotNext.Threading.AsyncLock.Equals*"></a>
   <h4 id="DotNext_Threading_AsyncLock_Equals_System_Object_" data-uid="DotNext.Threading.AsyncLock.Equals(System.Object)">Equals(Object)</h4>
@@ -315,12 +343,14 @@ As a result, this lock is not usable after calling of this method.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_Exclusive.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Exclusive%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_Exclusive.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Exclusive%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L114">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L115">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_Exclusive_" data-uid="DotNext.Threading.AsyncLock.Exclusive*"></a>
   <h4 id="DotNext_Threading_AsyncLock_Exclusive" data-uid="DotNext.Threading.AsyncLock.Exclusive">Exclusive()</h4>
@@ -356,10 +386,10 @@ As a result, this lock is not usable after calling of this method.</p>
   </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncExclusiveLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncExclusiveLock)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncExclusiveLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncExclusiveLock)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L121">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L122">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_Exclusive_" data-uid="DotNext.Threading.AsyncLock.Exclusive*"></a>
   <h4 id="DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncExclusiveLock_" data-uid="DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncExclusiveLock)">Exclusive(AsyncExclusiveLock)</h4>
@@ -406,10 +436,10 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncSharedLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncSharedLock)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncSharedLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncSharedLock)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L163">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L164">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_Exclusive_" data-uid="DotNext.Threading.AsyncLock.Exclusive*"></a>
   <h4 id="DotNext_Threading_AsyncLock_Exclusive_DotNext_Threading_AsyncSharedLock_" data-uid="DotNext.Threading.AsyncLock.Exclusive(DotNext.Threading.AsyncSharedLock)">Exclusive(AsyncSharedLock)</h4>
@@ -456,10 +486,10 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L308">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L292">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_GetHashCode_" data-uid="DotNext.Threading.AsyncLock.GetHashCode*"></a>
   <h4 id="DotNext_Threading_AsyncLock_GetHashCode" data-uid="DotNext.Threading.AsyncLock.GetHashCode">GetHashCode()</h4>
@@ -486,12 +516,14 @@ As a result, this lock is not usable after calling of this method.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_ReadLock_DotNext_Threading_AsyncReaderWriterLock_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.ReadLock(DotNext.Threading.AsyncReaderWriterLock%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_ReadLock_DotNext_Threading_AsyncReaderWriterLock_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.ReadLock(DotNext.Threading.AsyncReaderWriterLock%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L147">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L148">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_ReadLock_" data-uid="DotNext.Threading.AsyncLock.ReadLock*"></a>
   <h4 id="DotNext_Threading_AsyncLock_ReadLock_DotNext_Threading_AsyncReaderWriterLock_System_Boolean_" data-uid="DotNext.Threading.AsyncLock.ReadLock(DotNext.Threading.AsyncReaderWriterLock,System.Boolean)">ReadLock(AsyncReaderWriterLock, Boolean)</h4>
@@ -544,60 +576,10 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_Semaphore_SemaphoreSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Semaphore(SemaphoreSlim)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_Semaphore_System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Semaphore(System.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L128">View Source</a>
-  </span>
-  <a id="DotNext_Threading_AsyncLock_Semaphore_" data-uid="DotNext.Threading.AsyncLock.Semaphore*"></a>
-  <h4 id="DotNext_Threading_AsyncLock_Semaphore_SemaphoreSlim_" data-uid="DotNext.Threading.AsyncLock.Semaphore(SemaphoreSlim)">Semaphore(SemaphoreSlim)</h4>
-  <div class="markdown level1 summary"><p>Wraps semaphore instance into the unified representation of the lock.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static AsyncLock Semaphore(SemaphoreSlim semaphore)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">SemaphoreSlim</span></td>
-        <td><span class="parametername">semaphore</span></td>
-        <td><p>The semaphore to wrap into lock object.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
-        <td><p>The lock representing semaphore.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_Semaphore_System_Int32_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Semaphore(System.Int32%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L139">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L140">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_Semaphore_" data-uid="DotNext.Threading.AsyncLock.Semaphore*"></a>
   <h4 id="DotNext_Threading_AsyncLock_Semaphore_System_Int32_System_Int32_" data-uid="DotNext.Threading.AsyncLock.Semaphore(System.Int32,System.Int32)">Semaphore(Int32, Int32)</h4>
@@ -653,10 +635,60 @@ As a result, this lock is not usable after calling of this method.</p>
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_ToString.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_Semaphore_System_Threading_SemaphoreSlim_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Semaphore(System.Threading.SemaphoreSlim)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L323">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L129">View Source</a>
+  </span>
+  <a id="DotNext_Threading_AsyncLock_Semaphore_" data-uid="DotNext.Threading.AsyncLock.Semaphore*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_Semaphore_System_Threading_SemaphoreSlim_" data-uid="DotNext.Threading.AsyncLock.Semaphore(System.Threading.SemaphoreSlim)">Semaphore(SemaphoreSlim)</h4>
+  <div class="markdown level1 summary"><p>Wraps semaphore instance into the unified representation of the lock.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static AsyncLock Semaphore(SemaphoreSlim semaphore)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.semaphoreslim">SemaphoreSlim</a></td>
+        <td><span class="parametername">semaphore</span></td>
+        <td><p>The semaphore to wrap into lock object.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Threading.AsyncLock.html">AsyncLock</a></td>
+        <td><p>The lock representing semaphore.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_ToString.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L298">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_ToString_" data-uid="DotNext.Threading.AsyncLock.ToString*"></a>
   <h4 id="DotNext_Threading_AsyncLock_ToString" data-uid="DotNext.Threading.AsyncLock.ToString">ToString()</h4>
@@ -683,21 +715,23 @@ As a result, this lock is not usable after calling of this method.</p>
       </tr>
     </tbody>
   </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a></div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_TryAcquire_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.TryAcquire(CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_TryAcquireAsync_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.TryAcquireAsync(System.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L272">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L256">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncLock_TryAcquire_" data-uid="DotNext.Threading.AsyncLock.TryAcquire*"></a>
-  <h4 id="DotNext_Threading_AsyncLock_TryAcquire_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.TryAcquire(CancellationToken)">TryAcquire(CancellationToken)</h4>
+  <a id="DotNext_Threading_AsyncLock_TryAcquireAsync_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_TryAcquireAsync_System_Threading_CancellationToken_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync(System.Threading.CancellationToken)">TryAcquireAsync(CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Tries to acquire lock asynchronously</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;AsyncLock.Holder&gt; TryAcquire(CancellationToken token)</code></pre>
+    <pre><code class="lang-csharp hljs">public Task&lt;AsyncLock.Holder&gt; TryAcquireAsync(CancellationToken token)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -710,7 +744,7 @@ As a result, this lock is not usable after calling of this method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort acquisition operation.</p>
 </td>
@@ -727,7 +761,7 @@ As a result, this lock is not usable after calling of this method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
         <td><p>The task returning the acquired lock holder; or empty lock holder if operation was canceled.</p>
 </td>
       </tr>
@@ -735,19 +769,19 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_TryAcquire_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.TryAcquire(TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_TryAcquireAsync_System_TimeSpan_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.TryAcquireAsync(System.TimeSpan)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L223">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L224">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncLock_TryAcquire_" data-uid="DotNext.Threading.AsyncLock.TryAcquire*"></a>
-  <h4 id="DotNext_Threading_AsyncLock_TryAcquire_TimeSpan_" data-uid="DotNext.Threading.AsyncLock.TryAcquire(TimeSpan)">TryAcquire(TimeSpan)</h4>
+  <a id="DotNext_Threading_AsyncLock_TryAcquireAsync_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_TryAcquireAsync_System_TimeSpan_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync(System.TimeSpan)">TryAcquireAsync(TimeSpan)</h4>
   <div class="markdown level1 summary"><p>Tries to acquire the lock asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;AsyncLock.Holder&gt; TryAcquire(TimeSpan timeout)</code></pre>
+    <pre><code class="lang-csharp hljs">public Task&lt;AsyncLock.Holder&gt; TryAcquireAsync(TimeSpan timeout)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -760,7 +794,7 @@ As a result, this lock is not usable after calling of this method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TimeSpan</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The interval to wait for the lock.</p>
 </td>
@@ -777,7 +811,7 @@ As a result, this lock is not usable after calling of this method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
         <td><p>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</p>
 </td>
       </tr>
@@ -785,19 +819,19 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_TryAcquire_TimeSpan_CancellationToken_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.TryAcquire(TimeSpan%2CCancellationToken%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.TryAcquireAsync(System.TimeSpan%2CSystem.Threading.CancellationToken%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L232">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L233">View Source</a>
   </span>
-  <a id="DotNext_Threading_AsyncLock_TryAcquire_" data-uid="DotNext.Threading.AsyncLock.TryAcquire*"></a>
-  <h4 id="DotNext_Threading_AsyncLock_TryAcquire_TimeSpan_CancellationToken_System_Boolean_" data-uid="DotNext.Threading.AsyncLock.TryAcquire(TimeSpan,CancellationToken,System.Boolean)">TryAcquire(TimeSpan, CancellationToken, Boolean)</h4>
+  <a id="DotNext_Threading_AsyncLock_TryAcquireAsync_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync*"></a>
+  <h4 id="DotNext_Threading_AsyncLock_TryAcquireAsync_System_TimeSpan_System_Threading_CancellationToken_System_Boolean_" data-uid="DotNext.Threading.AsyncLock.TryAcquireAsync(System.TimeSpan,System.Threading.CancellationToken,System.Boolean)">TryAcquireAsync(TimeSpan, CancellationToken, Boolean)</h4>
   <div class="markdown level1 summary"><p>Tries to acquire the lock asynchronously.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Task&lt;AsyncLock.Holder&gt; TryAcquire(TimeSpan timeout, CancellationToken token, bool suppressCancellation = false)</code></pre>
+    <pre><code class="lang-csharp hljs">public Task&lt;AsyncLock.Holder&gt; TryAcquireAsync(TimeSpan timeout, CancellationToken token, bool suppressCancellation = false)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -810,13 +844,13 @@ As a result, this lock is not usable after calling of this method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">TimeSpan</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.timespan">TimeSpan</a></td>
         <td><span class="parametername">timeout</span></td>
         <td><p>The interval to wait for the lock.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to abort acquisition operation.</p>
 </td>
@@ -824,7 +858,7 @@ As a result, this lock is not usable after calling of this method.</p>
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
         <td><span class="parametername">suppressCancellation</span></td>
-        <td><p><span class="xref">true</span> to return empty lock holder instead of throwing <see cref="!:OperationCanceledException"></see>.</p>
+        <td><p><span class="xref">true</span> to return empty lock holder instead of throwing <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a>.</p>
 </td>
       </tr>
     </tbody>
@@ -839,7 +873,7 @@ As a result, this lock is not usable after calling of this method.</p>
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;<a class="xref" href="DotNext.Threading.AsyncLock.Holder.html">AsyncLock.Holder</a>&gt;</td>
         <td><p>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</p>
 </td>
       </tr>
@@ -847,10 +881,10 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_Weak_DotNext_Threading_AsyncSharedLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Weak(DotNext.Threading.AsyncSharedLock)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_Weak_DotNext_Threading_AsyncSharedLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.Weak(DotNext.Threading.AsyncSharedLock)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L170">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L171">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_Weak_" data-uid="DotNext.Threading.AsyncLock.Weak*"></a>
   <h4 id="DotNext_Threading_AsyncLock_Weak_DotNext_Threading_AsyncSharedLock_" data-uid="DotNext.Threading.AsyncLock.Weak(DotNext.Threading.AsyncSharedLock)">Weak(AsyncSharedLock)</h4>
@@ -897,10 +931,10 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_WriteLock_DotNext_Threading_AsyncReaderWriterLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.WriteLock(DotNext.Threading.AsyncReaderWriterLock)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_WriteLock_DotNext_Threading_AsyncReaderWriterLock_.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.WriteLock(DotNext.Threading.AsyncReaderWriterLock)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L155">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L156">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_WriteLock_" data-uid="DotNext.Threading.AsyncLock.WriteLock*"></a>
   <h4 id="DotNext_Threading_AsyncLock_WriteLock_DotNext_Threading_AsyncReaderWriterLock_" data-uid="DotNext.Threading.AsyncLock.WriteLock(DotNext.Threading.AsyncReaderWriterLock)">WriteLock(AsyncReaderWriterLock)</h4>
@@ -949,10 +983,10 @@ As a result, this lock is not usable after calling of this method.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_op_Equality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.op_Equality(DotNext.Threading.AsyncLock%40%2CDotNext.Threading.AsyncLock%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_op_Equality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.op_Equality(DotNext.Threading.AsyncLock%40%2CDotNext.Threading.AsyncLock%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L331">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L306">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_op_Equality_" data-uid="DotNext.Threading.AsyncLock.op_Equality*"></a>
   <h4 id="DotNext_Threading_AsyncLock_op_Equality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__" data-uid="DotNext.Threading.AsyncLock.op_Equality(DotNext.Threading.AsyncLock@,DotNext.Threading.AsyncLock@)">Equality(AsyncLock, AsyncLock)</h4>
@@ -1005,10 +1039,10 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock_op_Inequality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.op_Inequality(DotNext.Threading.AsyncLock%40%2CDotNext.Threading.AsyncLock%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock_op_Inequality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock.op_Inequality(DotNext.Threading.AsyncLock%40%2CDotNext.Threading.AsyncLock%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L339">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L314">View Source</a>
   </span>
   <a id="DotNext_Threading_AsyncLock_op_Inequality_" data-uid="DotNext.Threading.AsyncLock.op_Inequality*"></a>
   <h4 id="DotNext_Threading_AsyncLock_op_Inequality_DotNext_Threading_AsyncLock__DotNext_Threading_AsyncLock__" data-uid="DotNext.Threading.AsyncLock.op_Inequality(DotNext.Threading.AsyncLock@,DotNext.Threading.AsyncLock@)">Inequality(AsyncLock, AsyncLock)</h4>
@@ -1061,14 +1095,20 @@ As a result, this lock is not usable after calling of this method.</p>
   </table>
   <h3 id="implements">Implements</h3>
   <div>
-      <span class="xref">IDisposable</span>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
   </div>
   <div>
-      <span class="xref">IEquatable&lt;&gt;</span>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">System.IEquatable&lt;T&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0___0___">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
   </div>
 </article>
           </div>
@@ -1078,10 +1118,10 @@ As a result, this lock is not usable after calling of this method.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Threading_AsyncLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Threading_AsyncLock.md&amp;value=---%0Auid%3A%20DotNext.Threading.AsyncLock%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Threading/Threading/AsyncLock.cs/#L22" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Threading/Threading/AsyncLock.cs/#L22" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

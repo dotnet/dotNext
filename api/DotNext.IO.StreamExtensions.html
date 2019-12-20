@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class StreamExtensions
    | .NEXT ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,33 +81,57 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">StreamExtensions</span></div>
   </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.IO.html">DotNext.IO</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_IO_StreamExtensions_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class StreamExtensions : object</code></pre>
+    <pre><code class="lang-csharp hljs">public static class StreamExtensions</code></pre>
   </div>
   <h5 id="DotNext_IO_StreamExtensions_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>This class provides alternative way to read and write typed data from/to the stream
-without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:BinaryWriter"></see>.</p>
+without instantiation of <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.binaryreader">BinaryReader</a> and <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.binarywriter">BinaryWriter</a>.</p>
 </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_CopyTo_Stream_Stream_System_Byte___CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.CopyTo(Stream%2CStream%2CSystem.Byte%5B%5D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_CopyTo_System_IO_Stream_System_IO_Stream_System_Span_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.CopyTo(System.IO.Stream%2CSystem.IO.Stream%2CSystem.Span%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L330">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L656">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_CopyTo_" data-uid="DotNext.IO.StreamExtensions.CopyTo*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_CopyTo_Stream_Stream_System_Byte___CancellationToken_" data-uid="DotNext.IO.StreamExtensions.CopyTo(Stream,Stream,System.Byte[],CancellationToken)">CopyTo(Stream, Stream, Byte[], CancellationToken)</h4>
+  <h4 id="DotNext_IO_StreamExtensions_CopyTo_System_IO_Stream_System_IO_Stream_System_Span_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.CopyTo(System.IO.Stream,System.IO.Stream,System.Span{System.Byte},System.Threading.CancellationToken)">CopyTo(Stream, Stream, Span&lt;Byte&gt;, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Synchronously reads the bytes from the source stream and writes them to another stream, using a specified buffer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static long CopyTo(this Stream source, Stream destination, byte[] buffer, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public static long CopyTo(this Stream source, Stream destination, Span&lt;byte&gt; buffer, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -120,25 +144,25 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">source</span></td>
         <td><p>The source stream to read from.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">destination</span></td>
         <td><p>The destination stream to write into.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">buffer</span></td>
         <td><p>The buffer used to hold copied content temporarily.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel this operation.</p>
 </td>
@@ -163,19 +187,19 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_CopyToAsync_Stream_Stream_System_Byte___CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.CopyToAsync(Stream%2CStream%2CSystem.Byte%5B%5D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.CopyToAsync(System.IO.Stream%2CSystem.IO.Stream%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L310">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L636">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_CopyToAsync_" data-uid="DotNext.IO.StreamExtensions.CopyToAsync*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_CopyToAsync_Stream_Stream_System_Byte___CancellationToken_" data-uid="DotNext.IO.StreamExtensions.CopyToAsync(Stream,Stream,System.Byte[],CancellationToken)">CopyToAsync(Stream, Stream, Byte[], CancellationToken)</h4>
+  <h4 id="DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.CopyToAsync(System.IO.Stream,System.IO.Stream,System.Memory{System.Byte},System.Threading.CancellationToken)">CopyToAsync(Stream, Stream, Memory&lt;Byte&gt;, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Asynchronously reads the bytes from the source stream and writes them to another stream, using a specified buffer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;long&gt; CopyToAsync(this Stream source, Stream destination, byte[] buffer, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;long&gt; CopyToAsync(this Stream source, Stream destination, Memory&lt;byte&gt; buffer, CancellationToken token = default(CancellationToken))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -188,25 +212,25 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">source</span></td>
         <td><p>The source stream to read from.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">destination</span></td>
         <td><p>The destination stream to write into.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">buffer</span></td>
         <td><p>The buffer used to hold copied content temporarily.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel this operation.</p>
 </td>
@@ -223,7 +247,7 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a>&gt;</td>
         <td><p>The total number of copied bytes.</p>
 </td>
       </tr>
@@ -231,19 +255,19 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_Read__1_Stream_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.Read%60%601(Stream%2CSystem.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.Read%60%601(System.IO.Stream)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L225">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L551">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_Read_" data-uid="DotNext.IO.StreamExtensions.Read*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_Read__1_Stream_System_Byte___" data-uid="DotNext.IO.StreamExtensions.Read``1(Stream,System.Byte[])">Read&lt;T&gt;(Stream, Byte[])</h4>
+  <h4 id="DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_" data-uid="DotNext.IO.StreamExtensions.Read``1(System.IO.Stream)">Read&lt;T&gt;(Stream)</h4>
   <div class="markdown level1 summary"><p>Deserializes the value type from the stream.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(this Stream stream, byte[] buffer)
+    <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(this Stream stream)
 
     where T : struct</code></pre>
   </div>
@@ -258,15 +282,9 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">stream</span></td>
         <td><p>The stream to read from.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The buffer that is allocated by the caller.</p>
 </td>
       </tr>
     </tbody>
@@ -303,21 +321,37 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The end of the stream is reached.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadAsync__1_Stream_System_Byte___CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadAsync%60%601(Stream%2CSystem.Byte%5B%5D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadAsync%60%601(System.IO.Stream%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L238">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L567">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_ReadAsync_" data-uid="DotNext.IO.StreamExtensions.ReadAsync*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_ReadAsync__1_Stream_System_Byte___CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadAsync``1(Stream,System.Byte[],CancellationToken)">ReadAsync&lt;T&gt;(Stream, Byte[], CancellationToken)</h4>
+  <h4 id="DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadAsync``1(System.IO.Stream,System.Memory{System.Byte},System.Threading.CancellationToken)">ReadAsync&lt;T&gt;(Stream, Memory&lt;Byte&gt;, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Asynchronously deserializes the value type from the stream.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;T&gt; ReadAsync&lt;T&gt;(this Stream stream, byte[] buffer, CancellationToken token = null)
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(this Stream stream, Memory&lt;byte&gt; buffer, CancellationToken token = default(CancellationToken))
 
     where T : struct</code></pre>
   </div>
@@ -332,19 +366,19 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">stream</span></td>
         <td><p>The stream to read from.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">buffer</span></td>
         <td><p>The buffer that is allocated by the caller.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel asynchronous operation.</p>
 </td>
@@ -361,7 +395,7 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;T&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
         <td><p>The value deserialized from the stream.</p>
 </td>
       </tr>
@@ -383,21 +417,39 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The end of the stream is reached.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadBytes_Stream_System_Int32_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadBytes(Stream%2CSystem.Int32%2CSystem.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadAsync%60%601(System.IO.Stream%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L200">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L582">View Source</a>
   </span>
-  <a id="DotNext_IO_StreamExtensions_ReadBytes_" data-uid="DotNext.IO.StreamExtensions.ReadBytes*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_ReadBytes_Stream_System_Int32_System_Byte___" data-uid="DotNext.IO.StreamExtensions.ReadBytes(Stream,System.Int32,System.Byte[])">ReadBytes(Stream, Int32, Byte[])</h4>
-  <div class="markdown level1 summary"><p>Reads the number of bytes using the pre-allocated buffer.</p>
+  <a id="DotNext_IO_StreamExtensions_ReadAsync_" data-uid="DotNext.IO.StreamExtensions.ReadAsync*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadAsync``1(System.IO.Stream,System.Threading.CancellationToken)">ReadAsync&lt;T&gt;(Stream, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Asynchronously deserializes the value type from the stream.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static ReadOnlySpan&lt;byte&gt; ReadBytes(this Stream stream, int count, byte[] buffer)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(this Stream stream, CancellationToken token = default(CancellationToken))
+
+    where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -410,90 +462,13 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">stream</span></td>
         <td><p>The stream to read from.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The number of bytes to read.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The buffer that is allocated by the caller.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">ReadOnlySpan</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
-        <td><p>The span of bytes representing buffer segment.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_IO_StreamExtensions_ReadBytes_Stream_System_Int32_System_Byte____remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>You can use <see cref="!:System.Buffers.Binary.BinaryPrimitives"></see> to decode the returned bytes.</p>
-</div>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadBytesAsync_Stream_System_Int32_System_Byte___CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadBytesAsync(Stream%2CSystem.Int32%2CSystem.Byte%5B%5D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L285">View Source</a>
-  </span>
-  <a id="DotNext_IO_StreamExtensions_ReadBytesAsync_" data-uid="DotNext.IO.StreamExtensions.ReadBytesAsync*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_ReadBytesAsync_Stream_System_Int32_System_Byte___CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadBytesAsync(Stream,System.Int32,System.Byte[],CancellationToken)">ReadBytesAsync(Stream, Int32, Byte[], CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Reads asynchronously the number of bytes using the pre-allocated buffer.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;ReadOnlyMemory&lt;byte&gt;&gt; ReadBytesAsync(this Stream stream, int count, byte[] buffer, CancellationToken token = null)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="xref">Stream</span></td>
-        <td><span class="parametername">stream</span></td>
-        <td><p>The stream to read from.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">count</span></td>
-        <td><p>The number of bytes to read.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The buffer that is allocated by the caller.</p>
-</td>
-      </tr>
-      <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel asynchronous operation.</p>
 </td>
@@ -510,30 +485,59 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<span class="xref">ReadOnlyMemory</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;&gt;</td>
-        <td><p>The span of bytes representing buffer segment.</p>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;T&gt;</td>
+        <td><p>The value deserialized from the stream.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_IO_StreamExtensions_ReadBytesAsync_Stream_System_Int32_System_Byte___CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>You can use <see cref="!:System.Buffers.Binary.BinaryPrimitives"></see> to decode the returned bytes.</p>
-</div>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The value type to be deserialized.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>The end of the stream is reached.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadString_Stream_System_Int32_DotNext_Text_DecodingContext_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadString(Stream%2CSystem.Int32%2CDotNext.Text.DecodingContext%2CSystem.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadString(System.IO.Stream%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%40%2CSystem.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L105">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L403">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_ReadString_" data-uid="DotNext.IO.StreamExtensions.ReadString*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_ReadString_Stream_System_Int32_DotNext_Text_DecodingContext_System_Byte___" data-uid="DotNext.IO.StreamExtensions.ReadString(Stream,System.Int32,DotNext.Text.DecodingContext,System.Byte[])">ReadString(Stream, Int32, DecodingContext, Byte[])</h4>
-  <div class="markdown level1 summary"><p>Reads the string using the specified encoding.</p>
+  <h4 id="DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__" data-uid="DotNext.IO.StreamExtensions.ReadString(System.IO.Stream,DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext@,System.Span{System.Byte})">ReadString(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Reads a length-prefixed string using the specified encoding and supplied reusable buffer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static string ReadString(this Stream stream, int length, DecodingContext context, byte[] buffer)</code></pre>
+    <pre><code class="lang-csharp hljs">public static string ReadString(this Stream stream, StringLengthEncoding lengthFormat, in DecodingContext context, Span&lt;byte&gt; buffer)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -546,15 +550,15 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">stream</span></td>
         <td><p>The stream to read from.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
-        <td><span class="parametername">length</span></td>
-        <td><p>The length of the string, in bytes.</p>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
 </td>
       </tr>
       <tr>
@@ -564,7 +568,7 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">buffer</span></td>
         <td><p>The buffer that is allocated by the caller.</p>
 </td>
@@ -587,21 +591,51 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
       </tr>
     </tbody>
   </table>
+  <h5 id="DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method decodes string length (in bytes) from
+stream in contrast to <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext__System_Span_System_Byte__">ReadString(Stream, Int32, DecodingContext, Span&lt;Byte&gt;)</a></p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">buffer</code> to small for decoding characters.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>Unexpected end of stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">lengthFormat</code> is invalid.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadStringAsync_Stream_System_Int32_DotNext_Text_DecodingContext_System_Byte___CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadStringAsync(Stream%2CSystem.Int32%2CDotNext.Text.DecodingContext%2CSystem.Byte%5B%5D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_StringLengthEncoding_System_Text_Encoding_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadString(System.IO.Stream%2CDotNext.IO.StringLengthEncoding%2CSystem.Text.Encoding)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L151">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L439">View Source</a>
   </span>
-  <a id="DotNext_IO_StreamExtensions_ReadStringAsync_" data-uid="DotNext.IO.StreamExtensions.ReadStringAsync*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_ReadStringAsync_Stream_System_Int32_DotNext_Text_DecodingContext_System_Byte___CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadStringAsync(Stream,System.Int32,DotNext.Text.DecodingContext,System.Byte[],CancellationToken)">ReadStringAsync(Stream, Int32, DecodingContext, Byte[], CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Reads the string asynchronously using the specified encoding.</p>
+  <a id="DotNext_IO_StreamExtensions_ReadString_" data-uid="DotNext.IO.StreamExtensions.ReadString*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_StringLengthEncoding_System_Text_Encoding_" data-uid="DotNext.IO.StreamExtensions.ReadString(System.IO.Stream,DotNext.IO.StringLengthEncoding,System.Text.Encoding)">ReadString(Stream, StringLengthEncoding, Encoding)</h4>
+  <div class="markdown level1 summary"><p>Reads a length-prefixed string using the specified encoding.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task&lt;string&gt; ReadStringAsync(this Stream stream, int length, DecodingContext context, byte[] buffer, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public static string ReadString(this Stream stream, StringLengthEncoding lengthFormat, Encoding encoding)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -614,7 +648,94 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The stream to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></td>
+        <td><span class="parametername">encoding</span></td>
+        <td><p>The encoding used to decode bytes from stream into characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><p>The string decoded from the log entry content stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_StringLengthEncoding_System_Text_Encoding__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method decodes string length (in bytes) from
+stream in contrast to <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_System_Text_Encoding_">ReadString(Stream, Int32, Encoding)</a>.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>Unexpected end of stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">lengthFormat</code> is invalid.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext__System_Span_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadString(System.IO.Stream%2CSystem.Int32%2CDotNext.Text.DecodingContext%40%2CSystem.Span%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L316">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamExtensions_ReadString_" data-uid="DotNext.IO.StreamExtensions.ReadString*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext__System_Span_System_Byte__" data-uid="DotNext.IO.StreamExtensions.ReadString(System.IO.Stream,System.Int32,DotNext.Text.DecodingContext@,System.Span{System.Byte})">ReadString(Stream, Int32, DecodingContext, Span&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Reads the string using the specified encoding and supplied reusable buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static string ReadString(this Stream stream, int length, in DecodingContext context, Span&lt;byte&gt; buffer)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">stream</span></td>
         <td><p>The stream to read from.</p>
 </td>
@@ -622,7 +743,7 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
       <tr>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
         <td><span class="parametername">length</span></td>
-        <td><p>The length of the string.</p>
+        <td><p>The length of the string, in bytes.</p>
 </td>
       </tr>
       <tr>
@@ -632,13 +753,184 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The buffer that is allocated by the caller.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><p>The string decoded from the log entry content stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext__System_Span_System_Byte___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p><code data-dev-comment-type="paramref" class="paramref">buffer</code> length can be less than <code data-dev-comment-type="paramref" class="paramref">length</code>
+but should be enough to decode at least one character of the specified encoding.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">buffer</code> to small for decoding characters.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>Unexpected end of stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_System_Text_Encoding_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadString(System.IO.Stream%2CSystem.Int32%2CSystem.Text.Encoding)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L414">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamExtensions_ReadString_" data-uid="DotNext.IO.StreamExtensions.ReadString*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_System_Text_Encoding_" data-uid="DotNext.IO.StreamExtensions.ReadString(System.IO.Stream,System.Int32,System.Text.Encoding)">ReadString(Stream, Int32, Encoding)</h4>
+  <div class="markdown level1 summary"><p>Reads the string using the specified encoding.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static string ReadString(this Stream stream, int length, Encoding encoding)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The stream to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the string, in bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></td>
+        <td><span class="parametername">encoding</span></td>
+        <td><p>The encoding used to decode bytes from stream into characters.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><p>The string decoded from the log entry content stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>Unexpected end of stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadStringAsync(System.IO.Stream%2CDotNext.IO.StringLengthEncoding%2CDotNext.Text.DecodingContext%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L498">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamExtensions_ReadStringAsync_" data-uid="DotNext.IO.StreamExtensions.ReadStringAsync*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadStringAsync(System.IO.Stream,DotNext.IO.StringLengthEncoding,DotNext.Text.DecodingContext,System.Memory{System.Byte},System.Threading.CancellationToken)">ReadStringAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads a length-prefixed string asynchronously using the specified encoding and supplied reusable buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;string&gt; ReadStringAsync(this Stream stream, StringLengthEncoding lengthFormat, DecodingContext context, Memory&lt;byte&gt; buffer, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The stream to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The text decoding context.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">buffer</span></td>
         <td><p>The buffer that is allocated by the caller.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel asynchronous operation.</p>
 </td>
@@ -655,27 +947,353 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
         <td><p>The string decoded from the log entry content stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method decodes string length (in bytes) from
+stream in contrast to <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_">ReadStringAsync(Stream, Int32, DecodingContext, Memory&lt;Byte&gt;, CancellationToken)</a>.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">buffer</code> to small for decoding characters.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>Unexpected end of stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">lengthFormat</code> is invalid.</p>
 </td>
       </tr>
     </tbody>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_Write__1_Stream___0__System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.Write%60%601(Stream%2C%60%600%40%2CSystem.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadStringAsync(System.IO.Stream%2CDotNext.IO.StringLengthEncoding%2CSystem.Text.Encoding%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L249">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L538">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamExtensions_ReadStringAsync_" data-uid="DotNext.IO.StreamExtensions.ReadStringAsync*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadStringAsync(System.IO.Stream,DotNext.IO.StringLengthEncoding,System.Text.Encoding,System.Threading.CancellationToken)">ReadStringAsync(Stream, StringLengthEncoding, Encoding, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads a length-prefixed string asynchronously using the specified encoding and supplied reusable buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;string&gt; ReadStringAsync(this Stream stream, StringLengthEncoding lengthFormat, Encoding encoding, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The stream to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a></td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>The format of the string length encoded in the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></td>
+        <td><span class="parametername">encoding</span></td>
+        <td><p>The encoding used to decode bytes from stream into characters.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel asynchronous operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
+        <td><p>The string decoded from the log entry content stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method decodes string length (in bytes) from
+stream in contrast to <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_System_Text_Encoding_System_Threading_CancellationToken_">ReadStringAsync(Stream, Int32, Encoding, CancellationToken)</a>.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>Unexpected end of stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">lengthFormat</code> is invalid.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadStringAsync(System.IO.Stream%2CSystem.Int32%2CDotNext.Text.DecodingContext%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L458">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamExtensions_ReadStringAsync_" data-uid="DotNext.IO.StreamExtensions.ReadStringAsync*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadStringAsync(System.IO.Stream,System.Int32,DotNext.Text.DecodingContext,System.Memory{System.Byte},System.Threading.CancellationToken)">ReadStringAsync(Stream, Int32, DecodingContext, Memory&lt;Byte&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads the string asynchronously using the specified encoding and supplied reusable buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;string&gt; ReadStringAsync(this Stream stream, int length, DecodingContext context, Memory&lt;byte&gt; buffer, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The stream to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the string, in bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The text decoding context.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">buffer</span></td>
+        <td><p>The buffer that is allocated by the caller.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel asynchronous operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
+        <td><p>The string decoded from the log entry content stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p><code data-dev-comment-type="paramref" class="paramref">buffer</code> length can be less than <code data-dev-comment-type="paramref" class="paramref">length</code>
+but should be enough to decode at least one character of the specified encoding.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">buffer</code> to small for decoding characters.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>Unexpected end of stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_System_Text_Encoding_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.ReadStringAsync(System.IO.Stream%2CSystem.Int32%2CSystem.Text.Encoding%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L511">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamExtensions_ReadStringAsync_" data-uid="DotNext.IO.StreamExtensions.ReadStringAsync*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_System_Text_Encoding_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.ReadStringAsync(System.IO.Stream,System.Int32,System.Text.Encoding,System.Threading.CancellationToken)">ReadStringAsync(Stream, Int32, Encoding, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Reads the string asynchronously using the specified encoding and supplied reusable buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask&lt;string&gt; ReadStringAsync(this Stream stream, int length, Encoding encoding, CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The stream to read from.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">length</span></td>
+        <td><p>The length of the string, in bytes.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></td>
+        <td><span class="parametername">encoding</span></td>
+        <td><p>The encoding used to decode bytes from stream into characters.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel asynchronous operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask-1">ValueTask</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a>&gt;</td>
+        <td><p>The string decoded from the log entry content stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.endofstreamexception">EndOfStreamException</a></td>
+        <td><p>Unexpected end of stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_Write__1_System_IO_Stream___0__.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.Write%60%601(System.IO.Stream%2C%60%600%40)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L595">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_Write_" data-uid="DotNext.IO.StreamExtensions.Write*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_Write__1_Stream___0__System_Byte___" data-uid="DotNext.IO.StreamExtensions.Write``1(Stream,``0@,System.Byte[])">Write&lt;T&gt;(Stream, ref T, Byte[])</h4>
+  <h4 id="DotNext_IO_StreamExtensions_Write__1_System_IO_Stream___0__" data-uid="DotNext.IO.StreamExtensions.Write``1(System.IO.Stream,``0@)">Write&lt;T&gt;(Stream, T)</h4>
   <div class="markdown level1 summary"><p>Serializes value to the stream.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this Stream stream, ref T value, byte[] buffer)
+    <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(this Stream stream, in T value)
 
     where T : struct</code></pre>
   </div>
@@ -690,7 +1308,7 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">stream</span></td>
         <td><p>The stream to write into.</p>
 </td>
@@ -699,12 +1317,6 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
         <td><span class="xref">T</span></td>
         <td><span class="parametername">value</span></td>
         <td><p>The value to be written into the stream.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
-        <td><span class="parametername">buffer</span></td>
-        <td><p>The buffer that is allocated by the caller.</p>
 </td>
       </tr>
     </tbody>
@@ -727,19 +1339,19 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_WriteAsync__1_Stream___0__System_Byte___CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.WriteAsync%60%601(Stream%2C%60%600%40%2CSystem.Byte%5B%5D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.WriteAsync%60%601(System.IO.Stream%2C%60%600%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L265">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L606">View Source</a>
   </span>
   <a id="DotNext_IO_StreamExtensions_WriteAsync_" data-uid="DotNext.IO.StreamExtensions.WriteAsync*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_WriteAsync__1_Stream___0__System_Byte___CancellationToken_" data-uid="DotNext.IO.StreamExtensions.WriteAsync``1(Stream,``0@,System.Byte[],CancellationToken)">WriteAsync&lt;T&gt;(Stream, ref T, Byte[], CancellationToken)</h4>
+  <h4 id="DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.WriteAsync``1(System.IO.Stream,``0,System.Memory{System.Byte},System.Threading.CancellationToken)">WriteAsync&lt;T&gt;(Stream, T, Memory&lt;Byte&gt;, CancellationToken)</h4>
   <div class="markdown level1 summary"><p>Asynchronously serializes value to the stream.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task WriteAsync&lt;T&gt;(this Stream stream, ref T value, byte[] buffer, CancellationToken token = null)
+    <pre><code class="lang-csharp hljs">public static ValueTask WriteAsync&lt;T&gt;(this Stream stream, T value, Memory&lt;byte&gt; buffer, CancellationToken token = default(CancellationToken))
 
     where T : struct</code></pre>
   </div>
@@ -754,7 +1366,7 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">stream</span></td>
         <td><p>The stream to write into.</p>
 </td>
@@ -766,13 +1378,13 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">buffer</span></td>
-        <td><p>The buffer that is allocated by the caller.</p>
+        <td><p>The buffer that is used for serialization.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel asynchronous operation.</p>
 </td>
@@ -789,7 +1401,7 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing asynchronous st</p>
 </td>
       </tr>
@@ -813,19 +1425,21 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_WriteString_Stream_System_String_DotNext_Text_EncodingContext_System_Byte___.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.WriteString(Stream%2CSystem.String%2CDotNext.Text.EncodingContext%2CSystem.Byte%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.WriteAsync%60%601(System.IO.Stream%2C%60%600%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L42">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L621">View Source</a>
   </span>
-  <a id="DotNext_IO_StreamExtensions_WriteString_" data-uid="DotNext.IO.StreamExtensions.WriteString*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_WriteString_Stream_System_String_DotNext_Text_EncodingContext_System_Byte___" data-uid="DotNext.IO.StreamExtensions.WriteString(Stream,System.String,DotNext.Text.EncodingContext,System.Byte[])">WriteString(Stream, String, EncodingContext, Byte[])</h4>
-  <div class="markdown level1 summary"><p>Writes the string into the stream.</p>
+  <a id="DotNext_IO_StreamExtensions_WriteAsync_" data-uid="DotNext.IO.StreamExtensions.WriteAsync*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.WriteAsync``1(System.IO.Stream,``0,System.Threading.CancellationToken)">WriteAsync&lt;T&gt;(Stream, T, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Asynchronously serializes value to the stream.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static void WriteString(this Stream stream, string value, EncodingContext context, byte[] buffer)</code></pre>
+    <pre><code class="lang-csharp hljs">public static ValueTask WriteAsync&lt;T&gt;(this Stream stream, T value, CancellationToken token = default(CancellationToken))
+
+    where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -838,13 +1452,91 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">stream</span></td>
         <td><p>The stream to write into.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The value to be written into the stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel asynchronous operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing asynchronous st</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>The value type to be serialized.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Span_System_Byte__System_Nullable_DotNext_IO_StringLengthEncoding__.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.WriteString(System.IO.Stream%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CDotNext.Text.EncodingContext%40%2CSystem.Span%7BSystem.Byte%7D%2CSystem.Nullable%7BDotNext.IO.StringLengthEncoding%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L136">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamExtensions_WriteString_" data-uid="DotNext.IO.StreamExtensions.WriteString*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Span_System_Byte__System_Nullable_DotNext_IO_StringLengthEncoding__" data-uid="DotNext.IO.StreamExtensions.WriteString(System.IO.Stream,System.ReadOnlySpan{System.Char},DotNext.Text.EncodingContext@,System.Span{System.Byte},System.Nullable{DotNext.IO.StringLengthEncoding})">WriteString(Stream, ReadOnlySpan&lt;Char&gt;, EncodingContext, Span&lt;Byte&gt;, Nullable&lt;StringLengthEncoding&gt;)</h4>
+  <div class="markdown level1 summary"><p>Writes a length-prefixed or raw string to the stream using supplied reusable buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static void WriteString(this Stream stream, ReadOnlySpan&lt;char&gt; value, in EncodingContext context, Span&lt;byte&gt; buffer, StringLengthEncoding? lengthFormat = default(StringLengthEncoding? ))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The stream to write into.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
         <td><span class="parametername">value</span></td>
         <td><p>The string to be encoded.</p>
 </td>
@@ -856,31 +1548,58 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">Span</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">buffer</span></td>
         <td><p>The buffer allocated by the caller needed for characters encoding.</p>
 </td>
       </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a>&gt;</td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>Represents string length encoding format.</p>
+</td>
+      </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_IO_StreamExtensions_WriteString_Stream_System_String_DotNext_Text_EncodingContext_System_Byte____remarks">Remarks</h5>
+  <h5 id="DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Span_System_Byte__System_Nullable_DotNext_IO_StringLengthEncoding___remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method doesn't encode the length of the string.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">buffer</code> is too small for encoding minimal portion of <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">lengthFormat</code> is invalid.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions_WriteStringAsync_Stream_System_String_DotNext_Text_EncodingContext_System_Byte___CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.WriteStringAsync(Stream%2CSystem.String%2CDotNext.Text.EncodingContext%2CSystem.Byte%5B%5D%2CCancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_StringLengthEncoding__.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.WriteString(System.IO.Stream%2CSystem.ReadOnlySpan%7BSystem.Char%7D%2CSystem.Text.Encoding%2CSystem.Nullable%7BDotNext.IO.StringLengthEncoding%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L76">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L188">View Source</a>
   </span>
-  <a id="DotNext_IO_StreamExtensions_WriteStringAsync_" data-uid="DotNext.IO.StreamExtensions.WriteStringAsync*"></a>
-  <h4 id="DotNext_IO_StreamExtensions_WriteStringAsync_Stream_System_String_DotNext_Text_EncodingContext_System_Byte___CancellationToken_" data-uid="DotNext.IO.StreamExtensions.WriteStringAsync(Stream,System.String,DotNext.Text.EncodingContext,System.Byte[],CancellationToken)">WriteStringAsync(Stream, String, EncodingContext, Byte[], CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Writes the string into the stream asynchronously.</p>
+  <a id="DotNext_IO_StreamExtensions_WriteString_" data-uid="DotNext.IO.StreamExtensions.WriteString*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_StringLengthEncoding__" data-uid="DotNext.IO.StreamExtensions.WriteString(System.IO.Stream,System.ReadOnlySpan{System.Char},System.Text.Encoding,System.Nullable{DotNext.IO.StringLengthEncoding})">WriteString(Stream, ReadOnlySpan&lt;Char&gt;, Encoding, Nullable&lt;StringLengthEncoding&gt;)</h4>
+  <div class="markdown level1 summary"><p>Writes a length-prefixed or raw string to the stream.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static Task WriteStringAsync(this Stream stream, string value, EncodingContext context, byte[] buffer, CancellationToken token = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public static void WriteString(this Stream stream, ReadOnlySpan&lt;char&gt; value, Encoding encoding, StringLengthEncoding? lengthFormat = default(StringLengthEncoding? ))</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -893,13 +1612,84 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Stream</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
         <td><span class="parametername">stream</span></td>
         <td><p>The stream to write into.</p>
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlyspan-1">ReadOnlySpan</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The string to be encoded.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></td>
+        <td><span class="parametername">encoding</span></td>
+        <td><p>The encoding.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a>&gt;</td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>Represents string length encoding format.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_StringLengthEncoding___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method doesn't encode the length of the string.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">lengthFormat</code> is invalid.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Memory_System_Byte__System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.WriteStringAsync(System.IO.Stream%2CSystem.ReadOnlyMemory%7BSystem.Char%7D%2CDotNext.Text.EncodingContext%2CSystem.Memory%7BSystem.Byte%7D%2CSystem.Nullable%7BDotNext.IO.StringLengthEncoding%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L237">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamExtensions_WriteStringAsync_" data-uid="DotNext.IO.StreamExtensions.WriteStringAsync*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Memory_System_Byte__System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.WriteStringAsync(System.IO.Stream,System.ReadOnlyMemory{System.Char},DotNext.Text.EncodingContext,System.Memory{System.Byte},System.Nullable{DotNext.IO.StringLengthEncoding},System.Threading.CancellationToken)">WriteStringAsync(Stream, ReadOnlyMemory&lt;Char&gt;, EncodingContext, Memory&lt;Byte&gt;, Nullable&lt;StringLengthEncoding&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Writes a length-prefixed or raw string to the stream asynchronously using supplied reusable buffer.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory&lt;char&gt; value, EncodingContext context, Memory&lt;byte&gt; buffer, StringLengthEncoding? lengthFormat = default(StringLengthEncoding? ), CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The stream to write into.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
         <td><span class="parametername">value</span></td>
         <td><p>The string to be encoded.</p>
 </td>
@@ -911,13 +1701,19 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
 </td>
       </tr>
       <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>[]</td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
         <td><span class="parametername">buffer</span></td>
         <td><p>The buffer allocated by the caller needed for characters encoding.</p>
 </td>
       </tr>
       <tr>
-        <td><span class="xref">CancellationToken</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a>&gt;</td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>Represents string length encoding format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
         <td><span class="parametername">token</span></td>
         <td><p>The token that can be used to cancel the operation.</p>
 </td>
@@ -934,15 +1730,139 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Task</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
         <td><p>The task representing asynchronous state of the operation.</p>
 </td>
       </tr>
     </tbody>
   </table>
-  <h5 id="DotNext_IO_StreamExtensions_WriteStringAsync_Stream_System_String_DotNext_Text_EncodingContext_System_Byte___CancellationToken__remarks">Remarks</h5>
+  <h5 id="DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Memory_System_Byte__System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken__remarks">Remarks</h5>
   <div class="markdown level1 remarks"><p>This method doesn't encode the length of the string.</p>
 </div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentexception">ArgumentException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">buffer</code> is too small for encoding minimal portion of <code data-dev-comment-type="paramref" class="paramref">value</code>.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">lengthFormat</code> is invalid.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions.WriteStringAsync(System.IO.Stream%2CSystem.ReadOnlyMemory%7BSystem.Char%7D%2CSystem.Text.Encoding%2CSystem.Nullable%7BDotNext.IO.StringLengthEncoding%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L290">View Source</a>
+  </span>
+  <a id="DotNext_IO_StreamExtensions_WriteStringAsync_" data-uid="DotNext.IO.StreamExtensions.WriteStringAsync*"></a>
+  <h4 id="DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken_" data-uid="DotNext.IO.StreamExtensions.WriteStringAsync(System.IO.Stream,System.ReadOnlyMemory{System.Char},System.Text.Encoding,System.Nullable{DotNext.IO.StringLengthEncoding},System.Threading.CancellationToken)">WriteStringAsync(Stream, ReadOnlyMemory&lt;Char&gt;, Encoding, Nullable&lt;StringLengthEncoding&gt;, CancellationToken)</h4>
+  <div class="markdown level1 summary"><p>Writes a length-prefixed or raw string to the stream asynchronously.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static ValueTask WriteStringAsync(this Stream stream, ReadOnlyMemory&lt;char&gt; value, Encoding encoding, StringLengthEncoding? lengthFormat = default(StringLengthEncoding? ), CancellationToken token = default(CancellationToken))</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></td>
+        <td><span class="parametername">stream</span></td>
+        <td><p>The stream to write into.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonlymemory-1">ReadOnlyMemory</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.char">Char</a>&gt;</td>
+        <td><span class="parametername">value</span></td>
+        <td><p>The string to be encoded.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></td>
+        <td><span class="parametername">encoding</span></td>
+        <td><p>The encoding context.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.nullable-1">Nullable</a>&lt;<a class="xref" href="DotNext.IO.StringLengthEncoding.html">StringLengthEncoding</a>&gt;</td>
+        <td><span class="parametername">lengthFormat</span></td>
+        <td><p>Represents string length encoding format.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td><p>The token that can be used to cancel the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.valuetask">ValueTask</a></td>
+        <td><p>The task representing asynchronous state of the operation.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method doesn't encode the length of the string.</p>
+</div>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.operationcanceledexception">OperationCanceledException</a></td>
+        <td><p>The operation has been canceled.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentoutofrangeexception">ArgumentOutOfRangeException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">lengthFormat</code> is invalid.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 </article>
           </div>
           
@@ -951,10 +1871,10 @@ without instantiation of <see cref="!:BinaryReader"></see> and <see cref="!:Bina
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_StreamExtensions.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_IO_StreamExtensions.md&amp;value=---%0Auid%3A%20DotNext.IO.StreamExtensions%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/IO/StreamExtensions.cs/#L22" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/IO/StreamExtensions.cs/#L24" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

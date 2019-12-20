@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Type&lt;T&gt;.Operator
    | .NEXT ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,20 +81,44 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">Type&lt;T&gt;.Operator</span></div>
   </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Reflection.html">DotNext.Reflection</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Reflection.dll</h6>
   <h5 id="DotNext_Reflection_Type_1_Operator_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class Operator : object</code></pre>
+    <pre><code class="lang-csharp hljs">public static class Operator</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Operator_Get_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Operator.Get(DotNext.Reflection.UnaryOperator%2CDotNext.Reflection.OperatorLookup)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Reflection_Type_1_Operator_Get_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Operator.Get(DotNext.Reflection.UnaryOperator%2CDotNext.Reflection.OperatorLookup)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Operators.cs/#L25">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Reflection/Reflection/Type.Operators.cs/#L25">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Operator_Get_" data-uid="DotNext.Reflection.Type`1.Operator.Get*"></a>
   <h4 id="DotNext_Reflection_Type_1_Operator_Get_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_" data-uid="DotNext.Reflection.Type`1.Operator.Get(DotNext.Reflection.UnaryOperator,DotNext.Reflection.OperatorLookup)">Get(UnaryOperator, OperatorLookup)</h4>
@@ -103,7 +127,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static UnaryOperator&lt;T, T&gt; Get(UnaryOperator op, OperatorLookup lookup = default(OperatorLookup))</code></pre>
+    <pre><code class="lang-csharp hljs">public static UnaryOperator&lt;T, T&gt; Get(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -147,10 +171,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Operator_Get__1_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Operator.Get%60%601(DotNext.Reflection.UnaryOperator%2CDotNext.Reflection.OperatorLookup)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Reflection_Type_1_Operator_Get__1_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Operator.Get%60%601(DotNext.Reflection.UnaryOperator%2CDotNext.Reflection.OperatorLookup)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Operators.cs/#L17">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Reflection/Reflection/Type.Operators.cs/#L17">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Operator_Get_" data-uid="DotNext.Reflection.Type`1.Operator.Get*"></a>
   <h4 id="DotNext_Reflection_Type_1_Operator_Get__1_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_" data-uid="DotNext.Reflection.Type`1.Operator.Get``1(DotNext.Reflection.UnaryOperator,DotNext.Reflection.OperatorLookup)">Get&lt;R&gt;(UnaryOperator, OperatorLookup)</h4>
@@ -159,7 +183,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static UnaryOperator&lt;T, R&gt; Get&lt;R&gt;(UnaryOperator op, OperatorLookup lookup = default(OperatorLookup))</code></pre>
+    <pre><code class="lang-csharp hljs">public static UnaryOperator&lt;T, R&gt; Get&lt;R&gt;(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -219,10 +243,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Operator_Require_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Operator.Require(DotNext.Reflection.UnaryOperator%2CDotNext.Reflection.OperatorLookup)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Reflection_Type_1_Operator_Require_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Operator.Require(DotNext.Reflection.UnaryOperator%2CDotNext.Reflection.OperatorLookup)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Operators.cs/#L44">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Reflection/Reflection/Type.Operators.cs/#L44">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Operator_Require_" data-uid="DotNext.Reflection.Type`1.Operator.Require*"></a>
   <h4 id="DotNext_Reflection_Type_1_Operator_Require_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_" data-uid="DotNext.Reflection.Type`1.Operator.Require(DotNext.Reflection.UnaryOperator,DotNext.Reflection.OperatorLookup)">Require(UnaryOperator, OperatorLookup)</h4>
@@ -231,7 +255,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static UnaryOperator&lt;T, T&gt; Require(UnaryOperator op, OperatorLookup lookup = default(OperatorLookup))</code></pre>
+    <pre><code class="lang-csharp hljs">public static UnaryOperator&lt;T, T&gt; Require(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -291,10 +315,10 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Operator_Require__1_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Operator.Require%60%601(DotNext.Reflection.UnaryOperator%2CDotNext.Reflection.OperatorLookup)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Reflection_Type_1_Operator_Require__1_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Operator.Require%60%601(DotNext.Reflection.UnaryOperator%2CDotNext.Reflection.OperatorLookup)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Operators.cs/#L35">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Reflection/Reflection/Type.Operators.cs/#L35">View Source</a>
   </span>
   <a id="DotNext_Reflection_Type_1_Operator_Require_" data-uid="DotNext.Reflection.Type`1.Operator.Require*"></a>
   <h4 id="DotNext_Reflection_Type_1_Operator_Require__1_DotNext_Reflection_UnaryOperator_DotNext_Reflection_OperatorLookup_" data-uid="DotNext.Reflection.Type`1.Operator.Require``1(DotNext.Reflection.UnaryOperator,DotNext.Reflection.OperatorLookup)">Require&lt;R&gt;(UnaryOperator, OperatorLookup)</h4>
@@ -303,7 +327,7 @@
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static UnaryOperator&lt;T, R&gt; Require&lt;R&gt;(UnaryOperator op, OperatorLookup lookup = default(OperatorLookup))</code></pre>
+    <pre><code class="lang-csharp hljs">public static UnaryOperator&lt;T, R&gt; Require&lt;R&gt;(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -385,10 +409,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Reflection_Type_1_Operator.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Operator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Reflection_Type_1_Operator.md&amp;value=---%0Auid%3A%20DotNext.Reflection.Type%601.Operator%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Reflection/Reflection/Type.Operators.cs/#L8" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Reflection/Reflection/Type.Operators.cs/#L8" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

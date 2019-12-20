@@ -8,7 +8,7 @@
     <title>Cluster and Distributed Consensus | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Cluster and Distributed Consensus | .NEXT ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -82,7 +82,7 @@
 <li><a href="../../api/DotNext.Net.Cluster.ICluster.html">ICluster</a> represents entire cluster. This is an entry point to work with cluster using .NEXT library.</li>
 <li><a href="../../api/DotNext.Net.Cluster.IExpandableCluster.html">IExpandableCluster</a> optional interface that extends <code>ICluster</code> and represents dynamically configurable cluster where the nodes can be added or removed on-the-fly. If actual implementation doesn't support this interface then cluster can be configured only statically - it is required to shutdown entire cluster if you want to add or remove nodes</li>
 <li><a href="../../api/DotNext.Net.Cluster.Messaging.IMessageBus.html">IMessageBus</a> optional interface provides message-based communication between nodes in  point-to-point manner</li>
-<li><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster</a> optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on <a href="../../api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html">audit trail</a>. By default, design of replication infrastructure supports <a href="https://en.wikipedia.org/wiki/Weak_consistency">Weak Consistency</a>.</li>
+<li><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster</a> optional interface represents a cluster where its state can be replicated across nodes to ensure consistency between them. Replication functionality based on <a href="../../api/DotNext.Net.Cluster.Replication.IAuditTrail-1.yml">audit trail</a>. By default, design of replication infrastructure supports <a href="https://en.wikipedia.org/wiki/Weak_consistency">Weak Consistency</a>.</li>
 </ul>
 <p>Thereby, core model consists of two interfaces: <code>ICluster</code> and <code>IClusterMember</code>. Other interfaces are extensions of the core model.</p>
 <h1 id="messaging">Messaging</h1>
@@ -116,7 +116,7 @@
 <li><a href="https://raft.github.io/raft.pdf">In Search of an Understandable Consensus Algorithm</a></li>
 </ul>
 <h1 id="replication">Replication</h1>
-<p>Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of <a href="../../api/DotNext.Net.Cluster.Replication.IAuditTrail-1.html">IAuditTrail</a> interface.</p>
+<p>Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of <a href="../../api/DotNext.Net.Cluster.Replication.IAuditTrail-1.yml">IAuditTrail</a> interface.</p>
 <p><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster</a> contains special method <code>WriteAsync</code> that allows clustered application to submit changes and wait unit they are replicated and committed. The behavior of this method depends on the passed <a href="../../api/DotNext.Net.Cluster.Replication.WriteConcern.html">WriteConcern</a> value. It regulates when to return control back to the client:</p>
 <ul>
 <li><em>None</em> indicates that control should be returned immediately after recording of changeset to the log. This mode doesn't provide any guarantees about consistency of the subsequent reads.</li>
@@ -141,7 +141,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/cluster/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/features/cluster/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

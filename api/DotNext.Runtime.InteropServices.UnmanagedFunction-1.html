@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class UnmanagedFunction&lt;R&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -81,11 +81,37 @@
     <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
     <div class="level1"><span class="xref">UnmanagedFunction&lt;R&gt;</span></div>
   </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Runtime.InteropServices.html">DotNext.Runtime.InteropServices</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static class UnmanagedFunction&lt;R&gt; : object where R : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public static class UnmanagedFunction&lt;R&gt;
+
+    where R : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -107,13 +133,13 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl(IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L538">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L538">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_IntPtr_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl(IntPtr)">Cdecl(IntPtr)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl(System.IntPtr)">Cdecl(IntPtr)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -132,7 +158,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -157,13 +183,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__1_IntPtr___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%601(IntPtr%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__1_System_IntPtr___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%601(System.IntPtr%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L552">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L552">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__1_IntPtr___0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``1(IntPtr,``0)">Cdecl&lt;T&gt;(IntPtr, T)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__1_System_IntPtr___0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``1(System.IntPtr,``0)">Cdecl&lt;T&gt;(IntPtr, T)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -184,7 +210,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -230,13 +256,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__2_IntPtr___0___1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%602(IntPtr%2C%60%600%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__2_System_IntPtr___0___1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%602(System.IntPtr%2C%60%600%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L569">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L569">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__2_IntPtr___0___1_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``2(IntPtr,``0,``1)">Cdecl&lt;T1, T2&gt;(IntPtr, T1, T2)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__2_System_IntPtr___0___1_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``2(System.IntPtr,``0,``1)">Cdecl&lt;T1, T2&gt;(IntPtr, T1, T2)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -257,7 +283,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -313,13 +339,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__3_IntPtr___0___1___2_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%603(IntPtr%2C%60%600%2C%60%601%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__3_System_IntPtr___0___1___2_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%603(System.IntPtr%2C%60%600%2C%60%601%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L589">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L589">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__3_IntPtr___0___1___2_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``3(IntPtr,``0,``1,``2)">Cdecl&lt;T1, T2, T3&gt;(IntPtr, T1, T2, T3)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__3_System_IntPtr___0___1___2_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``3(System.IntPtr,``0,``1,``2)">Cdecl&lt;T1, T2, T3&gt;(IntPtr, T1, T2, T3)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -340,7 +366,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -406,13 +432,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__4_IntPtr___0___1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%604(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__4_System_IntPtr___0___1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%604(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L612">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L612">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__4_IntPtr___0___1___2___3_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``4(IntPtr,``0,``1,``2,``3)">Cdecl&lt;T1, T2, T3, T4&gt;(IntPtr, T1, T2, T3, T4)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__4_System_IntPtr___0___1___2___3_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``4(System.IntPtr,``0,``1,``2,``3)">Cdecl&lt;T1, T2, T3, T4&gt;(IntPtr, T1, T2, T3, T4)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -433,7 +459,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -509,13 +535,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__5_IntPtr___0___1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%605(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__5_System_IntPtr___0___1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%605(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L638">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L638">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__5_IntPtr___0___1___2___3___4_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``5(IntPtr,``0,``1,``2,``3,``4)">Cdecl&lt;T1, T2, T3, T4, T5&gt;(IntPtr, T1, T2, T3, T4, T5)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__5_System_IntPtr___0___1___2___3___4_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``5(System.IntPtr,``0,``1,``2,``3,``4)">Cdecl&lt;T1, T2, T3, T4, T5&gt;(IntPtr, T1, T2, T3, T4, T5)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -536,7 +562,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -622,13 +648,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__6_IntPtr___0___1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%606(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__6_System_IntPtr___0___1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%606(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L667">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L667">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__6_IntPtr___0___1___2___3___4___5_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``6(IntPtr,``0,``1,``2,``3,``4,``5)">Cdecl&lt;T1, T2, T3, T4, T5, T6&gt;(IntPtr, T1, T2, T3, T4, T5, T6)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__6_System_IntPtr___0___1___2___3___4___5_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``6(System.IntPtr,``0,``1,``2,``3,``4,``5)">Cdecl&lt;T1, T2, T3, T4, T5, T6&gt;(IntPtr, T1, T2, T3, T4, T5, T6)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -649,7 +675,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -745,13 +771,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__7_IntPtr___0___1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%607(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__7_System_IntPtr___0___1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%607(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L699">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L699">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__7_IntPtr___0___1___2___3___4___5___6_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``7(IntPtr,``0,``1,``2,``3,``4,``5,``6)">Cdecl&lt;T1, T2, T3, T4, T5, T6, T7&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__7_System_IntPtr___0___1___2___3___4___5___6_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``7(System.IntPtr,``0,``1,``2,``3,``4,``5,``6)">Cdecl&lt;T1, T2, T3, T4, T5, T6, T7&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -772,7 +798,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -878,13 +904,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__8_IntPtr___0___1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%608(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__8_System_IntPtr___0___1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%608(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L734">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L734">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__8_IntPtr___0___1___2___3___4___5___6___7_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``8(IntPtr,``0,``1,``2,``3,``4,``5,``6,``7)">Cdecl&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__8_System_IntPtr___0___1___2___3___4___5___6___7_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``8(System.IntPtr,``0,``1,``2,``3,``4,``5,``6,``7)">Cdecl&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -905,7 +931,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -1021,13 +1047,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__9_IntPtr___0___1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%609(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__9_System_IntPtr___0___1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.Cdecl%60%609(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L772">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L772">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__9_IntPtr___0___1___2___3___4___5___6___7___8_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``9(IntPtr,``0,``1,``2,``3,``4,``5,``6,``7,``8)">Cdecl&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_Cdecl__9_System_IntPtr___0___1___2___3___4___5___6___7___8_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.Cdecl``9(System.IntPtr,``0,``1,``2,``3,``4,``5,``6,``7,``8)">Cdecl&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with CDECL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1048,7 +1074,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -1174,13 +1200,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall(IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_System_IntPtr_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall(System.IntPtr)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L803">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L803">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_IntPtr_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall(IntPtr)">StdCall(IntPtr)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_System_IntPtr_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall(System.IntPtr)">StdCall(IntPtr)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1199,7 +1225,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -1224,13 +1250,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__1_IntPtr___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%601(IntPtr%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__1_System_IntPtr___0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%601(System.IntPtr%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L817">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L817">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__1_IntPtr___0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``1(IntPtr,``0)">StdCall&lt;T&gt;(IntPtr, T)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__1_System_IntPtr___0_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``1(System.IntPtr,``0)">StdCall&lt;T&gt;(IntPtr, T)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1251,7 +1277,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -1297,13 +1323,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__2_IntPtr___0___1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%602(IntPtr%2C%60%600%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__2_System_IntPtr___0___1_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%602(System.IntPtr%2C%60%600%2C%60%601)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L834">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L834">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__2_IntPtr___0___1_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``2(IntPtr,``0,``1)">StdCall&lt;T1, T2&gt;(IntPtr, T1, T2)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__2_System_IntPtr___0___1_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``2(System.IntPtr,``0,``1)">StdCall&lt;T1, T2&gt;(IntPtr, T1, T2)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1324,7 +1350,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -1380,13 +1406,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__3_IntPtr___0___1___2_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%603(IntPtr%2C%60%600%2C%60%601%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__3_System_IntPtr___0___1___2_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%603(System.IntPtr%2C%60%600%2C%60%601%2C%60%602)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L854">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L854">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__3_IntPtr___0___1___2_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``3(IntPtr,``0,``1,``2)">StdCall&lt;T1, T2, T3&gt;(IntPtr, T1, T2, T3)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__3_System_IntPtr___0___1___2_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``3(System.IntPtr,``0,``1,``2)">StdCall&lt;T1, T2, T3&gt;(IntPtr, T1, T2, T3)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1407,7 +1433,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -1473,13 +1499,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__4_IntPtr___0___1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%604(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__4_System_IntPtr___0___1___2___3_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%604(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L877">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L877">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__4_IntPtr___0___1___2___3_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``4(IntPtr,``0,``1,``2,``3)">StdCall&lt;T1, T2, T3, T4&gt;(IntPtr, T1, T2, T3, T4)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__4_System_IntPtr___0___1___2___3_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``4(System.IntPtr,``0,``1,``2,``3)">StdCall&lt;T1, T2, T3, T4&gt;(IntPtr, T1, T2, T3, T4)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1500,7 +1526,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -1576,13 +1602,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__5_IntPtr___0___1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%605(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__5_System_IntPtr___0___1___2___3___4_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%605(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L903">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L903">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__5_IntPtr___0___1___2___3___4_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``5(IntPtr,``0,``1,``2,``3,``4)">StdCall&lt;T1, T2, T3, T4, T5&gt;(IntPtr, T1, T2, T3, T4, T5)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__5_System_IntPtr___0___1___2___3___4_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``5(System.IntPtr,``0,``1,``2,``3,``4)">StdCall&lt;T1, T2, T3, T4, T5&gt;(IntPtr, T1, T2, T3, T4, T5)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1603,7 +1629,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -1689,13 +1715,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__6_IntPtr___0___1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%606(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__6_System_IntPtr___0___1___2___3___4___5_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%606(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L932">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L932">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__6_IntPtr___0___1___2___3___4___5_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``6(IntPtr,``0,``1,``2,``3,``4,``5)">StdCall&lt;T1, T2, T3, T4, T5, T6&gt;(IntPtr, T1, T2, T3, T4, T5, T6)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__6_System_IntPtr___0___1___2___3___4___5_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``6(System.IntPtr,``0,``1,``2,``3,``4,``5)">StdCall&lt;T1, T2, T3, T4, T5, T6&gt;(IntPtr, T1, T2, T3, T4, T5, T6)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1716,7 +1742,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -1812,13 +1838,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__7_IntPtr___0___1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%607(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__7_System_IntPtr___0___1___2___3___4___5___6_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%607(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L964">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L964">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__7_IntPtr___0___1___2___3___4___5___6_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``7(IntPtr,``0,``1,``2,``3,``4,``5,``6)">StdCall&lt;T1, T2, T3, T4, T5, T6, T7&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__7_System_IntPtr___0___1___2___3___4___5___6_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``7(System.IntPtr,``0,``1,``2,``3,``4,``5,``6)">StdCall&lt;T1, T2, T3, T4, T5, T6, T7&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1839,7 +1865,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -1945,13 +1971,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__8_IntPtr___0___1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%608(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__8_System_IntPtr___0___1___2___3___4___5___6___7_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%608(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L999">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L999">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__8_IntPtr___0___1___2___3___4___5___6___7_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``8(IntPtr,``0,``1,``2,``3,``4,``5,``6,``7)">StdCall&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__8_System_IntPtr___0___1___2___3___4___5___6___7_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``8(System.IntPtr,``0,``1,``2,``3,``4,``5,``6,``7)">StdCall&lt;T1, T2, T3, T4, T5, T6, T7, T8&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -1972,7 +1998,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -2088,13 +2114,13 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__9_IntPtr___0___1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%609(IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__9_System_IntPtr___0___1___2___3___4___5___6___7___8_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601.StdCall%60%609(System.IntPtr%2C%60%600%2C%60%601%2C%60%602%2C%60%603%2C%60%604%2C%60%605%2C%60%606%2C%60%607%2C%60%608)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L1037">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L1037">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall*"></a>
-  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__9_IntPtr___0___1___2___3___4___5___6___7___8_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``9(IntPtr,``0,``1,``2,``3,``4,``5,``6,``7,``8)">StdCall&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
+  <h4 id="DotNext_Runtime_InteropServices_UnmanagedFunction_1_StdCall__9_System_IntPtr___0___1___2___3___4___5___6___7___8_" data-uid="DotNext.Runtime.InteropServices.UnmanagedFunction`1.StdCall``9(System.IntPtr,``0,``1,``2,``3,``4,``5,``6,``7,``8)">StdCall&lt;T1, T2, T3, T4, T5, T6, T7, T8, T9&gt;(IntPtr, T1, T2, T3, T4, T5, T6, T7, T8, T9)</h4>
   <div class="markdown level1 summary"><p>Invokes unmanaged function with STDCALL calling convention by its pointer.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -2115,7 +2141,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">IntPtr</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a></td>
         <td><span class="parametername">functionPtr</span></td>
         <td><p>The pointer to the unmanaged function.</p>
 </td>
@@ -2247,10 +2273,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Runtime_InteropServices_UnmanagedFunction_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.UnmanagedFunction%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L530" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.Unsafe/Runtime/InteropServices/UnmanagedFunction.cs/#L530" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

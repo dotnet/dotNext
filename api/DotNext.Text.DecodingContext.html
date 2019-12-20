@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct DecodingContext
    | .NEXT ">
-    <meta name="generator" content="docfx 2.47.0.0">
+    <meta name="generator" content="docfx 2.48.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -76,26 +76,53 @@
   <div class="markdown level0 summary"><p>Represents text decoding context.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.icloneable">ICloneable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.equals#System_ValueType_Equals_System_Object_">ValueType.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.gethashcode#System_ValueType_GetHashCode">ValueType.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.valuetype.tostring#System_ValueType_ToString">ValueType.ToString()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Text.html">DotNext.Text</a></h6>
-  <h6><strong>Assembly</strong>: DotNext.dll</h6>
+  <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
   <h5 id="DotNext_Text_DecodingContext_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct DecodingContext</code></pre>
+    <pre><code class="lang-csharp hljs">public struct DecodingContext : ICloneable</code></pre>
   </div>
   <h5 id="DotNext_Text_DecodingContext_remarks"><strong>Remarks</strong></h5>
-  <div class="markdown level0 remarks"><p>The context represents a decoding cache to avoid memory allocations for each round of string decoding caused by methods of <a class="xref" href="DotNext.IO.StreamExtensions.html">StreamExtensions</a> class.</p>
+  <div class="markdown level0 remarks"><p>The context represents a decoding cache to avoid memory allocations for each round of string decoding caused by methods of <a class="xref" href="DotNext.IO.StreamExtensions.html">StreamExtensions</a> class.
+It cannot be shared across parallel flows or threads. However, you can call <a class="xref" href="DotNext.Text.DecodingContext.html#DotNext_Text_DecodingContext_Copy">Copy()</a> method to create
+an independent copy of this context for separated async flow or thread.</p>
 </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_DecodingContext__ctor_Encoding_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext.%23ctor(Encoding%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Text_DecodingContext__ctor_System_Text_Encoding_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext.%23ctor(System.Text.Encoding%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Text/DecodingContext.cs/#L25">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/Text/DecodingContext.cs/#L27">View Source</a>
   </span>
   <a id="DotNext_Text_DecodingContext__ctor_" data-uid="DotNext.Text.DecodingContext.#ctor*"></a>
-  <h4 id="DotNext_Text_DecodingContext__ctor_Encoding_System_Boolean_" data-uid="DotNext.Text.DecodingContext.#ctor(Encoding,System.Boolean)">DecodingContext(Encoding, Boolean)</h4>
+  <h4 id="DotNext_Text_DecodingContext__ctor_System_Text_Encoding_System_Boolean_" data-uid="DotNext.Text.DecodingContext.#ctor(System.Text.Encoding,System.Boolean)">DecodingContext(Encoding, Boolean)</h4>
   <div class="markdown level1 summary"><p>Initializes a new decoding context.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -114,7 +141,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Encoding</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></td>
         <td><span class="parametername">encoding</span></td>
         <td><p>The encoding to be used for converting bytes into string.</p>
 </td>
@@ -127,14 +154,30 @@
       </tr>
     </tbody>
   </table>
+  <h5 class="exceptions">Exceptions</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Condition</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.argumentnullexception">ArgumentNullException</a></td>
+        <td><p><code data-dev-comment-type="paramref" class="paramref">encoding</code> is <span class="xref">null</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="properties">Properties
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_DecodingContext_Encoding.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext.Encoding%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Text_DecodingContext_Encoding.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext.Encoding%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Text/DecodingContext.cs/#L39">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/Text/DecodingContext.cs/#L50">View Source</a>
   </span>
   <a id="DotNext_Text_DecodingContext_Encoding_" data-uid="DotNext.Text.DecodingContext.Encoding*"></a>
   <h4 id="DotNext_Text_DecodingContext_Encoding" data-uid="DotNext.Text.DecodingContext.Encoding">Encoding</h4>
@@ -155,7 +198,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Encoding</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></td>
         <td></td>
       </tr>
     </tbody>
@@ -164,10 +207,43 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_DecodingContext_Reset.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext.Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Text_DecodingContext_Copy.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext.Copy%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Text/DecodingContext.cs/#L34">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/Text/DecodingContext.cs/#L38">View Source</a>
+  </span>
+  <a id="DotNext_Text_DecodingContext_Copy_" data-uid="DotNext.Text.DecodingContext.Copy*"></a>
+  <h4 id="DotNext_Text_DecodingContext_Copy" data-uid="DotNext.Text.DecodingContext.Copy">Copy()</h4>
+  <div class="markdown level1 summary"><p>Creates independent copy of this context that can be used
+in separated async flow or thread.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public DecodingContext Copy()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Text.DecodingContext.html">DecodingContext</a></td>
+        <td><p>The independent copy of this context.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Text_DecodingContext_Reset.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext.Reset%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/Text/DecodingContext.cs/#L45">View Source</a>
   </span>
   <a id="DotNext_Text_DecodingContext_Reset_" data-uid="DotNext.Text.DecodingContext.Reset*"></a>
   <h4 id="DotNext_Text_DecodingContext_Reset" data-uid="DotNext.Text.DecodingContext.Reset">Reset()</h4>
@@ -182,13 +258,13 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_DecodingContext_op_Implicit_Encoding__DotNext_Text_DecodingContext.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext.op_Implicit(Encoding)~DotNext.Text.DecodingContext%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Text_DecodingContext_op_Implicit_System_Text_Encoding__DotNext_Text_DecodingContext.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext.op_Implicit(System.Text.Encoding)~DotNext.Text.DecodingContext%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Text/DecodingContext.cs/#L47">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/Text/DecodingContext.cs/#L58">View Source</a>
   </span>
   <a id="DotNext_Text_DecodingContext_op_Implicit_" data-uid="DotNext.Text.DecodingContext.op_Implicit*"></a>
-  <h4 id="DotNext_Text_DecodingContext_op_Implicit_Encoding__DotNext_Text_DecodingContext" data-uid="DotNext.Text.DecodingContext.op_Implicit(Encoding)~DotNext.Text.DecodingContext">Implicit(Encoding to DecodingContext)</h4>
+  <h4 id="DotNext_Text_DecodingContext_op_Implicit_System_Text_Encoding__DotNext_Text_DecodingContext" data-uid="DotNext.Text.DecodingContext.op_Implicit(System.Text.Encoding)~DotNext.Text.DecodingContext">Implicit(Encoding to DecodingContext)</h4>
   <div class="markdown level1 summary"><p>Creates decoding context</p>
 </div>
   <div class="markdown level1 conceptual"></div>
@@ -207,7 +283,7 @@
     </thead>
     <tbody>
       <tr>
-        <td><span class="xref">Encoding</span></td>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.text.encoding">Encoding</a></td>
         <td><span class="parametername">encoding</span></td>
         <td><p>The text encoding.</p>
 </td>
@@ -229,6 +305,42 @@
       </tr>
     </tbody>
   </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Text_DecodingContext_System_ICloneable_Clone.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext.System%23ICloneable%23Clone%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/Text/DecodingContext.cs/#L40">View Source</a>
+  </span>
+  <a id="DotNext_Text_DecodingContext_System_ICloneable_Clone_" data-uid="DotNext.Text.DecodingContext.System#ICloneable#Clone*"></a>
+  <h4 id="DotNext_Text_DecodingContext_System_ICloneable_Clone" data-uid="DotNext.Text.DecodingContext.System#ICloneable#Clone">ICloneable.Clone()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">object ICloneable.Clone()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.icloneable">System.ICloneable</a>
+  </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
@@ -241,10 +353,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Text_DecodingContext.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Text_DecodingContext.md&amp;value=---%0Auid%3A%20DotNext.Text.DecodingContext%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Text/DecodingContext.cs/#L13" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext.IO/Text/DecodingContext.cs/#L15" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>
