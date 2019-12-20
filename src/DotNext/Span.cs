@@ -5,7 +5,7 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext
 {
-    using Runtime.InteropServices;
+    using Runtime;
 
     /// <summary>
     /// Provides extension methods for type <see cref="Span{T}"/> and <see cref="ReadOnlySpan{T}"/>.
@@ -42,8 +42,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? RandomExtensions.BitwiseHashSalt : 0;
-            fixed (T* ptr = span)
-                return Memory.GetHashCode32(ptr, (long)span.Length * sizeof(T), salted);
+            return Intrinsics.GetHashCode32(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), salted);
         }
 
         /// <summary>
@@ -112,8 +111,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
-            fixed (T* ptr = span)
-                return Memory.GetHashCode32(ptr, (long)span.Length * sizeof(T), hash, hashFunction, salted);
+            return Intrinsics.GetHashCode32(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
         }
 
         /// <summary>
@@ -143,8 +141,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
-            fixed (T* ptr = span)
-                return Memory.GetHashCode64(ptr, (long)span.Length * sizeof(T), hash, hashFunction, salted);
+            return Intrinsics.GetHashCode64(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
         }
 
         /// <summary>
@@ -156,7 +153,7 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>64-bit hash code of the array content.</returns>
-        public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
+        public static long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
             => BitwiseHashCode64(span, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
 
@@ -181,8 +178,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? RandomExtensions.BitwiseHashSalt : 0L;
-            fixed (T* ptr = span)
-                return Memory.GetHashCode64(ptr, (long)span.Length * sizeof(T), salted);
+            return Intrinsics.GetHashCode64(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), salted);
         }
 
         /// <summary>
@@ -245,11 +241,11 @@ namespace DotNext
                 ref var jptr = ref span[j];
                 if (comparison.Invoke(jptr, pivot) > 0) continue;
                 i += 1;
-                Memory.Swap(ref span[i], ref jptr);
+                Intrinsics.Swap(ref span[i], ref jptr);
             }
 
             i += 1;
-            Memory.Swap(ref span[endIndex], ref span[i]);
+            Intrinsics.Swap(ref span[endIndex], ref span[i]);
             return i;
         }
 
@@ -270,7 +266,7 @@ namespace DotNext
         /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
         /// <param name="comparison">The comparer used for sorting.</param>
         /// <typeparam name="T">The type of the elements.</typeparam>
-        public static void Sort<T>(this Span<T> span, IComparer<T> comparison = null)
+        public static void Sort<T>(this Span<T> span, IComparer<T>? comparison = null)
         {
             var cmp = new ValueComparer<T>(comparison ?? Comparer<T>.Default);
             QuickSort(span, 0, span.Length - 1, ref cmp);

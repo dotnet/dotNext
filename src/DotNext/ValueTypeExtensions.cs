@@ -12,10 +12,10 @@ namespace DotNext
     public static class ValueTypeExtensions
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string ToString<T>(T value, IFormatProvider provider = null) where T : struct, IConvertible => value.ToString(provider);
+        internal static string ToString<T>(T value, IFormatProvider? provider = null) where T : struct, IConvertible => value.ToString(provider);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static string ToString<T>(T value, string format, IFormatProvider provider = null) where T : struct, IFormattable => value.ToString(format, provider);
+        internal static string ToString<T>(T value, string format, IFormatProvider? provider = null) where T : struct, IFormattable => value.ToString(format, provider);
 
         /// <summary>
 		/// Checks whether the specified value is equal to one
@@ -458,12 +458,29 @@ namespace DotNext
         /// <param name="x">The dividend.</param>
         /// <param name="y">The divisor.</param>
         /// <returns>The result of dividing <paramref name="x"/> by <paramref name="y"/>.</returns>
+        /// <exception cref="DivideByZeroException"><paramref name="y"/> is equal to <see cref="IntPtr.Zero"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr Divide(this IntPtr x, IntPtr y)
         {
             Push(x);
             Push(y);
             Div();
+            return Return<IntPtr>();
+        }
+
+        /// <summary>
+        /// Divides two values and returns the remainder.
+        /// </summary>
+        /// <param name="x">The dividend.</param>
+        /// <param name="y">The divisor.</param>
+        /// <returns>The remainder.</returns>
+        /// <exception cref="DivideByZeroException"><paramref name="y"/> is equal to <see cref="IntPtr.Zero"/>.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IntPtr Remainder(this IntPtr x, IntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Rem();
             return Return<IntPtr>();
         }
 
@@ -480,6 +497,23 @@ namespace DotNext
             Push(x);
             Push(y);
             Div_Un();
+            return Return<UIntPtr>();
+        }
+
+        /// <summary>
+        /// Divides two values and returns the remainder.
+        /// </summary>
+        /// <param name="x">The dividend.</param>
+        /// <param name="y">The divisor.</param>
+        /// <returns>The remainder.</returns>
+        /// <exception cref="DivideByZeroException"><paramref name="y"/> is equal to <see cref="UIntPtr.Zero"/>.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [CLSCompliant(false)]
+        public static UIntPtr Remainder(this UIntPtr x, UIntPtr y)
+        {
+            Push(x);
+            Push(y);
+            Rem_Un();
             return Return<UIntPtr>();
         }
 
@@ -666,5 +700,13 @@ namespace DotNext
             Ckfinite();
             return Return<double>();
         }
+
+        /// <summary>
+        /// Truncates 64-bit signed integer.
+        /// </summary>
+        /// <param name="value">The value to truncate.</param>
+        /// <returns><see cref="int.MaxValue"/> if <paramref name="value"/> is greater than <see cref="int.MaxValue"/>; otherwise, cast <paramref name="value"/> to <see cref="int"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int Truncate(this long value) => value > int.MaxValue ? int.MaxValue : (int)value;
     }
 }

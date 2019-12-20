@@ -1,9 +1,11 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
 {
-    using Runtime.InteropServices;
+    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Provides specialized methods to work with one-dimensional array.
@@ -23,7 +25,7 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the array.</typeparam>
         /// <param name="array">The array to check.</param>
         /// <returns><see langword="true"/>, if array is <see langword="null"/> or empty.</returns>
-        public static bool IsNullOrEmpty<T>(this T[] array)
+        public static bool IsNullOrEmpty<T>([NotNullWhen(false)]this T[]? array)
             => array is null || array.LongLength == 0L;
 
         /// <summary>
@@ -184,14 +186,11 @@ namespace DotNext
         {
             if (count == 0L)
                 return input;
-            else if (count >= input.LongLength)
+            if (count >= input.LongLength)
                 return Array.Empty<T>();
-            else
-            {
-                var result = new T[input.LongLength - count];
-                Array.Copy(input, count, result, 0, result.LongLength);
-                return result;
-            }
+            var result = new T[input.LongLength - count];
+            Array.Copy(input, count, result, 0, result.LongLength);
+            return result;
         }
 
         /// <summary>
@@ -245,18 +244,16 @@ namespace DotNext
         /// <param name="first">First array for equality check.</param>
         /// <param name="second">Second array of equality check.</param>
         /// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
-        public static unsafe bool BitwiseEquals<T>(this T[] first, T[] second)
+        public static unsafe bool BitwiseEquals<T>(this T[]? first, T[]? second)
             where T : unmanaged
         {
             if (first is null || second is null)
                 return ReferenceEquals(first, second);
-            else if (first.LongLength != second.LongLength)
+            if (first.LongLength != second.LongLength)
                 return false;
-            else if (first.LongLength == 0)
+            if (first.LongLength == 0)
                 return true;
-            else
-                fixed (T* firstPtr = first, secondPtr = second)
-                    return Memory.EqualsAligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * sizeof(T));
+            return Intrinsics.EqualsAligned(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
         }
 
         /// <summary>
@@ -268,12 +265,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static unsafe int BitwiseHashCode<T>(this T[] array, bool salted = true)
             where T : unmanaged
-        {
-            if (array.IsNullOrEmpty())
-                return 0;
-            fixed (T* ptr = array)
-                return Memory.GetHashCode32Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), salted);
-        }
+            => array.LongLength > 0L ? Intrinsics.GetHashCode32(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0;
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -286,12 +278,7 @@ namespace DotNext
         /// <returns>32-bit hash code of the array content.</returns>
         public static unsafe int BitwiseHashCode<T>(this T[] array, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
             where T : unmanaged
-        {
-            if (array.IsNullOrEmpty())
-                return hash;
-            fixed (T* ptr = array)
-                return Memory.GetHashCode32Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), hash, hashFunction, salted);
-        }
+            => array.LongLength > 0L ? Intrinsics.GetHashCode32(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -317,12 +304,7 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static unsafe long BitwiseHashCode64<T>(this T[] array, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
-        {
-            if (array.IsNullOrEmpty())
-                return hash;
-            fixed (T* ptr = array)
-                return Memory.GetHashCode64Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), hash, hashFunction, salted);
-        }
+            => array.LongLength > 0L ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), hash, hashFunction, salted) : hash;
 
         /// <summary>
         /// Computes bitwise hash code for the array content using custom hash function.
@@ -346,11 +328,23 @@ namespace DotNext
         /// <returns>64-bit hash code of the array content.</returns>
         public static unsafe long BitwiseHashCode64<T>(this T[] array, bool salted = true)
             where T : unmanaged
+            => array.LongLength > 0L ? Intrinsics.GetHashCode64(ref As<T, byte>(ref array[0]), array.LongLength * sizeof(T), salted) : 0L;
+
+        private sealed class ArrayEqualityComparer
         {
-            if (array.IsNullOrEmpty())
-                return 0;
-            fixed (T* ptr = array)
-                return Memory.GetHashCode64Aligned(new IntPtr(ptr), array.LongLength * sizeof(T), salted);
+            private readonly object?[] first, second;
+
+            internal ArrayEqualityComparer(object?[] first, object?[] second)
+            {
+                this.first = first;
+                this.second = second;
+            }
+
+            internal void Iteration(long index, ParallelLoopState state)
+            {
+                if (!(state.ShouldExitCurrentIteration || Equals(first[index], second[index])))
+                    state.Break();
+            }
         }
 
         /// <summary>
@@ -361,19 +355,28 @@ namespace DotNext
 		/// </remarks>
 		/// <param name="first">The first array to compare.</param>
 		/// <param name="second">The second array to compare.</param>
+        /// <param name="parallel"><see langword="true"/> to perform parallel iteration over array elements; <see langword="false"/> to perform sequential iteration.</param>
 		/// <returns><see langword="true"/>, if both arrays are equal; otherwise, <see langword="false"/>.</returns>
-        public static bool SequenceEqual(this object[] first, object[] second)
+        public static bool SequenceEqual(this object?[]? first, object?[]? second, bool parallel = false)
         {
+            static bool EqualsSequential(object?[] first, object?[] second)
+            {
+                for (var i = 0L; i < first.LongLength; i++)
+                    if (!Equals(first[i], second[i]))
+                        return false;
+                return true;
+            }
+
+            static bool EqualsParallel(object?[] first, object?[] second)
+                => Parallel.For(0L, first.LongLength, new ArrayEqualityComparer(first, second).Iteration).IsCompleted;
+
             if (ReferenceEquals(first, second))
                 return true;
-            else if (first is null)
+            if (first is null)
                 return second is null;
-            else if (second is null || first.LongLength != second.LongLength)
+            if (second is null || first.LongLength != second.LongLength)
                 return false;
-            for (var i = 0L; i < first.LongLength; i++)
-                if (!Equals(first[i], second[i]))
-                    return false;
-            return true;
+            return parallel ? EqualsParallel(first, second) : EqualsSequential(first, second);
         }
 
         /// <summary>
@@ -383,7 +386,7 @@ namespace DotNext
         /// <param name="first">The first array to compare.</param>
         /// <param name="second">The second array to compare.</param>
         /// <returns>Comparison result.</returns>
-        public static unsafe int BitwiseCompare<T>(this T[] first, T[] second)
+        public static unsafe int BitwiseCompare<T>(this T[]? first, T[]? second)
             where T : unmanaged
         {
             if (first is null)
@@ -392,8 +395,7 @@ namespace DotNext
                 return 1;
             else if (first.LongLength != second.LongLength)
                 return first.LongLength.CompareTo(second.LongLength);
-            fixed (T* firstPtr = first, secondPtr = second)
-                return Memory.CompareUnaligned(new IntPtr(firstPtr), new IntPtr(secondPtr), first.LongLength * sizeof(T));
+            return Intrinsics.Compare(ref As<T, byte>(ref first[0]), ref As<T, byte>(ref second[0]), first.LongLength * sizeof(T));
         }
     }
 }

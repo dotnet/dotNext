@@ -17,7 +17,7 @@ namespace DotNext.Reflection
             /// <param name="eventName">Name of event.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public event.</param>
             /// <returns>Instance event; or <see langword="null"/>, if event doesn't exist.</returns>
-            public static Event<T, H> Get(string eventName, bool nonPublic = false)
+            public static Event<T, H>? Get(string eventName, bool nonPublic = false)
                 => Event<T, H>.GetOrCreate(eventName, nonPublic);
 
             /// <summary>
@@ -36,7 +36,7 @@ namespace DotNext.Reflection
             /// <param name="eventName">Name of event.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public event.</param>
             /// <returns>Static event; or <see langword="null"/>, if event doesn't exist.</returns>
-            public static Reflection.Event<H> GetStatic(string eventName, bool nonPublic = false)
+            public static Reflection.Event<H>? GetStatic(string eventName, bool nonPublic = false)
                 => Reflection.Event<H>.GetOrCreate<T>(eventName, nonPublic);
 
             /// <summary>

@@ -25,8 +25,8 @@ namespace DotNext.Metaprogramming
         public delegate Expression Handler(ParameterExpression exception);
 
         private readonly Expression tryBlock;
-        private Expression faultBlock;
-        private Expression finallyBlock;
+        private Expression? faultBlock;
+        private Expression? finallyBlock;
         private readonly ICollection<CatchBlock> handlers;
 
         internal TryBuilder(Expression tryBlock, ILexicalScope currentScope)
@@ -37,7 +37,7 @@ namespace DotNext.Metaprogramming
             handlers = new LinkedList<CatchBlock>();
         }
 
-        internal TryBuilder Catch(ParameterExpression exception, Expression filter, Expression handler)
+        internal TryBuilder Catch(ParameterExpression exception, Expression? filter, Expression handler)
         {
             VerifyCaller();
             handlers.Add(Expression.MakeCatchBlock(exception.Type, exception, handler, filter));
@@ -51,7 +51,7 @@ namespace DotNext.Metaprogramming
         /// <param name="filter">Additional filter to be applied to the caught exception.</param>
         /// <param name="handler">Exception handling block.</param>
         /// <returns><c>this</c> builder.</returns>
-        public TryBuilder Catch(Type exceptionType, Filter filter, Handler handler)
+        public TryBuilder Catch(Type exceptionType, Filter? filter, Handler handler)
         {
             var exception = Expression.Variable(exceptionType, "e");
             return Catch(exception, filter?.Invoke(exception), handler(exception));

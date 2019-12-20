@@ -2,7 +2,7 @@
 ====
 [![Build Status](https://dev.azure.com/rvsakno/dotNext/_apis/build/status/sakno.dotNext?branchName=master)](https://dev.azure.com/rvsakno/dotNext/_build/latest?definitionId=1&branchName=master)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/sakno/dotNext/blob/master/LICENSE)
-![Test Coverage](https://img.shields.io/azure-devops/coverage/rvsakno/dotnext/1)
+![Test Coverage](https://img.shields.io/azure-devops/coverage/rvsakno/dotnext/1/master)
 
 .NEXT (dotNext) is a set of powerful libaries aimed to improve development productivity and extend .NET API with unique features. Some of these features are planned in future releases of .NET platform but already implemented in the library:
 
@@ -22,7 +22,7 @@ Quick overview of additional features:
 * [Attachment of user data to arbitrary objects](https://sakno.github.io/dotNext/features/core/userdata.html)
 * [Automatic generation of Equals/GetHashCode](https://sakno.github.io/dotNext/features/core/autoeh.html) for arbitrary type at runtime which is much better that Visual Studio compile-time helper for generating these methods
 * Extended set of [atomic operations](https://sakno.github.io/dotNext/features/core/atomic.html). Inspired by [AtomicInteger](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/atomic/AtomicInteger.html) and friends from Java
-* [Async execution of delegates](https://sakno.github.io/dotNext/features/core/asyncd.html) as replacement of `BeginInvoke` and `EndInvoke` pair of methods which are not supported in .NET Core.
+* [Async execution of delegates](https://sakno.github.io/dotNext/features/core/asyncd.html) as replacement of `BeginInvoke` and `EndInvoke` pair of methods which are not supported on .NET Core.
 * [Fast Reflection](https://sakno.github.io/dotNext/features/reflection/fast.html)
 * `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://sakno.github.io/dotNext/features/threading/rwlock.html)
 * Powerful concurrent [ObjectPool](https://sakno.github.io/dotNext/features/threading/objectpool.html)

@@ -44,7 +44,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="other">The method pointer to compare.</param>
         /// <returns><see langword="true"/> if this method pointer is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ManagedMethodPointer ptr && Equals(ptr);
+        public override bool Equals(object? other) => other is ManagedMethodPointer ptr && Equals(ptr);
 
         /// <summary>
         /// Gets hash code of this method pointer.

@@ -67,7 +67,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="other">Other list to compare.</param>
         /// <returns><see langword="true"/> if this collection wraps the same source collection and contains the same converter as other collection; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other)
             => other is ReadOnlyListView<I, O> view ? Equals(view) : Equals(source, other);
 
         /// <summary>

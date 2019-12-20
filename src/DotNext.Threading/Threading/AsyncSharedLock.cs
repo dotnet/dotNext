@@ -43,7 +43,7 @@ namespace DotNext.Threading
 
             internal StrongLockManager(State state) => this.state = state;
 
-            StrongLockNode ILockManager<StrongLockNode>.CreateNode(WaitNode tail) => tail is null ? new StrongLockNode() : new StrongLockNode(tail);
+            StrongLockNode ILockManager<StrongLockNode>.CreateNode(WaitNode? tail) => tail is null ? new StrongLockNode() : new StrongLockNode(tail);
 
             public bool TryAcquire()
             {
@@ -60,7 +60,7 @@ namespace DotNext.Threading
 
             internal WeakLockManager(State state) => this.state = state;
 
-            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode tail) => tail is null ? new WaitNode() : new WaitNode(tail);
+            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
 
             public bool TryAcquire()
             {
@@ -122,8 +122,8 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquire(bool strongLock, TimeSpan timeout, CancellationToken token)
-            => strongLock ? Wait(ref this.strongLock, timeout, token) : Wait(ref weakLock, timeout, token);
+        public Task<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token)
+            => strongLock ? WaitAsync(ref this.strongLock, timeout, token) : WaitAsync(ref weakLock, timeout, token);
 
         /// <summary>
         /// Attempts to enter the lock asynchronously, with an optional time-out.
@@ -133,7 +133,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquire(bool strongLock, TimeSpan timeout) => TryAcquire(strongLock, timeout, CancellationToken.None);
+        public Task<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout) => TryAcquireAsync(strongLock, timeout, CancellationToken.None);
 
         /// <summary>
         /// Entres the lock asynchronously.
@@ -144,7 +144,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task Acquire(bool strongLock, TimeSpan timeout) => TryAcquire(strongLock, timeout).CheckOnTimeout();
+        public Task AcquireAsync(bool strongLock, TimeSpan timeout) => TryAcquireAsync(strongLock, timeout).CheckOnTimeout();
 
         /// <summary>
         /// Entres the lock asynchronously.
@@ -153,11 +153,11 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to abort lock acquisition.</param>
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task Acquire(bool strongLock, CancellationToken token) => TryAcquire(strongLock, InfiniteTimeSpan, token);
+        public Task AcquireAsync(bool strongLock, CancellationToken token) => TryAcquireAsync(strongLock, InfiniteTimeSpan, token);
 
         private void ReleasePendingWeakLocks()
         {
-            for (WaitNode current = head, next; !(current is null || current is StrongLockNode) && state.RemainingLocks > 0L; state.RemainingLocks--, current = next)
+            for (WaitNode? current = head, next; !(current is null || current is StrongLockNode) && state.RemainingLocks > 0L; state.RemainingLocks--, current = next)
             {
                 next = current.Next;
                 RemoveNode(current);

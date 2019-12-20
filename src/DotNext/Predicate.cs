@@ -119,6 +119,9 @@ namespace DotNext
         public static Converter<T, bool> AsConverter<T>(this Predicate<T> predicate)
             => predicate.ChangeType<Converter<T, bool>>();
 
+        private static bool Negate<T>(this Predicate<T> predicate, T obj)
+            => !predicate(obj);
+
         /// <summary>
         /// Returns a predicate which negates evaluation result of
         /// the original predicate.
@@ -126,7 +129,7 @@ namespace DotNext
         /// <typeparam name="T">Type of the predicate argument.</typeparam>
         /// <param name="predicate">The predicate to negate.</param>
         /// <returns>The predicate which negates evaluation result of the original predicate.</returns>
-        public static Predicate<T> Negate<T>(this Predicate<T> predicate) => input => !predicate(input);
+        public static Predicate<T> Negate<T>(this Predicate<T> predicate) => predicate.Negate;
 
         /// <summary>
         /// Returns a predicate which computes logical OR between

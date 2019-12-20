@@ -9,6 +9,7 @@ namespace DotNext.Reflection
     /// <summary>
     /// Represents binary operator.
     /// </summary>
+    [Serializable]
     public enum BinaryOperator
     {
         /// <summary>
@@ -122,13 +123,15 @@ namespace DotNext.Reflection
     {
         private sealed class Cache : Cache<BinaryOperator<Op1, Op2, R>>
         {
-            private protected override BinaryOperator<Op1, Op2, R> Create(Operator.Kind kind) => Reflect(kind);
+            private protected override BinaryOperator<Op1, Op2, R>? Create(Operator.Kind kind) => Reflect(kind);
         }
 
-        private BinaryOperator(Expression<Operator<Op1, Op2, R>> invoker, BinaryOperator type, MethodInfo overloaded)
+        private BinaryOperator(Expression<Operator<Op1, Op2, R>> invoker, BinaryOperator type, MethodInfo? overloaded)
             : base(invoker.Compile(), type.ToExpressionType(), overloaded)
         {
         }
+
+        private protected override Type DeclaringType => typeof(Op1);
 
         /// <summary>
         /// Invokes binary operator.
@@ -144,7 +147,7 @@ namespace DotNext.Reflection
         /// </summary>
         public new BinaryOperator Type => (BinaryOperator)base.Type;
 
-        private static Expression<Operator<Op1, Op2, R>> MakeBinary(Operator.Kind @operator, Operator.Operand first, Operator.Operand second, out MethodInfo overloaded)
+        private static Expression<Operator<Op1, Op2, R>>? MakeBinary(Operator.Kind @operator, Operator.Operand first, Operator.Operand second, out MethodInfo? overloaded)
         {
             var resultType = typeof(R);
             //perform automatic cast from byte/short/ushort/sbyte so binary operators become available for these types
@@ -178,7 +181,7 @@ namespace DotNext.Reflection
             }
         }
 
-        private static BinaryOperator<Op1, Op2, R> Reflect(Operator.Kind op)
+        private static BinaryOperator<Op1, Op2, R>? Reflect(Operator.Kind op)
         {
             var first = Expression.Parameter(typeof(Op1).MakeByRefType(), "first");
             var second = Expression.Parameter(typeof(Op2).MakeByRefType(), "second");
@@ -186,21 +189,14 @@ namespace DotNext.Reflection
             return expr is null ? null : new BinaryOperator<Op1, Op2, R>(expr, op, overloaded);
         }
 
-        private static BinaryOperator<Op1, Op2, R> GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(Op1)).GetOrCreate(op);
+        private static BinaryOperator<Op1, Op2, R>? GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(Op1)).GetOrCreate(op);
 
-        internal static BinaryOperator<Op1, Op2, R> GetOrCreate(BinaryOperator @operator, OperatorLookup lookup)
+        internal static BinaryOperator<Op1, Op2, R>? GetOrCreate(BinaryOperator @operator, OperatorLookup lookup) => lookup switch
         {
-            switch (lookup)
-            {
-                case OperatorLookup.Predefined:
-                    return GetOrCreate(new Operator.Kind(@operator, false));
-                case OperatorLookup.Overloaded:
-                    return GetOrCreate(new Operator.Kind(@operator, true));
-                case OperatorLookup.Any:
-                    return GetOrCreate(new Operator.Kind(@operator, true)) ?? GetOrCreate(new Operator.Kind(@operator, false));
-                default:
-                    return null;
-            }
-        }
+            OperatorLookup.Predefined => GetOrCreate(new Operator.Kind(@operator, false)),
+            OperatorLookup.Overloaded => GetOrCreate(new Operator.Kind(@operator, true)),
+            OperatorLookup.Any => GetOrCreate(new Operator.Kind(@operator, true)) ?? GetOrCreate(new Operator.Kind(@operator, false)),
+            _ => null,
+        };
     }
 }

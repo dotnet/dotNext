@@ -44,7 +44,7 @@ namespace DotNext.Metaprogramming
 
         private readonly Expression switchValue;
         private readonly ICollection<SwitchCase> cases;
-        private Expression defaultExpression;
+        private Expression? defaultExpression;
 
         internal SwitchBuilder(Expression expression, ILexicalScope currentScope)
             : base(currentScope)

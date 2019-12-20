@@ -43,7 +43,7 @@ namespace DotNext
         /// </summary>
         /// <param name="resultType">Result type.</param>
         /// <returns>Underlying type argument of result type; otherwise, <see langword="null"/>.</returns>
-        public static Type GetUnderlyingType(Type resultType) => IsResult(resultType) ? resultType.GetGenericArguments()[0] : null;
+        public static Type? GetUnderlyingType(Type resultType) => IsResult(resultType) ? resultType.GetGenericArguments()[0] : null;
     }
 
     /// <summary>
@@ -56,8 +56,9 @@ namespace DotNext
         private const string ExceptionSerData = "Exception";
         private const string ValueSerData = "Value";
 
+        [AllowNull]
         private readonly T value;
-        private readonly ExceptionDispatchInfo exception;
+        private readonly ExceptionDispatchInfo? exception;
 
         /// <summary>
         /// Initializes a new successful result.
@@ -97,7 +98,9 @@ namespace DotNext
         private Result(SerializationInfo info, StreamingContext context)
         {
             value = (T)info.GetValue(ValueSerData, typeof(T));
-            exception = ExceptionDispatchInfo.Capture((Exception)info.GetValue(ExceptionSerData, typeof(Exception)));
+            exception = info.GetValue(ExceptionSerData, typeof(Exception)) is Exception e ?
+                ExceptionDispatchInfo.Capture(e) :
+                null;
         }
 
         /// <summary>
@@ -157,7 +160,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">Extracted value.</param>
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-        public bool TryGet(out T value)
+        public bool TryGet([NotNullWhen(true)]out T value)
         {
             value = this.value;
             return exception is null;
@@ -207,12 +210,19 @@ namespace DotNext
         /// <summary>
         /// Gets exception associated with this result.
         /// </summary>
-        public Exception Error => exception?.SourceException;
+        public Exception? Error => exception?.SourceException;
+
+        /// <summary>
+        /// Gets boxed representation of the result.
+        /// </summary>
+        /// <returns>The boxed representation of the result.</returns>
+        public Result<object?> Box() => exception is null ? new Result<object?>(value) : new Result<object?>(exception);
 
         /// <summary>
         /// Extracts actual result.
         /// </summary>
         /// <param name="result">The result object.</param>
+        [return: MaybeNull]
         public static explicit operator T(in Result<T> result) => result.Value;
 
         /// <summary>

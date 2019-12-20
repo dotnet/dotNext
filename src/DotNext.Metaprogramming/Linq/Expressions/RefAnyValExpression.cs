@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace DotNext.Linq.Expressions
 {
-    using Memory = Runtime.InteropServices.Memory;
+    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Represents expression that is equivalent to <c>__refvalue</c> C# undocumented keyword
@@ -54,6 +54,6 @@ namespace DotNext.Linq.Expressions
         /// using Lowering technique.
         /// </summary>
         /// <returns>Translated expression.</returns>
-        public override Expression Reduce() => Call(typeof(Memory), nameof(Memory.AsRef), new[] { ReferenceType }, TypedReferenceVar);
+        public override Expression Reduce() => Call(typeof(Intrinsics), nameof(Intrinsics.AsRef), new[] { ReferenceType }, TypedReferenceVar);
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Replication;
+    using IO.Log;
     using Threading;
     using static Threading.Tasks.Continuation;
     using Timestamp = Diagnostics.Timestamp;
@@ -112,12 +112,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
 
-        private Task heartbeatTask;
+        private Task? heartbeatTask;
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
         private readonly AsyncManualResetEvent forcedReplication;
-        internal ILeaderStateMetrics Metrics;
+        internal ILeaderStateMetrics? Metrics;
 
         internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
             : base(stateMachine)
@@ -197,7 +197,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var token = timerCancellation.Token;
             while (await DoHeartbeats(auditTrail, token).ConfigureAwait(false))
-                await forcedReplication.Wait(period, token).ConfigureAwait(false);
+                await forcedReplication.WaitAsync(period, token).ConfigureAwait(false);
         }
 
         internal void ForceReplication() => forcedReplication.Set(true);
@@ -221,7 +221,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal override Task StopAsync()
         {
             timerCancellation.Cancel(false);
-            return heartbeatTask.OnCompleted();
+            return heartbeatTask?.OnCompleted() ?? Task.CompletedTask;
         }
 
         protected override void Dispose(bool disposing)

@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// Gets the leader node.
         /// </summary>
-        IClusterMember Leader { get; }
+        IClusterMember? Leader { get; }
 
         /// <summary>
         /// Gets collection of cluster members.
@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// An event raised when leader has been changed.
         /// </summary>
-        event ClusterLeaderChangedEventHandler LeaderChanged;
+        event ClusterLeaderChangedEventHandler? LeaderChanged;
 
         /// <summary>
         /// Revokes leadership and starts new election process.

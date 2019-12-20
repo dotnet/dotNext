@@ -110,7 +110,7 @@ namespace DotNext
         /// </summary>
         /// <param name="optionalType">Optional type.</param>
         /// <returns>Underlying type argument of optional type; otherwise, <see langword="null"/>.</returns>
-        public static Type GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
+        public static Type? GetUnderlyingType(Type optionalType) => IsOptional(optionalType) ? optionalType.GetGenericArguments()[0] : null;
 
         /// <summary>
         /// Constructs optional value from nullable reference type.
@@ -139,7 +139,7 @@ namespace DotNext
         /// <param name="second">The second optional value.</param>
         /// <typeparam name="T">Type of value.</typeparam>
         /// <returns>The second value if the first is empty; otherwise, the first value.</returns>
-        public static ref readonly Optional<T> Coalesce<T>(this in Optional<T> first, in Optional<T> second) => ref first.IsPresent ? ref first : ref second;
+        public static ref readonly Optional<T> Coalesce<T>(this in Optional<T> first, in Optional<T> second) => ref first.HasValue ? ref first : ref second;
     }
 
     /// <summary>
@@ -178,28 +178,20 @@ namespace DotNext
         public Optional(T value)
         {
             this.value = value;
-            switch (type)
+            HasValue = type switch
             {
-                default:
-                    IsPresent = false;
-                    break;
-                case ReferenceType:
-                    IsPresent = value != null;
-                    break;
-                case ValueType:
-                    IsPresent = true;
-                    break;
-                case NullableType:
-                    IsPresent = !value.Equals(null);
-                    break;
-            }
+                ReferenceType => value != null,
+                ValueType => true,
+                NullableType => !value!.Equals(null),
+                _ => false,
+            };
         }
 
         [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
         private Optional(SerializationInfo info, StreamingContext context)
         {
             value = (T)info.GetValue(ValueSerData, typeof(T));
-            IsPresent = info.GetBoolean(IsPresentSerData);
+            HasValue = info.GetBoolean(IsPresentSerData);
         }
 
         /// <summary>
@@ -210,17 +202,23 @@ namespace DotNext
         /// <summary>
         /// Indicates whether the value is present.
         /// </summary>
-        public bool IsPresent { get; }
+        public bool HasValue { get; }
+
+        /// <summary>
+        /// Boxes value encapsulated by this object.
+        /// </summary>
+        /// <returns>The boxed value.</returns>
+        public Optional<object> Box() => HasValue ? new Optional<object>(value!) : default;
 
         /// <summary>
         /// Attempts to extract value from container if it is present.
         /// </summary>
         /// <param name="value">Extracted value.</param>
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-        public bool TryGet(out T value)
+        public bool TryGet([NotNullWhen(true)]out T value)
         {
             value = this.value;
-            return IsPresent;
+            return HasValue;
         }
 
         /// <summary>
@@ -228,16 +226,18 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultValue">The value to be returned if there is no value present.</param>
         /// <returns>The value, if present, otherwise <paramref name="defaultValue"/>.</returns>
-        public T Or(T defaultValue) => IsPresent ? value : defaultValue;
+        [return: NotNullIfNotNull("defaultValue")]
+        public T Or(T defaultValue) => HasValue ? value : defaultValue;
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>
         /// <typeparam name="E">Type of exception to throw.</typeparam>
         /// <returns>The value, if present.</returns>
+        [return: NotNull]
         public T OrThrow<E>()
             where E : Exception, new()
-            => IsPresent ? value : throw new E();
+            => HasValue ? value : throw new E();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
@@ -245,9 +245,10 @@ namespace DotNext
         /// <typeparam name="E"></typeparam>
         /// <param name="exceptionFactory">Exception factory.</param>
         /// <returns>The value, if present.</returns>
+        [return: NotNull]
         public T OrThrow<E>(in ValueFunc<E> exceptionFactory)
             where E : Exception
-            => IsPresent ? value : throw exceptionFactory.Invoke();
+            => HasValue ? value : throw exceptionFactory.Invoke();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
@@ -255,6 +256,7 @@ namespace DotNext
         /// <typeparam name="E"></typeparam>
         /// <param name="exceptionFactory">Exception factory.</param>
         /// <returns>The value, if present.</returns>
+        [return: NotNull]
         public T OrThrow<E>(Func<E> exceptionFactory)
             where E : Exception
             => OrThrow(new ValueFunc<E>(exceptionFactory, true));
@@ -264,7 +266,7 @@ namespace DotNext
         /// </summary>
         /// <param name="defaultFunc">A delegate to be invoked if value is not present.</param>
         /// <returns>The value, if present, otherwise returned from delegate.</returns>
-        public T OrInvoke(in ValueFunc<T> defaultFunc) => IsPresent ? value : defaultFunc.Invoke();
+        public T OrInvoke(in ValueFunc<T> defaultFunc) => HasValue ? value : defaultFunc.Invoke();
 
         /// <summary>
         /// Returns the value if present; otherwise invoke delegate.
@@ -283,7 +285,8 @@ namespace DotNext
         /// If a value is present, returns the value, otherwise throw exception.
         /// </summary>
         /// <exception cref="InvalidOperationException">No value is present.</exception>
-        public T Value => IsPresent ? value : throw new InvalidOperationException(ExceptionMessages.OptionalNoValue);
+        [DisallowNull]
+        public T Value => HasValue ? value : throw new InvalidOperationException(ExceptionMessages.OptionalNoValue);
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is 
@@ -292,7 +295,7 @@ namespace DotNext
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-        public Optional<U> Convert<U>(in ValueFunc<T, U> mapper) => IsPresent ? mapper.Invoke(value) : Optional<U>.Empty;
+        public Optional<U> Convert<U>(in ValueFunc<T, U> mapper) => HasValue ? mapper.Invoke(value) : Optional<U>.Empty;
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is 
@@ -310,7 +313,7 @@ namespace DotNext
         /// <typeparam name="U">The type of the result of the mapping function.</typeparam>
         /// <param name="mapper">A mapping function to be applied to the value, if present.</param>
         /// <returns>An Optional describing the result of applying a mapping function to the value of this Optional, if a value is present, otherwise <see cref="Empty"/>.</returns>
-		public Optional<U> Convert<U>(in ValueFunc<T, Optional<U>> mapper) => IsPresent ? mapper.Invoke(value) : Optional<U>.Empty;
+		public Optional<U> Convert<U>(in ValueFunc<T, Optional<U>> mapper) => HasValue ? mapper.Invoke(value) : Optional<U>.Empty;
 
         /// <summary>
         /// If a value is present, apply the provided mapping function to it, and if the result is 
@@ -327,7 +330,7 @@ namespace DotNext
         /// </summary>
         /// <param name="condition">A predicate to apply to the value, if present.</param>
         /// <returns>An Optional describing the value of this Optional if a value is present and the value matches the given predicate, otherwise an empty Optional</returns>
-        public Optional<T> If(in ValueFunc<T, bool> condition) => IsPresent && condition.Invoke(value) ? this : Empty;
+        public Optional<T> If(in ValueFunc<T, bool> condition) => HasValue && condition.Invoke(value) ? this : Empty;
 
         /// <summary>
         /// If a value is present, and the value matches the given predicate, 
@@ -341,7 +344,7 @@ namespace DotNext
         /// Returns textual representation of this object.
         /// </summary>
         /// <returns>The textual representation of this object.</returns>
-		public override string ToString() => IsPresent ? value.ToString() : "<EMPTY>";
+		public override string ToString() => HasValue ? value!.ToString() : "<EMPTY>";
 
         /// <summary>
         /// Computes hash code of the stored value.
@@ -351,7 +354,7 @@ namespace DotNext
         /// This method calls <see cref="object.GetHashCode()"/>
         /// for the object <see cref="Value"/>.
         /// </remarks>
-		public override int GetHashCode() => IsPresent ? value.GetHashCode() : 0;
+		public override int GetHashCode() => HasValue ? value!.GetHashCode() : 0;
 
         /// <summary>
         /// Determines whether this container stored the same
@@ -359,7 +362,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/> if <see cref="Value"/> is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-		public bool Equals(T other) => IsPresent && value.Equals(other);
+		public bool Equals(T other) => HasValue && value!.Equals(other);
 
         /// <summary>
         /// Determines whether this container stores
@@ -367,18 +370,12 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other container to compare.</param>
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(Optional<T> other)
+        public bool Equals(Optional<T> other) => (HasValue.ToInt32() + other.HasValue.ToInt32()) switch
         {
-            switch (IsPresent.ToInt32() + other.IsPresent.ToInt32())
-            {
-                default:
-                    return true;
-                case 1:
-                    return false;
-                case 2:
-                    return value.Equals(other.value);
-            }
-        }
+            1 => false,
+            2 => value!.Equals(other.value),
+            _ => true,
+        };
 
         /// <summary>
         /// Determines whether this container stores
@@ -386,20 +383,13 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other container to compare.</param>
         /// <returns><see langword="true"/> if this container stores the same value as <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other) => other switch
         {
-            switch (other)
-            {
-                case null:
-                    return IsPresent == false;
-                case Optional<T> optional:
-                    return Equals(optional);
-                case T value:
-                    return Equals(value);
-                default:
-                    return false;
-            }
-        }
+            null => HasValue == false,
+            Optional<T> optional => Equals(optional),
+            T value => Equals(value),
+            _ => false,
+        };
 
         /// <summary>
         /// Performs equality check between stored value
@@ -408,8 +398,8 @@ namespace DotNext
         /// <param name="other">Other object to compare with <see cref="Value"/>.</param>
         /// <param name="comparer">The comparer implementing custom equality check.</param>
         /// <returns><see langword="true"/> if <paramref name="other"/> is equal to <see cref="Value"/> using custom check; otherwise, <see langword="false"/>.</returns>
-		public bool Equals(object other, IEqualityComparer comparer)
-            => other is T && IsPresent && comparer.Equals(value, other);
+		public bool Equals(object? other, IEqualityComparer comparer)
+            => other is T && HasValue && comparer.Equals(value, other);
 
         /// <summary>
         /// Computes hash code for the stored value 
@@ -418,7 +408,7 @@ namespace DotNext
         /// <param name="comparer">The comparer implementing hash code function.</param>
         /// <returns>The hash code of <see cref="Value"/>.</returns>
 		public int GetHashCode(IEqualityComparer comparer)
-            => IsPresent ? comparer.GetHashCode(value) : 0;
+            => HasValue ? comparer.GetHashCode(value) : 0;
 
         /// <summary>
         /// Wraps value into Optional container.
@@ -440,18 +430,12 @@ namespace DotNext
         /// <param name="first">The first container to compare.</param>
         /// <param name="second">The second container to compare.</param>
         /// <returns><see langword="true"/>, if both containers store the same value; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(in Optional<T> first, in Optional<T> second)
+        public static bool operator ==(in Optional<T> first, in Optional<T> second) => (first.HasValue.ToInt32() + second.HasValue.ToInt32()) switch
         {
-            switch (first.IsPresent.ToInt32() + second.IsPresent.ToInt32())
-            {
-                default:
-                    return true;
-                case 1:
-                    return false;
-                case 2:
-                    return first.value.Equals(second.value);
-            }
-        }
+            1 => false,
+            2 => first.value!.Equals(second.value),
+            _ => true,
+        };
 
         /// <summary>
         /// Determines whether two containers store the different values.
@@ -459,18 +443,12 @@ namespace DotNext
         /// <param name="first">The first container to compare.</param>
         /// <param name="second">The second container to compare.</param>
         /// <returns><see langword="true"/>, if both containers store the different values; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(in Optional<T> first, in Optional<T> second)
+        public static bool operator !=(in Optional<T> first, in Optional<T> second) => (first.HasValue.ToInt32() + second.HasValue.ToInt32()) switch
         {
-            switch (first.IsPresent.ToInt32() + second.IsPresent.ToInt32())
-            {
-                default:
-                    return false;
-                case 1:
-                    return true;
-                case 2:
-                    return !first.value.Equals(second.value);
-            }
-        }
+            1 => true,
+            2 => !first.value!.Equals(second.value),
+            _ => false,
+        };
 
         /// <summary>
         /// Returns non-empty container.
@@ -480,7 +458,7 @@ namespace DotNext
         /// <returns>The first non-empty container.</returns>
         /// <seealso cref="Optional.Coalesce{T}"/>
 		public static Optional<T> operator |(in Optional<T> first, in Optional<T> second)
-            => first.IsPresent ? first : second;
+            => first.HasValue ? first : second;
 
         /// <summary>
         /// Determines whether two containers are empty or have values.
@@ -488,38 +466,32 @@ namespace DotNext
         /// <param name="first">The first container.</param>
         /// <param name="second">The second container.</param>
         /// <returns><see langword="true"/>, if both containers are empty or have values; otherwise, <see langword="false"/>.</returns>
-        public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second)
+        public static Optional<T> operator ^(in Optional<T> first, in Optional<T> second) => (first.HasValue.ToInt32() - second.HasValue.ToInt32()) switch
         {
-            switch (first.IsPresent.ToInt32() - second.IsPresent.ToInt32())
-            {
-                default:
-                    return Empty;
-                case -1:
-                    return second;
-                case 1:
-                    return first;
-            }
-        }
+            -1 => second,
+            1 => first,
+            _ => Empty,
+        };
 
         /// <summary>
         /// Checks whether the container has value.
         /// </summary>
         /// <param name="optional">The container to check.</param>
         /// <returns><see langword="true"/> if this container has value; otherwise, <see langword="false"/>.</returns>
-        /// <see cref="IsPresent"/>
-        public static bool operator true(in Optional<T> optional) => optional.IsPresent;
+        /// <see cref="HasValue"/>
+        public static bool operator true(in Optional<T> optional) => optional.HasValue;
 
         /// <summary>
         /// Checks whether the container has no value.
         /// </summary>
         /// <param name="optional">The container to check.</param>
         /// <returns><see langword="true"/> if this container has no value; otherwise, <see langword="false"/>.</returns>
-        /// <see cref="IsPresent"/>
-        public static bool operator false(in Optional<T> optional) => !optional.IsPresent;
+        /// <see cref="HasValue"/>
+        public static bool operator false(in Optional<T> optional) => !optional.HasValue;
 
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue(IsPresentSerData, IsPresent);
+            info.AddValue(IsPresentSerData, HasValue);
             info.AddValue(ValueSerData, value, typeof(T));
         }
     }

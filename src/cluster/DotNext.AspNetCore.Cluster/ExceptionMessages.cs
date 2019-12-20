@@ -11,6 +11,7 @@ namespace DotNext
     {
         private static readonly ResourceManager Resources = new ResourceManager("DotNext.ExceptionMessages", Assembly.GetExecutingAssembly());
 
+#pragma warning disable CS8603, CS8604
         internal static string UnresolvedHostName(string hostName) =>
             string.Format(Resources.GetString("UnresolvedHostName"), hostName);
 
@@ -26,5 +27,7 @@ namespace DotNext
         internal static string UnavailableMember => Resources.GetString("UnavailableMember");
 
         internal static string LeaderIsUnavailable => Resources.GetString("LeaderIsUnavailable");
+
+#pragma warning restore CS8603, CS8604
     }
 }

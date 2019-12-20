@@ -14,7 +14,7 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct MemoryRental<T>
     {
-        private readonly IMemoryOwner<T> owner;
+        private readonly IMemoryOwner<T>? owner;
         private readonly Span<T> memory;
 
         /// <summary>

@@ -127,6 +127,8 @@ namespace DotNext.Threading
             Equal("Hello", stref.SetIfNull(() => "Hello"));
             Equal("Hello", stref.SetIfNull(() => ""));
             Equal("Hello", stref.Value);
+            Equal("Hello", stref.ToString());
+            Equal("Hello".GetHashCode(), stref.GetHashCode());
         }
 
         [Fact]
@@ -142,6 +144,19 @@ namespace DotNext.Threading
             False(value.Value);
             value.Value = true;
             True(value.Value);
+            True(value.GetAndSet(false));
+            False(value.Value);
+            True(value.SetAndGet(true));
+            True(value.Value);
+            Equal(bool.TrueString, value.ToString());
+        }
+
+        [Fact]
+        public static void Serialization()
+        {
+            True(SerializationTestHelper.SerializeDeserialize(new AtomicBoolean(true)).Value);
+            Equal("Frank Underwood", SerializationTestHelper.SerializeDeserialize(new AtomicReference<string>("Frank Underwood")).Value);
+            Equal(EnvironmentVariableTarget.Machine, SerializationTestHelper.SerializeDeserialize(new AtomicEnum<EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine)).Value);
         }
 
         [Fact]
@@ -153,6 +168,7 @@ namespace DotNext.Threading
             Equal(EnvironmentVariableTarget.Machine, value.Value);
             Equal(EnvironmentVariableTarget.Machine, value.GetAndUpdate(x => EnvironmentVariableTarget.User));
             Equal(EnvironmentVariableTarget.User, value.Value);
+            Equal(EnvironmentVariableTarget.User.ToString(), value.ToString());
         }
 
         [Fact]

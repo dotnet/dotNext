@@ -20,8 +20,8 @@ namespace DotNext.Linq.Expressions
         public delegate Expression Statement(ParameterExpression resource);
 
         private readonly MethodInfo disposeMethod;
-        private readonly BinaryExpression assignment;
-        private Expression body;
+        private readonly BinaryExpression? assignment;
+        private Expression? body;
 
         internal UsingExpression(Expression resource)
         {

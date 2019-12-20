@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Channels;
@@ -10,22 +11,25 @@ namespace DotNext.Threading.Channels
     using IO;
 
     internal sealed class PersistentChannelReader<T> : ChannelReader<T>, IChannelInfo, IDisposable
+        where T : notnull
     {
         private const string StateFileName = "reader.state";
         private interface IReadBuffer
         {
-            bool TryRead(out T result);
+            bool TryRead([NotNullWhen(true)]out T result);
 
             void Add(T item);
 
-            //TODO: Clear can be implemented easily in .NET Standard 2.1
-            //void Clear();
+            void Clear();
         }
 
         private sealed class SingleReaderBuffer : IReadBuffer
         {
             private AtomicBoolean readyToRead;
+#pragma warning disable CS8618 
+            [AllowNull]
             private T value;
+#pragma warning restore CS8618
 
             void IReadBuffer.Add(T item)
             {
@@ -33,7 +37,7 @@ namespace DotNext.Threading.Channels
                 readyToRead.Value = true;
             }
 
-            bool IReadBuffer.TryRead(out T result)
+            bool IReadBuffer.TryRead([NotNullWhen(true)]out T result)
             {
                 if (readyToRead.CompareAndSet(true, false))
                 {
@@ -42,10 +46,12 @@ namespace DotNext.Threading.Channels
                 }
                 else
                 {
-                    result = default;
+                    result = default!;
                     return false;
                 }
             }
+
+            void IReadBuffer.Clear() => value = default;
         }
 
         private sealed class MultipleReadersBuffer : ConcurrentQueue<T>, IReadBuffer
@@ -57,7 +63,7 @@ namespace DotNext.Threading.Channels
 
         private readonly IChannelReader<T> reader;
         private AsyncLock readLock;
-        private PartitionStream readTopic;
+        private PartitionStream? readTopic;
         private readonly IReadBuffer buffer;
         private readonly FileCreationOptions fileOptions;
         private ChannelCursor cursor;
@@ -90,7 +96,7 @@ namespace DotNext.Threading.Channels
             await reader.WaitToReadAsync(token).ConfigureAwait(false);
             //lock and deserialize
             T result;
-            using (await readLock.Acquire(token).ConfigureAwait(false))
+            using (await readLock.AcquireAsync(token).ConfigureAwait(false))
             {
                 var lookup = Partition;
                 //reset file cache
@@ -105,7 +111,7 @@ namespace DotNext.Threading.Channels
         {
             await reader.WaitToReadAsync(token).ConfigureAwait(false);
             //lock and deserialize
-            using (await readLock.Acquire(token).ConfigureAwait(false))
+            using (await readLock.AcquireAsync(token).ConfigureAwait(false))
             {
                 var lookup = Partition;
                 buffer.Add(await reader.DeserializeAsync(lookup, token).ConfigureAwait(false));
@@ -121,6 +127,7 @@ namespace DotNext.Threading.Channels
                 readTopic?.Dispose();
                 readTopic = null;
                 cursor.Dispose();
+                buffer.Clear();
             }
             readLock.Dispose();
         }

@@ -1,4 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
@@ -7,8 +12,34 @@ using Xunit;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
     [ExcludeFromCodeCoverage]
-    public sealed class HostedClusterSupportTests : ClusterMemberTest
+    public sealed class HostedClusterSupportTests : Assert
     {
+        private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null)
+            where TStartup : class
+        {
+            return new HostBuilder()
+                .ConfigureWebHost(webHost =>
+                    webHost.UseKestrel(options =>
+                    {
+                        if (localhost)
+                            options.ListenLocalhost(port);
+                        else
+                            options.ListenAnyIP(port);
+                    })
+                    .UseShutdownTimeout(TimeSpan.FromMinutes(2))
+                    .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
+                    .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
+                    .ConfigureServices(services =>
+                    {
+                        if (configurator != null)
+                            services.AddSingleton(configurator);
+                    })
+                    .UseStartup<TStartup>()
+                )
+                .JoinCluster()
+                .Build();
+        }
+
         [Fact]
         public static async Task DependencyInjection()
         {
@@ -21,23 +52,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                 {"members:1", "http://localhost:3566"},
                 {"allowedNetworks:0", "127.0.0.0"}
             };
-            using (var host = CreateHost<WebApplicationSetup>(3100, true, config))
-            {
-                await host.StartAsync();
-                object service = host.Services.GetService<ICluster>();
-                NotNull(service);
-                //check whether the local member present
-                var count = 0;
-                foreach (var member in host.Services.GetService<ICluster>().Members)
-                    if (!member.IsRemote)
-                        count += 1;
-                Equal(1, count);
-                service = host.Services.GetService<IExpandableCluster>();
-                NotNull(service);
-                service = host.Services.GetService<IRaftCluster>();
-                NotNull(service);
-                await host.StopAsync();
-            }
+            using var host = CreateHost<WebApplicationSetup>(3100, true, config);
+            await host.StartAsync();
+            object service = host.Services.GetService<ICluster>();
+            NotNull(service);
+            //check whether the local member present
+            var count = 0;
+            foreach (var member in host.Services.GetService<ICluster>().Members)
+                if (!member.IsRemote)
+                    count += 1;
+            Equal(1, count);
+            service = host.Services.GetService<IExpandableCluster>();
+            NotNull(service);
+            service = host.Services.GetService<IRaftCluster>();
+            NotNull(service);
+            await host.StopAsync();
         }
     }
 }

@@ -42,6 +42,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cluster", "Cluster", "{511B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{F8DCA620-40E7-411E-8970-85DC808B6BAF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNext.IO", "DotNext.IO\DotNext.IO.csproj", "{FA84F361-46D6-4769-9F96-3370D1CEC439}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,10 @@ Global
 		{E1DA704A-3BE6-4328-893B-5ACF536AEE36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1DA704A-3BE6-4328-893B-5ACF536AEE36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1DA704A-3BE6-4328-893B-5ACF536AEE36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA84F361-46D6-4769-9F96-3370D1CEC439}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA84F361-46D6-4769-9F96-3370D1CEC439}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA84F361-46D6-4769-9F96-3370D1CEC439}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA84F361-46D6-4769-9F96-3370D1CEC439}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

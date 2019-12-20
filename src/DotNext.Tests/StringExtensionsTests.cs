@@ -51,5 +51,12 @@ namespace DotNext
             Equal('H', ch);
             Throws<NullReferenceException>(() => default(string).GetRawData());
         }
+
+        [Fact]
+        public static void Equality()
+        {
+            True("Abc".IsEqualIgnoreCase("abc"));
+            False("abc".IsEqualIgnoreCase("CBA"));
+        }
     }
 }

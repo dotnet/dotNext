@@ -56,6 +56,13 @@ namespace DotNext
         }
 
         [Fact]
+        public static void Conversion()
+        {
+            IConvertible<Func<Guid>> activator = ValueFunc<Guid>.DefaultValueProvider;
+            Equal(default, activator.Convert().Invoke());
+        }
+
+        [Fact]
         public void StaticMethodAsClosedFunctionPtr()
         {
             var method = GetType().GetMethod(nameof(Dup), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly);

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,16 +15,14 @@ namespace RaftNode
     {
         private static X509Certificate2 LoadCertificate()
         {
-            using (var rawCertificate = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(Program), "node.pfx"))
-            using (var ms = new MemoryStream(1024))
-            {
-                rawCertificate.CopyTo(ms);
-                ms.Seek(0, SeekOrigin.Begin);
-                return new X509Certificate2(ms.ToArray(), "1234");
-            }
+            using var rawCertificate = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(Program), "node.pfx");
+            using var ms = new MemoryStream(1024);
+            rawCertificate?.CopyTo(ms);
+            ms.Seek(0, SeekOrigin.Begin);
+            return new X509Certificate2(ms.ToArray(), "1234");
         }
 
-        private static void StartNode(int port, string persistentStorage = null)
+        private static void StartNode(int port, string? persistentStorage = null)
         {
             var configuration = new Dictionary<string, string>
             {
@@ -37,17 +37,19 @@ namespace RaftNode
             };
             if (!string.IsNullOrEmpty(persistentStorage))
                 configuration[SimplePersistentState.LogLocation] = persistentStorage;
-            new WebHostBuilder()
-                .UseKestrel(options =>
+            new HostBuilder().ConfigureWebHost(webHost =>
+            {
+                webHost.UseKestrel(options =>
                 {
                     options.ListenLocalhost(port, listener => listener.UseHttps(LoadCertificate()));
                 })
-                .UseShutdownTimeout(TimeSpan.FromHours(1))
-                .ConfigureLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Error))
-                .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
-                .UseStartup<Startup>()
-                .Build()
-                .Run();
+                .UseStartup<Startup>();
+            })
+            .ConfigureLogging(builder => builder.AddConsole().SetMinimumLevel(LogLevel.Error))
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
+            .JoinCluster()
+            .Build()
+            .Run();
         }
 
         private static void Main(string[] args)

@@ -7,9 +7,9 @@ namespace DotNext.Metaprogramming
     {
         private readonly TryBuilder builder;
         private readonly ParameterExpression exception;
-        private readonly Expression filter;
+        private readonly Expression? filter;
 
-        internal CatchStatement(TryBuilder builder, Type exceptionType = null, TryBuilder.Filter filter = null)
+        internal CatchStatement(TryBuilder builder, Type? exceptionType = null, TryBuilder.Filter? filter = null)
         {
             this.builder = builder;
             exception = Expression.Variable(exceptionType ?? typeof(Exception), "e");

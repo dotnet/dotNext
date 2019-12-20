@@ -15,7 +15,7 @@ namespace DotNext.Runtime.CompilerServices
     public sealed class ValueTupleBuilder : Disposable, IEnumerable<Type>
     {
         private readonly IList<Type> items = new List<Type>(7);//no more than 7 items because max number of generic arguments of tuple type
-        private ValueTupleBuilder Rest;
+        private ValueTupleBuilder? Rest;
 
         /// <summary>
         /// Number of elements in the tuple.
@@ -26,30 +26,18 @@ namespace DotNext.Runtime.CompilerServices
         /// Constructs value tuple.
         /// </summary>
         /// <returns>Value tuple.</returns>
-        public Type Build()
+        public Type Build() => Count switch
         {
-            switch (Count)
-            {
-                case 0:
-                    return typeof(ValueTuple);
-                case 1:
-                    return typeof(ValueTuple<>).MakeGenericType(items[0]);
-                case 2:
-                    return typeof(ValueTuple<,>).MakeGenericType(items[0], items[1]);
-                case 3:
-                    return typeof(ValueTuple<,,>).MakeGenericType(items[0], items[1], items[2]);
-                case 4:
-                    return typeof(ValueTuple<,,,>).MakeGenericType(items[0], items[1], items[2], items[3]);
-                case 5:
-                    return typeof(ValueTuple<,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4]);
-                case 6:
-                    return typeof(ValueTuple<,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5]);
-                case 7:
-                    return typeof(ValueTuple<,,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5], items[6]);
-                default:
-                    return typeof(ValueTuple<,,,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5], items[6], Rest.Build());
-            }
-        }
+            0 => typeof(ValueTuple),
+            1 => typeof(ValueTuple<>).MakeGenericType(items[0]),
+            2 => typeof(ValueTuple<,>).MakeGenericType(items[0], items[1]),
+            3 => typeof(ValueTuple<,,>).MakeGenericType(items[0], items[1], items[2]),
+            4 => typeof(ValueTuple<,,,>).MakeGenericType(items[0], items[1], items[2], items[3]),
+            5 => typeof(ValueTuple<,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4]),
+            6 => typeof(ValueTuple<,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5]),
+            7 => typeof(ValueTuple<,,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5], items[6]),
+            _ => typeof(ValueTuple<,,,,,,,>).MakeGenericType(items[0], items[1], items[2], items[3], items[4], items[5], items[6], Rest!.Build()),
+        };
 
         private void Build(Expression instance, Span<MemberExpression> output)
         {

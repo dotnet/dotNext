@@ -10,8 +10,8 @@ namespace DotNext.Runtime.CompilerServices
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct TaskType
     {
-        private readonly Type resultType;
-        private readonly Type taskType;
+        private readonly Type? resultType;
+        private readonly Type? taskType;
 
         internal TaskType(Type resultType, bool isValueTask)
         {

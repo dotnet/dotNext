@@ -29,7 +29,7 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// An event raised when cluster member becomes available or unavailable.
         /// </summary>
-        event ClusterMemberStatusChanged MemberStatusChanged;
+        event ClusterMemberStatusChanged? MemberStatusChanged;
 
         /// <summary>
         /// Gets status of this member.

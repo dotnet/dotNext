@@ -1,5 +1,4 @@
-﻿using DotNext.Net.Cluster.Replication;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -7,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using IO.Log;
     using static Threading.Tasks.Continuation;
 
     internal sealed class CandidateState : RaftState
@@ -56,7 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private readonly CancellationTokenSource votingCancellation;
         internal readonly long Term;
-        private Task votingTask;
+        private Task? votingTask;
 
         internal CandidateState(IRaftStateMachine stateMachine, long term)
             : base(stateMachine)
@@ -134,7 +134,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal override Task StopAsync()
         {
             votingCancellation.Cancel();
-            return votingTask.OnCompleted() ?? Task.CompletedTask;
+            return votingTask?.OnCompleted() ?? Task.CompletedTask;
         }
 
         protected override void Dispose(bool disposing)

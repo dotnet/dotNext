@@ -9,11 +9,12 @@ namespace DotNext.Threading.Channels
     using IO;
 
     internal sealed class PersistentChannelWriter<T> : ChannelWriter<T>, IChannelInfo, IDisposable
+        where T : notnull
     {
         private const string StateFileName = "writer.state";
         private readonly IChannelWriter<T> writer;
         private AsyncLock writeLock;
-        private PartitionStream writeTopic;
+        private PartitionStream? writeTopic;
         private readonly FileCreationOptions fileOptions;
         private ChannelCursor cursor;
 
@@ -36,12 +37,12 @@ namespace DotNext.Threading.Channels
 
         public override async ValueTask WriteAsync(T item, CancellationToken token)
         {
-            using (await writeLock.Acquire(token).ConfigureAwait(false))
+            using (await writeLock.AcquireAsync(token).ConfigureAwait(false))
             {
-                var lookup = Partition;
-                await writer.SerializeAsync(item, lookup, token).ConfigureAwait(false);
-                await lookup.FlushAsync(token).ConfigureAwait(false);
-                cursor.Advance(lookup.Position);
+                var partition = Partition;
+                await writer.SerializeAsync(item, partition, token).ConfigureAwait(false);
+                await partition.FlushAsync(token).ConfigureAwait(false);
+                cursor.Advance(partition.Position);
             }
             writer.MessageReady();
         }

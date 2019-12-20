@@ -26,10 +26,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly Uri resourcePath;
         private int status;
         private readonly IHostingContext context;
-        private volatile MemberMetadata metadata;
-        private ClusterMemberStatusChanged memberStatusChanged;
+        private volatile MemberMetadata? metadata;
+        private ClusterMemberStatusChanged? memberStatusChanged;
         private long nextIndex;
-        internal IHttpClientMetrics Metrics;
+        internal IHttpClientMetrics? Metrics;
         internal HttpVersion ProtocolVersion;
 
         internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
@@ -40,10 +40,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             status = UnknownStatus;
             BaseAddress = remoteMember;
             Endpoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
-            DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, GetType().Assembly.GetName().Version.ToString()));
+            DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
         }
 
-        event ClusterMemberStatusChanged IClusterMember.MemberStatusChanged
+        event ClusterMemberStatusChanged? IClusterMember.MemberStatusChanged
         {
             add => memberStatusChanged += value;
             remove => memberStatusChanged -= value;

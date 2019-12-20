@@ -68,7 +68,7 @@ namespace DotNext
         /// Converts the number into string.
         /// </summary>
         /// <returns>The textual representation of the number.</returns>
-        public override string ToString() => ToStringMethod(in value);
+        public override string ToString() => ToStringMethod(in value) ?? string.Empty;
 
         /// <summary>
         /// Computes hash code of the number.
@@ -190,18 +190,12 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The number to compare.</param>
         /// <returns><see langword="true"/>, if two numbers are equal; otherwise, <see langword="false"/>.</returns>
-		public override bool Equals(object other)
+		public override bool Equals(object? other) => other switch
         {
-            switch (other)
-            {
-                case T number:
-                    return Equals(number);
-                case Number<T> number:
-                    return Equals(number);
-                default:
-                    return false;
-            }
-        }
+            T number => Equals(number),
+            Number<T> number => Equals(number),
+            _ => false,
+        };
 
         /// <summary>
         /// Converts the string representation of a number to its typed equivalent.  

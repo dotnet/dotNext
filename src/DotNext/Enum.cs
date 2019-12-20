@@ -17,7 +17,7 @@ namespace DotNext
     {
         private readonly struct Tuple : IEquatable<Tuple>
         {
-            internal readonly string Name;
+            internal readonly string? Name;
             internal readonly E Value;
 
             private Tuple(string name)
@@ -38,8 +38,8 @@ namespace DotNext
             public bool Equals(Tuple other)
                 => Name is null ? other.Name is null && EqualityComparer<E>.Default.Equals(Value, other.Value) : Name == other.Name;
 
-            public override bool Equals(object other) => other is Tuple t && Equals(t);
-            public override int GetHashCode() => Name is null ? Value.GetHashCode() : Name.GetHashCode();
+            public override bool Equals(object? other) => other is Tuple t && Equals(t);
+            public override int GetHashCode() => Name is null ? Value.GetHashCode() : Name.GetHashCode(StringComparison.Ordinal);
         }
 
         private sealed class Mapping : Dictionary<Tuple, long>
@@ -166,9 +166,9 @@ namespace DotNext
 
         private const string NameSerData = "Name";
         private const string ValueSerData = "Value";
-        private readonly string name;
+        private readonly string? name;
 
-        private Enum(E value, string name)
+        private Enum(E value, string? name)
         {
             Value = value;
             this.name = name;
@@ -182,11 +182,12 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Determines whether one or more bit fields are set in the current instance.
+        /// Determines whether one or more bit fields associated
+        /// with the current instance are set in the given value.
         /// </summary>
-        /// <param name="flag">An enumeration value.</param>
-        /// <returns></returns>
-        public bool HasFlag(E flag) => Runtime.Intrinsics.HasFlag(Value, flag);
+        /// <param name="flags">An enumeration value.</param>
+        /// <returns><see langword="true"/>, if <see cref="Value"/> bits are set in <paramref name="flags"/>.</returns>
+        public bool IsFlag(E flags) => Runtime.Intrinsics.HasFlag(flags, Value);
 
         /// <summary>
         /// Represents value of the enum member.
@@ -230,30 +231,18 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns>Equality check result.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other) => other switch
         {
-            switch (other)
-            {
-                case Enum<E> en:
-                    return Equals(en);
-                case E en:
-                    return Equals(en);
-                default:
-                    return false;
-            }
-        }
+            Enum<E> en => Equals(en),
+            E en => Equals(en),
+            _ => false,
+        };
 
         /// <summary>
         /// Gets hash code of the enum member.
         /// </summary>
         /// <returns>The hash code of the enum member.</returns>
-        public override int GetHashCode()
-        {
-            var hashCode = -1670801664;
-            hashCode = hashCode * -1521134295 + Value.GetHashCode();
-            hashCode = hashCode * -1521134295 + Name.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(Value, Name);
 
         /// <summary>
         /// Returns textual representation of the enum value.

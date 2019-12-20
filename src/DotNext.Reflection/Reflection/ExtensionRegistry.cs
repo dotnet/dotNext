@@ -22,6 +22,8 @@ namespace DotNext.Reflection
 
         }
 
+        private static ExtensionRegistry Create() => new ExtensionRegistry();
+
         private static IEnumerable<MethodInfo> GetMethods(IEnumerable<Type> types, UserDataSlot<ExtensionRegistry> registrySlot)
         {
             foreach (var type in types)
@@ -44,30 +46,22 @@ namespace DotNext.Reflection
             return GetMethods(types, InstanceMethods);
         }
 
-        internal static IEnumerable<MethodInfo> GetMethods(Type target, MethodLookup lookup)
+        internal static IEnumerable<MethodInfo> GetMethods(Type target, MethodLookup lookup) => lookup switch
         {
-            switch (lookup)
-            {
-                case MethodLookup.Static:
-                    return GetStaticMethods(target);
-                case MethodLookup.Instance:
-                    return GetInstanceMethods(target);
-                default:
-                    return Enumerable.Empty<MethodInfo>();
-            }
-        }
+            MethodLookup.Static => GetStaticMethods(target),
+            MethodLookup.Instance => GetInstanceMethods(target),
+            _ => Enumerable.Empty<MethodInfo>(),
+        };
 
         private static ExtensionRegistry GetOrCreateRegistry(Type target, MethodLookup lookup)
         {
-            switch (lookup)
+            var registrySlot = lookup switch
             {
-                case MethodLookup.Instance:
-                    return target.GetUserData().GetOrSet(InstanceMethods, () => new ExtensionRegistry());
-                case MethodLookup.Static:
-                    return target.GetUserData().GetOrSet(StaticMethods, () => new ExtensionRegistry());
-                default:
-                    return null;
-            }
+                MethodLookup.Instance => InstanceMethods,
+                MethodLookup.Static => StaticMethods,
+                _ => throw new ArgumentOutOfRangeException(nameof(lookup)),
+            };
+            return target.GetUserData().GetOrSet(registrySlot, new ValueFunc<ExtensionRegistry>(Create));
         }
 
         /// <summary>

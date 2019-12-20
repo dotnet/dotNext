@@ -15,6 +15,7 @@ using static System.Globalization.CultureInfo;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
+    using IDataTransferObject = IO.IDataTransferObject;
     using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage, Generic.DefaultConst<Messaging.IMessage>>;
 
     internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage>
@@ -71,7 +72,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 }
             }
 
-            Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => requestStream.CopyToAsync(output, 1024, token);
+            ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => new ValueTask(requestStream.CopyToAsync(output, token));
 
             ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask(requestStream.CopyToAsync(output, token));
         }
@@ -125,7 +126,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             response.ContentType = message.Type.ToString();
             response.ContentLength = message.Length;
             response.Headers.Add(MessageNameHeader, message.Name);
-            return message.CopyToAsync(response.Body, token);
+            return message.CopyToAsync(response.Body, token).AsTask();
         }
 
         //do not parse response because this is one-way message
@@ -135,8 +136,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
             var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
-            using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                return await reader(new InboundMessageContent(content, name, contentType, response.Content.Headers.ContentLength), token).ConfigureAwait(false);
+            using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            return await reader(new InboundMessageContent(content, name, contentType, response.Content.Headers.ContentLength), token).ConfigureAwait(false);
         }
     }
 

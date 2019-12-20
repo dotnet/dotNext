@@ -7,7 +7,7 @@ using SpinWait = System.Threading.SpinWait;
 
 namespace DotNext.Threading
 {
-    using static Runtime.InteropServices.Memory;
+    using static Runtime.Intrinsics;
 
     /// <summary>
     /// Provides atomic access to non-primitive data type.
@@ -60,9 +60,9 @@ namespace DotNext.Threading
         /// Performs atomic read.
         /// </summary>
         /// <param name="result">The result of atomic read.</param>
-        public void Read(out T result)
+        public readonly void Read(out T result)
         {
-            SpinWait spinner;
+            var spinner = new SpinWait();
             spin_loop:
             var stamp = version;
             Copy(in value, out result);
@@ -96,7 +96,7 @@ namespace DotNext.Threading
         {
             lockState.Acquire();
             Increment(ref version);
-            Runtime.InteropServices.Memory.Swap(ref value, ref other);
+            Runtime.Intrinsics.Swap(ref value, ref other);
             lockState.Release();
         }
 
@@ -274,7 +274,7 @@ namespace DotNext.Threading
         /// </remarks>
         public T Value
         {
-            get
+            readonly get
             {
                 Read(out var result);
                 return result;
@@ -284,7 +284,7 @@ namespace DotNext.Threading
 
         object IStrongBox.Value
         {
-            get => Value;
+            readonly get => Value;
             set => Value = (T)value;
         }
 
@@ -292,7 +292,7 @@ namespace DotNext.Threading
         /// Converts the stored value into string atomically.
         /// </summary>
         /// <returns>The string returned from <see cref="object.ToString"/> method called on the stored value.</returns>
-        public override string ToString()
+        public readonly override string ToString()
         {
             Read(out var result);
             return result.ToString();

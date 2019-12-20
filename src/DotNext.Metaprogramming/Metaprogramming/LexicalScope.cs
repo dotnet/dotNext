@@ -16,7 +16,7 @@ namespace DotNext.Metaprogramming
 
             internal Expression Statement { get; }
 
-            internal StatementNode Next { get; private protected set; }
+            internal StatementNode? Next { get; private protected set; }
 
             internal StatementNode CreateNext(Expression statement) => Next = new StatementNode(statement);
 
@@ -25,9 +25,9 @@ namespace DotNext.Metaprogramming
 
         private sealed class Enumerator : StatementNode, IEnumerator<Expression>
         {
-            private StatementNode current;
+            private StatementNode? current;
 
-            internal Enumerator(StatementNode first)
+            internal Enumerator(StatementNode? first)
                 : base(Expression.Empty())
             {
                 Next = first;
@@ -46,7 +46,7 @@ namespace DotNext.Metaprogramming
                 }
             }
 
-            public Expression Current => current?.Statement;
+            public Expression Current => current?.Statement ?? throw new InvalidOperationException();
 
             object IEnumerator.Current => Current;
 
@@ -55,14 +55,15 @@ namespace DotNext.Metaprogramming
             public override void Dispose()
             {
                 current = null;
+                Next = null;
                 base.Dispose();
             }
         }
 
         [ThreadStatic]
-        private static LexicalScope current;
+        private static LexicalScope? current;
 
-        internal static S FindScope<S>()
+        internal static S? FindScope<S>()
             where S : class, ILexicalScope
         {
             for (var current = LexicalScope.current; !(current is null); current = current.Parent)
@@ -77,8 +78,8 @@ namespace DotNext.Metaprogramming
 
         private readonly Dictionary<string, ParameterExpression> variables = new Dictionary<string, ParameterExpression>();
 
-        private StatementNode first, last;
-        private protected readonly LexicalScope Parent;
+        private StatementNode? first, last;
+        private protected readonly LexicalScope? Parent;
 
         private protected LexicalScope(bool isStatement)
         {
@@ -92,10 +93,10 @@ namespace DotNext.Metaprogramming
         {
             get
             {
-                for (var current = this; !(current is null); current = current.Parent)
+                for (LexicalScope? current = this; current != null; current = current.Parent)
                     if (current.variables.TryGetValue(variableName, out var variable))
                         return variable;
-                return null;
+                throw new ArgumentException(ExceptionMessages.UndeclaredVariable(variableName), nameof(variableName));
             }
         }
 

@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading;
 using Xunit;
 
@@ -80,18 +82,61 @@ namespace DotNext
         }
 
         [Fact]
-        public static void TryInvoke()
+        public static void TryInvokeFunc()
         {
-            Func<string, int> parser = int.Parse;
-            var result = parser.TryInvoke("123");
-            True(result.IsSuccessful);
-            Null(result.Error);
-            Equal(123, result.Value);
+            static MethodInfo GetMethod(int argCount)
+            {
+                const BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
+                foreach (var candidate in typeof(Func).GetMethods(flags))
+                    if (candidate.Name == nameof(Func.TryInvoke) && candidate.GetParameters().Length == argCount + 1)
+                        return candidate;
+                throw new Xunit.Sdk.XunitException();
+            }
 
-            result = parser.TryInvoke("abc");
-            False(result.IsSuccessful);
-            NotNull(result.Error);
-            Throws<FormatException>(() => result.Value);
+            var successValue = Expression.Constant(42, typeof(int));
+            var failedValue = Expression.Throw(Expression.New(typeof(ArithmeticException)), typeof(int));
+            for (var argCount = 0; argCount <= 10; argCount++)
+            {
+                var types = new Type[argCount + 1];
+                Array.Fill(types, typeof(string));
+                types[argCount] = typeof(int);
+                var funcType = Expression.GetFuncType(types);
+                var parameters = new ParameterExpression[argCount];
+                parameters.ForEach((ref ParameterExpression p, long idx) => p = Expression.Parameter(typeof(string)));
+                //prepare args
+                var args = new object[parameters.LongLength + 1];
+                Array.Fill(args, string.Empty);
+                //find method to test
+                var method = GetMethod(argCount).MakeGenericMethod(types);
+                //check success scenario
+                args[0] = Expression.Lambda(funcType, successValue, parameters).Compile();
+                var result = (Result<int>)method.Invoke(null, args);
+                Equal(42, result);
+                //check failure
+                args[0] = Expression.Lambda(funcType, failedValue, parameters).Compile();
+                result = (Result<int>)method.Invoke(null, args);
+                IsType<ArithmeticException>(result.Error);
+            }
+        }
+
+        [Fact]
+        public static void FuncNullNotNull()
+        {
+            var nullChecker = Func.IsNull<object>().AsPredicate();
+            False(nullChecker(new object()));
+            nullChecker = Func.IsNotNull<object>().AsPredicate();
+            False(nullChecker(null));
+        }
+
+        [Fact]
+        public static void Conversion()
+        {
+            var conv = new Converter<string, int>(int.Parse);
+            Equal(42, conv.AsFunc().Invoke("42"));
+            Converter<int, bool> odd = i => i % 2 != 0;
+            True(odd.AsPredicate().Invoke(3));
+            Equal(42, conv.TryInvoke("42"));
+            NotNull(conv.TryInvoke("abc").Error);
         }
     }
 }

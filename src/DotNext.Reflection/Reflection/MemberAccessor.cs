@@ -1,11 +1,14 @@
-﻿namespace DotNext.Reflection
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace DotNext.Reflection
 {
     /// <summary>
     /// Represents static property or field value getter.
     /// </summary>
     /// <typeparam name="V">Type of the property of field.</typeparam>
     /// <returns>The value of the property of field.</returns>
-	public delegate V MemberGetter<out V>();
+    [return: MaybeNull]
+    public delegate V MemberGetter<out V>();
 
     /// <summary>
     /// Represents static property or field setter.
@@ -21,7 +24,8 @@
     /// <typeparam name="T">Declaring type.</typeparam>
     /// <typeparam name="V">Member type.</typeparam>
     /// <returns>Field value.</returns>
-    public delegate V MemberGetter<T, out V>(in T @this);
+    [return: MaybeNull]
+    public delegate V MemberGetter<T, out V>([DisallowNull]in T @this);
 
     /// <summary>
     /// Represents field setter.
@@ -30,5 +34,5 @@
     /// <param name="value">A value to set.</param>
     /// <typeparam name="T">Declaring type.</typeparam>
     /// <typeparam name="V">Member type.</typeparam>
-    public delegate void MemberSetter<T, in V>(in T @this, V value);
+    public delegate void MemberSetter<T, in V>([DisallowNull]in T @this, V value);
 }

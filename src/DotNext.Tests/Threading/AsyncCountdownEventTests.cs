@@ -11,19 +11,17 @@ namespace DotNext.Threading
         [Fact]
         public static async Task Counting()
         {
-            using (var countdown = new AsyncCountdownEvent(4))
-            {
-                False(countdown.IsSet);
-                False(await countdown.Wait(TimeSpan.FromMilliseconds(100)));
+            using var countdown = new AsyncCountdownEvent(4);
+            False(countdown.IsSet);
+            False(await countdown.WaitAsync(TimeSpan.FromMilliseconds(100)));
 
-                False(countdown.Signal()); //count == 3
-                False(countdown.IsSet);
-                False(await countdown.Wait(TimeSpan.FromMilliseconds(100)));
+            False(countdown.Signal()); //count == 3
+            False(countdown.IsSet);
+            False(await countdown.WaitAsync(TimeSpan.FromMilliseconds(100)));
 
-                True(countdown.Signal(3));
-                True(countdown.IsSet);
-                True(await countdown.Wait(TimeSpan.FromMilliseconds(40)));
-            }
+            True(countdown.Signal(3));
+            True(countdown.IsSet);
+            True(await countdown.WaitAsync(TimeSpan.FromMilliseconds(40)));
         }
 
         [Theory]
@@ -42,34 +40,32 @@ namespace DotNext.Threading
         [InlineData(1024 * 1024, 1024, true)]
         public static void CheckStateTransitions(long initCount, long increms, bool takeAllAtOnce)
         {
-            using (var ev = new AsyncCountdownEvent(initCount))
-            {
-                Equal(initCount, ev.InitialCount);
+            using var ev = new AsyncCountdownEvent(initCount);
+            Equal(initCount, ev.InitialCount);
 
-                // Increment (optionally).
-                for (var i = 1; i < increms + 1; i++)
+            // Increment (optionally).
+            for (var i = 1; i < increms + 1; i++)
+            {
+                ev.AddCount();
+                Equal(initCount + i, ev.CurrentCount);
+            }
+
+            // Decrement until it hits 0.
+            if (takeAllAtOnce)
+                ev.Signal(initCount + increms);
+            else
+                for (int i = 0; i < initCount + increms; i++)
                 {
-                    ev.AddCount();
-                    Equal(initCount + i, ev.CurrentCount);
+                    False(ev.IsSet);
+                    ev.Signal();
                 }
 
-                // Decrement until it hits 0.
-                if (takeAllAtOnce)
-                    ev.Signal(initCount + increms);
-                else
-                    for (int i = 0; i < initCount + increms; i++)
-                    {
-                        False(ev.IsSet);
-                        ev.Signal();
-                    }
+            True(ev.IsSet);
+            Equal(0, ev.CurrentCount);
 
-                True(ev.IsSet);
-                Equal(0, ev.CurrentCount);
-
-                // Now reset the event and check its count.
-                ev.Reset();
-                Equal(ev.InitialCount, ev.CurrentCount);
-            }
+            // Now reset the event and check its count.
+            ev.Reset();
+            Equal(ev.InitialCount, ev.CurrentCount);
         }
     }
 }

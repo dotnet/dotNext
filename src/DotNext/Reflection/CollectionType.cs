@@ -16,7 +16,7 @@ namespace DotNext.Reflection
         /// <param name="collectionType">Any collection type implementing <see cref="IEnumerable{T}"/>.</param>
         /// <param name="enumerableInterface">The type <see cref="IEnumerable{T}"/> with actual generic argument.</param>
         /// <returns>Type of items in the collection; or <see langword="null"/> if <paramref name="collectionType"/> is not a generic collection.</returns>
-        public static Type GetItemType(this Type collectionType, out Type enumerableInterface)
+        public static Type? GetItemType(this Type collectionType, out Type? enumerableInterface)
         {
             enumerableInterface = collectionType.FindGenericInstance(typeof(IEnumerable<>));
             if (!(enumerableInterface is null))
@@ -38,7 +38,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="collectionType">Any collection type implementing <see cref="IEnumerable{T}"/>.</param>
         /// <returns>Type of items in the collection; or <see langword="null"/> if <paramref name="collectionType"/> is not a generic collection.</returns>
-        public static Type GetItemType(this Type collectionType)
+        public static Type? GetItemType(this Type collectionType)
             => collectionType.GetItemType(out _);
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace DotNext.Reflection
         /// <returns>The interface of the collection implemented by the given type; otherwise, <see langword="null"/> if collection interface is not implemented.</returns>
         /// <seealso cref="ICollection{T}"/>
         /// <seealso cref="IReadOnlyCollection{T}"/>
-        public static Type GetImplementedCollection(this Type type)
+        public static Type? GetImplementedCollection(this Type type)
         {
             foreach (var collectionType in (typeof(IReadOnlyCollection<>), typeof(ICollection<>)).AsEnumerable())
             {

@@ -9,7 +9,7 @@ namespace DotNext.Runtime.CompilerServices
     {
         private readonly uint previousState;
         private readonly uint recoveryStateId;
-        private readonly LabelTarget finallyLabel;
+        private readonly LabelTarget? finallyLabel;
 
         internal TryCatchFinallyStatement(TryExpression expression, IDictionary<uint, StateTransition> transitionTable, uint previousState, ref uint stateId)
             : base(expression, Label("fault_" + (++stateId)))
@@ -47,7 +47,7 @@ namespace DotNext.Runtime.CompilerServices
                 tryBody = tryBody.AddEpilogue(false, finallyLabel.Goto(), FaultLabel.LandingSite());
             //generate exception handlers block
             var handlers = new LinkedList<Expression>();
-            if (Content.Handlers.Count > 0)
+            if (finallyLabel != null)
             {
                 handlers.AddLast(new ExitGuardedCodeExpression(previousState));
                 handlers.AddLast(new EnterGuardedCodeExpression(recoveryStateId));

@@ -5,6 +5,8 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Replication
 {
+    using IO.Log;
+
     /// <summary>
     /// Represents a list with single log entry.
     /// </summary>

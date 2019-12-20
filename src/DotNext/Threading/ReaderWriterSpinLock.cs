@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Threading
 {
@@ -28,7 +29,7 @@ namespace DotNext.Threading
                 valid = true;
             }
 
-            internal bool IsValid(ref int version) => valid && this.version == version.VolatileRead();
+            internal readonly bool IsValid(in int version) => valid && this.version == Unsafe.AsRef(in version).VolatileRead();
 
             /// <summary>
             /// Determines whether this stamp represents the same version of the lock state
@@ -36,7 +37,7 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="other">The lock stamp to compare.</param>
             /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public bool Equals(LockStamp other) => version == other.version && valid == other.valid;
+            public readonly bool Equals(LockStamp other) => version == other.version && valid == other.valid;
 
             /// <summary>
             /// Determines whether this stamp represents the same version of the lock state
@@ -44,13 +45,13 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="other">The lock stamp to compare.</param>
             /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public override bool Equals(object other) => other is LockStamp stamp && Equals(stamp);
+            public readonly override bool Equals(object? other) => other is LockStamp stamp && Equals(stamp);
 
             /// <summary>
             /// Computes hash code for this stamp.
             /// </summary>
             /// <returns>The hash code of this stamp.</returns>
-            public override int GetHashCode() => version;
+            public readonly override int GetHashCode() => version;
 
             /// <summary>
             /// Determines whether the first stamp represents the same version of the lock state
@@ -94,22 +95,22 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="stamp">A stamp to check.</param>
         /// <returns><see langword="true"/> if the lock has not been exclusively acquired since issuance of the given stamp; else <see langword="false"/>.</returns>
-        public bool Validate(in LockStamp stamp) => stamp.IsValid(ref version);
+        public readonly bool Validate(in LockStamp stamp) => stamp.IsValid(in version);
 
         /// <summary>
         /// Gets a value that indicates whether the current thread has entered the lock in write mode.
         /// </summary>
-        public bool IsWriteLockHeld => state == WriteLockState;
+        public readonly bool IsWriteLockHeld => state == WriteLockState;
 
         /// <summary>
         /// Gets a value that indicates whether the current thread has entered the lock in read mode.
         /// </summary>
-        public bool IsReadLockHeld => state > NoLockState;
+        public readonly bool IsReadLockHeld => state > NoLockState;
 
         /// <summary>
         /// Gets the total number of unique threads that have entered the lock in read mode.
         /// </summary>
-        public int CurrentReadCount => Math.Max(0, state);
+        public readonly int CurrentReadCount => Math.Max(0, state);
 
         /// <summary>
         /// Attempts to enter reader lock without blocking the caller thread.
@@ -133,7 +134,7 @@ namespace DotNext.Threading
         /// </summary>
         public void EnterReadLock()
         {
-            for (SpinWait spinner; ;)
+            for (var spinner = new SpinWait(); ;)
             {
                 var currentState = state;
                 if (currentState == WriteLockState)
@@ -150,7 +151,7 @@ namespace DotNext.Threading
 
         private bool TryEnterReadLock(Timeout timeout, CancellationToken token)
         {
-            SpinWait spinner;
+            var spinner = new SpinWait();
             for (int currentState; !timeout.IsExpired; token.ThrowIfCancellationRequested())
                 if ((currentState = state) == WriteLockState)
                     spinner.SpinOnce();
@@ -174,7 +175,7 @@ namespace DotNext.Threading
         /// </summary>
         public void EnterWriteLock()
         {
-            for (SpinWait spinner; Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce()) { }
+            for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce()) { }
             Interlocked.Increment(ref version);
         }
 
@@ -192,7 +193,7 @@ namespace DotNext.Threading
 
         private bool TryEnterWriteLock(Timeout timeout, CancellationToken token)
         {
-            for (SpinWait spinner; Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce(), token.ThrowIfCancellationRequested())
+            for (var spinner = new SpinWait(); Interlocked.CompareExchange(ref state, WriteLockState, NoLockState) != NoLockState; spinner.SpinOnce(), token.ThrowIfCancellationRequested())
                 if (timeout.IsExpired)
                     return false;
             Interlocked.Increment(ref version);

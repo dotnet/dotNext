@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading;
@@ -11,25 +13,48 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
     internal sealed class RaftHostedCluster : RaftHttpCluster
     {
+        private sealed class WebHostConfigurer
+        {
+            private readonly RaftHostedClusterMemberConfiguration config;
+            private readonly IDedicatedHostBuilder? hostBuilder;
+            private readonly RequestDelegate raftProcessor;
+
+            internal WebHostConfigurer(IServiceProvider services, out RaftHostedClusterMemberConfiguration config, RequestDelegate raftProcessor)
+            {
+                this.config = config = services.GetRequiredService<IOptions<RaftHostedClusterMemberConfiguration>>().Value;
+                hostBuilder = services.GetService<IDedicatedHostBuilder>();
+                this.raftProcessor = raftProcessor;
+            }
+
+            private void Configure(IApplicationBuilder app)
+                => app.UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent }).Run(raftProcessor);
+
+            private void Configure(IWebHostBuilder webHost)
+            {
+                Action<IApplicationBuilder> appBuilder = Configure;
+                if (hostBuilder is null)
+                {
+                    webHost.UseKestrel(config.ConfigureKestrel);
+                }
+                else
+                {
+                    hostBuilder.Configure(webHost);
+                    appBuilder = hostBuilder.Configure + appBuilder;
+                }
+                webHost.Configure(appBuilder);
+            }
+
+            internal IHost BuildHost() => new HostBuilder().ConfigureWebHost(Configure).Build();
+        }
+
         private static readonly Uri Root = new Uri("/", UriKind.Relative);
-        private readonly IWebHost host;
+        private readonly IHost host;
 
         public RaftHostedCluster(IServiceProvider services)
             : base(services, out var members)
         {
-            var config = services.GetRequiredService<IOptions<RaftHostedClusterMemberConfiguration>>().Value;
-            var appConfigurer = services.GetService<ApplicationBuilder>();
-            host = services.GetRequiredService<WebHostBuilder>()
-                .Configure(config)
-                .Configure(app =>
-                {
-                    appConfigurer?.Invoke(app);
-                    app
-                        .UseExceptionHandler(new ExceptionHandlerOptions { ExceptionHandler = RaftHttpConfigurator.WriteExceptionContent })
-                        .Run(ProcessRequest);
-                })
-                .Build();
-            config.SetupHostAddressHint(host.ServerFeatures);
+            host = new WebHostConfigurer(services, out var config, ProcessRequest).BuildHost();
+            config.SetupHostAddressHint(host.Services.GetRequiredService<IServer>().Features);
             foreach (var memberUri in config.Members)
                 members.Add(CreateMember(memberUri));
         }

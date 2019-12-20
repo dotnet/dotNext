@@ -15,13 +15,6 @@ namespace DotNext
         }
 
         [Fact]
-        public static void RestrictionTest()
-        {
-            Equal(30M, 20M.Max(30M));
-            Equal(10M, 10M.Min(30M));
-        }
-
-        [Fact]
         public static void BetweenTest()
         {
             True(15M.Between(10M, 20M));

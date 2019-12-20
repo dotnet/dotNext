@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -32,44 +33,40 @@ namespace DotNext.Runtime.InteropServices
         public static void StreamInterop()
         {
             var array = new ushort[] { 1, 2, 3 }.AsMemory();
-            using (var pinned = array.Pin())
-            using (var ms = new MemoryStream())
+            using var pinned = array.Pin();
+            using var ms = new MemoryStream();
+            var ptr = (Pointer<ushort>)pinned;
+            ptr.WriteTo(ms, array.Length);
+            Equal(6L, ms.Length);
+            True(ms.TryGetBuffer(out var buffer));
+            buffer.Array.ForEach((ref byte value, long index) =>
             {
-                var ptr = (Pointer<ushort>)pinned;
-                ptr.WriteTo(ms, array.Length);
-                Equal(6L, ms.Length);
-                True(ms.TryGetBuffer(out var buffer));
-                buffer.Array.ForEach((ref byte value, long index) =>
-                {
-                    if (value == 1)
-                        value = 20;
-                });
-                ms.Position = 0;
-                Equal(6, ptr.ReadFrom(ms, array.Length));
-                Equal(20, ptr[0]);
-            }
+                if (value == 1)
+                    value = 20;
+            });
+            ms.Position = 0;
+            Equal(6, ptr.ReadFrom(ms, array.Length));
+            Equal(20, ptr[0]);
         }
 
         [Fact]
         public static async Task StreamInteropAsync()
         {
             var array = new ushort[] { 1, 2, 3 }.AsMemory();
-            using (var pinned = array.Pin())
-            using (var ms = new MemoryStream())
+            using var pinned = array.Pin();
+            using var ms = new MemoryStream();
+            var ptr = (Pointer<ushort>)pinned;
+            await ptr.WriteToAsync(ms, array.Length);
+            Equal(6L, ms.Length);
+            True(ms.TryGetBuffer(out var buffer));
+            buffer.Array.ForEach((ref byte value, long index) =>
             {
-                var ptr = (Pointer<ushort>)pinned;
-                await ptr.WriteToAsync(ms, array.Length);
-                Equal(6L, ms.Length);
-                True(ms.TryGetBuffer(out var buffer));
-                buffer.Array.ForEach((ref byte value, long index) =>
-                {
-                    if (value == 1)
-                        value = 20;
-                });
-                ms.Position = 0;
-                Equal(6, await ptr.ReadFromAsync(ms, array.Length));
-                Equal(20, ptr[0]);
-            }
+                if (value == 1)
+                    value = 20;
+            });
+            ms.Position = 0;
+            Equal(6, await ptr.ReadFromAsync(ms, array.Length));
+            Equal(20, ptr[0]);
         }
 
         [Fact]
@@ -248,23 +245,25 @@ namespace DotNext.Runtime.InteropServices
             ptr.Fill(42, 10L);
             Equal(42, ptr[0]);
             Equal(42, ptr[9]);
+            Pointer<int> ptr2 = stackalloc int[10];
+            ptr.WriteTo(ptr2, 10);
+            Equal(42, ptr2[0]);
+            Equal(42, ptr2[9]);
             ptr.Clear(10);
             Equal(0, ptr[0]);
-            Equal(0, ptr[9]);
+            Equal(0, ptr[8]);
         }
 
         [Fact]
         public static unsafe void ToStreamConversion()
         {
             Pointer<byte> ptr = stackalloc byte[] { 10, 20, 30 };
-            using (var stream = ptr.AsStream(3))
-            {
-                var bytes = new byte[3];
-                Equal(3, stream.Read(bytes, 0, 3));
-                Equal(10, bytes[0]);
-                Equal(20, bytes[1]);
-                Equal(30, bytes[2]);
-            }
+            using var stream = ptr.AsStream(3);
+            var bytes = new byte[3];
+            Equal(3, stream.Read(bytes, 0, 3));
+            Equal(10, bytes[0]);
+            Equal(20, bytes[1]);
+            Equal(30, bytes[2]);
         }
 
         [Fact]
@@ -290,6 +289,66 @@ namespace DotNext.Runtime.InteropServices
             Equal(2, array[1]);
             Equal(3, array[2]);
             NotEqual(Pointer<byte>.Null, ptr);
+        }
+
+        [Fact]
+        public static unsafe void Alignment()
+        {
+            Pointer<int> ptr = default;
+            True(ptr.IsAligned);
+            var a = 20;
+            ptr = &a;
+            True(ptr.IsAligned);
+            decimal d = 20;
+            ptr = (int*)(((byte*)&d) + 1);
+            False(ptr.IsAligned);
+        }
+
+        [Fact]
+        public static unsafe void Operators()
+        {
+            var ptr1 = new Pointer<int>(new IntPtr(42));
+            var ptr2 = new Pointer<int>(new IntPtr(43));
+            True(ptr1 != ptr2);
+            False(ptr1 == ptr2);
+            ptr2 -= new IntPtr(1);
+            Equal(new IntPtr(42), ptr2);
+            False(ptr1 != ptr2);
+            Equal(new IntPtr(42), ptr1);
+            True(new IntPtr(42).ToPointer() == ptr1);
+            if (ptr1) { }
+            else throw new Xunit.Sdk.XunitException();
+            ptr2 = default;
+            if (ptr2) throw new Xunit.Sdk.XunitException();
+
+            ptr1 += 2U;
+            Equal(new IntPtr(50), ptr1);
+            ptr1 += 1L;
+            Equal(new IntPtr(54), ptr1);
+            ptr1 += new IntPtr(2);
+            Equal(new IntPtr(56), ptr1);
+
+            ptr1 = new Pointer<int>(new UIntPtr(56U));
+            Equal(new UIntPtr(56U), ptr1);
+        }
+
+        [Fact]
+        public static unsafe void Boxing()
+        {
+            var value = 10;
+            IStrongBox box = new Pointer<int>(&value);
+            Equal(10, box.Value);
+            box.Value = 42;
+            Equal(42, box.Value);
+        }
+
+        [Fact]
+        public static unsafe void Conversion()
+        {
+            var value = 10;
+            Pointer<uint> ptr = new Pointer<int>(&value).As<uint>();
+            ptr.Value = 42U;
+            Equal(42, value);
         }
     }
 }

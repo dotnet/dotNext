@@ -8,7 +8,7 @@ namespace DotNext
 {
     using Reflection;
     using Runtime.CompilerServices;
-    using Runtime.InteropServices;
+    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Generates hash code and equality check functions for the particular type.
@@ -21,6 +21,7 @@ namespace DotNext
     [RuntimeFeatures(RuntimeGenericInstantiation = true, DynamicCodeCompilation = true, PrivateReflection = true)]
     public struct EqualityComparerBuilder<T>
     {
+        private const BindingFlags PublicStaticFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
         private bool salted;
         private ICollection<string> excludedFields;
 
@@ -79,11 +80,14 @@ namespace DotNext
         }
 
         private static MethodInfo EqualsMethodForArrayElementType(Type itemType)
-            => itemType.IsValueType ?
+        {
+            var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
+            return itemType.IsValueType ?
                 typeof(OneDimensionalArray)
-                        .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, null)
+                        .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), 1, PublicStaticFlags, null, new[] { arrayType, arrayType }, null)!
                         .MakeGenericMethod(itemType)
                 : new Func<IEnumerable<object>, IEnumerable<object>, bool>(Sequence.SequenceEqual).Method;
+        }
 
         private static MethodCallExpression EqualsMethodForArrayElementType(MemberExpression fieldX, MemberExpression fieldY)
         {
@@ -92,12 +96,15 @@ namespace DotNext
         }
 
         private static MethodInfo HashCodeMethodForArrayElementType(Type itemType)
-            => itemType.IsValueType ?
-                typeof(OneDimensionalArray)
-                        .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, typeof(bool))
-                        .MakeGenericMethod(itemType) :
-                typeof(Sequence)
-                        .GetMethod(nameof(Sequence.SequenceHashCode), new[] { typeof(IEnumerable<object>), typeof(bool) });
+        {
+            var arrayType = Type.MakeGenericMethodParameter(0).MakeArrayType();
+            return itemType.IsValueType ?
+                  typeof(OneDimensionalArray)
+                          .GetMethod(nameof(OneDimensionalArray.BitwiseHashCode), 1, PublicStaticFlags, null, new[] { arrayType, typeof(bool) }, null)!
+                          .MakeGenericMethod(itemType) :
+                  typeof(Sequence)
+                          .GetMethod(nameof(Sequence.SequenceHashCode), new[] { typeof(IEnumerable<object>), typeof(bool) });
+        }
 
         private static MethodCallExpression HashCodeMethodForArrayElementType(Expression expr, ConstantExpression salted)
         {
@@ -123,9 +130,8 @@ namespace DotNext
             {
                 var y = Expression.Parameter(x.Type);
                 //collect all fields in the hierarchy
-                Expression expr = x.Type.IsClass ? Expression.ReferenceNotEqual(y, Expression.Constant(null, y.Type)) : null;
-                foreach (var field in GetAllFields(x.Type
-                ))
+                Expression? expr = x.Type.IsClass ? Expression.ReferenceNotEqual(y, Expression.Constant(null, y.Type)) : null;
+                foreach (var field in GetAllFields(x.Type))
                     if (IsIncluded(field))
                     {
                         var fieldX = Expression.Field(x, field);
@@ -168,7 +174,7 @@ namespace DotNext
                     {
                         expr = Expression.Field(inputParam, field);
                         if (field.FieldType.IsPointer)
-                            expr = Expression.Call(typeof(Memory).GetMethod(nameof(Memory.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic), expr);
+                            expr = Expression.Call(typeof(Intrinsics).GetMethod(nameof(Intrinsics.PointerHashCode), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic), expr);
                         else if (field.FieldType.IsPrimitive)
                             expr = Expression.Call(expr, nameof(GetHashCode), Array.Empty<Type>());
                         else if (field.FieldType.IsValueType)

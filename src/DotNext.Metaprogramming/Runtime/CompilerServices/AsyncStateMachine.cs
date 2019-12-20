@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 using System.Runtime.ExceptionServices;
@@ -17,6 +18,7 @@ namespace DotNext.Runtime.CompilerServices
     /// <typeparam name="STATE">The local state of async function used to store computation state.</typeparam>
     [StructLayout(LayoutKind.Auto)]
     internal struct AsyncStateMachine<STATE> : IAsyncStateMachine<STATE>
+        where STATE : struct
     {
         /// <summary>
         /// Represents state-transition function.
@@ -36,7 +38,7 @@ namespace DotNext.Runtime.CompilerServices
 
         private AsyncValueTaskMethodBuilder builder;
         private readonly Transition transition;
-        private ExceptionDispatchInfo exception;
+        private ExceptionDispatchInfo? exception;
         private uint guardedRegionsCounter;    //number of entries into try-clause
 
         private AsyncStateMachine(Transition transition, STATE state)
@@ -95,7 +97,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="restoredException">Reference to the captured exception.</param>
         /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="E"/>; otherwise, <see langword="false"/>.</returns>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public bool TryRecover<E>(out E restoredException)
+        public bool TryRecover<E>([NotNullWhen(true)] out E? restoredException)
             where E : Exception
         {
             if (exception?.SourceException is E typed)
@@ -226,8 +228,9 @@ namespace DotNext.Runtime.CompilerServices
         public STATE State;
         private AsyncValueTaskMethodBuilder<R> builder;
         private readonly Transition transition;
-        private ExceptionDispatchInfo exception;
+        private ExceptionDispatchInfo? exception;
         private uint guardedRegionsCounter;    //number of entries into try-clause
+        [AllowNull]
         private R result;
 
         private AsyncStateMachine(Transition transition, STATE state)
@@ -286,7 +289,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="restoredException">Reference to the captured exception.</param>
         /// <returns><see langword="true"/>, if caught exception is of type <typeparamref name="E"/>; otherwise, <see langword="false"/>.</returns>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public bool TryRecover<E>(out E restoredException)
+        public bool TryRecover<E>([NotNullWhen(true)]out E? restoredException)
             where E : Exception
         {
             if (exception?.SourceException is E typed)

@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Concurrent
 {
-    using static Runtime.InteropServices.Memory;
+    using static Runtime.Intrinsics;
 
     /// <summary>
     /// A thread-safe variant of <see cref="List{T}"/> in which all mutative operations are implemented by making a snapshot copy of the underlying array. 
@@ -38,11 +38,11 @@ namespace DotNext.Collections.Concurrent
             /// <summary>
             /// Gets the element in the collection at the current position of the enumerator.
             /// </summary>
-            public ref readonly T Current => ref snapshot.GetReadonlyRef(position);
+            public readonly ref readonly T Current => ref snapshot.GetReadonlyRef(position);
 
-            T IEnumerator<T>.Current => Current;
+            readonly T IEnumerator<T>.Current => Current;
 
-            object IEnumerator.Current => Current;
+            readonly object? IEnumerator.Current => Current;
 
             void IDisposable.Dispose() => this = default;
 
@@ -271,7 +271,7 @@ namespace DotNext.Collections.Concurrent
             {
                 ref var item = ref oldStore[i];
                 cleaner.Invoke(item);
-                item = default;
+                item = default!;
             }
         }
 

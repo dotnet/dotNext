@@ -9,6 +9,7 @@ namespace DotNext.Reflection
     /// <summary>
     /// Represents unary operator.
     /// </summary>
+    [Serializable]
     public enum UnaryOperator : int
     {
         /// <summary>
@@ -87,13 +88,15 @@ namespace DotNext.Reflection
     {
         private sealed class Cache : Cache<UnaryOperator<T, R>>
         {
-            private protected override UnaryOperator<T, R> Create(Operator.Kind kind) => Reflect(kind);
+            private protected override UnaryOperator<T, R>? Create(Operator.Kind kind) => Reflect(kind);
         }
 
-        private UnaryOperator(Expression<Operator<T, R>> invoker, UnaryOperator type, MethodInfo overloaded)
+        private UnaryOperator(Expression<Operator<T, R>> invoker, UnaryOperator type, MethodInfo? overloaded)
             : base(invoker.Compile(), type.ToExpressionType(), overloaded)
         {
         }
+
+        private protected override Type DeclaringType => typeof(T);
 
         /// <summary>
         /// Type of operator.
@@ -108,7 +111,7 @@ namespace DotNext.Reflection
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public R Invoke(in T operand) => Invoker(in operand);
 
-        private static Expression<Operator<T, R>> MakeUnary(Operator.Kind @operator, Operator.Operand operand, out MethodInfo overloaded)
+        private static Expression<Operator<T, R>>? MakeUnary(Operator.Kind @operator, Operator.Operand operand, out MethodInfo? overloaded)
         {
             var resultType = typeof(R);
             bool usePrimitiveCast;
@@ -149,7 +152,7 @@ namespace DotNext.Reflection
         }
 
 
-        private static UnaryOperator<T, R> Reflect(Operator.Kind op)
+        private static UnaryOperator<T, R>? Reflect(Operator.Kind op)
         {
             var parameter = Expression.Parameter(typeof(T).MakeByRefType(), "operand");
             var result = MakeUnary(op, parameter, out var overloaded);
@@ -162,21 +165,15 @@ namespace DotNext.Reflection
                 return new UnaryOperator<T, R>(result, op, overloaded);
         }
 
-        private static UnaryOperator<T, R> GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(T)).GetOrCreate(op);
+        private static UnaryOperator<T, R>? GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(T)).GetOrCreate(op);
 
-        internal static UnaryOperator<T, R> GetOrCreate(UnaryOperator @operator, OperatorLookup lookup)
-        {
-            switch (lookup)
+        internal static UnaryOperator<T, R>? GetOrCreate(UnaryOperator @operator, OperatorLookup lookup)
+            => lookup switch
             {
-                case OperatorLookup.Predefined:
-                    return GetOrCreate(new Operator.Kind(@operator, false));
-                case OperatorLookup.Overloaded:
-                    return GetOrCreate(new Operator.Kind(@operator, true));
-                case OperatorLookup.Any:
-                    return GetOrCreate(new Operator.Kind(@operator, true)) ?? GetOrCreate(new Operator.Kind(@operator, false));
-                default:
-                    return null;
-            }
-        }
+                OperatorLookup.Predefined => GetOrCreate(new Operator.Kind(@operator, false)),
+                OperatorLookup.Overloaded => GetOrCreate(new Operator.Kind(@operator, true)),
+                OperatorLookup.Any => GetOrCreate(new Operator.Kind(@operator, true)) ?? GetOrCreate(new Operator.Kind(@operator, false)),
+                _ => null,
+            };
     }
 }

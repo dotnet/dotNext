@@ -11,7 +11,7 @@ namespace DotNext.Threading
     /// <remarks>
     /// This class behaves in opposite to <see cref="AsyncCountdownEvent"/>.
     /// Every call of <see cref="Increment"/> increments the counter.
-    /// Every call of <see cref="Wait(TimeSpan, CancellationToken)"/>
+    /// Every call of <see cref="WaitAsync(TimeSpan, CancellationToken)"/>
     /// decrements counter and release the caller if the current count is greater than zero.
     /// </remarks>
     public class AsyncCounter : QueuedSynchronizer, IAsyncEvent
@@ -30,7 +30,7 @@ namespace DotNext.Threading
 
             internal bool Reset() => Interlocked.Exchange(ref counter, 0L) > 0L;
 
-            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode tail)
+            WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail)
                 => tail is null ? new WaitNode() : new WaitNode(tail);
 
             bool ILockManager<WaitNode>.TryAcquire()
@@ -63,7 +63,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <remarks>
         /// The returned value indicates how many calls you can perform
-        /// using <see cref="Wait(TimeSpan, CancellationToken)"/> without
+        /// using <see cref="WaitAsync(TimeSpan, CancellationToken)"/> without
         /// blocking.
         /// </remarks>
         public long Value => manager.Count;
@@ -80,7 +80,7 @@ namespace DotNext.Threading
         {
             ThrowIfDisposed();
             manager.Increment();
-            for (WaitNode current = head, next; !(current is null) && manager.Count > 0L; manager.Decrement(), current = next)
+            for (WaitNode? current = head, next; !(current is null) && manager.Count > 0L; manager.Decrement(), current = next)
             {
                 next = current.Next;
                 RemoveNode(current);
@@ -103,7 +103,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if counter is decremented successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
-        public Task<bool> Wait(TimeSpan timeout, CancellationToken token)
-            => Wait(ref manager, timeout, token);
+        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token)
+            => WaitAsync(ref manager, timeout, token);
     }
 }

@@ -4,10 +4,11 @@ using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
+using TR = InlineIL.TypeRef;
 
 namespace DotNext
 {
-    using Memory = Runtime.InteropServices.Memory;
+    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Represents bitwise comparer for the arbitrary value type.
@@ -51,7 +52,7 @@ namespace DotNext
                     Push(ref first);
                     Push(ref second);
                     Push(size);
-                    Call(new M(typeof(Memory), nameof(Memory.EqualsAligned)));
+                    Call(new M(typeof(Intrinsics), nameof(Intrinsics.EqualsAligned)));
                     break;
                 case sizeof(byte):
                     Push(ref first);
@@ -67,6 +68,8 @@ namespace DotNext
                     Ldind_I2();
                     Ceq();
                     break;
+                case 3:
+                    goto default;
                 case sizeof(int):
                     Push(ref first);
                     Ldind_I4();
@@ -74,6 +77,10 @@ namespace DotNext
                     Ldind_I4();
                     Ceq();
                     break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
                 case sizeof(long):
                     Push(ref first);
                     Ldind_I8();
@@ -121,7 +128,7 @@ namespace DotNext
                     Push(ref first);
                     Push(ref second);
                     Push(size);
-                    Call(new M(typeof(Memory), nameof(Memory.CompareUnaligned)));
+                    Call(new M(typeof(Intrinsics), nameof(Intrinsics.Compare), new TR(typeof(byte)).MakeByRefType(), new TR(typeof(byte)).MakeByRefType(), typeof(long)));
                     break;
                 case sizeof(byte):
                     Push(ref first);
@@ -135,12 +142,18 @@ namespace DotNext
                     Ldind_U2();
                     Call(new M(typeof(ushort), nameof(ushort.CompareTo), typeof(ushort)));
                     break;
+                case 3:
+                    goto default;
                 case sizeof(uint):
                     Push(ref first);
                     Push(ref second);
                     Ldind_U4();
                     Call(new M(typeof(uint), nameof(uint.CompareTo), typeof(uint)));
                     break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
                 case sizeof(ulong):
                     Push(ref first);
                     Push(ref second);
@@ -175,7 +188,7 @@ namespace DotNext
                     Push(ref value);
                     Push(size);
                     Push(salted);
-                    Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(bool)));
+                    Call(new M(typeof(Intrinsics), nameof(Intrinsics.GetHashCode32), new TR(typeof(byte)).MakeByRefType(), typeof(long), typeof(bool)));
                     return Return<int>();
                 case sizeof(byte):
                     Push(ref value);
@@ -185,10 +198,16 @@ namespace DotNext
                     Push(ref value);
                     Ldind_I2();
                     break;
+                case 3:
+                    goto default;
                 case sizeof(int):
                     Push(ref value);
                     Ldind_I4();
                     break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
                 case sizeof(long):
                     Push(ref value);
                     Call(new M(typeof(ulong), nameof(GetHashCode)));
@@ -218,7 +237,7 @@ namespace DotNext
             Push(hash);
             Ldarg(nameof(hashFunction));
             Push(salted);
-            Call(new M(typeof(Memory), nameof(Memory.GetHashCode32Aligned), typeof(IntPtr), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>).MakeByRefType(), typeof(bool)));
+            Call(new M(typeof(Intrinsics), nameof(Intrinsics.GetHashCode32), new TR(typeof(byte)).MakeByRefType(), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>).MakeByRefType(), typeof(bool)));
             return Return<int>();
         }
 

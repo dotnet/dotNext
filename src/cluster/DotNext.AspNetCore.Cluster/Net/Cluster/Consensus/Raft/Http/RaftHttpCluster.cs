@@ -11,6 +11,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
@@ -18,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
-        private readonly IRaftClusterConfigurator configurator;
+        private readonly IClusterMemberLifetime configurator;
         private readonly IMessageHandler messageHandler;
 
         private readonly IDisposable configurationTracker;
@@ -26,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private volatile ISet<IPNetwork> allowedNetworks;
 
         [SuppressMessage("Usage", "CA2213", Justification = "This object is disposed via RaftCluster.members collection")]
-        private RaftClusterMember localMember;
+        private RaftClusterMember? localMember;
 
         private readonly IHttpMessageHandlerFactory httpHandlerFactory;
         private readonly TimeSpan requestTimeout;
@@ -36,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly HttpVersion protocolVersion;
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
-        private RaftHttpCluster(RaftClusterMemberConfiguration config, out MutableMemberCollection members)
+        private RaftHttpCluster(RaftClusterMemberConfiguration config, IServiceProvider dependencies, out MutableMemberCollection members, Func<Action<RaftClusterMemberConfiguration, string>, IDisposable> configTracker)
             : base(config, out members)
         {
             openConnectionForEachRequest = config.OpenConnectionForEachRequest;
@@ -46,20 +47,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;
-        }
-
-        private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MutableMemberCollection members)
-            : this(config.CurrentValue, out members)
-        {
-            configurator = dependencies.GetService<IRaftClusterConfigurator>();
+            //dependencies
+            configurator = dependencies.GetService<IClusterMemberLifetime>();
             messageHandler = dependencies.GetService<IMessageHandler>();
             AuditTrail = dependencies.GetService<IPersistentState>() ?? new InMemoryAuditTrail();
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
-            var loggerFactory = dependencies.GetRequiredService<ILoggerFactory>();
-            Logger = loggerFactory.CreateLogger(GetType());
+            Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
             Metrics = dependencies.GetService<MetricsCollector>();
             //track changes in configuration
-            configurationTracker = config.OnChange(ConfigurationChanged);
+            configurationTracker = configTracker(ConfigurationChanged);
+        }
+
+        private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MutableMemberCollection members)
+            : this(config.CurrentValue, dependencies, out members, config.OnChange)
+        {
         }
 
         private protected RaftHttpCluster(IServiceProvider dependencies, out MutableMemberCollection members)
@@ -83,7 +84,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         IReadOnlyCollection<ISubscriber> IMessageBus.Members => Members;
 
-        ISubscriber IMessageBus.Leader => Leader;
+        ISubscriber? IMessageBus.Leader => Leader;
 
         private async void ConfigurationChanged(RaftClusterMemberConfiguration configuration, string name)
         {
@@ -144,6 +145,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if (!token.CanBeCanceled)
                 token = Token;
+            Assert(localMember != null);
             //keep the same message between retries for correct identification of duplicate messages
             var signal = new CustomMessage(localMember.Endpoint, message, true) { RespectLeadership = true };
             do
@@ -173,16 +175,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        IPEndPoint IHostingContext.LocalEndpoint => localMember?.Endpoint;
+        IPEndPoint IHostingContext.LocalEndpoint => localMember?.Endpoint ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
             => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new HttpClientHandler();
 
-        public event ClusterChangedEventHandler MemberAdded;
-        public event ClusterChangedEventHandler MemberRemoved;
+        public event ClusterChangedEventHandler? MemberAdded;
+        public event ClusterChangedEventHandler? MemberRemoved;
 
         private protected abstract Predicate<RaftClusterMember> LocalMemberFinder { get; }
-
 
         public override Task StartAsync(CancellationToken token)
         {
@@ -233,22 +234,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private async Task ReceiveEntries(HttpRequest request, HttpResponse response)
         {
             var message = new AppendEntriesMessage(request, out var entries);
-            var sender = FindMember(message.Sender.Represents);
-            if (sender is null)
-                response.StatusCode = StatusCodes.Status404NotFound;
-            else
-                await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
-                    entries, message.PrevLogIndex,
-                    message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false), Token).ConfigureAwait(false);
+            await using (entries)
+            {
+                var sender = FindMember(message.Sender.Represents);
+                if (sender is null)
+                    response.StatusCode = StatusCodes.Status404NotFound;
+                else
+                    await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
+                        entries, message.PrevLogIndex,
+                        message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false), Token).ConfigureAwait(false);
+            }
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
         private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IMessageHandler handler, HttpResponse response, CancellationToken token)
         {
-            const long maxSize = 10 * 1024;   //10 KB
             var length = message.Length;
             IDisposableMessage buffered;
-            if (length.HasValue && length.Value < maxSize)
+            if (length.HasValue && length.Value < FileMessage.MinSize)
                 buffered = await StreamMessage.CreateBufferedMessageAsync(message, token).ConfigureAwait(false);
             else
             {

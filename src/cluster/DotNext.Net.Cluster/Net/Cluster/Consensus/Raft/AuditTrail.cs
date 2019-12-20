@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Replication;
+    using IO.Log;
 
     internal static class AuditTrail
     {

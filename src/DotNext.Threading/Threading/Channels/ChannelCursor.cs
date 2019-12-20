@@ -29,9 +29,9 @@ namespace DotNext.Threading.Channels
             offset = stateView.ReadInt64(OffsetOffset);
         }
 
-        internal long Position => position;
+        internal readonly long Position => position;
 
-        internal void Adjust(Stream stream) => stream.Position = offset;
+        internal readonly void Adjust(Stream stream) => stream.Position = offset;
 
         internal void Reset()
             => stateView.Write(OffsetOffset, offset = 0L);

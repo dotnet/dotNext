@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>netcoreapp2.2</TargetFramework>
+	  <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
-    <Version>1.2.9</Version>
+    <Version>2.0.0</Version>
     <IsPackable>false</IsPackable>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" PrivateAssets="all" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
@@ -43,5 +43,4 @@
     <ProjectReference Include="..\DotNext\DotNext.csproj" />
     <ProjectReference Include="..\VisualBasicElements\VisualBasicElements.vbproj" />
   </ItemGroup>
-
 </Project>

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace DotNext.Reflection
 {
@@ -27,6 +28,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets or sets property value.
         /// </summary>
+        [MaybeNull]
         P Value { get; set; }
     }
 
@@ -42,6 +44,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="this">The object whose property value will be set or returned.</param>
         /// <returns>Property value.</returns>
-        P this[in T @this] { get; set; }
+        [MaybeNull]
+        P this[[DisallowNull]in T @this] { get; set; }
     }
 }

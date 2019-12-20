@@ -7,7 +7,7 @@ using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using LogEntryList = Replication.LogEntryProducer<IRaftLogEntry>;
+    using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
     [ExcludeFromCodeCoverage]
     public sealed class InMemoryAuditTrailTests : Assert

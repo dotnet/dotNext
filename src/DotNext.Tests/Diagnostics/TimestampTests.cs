@@ -34,5 +34,20 @@ namespace DotNext.Diagnostics
             True(ts2 > ts);
             False(ts2 < ts);
         }
+
+        [Fact]
+        public static void Equality()
+        {
+            var ts = Timestamp.Current;
+            object other = ts;
+            Equal(ts, other);
+        }
+
+        [Fact]
+        public static void Conversion()
+        {
+            var ts = Timestamp.Current;
+            Equal(ts.Value, ts);
+        }
     }
 }

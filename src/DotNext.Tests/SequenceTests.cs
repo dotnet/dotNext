@@ -102,15 +102,26 @@ namespace DotNext
         public static void Skip()
         {
             var range = Enumerable.Range(0, 10);
-            using (var enumerator = range.GetEnumerator())
-            {
-                True(enumerator.Skip(8));
-                True(enumerator.MoveNext());
-                Equal(8, enumerator.Current);
-                True(enumerator.MoveNext());
-                Equal(9, enumerator.Current);
-                False(enumerator.MoveNext());
-            }
+            using var enumerator = range.GetEnumerator();
+            True(enumerator.Skip(8));
+            True(enumerator.MoveNext());
+            Equal(8, enumerator.Current);
+            True(enumerator.MoveNext());
+            Equal(9, enumerator.Current);
+            False(enumerator.MoveNext());
+        }
+
+        [Fact]
+        public static void Iteration()
+        {
+            IEnumerable<int> collection = Array.Empty<int>();
+            Null(collection.FirstOrNull());
+            Equal(Optional<int>.Empty, collection.FirstOrEmpty());
+            Equal(Optional<int>.Empty, collection.FirstOrEmpty(Predicate.True<int>()));
+            collection = new int[] { 42 };
+            Equal(42, collection.FirstOrNull());
+            Equal(42, collection.FirstOrEmpty());
+            Equal(42, collection.FirstOrEmpty(Predicate.True<int>()));
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -9,6 +10,7 @@ using Xunit;
 
 namespace DotNext.Threading.Channels
 {
+    [ExcludeFromCodeCoverage]
     public sealed class PersistentChannelTests : Assert
     {
         private sealed class SerializationChannel<T> : PersistentChannel<T, T>
@@ -43,19 +45,17 @@ namespace DotNext.Threading.Channels
         public static async Task ReadWrite(bool singleReader, bool singleWriter, long initialSize)
         {
             Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid();
-            using (var channel = new SerializationChannel<Guid>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter, InitialPartitionSize = initialSize }))
-            {
-                False(channel.Writer.TryWrite(g1));
-                await channel.Writer.WriteAsync(g1);
-                await channel.Writer.WriteAsync(g2);
-                await channel.Writer.WriteAsync(g3);
-                Equal(g1, await channel.Reader.ReadAsync());
-                Equal(g2, await channel.Reader.ReadAsync());
-                True(await channel.Reader.WaitToReadAsync());
-                True(channel.Reader.TryRead(out var last));
-                Equal(g3, last);
-                Equal(1D, channel.Throughput);
-            }
+            using var channel = new SerializationChannel<Guid>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = singleWriter, InitialPartitionSize = initialSize });
+            False(channel.Writer.TryWrite(g1));
+            await channel.Writer.WriteAsync(g1);
+            await channel.Writer.WriteAsync(g2);
+            await channel.Writer.WriteAsync(g3);
+            Equal(g1, await channel.Reader.ReadAsync());
+            Equal(g2, await channel.Reader.ReadAsync());
+            True(await channel.Reader.WaitToReadAsync());
+            True(channel.Reader.TryRead(out var last));
+            Equal(g3, last);
+            Equal(1D, channel.Throughput);
         }
 
         [Fact]
@@ -87,17 +87,15 @@ namespace DotNext.Threading.Channels
                 PartitionCapacity = 3
             };
             Guid g1 = Guid.NewGuid(), g2 = Guid.NewGuid(), g3 = Guid.NewGuid(), g4 = Guid.NewGuid();
-            using (var channel = new SerializationChannel<Guid>(options))
-            {
-                await channel.Writer.WriteAsync(g1);
-                await channel.Writer.WriteAsync(g2);
-                await channel.Writer.WriteAsync(g3);
-                await channel.Writer.WriteAsync(g4);
-                Equal(g1, await channel.Reader.ReadAsync());
-                Equal(g2, await channel.Reader.ReadAsync());
-                Equal(g3, await channel.Reader.ReadAsync());
-                Equal(g4, await channel.Reader.ReadAsync());
-            }
+            using var channel = new SerializationChannel<Guid>(options);
+            await channel.Writer.WriteAsync(g1);
+            await channel.Writer.WriteAsync(g2);
+            await channel.Writer.WriteAsync(g3);
+            await channel.Writer.WriteAsync(g4);
+            Equal(g1, await channel.Reader.ReadAsync());
+            Equal(g2, await channel.Reader.ReadAsync());
+            Equal(g3, await channel.Reader.ReadAsync());
+            Equal(g4, await channel.Reader.ReadAsync());
         }
 
         [Fact]
@@ -143,12 +141,10 @@ namespace DotNext.Threading.Channels
         [InlineData(102400L)]
         public static async Task ProduceConsumeConcurrently(long initialSize)
         {
-            using (var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { SingleReader = true, SingleWriter = true, PartitionCapacity = 100, InitialPartitionSize = initialSize }))
-            {
-                var consumer = Consume(channel.Reader);
-                var producer = Produce(channel.Writer);
-                await Task.WhenAll(consumer, producer);
-            }
+            using var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { SingleReader = true, SingleWriter = true, PartitionCapacity = 100, InitialPartitionSize = initialSize });
+            var consumer = Consume(channel.Reader);
+            var producer = Produce(channel.Writer);
+            await Task.WhenAll(consumer, producer);
         }
     }
 }

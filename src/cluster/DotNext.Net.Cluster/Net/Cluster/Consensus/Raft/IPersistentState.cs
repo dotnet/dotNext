@@ -6,14 +6,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// Represents persistent state of local cluster member
     /// required by Raft consensus protocol.
     /// </summary>
-    public interface IPersistentState : Replication.IAuditTrail<IRaftLogEntry>
+    public interface IPersistentState : IO.Log.IAuditTrail<IRaftLogEntry>
     {
         /// <summary>
         /// Determines whether the local member granted its vote for the specified remote member.
         /// </summary>
         /// <param name="member">The cluster member to check.</param>
         /// <returns><see langword="true"/> if the local member granted its vote for the specified remote member; otherwise, <see langword="false"/>.</returns>
-        bool IsVotedFor(IRaftClusterMember member);
+        bool IsVotedFor(IRaftClusterMember? member);
 
         /// <summary>
         /// Reads Term value associated with the local member
@@ -40,6 +40,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="member">The member which identifier should be stored inside of persistence storage. May be <see langword="null"/>.</param>
         /// <returns>The task representing asynchronous execution of the operation.</returns>
-        ValueTask UpdateVotedForAsync(IRaftClusterMember member);
+        ValueTask UpdateVotedForAsync(IRaftClusterMember? member);
     }
 }
