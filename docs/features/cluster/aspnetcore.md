@@ -114,13 +114,13 @@ internal sealed class MemberLifetime : IClusterMemberLifetime
 {
 	private static void LeaderChanged(ICluster cluster, IClusterMember leader) {}
 
-	void IRaftClusterConfigurator.Initialize(IRaftCluster cluster, IDictionary<string, string> metadata)
+	void IClusterMemberLifetime.Initialize(IRaftCluster cluster, IDictionary<string, string> metadata)
 	{
 		metadata["key"] = "value";
 		cluster.LeaderChanged += LeaderChanged;
 	}
 
-	void IRaftClusterConfigurator.Shutdown(IRaftCluster cluster)
+	void IClusterMemberLifetime.Shutdown(IRaftCluster cluster)
 	{
 		cluster.LeaderChanged -= LeaderChanged;
 	}
@@ -285,7 +285,7 @@ Messaging inside of cluster supports redirection to the leader as well as for ex
 * `SendSignalToLeaderAsync` to send _One Way_ message to the leader
 
 # Replication
-Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface. By default, it is implemented as [in-memory storage](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html) which is suitable only for applications that doesn't have replicated state. If your application has it then use [PersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.yml) class or implement this interface manually and use reliable storage such as disk. The implementation can be injected explicitly via `AuditTrail` property of [IRaftCluster](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.yml) interface or implicitly via Dependency Injection. The explicit should be done inside of the user-defined implementation of [IRaftClusterConfigurator](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.yml) interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of singleton service which implements [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface.
+Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface. By default, it is implemented as [in-memory storage](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html) which is suitable only for applications that doesn't have replicated state. If your application has it then use [PersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.yml) class or implement this interface manually and use reliable storage such as disk. The implementation can be injected explicitly via `AuditTrail` property of [IRaftCluster](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.yml) interface or implicitly via Dependency Injection. The explicit should be done inside of the user-defined implementation of [IClusterMemberLifetime](../../api/DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.yml) interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of singleton service which implements [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface.
 
 ## Reliable State
 Information about reliable persistent state which uses disk for storing write ahead log located in the separated [article](./wal.md).

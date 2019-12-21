@@ -70,7 +70,7 @@
 <h1 id="unsafe-data-structures">Unsafe Data Structures</h1>
 
 <p>Historically, .NET Runtime was oriented to work with managed memory where Garbage Collector provides automatic memory management. The object placed into managed heap is reclaimed automatically when no longer needed. But numerous instantiation of thousand objects leads to GC pressure and may affect application performance. Manual memory management in some situations may fix this issue.</p>
-<p>.NET provides a lot of interop services to call external native C libraries or COM objects. Moreover, the standard library provides a way to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.marshal.allochglobal">allocate unmanaged memory</a> outside of managed heap. But there is no routines for unmanaged memory manipulation. <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool</a> are not equal to C memory functions and oriented to managed memory manipulation. <em>Span</em> value type has special syntactic support in C# when stack allocated memory can be wrapped into this type:</p>
+<p>.NET provides a lot of interop services to call external native C libraries or COM objects. Moreover, the standard library provides a way to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.interopservices.marshal.allochglobal">allocate unmanaged memory</a> outside of managed heap. But there is no routines for unmanaged memory manipulation. <a href="https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.unsafe">Unsafe</a>, <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool</a> are not equal to C memory functions and oriented to managed memory manipulation. <code>Span</code> value type has special syntactic support in C# when stack allocated memory can be wrapped into this type:</p>
 <pre><code class="lang-csharp">Span&lt;int&gt; s = stackalloc int[4];
 </code></pre>
 <p>.NEXT library provides rich data structures allocated in unmanaged heap (off-heap memory) and set of routines comparable to C memory functions. Moreover, these features are platform and hardware independent.</p>
@@ -80,11 +80,11 @@
 </div>
 <p>The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:</p>
 <ol>
-<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.yml">UnmanagedMemory&lt;T&gt;</a> provides structured access to the unmanaged memory.</li>
-<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory.yml">UnmanagedMemory</a> provides unstructured access to the unmanaged memory.</li>
+<li><a href="../../api/DotNext.Buffers.UnmanagedMemoryPool-1.html">UnmanagedMemoryPool&lt;T&gt;</a> provides allocation of unmanaged memory</li>
+<li><a href="../../api/DotNext.Buffers.IUnmanagedMemoryOwner-1.html">IUnmanagedMemoryOwner&lt;T&gt;</a> provides structured access to the allocated unmanaged memory.</li>
 </ol>
 <p>All unmanaged data types are not thread-safe. However, there are various extension methods in <a href="../../api/DotNext.Threading.AtomicPointer.html">AtomicPointer</a> class supporting thread-safe manipulations with unmanaged memory. Additionally, these types are implicitly convertible into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type.</p>
-<p>Both types are inherited from <a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.yml">UnmanagedMemoryHandle</a>. Direct manipulations with the memory are possible using the following approaches:</p>
+<p><code>IUnmanagedMemoryOwner&lt;T&gt;</code>implements <a href="../../api/DotNext.Runtime.InteropServices.IUnmanagedMemory.html">IUnmanagedMemory</a> and supports direct memory manipulations:</p>
 <ul>
 <li><code>Pointer</code> property provides flexible manipulations using typed pointer to the memory. It is unsafe way because the pointer doesn't provide bound checks</li>
 <li><code>Bytes</code> property provides memory access using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type. It is less flexible in comparison with pointer but safe because it implements bound checks</li>
@@ -127,7 +127,7 @@ private static void UnsafeMethod()
 <h5>Important</h5>
 <p>Typed pointer doesn't provide range checks.</p>
 </div>
-<p>Volatile operations are fully supported by pointer of one of the following types: <code>long</code>, <code>int</code>, <code>byte</code>, <code>bool</code>, <code>float</code>, <code>double</code>, <code>ulong</code>, <code>uint</code>, <code>sbyte</code>:</p>
+<p>Volatile operations are fully supported by pointer of one of the following types: <code>long</code>, <code>int</code>, <code>byte</code>, <code>bool</code>, <code>float</code>, <code>double</code>, <code>ulong</code>, <code>uint</code>, <code>sbyte</code>, <code>IntPtr</code>:</p>
 <pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
 using DotNext.Threading;
 

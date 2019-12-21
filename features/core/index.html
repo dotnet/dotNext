@@ -159,13 +159,6 @@ predicate = predicate.Xor(Predicate.IsNull&lt;string&gt;());
 </code></pre>
 <h1 id="comparable-data-types">Comparable data types</h1>
 <p>Related class: <a href="../../api/DotNext.Comparable.html">Comparable</a></p>
-<h2 id="minmax-value">Min/max value</h2>
-<p>Generic methods for comparable data types:</p>
-<pre><code class="lang-csharp">using DotNext;
-
-var str = &quot;ab&quot;.Max(&quot;bc&quot;); //str == &quot;bc&quot;
-str = &quot;ab&quot;.Min(&quot;bc&quot;);
-</code></pre>
 <h2 id="range-check">Range check</h2>
 <p>Checks whether the given value is in specific range.</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -215,6 +208,7 @@ array = array.RemoveFirst(2);   //array == new []{&quot;c&quot;}
 array = new string[]{&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;}; 
 array = array.Slice(1, 2);      //array == new []{&quot;b&quot;, &quot;c&quot;}
 </code></pre>
+<p>The same behavior can be achieved using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type. However, these methods support large arrays where index and length cannot be represented by <strong>int</strong> data type.</p>
 <h1 id="extensions-for-intptr-and-uintptr">Extensions for <code>IntPtr</code> and <code>UIntPtr</code></h1>
 <p>Natural-sized integer data types <a href="https://docs.microsoft.com/en-us/dotnet/api/system.intptr">IntPtr</a> and <a href="https://docs.microsoft.com/en-us/dotnet/api/system.intptr">UIntPtr</a> have no arithmetic, bitwise, and comparison operators as other numeric types in .NET standard library. This is fixed by .NEXT library which provides implementation of these operators in the form of extension methods available for both types from <a href="../../api/DotNext.ValueTypeExtensions.html">ValueTypeExtensions</a> class.</p>
 <p>These methods are implemented as intrinsics using inline IL code so they can be replaced by equivalent assembly instruction by JIT compiler. As a result, they the methods have the same performance as natively supported operators for regular numeric types.</p>
@@ -239,6 +233,27 @@ Console.WriteLine(current.Elapsed);
 </code></pre>
 <p><code>Elapsed</code> property returning value of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.timespan">TimeSpan</a> type which indicates the difference between <code>timestamp</code> and the current point in time.</p>
 <p>This type should not be used as unique identifier of some point in time. The created time stamp may identify the time since the start of the process, OS, user session or whatever else.</p>
+<h1 id="dynamic-task-result">Dynamic Task Result</h1>
+<p>In .NET it is not possible to obtain a result from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1">task</a> if its result type is not known at compile-time. It can be useful if you are writing proxy or SOAP Middleware using ASP.NET Core and task type is not known for your code. .NEXT provides two ways of doing that:</p>
+<ol>
+<li>Synchronous method <code>GetResult</code> which is located in <a href="../../api/DotNext.Threading.Tasks.Synchronization.html">Synchronization</a> class</li>
+<li>Asynchronous method <code>AsDynamic</code> which is located in <a href="../../api/DotNext.Threading.Tasks.Conversion.html">Conversion</a> class.</li>
+</ol>
+<p>All you need is to have instance of non-generic <a href="https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task">Task</a> class because all types tasks derive from it.</p>
+<p>Under the hood, .NEXT uses Dynamic Language Runtime feature in combination with high-speed optimizations.</p>
+<p>The following example demonstrates this approach:</p>
+<pre><code class="lang-csharp">using DotNext.Threading.Tasks;
+using System.Threading.Tasks;
+
+//assume that t is of unknown Task&lt;T&gt; type
+Task t = Task.FromResult(&quot;Hello, world!&quot;);
+
+//obtain result synchronously
+Result&lt;dynamic&gt; result = t.GetResult(CancellationToken.None);
+
+//obtain result asynchronously
+dynamic result = await t.AsDynamic();
+</code></pre>
 </article>
           </div>
           

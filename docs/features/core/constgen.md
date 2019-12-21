@@ -31,7 +31,7 @@ Constant value passed as generic argument is available in static context inside 
 
 The library offers a few predefined constant types:
 * [BooleanConst](../../api/DotNext.Generic.BooleanConst.yml) to pass boolean constant as generic argument
-* [IntConst](../../api/DotNext.Generic.IntConst.yml) to pass integer constant as generic argument
-* [LongConst](../../api/DotNext.Generic.LongConst.yml) to pass long integer constant as generic argument
-* [StringConst](../../api/DotNext.Generic.LongConst.yml) to pass string constant as generic argument
+* [Int32Const](../../api/DotNext.Generic.Int32Const.yml) to pass integer constant as generic argument
+* [Int64Const](../../api/DotNext.Generic.Int64Const.yml) to pass long integer constant as generic argument
+* [StringConst](../../api/DotNext.Generic.StringConst.yml) to pass string constant as generic argument
 * [DefaultConst](../../api/DotNext.Generic.DefaultConst-1.yml) to pass default value of `T` as generic argument

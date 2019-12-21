@@ -82,25 +82,21 @@
 <pre><code class="lang-csharp">using DotNext.Threading;
 using System.Threading;
 
-var semaphore = new SemaphoreSlim();
-using(var @lock = Lock.Semaphore(semaphore))
+using var semaphore = new SemaphoreSlim();
+using var @lock = Lock.Semaphore(semaphore);
+//acquires the lock
+using(@lock.Acquire())
 {
-    //acquires the lock
-    using(@lock.Acquire())
+}
+
+using var rwlock = new ReaderWriterLockSlim();
+using var @lock = Lock.WriteLock(rwLock);
+//acquires the writer lock
+if(@lock.TryAcquire(out Lock.Holder holder))
+    using(holder)
     {
+
     }
-}
-
-var rwlock = new ReaderWriterLockSlim();
-using(var @lock = Lock.WriteLock(rwLock))
-{
-    //acquires the writer lock
-    if(@lock.TryAcquire(out Lock.Holder holder))
-        using(holder)
-        {
-
-        }
-}
 </code></pre>
 <h1 id="built-in-readerwriter-synchronization">Built-in Reader/Writer Synchronization</h1>
 <p>Exclusive lock such as monitor lock may not be applicable due to performance reasons for some data types. For example, exclusive lock for dictionary or list is redundant because there are two consumers of these objects: writers and readers.</p>

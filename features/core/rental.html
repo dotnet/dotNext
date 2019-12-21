@@ -89,12 +89,10 @@
 <p><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html">ArrayRental&lt;T&gt;</a> allows to rent the array using array pool and supports <strong>using</strong> statement.</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
-using(var array = new ArrayRental&lt;byte&gt;(10))
-{
-  Memory&lt;byte&gt; mem = array.Memory;
-  Span&lt;byte&gt; span = array.Span;
-  ArraySegment&lt;byte&gt; segment = array.Segment;
-}
+using var array = new ArrayRental&lt;byte&gt;(10);
+Memory&lt;byte&gt; mem = array.Memory;
+Span&lt;byte&gt; span = array.Span;
+ArraySegment&lt;byte&gt; segment = array.Segment;
 
 //the code is equivalent to
 using System.Buffers;
@@ -108,7 +106,7 @@ finally
   Array&lt;byte&gt;.Shared.Return(array);
 }
 </code></pre>
-<p><code>ArrayRental</code> provides several accessor to the rented array using <code>Memory</code>, <code>Span</code> and <code>Segment</code> properties. All these properties return the representation of the rented array with exact size that was initially requested. Additionally, it is possible to obtain direct reference to the rented array using explicit cast operator, e.g. <code>(byte[])array</code>.</p>
+<p><code>ArrayRental</code> provides several accessor to the rented array using <code>Memory</code>, <code>Span</code> and <code>Segment</code> properties. All these properties return the representation of the rented array with exact size that was initially requested.</p>
 <p>The type supports custom array pool that can be passed to the constructor. In some advanced scenarios, you may have already allocated array so you don't to rent a new one from the pool. It is possible to pass such array as an argument of <code>ArrayRental</code> constructor.</p>
 <h1 id="memoryrental">MemoryRental</h1>
 <p><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html">MemoryRental&lt;T&gt;</a> is more specialized version of <code>ArrayRental</code> which is useful in hybrid scenarios when renting can be replaced with stack allocation. This type is <strong>ref</strong>-like value type so it cannot be stored in fields or used inside of <strong>async</strong> methods. The rented memory is only accessible using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span&lt;T&gt;</a> data type.</p>
@@ -118,18 +116,11 @@ finally
 public static unsafe string Reverse(this string str)
 {
   if (str.Length == 0) return str;
-  MemoryRental&lt;char&gt; result = str.Length &lt;= 1024 ? stackalloc char[str.Length] : new MemoryRental&lt;char&gt;(str.Length);
-  try
-  {
-    str.AsSpan().CopyTo(result.Span);
-    result.Span.Reverse();
-    fixed (char* ptr = result.Span)
-      return new string(ptr, 0, result.Length);
-  }
-  finally
-  {
-    result.Dispose();
-  }
+  using MemoryRental&lt;char&gt; result = str.Length &lt;= 1024 ? stackalloc char[str.Length] : new MemoryRental&lt;char&gt;(str.Length);
+  str.AsSpan().CopyTo(result.Span);
+  result.Span.Reverse();
+  fixed (char* ptr = result.Span)
+    return new string(ptr, 0, result.Length);
 } 
 </code></pre>
 <p>In constrast to <code>ArrayRental&lt;T&gt;</code>, this type uses <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1">MemoryPool</a>. It is possible to pass custom memory pool the constructor.</p>

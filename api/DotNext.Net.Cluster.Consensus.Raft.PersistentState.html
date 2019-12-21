@@ -390,7 +390,6 @@ using <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.PersistentState.h
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask AppendAsync&lt;TEntry&gt;(TEntry entry, long startIndex)
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -491,7 +490,6 @@ If it is not, the method behaves in the same way as <span class="xref">DotNext.N
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;long&gt; AppendAsync&lt;TEntry&gt;(ILogEntryProducer&lt;TEntry&gt; entries, CancellationToken token = default(CancellationToken))
-
     where TEntry : IRaftLogEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1079,7 +1077,6 @@ Additionally, it may force log compaction and squash all committed entries into 
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;TResult&gt; ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, long endIndex, CancellationToken token)
-
     where TReader : ILogEntryConsumer&lt;IRaftLogEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1196,7 +1193,6 @@ with the audit trail segment with entries.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;TResult&gt; ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, CancellationToken token)
-
     where TReader : ILogEntryConsumer&lt;IRaftLogEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
