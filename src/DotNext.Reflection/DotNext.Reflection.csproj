@@ -30,6 +30,7 @@
     <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
+    <Optimize>true</Optimize>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
