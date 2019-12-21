@@ -49,15 +49,13 @@
       {
         "files": [
           "api/**.yml",
-          "api/index.md"
-        ]
-      },
-      {
-        "files": [
+          "api/index.md",
           "features/**.md",
           "features/**/toc.yml",
           "toc.yml",
-          "*.md"
+          "*.md",
+          "migration/**.md",
+          "migration/toc.yml"
         ]
       }
     ],
