@@ -222,3 +222,27 @@ Console.WriteLine(current.Elapsed);
 `Elapsed` property returning value of [TimeSpan](https://docs.microsoft.com/en-us/dotnet/api/system.timespan) type which indicates the difference between `timestamp` and the current point in time.
 
 This type should not be used as unique identifier of some point in time. The created time stamp may identify the time since the start of the process, OS, user session or whatever else.
+
+# Dynamic Task Result
+In .NET it is not possible to obtain a result from [task](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1) if its result type is not known at compile-time. It can be useful if you are writing proxy or SOAP Middleware using ASP.NET Core and task type is not known for your code. .NEXT provides two ways of doing that:
+1. Synchronous method `GetResult` which is located in [Synchronization](../../api/DotNext.Threading.Tasks.Synchronization.yml) class
+1. Asynchronous method `AsDynamic` which is located in [Conversion](../../api/DotNext.Threading.Tasks.Conversion.yml) class.
+
+All you need is to have instance of non-generic [Task](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task) class because all types tasks derive from it.
+
+Under the hood, .NEXT uses Dynamic Language Runtime feature in combination with high-speed optimizations.
+
+The following example demonstrates this approach:
+```csharp
+using DotNext.Threading.Tasks;
+using System.Threading.Tasks;
+
+//assume that t is of unknown Task<T> type
+Task t = Task.FromResult("Hello, world!");
+
+//obtain result synchronously
+Result<dynamic> result = t.GetResult(CancellationToken.None);
+
+//obtain result asynchronously
+dynamic result = await t.AsDynamic();
+```
