@@ -61,6 +61,7 @@ What is done in this release:
 1. Additional optimizations of performance in [Write-Ahead Log](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html)
 1. Increased test coverage and fixed bugs
 1. Fixed issue [#4](https://github.com/sakno/dotNext/issues/4)
+1. Migration to C# 8 and nullable reference types
 
 Version 1.x is still supported and maintained because I want to keep .NEXT available on .NET Framework 4.8. However, backports of new features from 2.x to 1.x are very unlikely.
 

@@ -18,6 +18,7 @@ What is done in this release:
 1. Additional optimizations of performance in [Write-Ahead Log](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html)
 1. Increased test coverage and fixed bugs
 1. Fixed issue [#4](https://github.com/sakno/dotNext/issues/4)
+1. Migration to C# 8 and nullable reference types
 
 # 12-06-2019
 <a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.10">DotNext.Unsafe 1.2.10</a>
