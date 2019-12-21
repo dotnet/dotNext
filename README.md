@@ -27,6 +27,7 @@ Quick overview of additional features:
 * `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://sakno.github.io/dotNext/features/threading/rwlock.html)
 * Powerful concurrent [ObjectPool](https://sakno.github.io/dotNext/features/threading/objectpool.html)
 * [Atomic](https://sakno.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types
+* [PipeExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions) provides high-level I/O operations for pipelines such as string encoding and decoding
 * ASP.NET Core [Clustered microservices](https://sakno.github.io/dotNext/features/cluster/aspnetcore.html) powered by Raft Consensus Algorithm, data replication and point-to-point messaging
 
 All these things are implemented in 100% managed code on top of existing .NET Standard stack without modifications of Roslyn compiler or CoreFX libraries.
@@ -37,6 +38,9 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [API documentation](https://sakno.github.io/dotNext/api/DotNext.html)
 * [Benchmarks](https://sakno.github.io/dotNext/benchmarks.html)
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
+
+Documentation for older versions:
+* [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
 Release Date: 11-05-2019
@@ -49,9 +53,8 @@ Changelog for previous versions located [here](./CHANGELOG.md).
 
 # Release Policy
 * The libraries are versioned according with [Semantic Versioning 2.0](https://semver.org/).
-* API can be backward incompatible between 0.x versions
 * Version 0.x and 1.x relies on .NET Standard 2.0
-* Support of newer versions of .NET Standard is aligned with .NET Core LTS (Long-Term Support) release train. For example, support for .NET Standard 2.1 is scheduled no earlier than in November, 2019. Check [.NET Core Support Policy](https://dotnet.microsoft.com/platform/support/policy/dotnet-core) for more information.
+* Version 2.x relies on .NET Standard 2.1
 
 # Support Policy
 | Version | .NET compatibility | Support Level |
