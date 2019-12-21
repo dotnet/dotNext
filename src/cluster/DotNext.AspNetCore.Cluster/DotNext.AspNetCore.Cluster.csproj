@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>consensus;raft;aspnetcore</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
+    <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>https://github.com/sakno/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
 
@@ -39,6 +39,10 @@
     <EmbeddedResource Include="Net/Cluster/Consensus/Raft/Http/LogMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
+    <None Include="../../../logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>

@@ -17,7 +17,7 @@
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Description>Common API surface for decoding and encoding data from/to stream or I/O pipe.</Description>
-    <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
+    <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>https://github.com/sakno/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
 
@@ -52,6 +52,10 @@
     <EmbeddedResource Include="ExceptionMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
+    <None Include="../../logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
