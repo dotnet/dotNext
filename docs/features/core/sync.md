@@ -15,25 +15,21 @@ This unification is implemented in the form of the single type [Lock](../../api/
 using DotNext.Threading;
 using System.Threading;
 
-var semaphore = new SemaphoreSlim();
-using(var @lock = Lock.Semaphore(semaphore))
+using var semaphore = new SemaphoreSlim();
+using var @lock = Lock.Semaphore(semaphore);
+//acquires the lock
+using(@lock.Acquire())
 {
-    //acquires the lock
-    using(@lock.Acquire())
+}
+
+using var rwlock = new ReaderWriterLockSlim();
+using var @lock = Lock.WriteLock(rwLock);
+//acquires the writer lock
+if(@lock.TryAcquire(out Lock.Holder holder))
+    using(holder)
     {
+
     }
-}
-
-var rwlock = new ReaderWriterLockSlim();
-using(var @lock = Lock.WriteLock(rwLock))
-{
-    //acquires the writer lock
-    if(@lock.TryAcquire(out Lock.Holder holder))
-        using(holder)
-        {
-
-        }
-}
 ```
 
 # Built-in Reader/Writer Synchronization

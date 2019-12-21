@@ -9,7 +9,7 @@
 This chapter gives quick overview of these libraries. Read [articles](./features/core/index.md) for closer look at all available features.
 
 Prerequisites:
-* Runtime: any .NET implementation compatible with .NET Standard 2.1
+* Runtime: any .NET implementation compatible with .NET Standard 2.1 (except **DotNext.AspNetCore.Cluster** library which depends on .NET Core of version 3.1 or higher)
 * OS: Linux, Windows, MacOS
 * Architecture: any if supported by underlying .NET Runtime
 
@@ -65,7 +65,7 @@ But this is not all features of this library. Read more [here](./features/thread
 
 # DotNext.IO
 <a href="https://www.nuget.org/packages/dotnext.io/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.io.svg?logo=NuGet"></a><br/>
-Extending streams and I/O pipelines with methods for reading and writing typed values including strings asynchronously. Arbitrary character encodings are supported. Now encoding or decoding data using [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe) is much easier and comparable with [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter) or [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader).
+Extending streams and I/O pipelines with methods for reading and writing typed values including strings asynchronously. Arbitrary character encodings are supported. Now encoding or decoding data using [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe) is much easier and comparable with [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter) or [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader). Read more [here](features/core/io.md).
 
 # DotNext.Net.Cluster
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?logo=NuGet"></a><br/>

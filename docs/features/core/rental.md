@@ -18,12 +18,10 @@ The memory can be rented using [ArrayPool](https://docs.microsoft.com/en-us/dotn
 ```csharp
 using DotNext.Buffers;
 
-using(var array = new ArrayRental<byte>(10))
-{
-  Memory<byte> mem = array.Memory;
-  Span<byte> span = array.Span;
-  ArraySegment<byte> segment = array.Segment;
-}
+using var array = new ArrayRental<byte>(10);
+Memory<byte> mem = array.Memory;
+Span<byte> span = array.Span;
+ArraySegment<byte> segment = array.Segment;
 
 //the code is equivalent to
 using System.Buffers;
@@ -37,7 +35,7 @@ finally
   Array<byte>.Shared.Return(array);
 }
 ```
-`ArrayRental` provides several accessor to the rented array using `Memory`, `Span` and `Segment` properties. All these properties return the representation of the rented array with exact size that was initially requested. Additionally, it is possible to obtain direct reference to the rented array using explicit cast operator, e.g. `(byte[])array`.
+`ArrayRental` provides several accessor to the rented array using `Memory`, `Span` and `Segment` properties. All these properties return the representation of the rented array with exact size that was initially requested.
 
 The type supports custom array pool that can be passed to the constructor. In some advanced scenarios, you may have already allocated array so you don't to rent a new one from the pool. It is possible to pass such array as an argument of `ArrayRental` constructor.
 
@@ -51,18 +49,11 @@ using DotNext.Buffers;
 public static unsafe string Reverse(this string str)
 {
   if (str.Length == 0) return str;
-  MemoryRental<char> result = str.Length <= 1024 ? stackalloc char[str.Length] : new MemoryRental<char>(str.Length);
-  try
-  {
-    str.AsSpan().CopyTo(result.Span);
-    result.Span.Reverse();
-    fixed (char* ptr = result.Span)
-      return new string(ptr, 0, result.Length);
-  }
-  finally
-  {
-    result.Dispose();
-  }
+  using MemoryRental<char> result = str.Length <= 1024 ? stackalloc char[str.Length] : new MemoryRental<char>(str.Length);
+  str.AsSpan().CopyTo(result.Span);
+  result.Span.Reverse();
+  fixed (char* ptr = result.Span)
+    return new string(ptr, 0, result.Length);
 } 
 ```
 In constrast to `ArrayRental<T>`, this type uses [MemoryPool](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1). It is possible to pass custom memory pool the constructor.

@@ -21,13 +21,12 @@ using System.Buffers.Binary;
 using System.IO;
 
 //read
-using(var fs = new FileStream("content.bin", FileMode.Open, FileAccess.Read, FileShare.Read))
-using(var buffer = new ArrayRental<byte>(1024)) //rent the buffer
-{
-    var lengthInBytes = BinaryPrimitives.ReadInt64LittleEndian(fs.ReadBytes(sizeof(long)));
-    var str = await fs.ReadStringAsync(lengthInBytes, Encoding.UTF8);
-}
+using var fs = new FileStream("content.bin", FileMode.Open, FileAccess.Read, FileShare.Read);
+using var buffer = new ArrayRental<byte>(1024); //rent the buffer
+var str = await fs.ReadStringAsync(StringLengthEncoding.Plain, Encoding.UTF8);
 ```
+
+String encoding and decoding methods support various length encoding styles using [StringLengthEncoding](../../api/DotNext.IO.StringLengthEncoding.yml) enum type. As a result, you can prefix string with its length automatically.
 
 # Segmenting streams
 In some cases you may need to hide the entire stream from the callee for the reading operation. This can be necessary to protect underlying stream from accidental seeking. [StreamSegment](https://sakno.github.io/dotNext/api/DotNext.IO.StreamSegment.html) do the same for streams as [ArraySegment](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1) for arrays.
@@ -41,13 +40,38 @@ The segment can be reused for multiple consumers because its position and length
 using DotNext.IO;
 using System.IO;
 
-using(var fs = new FileStream("content.bin", FileMode.Open, FileAccess.Read, FileShare.Read))
-using(var segment = new StreamSegment(fs))
+var fs = new FileStream("content.bin", FileMode.Open, FileAccess.Read, FileShare.Read);
+using var segment = new StreamSegment(fs);
+foreach(Action<Stream> consumer in consumers)
 {
-    foreach(Action<Stream> consumer in consumers)
-    {
-        segment.Adjust(10L, 1024L); //fs is limited to the segment limited by the offset of 10 from the beginning of the stream and length of 1024 bytes
-        consumer(segment);
-    }
+    segment.Adjust(10L, 1024L); //fs is limited to the segment limited by the offset of 10 from the beginning of the stream and length of 1024 bytes
+    consumer(segment);
 }
+```
+
+# Pipelines
+[System.IO.Pipelines](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines) knowns as high-performance alternative to .NET streams. However, it doesn't have built-in helpers for encoding and decoding strongly-typed data such as blittable value types and strings that are provided by [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader) and [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter) classes. .NEXT I/O library provides API surface in the form of extensions methods that cover all these needs and turns I/O pipelines into first-class citizen in the world of high-level I/O operations. With these methods you can easily swith from streams to pipes without increasing complexity of code.
+
+The following example demonstrates string encoding and decoding using I/O pipelines:
+```csharp
+using DotNext.IO;
+using DotNext.IO.Pipelines;
+using System.IO.Pipelines;
+
+const string value = "Hello, world!";
+var pipe = new Pipe();
+await pipe.Writer.WriteStringAsync(value.AsMemory(), Encoding.UTF8, 0, StringLengthEncoding.Plain);
+var result = await pipe.Reader.ReadStringAsync(StringLengthEncoding.Plain, Encoding.UTF8);
+```
+
+In advance to strings, the library supports decoding and encoding values of arbitrary blittable value types.
+```csharp
+using DotNext.IO;
+using DotNext.IO.Pipelines;
+using System.IO.Pipelines;
+
+const string value = "Hello, world!";
+var pipe = new Pipe();
+await pipe.Writer.WriteAsync(Guid.NewGuid());
+var result = await pipe.Reader.ReadAsync<Guid>();
 ```

@@ -24,13 +24,17 @@ Internally, persistent WAL uses files to store the state of cluster member and l
 * `BufferSize` is the numbers of bytes that is allocated by persistent WAL in the memory to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.
 * `InitialPartitionSize` represents the initial pre-allocated size, in bytes, of the empty partition file. This parameter allows to avoid fragmentation of the partition file at file-system level.
 * `UseCaching` is `bool` flag that allows to enable or disable in-memory caching of log entries metadata. `true` value allows to improve the performance or read/write operations by the cost of additional heap memory. `false` reduces the memory footprint by the cost of the read/write performance
-* `UseSharedPool` specifies whether the [shared array pool](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1.shared?view=netstandard-2.1#System_Buffers_ArrayPool_1_Shared) should be used for internal purposes. If the parameter is `false` then the log will use dedicated array pool instead of shared pool.
+* `CreateMemoryPool` generic method used for renting memory and can be overridden
 * `MaxConcurrentReads` is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory. 
 
 Choose `recordsPerPartition` value with care because it cannot be changed for the existing persistent WAL.
 
 Let's write a simple custom audit trail based on the `PersistentState` to demonstrate basics of Write Ahead Log. Our state machine stores only the single **long** value as the only possible persistent state.
+
+The example below additionally requires **DotNext.IO** library to simplify I/O work. 
 ```csharp
+using DotNext.IO;
+using DotNext.IO.Pipelines;
 using DotNext.Net.Cluster.Consensus.Raft;
 using System.Threading.Tasks;
 using static System.Buffers.Binary.BinaryPrimitives;
@@ -43,22 +47,20 @@ sealed class SimpleAuditTrail : PersistentState
 	private sealed class SimpleSnapshotBuilder : SnapshotBuilder
 	{
 		private long currentValue;
-		private readonly byte[] sharedBuffer;
+		private readonly Memory<byte> sharedBuffer;
 
-		internal SimpleSnapshotBuilder(byte[] buffer) => sharedBuffer = buffer;
+		internal SimpleSnapshotBuilder(Memory<byte> buffer) => sharedBuffer = buffer;
 
 		//2.1
-		public override Task CopyToAsync(Stream output, CancellationToken token)
+		public override ValueTask CopyToAsync(Stream output, CancellationToken token)
 		{
-			WriteInt64LittleEndian(sharedBuffer, currentValue);
-			return output.WriteAsync(sharedBuffer, 0, sizeof(long), token);
+			return output.WriteAsync(currentValue, buffer, token);
 		}
 
 		//2.2
 		public override async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
 		{
-			WriteInt64LittleEndian(sharedBuffer, currentValue);
-			await output.WriteAsync(new ReadOnlyMemory<byte>(sharedBuffer, 0, sizeof(long)), token);
+			return output.WriteAsync(currentValue, token);
 		}
 
 		//1

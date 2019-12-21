@@ -12,23 +12,29 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-sealed class Startup : StartupBase
+sealed class Startup
 {
     private readonly IConfiguration configuration;
 
     public Startup(IConfiguration configuration) => this.configuration = configuration;
 
-    public override void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app)
     {
         app.UseConsensusProtocolHandler();	//informs that processing pipeline should handle Raft-specific requests
     }
 
-    public override void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
-        services.BecomeClusterMember(configuration["memberConfig"]);	//registers all necessary services required for normal cluster node operation
     }
 }
 
+IHost host = new HostBuilder()
+    .ConfigureWebHost(webHost => webHost
+        .UseKestrel(options => options.ListenLocalhost(80))
+        .UseStartup<Startup>()
+    )
+    .JoinCluster()  //registers all necessary services required for normal cluster node operation
+    .Build();
 ```
 
 Raft algorithm requires dedicated HTTP endpoint for internal purposes. There are two possible ways to expose necessary endpoint:
@@ -98,13 +104,13 @@ The application should be configured properly to work as a cluster node. The fol
 Choose `lowerElectionTimeout` and `upperElectionTimeout` according with the quality of your network. If values are small then you get frequent elections and migration of leader node.
 
 ## Runtime Hook
-The service implementing `IRaftCluster` is registered as singleton service. The service starts receiving Raft-specific messages immediately. Therefore, you can loose some events raised by the service such as `LeaderChanged` at starting point. To avoid that, you can implement [IRaftClusterConfigurator](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftClusterConfigurator.yml) interface and register implementation as singleton.
+The service implementing `IRaftCluster` is registered as singleton service. The service starts receiving Raft-specific messages immediately. Therefore, you can loose some events raised by the service such as `LeaderChanged` at starting point. To avoid that, you can implement [IClusterMemberLifetime](../../api/DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.yml) interface and register implementation as singleton.
 
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft;
 using System.Collections.Generic;
 
-internal sealed class ClusterConfigurator : IRaftClusterConfigurator
+internal sealed class MemberLifetime : IClusterMemberLifetime
 {
 	private static void LeaderChanged(ICluster cluster, IClusterMember leader) {}
 
@@ -142,9 +148,10 @@ internal sealed class RaftClientHandlerFactory : IHttpMessageHandlerFactory
 
 In practice, `ConnectTimeout` should be equal to `lowerElectionTimeout` configuration property. Note that `name` parameter is equal to the `clientHandlerName` configuration property when handler creation is requested by Raft implementation.
 
-
 # Hosted Mode
-This mode allows to create separated [Web Host](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhost) used for hosting Raft-specific stuff. As a result, Raft implementation listens on the port that differs from the port of underlying Web application. The following example demonstrates how to write _Startup_ class for hosted mode:
+This mode allows to create separated [Web Host](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhost) used for hosting Raft-specific stuff. As a result, Raft implementation listens on the port that differs from the port of underlying Web application. 
+
+The following example demonstrates this approach:
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft.Http.Hosting;
 using Microsoft.AspNetCore.Builder;
@@ -152,27 +159,18 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-internal sealed class Startup : StartupBase
-{
-	private readonly IConfiguration configuration;
-
-	public WebApplicationSetup(IConfiguration configuration) => this.configuration = configuration;
-
-	public override void Configure(IApplicationBuilder app)
-	{
-
-	}
-
-	public override void ConfigureServices(IServiceCollection services)
-	{
-		services.BecomeClusterMember(configuration);
-	}
-}
+IHost host = new HostBuilder()
+    .ConfigureWebHost(webHost => webHost
+        .UseKestrel(options => options.ListenLocalhost(80))
+        .UseStartup<Startup>()
+    )
+    .JoinCluster()  //registers all necessary services required for normal cluster node operation
+    .Build();
 ```
 
-Note that `BecomeClusterMember` declared in [DotNext.Net.Cluster.Consensus.Raft.Http.Hosting](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.yml) namespace. 
+Note that `JoinCluster` method declared in [DotNext.Net.Cluster.Consensus.Raft.Http.Hosting](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.yml) namespace and should be called after `ConfigureWebHost`. Otherwise, the behavior of this method is undefined.
 
-By default, .NEXT uses Kestrel web server to serve Raft requests. However, it is possible to use manually constructed [IWebHost](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhost). In this case, `port` configuration property will be ignored.
+By default, .NEXT uses Kestrel web server to serve Raft requests. However, it is possible to configure dedicated host manually. To do that, you need to register singleton service implementing [IDedicatedHostBuilder](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder.yml) interface. In this case, `port` configuration property will be ignored.
 
 # Embedded Mode
 Embedded mode shares the same [Web Host](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhost) and port with underlying Web Application. To serve Raft-specific requests the implementation uses dedicated endpoint `/cluster-consensus/raft` that can be changed through configuration parameter. The following example demonstrates how to setup embedded mode:
@@ -184,25 +182,32 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-sealed class Startup : StartupBase
+sealed class Startup
 {
     private readonly IConfiguration configuration;
 
     public Startup(IConfiguration configuration) => this.configuration = configuration;
 
-    public override void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app)
     {
         app.UseConsensusProtocolHandler();	//informs that processing pipeline should handle Raft-specific requests
     }
 
-    public override void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
-        services.BecomeClusterMember(configuration["memberConfig"]);	//registers all necessary services required for normal cluster node operation
     }
 }
+
+IHost host = new HostBuilder()
+    .ConfigureWebHost(webHost => webHost
+        .UseKestrel(options => options.ListenLocalhost(80))
+        .UseStartup<Startup>()
+    )
+    .JoinCluster()  //registers all necessary services required for normal cluster node operation
+    .Build();
 ```
 
-Note that `BecomeClusterMember` declared in [DotNext.Net.Cluster.Consensus.Raft.Http.Embedding](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.yml) namespace.
+Note that `JoinCluster` declared in [DotNext.Net.Cluster.Consensus.Raft.Http.Embedding](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.yml) namespace and should be called after `ConfigureWebHost`. Otherwise, the behavior of this method is undefined.
 
 `UseConsensusProtocolHandler` method should be called before registration of any authentication/authorization middleware.
 
@@ -219,22 +224,21 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-sealed class Startup : StartupBase
+sealed class Startup
 {
     private readonly IConfiguration configuration;
 
     public Startup(IConfiguration configuration) => this.configuration = configuration;
 
-    public override void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app)
     {
         app.UseConsensusProtocolHandler()
 			.RedirectToLeader("/endpoint1")
 			.RedirectToLeader("/endpoint2");
     }
 
-    public override void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
-        services.BecomeClusterMember(configuration);
     }
 }
 ```
@@ -253,7 +257,7 @@ private static Task CustomRedirection(HttpResponse response, Uri leaderUri)
     return response.WriteAsync(leaderUri.AbsoluteUri);
 }
 
-public override void Configure(IApplicationBuilder app)
+public void Configure(IApplicationBuilder app)
 {
     app.UseConsensusProtocolHandler()
         .RedirectToLeader("/endpoint1", redirection: CustomRedirection);
@@ -266,7 +270,7 @@ The customized redirection should be as fast as possible and don't block the cal
 Redirection mechanism trying to construct valid URI of the leader node based on its actual IP address. Identification of the address is not a problem unlike port number. The infrastructure cannot use the port if its [WebHost](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.webhost) because of Hosted Mode or the port from the incoming `Host` header because it can be rewritten by reverse proxy. The only way is to use the inbound port of the TCP listener responsible for handling all incoming HTTP requests. It is valid for the non-containerized environment. Inside of the container the ASP.NET Core application port is mapped to the externally visible port which not always the same. In this case you can specify port for redirections explicitly as follows:
 
 ```csharp
-public override void Configure(IApplicationBuilder app)
+public void Configure(IApplicationBuilder app)
 {
     app.UseConsensusProtocolHandler()
       .RedirectToLeader("/endpoint1", applicationPortHint: 3265);
@@ -315,22 +319,22 @@ sealed class MyCollector : HttpMetricsCollector
     }
 }
 
-sealed class Startup : StartupBase
+sealed class Startup 
 {
     private readonly IConfiguration configuration;
 
     public Startup(IConfiguration configuration) => this.configuration = configuration;
 
-    public override void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app)
     {
         app.UseConsensusProtocolHandler()
 			.RedirectToLeader("/endpoint1")
 			.RedirectToLeader("/endpoint2");
     }
 
-    public override void ConfigureServices(IServiceCollection services)
+    public void ConfigureServices(IServiceCollection services)
     {
-		services.AddSingleton<MetricsCollector, MyCollector>().BecomeClusterMember(configuration);
+		services.AddSingleton<MetricsCollector, MyCollector>();
     }
 }
 ```

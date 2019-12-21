@@ -122,15 +122,6 @@ predicate = predicate.Xor(Predicate.IsNull<string>());
 # Comparable data types
 Related class: [Comparable](../../api/DotNext.Comparable.yml)
 
-## Min/max value
-Generic methods for comparable data types:
-```csharp
-using DotNext;
-
-var str = "ab".Max("bc"); //str == "bc"
-str = "ab".Min("bc");
-```
-
 ## Range check
 Checks whether the given value is in specific range.
 ```csharp
@@ -196,6 +187,8 @@ array = array.RemoveFirst(2);   //array == new []{"c"}
 array = new string[]{"a", "b", "c", "d"}; 
 array = array.Slice(1, 2);      //array == new []{"b", "c"}
 ```
+
+The same behavior can be achieved using [Span](https://docs.microsoft.com/en-us/dotnet/api/system.span-1) data type. However, these methods support large arrays where index and length cannot be represented by **int** data type.
 
 # Extensions for `IntPtr` and `UIntPtr`
 Natural-sized integer data types [IntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) and [UIntPtr](https://docs.microsoft.com/en-us/dotnet/api/system.intptr) have no arithmetic, bitwise, and comparison operators as other numeric types in .NET standard library. This is fixed by .NEXT library which provides implementation of these operators in the form of extension methods available for both types from [ValueTypeExtensions](../../api/DotNext.ValueTypeExtensions.yml) class.

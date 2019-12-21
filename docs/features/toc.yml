@@ -89,8 +89,6 @@
   items:
     - name: Structured Memory Access
       href: unsafe/struct.md
-    - name: Unstructured Memory Access
-      href: unsafe/unstruct.md
     - name: Calling Function by Pointer
       href: unsafe/funcptr.md
     - name: Memory-Mapped File
