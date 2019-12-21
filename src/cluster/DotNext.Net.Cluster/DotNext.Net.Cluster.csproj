@@ -55,9 +55,15 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
     <PackageReference Include="System.IO.Pipelines" Version="4.7.0" />
-    <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Threading" Version="[2.0.0, 3)" Condition="'$(Configuration)'=='Release'" />
-    <ProjectReference Include="..\..\DotNext.IO\DotNext.IO.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.IO" Version="[2.0.0, 3)" Condition="'$(Configuration)'=='Release'" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'!='Release'">
+    <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj" />
+    <ProjectReference Include="..\..\DotNext.IO\DotNext.IO.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="DotNext.Threading" Version="[2.0.0, 3)" />
+    <PackageReference Include="DotNext.IO" Version="[2.0.0, 3)" />
   </ItemGroup>
 </Project>

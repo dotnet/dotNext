@@ -44,14 +44,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Reflection" Version="[2.0.0, 3)" Condition="'$(Configuration)'=='Release'" />
-    
-    <ProjectReference Include="..\DotNext\DotNext.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext" Version="[2.0.0, 3)" Condition="'$(Configuration)'=='Release'" />
-
-    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Metaprogramming" Version="[2.0.0, 3)" Condition="'$(Configuration)'=='Release'" />
+    <ProjectReference Include="..\DotNext.Reflection\DotNext.Reflection.csproj" />    
+    <ProjectReference Include="..\DotNext\DotNext.csproj" />
+    <ProjectReference Include="..\DotNext.Metaprogramming\DotNext.Metaprogramming.csproj" />
   </ItemGroup>
 
 </Project>
