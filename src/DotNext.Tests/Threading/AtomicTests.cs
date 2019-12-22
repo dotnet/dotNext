@@ -135,6 +135,8 @@ namespace DotNext.Threading
         public static void AtomicBooleanTest()
         {
             var value = new AtomicBoolean(false);
+            False(value.Equals(true));
+            True(value.Equals(false));
             True(value.FalseToTrue());
             False(value.FalseToTrue());
             True(value.TrueToFalse());
@@ -149,6 +151,19 @@ namespace DotNext.Threading
             True(value.SetAndGet(true));
             True(value.Value);
             Equal(bool.TrueString, value.ToString());
+            True(value.GetAndAccumulate(false, (current, update) =>
+            {
+                True(current);
+                False(update);
+                return current & update;
+            }));
+            False(value.Value);
+            True(value.AccumulateAndGet(true, (current, update) => current | update));
+            True(value.Value);
+            True(value.GetAndUpdate(x => !x));
+            False(value.Value);
+            True(value.UpdateAndGet(x => !x));
+            True(value.Value);
         }
 
         [Fact]
@@ -163,6 +178,8 @@ namespace DotNext.Threading
         public static void AtomicEnumTest()
         {
             var value = new AtomicEnum<EnvironmentVariableTarget>();
+            True(value.Equals(EnvironmentVariableTarget.Process));
+            False(value.Equals(EnvironmentVariableTarget.User));
             Equal(EnvironmentVariableTarget.Process, value.Value);
             Equal(EnvironmentVariableTarget.Process, value.GetAndSet(EnvironmentVariableTarget.Machine));
             Equal(EnvironmentVariableTarget.Machine, value.Value);
