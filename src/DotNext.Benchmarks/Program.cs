@@ -8,7 +8,7 @@ namespace DotNext
 {
     internal static class Program
     {
-        private static IConfig BenchConfig => DefaultConfig.Instance.With(Job.Default.WithCustomBuildConfiguration("Benchmark"));
+        private static IConfig BenchConfig => DefaultConfig.Instance.With(Job.Default.AsDefault().WithCustomBuildConfiguration("Benchmark"));
 
         static void Main(string[] args)
         {
