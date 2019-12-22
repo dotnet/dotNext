@@ -41,7 +41,7 @@ namespace DotNext.Metaprogramming
         {
             var body = base.Build();
             if (body.Type != taskType)
-                body = body.AddEpilogue(true, new AsyncResultExpression(taskType));
+                body = body.AddEpilogue(taskType.HasResult, new AsyncResultExpression(taskType));
             Expression<D> lambda;
             using (var builder = new AsyncStateMachineBuilder<D>(Parameters))
             {
