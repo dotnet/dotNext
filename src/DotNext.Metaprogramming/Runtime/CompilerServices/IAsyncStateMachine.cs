@@ -8,10 +8,15 @@ namespace DotNext.Runtime.CompilerServices
     /// This interface here for design purposes only
     /// to ensure that state machine class is written correctly.
     /// </summary>
-    /// <typeparam name="STATE">Type of internal state.</typeparam>
-    internal interface IAsyncStateMachine<STATE> : IAsyncStateMachine
+    /// <typeparam name="TState">Type of internal state.</typeparam>
+    internal interface IAsyncStateMachine<TState> : IAsyncStateMachine
     {
-        STATE State { get; }
+        /// <summary>
+        /// Represents final state identifier of async state machine.
+        /// </summary>
+        internal const uint FINAL_STATE = 0;
+
+        TState State { get; }
         uint StateId { get; }
         bool MoveNext<TAwaiter>(ref TAwaiter awaiter, uint stateId)
             where TAwaiter : INotifyCompletion;

@@ -20,7 +20,7 @@ namespace DotNext.Runtime.CompilerServices
             asyncMethodEnd = Expression.Label("end_async_method");
             attributes = new Stack<ExpressionAttributes>();
             statements = new Stack<Statement>();
-            asyncMethodEnd.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId = previousStateId = AsyncStateMachine<ValueTuple>.FINAL_STATE;
+            asyncMethodEnd.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId = previousStateId = IAsyncStateMachine<ValueTuple>.FINAL_STATE;
         }
 
         internal Statement CurrentStatement => statements.Peek();
