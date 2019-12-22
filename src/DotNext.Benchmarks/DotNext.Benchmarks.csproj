@@ -30,7 +30,7 @@
     <Optimize>true</Optimize>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Benchmark|AnyCPU'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Bench|AnyCPU'">
     <Optimize>true</Optimize>
     <DebugType>none</DebugType>
   </PropertyGroup>
