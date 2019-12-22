@@ -75,12 +75,14 @@ namespace DotNext.Buffers
 
             True(array1.BitwiseEquals(array2));
             True(owner1.BitwiseEquals(owner2));
+            True(owner1.BitwiseCompare(owner2) == 0);
             True(owner1.BitwiseEquals(owner2.Pointer));
             Equal(0, array1.BitwiseCompare(array2));
 
             array2[1] = 50;
             False(array1.BitwiseEquals(array2));
             False(owner1.BitwiseEquals(owner2));
+            True(owner1.BitwiseCompare(owner2) < 0);
             False(owner1.BitwiseEquals(owner2.Pointer));
             NotEqual(0, array1.BitwiseCompare(array2));
         }
