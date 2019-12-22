@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -20,7 +21,7 @@ namespace DotNext.Runtime.CompilerServices
 
         internal override Expression Reduce(ParameterExpression stateMachine)
         {
-            var tryRecover = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.TryRecover));
+            MethodInfo? tryRecover = stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.TryRecover));
             Debug.Assert(!(tryRecover is null));
             tryRecover = tryRecover.MakeGenericMethod(Receiver.Type);
             return stateMachine.Call(tryRecover, Receiver);
