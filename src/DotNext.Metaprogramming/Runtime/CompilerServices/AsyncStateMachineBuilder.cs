@@ -8,6 +8,7 @@ namespace DotNext.Runtime.CompilerServices
 {
     using Linq.Expressions;
     using Reflection;
+    using static Reflection.TypeExtensions;
     using static Collections.Generic.Dictionary;
 
     /// <summary>
@@ -435,12 +436,12 @@ namespace DotNext.Runtime.CompilerServices
             methodBuilder = new AsyncStateMachineBuilder(invokeMethod.ReturnType, parameters);
         }
 
+        private static Type BuildTransitionDelegate(Type stateMachineType)
+            => typeof(Transition<,>)
+                .MakeGenericType(stateMachineType.GetGenericArguments(typeof(IAsyncStateMachine<>))[0], stateMachineType);
+
         private static LambdaExpression BuildStateMachine(Expression body, ParameterExpression stateMachine, bool tailCall)
-        {
-            var delegateType = stateMachine.Type.GetNestedType(nameof(AsyncStateMachine<ValueTuple>.Transition));
-            delegateType = delegateType.MakeGenericType(stateMachine.Type.GetGenericArguments());
-            return Expression.Lambda(delegateType, body, tailCall, stateMachine);
-        }
+            => Expression.Lambda(BuildTransitionDelegate(stateMachine.Type), body, tailCall, stateMachine);
 
         private static MemberExpression GetStateField(ParameterExpression stateMachine)
             => stateMachine.Field(nameof(AsyncStateMachine<int>.State));

@@ -21,22 +21,16 @@ namespace DotNext.Runtime.CompilerServices
         where TState : struct
     {
         /// <summary>
-        /// Represents state-transition function.
-        /// </summary>
-        /// <param name="stateMachine">A state to modify during transition.</param>
-        public delegate void Transition(ref AsyncStateMachine<TState> stateMachine);
-
-        /// <summary>
         /// Runtime state associated with this state machine.
         /// </summary>
         public TState State;
 
         private AsyncValueTaskMethodBuilder builder;
-        private readonly Transition transition;
+        private readonly Transition<TState, AsyncStateMachine<TState>> transition;
         private ExceptionDispatchInfo? exception;
         private uint guardedRegionsCounter;    //number of entries into try-clause
 
-        private AsyncStateMachine(Transition transition, TState state)
+        private AsyncStateMachine(Transition<TState, AsyncStateMachine<TState>> transition, TState state)
         {
             builder = AsyncValueTaskMethodBuilder.Create();
             this.transition = transition;
@@ -188,7 +182,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="transition">Async function which execution is controlled by state machine.</param>
         /// <param name="initialState">Initial state.</param>
         /// <returns>The task representing execution of async function.</returns>
-        public static ValueTask Start(Transition transition, TState initialState = default)
+        public static ValueTask Start(Transition<TState, AsyncStateMachine<TState>> transition, TState initialState = default)
             => new AsyncStateMachine<TState>(transition, initialState).Start();
 
         readonly void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
@@ -208,23 +202,17 @@ namespace DotNext.Runtime.CompilerServices
         where TState : struct
     {
         /// <summary>
-        /// Represents state-transition function.
-        /// </summary>
-        /// <param name="stateMachine"></param>
-        public delegate void Transition(ref AsyncStateMachine<TState, TResult> stateMachine);
-
-        /// <summary>
         /// Represents internal state.
         /// </summary>
         public TState State;
         private AsyncValueTaskMethodBuilder<TResult> builder;
-        private readonly Transition transition;
+        private readonly Transition<TState, AsyncStateMachine<TState, TResult>> transition;
         private ExceptionDispatchInfo? exception;
         private uint guardedRegionsCounter;    //number of entries into try-clause
         [AllowNull]
         private TResult result;
 
-        private AsyncStateMachine(Transition transition, TState state)
+        private AsyncStateMachine(Transition<TState, AsyncStateMachine<TState, TResult>> transition, TState state)
         {
             builder = AsyncValueTaskMethodBuilder<TResult>.Create();
             StateId = IAsyncStateMachine<TState>.FINAL_STATE;
@@ -323,7 +311,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="transition">Async function which execution is controlled by state machine.</param>
         /// <param name="initialState">Initial state.</param>
         /// <returns>The task representing execution of async function.</returns>
-        public static ValueTask<TResult> Start(Transition transition, TState initialState = default)
+        public static ValueTask<TResult> Start(Transition<TState, AsyncStateMachine<TState, TResult>> transition, TState initialState = default)
             => new AsyncStateMachine<TState, TResult>(transition, initialState).Start();
 
         /// <summary>
