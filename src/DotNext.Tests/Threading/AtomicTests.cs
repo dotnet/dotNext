@@ -169,6 +169,30 @@ namespace DotNext.Threading
             Equal(EnvironmentVariableTarget.Machine, value.GetAndUpdate(x => EnvironmentVariableTarget.User));
             Equal(EnvironmentVariableTarget.User, value.Value);
             Equal(EnvironmentVariableTarget.User.ToString(), value.ToString());
+            value.Value = EnvironmentVariableTarget.Process;
+            Equal(EnvironmentVariableTarget.Machine, value.SetAndGet(EnvironmentVariableTarget.Machine));
+            Equal(EnvironmentVariableTarget.Machine, value.Value);
+            Equal(EnvironmentVariableTarget.User, value.UpdateAndGet(x =>
+            {
+                Equal(EnvironmentVariableTarget.Machine, x);
+                return EnvironmentVariableTarget.User;
+            }));
+            value.Value = EnvironmentVariableTarget.Process;
+            Equal(EnvironmentVariableTarget.Process, value.GetAndAccumulate(EnvironmentVariableTarget.User, (current, update) =>
+            {
+                Equal(EnvironmentVariableTarget.Process, current);
+                Equal(EnvironmentVariableTarget.User, update);
+                return (int)current + update;
+            }));
+            Equal(EnvironmentVariableTarget.User, value.Value);
+            value.Value = EnvironmentVariableTarget.Process;
+            Equal(EnvironmentVariableTarget.User, value.AccumulateAndGet(EnvironmentVariableTarget.User, (current, update) =>
+            {
+                Equal(EnvironmentVariableTarget.Process, current);
+                Equal(EnvironmentVariableTarget.User, update);
+                return (int)current + update;
+            }));
+            Equal(EnvironmentVariableTarget.User, value.Value);
         }
 
         [Fact]
