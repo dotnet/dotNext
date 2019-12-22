@@ -431,6 +431,7 @@ namespace DotNext.Runtime
                     length -= sizeof(byte);
                 else
                     goto exit;
+            //TODO: Workaround for https://github.com/dotnet/coreclr/issues/13549
             result = true;
             exit:
             return result;
