@@ -18,10 +18,19 @@ namespace DotNext.Security.Cryptography
             using var alg = new SHA256Managed();
             var hash = new byte[alg.HashSize / 8];
             using var builder = new HashBuilder(alg);
+            False(builder.IsEmpty);
             builder.Add(data);
             Equal(alg.HashSize / 8, builder.Build(hash));
             alg.Initialize();
             Equal(hash, alg.ComputeHash(data));
+        }
+
+        [Fact]
+        public static void NotEnoughHashLength()
+        {
+            using var builder = new HashBuilder("SHA-256");
+            builder.Add(new byte[] { 1, 2, 3 });
+            Throws<InvalidOperationException>(() => builder.Build(new byte[1]));
         }
 
         [Fact]
