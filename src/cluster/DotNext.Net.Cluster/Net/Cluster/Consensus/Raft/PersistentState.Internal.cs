@@ -77,10 +77,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (disposing)
                     foreach (ref var reader in readers.AsSpan())
                     {
-                        reader.Dispose();
+                        reader?.Dispose();
                         reader = null;
                     }
                 base.Dispose(disposing);
+            }
+
+            public override async ValueTask DisposeAsync()
+            {
+                foreach(Stream? reader in readers)
+                    if(reader != null)
+                        await reader.DisposeAsync().ConfigureAwait(false);
+                Array.Clear(readers, 0, readers.Length);
+                await base.DisposeAsync().ConfigureAwait(false);
+                base.Dispose(true);
             }
         }
     }

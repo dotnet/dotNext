@@ -290,5 +290,16 @@ namespace DotNext.IO
                 BaseStream.Dispose();
             base.Dispose(disposing);
         }
+
+        /// <summary>
+        /// Asynchronously releases the unmanaged resources used by this stream.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous dispose operation.</returns>
+        public override async ValueTask DisposeAsync()
+        {
+            if(!leaveOpen)
+                await BaseStream.DisposeAsync().ConfigureAwait(false);
+            await base.DisposeAsync().ConfigureAwait(false);
+        }
     }
 }
