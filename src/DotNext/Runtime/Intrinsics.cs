@@ -688,6 +688,8 @@ namespace DotNext.Runtime
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = hashFunction.Invoke(hash, source);
                     break;
+                case 0L:
+                    break;
                 case sizeof(byte):
                     hash = hashFunction.Invoke(hash, source);
                     break;
@@ -717,6 +719,8 @@ namespace DotNext.Runtime
                         hash = FNV1a64.GetHashCode(hash, Unsafe.ReadUnaligned<long>(ref source));
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = FNV1a64.GetHashCode(hash, source);
+                    break;
+                case 0L:
                     break;
                 case sizeof(byte):
                     hash = FNV1a64.GetHashCode(hash, source);
@@ -813,6 +817,8 @@ namespace DotNext.Runtime
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = hashFunction.Invoke(hash, source);
                     break;
+                case 0L:
+                    break;
                 case sizeof(byte):
                     hash = hashFunction.Invoke(hash, source);
                     break;
@@ -833,6 +839,8 @@ namespace DotNext.Runtime
                         hash = FNV1a32.GetHashCode(hash, Unsafe.ReadUnaligned<int>(ref source));
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = FNV1a32.GetHashCode(hash, source);
+                    break;
+                case 0L:
                     break;
                 case sizeof(byte):
                     hash = FNV1a32.GetHashCode(hash, source);
