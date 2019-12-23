@@ -78,13 +78,7 @@ namespace DotNext.Threading
             /// Computes hash code for this stamp.
             /// </summary>
             /// <returns>The hash code of this stamp.</returns>
-            public override int GetHashCode()
-            {
-                var hashCode = 1717085722;
-                hashCode = hashCode * -1521134295 + version.GetHashCode();
-                hashCode = hashCode * -1521134295 + RuntimeHelpers.GetHashCode(state);
-                return hashCode;
-            }
+            public override int GetHashCode() => HashCode.Combine(state, version);
 
             /// <summary>
             /// Determines whether the first stamp represents the same version of the lock state
