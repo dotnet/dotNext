@@ -121,14 +121,17 @@ namespace DotNext.Runtime
         public static bool IsDefault<T>(T value)
         {
             Sizeof(typeof(T));
-            Conv_I8();
-            Pop(out long size);
+            Pop(out uint size);
             switch (size)
             {
                 default:
                     Push(ref value);
                     Push(size);
+                    Conv_I8();
                     Call(new M(typeof(Intrinsics), nameof(IsZero)));
+                    break;
+                case 0U:
+                    Ldc_I4_1();
                     break;
                 case sizeof(byte):
                     Push(ref value);
@@ -142,12 +145,18 @@ namespace DotNext.Runtime
                     Ldc_I4_0();
                     Ceq();
                     break;
+                case 3:
+                    goto default;
                 case sizeof(uint):
                     Push(ref value);
                     Ldind_I4();
                     Ldc_I4_0();
                     Ceq();
                     break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
                 case sizeof(ulong):
                     Push(ref value);
                     Ldind_I8();
