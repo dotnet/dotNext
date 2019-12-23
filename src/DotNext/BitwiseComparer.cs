@@ -37,11 +37,9 @@ namespace DotNext
         {
             const string methodExit = "exit";
             Sizeof(typeof(T));
-            Conv_I8();
-            Pop(out long size);
+            Pop(out uint size);
             Push(size);
             Sizeof(typeof(G));
-            Conv_I8();
             Ceq();
             Dup();
             Brfalse(methodExit);
@@ -52,7 +50,11 @@ namespace DotNext
                     Push(ref first);
                     Push(ref second);
                     Push(size);
+                    Conv_I8();
                     Call(new M(typeof(Intrinsics), nameof(Intrinsics.EqualsAligned)));
+                    break;
+                case 0U:
+                    Ldc_I4_1();
                     break;
                 case sizeof(byte):
                     Push(ref first);
@@ -113,11 +115,9 @@ namespace DotNext
         {
             const string methodExit = "exit";
             Sizeof(typeof(T));
-            Conv_I8();
-            Pop(out long size);
+            Pop(out uint size);
             Push(size);
             Sizeof(typeof(G));
-            Conv_I8();
             Ceq();
             Dup();
             Brfalse(methodExit);
@@ -128,7 +128,11 @@ namespace DotNext
                     Push(ref first);
                     Push(ref second);
                     Push(size);
+                    Conv_I8();
                     Call(new M(typeof(Intrinsics), nameof(Intrinsics.Compare), new TR(typeof(byte)).MakeByRefType(), new TR(typeof(byte)).MakeByRefType(), typeof(long)));
+                    break;
+                case 0U:
+                    Ldc_I4_0();
                     break;
                 case sizeof(byte):
                     Push(ref first);
@@ -180,16 +184,19 @@ namespace DotNext
         {
             const string methodExit = "exit";
             Sizeof(typeof(T));
-            Conv_I8();
-            Pop(out long size);
+            Pop(out uint size);
             switch (size)
             {
                 default:
                     Push(ref value);
                     Push(size);
+                    Conv_I8();
                     Push(salted);
                     Call(new M(typeof(Intrinsics), nameof(Intrinsics.GetHashCode32), new TR(typeof(byte)).MakeByRefType(), typeof(long), typeof(bool)));
                     return Return<int>();
+                case 0U:
+                    Ldc_I4_0();
+                    break;
                 case sizeof(byte):
                     Push(ref value);
                     Ldind_I1();
