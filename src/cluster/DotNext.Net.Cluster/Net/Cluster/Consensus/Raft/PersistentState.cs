@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// The audit trail supports log compaction. However, it doesn't know how to interpret and reduce log records during compaction.
     /// To do that, you can override <see cref="CreateSnapshotBuilder"/> method and implement state machine logic.
     /// </remarks>
-    public partial class PersistentState : Disposable, IPersistentState
+    public partial class PersistentState : Disposable, IPersistentState, IAsyncDisposable
     {
         private Snapshot snapshot;
         private readonly DirectoryInfo location;
@@ -634,12 +634,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 state.Dispose();
                 commitEvent.Dispose();
                 syncRoot.Dispose();
-                snapshot?.Dispose();
+                snapshot.Dispose();
                 nullSegment.Dispose();
                 entryPool.Dispose();
                 metadataPool?.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        /// <summary>
+        /// Releases unmanaged resources asynchronously.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous dispose operation.</returns>
+        public virtual async ValueTask DisposeAsync()
+        {
+            foreach (var partition in partitionTable.Values)
+                await partition.DisposeAsync().ConfigureAwait(false);
+            sessionManager.Dispose();
+            partitionTable.Clear();
+            state.Dispose();
+            commitEvent.Dispose();
+            syncRoot.Dispose();
+            await snapshot.DisposeAsync().ConfigureAwait(false);
+            await nullSegment.DisposeAsync().ConfigureAwait(false);
+            entryPool.Dispose();
+            metadataPool?.Dispose();
+            base.Dispose(true);
         }
     }
 }
