@@ -22,6 +22,14 @@ namespace DotNext.Threading
     [StructLayout(LayoutKind.Auto)]
     public struct AsyncLock : IDisposable, IEquatable<AsyncLock>
     {
+        /// <summary>
+        /// Represents custom acquisition logic for the lock.
+        /// </summary>
+        /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <param name="token">The token that can be used to abort acquisition operation.</param>
+        /// <returns>The task containing delegate that can be used to release the lock. If delegate is <see langword="null"/> then lock is not acquired.</returns>
+        public delegate Task<Action?> Acquisition(TimeSpan timeout, CancellationToken token = default); 
+
         internal enum Type : byte
         {
             None = 0,
@@ -31,7 +39,8 @@ namespace DotNext.Threading
             WriteLock,
             Semaphore,
             Weak,
-            Strong
+            Strong,
+            Custom
         }
 
         /// <summary>
@@ -81,6 +90,9 @@ namespace DotNext.Threading
                     case Type.Weak:
                         As<AsyncSharedLock>(lockedObject).Release();
                         break;
+                    case Type.Custom:
+                        As<Action>(lockedObject).Invoke();
+                        break;
                 }
                 this = default;
             }
@@ -102,6 +114,15 @@ namespace DotNext.Threading
             this.lockedObject = lockedObject;
             this.type = type;
             this.owner = owner;
+        }
+
+        /// <summary>
+        /// Creates a custom asynchronous lock.
+        /// </summary>
+        /// <param name="acquisition">The delegate representing lock acquisition logic.</param>
+        public AsyncLock(Acquisition acquisition)
+            : this(acquisition, Type.Custom, false)
+        {
         }
 
         /// <summary>
@@ -211,6 +232,9 @@ namespace DotNext.Threading
                 case Type.Weak:
                     task = As<AsyncSharedLock>(lockedObject).AcquireAsync(false, timeout);
                     break;
+                case Type.Custom:
+                    var release = await As<Acquisition>(lockedObject).Invoke(timeout).ConfigureAwait(false);
+                    return release is null ? throw new TimeoutException() : new Holder(release, Type.Custom);
             }
             await task.ConfigureAwait(false);
             return new Holder(lockedObject, type);
@@ -232,16 +256,44 @@ namespace DotNext.Threading
         /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
         public readonly async Task<Holder> TryAcquireAsync(TimeSpan timeout, CancellationToken token, bool suppressCancellation = false)
         {
-            var task = type switch
+            static Task<Action?> TryAcquireCustomAsync(Acquisition acquisition, TimeSpan timeout, CancellationToken token, bool suppressCancellation)
             {
-                Type.Exclusive => As<AsyncExclusiveLock>(lockedObject).TryAcquireAsync(timeout, token),
-                Type.ReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLockAsync(timeout, token),
-                Type.UpgradeableReadLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterUpgradeableReadLockAsync(timeout, token),
-                Type.WriteLock => As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLockAsync(timeout, token),
-                Type.Semaphore => As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token),
-                Type.Strong => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(true, timeout, token),
-                Type.Weak => As<AsyncSharedLock>(lockedObject).TryAcquireAsync(false, timeout, token),
-                _ => CompletedTask<bool, BooleanConst.False>.Task,
+                var releaseTask = acquisition(timeout, token);
+                return suppressCancellation && token.CanBeCanceled ?
+                    releaseTask.OnCanceled<Action?, DefaultConst<Action?>>() :
+                    releaseTask;
+            }
+
+            Task<bool> task;
+            switch(type)
+            {
+                default:
+                    task = CompletedTask<bool, BooleanConst.False>.Task;
+                    break;
+                case Type.Exclusive:
+                    task = As<AsyncExclusiveLock>(lockedObject).TryAcquireAsync(timeout, token);
+                    break;
+                case Type.ReadLock: 
+                    task = As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLockAsync(timeout, token);
+                    break;
+                case Type.UpgradeableReadLock:
+                    task = As<AsyncReaderWriterLock>(lockedObject).TryEnterUpgradeableReadLockAsync(timeout, token);
+                    break;
+                case Type.WriteLock:
+                    task = As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLockAsync(timeout, token);
+                    break;
+                case Type.Semaphore: 
+                    task = As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token);
+                    break;
+                case Type.Strong: 
+                    task = As<AsyncSharedLock>(lockedObject).TryAcquireAsync(true, timeout, token);
+                    break;
+                case Type.Weak:
+                    task = As<AsyncSharedLock>(lockedObject).TryAcquireAsync(false, timeout, token);
+                    break;
+                case Type.Custom:
+                    var release = await TryAcquireCustomAsync(As<Acquisition>(lockedObject), timeout, token, suppressCancellation).ConfigureAwait(false);
+                    return release is null ? default : new Holder(release, Type.Custom);
             };
             if (suppressCancellation && token.CanBeCanceled)
                 task = task.OnCanceled<bool, BooleanConst.False>();
