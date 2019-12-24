@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Net;
 using System.Threading;
@@ -24,7 +25,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             private const string FileName = "node.state";
             private const long Capacity = 128;
-            private const long TermOffset = 0L;
+            private const long IdOffset = 0L;
+            private const long TermOffset = IdOffset + 16L;
             private const long CommitIndexOffset = TermOffset + sizeof(long);
             private const long LastAppliedOffset = CommitIndexOffset + sizeof(long);
             private const long LastIndexOffset = LastAppliedOffset + sizeof(long);
@@ -34,6 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly MemoryMappedFile mappedFile;
             private readonly MemoryMappedViewAccessor stateView;
             private AsyncLock syncRoot;
+            internal readonly Guid Id;
             private volatile IPEndPoint? votedFor;
             private long term, commitIndex, lastIndex, lastApplied;  //volatile
 
@@ -42,6 +45,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 mappedFile = MemoryMappedFile.CreateFromFile(Path.Combine(location.FullName, FileName), FileMode.OpenOrCreate, null, Capacity, MemoryMappedFileAccess.ReadWrite);
                 syncRoot = writeLock;
                 stateView = mappedFile.CreateViewAccessor();
+                stateView.Read(IdOffset, out Id);
+                if(Id == Guid.Empty)
+                {
+                    Id = Guid.NewGuid();
+                    stateView.Write(IdOffset, ref Id);
+                }
                 term = stateView.ReadInt64(TermOffset);
                 commitIndex = stateView.ReadInt64(CommitIndexOffset);
                 lastIndex = stateView.ReadInt64(LastIndexOffset);
@@ -164,5 +173,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="committed"><see langword="true"/> to get the index of highest log entry known to be committed; <see langword="false"/> to get the index of the last log entry.</param>
         /// <returns>The index of the log entry.</returns>
         public long GetLastIndex(bool committed) => committed ? state.CommitIndex : state.LastIndex;
+
+        /// <summary>
+        /// Gets identifier of the cluster node.
+        /// </summary>
+        public ref readonly Guid NodeId => ref state.Id;
     }
 }

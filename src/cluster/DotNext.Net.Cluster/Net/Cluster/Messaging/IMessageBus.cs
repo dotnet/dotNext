@@ -15,10 +15,14 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         new ISubscriber? Leader { get; }
 
+        IClusterMember? ICluster.Leader => Leader;
+
         /// <summary>
         /// Represents a collection of nodes in the network.
         /// </summary>
         new IReadOnlyCollection<ISubscriber> Members { get; }
+
+        IReadOnlyCollection<IClusterMember> ICluster.Members => Members;
 
         /// <summary>
         /// Sends a message to the cluster leader.

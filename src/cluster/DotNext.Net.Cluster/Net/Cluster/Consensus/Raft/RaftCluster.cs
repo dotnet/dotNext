@@ -187,9 +187,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         protected bool IsLeaderLocal => state is LeaderState;
 
-        IAuditTrail<IRaftLogEntry> IReplicationCluster<IRaftLogEntry>.AuditTrail => auditTrail;
-        IAuditTrail IReplicationCluster.AuditTrail => auditTrail;
-
         /// <summary>
         /// Associates audit trail with the current instance.
         /// </summary>

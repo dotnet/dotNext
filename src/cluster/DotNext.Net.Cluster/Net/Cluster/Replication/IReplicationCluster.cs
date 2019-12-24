@@ -28,6 +28,8 @@ namespace DotNext.Net.Cluster.Replication
         /// </summary>
         new IAuditTrail<TEntry> AuditTrail { get; }
 
+        IAuditTrail IReplicationCluster.AuditTrail => AuditTrail;
+
         /// <summary>
         /// Writes message into the cluster according with the specified concern.
         /// </summary>
