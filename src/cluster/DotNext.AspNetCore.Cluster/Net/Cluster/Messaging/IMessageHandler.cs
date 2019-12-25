@@ -9,6 +9,14 @@ namespace DotNext.Net.Cluster.Messaging
     public interface IMessageHandler
     {
         /// <summary>
+        /// Determines whether the specified message can be processed by this handler.
+        /// </summary>
+        /// <param name="messageName">The name of the message.</param>
+        /// <param name="oneWay"><see langword="true"/> if message is one-way; <see langword="false"/> if message is request message that requires a response.</param>
+        /// <returns><see langword="true"/> if message can be processed by this handler; otherwise, <see langword="false"/>.</returns>
+        bool IsSupported(string messageName, bool oneWay) => true;
+
+        /// <summary>
         /// Handles incoming message from the specified cluster member.
         /// </summary>
         /// <remarks>

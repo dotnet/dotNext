@@ -28,6 +28,8 @@ namespace DotNext
 
         internal static string LeaderIsUnavailable => Resources.GetString("LeaderIsUnavailable");
 
+        internal static string DistributedServicesAreUnavailable => Resources.GetString("DistributedServicesAreUnavailable");
+
 #pragma warning restore CS8603, CS8604
     }
 }

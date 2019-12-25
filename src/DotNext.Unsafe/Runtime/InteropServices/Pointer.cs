@@ -227,7 +227,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new NullPointerException(ExceptionMessages.NullSource);
             if (destination.IsNull)
                 throw new ArgumentNullException(nameof(destination), ExceptionMessages.NullDestination);
-            Intrinsics.Copy(ref value[0], ref destination.value[0], count);
+            Intrinsics.Copy(in value[0], ref destination.value[0], count);
         }
 
         /// <summary>
@@ -250,7 +250,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (destination.LongLength == 0L || (offset + count) > destination.LongLength)
                 return 0L;
-            Intrinsics.Copy(ref value[0], ref destination[0], count);
+            Intrinsics.Copy(in value[0], ref destination[0], count);
             return count;
         }
 
@@ -340,7 +340,7 @@ namespace DotNext.Runtime.InteropServices
                 throw new ArgumentOutOfRangeException(nameof(offset));
             if (source.LongLength == 0L || (count + offset) > source.LongLength)
                 return 0L;
-            Intrinsics.Copy(ref source[0], ref value[0], count);
+            Intrinsics.Copy(in source[0], ref value[0], count);
             return count;
         }
 
@@ -448,7 +448,7 @@ namespace DotNext.Runtime.InteropServices
             if (IsNull)
                 return Array.Empty<byte>();
             var result = new byte[sizeof(T) * length];
-            Intrinsics.Copy(ref Unsafe.AsRef<byte>(value), ref result[0], length * sizeof(T));
+            Intrinsics.Copy(in Unsafe.AsRef<byte>(value), ref result[0], length * sizeof(T));
             return result;
         }
 

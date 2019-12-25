@@ -337,7 +337,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="matcher">The predicate used to find appropriate member.</param>
         /// <returns>The cluster member; </returns>
-        protected TMember FindMember(Predicate<TMember> matcher)
+        protected TMember? FindMember(Predicate<TMember> matcher)
             => members.FirstOrDefault(matcher.AsFunc());
 
         /// <summary>

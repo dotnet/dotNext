@@ -5,3 +5,4 @@ UnresolvedLocalMember=Configured list of members in cluster doesn't contain addr
 MessagingNotSupported=Message exchange is not supported by remote member
 UnavailableMember=Member is not reachable through network
 LeaderIsUnavailable=Leader node is not yet elected
+DistributedServicesAreUnavailable=Distributed services are unavailable in the current configuration of cluster

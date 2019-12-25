@@ -15,12 +15,14 @@ using static System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using DistributedServices;
     using Messaging;
+    using Threading;
 
-    internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
+    internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IDistributedApplicationEnvironment
     {
         private readonly IClusterMemberLifetime configurator;
-        private readonly IMessageHandler messageHandler;
+        private readonly IEnumerable<IMessageHandler> messageHandlers;
 
         private readonly IDisposable configurationTracker;
         private volatile MemberMetadata metadata;
@@ -35,6 +37,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
+        //distributed services
+        private IDistributedLockProvider? distributedLock;
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
         private RaftHttpCluster(RaftClusterMemberConfiguration config, IServiceProvider dependencies, out MutableMemberCollection members, Func<Action<RaftClusterMemberConfiguration, string>, IDisposable> configTracker)
@@ -49,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             protocolVersion = config.ProtocolVersion;
             //dependencies
             configurator = dependencies.GetService<IClusterMemberLifetime>();
-            messageHandler = dependencies.GetService<IMessageHandler>();
+            messageHandlers = dependencies.GetServices<IMessageHandler>();
             AuditTrail = dependencies.GetService<IPersistentState>() ?? new InMemoryAuditTrail();
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
@@ -67,6 +71,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             : this(dependencies.GetRequiredService<IOptionsMonitor<RaftClusterMemberConfiguration>>(), dependencies, out members)
         {
         }
+
+        internal bool IsDistributedServicesSupported => distributedLock != null;
+
+        IDistributedLockProvider IDistributedApplicationEnvironment.LockProvider => distributedLock ?? throw new NotSupportedException(ExceptionMessages.DistributedServicesAreUnavailable);
 
         private protected void ConfigureMember(RaftClusterMember member)
         {
@@ -192,6 +200,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (localMember is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             configurator?.Initialize(this, metadata);
+            distributedLock = DistributedLockProvider.TryCreate(this);
             return base.StartAsync(token);
         }
 
@@ -247,8 +256,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
-        private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IMessageHandler handler, HttpResponse response, CancellationToken token)
+        private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IEnumerable<IMessageHandler> handlers, HttpResponse response, CancellationToken token)
         {
+            IMessageHandler? handler = handlers.FirstOrDefault(message.IsSignalSupported);
+            if(handlers is null)
+                return;
             var length = message.Length;
             IDisposableMessage buffered;
             if (length.HasValue && length.Value < FileMessage.MinSize)
@@ -262,24 +274,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
             response.OnCompleted(async delegate ()
             {
-                using (buffered)
+                await using(buffered)
                     await handler.ReceiveSignal(sender, buffered, null).ConfigureAwait(false);
             });
         }
 
-        private static Task ReceiveOneWayMessage(ISubscriber sender, CustomMessage request, IMessageHandler handler, bool reliable, HttpResponse response, CancellationToken token)
+        private static Task ReceiveOneWayMessage(ISubscriber sender, CustomMessage request, IEnumerable<IMessageHandler> handlers, bool reliable, HttpResponse response, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status204NoContent;
             //drop duplicated request
             if (response.HttpContext.Features.Get<DuplicateRequestDetector>().IsDuplicated(request))
                 return Task.CompletedTask;
-            return reliable ? handler.ReceiveSignal(sender, request.Message, response.HttpContext) : ReceiveOneWayMessageFastAck(sender, request.Message, handler, response, token);
+            Task? task = reliable ? 
+                handlers.TryReceiveSignal(sender, request.Message, response.HttpContext) :
+                ReceiveOneWayMessageFastAck(sender, request.Message, handlers, response, token);
+            if(task is null)
+            {
+                response.StatusCode = StatusCodes.Status501NotImplemented;
+                task = Task.CompletedTask;
+            }
+            return task;
         }
 
-        private static async Task ReceiveMessage(ISubscriber sender, CustomMessage request, IMessageHandler handler, HttpResponse response, CancellationToken token)
+        private static async Task ReceiveMessage(ISubscriber sender, CustomMessage request, IEnumerable<IMessageHandler> handlers, HttpResponse response, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
-            await request.SaveResponse(response, await handler.ReceiveMessage(sender, request.Message, response.HttpContext).ConfigureAwait(false), token).ConfigureAwait(false);
+            var task = handlers.TryReceiveMessage(sender, request.Message, response.HttpContext);
+            if(task is null)
+                response.StatusCode = StatusCodes.Status501NotImplemented;
+            else
+                await request.SaveResponse(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);
         }
 
         private Task ReceiveMessage(CustomMessage message, HttpResponse response)
@@ -291,22 +315,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 response.StatusCode = StatusCodes.Status404NotFound;
                 task = Task.CompletedTask;
             }
-            else if (messageHandler is null)
-            {
-                response.StatusCode = StatusCodes.Status501NotImplemented;
-                task = Task.CompletedTask;
-            }
             else if (!message.RespectLeadership || IsLeaderLocal)
                 switch (message.Mode)
                 {
                     case CustomMessage.DeliveryMode.RequestReply:
-                        task = ReceiveMessage(sender, message, messageHandler, response, Token);
+                        task = ReceiveMessage(sender, message, messageHandlers, response, Token);
                         break;
                     case CustomMessage.DeliveryMode.OneWay:
-                        task = ReceiveOneWayMessage(sender, message, messageHandler, true, response, Token);
+                        task = ReceiveOneWayMessage(sender, message, messageHandlers, true, response, Token);
                         break;
                     case CustomMessage.DeliveryMode.OneWayNoAck:
-                        task = ReceiveOneWayMessage(sender, message, messageHandler, false, response, Token);
+                        task = ReceiveOneWayMessage(sender, message, messageHandlers, false, response, Token);
                         break;
                     default:
                         response.StatusCode = StatusCodes.Status400BadRequest;
@@ -376,6 +395,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 localMember = null;
                 configurationTracker.Dispose();
                 duplicationDetector.Dispose();
+                distributedLock = null;
             }
 
             base.Dispose(disposing);
