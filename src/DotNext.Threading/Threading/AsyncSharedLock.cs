@@ -140,11 +140,12 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="strongLock"><see langword="true"/> to acquire strong(exclusive) lock; <see langword="false"/> to acquire weak lock.</param>
         /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <param name="token">The token that can be used to abort lock acquisition.</param>
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task AcquireAsync(bool strongLock, TimeSpan timeout) => TryAcquireAsync(strongLock, timeout).CheckOnTimeout();
+        public Task AcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token = default) => TryAcquireAsync(strongLock, timeout, token).CheckOnTimeout();
 
         /// <summary>
         /// Entres the lock asynchronously.

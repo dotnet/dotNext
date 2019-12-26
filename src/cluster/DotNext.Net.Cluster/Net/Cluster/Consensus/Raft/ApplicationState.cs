@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Concurrent;
 using System.IO;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -13,6 +15,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public ApplicationState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
             : base(path, recordsPerPartition, configuration)
         {
+            lockState = new DirectoryInfo(Path.Combine(path.FullName, LockDirectoryName));
+            if(!lockState.Exists)
+                lockState.Create();
+            waitNodes = new ConcurrentDictionary<string, WaitNode>(StringComparer.Ordinal);
         }
     }
 }

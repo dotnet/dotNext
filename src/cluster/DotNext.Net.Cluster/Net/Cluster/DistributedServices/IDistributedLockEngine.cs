@@ -1,3 +1,7 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace DotNext.Net.Cluster.DistributedServices
 {
     using IAuditTrail = IO.Log.IAuditTrail;
@@ -7,6 +11,8 @@ namespace DotNext.Net.Cluster.DistributedServices
     /// </summary>
     internal interface IDistributedLockEngine : IAuditTrail
     {
-         
+        Task RestoreAsync(CancellationToken token);
+
+        Task<bool> WaitForAcquisitionAsync(string lockName, TimeSpan timeout, CancellationToken token);
     }
 }

@@ -283,11 +283,12 @@ namespace DotNext.Threading
         /// Enters the lock in read mode asynchronously.
         /// </summary>
         /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <param name="token">The token that can be used to abort lock acquisition.</param>
         /// <returns>The task representing acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task EnterReadLockAsync(TimeSpan timeout) => TryEnterReadLockAsync(timeout).CheckOnTimeout();
+        public Task EnterReadLockAsync(TimeSpan timeout, CancellationToken token = default) => TryEnterReadLockAsync(timeout, token).CheckOnTimeout();
 
         /// <summary>
         /// Tries to enter the lock in write mode asynchronously, with an optional time-out.
@@ -329,11 +330,12 @@ namespace DotNext.Threading
         /// Enters the lock in write mode asynchronously.
         /// </summary>
         /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <param name="token">The token that can be used to abort lock acquisition.</param>
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task EnterWriteLockAsync(TimeSpan timeout) => TryEnterWriteLockAsync(timeout).CheckOnTimeout();
+        public Task EnterWriteLockAsync(TimeSpan timeout, CancellationToken token = default) => TryEnterWriteLockAsync(timeout, token).CheckOnTimeout();
 
         /// <summary>
         /// Tries to enter the lock in upgradeable mode asynchronously, with an optional time-out.
@@ -375,11 +377,12 @@ namespace DotNext.Threading
         /// Enters the lock in upgradeable mode asynchronously.
         /// </summary>
         /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <param name="token">The token that can be used to abort lock acquisition.</param>
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task EnterUpgradeableReadLockAsync(TimeSpan timeout) => TryEnterUpgradeableReadLockAsync(timeout).CheckOnTimeout();
+        public Task EnterUpgradeableReadLockAsync(TimeSpan timeout, CancellationToken token = default) => TryEnterUpgradeableReadLockAsync(timeout, token).CheckOnTimeout();
 
         private void ProcessReadLocks()
         {

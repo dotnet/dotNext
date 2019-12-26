@@ -55,10 +55,8 @@ namespace DotNext.Threading
         /// Releases the lock in unsafe manner.
         /// </summary>
         /// <param name="lockName">The name of distributed lock.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task represention unlock async operation.</returns>
-        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task ForceUnlockAsync(string lockName, CancellationToken token = default);
+        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string; or contains invalid characters.</exception>
+        void ForceUnlock(string lockName);
     }
 }

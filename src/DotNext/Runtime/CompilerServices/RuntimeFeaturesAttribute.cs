@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
@@ -14,6 +15,8 @@ namespace DotNext.Runtime.CompilerServices
     /// </remarks>
     [SuppressMessage("Style", "CA1051", Justification = "This type for internal purposes only")]
     [Conditional("DEBUG")]
+    [CLSCompliant(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Assembly | AttributeTargets.Module, AllowMultiple = false, Inherited = true)]
     public sealed class RuntimeFeaturesAttribute : Attribute
     {

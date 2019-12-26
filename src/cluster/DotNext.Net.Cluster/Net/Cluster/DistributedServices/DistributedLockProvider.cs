@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,46 +18,49 @@ namespace DotNext.Net.Cluster.DistributedServices
     /// </remarks>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
-    public sealed class DistributedLockProvider : IDistributedLockProvider
+    public sealed class DistributedLockProvider : IDistributedLockProvider, IDistributedServiceProvider
     {
         private IDistributedLockProvider.ConfigurationProvider? lockConfig;
         private readonly IDistributedLockEngine engine;
         private readonly IMessageBus messageBus;
+        private readonly ConcurrentDictionary<string, AsyncExclusiveLock> locks;
 
         private DistributedLockProvider(IDistributedLockEngine engine, IMessageBus messageBus)
         {
             this.engine = engine;
             this.messageBus = messageBus;
+            locks = new ConcurrentDictionary<string, AsyncExclusiveLock>(StringComparer.Ordinal);
         }
 
         private Task<Action?> TryAcquireLockAsync(string lockName, TimeSpan timeout, CancellationToken token)
         {
-            Action release = () => Unlock(lockName);
+            if(token.IsCancellationRequested)
+                return Task.FromCanceled<Action?>(token);
+            timeout.ToString();
+            Action release = () => Unlock(lockName, false);
             return Task.FromResult<Action?>(release);
         }
 
-        private void Unlock(string lockName)
+        private void Unlock(string lockName, bool force)
         {
+            lockName.ToString();
+            force.ToString();
         }
+
+        public Task InitializeAsync(CancellationToken token)
+            => engine.RestoreAsync(token);
 
         public AsyncLock GetLock(string lockName)
             => new AsyncLock((timeout, token) => TryAcquireLockAsync(lockName, timeout, token));
         
-        public IDistributedLockProvider.ConfigurationProvider LockConfiguration
+        AsyncLock IDistributedLockProvider.this[string lockName] => GetLock(lockName);
+        public IDistributedLockProvider.ConfigurationProvider Configuration
         {
             set => lockConfig = value;
         }
 
-        AsyncLock IDistributedLockProvider.this[string lockName] => GetLock(lockName);
-        IDistributedLockProvider.ConfigurationProvider IDistributedLockProvider.Configuration
-        {
-            set => LockConfiguration = value;
-        }
-
-        public Task ForceUnlockAsync(string lockName, CancellationToken token = default)
-        {
-            return Task.CompletedTask;
-        }
+        public void ForceUnlock(string lockName)
+            => Unlock(lockName, true);
 
         public static DistributedLockProvider? TryCreate<TCluster>(TCluster cluster)
             where TCluster : class, IMessageBus, IReplicationCluster

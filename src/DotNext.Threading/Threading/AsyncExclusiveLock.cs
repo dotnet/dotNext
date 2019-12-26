@@ -66,11 +66,12 @@ namespace DotNext.Threading
         /// Enters the lock in exclusive mode asynchronously.
         /// </summary>
         /// <param name="timeout">The interval to wait for the lock.</param>
+        /// <param name="token">The token that can be used to abort lock acquisition.</param>
         /// <returns>The task representing lock acquisition operation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
-        public Task AcquireAsync(TimeSpan timeout) => TryAcquireAsync(timeout).CheckOnTimeout();
+        public Task AcquireAsync(TimeSpan timeout, CancellationToken token = default) => TryAcquireAsync(timeout, token).CheckOnTimeout();
 
         /// <summary>
         /// Enters the lock in exclusive mode asynchronously.
