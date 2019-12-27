@@ -59,7 +59,7 @@ namespace DotNext.Threading.Tasks
         private sealed class Continuation
         {
             private readonly Action callback;
-            private readonly SynchronizationContext context;
+            private readonly object context;
 
             private Continuation(Action callback, SynchronizationContext context)
             {
@@ -67,12 +67,37 @@ namespace DotNext.Threading.Tasks
                 this.context = context;
             }
 
-            private void Invoke() => callback.InvokeInContext(context);
+            private Continuation(Action callback, TaskScheduler scheduler)
+            {
+                this.callback = callback;
+                this.context = scheduler;
+            }
+
+            private void Invoke()
+            {
+                switch(context)
+                {
+                    case SynchronizationContext ctx:
+                        callback.InvokeInContext(ctx);
+                        break;
+                    case TaskScheduler scheduler:
+                        Task.Factory.StartNew(callback, CancellationToken.None, TaskCreationOptions.DenyChildAttach, scheduler);
+                        break;
+                    default:
+                        callback.Invoke();
+                        break;
+                }
+            }
 
             internal static Action Create(Action callback)
             {
                 var context = SynchronizationContext.Current?.CreateCopy();
-                return context is null ? new Action(callback.InvokeInThreadPool) : new Continuation(callback, context).Invoke;
+                if(context != null)
+                    return new Continuation(callback, context).Invoke;
+                var scheduler = TaskScheduler.Current;
+                if(ReferenceEquals(scheduler, TaskScheduler.Default))
+                    return callback.InvokeInThreadPool;
+                return new Continuation(callback, scheduler).Invoke;
             }
         }
 
