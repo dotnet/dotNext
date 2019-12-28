@@ -1,6 +1,5 @@
 using System.Buffers;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
@@ -47,16 +46,6 @@ namespace DotNext.IO
             if(disposing)
                 pool.Return(GetBuffer());
             base.Dispose(disposing);
-        }
-
-        /// <summary>
-        /// Asynchronously releases the unmanaged resources used by the
-        /// </summary>
-        /// <returns>A task that represents the asynchronous dispose operation.</returns>
-        public override ValueTask DisposeAsync()
-        {
-            pool.Return(GetBuffer());
-            return base.DisposeAsync();
         }
     }
 }
