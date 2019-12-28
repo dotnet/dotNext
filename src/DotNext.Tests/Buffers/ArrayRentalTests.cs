@@ -33,7 +33,7 @@ namespace DotNext.Buffers
             {
                 Equal(10, *ptr);
             }
-            Same(array, (int[])rental);
+            Same(array, rental.Segment.Array);
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace DotNext.Buffers
             True(rental.Span.IsEmpty);
             True(rental.Memory.IsEmpty);
             True(rental.Segment.Count == 0);
-            Empty((int[])rental);
+            Empty(rental.Segment);
             rental.Dispose();
 
             rental = default;
@@ -55,7 +55,7 @@ namespace DotNext.Buffers
             True(rental.Memory.IsEmpty);
             True(rental.Segment.Count == 0);
             rental.Dispose();
-            Empty((int[])rental);
+            Empty(rental.Segment);
         }
     }
 }
