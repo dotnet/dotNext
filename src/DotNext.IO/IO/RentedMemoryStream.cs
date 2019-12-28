@@ -11,21 +11,16 @@ namespace DotNext.IO
     {
         private readonly ArrayPool<byte> pool;
 
-        private RentedMemoryStream(byte[] rentedBuffer, ArrayPool<byte> bufferSource)
-            : base(rentedBuffer, 0, rentedBuffer.Length, true, true)
-        {
-            this.pool = bufferSource;
-            SetLength(0L);
-        }
-
         /// <summary>
         /// Initializes a new non-resizable memory stream of rented memory from shared array pool. 
         /// </summary>
         /// <param name="capacity">The recommended capacity of the memory stream.</param>
         /// <param name="pool">The array pool used to rent the underlying buffer.</param>
         public RentedMemoryStream(int capacity, ArrayPool<byte> pool)
-            : this(pool.Rent(capacity), pool)
+            : base(pool.Rent(capacity), 0, capacity, true, true)
         {
+            this.pool = pool;
+            SetLength(0L);
         }
 
         /// <summary>
