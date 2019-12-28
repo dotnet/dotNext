@@ -18,6 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using DistributedServices;
     using Messaging;
     using Threading;
+    using RentedMemoryStream = IO.RentedMemoryStream;
 
     internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IDistributedApplicationEnvironment
     {
@@ -261,17 +262,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             IMessageHandler? handler = handlers.FirstOrDefault(message.IsSignalSupported);
             if(handlers is null)
                 return;
-            var length = message.Length;
-            IDisposableMessage buffered;
-            if (length.HasValue && length.Value < FileMessage.MinSize)
-                buffered = await StreamMessage.CreateBufferedMessageAsync(message, token).ConfigureAwait(false);
+            IBufferedMessage buffered;
+            if (message.Length.TryGet(out var length) && length < FileMessage.MinSize)
+                buffered = new InMemoryMessage(message.Name, message.Type, Convert.ToInt32(length));
             else
-            {
-                var file = new FileMessage(message.Name, message.Type);
-                await message.CopyToAsync(file, token).ConfigureAwait(false);
-                file.Position = 0;
-                buffered = file;
-            }
+                buffered = new FileMessage(message.Name, message.Type);
+            await buffered.LoadFromAsync(message, token).ConfigureAwait(false);
+            buffered.PrepareForReuse();
             response.OnCompleted(async delegate ()
             {
                 await using(buffered)

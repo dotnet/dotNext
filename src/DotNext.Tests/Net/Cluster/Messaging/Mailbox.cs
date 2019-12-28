@@ -18,6 +18,10 @@ namespace DotNext.Net.Cluster.Messaging
         }
 
         async Task IMessageHandler.ReceiveSignal(ISubscriber sender, IMessage signal, object context)
-           => Enqueue(await StreamMessage.CreateBufferedMessageAsync(signal).ConfigureAwait(false));
+        {
+            var buffered = new StreamMessage(signal.Name, signal.Type);
+            await buffered.LoadFromAsync(signal).ConfigureAwait(false);
+            Enqueue(buffered);
+        }
     }
 }

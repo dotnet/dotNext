@@ -27,6 +27,25 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Loads the content from another data transfer object.
+        /// </summary>
+        /// <param name="source">The content source.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of content loading.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="NotSupportedException">The underlying stream does not support seeking.</exception>
+        public async ValueTask LoadFromAsync(IDataTransferObject source, CancellationToken token = default)
+        {
+            if(content.CanSeek && content.CanWrite)
+            {
+                await source.CopyToAsync(content, token).ConfigureAwait(false);
+                content.Seek(0, SeekOrigin.Begin);
+            }
+            else
+                throw new NotSupportedException();
+        }
+
+        /// <summary>
         /// Indicates that the content of this message can be copied to the output stream or pipe multiple times.
         /// </summary>
         public virtual bool IsReusable => content.CanSeek;

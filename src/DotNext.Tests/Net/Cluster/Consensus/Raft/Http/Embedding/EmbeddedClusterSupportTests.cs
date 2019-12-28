@@ -133,6 +133,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host1.StopAsync();
         }
 
+        private static async ValueTask<StreamMessage> CreateBufferedMessageAsync(IMessage message, CancellationToken token)
+        {
+            var result = new StreamMessage(message.Name, message.Type);
+            await result.LoadFromAsync(message, token);
+            return result;
+        }
+
         [Fact]
         public static async Task MessageExchange()
         {
@@ -161,7 +168,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             var messageBox = host2.Services.GetService<IMessageHandler>() as Mailbox;
             NotNull(messageBox);
             //request-reply test
-            var response = await client.SendTextMessageAsync(StreamMessage.CreateBufferedMessageAsync, "Request", "Ping");
+            var response = await client.SendTextMessageAsync<StreamMessage>(CreateBufferedMessageAsync, "Request", "Ping");
             True(response.IsReusable);
             NotNull(response);
             Equal("Reply", response.Name);
