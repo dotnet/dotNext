@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Missing = System.Reflection.Missing;
 
 namespace DotNext.IO.Pipelines
 {
@@ -30,6 +31,28 @@ namespace DotNext.IO.Pipelines
             T Complete();
 
             void EndOfStream() => throw new EndOfStreamException();
+        }
+
+        private struct BufferReader : IBufferReader<Missing>
+        {
+            private readonly Memory<byte> buffer;
+            private int offset;
+
+            internal BufferReader(Memory<byte> buffer)
+            {
+                this.buffer = buffer;
+                offset = 0;
+            }
+
+            int IBufferReader<Missing>.RemainingBytes => buffer.Length - offset;
+
+            Missing IBufferReader<Missing>.Complete() => Missing.Value;
+
+            void IBufferReader<Missing>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
+            {
+                block.CopyTo(buffer.Span.Slice(offset));
+                offset += block.Length;
+            }
         }
 
         [StructLayout(LayoutKind.Auto)]
@@ -274,6 +297,16 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<T> ReadAsync<T>(this PipeReader reader, CancellationToken token = default)
             where T : unmanaged
             => ReadAsync<T, ValueReader<T>>(reader, new ValueReader<T>(), token);
+
+        /// <summary>
+        /// Reads the block of memory.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="output">The block of memory to fill from the pipe.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous state of the operation.</returns>
+        public static async ValueTask ReadAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
+            => await ReadAsync<Missing, BufferReader>(reader, new BufferReader(output), token).ConfigureAwait(false);
 
         /// <summary>
         /// Encodes value of blittable type.

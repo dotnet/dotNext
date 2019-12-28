@@ -26,6 +26,28 @@ namespace DotNext.IO.Pipelines
         }
 
         [Fact]
+        public static async Task EncodeDecodeMemory()
+        {
+            static async void WriteValueAsync(Memory<byte> memory, PipeWriter writer)
+            {
+                await writer.WriteAsync(memory);
+                await writer.CompleteAsync();
+            }
+
+            var pipe = new Pipe();
+            WriteValueAsync(new byte[]{ 1, 5, 8, 9, 10}, pipe.Writer);
+            var portion1 = new byte[3];
+            var portion2 = new byte[2];
+            await pipe.Reader.ReadAsync(portion1);
+            await pipe.Reader.ReadAsync(portion2);
+            Equal(1, portion1[0]);
+            Equal(5, portion1[1]);
+            Equal(8, portion1[2]);
+            Equal(9, portion2[0]);
+            Equal(10, portion2[1]);
+        }
+
+        [Fact]
         public static async Task EncodeDecodeValue2()
         {
             static async void WriteValueAsync(PipeWriter writer)
