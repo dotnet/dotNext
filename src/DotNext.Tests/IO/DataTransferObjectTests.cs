@@ -17,6 +17,8 @@ namespace DotNext.IO
             using var dto = new StreamTransferObject(ms, false);
             Equal(ms.Length, ((IDataTransferObject)dto).Length);
             Equal(testString, await dto.ReadAsTextAsync(Encoding.Unicode));
+            ms.Position = 0;
+            Equal(testString, await dto.ReadAsTextAsync(Encoding.Unicode, 1024));
         }
 
         [Fact]
