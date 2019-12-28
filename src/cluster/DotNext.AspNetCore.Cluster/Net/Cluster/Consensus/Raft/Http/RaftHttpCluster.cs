@@ -263,7 +263,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if(handlers is null)
                 return;
             IBufferedMessage buffered;
-            if (message.Length.TryGet(out var length) && length < FileMessage.MinSize)
+            if (message.Length.TryGetValue(out var length) && length < FileMessage.MinSize)
                 buffered = new InMemoryMessage(message.Name, message.Type, Convert.ToInt32(length));
             else
                 buffered = new FileMessage(message.Name, message.Type);

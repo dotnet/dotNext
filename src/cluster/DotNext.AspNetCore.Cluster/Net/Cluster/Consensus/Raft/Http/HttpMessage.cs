@@ -50,7 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext context) => dto.CopyToAsync(stream).AsTask();
 
             protected sealed override bool TryComputeLength(out long length)
-                => dto.Length.TryGet(out length);
+                => dto.Length.TryGetValue(out length);
         }
 
         internal readonly string Id;

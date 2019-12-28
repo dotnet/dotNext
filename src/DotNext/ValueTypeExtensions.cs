@@ -61,7 +61,7 @@ namespace DotNext
         /// <param name="nullable">Nullable value.</param>
         /// <param name="value">Underlying value.</param>
         /// <returns><see langword="true"/> if <paramref name="nullable"/> is not <see langword="null"/>; otherwise, <see langword="false"/>.</returns>
-        public static bool TryGet<T>(this in T? nullable, out T value) where T : struct
+        public static bool TryGetValue<T>(this T? nullable, out T value) where T : struct
         {
             value = nullable.GetValueOrDefault();
             return nullable.HasValue;

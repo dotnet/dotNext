@@ -25,7 +25,7 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-        /// Indicates that timeout is reached.
+        /// Indicates that timeout is occurred.
         /// </summary>
         public bool IsExpired => created.Elapsed > timeout;
 
@@ -44,9 +44,21 @@ namespace DotNext.Threading
         /// <param name="remaining">The remaining time before timeout.</param>
         public void ThrowIfExpired(out TimeSpan remaining)
         {
-            remaining = timeout - created.Elapsed;
-            if (remaining <= TimeSpan.Zero)
+            if(!RemainingTime.TryGetValue(out remaining))
                 throw new TimeoutException();
+        }
+        
+        /// <summary>
+        /// Gets the remaining time.
+        /// </summary>
+        /// <value>The remaining time; or <see langword="null"/> if timeout occurs.</value>
+        public TimeSpan? RemainingTime
+        {
+            get
+            {
+                var remaining = timeout - created.Elapsed;
+                return remaining >= TimeSpan.Zero ? new TimeSpan?(remaining) : null;
+            }
         }
 
         /// <summary>
