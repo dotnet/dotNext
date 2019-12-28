@@ -17,14 +17,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private const string UserAgent = "Raft.NET";
 
-        private const int UnknownStatus = (int)ClusterMemberStatus.Unknown;
-        private const int UnavailableStatus = (int)ClusterMemberStatus.Unavailable;
-        private const int AvailableStatus = (int)ClusterMemberStatus.Available;
-
         private static readonly Version Http1 = new Version(1, 1);
         private static readonly Version Http2 = new Version(2, 0);
         private readonly Uri resourcePath;
-        private int status;
+        private AtomicEnum<ClusterMemberStatus> status;
         private readonly IHostingContext context;
         private volatile MemberMetadata? metadata;
         private ClusterMemberStatusChanged? memberStatusChanged;
@@ -37,7 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             this.resourcePath = resourcePath;
             this.context = context;
-            status = UnknownStatus;
+            status = new AtomicEnum<ClusterMemberStatus>(ClusterMemberStatus.Unknown);
             BaseAddress = remoteMember;
             Endpoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
@@ -49,14 +45,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             remove => memberStatusChanged -= value;
         }
 
-        private void ChangeStatus(int newState)
+        private void ChangeStatus(ClusterMemberStatus newState)
         {
             var previousState = status.GetAndSet(newState);
             if (previousState != newState)
-                memberStatusChanged?.Invoke(this, (ClusterMemberStatus)previousState, (ClusterMemberStatus)newState);
+                memberStatusChanged?.Invoke(this, previousState, newState);
         }
 
-        internal void Touch() => ChangeStatus(AvailableStatus);
+        internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Response is disposed in finally block")]
         private async Task<R> SendAsync<R, M>(M message, CancellationToken token)
@@ -81,7 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 response = (await SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token)
                     .ConfigureAwait(false)).EnsureSuccessStatusCode();
-                ChangeStatus(AvailableStatus);
+                ChangeStatus(ClusterMemberStatus.Available);
                 return await message.ParseResponse(response, token).ConfigureAwait(false);
             }
             catch (HttpRequestException e)
@@ -89,7 +85,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 if (response is null)
                 {
                     context.Logger.MemberUnavailable(Endpoint, e);
-                    ChangeStatus(UnavailableStatus);
+                    ChangeStatus(ClusterMemberStatus.Unavailable);
                     throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
                 }
                 else
@@ -98,7 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             catch (OperationCanceledException e) when (!token.IsCancellationRequested)
             {
                 context.Logger.MemberUnavailable(Endpoint, e);
-                ChangeStatus(UnavailableStatus);
+                ChangeStatus(ClusterMemberStatus.Unavailable);
                 throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
             }
             finally
@@ -145,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public bool IsRemote => !Endpoint.Equals(context.LocalEndpoint);
 
         ClusterMemberStatus IClusterMember.Status
-            => Endpoint.Equals(context.LocalEndpoint) ? ClusterMemberStatus.Available : (ClusterMemberStatus)status.VolatileRead();
+            => Endpoint.Equals(context.LocalEndpoint) ? ClusterMemberStatus.Available : status.Value;
 
         bool IEquatable<IClusterMember>.Equals(IClusterMember other) => Endpoint.Equals(other?.Endpoint);
 
