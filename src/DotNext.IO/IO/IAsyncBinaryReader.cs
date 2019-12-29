@@ -17,6 +17,11 @@ namespace DotNext.IO
     public interface IAsyncBinaryReader
     {
         /// <summary>
+        /// Represents empty reader.
+        /// </summary>
+        public static IAsyncBinaryReader Empty { get; } = new EmptyBinaryReader();
+
+        /// <summary>
         /// Decodes the value of blittable type.
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
