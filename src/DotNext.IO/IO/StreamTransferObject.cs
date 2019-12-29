@@ -80,6 +80,15 @@ namespace DotNext.IO
             }
         }
 
+        /// <summary>
+        /// Parses the encapsulated stream. 
+        /// </summary>
+        /// <param name="parser">The parser instance.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <typeparam name="TParser">The type of parser.</typeparam>
+        /// <returns>The converted DTO content.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public async ValueTask<TResult> ParseAsync<TResult, TParser>(TParser parser, CancellationToken token = default)
             where TParser : IDataTransferObject.IParser<TResult>
         {
