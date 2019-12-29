@@ -19,7 +19,7 @@ namespace DotNext.IO
         private const int DefaultBufferSize = 1024;
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct TextDecoder : IDataTransferObject.ITransformation<string>
+        private readonly struct TextDecoder : IDataTransferObject.IDecoder<string>
         {
             private readonly Encoding encoding;
             private readonly int? capacity;
@@ -58,7 +58,7 @@ namespace DotNext.IO
         }
 
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct ArrayDecoder : IDataTransferObject.ITransformation<byte[]>
+        private readonly struct ArrayDecoder : IDataTransferObject.IDecoder<byte[]>
         {
             public async ValueTask<byte[]> TransformAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : IAsyncBinaryReader

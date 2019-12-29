@@ -1,13 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using ByteBuffer = Buffers.ArrayRental<byte>;
-
     /// <summary>
     /// Represents object which content is represented by <see cref="Stream"/>.
     /// </summary>
@@ -81,7 +78,7 @@ namespace DotNext.IO
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
-            where TDecoder : IDataTransferObject.ITransformation<TResult>
+            where TDecoder : IDataTransferObject.IDecoder<TResult>
             => IDataTransferObject.DecodeAsync<TResult, TDecoder>(content, parser, true, token);
 
         /// <summary>

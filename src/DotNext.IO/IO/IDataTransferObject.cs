@@ -19,7 +19,7 @@ namespace DotNext.IO
         /// Represents DTO transformation.
         /// </summary>
         /// <typeparam name="TResult">The result type.</typeparam>
-        public interface ITransformation<TResult>
+        public interface IDecoder<TResult>
         {
             /// <summary>
             /// Parses DTO content asynchronously.
@@ -68,7 +68,7 @@ namespace DotNext.IO
         /// <returns>The decoded stream.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         protected static async ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, CancellationToken token)
-            where TDecoder : notnull, ITransformation<TResult>
+            where TDecoder : notnull, IDecoder<TResult>
         {
             const int bufferSize = 1024;
             var buffer = new ByteBuffer(bufferSize);
@@ -95,7 +95,7 @@ namespace DotNext.IO
         /// <returns>The decoded stream.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         protected static ValueTask<TResult> DecodeAsync<TResult, TDecoder>(PipeReader input, TDecoder transformation, CancellationToken token)
-            where TDecoder : notnull, ITransformation<TResult>
+            where TDecoder : notnull, IDecoder<TResult>
             => transformation.TransformAsync(new Pipelines.PipeBinaryReader(input), token);
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace DotNext.IO
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         async ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
-            where TDecoder : notnull, ITransformation<TResult>
+            where TDecoder : notnull, IDecoder<TResult>
         {
             const int bufferSize = 1024;
             using var ms = Length.TryGetValue(out var length) && length <= int.MaxValue ?
