@@ -238,7 +238,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The block of characters to encode.</param>
         /// <param name="context">The text encoding context.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        /// <param name="lengthFormat">Represents string length encoding format.</param>
+        /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The result of operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>

@@ -10,9 +10,10 @@ namespace DotNext.IO
     using DecodingContext = Text.DecodingContext;
 
     /// <summary>
-    /// Provides uniform way to decode the data
+    /// Providers a uniform way to decode the data
     /// from various sources such as streams, pipes, unmanaged memory etc.
     /// </summary>
+    /// <seealso cref="IAsyncBinaryWriter"/>
     public interface IAsyncBinaryReader
     {
         /// <summary>
@@ -55,6 +56,7 @@ namespace DotNext.IO
         /// <returns>The decoded string.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         ValueTask<string> ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default);
 
         /// <summary>

@@ -11,6 +11,8 @@ namespace DotNext.IO
     /// <summary>
     /// Represents structured data unit that can be transferred over wire.
     /// </summary>
+    /// <seealso cref="IAsyncBinaryReader"/>
+    /// <seealso cref="IAsyncBinaryWriter"/>
     public interface IDataTransferObject
     {
         /// <summary>

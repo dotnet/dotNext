@@ -123,7 +123,7 @@ namespace DotNext.IO
         /// <param name="value">The string to be encoded.</param>
         /// <param name="context">The encoding.</param>
         /// <param name="buffer">The buffer allocated by the caller needed for characters encoding.</param>
-        /// <param name="lengthFormat">Represents string length encoding format.</param>
+        /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
         /// <exception cref="ArgumentException"><paramref name="buffer"/> is too small for encoding minimal portion of <paramref name="value"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static void WriteString(this Stream stream, ReadOnlySpan<char> value, in EncodingContext context, Span<byte> buffer, StringLengthEncoding? lengthFormat = null)
@@ -176,7 +176,7 @@ namespace DotNext.IO
         /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The string to be encoded.</param>
         /// <param name="encoding">The encoding.</param>
-        /// <param name="lengthFormat">Represents string length encoding format.</param>
+        /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
         public static void WriteString(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat = null)
         {
@@ -221,7 +221,7 @@ namespace DotNext.IO
         /// <param name="value">The string to be encoded.</param>
         /// <param name="context">The encoding context.</param>
         /// <param name="buffer">The buffer allocated by the caller needed for characters encoding.</param>
-        /// <param name="lengthFormat">Represents string length encoding format.</param>
+        /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
