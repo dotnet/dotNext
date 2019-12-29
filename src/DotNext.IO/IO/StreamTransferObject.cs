@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
+    using ByteBuffer = Buffers.ArrayRental<byte>;
+
     /// <summary>
     /// Represents object which content is represented by <see cref="Stream"/>.
     /// </summary>
@@ -52,19 +54,47 @@ namespace DotNext.IO
 
         long? IDataTransferObject.Length => content.CanSeek ? content.Length : default(long?);
 
-
         async ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
         {
-            await content.CopyToAsync(output, DefaultBufferSize, token).ConfigureAwait(false);
-            if (content.CanSeek)
-                content.Seek(0, SeekOrigin.Begin);
+            try
+            {
+                await content.CopyToAsync(output, DefaultBufferSize, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (content.CanSeek)
+                    content.Seek(0, SeekOrigin.Begin);
+            }
         }
 
         async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
         {
-            await content.CopyToAsync(output, token).ConfigureAwait(false);
-            if (content.CanSeek)
-                content.Seek(0, SeekOrigin.Begin);
+            try
+            {
+                await content.CopyToAsync(output, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                if (content.CanSeek)
+                    content.Seek(0, SeekOrigin.Begin);
+            }
+        }
+
+        public async ValueTask<TResult> ParseAsync<TResult, TParser>(TParser parser, CancellationToken token = default)
+            where TParser : IDataTransferObject.IParser<TResult>
+        {
+            const int bufferSize = 1024;
+            var buffer = new ByteBuffer(bufferSize);
+            try
+            {
+                return await parser.ParseAsync(new AsyncStreamBinaryReader(content, buffer.Memory), token).ConfigureAwait(false);
+            }
+            finally
+            {
+                buffer.Dispose();
+                if(content.CanSeek)
+                    content.Seek(0L, SeekOrigin.Begin);
+            }
         }
 
         /// <summary>

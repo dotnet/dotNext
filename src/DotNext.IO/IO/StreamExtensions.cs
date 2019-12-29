@@ -88,13 +88,6 @@ namespace DotNext.IO
             }
             return (int)reader.Result;
         }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void ReverseIfNeeded(this ref int value, bool littleEndian)
-        {
-            if(BitConverter.IsLittleEndian != littleEndian)
-                value = BinaryPrimitives.ReverseEndianness(value);
-        }
 
         private static void WriteLength(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat)
         {
