@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.DistributedServices
 {
+    using AsyncEventListener = Threading.AsyncEventListener;
     using IAuditTrail = IO.Log.IAuditTrail;
 
     /// <summary>
@@ -13,6 +14,11 @@ namespace DotNext.Net.Cluster.DistributedServices
     {
         Task RestoreAsync(CancellationToken token);
 
+        AsyncEventListener CreateReleaseLockListener(CancellationToken token);
+
         Task<bool> WaitForAcquisitionAsync(string lockName, TimeSpan timeout, CancellationToken token);
+
+        //releases all expired locks
+        Task CollectGarbage(CancellationToken token);
     }
 }

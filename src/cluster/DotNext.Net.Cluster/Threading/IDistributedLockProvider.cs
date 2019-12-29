@@ -17,7 +17,7 @@ namespace DotNext.Threading
             private TimeSpan? leaseTime;
 
             /// <summary>
-            /// Gets or sets maximum lease time for the acquired lock.
+            /// Gets or sets maximum lease duration for the acquired lock.
             /// </summary>
             /// <remarks>
             /// The lock holder must acquire its ownership periodically

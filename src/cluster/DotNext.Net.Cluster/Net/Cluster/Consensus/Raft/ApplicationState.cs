@@ -15,10 +15,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public ApplicationState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
             : base(path, recordsPerPartition, configuration)
         {
-            lockState = new DirectoryInfo(Path.Combine(path.FullName, LockDirectoryName));
-            if(!lockState.Exists)
-                lockState.Create();
-            waitNodes = new ConcurrentDictionary<string, WaitNode>(StringComparer.Ordinal);
+            lockPersistentStateStorage = new DirectoryInfo(Path.Combine(path.FullName, LockDirectoryName));
+            if(!lockPersistentStateStorage.Exists)
+                lockPersistentStateStorage.Create();
+            lockAcquisitions = new ConcurrentDictionary<string, WaitNode>(StringComparer.Ordinal);
         }
     }
 }

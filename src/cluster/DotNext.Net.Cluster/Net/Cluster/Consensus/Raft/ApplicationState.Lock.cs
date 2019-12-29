@@ -9,8 +9,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using DistributedServices;
+    using Threading;
     using static Threading.Tasks.Synchronization;
-    using TimeoutTracker = Threading.Timeout;
     using static IO.StreamExtensions;
     using TrueTask = Threading.Tasks.CompletedTask<bool, Generic.BooleanConst.True>;
 
@@ -39,29 +39,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Release
         }
 
-        private struct LockState
-        {
-            private DateTimeOffset creationTime;
-
-            internal Guid Owner;
-            internal DateTimeOffset CreationTime
-            {
-                get => creationTime;
-                set => creationTime = value.ToUniversalTime();
-            }
-
-            internal TimeSpan LeaseTime;
-
-            internal bool IsExpired
-            {
-                get
-                {
-                    var currentTime = DateTimeOffset.Now.ToUniversalTime();
-                    return CreationTime + LeaseTime <= currentTime;
-                }
-            }           
-        }
-
         private sealed class WaitNode : TaskCompletionSource<bool>
         {
             internal readonly Guid Owner;
@@ -73,8 +50,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private readonly DirectoryInfo lockState;
-        private readonly ConcurrentDictionary<string, WaitNode> waitNodes;
+        private readonly DirectoryInfo lockPersistentStateStorage;
+        private readonly ConcurrentDictionary<string, WaitNode> lockAcquisitions;
+        private readonly AsyncEventSource releaseEventSource = new AsyncEventSource();
 
         private async ValueTask AppendLockCommandAsync(LogEntry entry)
         {
@@ -90,10 +68,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        AsyncEventListener IDistributedLockEngine.CreateReleaseLockListener(CancellationToken token) => new AsyncEventListener(releaseEventSource, token);
+
         Task<bool> IDistributedLockEngine.WaitForAcquisitionAsync(string lockName, TimeSpan timeout, CancellationToken token)
         {
             var newNode = new WaitNode(NodeId);
-            var currentNode = waitNodes.GetOrAdd(lockName, newNode);
+            var currentNode = lockAcquisitions.GetOrAdd(lockName, newNode);
             //the lock was acquired previously so just wait
             //otherwise the lock was not acquired so return immediately 
             return ReferenceEquals(newNode, currentNode) ?
@@ -101,16 +81,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 currentNode.Task.WaitAsync(timeout, token);
         }
 
+        Task IDistributedLockEngine.CollectGarbage(CancellationToken token) => Task.CompletedTask;
+
         async Task IDistributedLockEngine.RestoreAsync(CancellationToken token)
         {
             //restore lock state from file system
             const int fileBuffer = 1024;
             using var buffer = new ArrayRental<byte>(fileBuffer);
-            foreach(var lockFile in lockState.EnumerateFiles())
+            foreach(var lockFile in lockPersistentStateStorage.EnumerateFiles())
                 await using(var fs = new FileStream(lockFile.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, fileBuffer, true))
                 {
-                    var state = await fs.ReadAsync<LockState>(buffer.Memory, token).ConfigureAwait(false);
-                    waitNodes[Path.GetFileNameWithoutExtension(lockFile.Name)] = new WaitNode(state.Owner);
+                    var state = await fs.ReadAsync<DistributedLockInfo>(buffer.Memory, token).ConfigureAwait(false);
+                    lockAcquisitions[Path.GetFileNameWithoutExtension(lockFile.Name)] = new WaitNode(state.Owner);
                 }
         }
     }
