@@ -16,9 +16,9 @@ namespace DotNext.IO
             using var ms = new MemoryStream(Encoding.Unicode.GetBytes(testString));
             using var dto = new StreamTransferObject(ms, false);
             Equal(ms.Length, ((IDataTransferObject)dto).Length);
-            Equal(testString, await dto.ReadAsTextAsync(Encoding.Unicode));
+            Equal(testString, await dto.ToStringAsync(Encoding.Unicode));
             ms.Position = 0;
-            Equal(testString, await dto.ReadAsTextAsync(Encoding.Unicode, 1024));
+            Equal(testString, await dto.ToStringAsync(Encoding.Unicode, 1024));
         }
 
         [Fact]
@@ -28,7 +28,7 @@ namespace DotNext.IO
             Equal(3L, dto.Length);
             True(dto.IsReusable);
             using var ms = new MemoryStream();
-            await dto.CopyToAsync(ms);
+            await dto.TransformAsync(ms);
             Equal(3, ms.Length);
         }
     }

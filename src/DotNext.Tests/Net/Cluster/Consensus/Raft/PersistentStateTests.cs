@@ -182,7 +182,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(2, entries.Count);
                     Equal(state.First, entries[0]);
                     Equal(42L, entries[1].Term);
-                    Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
             }
@@ -207,7 +207,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(2, entries.Count);
                     Equal(state.First, entries[0]);
                     Equal(42L, entries[1].Term);
-                    Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                 };
                 Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker1 = async (entries, snapshotIndex) =>
                 {
@@ -215,7 +215,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(2, entries.Count);
                     Equal(state.First, entries[0]);
                     Equal(42L, entries[1].Term);
-                    Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     //execute reader inside of another reader which is not possible for InMemoryAuditTrail
                     await state.ReadAsync<TestReader, DBNull>(checker2, 0L, CancellationToken.None);
                 };
@@ -276,7 +276,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Null(snapshotIndex);
                     Equal(1, entries.Count);
                     False(entries[0].IsSnapshot);
-                    Equal(entry1.Content, await entries[0].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry1.Content, await entries[0].ToStringAsync(Encoding.UTF8));
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 1L, CancellationToken.None);
             }
@@ -317,19 +317,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     False(entries[0].IsSnapshot);
                     Equal(state.First, entries[0]);
                     Equal(42L, entries[1].Term);
-                    Equal(entry1.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     Equal(entry1.Timestamp, entries[1].Timestamp);
                     Equal(43L, entries[2].Term);
-                    Equal(entry2.Content, await entries[2].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry2.Content, await entries[2].ToStringAsync(Encoding.UTF8));
                     Equal(entry2.Timestamp, entries[2].Timestamp);
                     Equal(44L, entries[3].Term);
-                    Equal(entry3.Content, await entries[3].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry3.Content, await entries[3].ToStringAsync(Encoding.UTF8));
                     Equal(entry3.Timestamp, entries[3].Timestamp);
                     Equal(45L, entries[4].Term);
-                    Equal(entry4.Content, await entries[4].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry4.Content, await entries[4].ToStringAsync(Encoding.UTF8));
                     Equal(entry4.Timestamp, entries[4].Timestamp);
                     Equal(46L, entries[5].Term);
-                    Equal(entry5.Content, await entries[5].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry5.Content, await entries[5].ToStringAsync(Encoding.UTF8));
                     Equal(entry5.Timestamp, entries[5].Timestamp);
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
@@ -350,19 +350,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(6, entries.Count);
                     Equal(state.First, entries[0]);
                     Equal(42L, entries[1].Term);
-                    Equal(entry1.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     Equal(entry1.Timestamp, entries[1].Timestamp);
                     Equal(43L, entries[2].Term);
-                    Equal(entry2.Content, await entries[2].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry2.Content, await entries[2].ToStringAsync(Encoding.UTF8));
                     Equal(entry2.Timestamp, entries[2].Timestamp);
                     Equal(44L, entries[3].Term);
-                    Equal(entry3.Content, await entries[3].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry3.Content, await entries[3].ToStringAsync(Encoding.UTF8));
                     Equal(entry3.Timestamp, entries[3].Timestamp);
                     Equal(45L, entries[4].Term);
-                    Equal(entry4.Content, await entries[4].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry4.Content, await entries[4].ToStringAsync(Encoding.UTF8));
                     Equal(entry4.Timestamp, entries[4].Timestamp);
                     Equal(46L, entries[5].Term);
-                    Equal(entry5.Content, await entries[5].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry5.Content, await entries[5].ToStringAsync(Encoding.UTF8));
                     Equal(entry5.Timestamp, entries[5].Timestamp);
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
