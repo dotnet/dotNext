@@ -52,7 +52,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         public string Content { get; }
 
-        ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => writer.WriteAsync(Content.AsMemory(), Type.GetEncoding(), null, token);
 
         /// <summary>

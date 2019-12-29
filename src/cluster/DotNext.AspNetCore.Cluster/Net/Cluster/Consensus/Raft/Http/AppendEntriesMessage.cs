@@ -201,7 +201,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                         encodingContext.Reset();
                         Debug.Assert(builder.Length <= maxChars);
                         writeDivider = true;
-                        await entry.TransformAsync(stream).ConfigureAwait(false);
+                        await entry.WriteToAsync(stream).ConfigureAwait(false);
                     }
                     //write footer
                     await stream.WriteStringAsync((CrLf + DoubleDash + boundary + DoubleDash + CrLf).AsMemory(), encodingContext, encodingBuffer.Memory).ConfigureAwait(false);

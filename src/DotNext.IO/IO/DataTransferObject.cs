@@ -80,9 +80,9 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask TransformAsync<TObject>(this TObject dto, Stream output, Memory<byte> buffer, CancellationToken token = default)
+        public static ValueTask WriteToAsync<TObject>(this TObject dto, Stream output, Memory<byte> buffer, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.TransformAsync(new AsyncStreamBinaryWriter(output, buffer), token);
+            => dto.WriteToAsync(new AsyncStreamBinaryWriter(output, buffer), token);
 
         /// <summary>
         /// Copies the object content into the specified stream.
@@ -94,11 +94,11 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask TransformAsync<TObject>(this TObject dto, Stream output, int bufferSize = DefaultBufferSize, CancellationToken token = default)
+        public static async ValueTask WriteToAsync<TObject>(this TObject dto, Stream output, int bufferSize = DefaultBufferSize, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
         {
             using var buffer = new ByteBuffer(bufferSize);
-            await TransformAsync(dto, output, buffer.Memory, token).ConfigureAwait(false);
+            await WriteToAsync(dto, output, buffer.Memory, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -110,9 +110,9 @@ namespace DotNext.IO
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask TransformAsync<TObject>(this TObject dto, PipeWriter output, CancellationToken token = default)
+        public static ValueTask WriteToAsync<TObject>(this TObject dto, PipeWriter output, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.TransformAsync(new PipeBinaryWriter(output), token);
+            => dto.WriteToAsync(new PipeBinaryWriter(output), token);
 
         /// <summary>
         /// Converts DTO content into string.
@@ -125,7 +125,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static Task<string> ToStringAsync<TObject>(this TObject dto, Encoding encoding, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.TransformAsync<string, TextDecoder>(new TextDecoder(encoding), token).AsTask();
+            => dto.GetObjectDataAsync<string, TextDecoder>(new TextDecoder(encoding), token).AsTask();
 
         /// <summary>
         /// Converts DTO content into string.
@@ -139,7 +139,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static Task<string> ToStringAsync<TObject>(this TObject dto, Encoding encoding, int capacity, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.TransformAsync<string, TextDecoder>(new TextDecoder(encoding, capacity), token).AsTask();
+            => dto.GetObjectDataAsync<string, TextDecoder>(new TextDecoder(encoding, capacity), token).AsTask();
 
         /// <summary>
         /// Converts DTO into array of bytes.
@@ -151,6 +151,6 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static Task<byte[]> ToByteArrayAsync<TObject>(this TObject dto, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
-            => dto.TransformAsync<byte[], ArrayDecoder>(new ArrayDecoder(), token).AsTask();
+            => dto.GetObjectDataAsync<byte[], ArrayDecoder>(new ArrayDecoder(), token).AsTask();
     }
 }

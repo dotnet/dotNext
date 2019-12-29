@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// Sends a message to the cluster leader.
         /// </summary>
         /// <remarks>
-        /// <paramref name="message"/> should be reusable because <see cref="IO.IDataTransferObject.TransformAsync{TWriter}"/> 
+        /// <paramref name="message"/> should be reusable because <see cref="IO.IDataTransferObject.WriteToAsync{TWriter}"/> 
         /// can be called multiple times.
         /// </remarks>
         /// <typeparam name="TResponse">The type of the parsed response message.</typeparam>
@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// Sends one-way message to the cluster leader.
         /// </summary>
         /// <remarks>
-        /// <paramref name="message"/> should be reusable because <see cref="IO.IDataTransferObject.TransformAsync{TWriter}"/> 
+        /// <paramref name="message"/> should be reusable because <see cref="IO.IDataTransferObject.WriteToAsync{TWriter}"/> 
         /// can be called multiple times.
         /// </remarks>
         /// <param name="message">The message to be sent.</param>

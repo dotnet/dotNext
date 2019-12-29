@@ -53,7 +53,7 @@ namespace DotNext.IO
         /// <typeparam name="TWriter">The type of writer.</typeparam>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        ValueTask TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+        ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             where TWriter : IAsyncBinaryWriter;
         
         /// <summary>
@@ -67,7 +67,7 @@ namespace DotNext.IO
         /// <typeparam name="TDecoder">The type of parser.</typeparam>
         /// <returns>The decoded stream.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected static async ValueTask<TResult> TransformAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, CancellationToken token)
+        protected static async ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, CancellationToken token)
             where TDecoder : notnull, ITransformation<TResult>
         {
             const int bufferSize = 1024;
@@ -94,7 +94,7 @@ namespace DotNext.IO
         /// <typeparam name="TDecoder">The type of parser.</typeparam>
         /// <returns>The decoded stream.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        protected static ValueTask<TResult> TransformAsync<TResult, TDecoder>(PipeReader input, TDecoder transformation, CancellationToken token)
+        protected static ValueTask<TResult> DecodeAsync<TResult, TDecoder>(PipeReader input, TDecoder transformation, CancellationToken token)
             where TDecoder : notnull, ITransformation<TResult>
             => transformation.TransformAsync(new Pipelines.PipeBinaryReader(input), token);
 
@@ -111,7 +111,7 @@ namespace DotNext.IO
         /// <typeparam name="TDecoder">The type of parser.</typeparam>
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        async ValueTask<TResult> TransformAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
+        async ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
             where TDecoder : notnull, ITransformation<TResult>
         {
             const int bufferSize = 1024;
@@ -119,7 +119,7 @@ namespace DotNext.IO
                 new RentedMemoryStream((int)length) :
                 new MemoryStream(bufferSize);
             using var buffer = new ByteBuffer(bufferSize);
-            await TransformAsync(new AsyncStreamBinaryWriter(ms, buffer.Memory), token).ConfigureAwait(false);
+            await WriteToAsync(new AsyncStreamBinaryWriter(ms, buffer.Memory), token).ConfigureAwait(false);
             ms.Position = 0;
             return await parser.TransformAsync(new AsyncStreamBinaryReader(ms, buffer.Memory), token).ConfigureAwait(false);
         }

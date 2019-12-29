@@ -38,7 +38,7 @@ namespace DotNext.Net.Cluster.DistributedServices
     
         ContentType IMessage.Type => new ContentType(MediaTypeNames.Application.Octet);
 
-        async ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             await writer.WriteAsync(LockName.AsMemory(), Encoding, StringLengthEncoding.Plain, token).ConfigureAwait(false);
             await writer.WriteAsync(LockInfo, token).ConfigureAwait(false);

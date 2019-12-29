@@ -28,7 +28,7 @@ namespace DotNext.IO
             Equal(3L, dto.Length);
             True(dto.IsReusable);
             using var ms = new MemoryStream();
-            await dto.TransformAsync(ms);
+            await dto.WriteToAsync(ms);
             Equal(3, ms.Length);
         }
     }

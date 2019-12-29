@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Messaging
             Type = type;
         }
 
-        async ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             try
             {
@@ -33,7 +33,7 @@ namespace DotNext.Net.Cluster.Messaging
             }
         }
 
-        ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token) => source.TransformAsync(this, BufferSize, token);
+        ValueTask IBufferedMessage.LoadFromAsync(IDataTransferObject source, CancellationToken token) => source.WriteToAsync(this, BufferSize, token);
 
         void IBufferedMessage.PrepareForReuse() => Seek(0L, SeekOrigin.Begin);
 

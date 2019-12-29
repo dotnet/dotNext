@@ -41,7 +41,7 @@ namespace DotNext.IO
             if(content.CanSeek && content.CanWrite)
                 try
                 {
-                    await source.TransformAsync(content, DefaultBufferSize, token).ConfigureAwait(false);
+                    await source.WriteToAsync(content, DefaultBufferSize, token).ConfigureAwait(false);
                 }
                 finally
                 {
@@ -58,7 +58,7 @@ namespace DotNext.IO
 
         long? IDataTransferObject.Length => content.CanSeek ? content.Length : default(long?);
 
-        async ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             try
             {
@@ -80,9 +80,9 @@ namespace DotNext.IO
         /// <typeparam name="TDecoder">The type of parser.</typeparam>
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public ValueTask<TResult> TransformAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
+        public ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
             where TDecoder : IDataTransferObject.ITransformation<TResult>
-            => IDataTransferObject.TransformAsync<TResult, TDecoder>(content, parser, true, token);
+            => IDataTransferObject.DecodeAsync<TResult, TDecoder>(content, parser, true, token);
 
         /// <summary>
         /// Releases resources associated with this object.

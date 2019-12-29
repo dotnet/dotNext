@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             long? IDataTransferObject.Length => 0L;
             
-            ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
                 token.ThrowIfCancellationRequested();
                 return new ValueTask();
@@ -61,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             bool ILogEntry.IsSnapshot => false;
 
-            ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
+            ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
                 => parser.TransformAsync(IAsyncBinaryReader.Empty, token);
         }
 

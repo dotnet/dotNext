@@ -25,7 +25,7 @@ namespace DotNext.IO
 
         long? IDataTransferObject.Length => Length;
     
-        ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => writer.WriteAsync(content, token);
     }
 
@@ -58,7 +58,7 @@ namespace DotNext.IO
 
         long? IDataTransferObject.Length => Content.Length;
 
-        async ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             foreach (var segment in Content)
                 await writer.WriteAsync(segment, token).ConfigureAwait(false);

@@ -72,11 +72,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 }
             }
 
-            ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
                 => new ValueTask(writer.CopyFromAsync(requestStream, token));
         
-            ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
-                => IDataTransferObject.TransformAsync<TResult, TDecoder>(requestStream, parser, false, token);
+            ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
+                => IDataTransferObject.DecodeAsync<TResult, TDecoder>(requestStream, parser, false, token);
         }
 
         internal new const string MessageType = "CustomMessage";
@@ -128,7 +128,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             response.ContentType = message.Type.ToString();
             response.ContentLength = message.Length;
             response.Headers.Add(MessageNameHeader, message.Name);
-            return message.TransformAsync(response.BodyWriter, token).AsTask();
+            return message.WriteToAsync(response.BodyWriter, token).AsTask();
         }
 
         //do not parse response because this is one-way message
