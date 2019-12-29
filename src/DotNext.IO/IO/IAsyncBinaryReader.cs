@@ -24,11 +24,37 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         ValueTask<T> ReadAsync<T>(CancellationToken token = default) where T : unmanaged;
 
+        /// <summary>
+        /// Reads the block of bytes.
+        /// </summary>
+        /// <param name="output">The block of memory to fill.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default);
 
+        /// <summary>
+        /// Decodes the string.
+        /// </summary>
+        /// <param name="length">The length of the encoded string, in bytes.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded string.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default);
 
-        ValueTask<string> ReadStringAsync(StringLengthEncoding lengthEncoding, DecodingContext context, CancellationToken token = default);
+        /// <summary>
+        /// Decodes the string.
+        /// </summary>
+        /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
+        /// <param name="context">The decoding context containing string characters encoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded string.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        ValueTask<string> ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default);
     
         /// <summary>
         /// Creates default implementation of binary reader for the stream.
