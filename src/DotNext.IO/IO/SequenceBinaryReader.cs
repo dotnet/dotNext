@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.IO;
+using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 using Missing = System.Reflection.Missing;
@@ -8,6 +9,7 @@ using Missing = System.Reflection.Missing;
 namespace DotNext.IO
 {
     using Buffers;
+    using static Pipelines.ResultExtensions;
     using DecodingContext = Text.DecodingContext;
 
     /// <summary>
@@ -127,6 +129,23 @@ namespace DotNext.IO
         {
             token.ThrowIfCancellationRequested();
             return new ValueTask<string>(ReadString(lengthEncoding, in context));
+        }
+
+        async Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
+        {
+            while(sequence.TryGet(ref position, out var block))
+                await output.WriteAsync(block, token).ConfigureAwait(false);
+        }
+
+        async Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
+        {
+            while(sequence.TryGet(ref position, out var block))
+            {
+                var result = await output.WriteAsync(block, token).ConfigureAwait(false);
+                result.ThrowIfCancellationRequested();
+                if(result.IsCompleted)
+                    break;
+            }
         }
     }
 }

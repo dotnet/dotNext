@@ -56,7 +56,24 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         ValueTask<string> ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default);
-    
+
+        /// <summary>
+        /// Copies the content to the specified stream.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <param name="output">The output stream receiving object content.</param>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        Task CopyToAsync(Stream output, CancellationToken token = default);
+
+        /// <summary>
+        /// Copies the content to the specified pipe writer.
+        /// </summary>
+        /// <param name="output">The writer.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        Task CopyToAsync(PipeWriter output, CancellationToken token = default);
+        
         /// <summary>
         /// Creates default implementation of binary reader for the stream.
         /// </summary>

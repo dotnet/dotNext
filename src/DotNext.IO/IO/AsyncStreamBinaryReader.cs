@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
@@ -40,5 +41,11 @@ namespace DotNext.IO
         
         public ValueTask<string> ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
             => StreamExtensions.ReadStringAsync(input, lengthFormat, context, buffer, token);
+    
+        Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
+            => input.CopyToAsync(output, token);
+
+        Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
+            => input.CopyToAsync(output, token);
     }
 }
