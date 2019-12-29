@@ -39,10 +39,14 @@ namespace DotNext.IO
         public async ValueTask LoadFromAsync(IDataTransferObject source, CancellationToken token = default)
         {
             if(content.CanSeek && content.CanWrite)
-            {
-                await source.CopyToAsync(content, token).ConfigureAwait(false);
-                content.Seek(0, SeekOrigin.Begin);
-            }
+                try
+                {
+                    await source.TransformAsync(content, DefaultBufferSize, token).ConfigureAwait(false);
+                }
+                finally
+                {
+                    content.Seek(0, SeekOrigin.Begin);
+                }
             else
                 throw new NotSupportedException();
         }
@@ -54,28 +58,15 @@ namespace DotNext.IO
 
         long? IDataTransferObject.Length => content.CanSeek ? content.Length : default(long?);
 
-        async ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
+        async ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             try
             {
-                await content.CopyToAsync(output, DefaultBufferSize, token).ConfigureAwait(false);
+                await writer.CopyFromAsync(content, token).ConfigureAwait(false);
             }
             finally
             {
-                if (content.CanSeek)
-                    content.Seek(0, SeekOrigin.Begin);
-            }
-        }
-
-        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
-        {
-            try
-            {
-                await content.CopyToAsync(output, token).ConfigureAwait(false);
-            }
-            finally
-            {
-                if (content.CanSeek)
+                if(content.CanSeek)
                     content.Seek(0, SeekOrigin.Begin);
             }
         }

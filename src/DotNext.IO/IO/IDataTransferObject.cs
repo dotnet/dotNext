@@ -46,19 +46,15 @@ namespace DotNext.IO
         long? Length { get; }
 
         /// <summary>
-        /// Copies the object content into the specified stream.
+        /// Transforms this object to serialized form.
         /// </summary>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-        /// <param name="output">The output stream receiving object content.</param>
-        ValueTask CopyToAsync(Stream output, CancellationToken token = default);
-
-        /// <summary>
-        /// Copies the object content into the specified pipe writer.
-        /// </summary>
-        /// <param name="output">The writer.</param>
-        /// <param name="token">The token that can be used to cancel operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        ValueTask CopyToAsync(PipeWriter output, CancellationToken token = default);
+        /// <param name="writer">The binary writer.</param>
+        /// <param name="token">The toke that can be used to cancel the operation.</param>
+        /// <typeparam name="TWriter">The type of writer.</typeparam>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+            where TWriter : IAsyncBinaryWriter;
 
         /// <summary>
         /// Converts data transfer object to another type.
@@ -80,8 +76,8 @@ namespace DotNext.IO
             using var ms = Length.TryGetValue(out var length) && length <= int.MaxValue ?
                 new RentedMemoryStream((int)length) :
                 new MemoryStream(bufferSize);
-            await CopyToAsync(ms, token).ConfigureAwait(false);
             using var buffer = new ByteBuffer(bufferSize);
+            await TransformAsync(new AsyncStreamBinaryWriter(ms, buffer.Memory), token).ConfigureAwait(false);
             ms.Position = 0;
             return await parser.TransformAsync(new AsyncStreamBinaryReader(ms, buffer.Memory), token).ConfigureAwait(false);
         }

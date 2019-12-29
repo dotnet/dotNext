@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Buffers;
-using System.IO;
-using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO
 {
@@ -28,16 +25,8 @@ namespace DotNext.IO
 
         long? IDataTransferObject.Length => Length;
     
-        ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
-            => output.WriteAsync(content, token);
-
-        ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
-        {
-            var buffer = output.GetMemory(Length);
-            MemoryMarshal.Write(buffer.Span, ref content);
-            output.Advance(Length);
-            return new ValueTask();
-        }
+        ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+            => writer.WriteAsync(content, token);
     }
 
     /// <summary>
@@ -69,22 +58,10 @@ namespace DotNext.IO
 
         long? IDataTransferObject.Length => Content.Length;
 
-        async ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
+        async ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             foreach (var segment in Content)
-                await output.WriteAsync(segment, token).ConfigureAwait(false);
-        }
-
-        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
-        {
-            foreach (var segment in Content)
-            {
-                var result = await output.WriteAsync(segment, token).ConfigureAwait(false);
-                if (result.IsCompleted)
-                    break;
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token);
-            }
+                await writer.WriteAsync(segment, token).ConfigureAwait(false);
         }
     }
 }
