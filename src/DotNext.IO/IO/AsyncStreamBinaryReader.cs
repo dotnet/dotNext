@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 namespace DotNext.IO
 {
@@ -10,6 +11,7 @@ namespace DotNext.IO
     /// <summary>
     /// Represents binary reader for the stream.
     /// </summary>
+    [StructLayout(LayoutKind.Auto)]
     internal readonly struct AsyncStreamBinaryReader : IAsyncBinaryReader
     {
         private readonly Memory<byte> buffer;

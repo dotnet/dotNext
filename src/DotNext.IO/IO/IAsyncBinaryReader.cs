@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.IO;
+using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -82,5 +83,12 @@ namespace DotNext.IO
         /// <param name="memory">The block of memory.</param>
         /// <returns>The binary reader for the memory block.</returns>
         public static SequenceBinaryReader Create(ReadOnlyMemory<byte> memory) => Create(new ReadOnlySequence<byte>(memory));
+
+        /// <summary>
+        /// Creates default implementation of binary reader for the specifed pipe reader.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <returns>The binary reader.</returns>
+        public static IAsyncBinaryReader Create(PipeReader reader) => new Pipelines.PipeBinaryReader(reader);
     }
 }
