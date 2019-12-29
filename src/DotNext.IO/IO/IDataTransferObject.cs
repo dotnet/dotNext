@@ -16,10 +16,10 @@ namespace DotNext.IO
     public interface IDataTransferObject
     {
         /// <summary>
-        /// Represents parser of DTO content.
+        /// Represents DTO transformation.
         /// </summary>
         /// <typeparam name="TResult">The result type.</typeparam>
-        public interface IDecoder<TResult>
+        public interface ITransformation<TResult>
         {
             /// <summary>
             /// Parses DTO content asynchronously.
@@ -28,7 +28,7 @@ namespace DotNext.IO
             /// <param name="token">The token that can be used to cancel the operation.</param>
             /// <typeparam name="TReader">The type of binary reader.</typeparam>
             /// <returns>The converted DTO content.</returns>
-            ValueTask<TResult> DecodeAsync<TReader>(TReader reader, CancellationToken token)
+            ValueTask<TResult> TransformAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : IAsyncBinaryReader;
         }
 
@@ -61,7 +61,7 @@ namespace DotNext.IO
         ValueTask CopyToAsync(PipeWriter output, CancellationToken token = default);
 
         /// <summary>
-        /// Parses the content of binary transfer object. 
+        /// Converts data transfer object to another type.
         /// </summary>
         /// <remarks>
         /// The default implementation copies the content into memory
@@ -70,11 +70,11 @@ namespace DotNext.IO
         /// <param name="parser">The parser instance.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
-        /// <typeparam name="TParser">The type of parser.</typeparam>
+        /// <typeparam name="TDecoder">The type of parser.</typeparam>
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        async ValueTask<TResult> DecodeAsync<TResult, TParser>(TParser parser, CancellationToken token = default)
-            where TParser : IDecoder<TResult>
+        async ValueTask<TResult> TransformAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
+            where TDecoder : ITransformation<TResult>
         {
             const int bufferSize = 1024;
             using var ms = Length.TryGetValue(out var length) && length <= int.MaxValue ?
@@ -83,7 +83,7 @@ namespace DotNext.IO
             await CopyToAsync(ms, token).ConfigureAwait(false);
             using var buffer = new ByteBuffer(bufferSize);
             ms.Position = 0;
-            return await parser.DecodeAsync(new AsyncStreamBinaryReader(ms, buffer.Memory), token).ConfigureAwait(false);
+            return await parser.TransformAsync(new AsyncStreamBinaryReader(ms, buffer.Memory), token).ConfigureAwait(false);
         }
     }
 }

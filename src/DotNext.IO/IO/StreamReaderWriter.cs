@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.IO
 {
-    using DecodingContext = Text.DecodingContext;
+    using Text;
 
     /// <summary>
     /// Represents binary reader for the stream.
@@ -46,6 +46,35 @@ namespace DotNext.IO
             => input.CopyToAsync(output, token);
 
         Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
+            => input.CopyToAsync(output, token);
+    }
+    
+    [StructLayout(LayoutKind.Auto)]
+    internal readonly struct AsyncStreamBinaryWriter : IAsyncBinaryWriter
+    {
+        private readonly Memory<byte> buffer;
+        private readonly Stream output;
+
+        internal AsyncStreamBinaryWriter(Stream output, Memory<byte> buffer)
+        {
+            this.output = output;
+            this.buffer = buffer;
+        }
+
+        public ValueTask WriteAsync<T>(T value, CancellationToken token)
+            where T : unmanaged
+            => output.WriteAsync(value, buffer, token);
+        
+        public ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token)
+            => output.WriteAsync(input, token);
+        
+        public ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
+            => output.WriteStringAsync(chars, context, buffer, lengthFormat, token);
+        
+        Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
+            => input.CopyToAsync(output, token);
+
+        Task IAsyncBinaryWriter.CopyFromAsync(PipeReader input, CancellationToken token)
             => input.CopyToAsync(output, token);
     }
 }

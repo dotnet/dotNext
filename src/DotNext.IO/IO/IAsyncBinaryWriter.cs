@@ -44,7 +44,7 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
-        ValueTask WriteAsync(ReadOnlySpan<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token);
+        ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token);
 
         /// <summary>
         /// Writes the content from the specified stream.
@@ -63,5 +63,32 @@ namespace DotNext.IO
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyFromAsync(PipeReader input, CancellationToken token);
+
+        /// <summary>
+        /// Creates default implementation of binary writer for the stream.
+        /// </summary>
+        /// <remarks>
+        /// It is recommended to use extension methods from <see cref="StreamExtensions"/> class
+        /// for encoding data to the stream. This method is intended for situation
+        /// when you need an object implementing <see cref="IAsyncBinaryWriter"/> interface.
+        /// </remarks>
+        /// <param name="output">The stream instance.</param>
+        /// <param name="buffer">The buffer used for encoding binary data.</param>
+        /// <returns>The stream writer.</returns>
+        public static IAsyncBinaryWriter Create(Stream output, Memory<byte> buffer) 
+            => new AsyncStreamBinaryWriter(output, buffer);
+        
+        /// <summary>
+        /// Creates default implementation of binary writer for the pipe.
+        /// </summary>
+        /// <remarks>
+        /// It is recommended to use extension methods from <see cref="Pipelines.PipeExtensions"/> class
+        /// for encoding data to the pipe. This method is intended for situation
+        /// when you need an object implementing <see cref="IAsyncBinaryWriter"/> interface.
+        /// </remarks>
+        /// <param name="output">The stream instance.</param>
+        /// <returns>The stream writer.</returns>
+        public static IAsyncBinaryWriter Create(PipeWriter output)
+            => new Pipelines.PipeBinaryWriter(output);
     }
 }

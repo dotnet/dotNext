@@ -86,17 +86,17 @@ namespace DotNext.IO
         /// <param name="parser">The parser instance.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TResult">The type of result.</typeparam>
-        /// <typeparam name="TParser">The type of parser.</typeparam>
+        /// <typeparam name="TDecoder">The type of parser.</typeparam>
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public async ValueTask<TResult> DecodeAsync<TResult, TParser>(TParser parser, CancellationToken token = default)
-            where TParser : IDataTransferObject.IDecoder<TResult>
+        public async ValueTask<TResult> TransformAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
+            where TDecoder : IDataTransferObject.ITransformation<TResult>
         {
             const int bufferSize = 1024;
             var buffer = new ByteBuffer(bufferSize);
             try
             {
-                return await parser.DecodeAsync(new AsyncStreamBinaryReader(content, buffer.Memory), token).ConfigureAwait(false);
+                return await parser.TransformAsync(new AsyncStreamBinaryReader(content, buffer.Memory), token).ConfigureAwait(false);
             }
             finally
             {
