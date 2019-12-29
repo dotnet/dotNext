@@ -29,7 +29,7 @@ namespace DotNext.IO
             /// <typeparam name="TReader">The type of binary reader.</typeparam>
             /// <returns>The converted DTO content.</returns>
             ValueTask<TResult> TransformAsync<TReader>(TReader reader, CancellationToken token)
-                where TReader : IAsyncBinaryReader;
+                where TReader : notnull, IAsyncBinaryReader;
         }
 
         /// <summary>
@@ -55,6 +55,48 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask TransformAsync<TWriter>(TWriter writer, CancellationToken token)
             where TWriter : IAsyncBinaryWriter;
+        
+        /// <summary>
+        /// Decodes the stream.
+        /// </summary>
+        /// <param name="input">The stream to decode.</param>
+        /// <param name="transformation">The decoder.</param>
+        /// <param name="resetStream"><see langword="true"/> to reset stream position after decoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <returns>The decoded stream.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        protected static async ValueTask<TResult> TransformAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, CancellationToken token)
+            where TDecoder : notnull, ITransformation<TResult>
+        {
+            const int bufferSize = 1024;
+            var buffer = new ByteBuffer(bufferSize);
+            try
+            {
+                return await transformation.TransformAsync(new AsyncStreamBinaryReader(input, buffer.Memory), token).ConfigureAwait(false);
+            }
+            finally
+            {
+                buffer.Dispose();
+                if(resetStream && input.CanSeek)
+                    input.Seek(0L, SeekOrigin.Begin);
+            }
+        }
+
+        /// <summary>
+        /// Decodes the data using pipe reader.
+        /// </summary>
+        /// <param name="input">The pipe reader used for decoding.</param>
+        /// <param name="transformation">The decoder.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <returns>The decoded stream.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        protected static ValueTask<TResult> TransformAsync<TResult, TDecoder>(PipeReader input, TDecoder transformation, CancellationToken token)
+            where TDecoder : notnull, ITransformation<TResult>
+            => transformation.TransformAsync(new Pipelines.PipeBinaryReader(input), token);
 
         /// <summary>
         /// Converts data transfer object to another type.
@@ -70,7 +112,7 @@ namespace DotNext.IO
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         async ValueTask<TResult> TransformAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
-            where TDecoder : ITransformation<TResult>
+            where TDecoder : notnull, ITransformation<TResult>
         {
             const int bufferSize = 1024;
             using var ms = Length.TryGetValue(out var length) && length <= int.MaxValue ?
