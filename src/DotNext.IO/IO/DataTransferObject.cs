@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.IO.Pipelines;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,28 +18,84 @@ namespace DotNext.IO
     {
         private const int DefaultBufferSize = 1024;
 
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct TextDecoder : IDataTransferObject.ITransformation<string>
+        {
+            private readonly Encoding encoding;
+            private readonly int? capacity;
+
+            internal TextDecoder(Encoding encoding)
+            {
+                this.encoding = encoding;
+                capacity = null;
+            }
+
+            internal TextDecoder(Encoding encoding, int capacity)
+            {
+                this.encoding = encoding;
+                this.capacity = capacity;
+            }
+
+            private static string ReadAsString(MemoryStream content, Encoding encoding)
+            {
+                if (content.Length == 0L)
+                    return string.Empty;
+                if (!content.TryGetBuffer(out var buffer))
+                    buffer = new ArraySegment<byte>(content.ToArray());
+                return encoding.GetString(buffer.AsSpan());
+            }
+
+            public async ValueTask<string> TransformAsync<TReader>(TReader reader, CancellationToken token)
+                where TReader : IAsyncBinaryReader
+            {
+                using var ms = capacity.HasValue ?
+                    new RentedMemoryStream(capacity.Value) :
+                    new MemoryStream(DefaultBufferSize);
+                await reader.CopyToAsync(ms, token).ConfigureAwait(false);
+                ms.Seek(0, SeekOrigin.Begin);
+                return ReadAsString(ms, encoding);
+            }
+        }
+
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct ArrayDecoder : IDataTransferObject.ITransformation<byte[]>
+        {
+            public async ValueTask<byte[]> TransformAsync<TReader>(TReader reader, CancellationToken token)
+                where TReader : IAsyncBinaryReader
+            {
+                using var ms = new MemoryStream(DefaultBufferSize);
+                await reader.CopyToAsync(ms, token).ConfigureAwait(false);
+                ms.Seek(0, SeekOrigin.Begin);
+                return ms.ToArray();
+            }
+        }
+
         /// <summary>
         /// Copies the object content into the specified stream.
         /// </summary>
+        /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Transfer data object to transform.</param>
         /// <param name="output">The output stream receiving object content.</param>
         /// <param name="buffer">The buffer to be used for transformation.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask TransformAsync(this IDataTransferObject dto, Stream output, Memory<byte> buffer, CancellationToken token = default)
+        public static ValueTask TransformAsync<TObject>(this TObject dto, Stream output, Memory<byte> buffer, CancellationToken token = default)
+            where TObject : notnull, IDataTransferObject
             => dto.TransformAsync(new AsyncStreamBinaryWriter(output, buffer), token);
 
         /// <summary>
         /// Copies the object content into the specified stream.
         /// </summary>
+        /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Transfer data object to transform.</param>
         /// <param name="output">The output stream receiving object content.</param>
         /// <param name="bufferSize">The size of the buffer to be used for transformation.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async ValueTask TransformAsync(this IDataTransferObject dto, Stream output, int bufferSize = DefaultBufferSize, CancellationToken token = default)
+        public static async ValueTask TransformAsync<TObject>(this TObject dto, Stream output, int bufferSize = DefaultBufferSize, CancellationToken token = default)
+            where TObject : notnull, IDataTransferObject
         {
             using var buffer = new ByteBuffer(bufferSize);
             await TransformAsync(dto, output, buffer.Memory, token).ConfigureAwait(false);
@@ -47,54 +104,53 @@ namespace DotNext.IO
         /// <summary>
         /// Copies the object content into the specified pipe writer.
         /// </summary>
+        /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Transfer data object to transform.</param>
         /// <param name="output">The pipe writer receiving object content.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static ValueTask TransformAsync(this IDataTransferObject dto, PipeWriter output, CancellationToken token = default)
+        public static ValueTask TransformAsync<TObject>(this TObject dto, PipeWriter output, CancellationToken token = default)
+            where TObject : notnull, IDataTransferObject
             => dto.TransformAsync(new PipeBinaryWriter(output), token);
-
-        private static string ReadAsString(this MemoryStream content, Encoding encoding)
-        {
-            if (content.Length == 0L)
-                return string.Empty;
-            if (!content.TryGetBuffer(out var buffer))
-                buffer = new ArraySegment<byte>(content.ToArray());
-            return encoding.GetString(buffer.AsSpan());
-        }
 
         /// <summary>
         /// Converts DTO content into string.
         /// </summary>
-        /// <param name="content">The content to read.</param>
+        /// <typeparam name="TObject">The type of data transfer object.</typeparam>
+        /// <param name="dto">Data transfer object to read from.</param>
         /// <param name="encoding">The encoding used to decode stored string.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The content of the object.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task<string> ReadAsTextAsync(this IDataTransferObject content, Encoding encoding, CancellationToken token = default)
-        {
-            using var ms = new MemoryStream(DefaultBufferSize);
-            await content.TransformAsync(ms, DefaultBufferSize, token).ConfigureAwait(false);
-            ms.Seek(0, SeekOrigin.Begin);
-            return ms.ReadAsString(encoding);
-        }
+        public static Task<string> ToStringAsync<TObject>(this TObject dto, Encoding encoding, CancellationToken token = default)
+            where TObject : notnull, IDataTransferObject
+            => dto.TransformAsync<string, TextDecoder>(new TextDecoder(encoding), token).AsTask();
 
         /// <summary>
         /// Converts DTO content into string.
         /// </summary>
-        /// <param name="content">The content to read.</param>
+        /// <typeparam name="TObject">The type of data transfer object.</typeparam>
+        /// <param name="dto">Data transfer object to read from.</param>
         /// <param name="encoding">The encoding used to decode stored string.</param>
         /// <param name="capacity">The maximum possible size of the message, in bytes.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The content of the object.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public static async Task<string> ReadAsTextAsync(this IDataTransferObject content, Encoding encoding, int capacity, CancellationToken token = default)
-        {
-            using var ms = new RentedMemoryStream(capacity);
-            await content.TransformAsync(ms, DefaultBufferSize, token).ConfigureAwait(false);
-            ms.Seek(0, SeekOrigin.Begin);
-            return ms.ReadAsString(encoding);
-        }
+        public static Task<string> ToStringAsync<TObject>(this TObject dto, Encoding encoding, int capacity, CancellationToken token = default)
+            where TObject : notnull, IDataTransferObject
+            => dto.TransformAsync<string, TextDecoder>(new TextDecoder(encoding, capacity), token).AsTask();
+
+        /// <summary>
+        /// Converts DTO into array of bytes.
+        /// </summary>
+        /// <typeparam name="TObject">The type of data transfer object.</typeparam>
+        /// <param name="dto">Data transfer object to read from.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The content of the object.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static Task<byte[]> ToByteArrayAsync<TObject>(this TObject dto, CancellationToken token = default)
+            where TObject : notnull, IDataTransferObject
+            => dto.TransformAsync<byte[], ArrayDecoder>(new ArrayDecoder(), token).AsTask();
     }
 }
