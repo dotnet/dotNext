@@ -9,7 +9,7 @@ namespace DotNext.IO
     using ByteBuffer = Buffers.ArrayRental<byte>;
 
     /// <summary>
-    /// Represents data unit that can be transferred over wire.
+    /// Represents structured data unit that can be transferred over wire.
     /// </summary>
     public interface IDataTransferObject
     {
@@ -17,7 +17,7 @@ namespace DotNext.IO
         /// Represents parser of DTO content.
         /// </summary>
         /// <typeparam name="TResult">The result type.</typeparam>
-        public interface IConverter<TResult>
+        public interface IDecoder<TResult>
         {
             /// <summary>
             /// Parses DTO content asynchronously.
@@ -26,7 +26,7 @@ namespace DotNext.IO
             /// <param name="token">The token that can be used to cancel the operation.</param>
             /// <typeparam name="TReader">The type of binary reader.</typeparam>
             /// <returns>The converted DTO content.</returns>
-            ValueTask<TResult> ConvertAsync<TReader>(TReader reader, CancellationToken token)
+            ValueTask<TResult> DecodeAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : IAsyncBinaryReader;
         }
 
@@ -71,8 +71,8 @@ namespace DotNext.IO
         /// <typeparam name="TParser">The type of parser.</typeparam>
         /// <returns>The converted DTO content.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        async ValueTask<TResult> ConvertAsync<TResult, TParser>(TParser parser, CancellationToken token = default)
-            where TParser : IConverter<TResult>
+        async ValueTask<TResult> DecodeAsync<TResult, TParser>(TParser parser, CancellationToken token = default)
+            where TParser : IDecoder<TResult>
         {
             const int bufferSize = 1024;
             using var ms = Length.TryGetValue(out var length) && length <= int.MaxValue ?
@@ -81,7 +81,7 @@ namespace DotNext.IO
             await CopyToAsync(ms, token).ConfigureAwait(false);
             using var buffer = new ByteBuffer(bufferSize);
             ms.Position = 0;
-            return await parser.ConvertAsync(new AsyncStreamBinaryReader(ms, buffer.Memory), token).ConfigureAwait(false);
+            return await parser.DecodeAsync(new AsyncStreamBinaryReader(ms, buffer.Memory), token).ConfigureAwait(false);
         }
     }
 }
