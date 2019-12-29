@@ -28,8 +28,8 @@ namespace DotNext.Net.Cluster.Messaging
         /// Sends a message to the cluster leader.
         /// </summary>
         /// <remarks>
-        /// <paramref name="message"/> should be reusable because <see cref="IO.IDataTransferObject.CopyToAsync(System.IO.Stream, CancellationToken)"/> or
-        /// <see cref="IO.IDataTransferObject.CopyToAsync(System.IO.Pipelines.PipeWriter, CancellationToken)"/> can be called multiple times.
+        /// <paramref name="message"/> should be reusable because <see cref="IO.IDataTransferObject.TransformAsync{TWriter}"/> 
+        /// can be called multiple times.
         /// </remarks>
         /// <typeparam name="TResponse">The type of the parsed response message.</typeparam>
         /// <param name="message">The message to be sent.</param>
@@ -43,8 +43,8 @@ namespace DotNext.Net.Cluster.Messaging
         /// Sends one-way message to the cluster leader.
         /// </summary>
         /// <remarks>
-        /// <paramref name="message"/> should be reusable because <see cref="IO.IDataTransferObject.CopyToAsync(System.IO.Stream, CancellationToken)"/> or
-        /// <see cref="IO.IDataTransferObject.CopyToAsync(System.IO.Pipelines.PipeWriter, CancellationToken)"/> can be called multiple times.
+        /// <paramref name="message"/> should be reusable because <see cref="IO.IDataTransferObject.TransformAsync{TWriter}"/> 
+        /// can be called multiple times.
         /// </remarks>
         /// <param name="message">The message to be sent.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
