@@ -107,29 +107,27 @@ namespace DotNext.IO
         }
 
         ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-            return new ValueTask<T>(Read<T>());
-        }
+            => token.IsCancellationRequested ?
+                new ValueTask<T>(Task.FromCanceled<T>(token)) :
+                new ValueTask<T>(Read<T>());
 
         ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
+            if(token.IsCancellationRequested)
+                return new ValueTask(Task.FromCanceled(token));
             Read(output);
             return new ValueTask();
         }
 
         ValueTask<string> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-            return new ValueTask<string>(ReadString(length, in context));
-        }
+            => token.IsCancellationRequested ?
+                new ValueTask<string>(Task.FromCanceled<string>(token)) :
+                new ValueTask<string>(ReadString(length, in context));
 
-        ValueTask<string> IAsyncBinaryReader.ReadStringAsync(StringLengthEncoding lengthEncoding, DecodingContext context, CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-            return new ValueTask<string>(ReadString(lengthEncoding, in context));
-        }
+        ValueTask<string> IAsyncBinaryReader.ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
+            => token.IsCancellationRequested ?
+                new ValueTask<string>(Task.FromCanceled<string>(token)) :
+                new ValueTask<string>(ReadString(lengthFormat, in context));
 
         async Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
         {
