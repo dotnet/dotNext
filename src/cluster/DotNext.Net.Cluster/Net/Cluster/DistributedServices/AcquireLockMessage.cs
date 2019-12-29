@@ -38,17 +38,10 @@ namespace DotNext.Net.Cluster.DistributedServices
     
         ContentType IMessage.Type => new ContentType(MediaTypeNames.Application.Octet);
 
-        async ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
+        async ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
         {
-            using var buffer = new ArrayRental<byte>(BufferSize);
-            await output.WriteStringAsync(LockName.AsMemory(), Encoding, buffer.Memory, StringLengthEncoding.Plain, token).ConfigureAwait(false);
-            await output.WriteAsync(LockInfo, buffer.Memory, token).ConfigureAwait(false);
-        }
-
-        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
-        {
-            await output.WriteStringAsync(LockName.AsMemory(), Encoding, lengthFormat: StringLengthEncoding.Plain, token: token);
-            await output.WriteAsync(LockInfo, token).ConfigureAwait(false);
+            await writer.WriteAsync(LockName.AsMemory(), Encoding, StringLengthEncoding.Plain, token).ConfigureAwait(false);
+            await writer.WriteAsync(LockInfo, token).ConfigureAwait(false);
         }
     }
 }

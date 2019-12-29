@@ -14,8 +14,8 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using IO;
     using Messaging;
-    using IDataTransferObject = IO.IDataTransferObject;
     using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage, Generic.DefaultConst<Messaging.IMessage>>;
 
     internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage>
@@ -72,9 +72,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 }
             }
 
-            ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => new ValueTask(requestStream.CopyToAsync(output, token));
-
-            ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask(requestStream.CopyToAsync(output, token));
+            ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+                => new ValueTask(writer.CopyFromAsync(requestStream, token));
+        
+            ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
+                => IDataTransferObject.TransformAsync<TResult, TDecoder>(requestStream, parser, false, token);
         }
 
         internal new const string MessageType = "CustomMessage";
@@ -126,7 +128,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             response.ContentType = message.Type.ToString();
             response.ContentLength = message.Length;
             response.Headers.Add(MessageNameHeader, message.Name);
-            return message.CopyToAsync(response.Body, token).AsTask();
+            return message.TransformAsync(response.BodyWriter, token).AsTask();
         }
 
         //do not parse response because this is one-way message

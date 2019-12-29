@@ -34,19 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal static async Task<BufferedLogEntry> CreateBufferedEntryAsync<TEntry>(TEntry entry, CancellationToken token = default)
                 where TEntry : IRaftLogEntry
-            {
-                ReadOnlyMemory<byte> content;
-                using (var ms = new MemoryStream(1024))
-                {
-                    await entry.CopyToAsync(ms, token).ConfigureAwait(false);
-                    ms.Seek(0, SeekOrigin.Begin);
-                    content = ms.TryGetBuffer(out var segment)
-                        ? segment
-                        : new ReadOnlyMemory<byte>(ms.ToArray());
-                }
-
-                return new BufferedLogEntry(content, entry.Term, entry.Timestamp.ToUniversalTime());
-            }
+                => new BufferedLogEntry(await entry.ToByteArrayAsync(token).ConfigureAwait(false), entry.Term, entry.Timestamp.ToUniversalTime());
 
             bool ILogEntry.IsSnapshot => false;
 
@@ -58,9 +46,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly struct InitialLogEntry : IRaftLogEntry
         {
             long? IDataTransferObject.Length => 0L;
-            ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => token.IsCancellationRequested ? new ValueTask(Task.FromCanceled(token)) : new ValueTask();
-
-            ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask();
+            
+            ValueTask IDataTransferObject.TransformAsync<TWriter>(TWriter writer, CancellationToken token)
+            {
+                token.ThrowIfCancellationRequested();
+                return new ValueTask();
+            }
 
             long IRaftLogEntry.Term => 0L;
 
@@ -69,6 +60,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             DateTimeOffset ILogEntry.Timestamp => default;
 
             bool ILogEntry.IsSnapshot => false;
+
+            ValueTask<TResult> IDataTransferObject.TransformAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
+                => parser.TransformAsync(IAsyncBinaryReader.Empty, token);
         }
 
         [StructLayout(LayoutKind.Auto)]

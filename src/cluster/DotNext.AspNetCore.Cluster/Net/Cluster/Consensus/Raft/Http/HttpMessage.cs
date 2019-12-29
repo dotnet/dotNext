@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             internal OutboundTransferObject(IDataTransferObject dto) => this.dto = dto;
 
-            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext context) => dto.CopyToAsync(stream).AsTask();
+            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext context) => dto.TransformAsync(stream).AsTask();
 
             protected sealed override bool TryComputeLength(out long length)
                 => dto.Length.TryGetValue(out length);
