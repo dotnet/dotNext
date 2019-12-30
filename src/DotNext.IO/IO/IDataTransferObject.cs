@@ -28,7 +28,7 @@ namespace DotNext.IO
             /// <param name="token">The token that can be used to cancel the operation.</param>
             /// <typeparam name="TReader">The type of binary reader.</typeparam>
             /// <returns>The converted DTO content.</returns>
-            ValueTask<TResult> TransformAsync<TReader>(TReader reader, CancellationToken token)
+            ValueTask<TResult> ReadAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : notnull, IAsyncBinaryReader;
         }
 
@@ -74,7 +74,7 @@ namespace DotNext.IO
             var buffer = new ByteBuffer(bufferSize);
             try
             {
-                return await transformation.TransformAsync(new AsyncStreamBinaryReader(input, buffer.Memory), token).ConfigureAwait(false);
+                return await transformation.ReadAsync(new AsyncStreamBinaryReader(input, buffer.Memory), token).ConfigureAwait(false);
             }
             finally
             {
@@ -96,7 +96,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         protected static ValueTask<TResult> DecodeAsync<TResult, TDecoder>(PipeReader input, TDecoder transformation, CancellationToken token)
             where TDecoder : notnull, IDecoder<TResult>
-            => transformation.TransformAsync(new Pipelines.PipeBinaryReader(input), token);
+            => transformation.ReadAsync(new Pipelines.PipeBinaryReader(input), token);
 
         /// <summary>
         /// Converts data transfer object to another type.
@@ -121,7 +121,7 @@ namespace DotNext.IO
             using var buffer = new ByteBuffer(bufferSize);
             await WriteToAsync(new AsyncStreamBinaryWriter(ms, buffer.Memory), token).ConfigureAwait(false);
             ms.Position = 0;
-            return await parser.TransformAsync(new AsyncStreamBinaryReader(ms, buffer.Memory), token).ConfigureAwait(false);
+            return await parser.ReadAsync(new AsyncStreamBinaryReader(ms, buffer.Memory), token).ConfigureAwait(false);
         }
     }
 }

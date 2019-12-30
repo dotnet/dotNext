@@ -45,7 +45,7 @@ namespace DotNext.IO
                 return encoding.GetString(buffer.AsSpan());
             }
 
-            public async ValueTask<string> TransformAsync<TReader>(TReader reader, CancellationToken token)
+            public async ValueTask<string> ReadAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : IAsyncBinaryReader
             {
                 using var ms = capacity.HasValue ?
@@ -60,7 +60,7 @@ namespace DotNext.IO
         [StructLayout(LayoutKind.Auto)]
         private readonly struct ArrayDecoder : IDataTransferObject.IDecoder<byte[]>
         {
-            public async ValueTask<byte[]> TransformAsync<TReader>(TReader reader, CancellationToken token)
+            public async ValueTask<byte[]> ReadAsync<TReader>(TReader reader, CancellationToken token)
                 where TReader : IAsyncBinaryReader
             {
                 using var ms = new MemoryStream(DefaultBufferSize);
@@ -68,6 +68,14 @@ namespace DotNext.IO
                 ms.Seek(0, SeekOrigin.Begin);
                 return ms.ToArray();
             }
+        }
+
+        private readonly struct ValueDecoder<T> : IDataTransferObject.IDecoder<T>
+            where T : unmanaged
+        {
+            public ValueTask<T> ReadAsync<TReader>(TReader reader, CancellationToken token)
+                where TReader : IAsyncBinaryReader
+                => reader.ReadAsync<T>(token);
         }
 
         /// <summary>
@@ -115,7 +123,7 @@ namespace DotNext.IO
             => dto.WriteToAsync(new PipeBinaryWriter(output), token);
 
         /// <summary>
-        /// Converts DTO content into string.
+        /// Converts DTO content to string.
         /// </summary>
         /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Data transfer object to read from.</param>
@@ -128,7 +136,7 @@ namespace DotNext.IO
             => dto.GetObjectDataAsync<string, TextDecoder>(new TextDecoder(encoding), token).AsTask();
 
         /// <summary>
-        /// Converts DTO content into string.
+        /// Converts DTO content to string.
         /// </summary>
         /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Data transfer object to read from.</param>
@@ -142,7 +150,7 @@ namespace DotNext.IO
             => dto.GetObjectDataAsync<string, TextDecoder>(new TextDecoder(encoding, capacity), token).AsTask();
 
         /// <summary>
-        /// Converts DTO into array of bytes.
+        /// Converts DTO to array of bytes.
         /// </summary>
         /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Data transfer object to read from.</param>
@@ -152,5 +160,19 @@ namespace DotNext.IO
         public static Task<byte[]> ToByteArrayAsync<TObject>(this TObject dto, CancellationToken token = default)
             where TObject : notnull, IDataTransferObject
             => dto.GetObjectDataAsync<byte[], ArrayDecoder>(new ArrayDecoder(), token).AsTask();
+
+        /// <summary>
+        /// Converts DTO to value of blittable type.
+        /// </summary>
+        /// <typeparam name="TObject">The type of data transfer object.</typeparam>
+        /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <param name="dto">Data transfer object to read from.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The content of the object.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<TResult> ToType<TResult, TObject>(this TObject dto, CancellationToken token = default)
+            where TObject : notnull, IDataTransferObject
+            where TResult : unmanaged
+            => dto.GetObjectDataAsync<TResult, ValueDecoder<TResult>>(new ValueDecoder<TResult>(), token);
     }
 }
