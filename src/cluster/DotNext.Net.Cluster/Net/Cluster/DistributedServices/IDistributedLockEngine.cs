@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.DistributedServices
 {
-    using AsyncEventListener = Threading.AsyncEventListener;
+    using Threading;
     using IAuditTrail = IO.Log.IAuditTrail;
+    using DistributedLockInfo = Threading.DistributedLockInfo;
 
     /// <summary>
     /// Represents engine of distributed services.
@@ -20,5 +21,7 @@ namespace DotNext.Net.Cluster.DistributedServices
 
         //releases all expired locks
         Task CollectGarbage(CancellationToken token);
+
+        DistributedLockInfo CreateLockInfo(IDistributedLockProvider.LockOptions options);
     }
 }

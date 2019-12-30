@@ -82,6 +82,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         Task IDistributedLockEngine.CollectGarbage(CancellationToken token) => Task.CompletedTask;
 
+        DistributedLockInfo IDistributedLockEngine.CreateLockInfo(IDistributedLockProvider.LockOptions options)
+            => new DistributedLockInfo
+            {
+                CreationTime = DateTimeOffset.Now,
+                LeaseTime = options.LeaseTime,
+                Owner = NodeId
+            };
+
         async Task IDistributedLockEngine.RestoreAsync(CancellationToken token)
         {
             //restore lock state from file system

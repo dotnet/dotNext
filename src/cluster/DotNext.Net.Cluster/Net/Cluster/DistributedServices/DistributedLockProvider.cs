@@ -41,10 +41,25 @@ namespace DotNext.Net.Cluster.DistributedServices
             //send Acquire message to leader node
             //if leader doesn't confirm that the lock is acquired then wait for Release log entry
             //in local audit trail and then try again
-            using(var timeoutToken = new CancellationTokenSource(timeout))
-            using(var linkedToken = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(timeoutToken.Token, token) : timeoutToken)
-            await using(var releaseListener = engine.CreateReleaseLockListener(linkedToken.Token))
+            var timeoutSource = new TimeoutTokenSource(timeout, token);
+            var releaseListener = engine.CreateReleaseLockListener(timeoutSource.Token);
+            try
             {
+                for(var request = new AcquireLockRequest { LockName = lockName }; ; await releaseListener.WaitAsync().ConfigureAwait(false))
+                {
+                    request.LockInfo = engine.CreateLockInfo(options);
+                    if(await messageBus.SendMessageToLeaderAsync(request, AcquireLockResponse.Reader, timeoutSource.Token).ConfigureAwait(false))
+                        break;
+                }
+            }
+            catch(OperationCanceledException e) when(timeoutSource.IsTimeout(e))    //timeout detected
+            {
+                return null;
+            }
+            finally
+            {
+                await releaseListener.ConfigureAwait(false).DisposeAsync();
+                timeoutSource.Dispose();
             }
             //acquisition confirmed by leader node so just wait for replication of audit trail containing
             //confirmation of lock acquisition

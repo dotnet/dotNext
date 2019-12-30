@@ -62,7 +62,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bool ILogEntry.IsSnapshot => false;
 
             ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
-                => parser.TransformAsync(IAsyncBinaryReader.Empty, token);
+                => parser.ReadAsync(IAsyncBinaryReader.Empty, token);
         }
 
         [StructLayout(LayoutKind.Auto)]
