@@ -114,7 +114,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 //write content
                 Position = offset;
-                await entry.CopyToAsync(this).ConfigureAwait(false);
+                await entry.WriteToAsync(this, buffer).ConfigureAwait(false);
                 metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
                 //record new log entry to the allocation table
                 Position = index * LogEntryMetadata.Size;
@@ -164,7 +164,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Index = index;
                 Position = SnapshotMetadata.Size;
-                await entry.CopyToAsync(this, token).ConfigureAwait(false);
+                await entry.WriteToAsync(this, buffer, token).ConfigureAwait(false);
                 var metadata = SnapshotMetadata.Create(entry, index, Length - SnapshotMetadata.Size);
                 Position = 0;
                 await this.WriteAsync(metadata, buffer, token).ConfigureAwait(false);

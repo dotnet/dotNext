@@ -479,7 +479,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     if (partition.FirstIndex > 0L || i > 0L) //ignore the ephemeral entry
                     {
                         var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false)).Value;
-                        entry.AdjustPosition();
+                        entry.Reset();
                         await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
                     }
                 snapshotIndex = partition.LastIndex;
@@ -579,7 +579,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (TryGetPartition(i, ref partition, out var switched))
                 {
                     var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, true, switched, token).ConfigureAwait(false)).Value;
-                    entry.AdjustPosition();
+                    entry.Reset();
                     await ApplyAsync(entry).ConfigureAwait(false);
                 }
                 else

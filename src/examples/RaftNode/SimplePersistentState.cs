@@ -1,12 +1,10 @@
-﻿using DotNext.Net.Cluster.Consensus.Raft;
+﻿using DotNext.IO;
+using DotNext.Net.Cluster.Consensus.Raft;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Buffers.Binary;
 using System.IO;
-using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
-using static DotNext.IO.StreamExtensions;
 
 namespace RaftNode
 {
@@ -17,15 +15,15 @@ namespace RaftNode
 
         private sealed class SimpleSnapshotBuilder : SnapshotBuilder
         {
-            private readonly Memory<byte> value;
+            private long value;
 
-            internal SimpleSnapshotBuilder() => value = new byte[sizeof(long)];
+            protected override async ValueTask ApplyAsync(LogEntry entry)
+            {
+                value = await entry.ReadAsync<long>().ConfigureAwait(false);
+            }
 
-            public override ValueTask CopyToAsync(Stream output, CancellationToken token) => output.WriteAsync(value, token);
-
-            public override async ValueTask CopyToAsync(PipeWriter output, CancellationToken token) => await output.WriteAsync(value, token).ConfigureAwait(false);
-
-            protected override async ValueTask ApplyAsync(LogEntry entry) => (await entry.ReadAsync(sizeof(long)).ConfigureAwait(false)).CopyTo(value);
+            public override ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+                => writer.WriteAsync(value, token);
         }
 
         private readonly FileStream content;
@@ -54,10 +52,10 @@ namespace RaftNode
 
         protected override async ValueTask ApplyAsync(LogEntry entry)
         {
-            var value = await entry.ReadAsync(sizeof(long)).ConfigureAwait(false);
+            var value = await entry.ReadAsync<long>().ConfigureAwait(false);
             content.Position = 0;
-            Console.WriteLine($"Accepting value {BinaryPrimitives.ReadInt64LittleEndian(value.Span)}");
-            await content.WriteAsync(value).ConfigureAwait(false);
+            Console.WriteLine($"Accepting value {value}");
+            await content.WriteAsync(value, Buffer).ConfigureAwait(false);
         }
 
         protected override ValueTask FlushAsync() => new ValueTask(content.FlushAsync());

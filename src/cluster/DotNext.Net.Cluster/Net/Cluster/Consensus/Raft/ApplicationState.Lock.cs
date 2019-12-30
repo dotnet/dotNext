@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using MemoryMarshal = System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -56,8 +55,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async ValueTask AppendLockCommandAsync(LogEntry entry)
         {
-            var bytes = await entry.ReadAsync(sizeof(LockCommand)).ConfigureAwait(false);
-            switch(MemoryMarshal.Read<LockCommand>(bytes.Span))
+            var command = await entry.ReadAsync<LockCommand>().ConfigureAwait(false);
+            switch(command)
             {
                 default:
                     throw new InvalidOperationException();

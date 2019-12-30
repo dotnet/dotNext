@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.IO.Pipelines;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -13,8 +12,6 @@ using static System.Buffers.Binary.BinaryPrimitives;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO;
-    using IO.Pipelines;
-    using static Messaging.Messenger;
     using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
     [ExcludeFromCodeCoverage]
@@ -95,19 +92,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private sealed class SimpleSnapshotBuilder : SnapshotBuilder
             {
                 private long currentValue;
-                private readonly Memory<byte> sharedBuffer;
 
-                internal SimpleSnapshotBuilder(Memory<byte> buffer) => sharedBuffer = buffer;
-
-                public override ValueTask CopyToAsync(Stream output, CancellationToken token)
+                protected override async ValueTask ApplyAsync(LogEntry entry)
                 {
-                    return output.WriteAsync(currentValue, sharedBuffer, token);
+                    currentValue = await entry.ReadAsync<long>();
                 }
 
-                public override async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
-                    => (await output.WriteAsync(currentValue, token)).ThrowIfCancellationRequested(token);
-
-                protected override async ValueTask ApplyAsync(LogEntry entry) => currentValue = await Decode(entry);
+                public override ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+                    => writer.WriteAsync(currentValue, token);
             }
 
             internal TestAuditTrail(string path, bool useCaching)
@@ -115,11 +107,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
             }
 
-            private static async Task<long> Decode(LogEntry entry) => ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
+            protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await entry.ReadAsync<long>();
 
-            protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await Decode(entry);
-
-            protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder(Buffer);
+            protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder();
         }
 
         private const int RecordsPerPartition = 4;
