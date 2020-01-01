@@ -12,12 +12,14 @@ namespace DotNext.IO
     public class BinaryTransferObject<T> : IDataTransferObject
         where T : unmanaged
     {
-        private T content;
-
         /// <summary>
-        /// Gets a value of blittable type encapsulated by this object.
+        /// Gets or sets a value of blittable type encapsulated by this object.
         /// </summary>
-        public ref T Content => ref content;
+        public T Content
+        {
+            get;
+            set;
+        }
 
         bool IDataTransferObject.IsReusable => true;
 
@@ -26,7 +28,7 @@ namespace DotNext.IO
         long? IDataTransferObject.Length => Length;
     
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-            => writer.WriteAsync(content, token);
+            => writer.WriteAsync(Content, token);
     }
 
     /// <summary>
