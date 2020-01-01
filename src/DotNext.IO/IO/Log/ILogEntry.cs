@@ -10,7 +10,7 @@ namespace DotNext.IO.Log
         /// <summary>
         /// Gets a value indicating that this entry is a snapshot entry.
         /// </summary>
-        bool IsSnapshot { get; }
+        bool IsSnapshot => false;
 
         /// <summary>
         /// Gets UTC time of the log entry when it was created.
