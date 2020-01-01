@@ -32,7 +32,7 @@ namespace DotNext.IO.Log
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The result returned by the reader.</returns>
         ValueTask<TResult> ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
-            where TEntryImpl : TEntry
-            where TList : IReadOnlyList<TEntryImpl>;
+            where TEntryImpl : notnull, TEntry
+            where TList : notnull, IReadOnlyList<TEntryImpl>;
     }
 }
