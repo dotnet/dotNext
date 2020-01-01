@@ -174,5 +174,19 @@ namespace DotNext.IO
             where TObject : notnull, IDataTransferObject
             where TResult : unmanaged
             => dto.GetObjectDataAsync<TResult, ValueDecoder<TResult>>(new ValueDecoder<TResult>(), token);
+
+        /// <summary>
+        /// Gets the data encapsulated by the data transfer object.
+        /// </summary>
+        /// <param name="dto">Data transfer object to read from.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TResult">The type representing another form of data transfer object.</typeparam>
+        /// <typeparam name="TObject">The type of the data transfer object.</typeparam>
+        /// <returns>The data extracted from DTO.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static ValueTask<TResult> GetObjectDataAsync<TResult, TObject>(this TObject dto, CancellationToken token = default)
+            where TResult : notnull, IDataTransferObject.IDecoder<TResult>, new()
+            where TObject : notnull, IDataTransferObject
+            => dto.GetObjectDataAsync<TResult, TResult>(new TResult(), token);
     }
 }
