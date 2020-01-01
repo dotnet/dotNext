@@ -90,7 +90,7 @@ namespace DotNext.IO.Log
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token = default)
-            where TReader : ILogEntryConsumer<TEntry, TResult>;
+            where TReader : notnull, ILogEntryConsumer<TEntry, TResult>;
 
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
@@ -104,7 +104,7 @@ namespace DotNext.IO.Log
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default)
-            where TReader : ILogEntryConsumer<TEntry, TResult>;
+            where TReader : notnull, ILogEntryConsumer<TEntry, TResult>;
 
         /// <summary>
         /// Adds uncommitted log entries into this log.
@@ -120,7 +120,7 @@ namespace DotNext.IO.Log
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="skipCommitted"/> is <see langword="false"/>; or the collection of entries contains the snapshot entry.</exception>
         ValueTask AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long startIndex, bool skipCommitted = false, CancellationToken token = default)
-            where TEntryImpl : TEntry;
+            where TEntryImpl : notnull, TEntry;
 
         /// <summary>
         /// Adds uncommitted log entries to the end of this log.
@@ -131,11 +131,11 @@ namespace DotNext.IO.Log
         /// <typeparam name="TEntryImpl">The actual type of the log entry returned by the supplier.</typeparam>
         /// <param name="entries">The entries to be added into this log.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>Index of the first added entry.</returns>
+        /// <returns>The index of the first added entry.</returns>
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
         /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
         ValueTask<long> AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, CancellationToken token = default)
-            where TEntryImpl : TEntry;
+            where TEntryImpl : notnull, TEntry;
 
         /// <summary>
         /// Adds uncommitted log entry to the end of this log.
@@ -152,7 +152,22 @@ namespace DotNext.IO.Log
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="entry"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
-        ValueTask AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex) where TEntryImpl : TEntry;
+        ValueTask AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex) where TEntryImpl : notnull, TEntry;
+
+        /// <summary>
+        /// Adds uncommitted log entry to the end of this log. 
+        /// </summary>
+        /// <remarks>
+        /// This method cannot be used to append a snapshot.
+        /// </remarks>
+        /// <param name="entry">The entry to add.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TEntryImpl">The actual type of the supplied log entry.</typeparam>
+        /// <returns>The index of the added entry.</returns>
+        /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
+        ValueTask<long> AppendAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
+            where TEntryImpl : notnull, TEntry
+            => AppendAsync(new SingleEntryProducer<TEntryImpl>(entry), token);
 
         /// <summary>
         /// Dropes the uncommitted entries starting from the specified position to the end of the log.

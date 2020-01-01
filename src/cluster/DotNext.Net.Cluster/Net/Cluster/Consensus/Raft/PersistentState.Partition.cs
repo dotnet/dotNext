@@ -91,7 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, Memory<byte> buffer)
-                where TEntry : IRaftLogEntry
+                where TEntry : notnull, IRaftLogEntry
             {
                 //calculate offset of the previous entry
                 long offset;
@@ -125,7 +125,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index)
-                where TEntry : IRaftLogEntry
+                where TEntry : notnull, IRaftLogEntry
             {
                 //calculate relative index
                 index -= FirstIndex;
@@ -160,7 +160,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 => Index = Length > 0L ? this.Read<SnapshotMetadata>().Index : 0L;
 
             private async ValueTask WriteAsync<TEntry>(TEntry entry, long index, Memory<byte> buffer, CancellationToken token)
-                where TEntry : IRaftLogEntry
+                where TEntry : notnull, IRaftLogEntry
             {
                 Index = index;
                 Position = SnapshotMetadata.Size;
@@ -171,7 +171,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index, CancellationToken token)
-                where TEntry : IRaftLogEntry
+                where TEntry : notnull, IRaftLogEntry
                 => WriteAsync(entry, index, session.Buffer, token);
 
             private static async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, CancellationToken token)

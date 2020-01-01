@@ -132,7 +132,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private async ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, DataAccessSession session, long startIndex, long endIndex, CancellationToken token)
-            where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
+            where TReader : notnull, ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex > state.LastIndex)
                 throw new IndexOutOfRangeException(ExceptionMessages.InvalidEntryIndex(endIndex));
@@ -190,7 +190,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         public async ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
-            where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
+            where TReader : notnull, ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -223,7 +223,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         public async ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
-            where TReader : ILogEntryConsumer<IRaftLogEntry, TResult>
+            where TReader : notnull, ILogEntryConsumer<IRaftLogEntry, TResult>
         {
             if (startIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -241,7 +241,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private async ValueTask InstallSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
-            where TSnapshot : IRaftLogEntry
+            where TSnapshot : notnull, IRaftLogEntry
         {
             //0. The snapshot can be installed only if the partitions were squashed on the sender side
             //therefore, snapshotIndex should be a factor of recordsPerPartition
@@ -294,7 +294,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private async ValueTask AppendAsync<TEntry>(ILogEntryProducer<TEntry> supplier, long startIndex, bool skipCommitted, CancellationToken token)
-            where TEntry : IRaftLogEntry
+            where TEntry : notnull, IRaftLogEntry
         {
             if (startIndex > state.LastIndex + 1)
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
@@ -346,10 +346,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="ArgumentNullException"><paramref name="entry"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
         public async ValueTask AppendAsync<TEntry>(TEntry entry, long startIndex)
-            where TEntry : IRaftLogEntry
+            where TEntry : notnull, IRaftLogEntry
         {
-            if (entry == null)
-                throw new ArgumentNullException(nameof(entry));
             await syncRoot.AcquireAsync(true, CancellationToken.None).ConfigureAwait(false);
             try
             {
@@ -357,9 +355,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 else if (entry.IsSnapshot)
                     await InstallSnapshot(entry, startIndex).ConfigureAwait(false);
-                else if (startIndex <= state.CommitIndex)
-                    throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-                else if (startIndex > state.LastIndex + 1)
+                else if (startIndex > state.LastIndex + 1L)
                     throw new ArgumentOutOfRangeException(nameof(startIndex));
                 else
                 {
@@ -377,6 +373,40 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
+        /// Adds uncommitted log entry to the end of this log. 
+        /// </summary>
+        /// <remarks>
+        /// This method cannot be used to append a snapshot.
+        /// </remarks>
+        /// <param name="entry">The entry to add.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TEntry">The actual type of the supplied log entry.</typeparam>
+        /// <returns>The index of the added entry.</returns>
+        /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
+        public async ValueTask<long> AppendAsync<TEntry>(TEntry entry, CancellationToken token)
+            where TEntry : notnull, IRaftLogEntry
+        {
+            if(entry.IsSnapshot)
+                throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
+            await syncRoot.AcquireAsync(true, token).ConfigureAwait(false);
+            long startIndex;
+            try
+            {
+                startIndex = state.LastIndex + 1L;
+                GetOrCreatePartition(startIndex, out var partition);
+                await partition.WriteAsync(sessionManager.WriteSession, entry, startIndex).ConfigureAwait(false);
+                await partition.FlushAsync(token).ConfigureAwait(false);
+                state.LastIndex = startIndex;
+                state.Flush();
+            }
+            finally
+            {
+                syncRoot.Release();
+            }
+            return startIndex;
+        }
+
+        /// <summary>
         /// Adds uncommitted log entries to the end of this log.
         /// </summary>
         /// <remarks>
@@ -389,7 +419,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="ArgumentException"><paramref name="entries"/> is empty.</exception>
         /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
         public async ValueTask<long> AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token = default)
-            where TEntry : IRaftLogEntry
+            where TEntry : notnull, IRaftLogEntry
         {
             if (entries.RemainingCount == 0L)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
@@ -611,7 +641,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         bool IPersistentState.IsVotedFor(IRaftClusterMember? member) => state.IsVotedFor(member?.Endpoint);
 
-        long IPersistentState.Term => state.Term;
+        /// <summary>
+        /// Gets the current term.
+        /// </summary>
+        public long Term => state.Term;
 
         ValueTask<long> IPersistentState.IncrementTermAsync() => state.IncrementTermAsync();
 
