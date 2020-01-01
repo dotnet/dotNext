@@ -116,9 +116,9 @@ namespace DotNext
         /// <summary>
         /// Decodes string from its base64 representation.
         /// </summary>
-        /// <param name="base64"></param>
-        /// <param name="encoding"></param>
-        /// <returns></returns>
+        /// <param name="base64">base64-encoded string.</param>
+        /// <param name="encoding">The encoding of original string.</param>
+        /// <returns>The decoded string.</returns>
         public static string FromBase64(this string base64, Encoding encoding)
         {
             using MemoryRental<byte> buffer = base64.Length <= 1024 ? stackalloc byte[base64.Length] : new MemoryRental<byte>(base64.Length);
