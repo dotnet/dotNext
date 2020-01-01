@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             lockPersistentStateStorage = new DirectoryInfo(Path.Combine(path.FullName, LockDirectoryName));
             if(!lockPersistentStateStorage.Exists)
                 lockPersistentStateStorage.Create();
-            lockAcquisitions = new ConcurrentDictionary<string, WaitNode>(StringComparer.Ordinal);
+            acquiredLocks = new ConcurrentDictionary<string, Threading.DistributedLockInfo>(StringComparer.Ordinal);
         }
     }
 }

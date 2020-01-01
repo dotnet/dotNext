@@ -9,6 +9,10 @@ namespace DotNext.Threading
         private DateTimeOffset creationTime;
 
         internal Guid Owner;
+
+        //it is needed to distinguish different versions of the same lock
+        internal Guid Id;  
+         
         internal DateTimeOffset CreationTime
         {
             get => creationTime;
@@ -21,9 +25,12 @@ namespace DotNext.Threading
         {
             get
             {
-                var currentTime = DateTimeOffset.Now.ToUniversalTime();
+                var currentTime = DateTimeOffset.UtcNow;
                 return CreationTime + LeaseTime <= currentTime;
             }
         }           
+
+        internal DistributedLockInfo Update(string name, DistributedLockInfo existing)
+            => existing.IsExpired ? this : existing;
     }
 }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,18 +10,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using Buffers;
     using DistributedServices;
+    using IO;
+    using IO.Log;
+    using Text;
     using Threading;
-    using static Threading.Tasks.Synchronization;
-    using static IO.StreamExtensions;
-    using TrueTask = Threading.Tasks.CompletedTask<bool, Generic.BooleanConst.True>;
-
+    
     public partial class ApplicationState : IDistributedLockEngine
     {
         //each file in directory contains description of distributed lock
-        //file name format: <lockName>.<hash>
-        //hash is needed to beat case sensivity problem
-        //Its format described by LockState value type
-        //If file exists then it means that the lock is acquired 
+        //file name is base64 encoded lock name to avoid case sensitivity issues 
         private const string LockDirectoryName = "locks";
 
         /// <summary>
@@ -38,20 +37,45 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             Release
         }
 
-        private sealed class WaitNode : TaskCompletionSource<bool>
+        [StructLayout(LayoutKind.Auto)]
+        private readonly struct AcquireLockCommand : IWriteOnlyLogEntry
         {
-            internal readonly Guid Owner;
+            private readonly long term;
+            private readonly DateTimeOffset timestamp;
+            private readonly ReadOnlyMemory<char> name;
+            //it is struct for faster serialization with writer
+            private readonly Guid owner, id;
+            private readonly TimeSpan leaseTime;
 
-            internal WaitNode(in Guid owner)
-                : base(TaskCreationOptions.RunContinuationsAsynchronously)
+            internal AcquireLockCommand(string lockName, DistributedLockInfo lockInfo, long term)
             {
-                Owner = owner;
+                this.term = term;
+                timestamp = lockInfo.CreationTime;
+                name = lockName.AsMemory();
+                owner = lockInfo.Owner;
+                id = lockInfo.Id;
+                leaseTime = lockInfo.LeaseTime;
+            }
+
+            long IRaftLogEntry.Term => term;
+
+            DateTimeOffset ILogEntry.Timestamp => timestamp;
+
+            async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            {
+                await writer.WriteAsync(LockCommand.Acquire, token).ConfigureAwait(false);
+                var context = new EncodingContext(Encoding.Unicode, true);
+                await writer.WriteAsync(name, context, null, token).ConfigureAwait(false);
+                await writer.WriteAsync(owner, token).ConfigureAwait(false);
+                await writer.WriteAsync(id, token).ConfigureAwait(false);
+                await writer.WriteAsync(leaseTime, token).ConfigureAwait(false);
             }
         }
 
+        private readonly ConcurrentDictionary<string, DistributedLockInfo> acquiredLocks;
         private readonly DirectoryInfo lockPersistentStateStorage;
-        private readonly ConcurrentDictionary<string, WaitNode> lockAcquisitions;
         private readonly AsyncEventSource releaseEventSource = new AsyncEventSource();
+        private readonly AsyncEventSource acquireEventSource = new AsyncEventSource();
 
         private async ValueTask AppendLockCommandAsync(LogEntry entry)
         {
@@ -69,26 +93,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         AsyncEventListener IDistributedLockEngine.CreateReleaseLockListener(CancellationToken token) => new AsyncEventListener(releaseEventSource, token);
 
-        Task<bool> IDistributedLockEngine.WaitForAcquisitionAsync(string lockName, TimeSpan timeout, CancellationToken token)
-        {
-            var newNode = new WaitNode(NodeId);
-            var currentNode = lockAcquisitions.GetOrAdd(lockName, newNode);
-            //the lock was acquired previously so just wait
-            //otherwise the lock was not acquired so return immediately 
-            return ReferenceEquals(newNode, currentNode) ?
-                TrueTask.Task :
-                currentNode.Task.WaitAsync(timeout, token);
-        }
+        AsyncEventListener IDistributedLockEngine.CreateAcquireLockListener(CancellationToken token) => new AsyncEventListener(acquireEventSource, token);
 
         Task IDistributedLockEngine.CollectGarbage(CancellationToken token) => Task.CompletedTask;
+        
+        async Task<bool> IDistributedLockEngine.TryAcquireAsync(string name, DistributedLockInfo lockInfo, CancellationToken token)
+        {
+            if(lockInfo.IsExpired)
+                return false;
+            var updatedLockInfo = acquiredLocks.AddOrUpdate(name, lockInfo, lockInfo.Update);
+            if(lockInfo.Id != updatedLockInfo.Id)
+                return false;
+            await AppendAsync(new AcquireLockCommand(name, lockInfo, Term), token).ConfigureAwait(false);
+            return true;
+        }
 
-        DistributedLockInfo IDistributedLockEngine.CreateLockInfo(IDistributedLockProvider.LockOptions options)
-            => new DistributedLockInfo
-            {
-                CreationTime = DateTimeOffset.Now,
-                LeaseTime = options.LeaseTime,
-                Owner = NodeId
-            };
+        bool IDistributedLockEngine.IsAcquired(string lockName, Guid version)
+            => acquiredLocks.TryGetValue(lockName, out var lockInfo) && lockInfo.Id == version;
+        
+        private static string FileNameToLockName(string fileName)
+            => fileName.FromBase64(Encoding.UTF8);
+        
+        private static string LockNameToFileName(string lockName)
+            => lockName.ToBase64(Encoding.UTF8);
 
         async Task IDistributedLockEngine.RestoreAsync(CancellationToken token)
         {
@@ -99,7 +126,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await using(var fs = new FileStream(lockFile.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, fileBuffer, true))
                 {
                     var state = await fs.ReadAsync<DistributedLockInfo>(buffer.Memory, token).ConfigureAwait(false);
-                    lockAcquisitions[Path.GetFileNameWithoutExtension(lockFile.Name)] = new WaitNode(state.Owner);
+                    acquiredLocks[FileNameToLockName(lockFile.Name)] = state;
                 }
         }
     }

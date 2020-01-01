@@ -23,10 +23,7 @@ namespace DotNext.Threading
                 Token = linkedSource.Token;
             }
         }
-
-        internal bool IsTimeout(OperationCanceledException e)
-            => timeoutSource != null && timeoutSource.Token == e.CancellationToken;
-
+        
         public void Dispose()
         {
             linkedSource?.Dispose();

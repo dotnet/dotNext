@@ -252,5 +252,11 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         internal void Detach(IEventHandler receiver)
             => receivers -= receiver.Receive;
+        
+        /// <summary>
+        /// Removes all event listeners attached to this source.
+        /// </summary>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void Clear() => receivers = null;
     }
 }

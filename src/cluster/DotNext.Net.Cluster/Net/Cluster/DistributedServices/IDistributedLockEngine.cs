@@ -5,23 +5,27 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.DistributedServices
 {
     using Threading;
-    using IAuditTrail = IO.Log.IAuditTrail;
+    
     using DistributedLockInfo = Threading.DistributedLockInfo;
 
     /// <summary>
     /// Represents engine of distributed services.
     /// </summary>
-    internal interface IDistributedLockEngine : IAuditTrail
+    internal interface IDistributedLockEngine : IDistributedServiceEngine
     {
         Task RestoreAsync(CancellationToken token);
 
         AsyncEventListener CreateReleaseLockListener(CancellationToken token);
 
-        Task<bool> WaitForAcquisitionAsync(string lockName, TimeSpan timeout, CancellationToken token);
+        AsyncEventListener CreateAcquireLockListener(CancellationToken token);
+
+        bool IsAcquired(string lockName, Guid version);
 
         //releases all expired locks
         Task CollectGarbage(CancellationToken token);
 
-        DistributedLockInfo CreateLockInfo(IDistributedLockProvider.LockOptions options);
+        //writes the log entry describing lock acquisition
+        //but doesn't wait for commit    
+        Task<bool> TryAcquireAsync(string name, DistributedLockInfo lockInfo, CancellationToken token);
     }
 }
