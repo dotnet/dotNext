@@ -403,7 +403,7 @@ namespace DotNext
         /// </summary>
         /// <param name="bytes">The bytes to convert.</param>
         /// <param name="output">The buffer used to write hexadecimal representation of bytes.</param>
-        /// <returns>The actual number of characters from <paramref name="output"/> written by the method.</returns>
+        /// <returns>The actual number of characters in <paramref name="output"/> written by the method.</returns>
         public static int ToHex(this ReadOnlySpan<byte> bytes, Span<char> output)
         {
             if (bytes.IsEmpty || output.IsEmpty)
@@ -437,6 +437,12 @@ namespace DotNext
             return new string(buffer.Span.Slice(0, count));
         }
 
+        /// <summary>
+        /// Decodes hexadecimal representation of bytes.
+        /// </summary>
+        /// <param name="chars">The hexadecimal representation of bytes.</param>
+        /// <param name="output">The output buffer used to write decoded bytes.</param>
+        /// <returns>The actual number of bytes in <paramref name="output"/> written by the method.</returns>
         public static int FromHex(this ReadOnlySpan<char> chars, Span<byte> output)
         {
             if (chars.IsEmpty || output.IsEmpty)
@@ -450,6 +456,11 @@ namespace DotNext
             return charCount / 2;
         }
 
+        /// <summary>
+        /// Decodes hexadecimal representation of bytes.
+        /// </summary>
+        /// <param name="chars">The characters containing hexadecimal representation of bytes.</param>
+        /// <returns>The decoded array of bytes.</returns>
         public static byte[] FromHex(this ReadOnlySpan<char> chars)
         {
             var count = chars.Length / 2;
