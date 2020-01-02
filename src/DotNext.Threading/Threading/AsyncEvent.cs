@@ -20,11 +20,11 @@ namespace DotNext.Threading
     /// Represents listener of asynchronous events.
     /// </summary>
     /// <remarks>
-    /// The caller can be suspended using <see cref="WaitAsync"/> method and
-    /// resumed by <see cref="AsyncEventSource.Fire"/> method.
+    /// The caller can be suspended using <see cref="SuspendAsync"/> method and
+    /// resumed by <see cref="AsyncEventSource.Resume"/> method.
     /// The time between two suspensions can be enough to raise one or more events.
-    /// In this case, the next call of <see cref="WaitAsync"/> will be completed
-    /// synchronously. However, multiple calls of <see cref="AsyncEventSource.Fire"/> will resume
+    /// In this case, the next call of <see cref="SuspendAsync"/> will be completed
+    /// synchronously. However, multiple calls of <see cref="AsyncEventSource.Resume"/> will resume
     /// the suspended caller once.
     /// </remarks>
     public sealed class AsyncEventListener : Disposable, IAsyncDisposable, IValueTaskSource, IEventHandler
@@ -68,7 +68,7 @@ namespace DotNext.Threading
         /// <returns>The task representing event.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public ValueTask WaitAsync()
+        public ValueTask SuspendAsync()
         {
             if(IsAborted)
                 throw new OperationCanceledException(registration.Token);
@@ -223,25 +223,23 @@ namespace DotNext.Threading
         private volatile Action? receivers;
 
         /// <summary>
-        /// Triggers all attached event listeners
+        /// Resumes all suspended event listeners
         /// synchronously.
         /// </summary>
-        [SuppressMessage("Design", "CA1030", Justification = "It is pub/sub pattern implementation")]
-        public void Fire()
+        public void Resume()
         {
             foreach(Action action in receivers?.GetInvocationList() ?? Array.Empty<Action>())
                 action.Invoke();
         }
 
         /// <summary>
-        /// Triggers all attached event listeners
+        /// Resumes all attached event listeners
         /// asynchronously.
         /// </summary>
         /// <param name="scheduler">The sheduler used to execute event listeners; or <see langword="null"/> to use <see cref="TaskScheduler.Current"/>.</param>
         /// <param name="token">The token that can be used to cancel execution.</param>
         /// <returns>The task that can be used to synchronize with all invoked listeners.</returns>
-        [SuppressMessage("Design", "CA1030", Justification = "It is pub/sub pattern implementation")]
-        public Task FireAsync(TaskScheduler? scheduler = null, CancellationToken token = default)
+        public Task ResumeAsync(TaskScheduler? scheduler = null, CancellationToken token = default)
         {
             ICollection<Task> tasks = new LinkedList<Task>();
             foreach(Action action in receivers?.GetInvocationList() ?? Array.Empty<Action>())

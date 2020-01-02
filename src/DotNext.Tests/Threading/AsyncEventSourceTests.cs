@@ -12,11 +12,11 @@ namespace DotNext.Threading
         {
             var source = new AsyncEventSource();
             using var listener = new AsyncEventListener(source);
-            source.Fire();
-            var task = listener.WaitAsync();
+            source.Resume();
+            var task = listener.SuspendAsync();
             True(task.IsCompleted);
             True(task.IsCompletedSuccessfully);
-            task = listener.WaitAsync();
+            task = listener.SuspendAsync();
             False(task.IsCompleted);
             False(task.IsCompletedSuccessfully);
         }
@@ -26,11 +26,11 @@ namespace DotNext.Threading
         {
             var source = new AsyncEventSource();
             await using var listener = new AsyncEventListener(source);
-            await source.FireAsync();
-            var task = listener.WaitAsync();
+            await source.ResumeAsync();
+            var task = listener.SuspendAsync();
             True(task.IsCompleted);
             True(task.IsCompletedSuccessfully);
-            task = listener.WaitAsync();
+            task = listener.SuspendAsync();
             False(task.IsCompleted);
             False(task.IsCompletedSuccessfully);
         }
@@ -41,23 +41,23 @@ namespace DotNext.Threading
             var token = new CancellationTokenSource();
             var source = new AsyncEventSource();
             using var listener = new AsyncEventListener(source, token.Token);
-            source.Fire();
-            var task = listener.WaitAsync();
+            source.Resume();
+            var task = listener.SuspendAsync();
             True(task.IsCompleted);
             True(task.IsCompletedSuccessfully);
             token.Cancel();
-            Throws<OperationCanceledException>(() => listener.WaitAsync());
+            Throws<OperationCanceledException>(() => listener.SuspendAsync());
         }
 
         [Fact]
         public static async Task AsyncSignal()
         {
             static void Fire(AsyncEventSource source)
-                => source.Fire();
+                => source.Resume();
 
             var source = new AsyncEventSource();
             var listener = new AsyncEventListener(source);
-            var task = listener.WaitAsync();
+            var task = listener.SuspendAsync();
             False(task.IsCompleted);
             ThreadPool.QueueUserWorkItem(Fire, source, false);
             await task;
@@ -72,7 +72,7 @@ namespace DotNext.Threading
                 var result = 0;
                 using var listener = new AsyncEventListener(source);
                 for(; result < 3; result++)
-                    await listener.WaitAsync();
+                    await listener.SuspendAsync();
                 return result;
             }
 
@@ -81,7 +81,7 @@ namespace DotNext.Threading
             var counter2 = ExecuteCounter(source);
             int value;
             for(value = 0; !(counter1.IsCompleted && counter2.IsCompleted); value++, await Task.Delay(100))
-                source.Fire();
+                source.Resume();
             Equal(3, await counter1);
             Equal(3, await counter2);
             True(value >= 3);
