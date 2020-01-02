@@ -26,6 +26,6 @@ namespace DotNext.Net.Cluster.DistributedServices
 
         //writes the log entry describing lock acquisition
         //but doesn't wait for commit    
-        Task<bool> TryAcquireAsync(string name, DistributedLockInfo lockInfo, CancellationToken token);
+        Task<bool> PrepareAcquisitionAsync(string name, DistributedLockInfo lockInfo, CancellationToken token);
     }
 }

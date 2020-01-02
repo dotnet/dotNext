@@ -21,16 +21,22 @@ namespace DotNext.Net.Cluster.DistributedServices
     [CLSCompliant(false)]
     public sealed class DistributedLockProvider : IDistributedLockProvider, IDistributedServiceProvider
     {
+        /*
+         * Algorithm of distributed lock:
+         * 1. Send AcquireLock message to leader node. It is non-blocking RPC call
+         * 2. Leader node checks whether the lock is not acquired. If so, respond with `true` and append acquisition command to audit trail for replication. Otherwise, immediately return `false`
+         * 3. Requester waits until leader responded with `true`. Timeout control is implemented at this step
+         * 4. If requester receives `true` then wait for the commit of the lock acquisition at its local audit trail 
+         */
+
         private IDistributedLockProvider.ConfigurationProvider? lockConfig;
         private readonly IDistributedLockEngine engine;
         private readonly IMessageBus messageBus;
-        private readonly ConcurrentDictionary<string, AsyncExclusiveLock> locks;
 
         private DistributedLockProvider(IDistributedLockEngine engine, IMessageBus messageBus)
         {
             this.engine = engine;
             this.messageBus = messageBus;
-            locks = new ConcurrentDictionary<string, AsyncExclusiveLock>(StringComparer.Ordinal);
             DefaultOptions = new IDistributedLockProvider.LockOptions();
         }
 
@@ -45,7 +51,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             var request = await message.GetObjectDataAsync<AcquireLockRequest, IMessage>(token).ConfigureAwait(false);
             return new AcquireLockResponse 
             { 
-                Content = await engine.TryAcquireAsync(request.LockName, request.LockInfo, token).ConfigureAwait(false)
+                Content = await engine.PrepareAcquisitionAsync(request.LockName, request.LockInfo, token).ConfigureAwait(false)
             };
         }
 
