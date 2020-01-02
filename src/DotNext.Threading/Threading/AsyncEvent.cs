@@ -13,7 +13,7 @@ namespace DotNext.Threading
 
     internal interface IEventHandler
     {
-        void Receive();
+        void Resume();
     }
 
     /// <summary>
@@ -164,7 +164,7 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]            
-        void IEventHandler.Receive()
+        void IEventHandler.Resume()
         {
             if(continuation is null)
                 state = true;
@@ -249,11 +249,11 @@ namespace DotNext.Threading
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         internal void Attach(IEventHandler receiver)
-            => receivers += receiver.Receive;
+            => receivers += receiver.Resume;
         
         [MethodImpl(MethodImplOptions.Synchronized)]
         internal void Detach(IEventHandler receiver)
-            => receivers -= receiver.Receive;
+            => receivers -= receiver.Resume;
         
         /// <summary>
         /// Removes all event listeners attached to this source.
