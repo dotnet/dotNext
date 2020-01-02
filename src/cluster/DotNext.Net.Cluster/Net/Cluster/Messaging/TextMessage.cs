@@ -13,8 +13,6 @@ namespace DotNext.Net.Cluster.Messaging
     /// </summary>
     public class TextMessage : IMessage
     {
-        private const int DefaultBufferSize = 128;
-
         /// <summary>
         /// Initializes a new text message.
         /// </summary>

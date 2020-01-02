@@ -123,7 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             const int fileBuffer = 1024;
             using var buffer = new ArrayRental<byte>(fileBuffer);
             foreach(var lockFile in lockPersistentStateStorage.EnumerateFiles())
-                await using(var fs = new FileStream(lockFile.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, fileBuffer, true))
+                using(var fs = new FileStream(lockFile.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, fileBuffer, true))
                 {
                     var state = await fs.ReadAsync<DistributedLockInfo>(buffer.Memory, token).ConfigureAwait(false);
                     acquiredLocks[FileNameToLockName(lockFile.Name)] = state;

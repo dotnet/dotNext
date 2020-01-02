@@ -165,7 +165,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
 
-                Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
+                Equal(1L, await state.AppendAsync(entry));
                 checker = async (entries, snapshotIndex) =>
                 {
                     Null(snapshotIndex);

@@ -14,7 +14,6 @@ namespace DotNext.Net.Cluster.DistributedServices
 
     internal sealed class AcquireLockRequest : IMessage, IDataTransferObject.IDecoder<AcquireLockRequest>
     {
-        private const int BufferSize = 512;
         internal const string Name = "AcquireDistributedLockRequest";
         private string? lockName;
         internal DistributedLockInfo LockInfo;

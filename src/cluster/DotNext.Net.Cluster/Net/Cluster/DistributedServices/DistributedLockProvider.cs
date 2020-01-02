@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             { 
                 Content = await engine.TryAcquireAsync(request.LockName, request.LockInfo, token).ConfigureAwait(false)
             };
-        }   
+        }
 
         /// <summary>
         /// Handles service message related to distributed lock management.
@@ -60,16 +60,11 @@ namespace DotNext.Net.Cluster.DistributedServices
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The response message produced by this provider.</returns>
         /// <exception cref="NotSupportedException">The specified message is not supported.</exception>
-        public Task<IMessage> ProcessMessage(IMessage message, CancellationToken token)
+        public Task<IMessage> ProcessMessage(IMessage message, CancellationToken token) => message.Name switch
         {
-            switch(message.Name)
-            {
-                case AcquireLockRequest.Name:
-                    return AcquireLockAsync(message, token);
-                default:
-                    return Task.FromException<IMessage>(new NotSupportedException());
-            }
-        }
+            AcquireLockRequest.Name => AcquireLockAsync(message, token),
+            _ => Task.FromException<IMessage>(new NotSupportedException()),
+        };
 
         /// <summary>
         /// Determines whether the specified message is a service message for distributed lock management.
@@ -158,9 +153,6 @@ namespace DotNext.Net.Cluster.DistributedServices
 
         public static DistributedLockProvider? TryCreate<TCluster>(TCluster cluster)
             where TCluster : class, IMessageBus, IReplicationCluster
-        {
-            var lockEngine = cluster.AuditTrail as IDistributedLockEngine;
-            return lockEngine is null ? null : new DistributedLockProvider(lockEngine, cluster);
-        }
+            => cluster.AuditTrail is IDistributedLockEngine lockEngine ? new DistributedLockProvider(lockEngine, cluster) : null;
     }
 }

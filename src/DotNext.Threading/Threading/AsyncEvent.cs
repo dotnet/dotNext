@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +33,7 @@ namespace DotNext.Threading
         private bool state;
         private short version;
         private readonly CancellationTokenRegistration registration;
+        [SuppressMessage("Usage", "CA2213", Justification = "The listener doesn't create or control lifetime of execution context")]
         private ExecutionContext? executionContext;
         private object? continuationState, syncContext;
         private Action<object?>? continuation;
@@ -224,6 +226,7 @@ namespace DotNext.Threading
         /// Triggers all attached event listeners
         /// synchronously.
         /// </summary>
+        [SuppressMessage("Design", "CA1030", Justification = "It is pub/sub pattern implementation")]
         public void Fire()
         {
             foreach(Action action in receivers?.GetInvocationList() ?? Array.Empty<Action>())
@@ -237,6 +240,7 @@ namespace DotNext.Threading
         /// <param name="scheduler">The sheduler used to execute event listeners; or <see langword="null"/> to use <see cref="TaskScheduler.Current"/>.</param>
         /// <param name="token">The token that can be used to cancel execution.</param>
         /// <returns>The task that can be used to synchronize with all invoked listeners.</returns>
+        [SuppressMessage("Design", "CA1030", Justification = "It is pub/sub pattern implementation")]
         public Task FireAsync(TaskScheduler? scheduler = null, CancellationToken token = default)
         {
             ICollection<Task> tasks = new LinkedList<Task>();
