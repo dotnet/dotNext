@@ -91,5 +91,19 @@ namespace DotNext
             Equal(1, span[0]);
             Equal(2, span[1]);
         }
+
+        [Theory]
+        [InlineData(0)]
+        [InlineData(128)]
+        [InlineData(2048)]
+        public static void ToHexConversion(int arraySize)
+        {
+            static string ToHexSlow(byte[] data) => string.Join(string.Empty, Array.ConvertAll(data, i => i.ToString("X2", null)));
+
+            var data = new byte[arraySize];
+            var rnd = new Random();
+            rnd.NextBytes(data);
+            Equal(ToHexSlow(data), new ReadOnlySpan<byte>(data).ToHex());
+        }
     }
 }

@@ -1,11 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using static System.Runtime.CompilerServices.Unsafe;
-using static System.Runtime.InteropServices.MemoryMarshal;
+using Debug = System.Diagnostics.Debug;
+using static System.Globalization.CultureInfo;
+using NumberStyles = System.Globalization.NumberStyles;
 
 namespace DotNext
 {
     using Runtime;
+    using CharBuffer = Buffers.MemoryRental<char>;
+    using ByteBuffer = Buffers.MemoryRental<byte>;
 
     /// <summary>
     /// Provides extension methods for type <see cref="Span{T}"/> and <see cref="ReadOnlySpan{T}"/>.
@@ -19,6 +24,30 @@ namespace DotNext
             internal ValueComparer(IComparer<T> comparer) => this.comparer = comparer;
 
             int ISupplier<T, T, int>.Invoke(T arg1, T arg2) => comparer.Compare(arg1, arg2);
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private readonly struct HexByte
+        {
+            internal readonly char High, Low;
+
+            internal HexByte(byte value)
+            {
+                var str = value.ToString("X2", InvariantCulture);
+                Debug.Assert(str.Length == 2);
+                High = str[0];
+                Low = str[1];
+            }
+        }
+
+        private static readonly ReadOnlyMemory<HexByte> HexLookupTable;
+
+        static Span()
+        {
+            var lookup = new HexByte[byte.MaxValue + 1];
+            for (var i = 0; i <= byte.MaxValue; i++)
+                lookup[i] = new HexByte((byte)i);
+            HexLookupTable = lookup;
         }
 
         /// <summary>
@@ -42,7 +71,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? RandomExtensions.BitwiseHashSalt : 0;
-            return Intrinsics.GetHashCode32(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), salted);
+            return Intrinsics.GetHashCode32(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), salted);
         }
 
         /// <summary>
@@ -111,7 +140,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
-            return Intrinsics.GetHashCode32(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
+            return Intrinsics.GetHashCode32(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
         }
 
         /// <summary>
@@ -141,7 +170,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
-            return Intrinsics.GetHashCode64(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
+            return Intrinsics.GetHashCode64(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
         }
 
         /// <summary>
@@ -178,7 +207,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? RandomExtensions.BitwiseHashSalt : 0L;
-            return Intrinsics.GetHashCode64(ref As<T, byte>(ref GetReference(span)), span.Length * sizeof(T), salted);
+            return Intrinsics.GetHashCode64(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), salted);
         }
 
         /// <summary>
@@ -193,7 +222,7 @@ namespace DotNext
 		/// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
 		public static bool BitwiseEquals<T>(this Span<T> first, Span<T> second)
             where T : unmanaged
-            => AsBytes(first).SequenceEqual(AsBytes(second));
+            => MemoryMarshal.AsBytes(first).SequenceEqual(MemoryMarshal.AsBytes(second));
 
         /// <summary>
         /// Determines whether two memory blocks identified by the given spans contain the same set of elements.
@@ -207,7 +236,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
         public static bool BitwiseEquals<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
             where T : unmanaged
-            => AsBytes(first).SequenceEqual(AsBytes(second));
+            => MemoryMarshal.AsBytes(first).SequenceEqual(MemoryMarshal.AsBytes(second));
 
         /// <summary>
         /// Compares content of the two memory blocks identified by the given spans.
@@ -218,7 +247,7 @@ namespace DotNext
         /// <returns>Comparison result.</returns>
         public static int BitwiseCompare<T>(this Span<T> first, Span<T> second)
             where T : unmanaged
-            => AsBytes(first).SequenceCompareTo(AsBytes(second));
+            => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
 
         /// <summary>
         /// Compares content of the two memory blocks identified by the given spans.
@@ -229,7 +258,7 @@ namespace DotNext
         /// <returns>Comparison result.</returns>
         public static int BitwiseCompare<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
             where T : unmanaged
-            => AsBytes(first).SequenceCompareTo(AsBytes(second));
+            => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
 
         private static int Partition<T, C>(Span<T> span, int startIndex, int endIndex, ref C comparison)
             where C : struct, ISupplier<T, T, int>
@@ -368,5 +397,67 @@ namespace DotNext
         /// <param name="span">The span to iterate.</param>
         /// <param name="action">The action to be applied for each element of the span.</param>
         public static void ForEach<T>(this Span<T> span, RefAction<T, int> action) => ForEach(span, new ValueRefAction<T, int>(action, true));
+
+        /// <summary>
+        /// Converts set of bytes into hexadecimal representation.
+        /// </summary>
+        /// <param name="bytes">The bytes to convert.</param>
+        /// <param name="output">The buffer used to write hexadecimal representation of bytes.</param>
+        /// <returns>The actual number of characters from <paramref name="output"/> written by the method.</returns>
+        public static int ToHex(this ReadOnlySpan<byte> bytes, Span<char> output)
+        {
+            if (bytes.IsEmpty || output.IsEmpty)
+                return 0;
+            var bytesCount = Math.Min(bytes.Length, output.Length / 2);
+            ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
+            ref char charPtr = ref MemoryMarshal.GetReference(output);
+            ref HexByte firstHex = ref MemoryMarshal.GetReference(HexLookupTable.Span);
+            for(var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
+            {
+                var hexInfo = Add(ref firstHex, Add(ref firstByte, i));
+                charPtr = hexInfo.High;
+                charPtr = ref Add(ref charPtr, 1);
+                charPtr = hexInfo.Low;
+            }
+            return bytesCount * 2;
+        }
+
+        /// <summary>
+        /// Converts set of bytes into hexadecimal representation.
+        /// </summary>
+        /// <param name="bytes">The bytes to convert.</param>
+        /// <returns>The hexadecimal representation of bytes.</returns>
+        public static string ToHex(this ReadOnlySpan<byte> bytes)
+        {
+            var count = bytes.Length * 2;
+            if (count == 0)
+                return string.Empty;
+            using CharBuffer buffer = count <= 1024 ? stackalloc char[count] : new CharBuffer(count);
+            count = ToHex(bytes, buffer.Span);
+            return new string(buffer.Span.Slice(0, count));
+        }
+
+        public static int FromHex(this ReadOnlySpan<char> chars, Span<byte> output)
+        {
+            if (chars.IsEmpty || output.IsEmpty)
+                return 0;
+            var charCount = Math.Min(chars.Length, output.Length * 2);
+            charCount -= charCount % 2;
+            ref HexByte pair = ref As<char, HexByte>(ref MemoryMarshal.GetReference(chars));
+            ref byte bytePtr = ref MemoryMarshal.GetReference(output);
+            for (var i = 0; i < charCount; i += 2, bytePtr = ref Add(ref bytePtr, 1), pair = ref Add(ref pair, 1))
+                bytePtr = byte.Parse(MemoryMarshal.CreateSpan(ref AsRef(in pair.High), 2), NumberStyles.AllowHexSpecifier, InvariantCulture);
+            return charCount / 2;
+        }
+
+        public static byte[] FromHex(this ReadOnlySpan<char> chars)
+        {
+            var count = chars.Length / 2;
+            if (count == 0)
+                return Array.Empty<byte>();
+            using ByteBuffer buffer = count <= 1024 ? stackalloc byte[count] : new ByteBuffer(count);
+            count = FromHex(chars, buffer.Span);
+            return buffer.Span.Slice(0, count).ToArray();
+        }
     }
 }
