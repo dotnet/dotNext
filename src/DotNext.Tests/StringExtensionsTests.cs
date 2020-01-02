@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography;
-using System.Text;
 using Xunit;
 
 namespace DotNext
@@ -58,27 +57,6 @@ namespace DotNext
         {
             True("Abc".IsEqualIgnoreCase("abc"));
             False("abc".IsEqualIgnoreCase("CBA"));
-        }
-
-        private static void EncodeDecodeBase64UsingEncoding(Encoding encoding)
-        {
-            var expected = @"Man is distinguished, not only by his reason, but by this singular passion from other animals, 
-which is a lust of the mind, that by a perseverance of delight in the continued and indefatigable 
-generation of knowledge, exceeds the short vehemence of any carnal pleasure.";
-            var actual = expected.ToBase64(encoding);
-            actual = actual.FromBase64(encoding);
-            Equal(expected, actual);
-        }
-
-        [Fact]
-        public static void EncodeDecodeBase64()
-        {
-            EncodeDecodeBase64UsingEncoding(Encoding.ASCII);
-            EncodeDecodeBase64UsingEncoding(Encoding.BigEndianUnicode);
-            EncodeDecodeBase64UsingEncoding(Encoding.Unicode);
-            EncodeDecodeBase64UsingEncoding(Encoding.UTF32);
-            EncodeDecodeBase64UsingEncoding(Encoding.UTF7);
-            EncodeDecodeBase64UsingEncoding(Encoding.UTF8);
         }
     }
 }
