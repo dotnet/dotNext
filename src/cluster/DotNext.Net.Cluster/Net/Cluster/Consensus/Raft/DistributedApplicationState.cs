@@ -61,5 +61,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new NotImplementedException();
             await ApplyAsync(await entry.ReadAsync<uint>().ConfigureAwait(false), entry).ConfigureAwait(false);
         }
+
+        private void ReleaseManagedMemory()
+        {
+            acquiredLocks.Clear();
+            acquireEventSource.Clear();
+            releaseEventSource.Clear();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if(disposing)
+                ReleaseManagedMemory();
+            base.Dispose(disposing);
+        }
+
+        public override ValueTask DisposeAsync()
+        {
+            ReleaseManagedMemory();
+            return base.DisposeAsync();
+        }
     }
 }

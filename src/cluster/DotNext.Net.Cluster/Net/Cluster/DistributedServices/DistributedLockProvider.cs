@@ -22,13 +22,12 @@ namespace DotNext.Net.Cluster.DistributedServices
     public sealed class DistributedLockProvider : IDistributedLockProvider, IDistributedServiceProvider
     {
         /*
-         * Algorithm of distributed lock:
+         * Lock acquisition algorithm:
          * 1. Send AcquireLock message to leader node. It is non-blocking RPC call
          * 2. Leader node checks whether the lock is not acquired. If so, respond with `true` and append acquisition command to audit trail for replication. Otherwise, immediately return `false`
          * 3. Requester waits until leader responded with `true`. Timeout control is implemented at this step
          * 4. If requester receives `true` then wait for the commit of the lock acquisition at its local audit trail 
          */
-
         private IDistributedLockProvider.ConfigurationProvider? lockConfig;
         private readonly IDistributedLockEngine engine;
         private readonly IMessageBus messageBus;
@@ -55,6 +54,12 @@ namespace DotNext.Net.Cluster.DistributedServices
             };
         }
 
+        private async Task<IMessage> ReleaseLockAsync(IMessage message, CancellationToken token)
+        {
+            var request = await message.GetObjectDataAsync<ReleaseLockRequest, IMessage>(token).ConfigureAwait(false);
+            return new ReleaseLockResponse();
+        }
+
         /// <summary>
         /// Handles service message related to distributed lock management.
         /// </summary>
@@ -69,16 +74,20 @@ namespace DotNext.Net.Cluster.DistributedServices
         public Task<IMessage> ProcessMessage(IMessage message, CancellationToken token) => message.Name switch
         {
             AcquireLockRequest.Name => AcquireLockAsync(message, token),
+            ReleaseLockRequest.Name => ReleaseLockAsync(message, token),
             _ => Task.FromException<IMessage>(new NotSupportedException()),
         };
 
         /// <summary>
         /// Determines whether the specified message is a service message for distributed lock management.
         /// </summary>
-        /// <param name="message"></param>
-        /// <returns></returns>
+        /// <param name="message">The message to check.</param>
+        /// <returns><see langword="true"/> if the specified message can be handled by distributed lock provider; otherwise, <see langword="false"/>.</returns>
         public static bool IsMessageSupported(IMessage message) 
-            => message.Name.IsOneOf(AcquireLockRequest.Name);
+            => message.Name.IsOneOf(AcquireLockRequest.Name, ReleaseLockRequest.Name);
+
+        private Action ReleaseAction(string lockName, Guid version, TimeSpan timeout)
+            => new Action(() => Unlock(lockName, version, timeout));
 
         private async Task<Action?> TryAcquireLockAsync(string lockName, Timeout timeout, CancellationToken token)
         {
@@ -88,15 +97,15 @@ namespace DotNext.Net.Cluster.DistributedServices
             //in local audit trail and then try again
             var timeoutSource = new TimeoutTokenSource(timeout, token);
             var eventListener = engine.CreateReleaseLockListener(timeoutSource.Token);
-            var lockId = Guid.NewGuid();
+            var lockVersion = Guid.NewGuid();
             try
             {
-                for(var request = new AcquireLockRequest { LockName = lockName }; ; await eventListener.WaitAsync().ConfigureAwait(false))
+                for(var request = new AcquireLockRequest { LockName = lockName }; ; await eventListener.SuspendAsync().ConfigureAwait(false))
                 {
                     request.LockInfo = new DistributedLockInfo
                     {
                         Owner = engine.NodeId,
-                        Id = lockId,
+                        Version = lockVersion,
                         CreationTime = DateTimeOffset.Now,
                         LeaseTime = options.LeaseTime
                     };
@@ -118,8 +127,8 @@ namespace DotNext.Net.Cluster.DistributedServices
             eventListener = engine.CreateAcquireLockListener(timeoutSource.Token);
             try
             {
-                while(!engine.IsAcquired(lockName, lockId))
-                    await eventListener.WaitAsync().ConfigureAwait(false);
+                while(!engine.IsAcquired(lockName, lockVersion))
+                    await eventListener.SuspendAsync().ConfigureAwait(false);
             }
             catch(OperationCanceledException) when(timeout.IsExpired)    //timeout detected
             {
@@ -131,31 +140,68 @@ namespace DotNext.Net.Cluster.DistributedServices
                 timeoutSource.Dispose();
             }
             //finally check the timeout
+            
             return timeout.RemainingTime.TryGetValue(out var remainingTime) ?
-                new Action(() => Unlock(lockName, false)) :
+                ReleaseAction(lockName, lockVersion, options.LeaseTime) :
                 null;
         }
 
-        private void Unlock(string lockName, bool force)
+        private async Task UnlockAsync(string lockName, Guid version)
         {
-            lockName.ToString();
-            force.ToString();
+            var request = new ReleaseLockRequest
+            {
+                Owner = engine.NodeId,
+                Version = version,
+                LockName = lockName
+            };
+            if(!(await messageBus.SendMessageToLeaderAsync(request, ReleaseLockResponse.Reader).ConfigureAwait(false)))
+                throw new SynchronizationLockException(ExceptionMessages.LockConflict);
+        }
+
+        private void Unlock(string lockName, Guid version, TimeSpan timeout)
+        {
+            //fail fast - check the local state
+            if(!engine.IsAcquired(lockName, version))
+                throw new SynchronizationLockException(ExceptionMessages.LockConflict);
+            //slow path - inform the leader node
+            var task = UnlockAsync(lockName, version);
+            try
+            {
+                if(!task.Wait(timeout))
+                    throw new TimeoutException();
+            }
+            catch(AggregateException e)
+            {
+                throw e.InnerException;
+            }
+            finally
+            {
+                if(task.IsCompleted)
+                    task.Dispose();
+            }
         }
 
         public Task InitializeAsync(CancellationToken token)
             => engine.RestoreAsync(token);
-
-        public AsyncLock GetLock(string lockName)
-            => new AsyncLock((timeout, token) => TryAcquireLockAsync(lockName, new Timeout(timeout), token));
         
-        AsyncLock IDistributedLockProvider.this[string lockName] => GetLock(lockName);
+        public AsyncLock this[string lockName]
+        {
+            get
+            {
+                engine.ValidateLockName(lockName);
+                return new AsyncLock((timeout, token) => TryAcquireLockAsync(lockName, new Timeout(timeout), token));
+            }
+        }
+        
         public IDistributedLockProvider.ConfigurationProvider Configuration
         {
             set => lockConfig = value;
         }
 
         public void ForceUnlock(string lockName)
-            => Unlock(lockName, true);
+        {
+            engine.ValidateLockName(lockName);
+        }
 
         public static DistributedLockProvider? TryCreate<TCluster>(TCluster cluster)
             where TCluster : class, IMessageBus, IReplicationCluster

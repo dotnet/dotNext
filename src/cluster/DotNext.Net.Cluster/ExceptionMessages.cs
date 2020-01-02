@@ -33,6 +33,8 @@ namespace DotNext
 
         internal static string NoAvailableReadSessions => Resources.GetString("NoAvailableReadSessions");
     
-        internal static string StringTooLong => Resources.GetString("StringTooLong");
+        internal static string LockNameTooLong => Resources.GetString("LockNameTooLong");
+    
+        internal static string LockConflict => Resources.GetString("LockConflict");
     }
 }

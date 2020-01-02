@@ -1,5 +1,4 @@
 using System;
-using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,27 +11,16 @@ namespace DotNext.Net.Cluster.DistributedServices
     using Text;
     using DistributedLockInfo = Threading.DistributedLockInfo;
 
-    internal sealed class AcquireLockRequest : IMessage, IDataTransferObject.IDecoder<AcquireLockRequest>
+    internal sealed class AcquireLockRequest : LockMessage, IMessage, IDataTransferObject.IDecoder<AcquireLockRequest>
     {
         internal const string Name = "AcquireDistributedLockRequest";
-        private string? lockName;
         internal DistributedLockInfo LockInfo;
-
-        internal string LockName
-        {
-            get => lockName ?? string.Empty;
-            set => lockName = value;
-        }
-
-        private static Encoding Encoding => Encoding.Unicode;
 
         string IMessage.Name => Name;
 
         bool IDataTransferObject.IsReusable => true;
 
         long? IDataTransferObject.Length => Unsafe.SizeOf<DistributedLockInfo>() + Encoding.GetByteCount(LockName);
-    
-        ContentType IMessage.Type => new ContentType(MediaTypeNames.Application.Octet);
 
         async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
@@ -52,8 +40,7 @@ namespace DotNext.Net.Cluster.DistributedServices
 
     internal sealed class AcquireLockResponse : BinaryMessage<bool>
     {
-        internal static readonly MessageReader<bool> Reader = DataTransferObject.ToType<bool, IMessage>;
-        internal new const string Name = "AcquireDistributedLockResponse";
+        private new const string Name = "AcquireDistributedLockResponse";
 
         internal AcquireLockResponse()
             : base(Name, null)

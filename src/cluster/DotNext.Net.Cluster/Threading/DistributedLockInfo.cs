@@ -11,7 +11,7 @@ namespace DotNext.Threading
         internal Guid Owner;
 
         //it is needed to distinguish different versions of the same lock
-        internal Guid Id;  
+        internal Guid Version;  
          
         internal DateTimeOffset CreationTime
         {

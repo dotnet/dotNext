@@ -5,14 +5,16 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.DistributedServices
 {
     using Threading;
-    
+    using IDistributedApplicationState = IO.Log.IDistributedApplicationState;
     using DistributedLockInfo = Threading.DistributedLockInfo;
 
     /// <summary>
     /// Represents engine of distributed services.
     /// </summary>
-    internal interface IDistributedLockEngine : IDistributedServiceEngine
+    internal interface IDistributedLockEngine : IDistributedApplicationState
     {
+        void ValidateLockName(string name);
+
         Task RestoreAsync(CancellationToken token);
 
         AsyncEventListener CreateReleaseLockListener(CancellationToken token);
@@ -26,6 +28,8 @@ namespace DotNext.Net.Cluster.DistributedServices
 
         //writes the log entry describing lock acquisition
         //but doesn't wait for commit    
-        Task<bool> PrepareAcquisitionAsync(string name, DistributedLockInfo lockInfo, CancellationToken token);
+        ValueTask<bool> PrepareAcquisitionAsync(string name, DistributedLockInfo lockInfo, CancellationToken token);
+
+        
     }
 }

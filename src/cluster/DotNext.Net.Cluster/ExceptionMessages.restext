@@ -9,4 +9,5 @@ SnapshotDetected=The method cannot be used for snapshot installation
 RangeTooBig=The requested range is too big
 UnexpectedError=The unexpected exception occurred
 NoAvailableReadSessions=Lack of available read sessions is encountered by persistent audit trail
-StringTooLong=String contains too long characters
+LockNameTooLong=Lock name cannot contain more than 63 characters
+LockConflict=The lock conflict detected

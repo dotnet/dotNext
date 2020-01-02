@@ -4,6 +4,8 @@ using System.Net.Mime;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using DataTransferObject = IO.DataTransferObject;
+
     /// <summary>
     /// Represents binary message that encapsulated value of blittable type.
     /// </summary>
@@ -11,6 +13,11 @@ namespace DotNext.Net.Cluster.Messaging
     public class BinaryMessage<T> : IO.BinaryTransferObject<T>, IMessage
         where T : unmanaged
     {
+        /// <summary>
+        /// Gets the reader of the binary message.
+        /// </summary>
+        public static readonly MessageReader<T> Reader = DataTransferObject.ToType<T, IMessage>;
+
         /// <summary>
         /// Initializes a new binary message.
         /// </summary>

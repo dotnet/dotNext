@@ -14,13 +14,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using IO.Log;
     using Text;
     using Threading;
-    using FalseTask = Threading.Tasks.CompletedTask<bool, Generic.BooleanConst.False>;
 
     public partial class DistributedApplicationState : IDistributedLockEngine
     {
-        private const int BufferSize = 1024;
         //each file in directory contains description of distributed lock
-        //file name is base64 encoded lock name to avoid case sensitivity issues 
+        //file name is hex encoded lock name to avoid case sensitivity issues 
+        private const int MaxLockNameLength = 63;   //255 max file name / 4 bytes per character ~ 63
+        private const int BufferSize = 1024;
         private const string LockDirectoryName = "locks";
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 timestamp = lockInfo.CreationTime;
                 name = lockName.AsMemory();
                 owner = lockInfo.Owner;
-                id = lockInfo.Id;
+                id = lockInfo.Version;
                 leaseTime = lockInfo.LeaseTime;
             }
 
@@ -81,7 +81,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 lockData.Info = new DistributedLockInfo
                 {
                     Owner = await entry.ReadAsync<Guid>().ConfigureAwait(false),
-                    Id = await entry.ReadAsync<Guid>().ConfigureAwait(false),
+                    Version = await entry.ReadAsync<Guid>().ConfigureAwait(false),
                     LeaseTime = await entry.ReadAsync<TimeSpan>().ConfigureAwait(false)
                 };
                 return lockData;
@@ -117,24 +117,36 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         Task IDistributedLockEngine.CollectGarbage(CancellationToken token) => Task.CompletedTask;
 
-        private async Task<bool> ReportAcquisition(string name, DistributedLockInfo lockInfo, CancellationToken token)
+        private async ValueTask<bool> ReportAcquisition(string name, DistributedLockInfo lockInfo, CancellationToken token)
         {
             var updatedLockInfo = acquiredLocks.AddOrUpdate(name, lockInfo, lockInfo.Update);
-            if (lockInfo.Id != updatedLockInfo.Id)
+            if (lockInfo.Version != updatedLockInfo.Version)
                 return false;
             await AppendAsync(new AcquireLockCommand(name, lockInfo, Term), token).ConfigureAwait(false);
             return true;
         }
 
-        Task<bool> IDistributedLockEngine.PrepareAcquisitionAsync(string name, DistributedLockInfo lockInfo, CancellationToken token)
-            => lockInfo.IsExpired ? FalseTask.Task : ReportAcquisition(name, lockInfo, token);
+        ValueTask<bool> IDistributedLockEngine.PrepareAcquisitionAsync(string name, DistributedLockInfo lockInfo, CancellationToken token)
+            => lockInfo.IsExpired ? new ValueTask<bool>(false) : ReportAcquisition(name, lockInfo, token);
 
         bool IDistributedLockEngine.IsAcquired(string lockName, Guid version)
-            => acquiredLocks.TryGetValue(lockName, out var lockInfo) && lockInfo.Id == version;
+            => acquiredLocks.TryGetValue(lockName, out var lockInfo) && lockInfo.Version == version && lockInfo.Owner == NodeId;
 
-        private static string FileNameToLockName(string fileName) => Uri.EscapeDataString(fileName);
+        private static string FileNameToLockName(string fileName) 
+        {
+            //4 characters = 1 decoded Unicode character
+            var count = fileName.Length / 4;
+            if(count == 0)
+                return string.Empty;
+            if(count >= MaxLockNameLength)
+                throw new ArgumentOutOfRangeException(nameof(fileName), ExceptionMessages.LockNameTooLong);
+            Span<char> chars = stackalloc char[count];
+            count = fileName.AsSpan().FromHex(MemoryMarshal.AsBytes(chars)) / 2;
+            return new string(chars.Slice(0, count));
+        }
 
-        private static string LockNameToFileName(string lockName) => Uri.UnescapeDataString(lockName);
+        private static string LockNameToFileName(string lockName) 
+            => lockName.Length <= MaxLockNameLength ? MemoryMarshal.AsBytes(lockName.AsSpan()).ToHex() : throw new ArgumentOutOfRangeException(nameof(lockName), ExceptionMessages.LockNameTooLong);
 
         private async ValueTask SaveLockAsync(string lockName, DistributedLockInfo lockInfo)
         {
@@ -143,6 +155,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //lockInfo has fixed size so no need to truncate file stream
             await lockFile.WriteAsync(lockInfo).ConfigureAwait(false);
             await lockFile.FlushAsync().ConfigureAwait(false);
+        }
+
+        void IDistributedLockEngine.ValidateLockName(string name)
+        {
+            if(name.Length > MaxLockNameLength)
+                throw new ArgumentOutOfRangeException(nameof(name), ExceptionMessages.LockNameTooLong);
         }
 
         async Task IDistributedLockEngine.RestoreAsync(CancellationToken token)
