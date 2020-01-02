@@ -107,6 +107,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     acquiredLocks[lockName] = lockInfo;
                     //save lock state to file
                     await SaveLockAsync(lockName, lockInfo).ConfigureAwait(false);
+                    acquireEventSource.Resume();
+                    break;
+                case LockCommand.Release:
+                    releaseEventSource.Resume();
                     break;
             }
         }
