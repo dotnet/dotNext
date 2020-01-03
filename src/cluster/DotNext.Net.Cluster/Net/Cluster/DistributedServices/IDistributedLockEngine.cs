@@ -21,19 +21,21 @@ namespace DotNext.Net.Cluster.DistributedServices
 
         AsyncEventListener CreateAcquireLockListener(CancellationToken token);
 
-        bool IsAcquired(string lockName, Guid version);
+        bool IsLockAcquired(string lockName, Guid version);
 
         //releases all expired locks
         Task CollectGarbage(CancellationToken token);
 
         //writes the log entry describing lock acquisition
         //but doesn't wait for commit    
-        Task<bool> PrepareAcquisitionAsync(string name, DistributedLockInfo lockInfo, CancellationToken token);
+        Task<bool> RegisterLockAsync(string name, DistributedLockInfo lockInfo, CancellationToken token);
         
         //write the log entry describing lock release
         //but doesn't wait for commit
-        Task<bool> PrepareReleaseAsync(string name, Guid owner, Guid version, CancellationToken token);
+        Task<bool> UnregisterLockAsync(string name, Guid owner, Guid version, CancellationToken token);
 
-        Task PrepareReleaseAsync(string name, CancellationToken token);
+        //write the log entry describing lock release
+        //but doesn't wait for commit
+        Task UnregisterLockAsync(string name, CancellationToken token);
     }
 }

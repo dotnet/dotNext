@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             var request = await message.GetObjectDataAsync<AcquireLockRequest, IMessage>(token).ConfigureAwait(false);
             return new AcquireLockResponse 
             { 
-                Content = await engine.PrepareAcquisitionAsync(request.LockName, request.LockInfo, token).ConfigureAwait(false)
+                Content = await engine.RegisterLockAsync(request.LockName, request.LockInfo, token).ConfigureAwait(false)
             };
         }
 
@@ -58,14 +58,14 @@ namespace DotNext.Net.Cluster.DistributedServices
             var request = await message.GetObjectDataAsync<ReleaseLockRequest, IMessage>(token).ConfigureAwait(false);
             return new ReleaseLockResponse()
             {
-                Content = await engine.PrepareReleaseAsync(request.LockName, request.Owner, request.Version, token).ConfigureAwait(false)
+                Content = await engine.UnregisterLockAsync(request.LockName, request.Owner, request.Version, token).ConfigureAwait(false)
             };
         }
 
         private async Task ForceUnlockAsync(IMessage message, CancellationToken token)
         {
             var request = await message.GetObjectDataAsync<ForcedUnlockRequest, IMessage>(token).ConfigureAwait(false);
-            await engine.PrepareReleaseAsync(request.LockName, token).ConfigureAwait(false);
+            await engine.UnregisterLockAsync(request.LockName, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             eventListener = engine.CreateAcquireLockListener(timeoutSource.Token);
             try
             {
-                while(!engine.IsAcquired(lockName, lockVersion))
+                while(!engine.IsLockAcquired(lockName, lockVersion))
                     await eventListener.SuspendAsync().ConfigureAwait(false);
             }
             catch(OperationCanceledException) when(timeout.IsExpired)    //timeout detected
@@ -185,7 +185,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         private void Unlock(string lockName, Guid version, TimeSpan timeout)
         {
             //fail fast - check the local state
-            if(!engine.IsAcquired(lockName, version))
+            if(!engine.IsLockAcquired(lockName, version))
                 throw new SynchronizationLockException(ExceptionMessages.LockConflict);
             //slow path - inform the leader node
             var task = UnlockAsync(lockName, version);
