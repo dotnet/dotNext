@@ -12,6 +12,15 @@ namespace DotNext.Net.Cluster
     public interface IClusterMember : IEquatable<IClusterMember>
     {
         /// <summary>
+        /// Represents member metadata key that contains unique identifier of cluster member.
+        /// </summary>
+        /// <remarks>
+        /// Member identifier must be of <see cref="Guid"/> format.
+        /// </remarks>
+        /// <seealso cref="Guid"/>
+        public const string NodeIdMetadataKey = "Id";
+
+        /// <summary>
         /// Represents cluster member endpoint that can be used to send messages specific to consensus protocol.
         /// </summary>
         IPEndPoint Endpoint { get; }
