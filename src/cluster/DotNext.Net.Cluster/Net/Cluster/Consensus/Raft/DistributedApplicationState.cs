@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using DistributedLockInfo = Threading.DistributedLockInfo;
+
     /// <summary>
     /// Represents persistent state of distributed application.
     /// </summary>
@@ -27,7 +29,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             lockPersistentStateStorage = new DirectoryInfo(Path.Combine(path.FullName, LockDirectoryName));
             if (!lockPersistentStateStorage.Exists)
                 lockPersistentStateStorage.Create();
-            acquiredLocks = ImmutableDictionary.Create<string, Threading.DistributedLockInfo>(StringComparer.Ordinal);
             isOverloaded = GetType() != typeof(DistributedApplicationState);
         }
 
@@ -64,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private void ReleaseManagedMemory()
         {
-            acquiredLocks.Clear();
+            acquiredLocks = ImmutableDictionary<string, DistributedLockInfo>.Empty;
             acquireEventSource.Clear();
             releaseEventSource.Clear();
         }

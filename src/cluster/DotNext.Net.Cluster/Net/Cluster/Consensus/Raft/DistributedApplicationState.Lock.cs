@@ -121,7 +121,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         //copy-on-write semantics
-        private volatile ImmutableDictionary<string, DistributedLockInfo> acquiredLocks;
+        private volatile ImmutableDictionary<string, DistributedLockInfo> acquiredLocks = ImmutableDictionary.Create<string, DistributedLockInfo>(StringComparer.Ordinal);
         private readonly DirectoryInfo lockPersistentStateStorage;
         private readonly AsyncEventSource releaseEventSource = new AsyncEventSource();
         private readonly AsyncEventSource acquireEventSource = new AsyncEventSource();
