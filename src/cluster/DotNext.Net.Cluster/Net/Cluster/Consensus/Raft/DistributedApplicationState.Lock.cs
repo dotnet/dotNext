@@ -162,9 +162,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await task.ConfigureAwait(false);
         }
 
-        AsyncEventListener IDistributedLockEngine.CreateReleaseLockListener(CancellationToken token) => new AsyncEventListener(releaseEventSource, token);
+        AsyncEventListener IDistributedLockEngine.OnRelease(CancellationToken token) => new AsyncEventListener(releaseEventSource, token);
 
-        AsyncEventListener IDistributedLockEngine.CreateAcquireLockListener(CancellationToken token) => new AsyncEventListener(acquireEventSource, token);
+        AsyncEventListener IDistributedLockEngine.OnAcquire(CancellationToken token) => new AsyncEventListener(acquireEventSource, token);
 
         Task IDistributedLockEngine.CollectGarbage(CancellationToken token) => Task.CompletedTask;
 
@@ -180,10 +180,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return true;
         }
 
-        Task<bool> IDistributedLockEngine.PrepareAcquisitionAsync(string name, DistributedLockInfo lockInfo, CancellationToken token)
+        Task<bool> IDistributedLockEngine.RegisterAsync(string name, DistributedLockInfo lockInfo, CancellationToken token)
             => lockInfo.IsExpired ? FalseTask.Task : ReportAcquisition(name, lockInfo, token);
 
-        async Task<bool> IDistributedLockEngine.PrepareReleaseAsync(string name, Guid owner, Guid version, CancellationToken token)
+        async Task<bool> IDistributedLockEngine.UnregisterAsync(string name, Guid owner, Guid version, CancellationToken token)
         {
             using (await WriteLock.AcquireAsync(token).ConfigureAwait(false))
                 if (acquiredLocks.TryGetValue(name, out var existingLock) && existingLock.Owner == owner && existingLock.Version == version)
@@ -195,7 +195,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return true;
         }
 
-        async Task IDistributedLockEngine.PrepareReleaseAsync(string name, CancellationToken token)
+        async Task IDistributedLockEngine.UnregisterAsync(string name, CancellationToken token)
         {
             using (await WriteLock.AcquireAsync(token).ConfigureAwait(false))
                 if (acquiredLocks.ContainsKey(name))
@@ -205,7 +205,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await AppendAsync(new ReleaseLockCommand(name, Term), token).ConfigureAwait(false);
         }
 
-        bool IDistributedLockEngine.IsAcquired(string lockName, Guid version)
+        bool IDistributedLockEngine.IsRegistered(string lockName, Guid version)
             => acquiredLocks.TryGetValue(lockName, out var lockInfo) && lockInfo.Version == version && lockInfo.Owner == NodeId;
 
         private static string FileNameToLockName(string fileName) 
@@ -238,7 +238,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private void RemoveLockFile(string lockName) => File.Delete(LockNameToFileName(lockPersistentStateStorage, lockName));
 
-        void IDistributedLockEngine.ValidateLockName(string name)
+        void IDistributedLockEngine.ValidateName(string name)
         {
             if (name.Length == 0)
                 throw new ArgumentException(ExceptionMessages.LockNameIsEmpty, nameof(name));
