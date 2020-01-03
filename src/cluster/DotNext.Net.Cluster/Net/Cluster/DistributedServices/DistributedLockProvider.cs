@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             var request = await message.GetObjectDataAsync<AcquireLockRequest, IMessage>(token).ConfigureAwait(false);
             return new AcquireLockResponse 
             { 
-                Content = await engine.RegisterLockAsync(request.LockName, request.LockInfo, token).ConfigureAwait(false)
+                Content = await engine.RegisterAsync(request.LockName, request.LockInfo, token).ConfigureAwait(false)
             };
         }
 
@@ -58,14 +58,14 @@ namespace DotNext.Net.Cluster.DistributedServices
             var request = await message.GetObjectDataAsync<ReleaseLockRequest, IMessage>(token).ConfigureAwait(false);
             return new ReleaseLockResponse()
             {
-                Content = await engine.UnregisterLockAsync(request.LockName, request.Owner, request.Version, token).ConfigureAwait(false)
+                Content = await engine.UnregisterAsync(request.LockName, request.Owner, request.Version, token).ConfigureAwait(false)
             };
         }
 
         private async Task ForceUnlockAsync(IMessage message, CancellationToken token)
         {
             var request = await message.GetObjectDataAsync<ForcedUnlockRequest, IMessage>(token).ConfigureAwait(false);
-            await engine.UnregisterLockAsync(request.LockName, token).ConfigureAwait(false);
+            await engine.UnregisterAsync(request.LockName, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             //if leader doesn't confirm that the lock is acquired then wait for Release log entry
             //in local audit trail and then try again
             var timeoutSource = new TimeoutTokenSource(timeout, token);
-            var eventListener = engine.CreateReleaseLockListener(timeoutSource.Token);
+            var eventListener = engine.OnRelease(timeoutSource.Token);
             var lockVersion = Guid.NewGuid();
             try
             {
@@ -149,10 +149,10 @@ namespace DotNext.Net.Cluster.DistributedServices
             }
             //acquisition confirmed by leader node so need to wait until the acquire command will be committed
             timeoutSource = new TimeoutTokenSource(timeout, token);
-            eventListener = engine.CreateAcquireLockListener(timeoutSource.Token);
+            eventListener = engine.OnAcquire(timeoutSource.Token);
             try
             {
-                while(!engine.IsLockAcquired(lockName, lockVersion))
+                while(!engine.IsRegistered(lockName, lockVersion))
                     await eventListener.SuspendAsync().ConfigureAwait(false);
             }
             catch(OperationCanceledException) when(timeout.IsExpired)    //timeout detected
@@ -185,7 +185,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         private void Unlock(string lockName, Guid version, TimeSpan timeout)
         {
             //fail fast - check the local state
-            if(!engine.IsLockAcquired(lockName, version))
+            if(!engine.IsRegistered(lockName, version))
                 throw new SynchronizationLockException(ExceptionMessages.LockConflict);
             //slow path - inform the leader node
             var task = UnlockAsync(lockName, version);
@@ -223,7 +223,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         {
             get
             {
-                engine.ValidateLockName(lockName);
+                engine.ValidateName(lockName);
                 return new AsyncLock((timeout, token) => TryAcquireLockAsync(lockName, new Timeout(timeout), token));
             }
         }
@@ -238,7 +238,7 @@ namespace DotNext.Net.Cluster.DistributedServices
 
         public async void ForceUnlock(string lockName)
         {
-            engine.ValidateLockName(lockName);
+            engine.ValidateName(lockName);
             await messageBus.SendSignalToLeaderAsync(new ForcedUnlockRequest { LockName = lockName }).ConfigureAwait(false);
         }
 
