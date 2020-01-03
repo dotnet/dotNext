@@ -106,6 +106,7 @@ namespace DotNext
         /// <param name="first">The first value to check.</param>
         /// <param name="second">The second value to check.</param>
         /// <returns><see langword="true"/>, if both values are equal; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static bool Equals<G>(T first, G second)
             where G : struct
             => Equals(ref first, ref second);
@@ -176,6 +177,7 @@ namespace DotNext
         /// <param name="first">The first value to compare.</param>
         /// <param name="second">The second value to compare.</param>
         /// <returns>A value that indicates the relative order of the objects being compared.</returns>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static int Compare<G>(T first, G second)
             where G : struct
             => Compare(ref first, ref second);
@@ -234,6 +236,7 @@ namespace DotNext
         /// <param name="value">Value to be hashed.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Content hash code.</returns>
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static int GetHashCode(T value, bool salted = true) => GetHashCode(ref value, salted);
 
         private static int GetHashCode(ref T value, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
@@ -260,7 +263,7 @@ namespace DotNext
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static int GetHashCode(T value, int hash, Func<int, int, int> hashFunction, bool salted = true)
             => GetHashCode(ref value, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
 
@@ -276,14 +279,17 @@ namespace DotNext
         /// <param name="hashFunction">Hashing function.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.NoInlining)]
         public static int GetHashCode(T value, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
             => GetHashCode(ref value, hash, hashFunction, salted);
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         bool IEqualityComparer<T>.Equals(T x, T y) => Equals(ref x, ref y);
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         int IEqualityComparer<T>.GetHashCode(T obj) => GetHashCode(ref obj, true);
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         int IComparer<T>.Compare(T x, T y) => Compare(ref x, ref y);
     }
 }
