@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.DistributedServices
     /// </remarks>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
-    public sealed class DistributedLockProvider : IDistributedLockProvider, IDistributedServiceProvider
+    public sealed class DistributedLockProvider : DistributedServiceProvider, IDistributedLockProvider
     {
         /*
          * Lock acquisition algorithm:
@@ -79,7 +79,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The response message produced by this provider.</returns>
         /// <exception cref="NotSupportedException">The specified message is not supported.</exception>
-        public Task<IMessage> ProcessMessage(IMessage message, CancellationToken token) => message.Name switch
+        public override Task<IMessage> ProcessMessage(IMessage message, CancellationToken token) => message.Name switch
         {
             AcquireLockRequest.Name => AcquireLockAsync(message, token),
             ReleaseLockRequest.Name => ReleaseLockAsync(message, token),
@@ -96,7 +96,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         /// <param name="signal">The message to process.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous message processing.</returns>
-        public Task ProcessSignal(IMessage signal, CancellationToken token) => signal.Name switch
+        public override Task ProcessSignal(IMessage signal, CancellationToken token) => signal.Name switch
         {
             ForcedUnlockRequest.Name => ForceUnlockAsync(signal, token),
             _ => Task.FromException<IMessage>(new NotSupportedException())
@@ -210,7 +210,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
-        public Task InitializeAsync(CancellationToken token)
+        public override Task InitializeAsync(CancellationToken token)
             => engine.RestoreAsync(token);
 
         /// <summary>

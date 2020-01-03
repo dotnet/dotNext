@@ -28,7 +28,12 @@ namespace DotNext.Threading
                 var currentTime = DateTimeOffset.UtcNow;
                 return CreationTime + LeaseTime <= currentTime;
             }
-        } 
+        }
+
+        /// <summary>
+        /// Renews the lifetime of this lock.
+        /// </summary>
+        internal void Renew() => creationTime = DateTimeOffset.UtcNow;
 
         public bool Equals(DistributedLockInfo other)
             => Owner == other.Owner && Version == other.Version && creationTime == other.creationTime;

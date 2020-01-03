@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         bool IsRegistered(string lockName, Guid version);
 
         //releases all expired locks
-        Task CollectGarbage(CancellationToken token);
+        Task CollectGarbage(Predicate<Guid> ownershipChecker, CancellationToken token);
 
         //writes the log entry describing lock acquisition
         //but doesn't wait for commit    
