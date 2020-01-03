@@ -18,7 +18,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using DistributedServices;
     using Messaging;
     using Threading;
-    using RentedMemoryStream = IO.RentedMemoryStream;
 
     internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IDistributedApplicationEnvironment
     {
