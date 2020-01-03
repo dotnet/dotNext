@@ -29,8 +29,5 @@ namespace DotNext.Threading
                 return CreationTime + LeaseTime <= currentTime;
             }
         }           
-
-        internal DistributedLockInfo Update(string name, DistributedLockInfo existing)
-            => existing.IsExpired ? this : existing;
     }
 }

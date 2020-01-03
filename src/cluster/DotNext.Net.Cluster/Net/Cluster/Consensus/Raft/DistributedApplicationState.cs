@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Immutable;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             lockPersistentStateStorage = new DirectoryInfo(Path.Combine(path.FullName, LockDirectoryName));
             if (!lockPersistentStateStorage.Exists)
                 lockPersistentStateStorage.Create();
-            acquiredLocks = new ConcurrentDictionary<string, Threading.DistributedLockInfo>(StringComparer.Ordinal);
+            acquiredLocks = ImmutableDictionary.Create<string, Threading.DistributedLockInfo>(StringComparer.Ordinal);
             isOverloaded = GetType() != typeof(DistributedApplicationState);
         }
 
@@ -41,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [CLSCompliant(false)]
         protected ValueTask ApplyAsync(uint command, LogEntry entry) => command switch
         {
-            LockCommandId => AppendLockCommandAsync(entry),
+            LockCommandId => ApplyLockCommandAsync(entry),
             _ => throw new ArgumentOutOfRangeException(nameof(command)),
         };
 

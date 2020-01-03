@@ -9,6 +9,8 @@ namespace DotNext.Net.Cluster.DistributedServices
     {
         Task<IMessage> ProcessMessage(IMessage message, CancellationToken token);
 
+        Task ProcessSignal(IMessage signal, CancellationToken token);
+
         Task InitializeAsync(CancellationToken token);
     }
 }

@@ -10,4 +10,5 @@ RangeTooBig=The requested range is too big
 UnexpectedError=The unexpected exception occurred
 NoAvailableReadSessions=Lack of available read sessions is encountered by persistent audit trail
 LockNameTooLong=Lock name cannot contain more than 63 characters
+LockNameIsEmpty=Lock name is empty string
 LockConflict=The lock conflict detected

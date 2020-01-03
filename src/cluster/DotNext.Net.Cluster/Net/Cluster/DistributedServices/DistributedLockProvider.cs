@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,7 +27,7 @@ namespace DotNext.Net.Cluster.DistributedServices
          * 3. Requester waits until leader responded with `true`. Timeout control is implemented at this step
          * 4. If requester receives `true` then wait for the commit of the lock acquisition at its local audit trail 
          */
-        private IDistributedLockProvider.ConfigurationProvider? lockConfig;
+        private DistributedLockConfigurationProvider? lockConfig;
         private readonly IDistributedLockEngine engine;
         private readonly IMessageBus messageBus;
 
@@ -36,14 +35,14 @@ namespace DotNext.Net.Cluster.DistributedServices
         {
             this.engine = engine;
             this.messageBus = messageBus;
-            DefaultOptions = new IDistributedLockProvider.LockOptions();
+            DefaultOptions = new DistributedLockOptions();
         }
 
         /// <summary>
         /// Gets the default options of the distributed lock.
         /// </summary>
         /// <value>The default lock options.</value>
-        public IDistributedLockProvider.LockOptions DefaultOptions { get; }
+        public DistributedLockOptions DefaultOptions { get; }
 
         private async Task<IMessage> AcquireLockAsync(IMessage message, CancellationToken token)
         {
@@ -57,7 +56,16 @@ namespace DotNext.Net.Cluster.DistributedServices
         private async Task<IMessage> ReleaseLockAsync(IMessage message, CancellationToken token)
         {
             var request = await message.GetObjectDataAsync<ReleaseLockRequest, IMessage>(token).ConfigureAwait(false);
-            return new ReleaseLockResponse();
+            return new ReleaseLockResponse()
+            {
+                Content = await engine.PrepareReleaseAsync(request.LockName, request.Owner, request.Version, token).ConfigureAwait(false)
+            };
+        }
+
+        private async Task ForceUnlockAsync(IMessage message, CancellationToken token)
+        {
+            var request = await message.GetObjectDataAsync<ForcedUnlockRequest, IMessage>(token).ConfigureAwait(false);
+            await engine.PrepareReleaseAsync(request.LockName, token).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -75,16 +83,33 @@ namespace DotNext.Net.Cluster.DistributedServices
         {
             AcquireLockRequest.Name => AcquireLockAsync(message, token),
             ReleaseLockRequest.Name => ReleaseLockAsync(message, token),
-            _ => Task.FromException<IMessage>(new NotSupportedException()),
+            _ => Task.FromException<IMessage>(new NotSupportedException())
+        };
+
+        /// <summary>
+        /// Handles one-way service message related to distributed lock management.
+        /// </summary>
+        /// <remarks>
+        /// Ensure that <see cref="IsMessageSupported"/> returned true before
+        /// calling this method.
+        /// </remarks>
+        /// <param name="signal">The message to process.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous message processing.</returns>
+        public Task ProcessSignal(IMessage signal, CancellationToken token) => signal.Name switch
+        {
+            ForcedUnlockRequest.Name => ForceUnlockAsync(signal, token),
+            _ => Task.FromException<IMessage>(new NotSupportedException())
         };
 
         /// <summary>
         /// Determines whether the specified message is a service message for distributed lock management.
         /// </summary>
         /// <param name="message">The message to check.</param>
+        /// <param name="oneWay"><see langword="true"/> if <paramref name="message"/> is one-way message; otherwise, <see langword="false"/>.</param>
         /// <returns><see langword="true"/> if the specified message can be handled by distributed lock provider; otherwise, <see langword="false"/>.</returns>
-        public static bool IsMessageSupported(IMessage message) 
-            => message.Name.IsOneOf(AcquireLockRequest.Name, ReleaseLockRequest.Name);
+        public static bool IsMessageSupported(IMessage message, bool oneWay)
+            => oneWay ? message.Name.IsOneOf(ForcedUnlockRequest.Name) : message.Name.IsOneOf(AcquireLockRequest.Name, ReleaseLockRequest.Name);
 
         private Action ReleaseAction(string lockName, Guid version, TimeSpan timeout)
             => new Action(() => Unlock(lockName, version, timeout));
@@ -140,8 +165,7 @@ namespace DotNext.Net.Cluster.DistributedServices
                 timeoutSource.Dispose();
             }
             //finally check the timeout
-            
-            return timeout.RemainingTime.TryGetValue(out var remainingTime) ?
+            return timeout.RemainingTime.HasValue ?
                 ReleaseAction(lockName, lockVersion, options.LeaseTime) :
                 null;
         }
@@ -181,9 +205,20 @@ namespace DotNext.Net.Cluster.DistributedServices
             }
         }
 
+        /// <summary>
+        /// Initializes distributed lock infrastructure.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
         public Task InitializeAsync(CancellationToken token)
             => engine.RestoreAsync(token);
-        
+
+        /// <summary>
+        /// Gets the distributed lock.
+        /// </summary>
+        /// <param name="lockName">The name of distributed lock.</param>
+        /// <returns>The distributed lock.</returns>
+        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string; or contains invalid characters</exception>
         public AsyncLock this[string lockName]
         {
             get
@@ -193,16 +228,26 @@ namespace DotNext.Net.Cluster.DistributedServices
             }
         }
         
-        public IDistributedLockProvider.ConfigurationProvider Configuration
+        /// <summary>
+        /// Sets distributed lock configuration provider.
+        /// </summary>
+        public DistributedLockConfigurationProvider Configuration
         {
             set => lockConfig = value;
         }
 
-        public void ForceUnlock(string lockName)
+        public async void ForceUnlock(string lockName)
         {
             engine.ValidateLockName(lockName);
+            await messageBus.SendSignalToLeaderAsync(new ForcedUnlockRequest { LockName = lockName }).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Attempts to create distributed lock provider.
+        /// </summary>
+        /// <typeparam name="TCluster">The type implementing cluster infrastructure.</typeparam>
+        /// <param name="cluster">The cluster instance.</param>
+        /// <returns>The lock provider; or <see langword="null"/> if cluster infrastructure is not compatible with distributed lock.</returns>
         public static DistributedLockProvider? TryCreate<TCluster>(TCluster cluster)
             where TCluster : class, IMessageBus, IReplicationCluster
             => cluster.AuditTrail is IDistributedLockEngine lockEngine ? new DistributedLockProvider(lockEngine, cluster) : null;
