@@ -46,7 +46,7 @@ namespace DotNext.Net.Cluster.DistributedServices
 
             private bool IsRegistered => engine.IsRegistered(name, version);
 
-            private Task<bool> ReleaseCoreAsync()
+            private Task<bool> Release(CancellationToken token)
                 => bus.SendMessageToLeaderAsync(new ReleaseLockRequest { Owner = engine.NodeId, Version = version, LockName = name }, ReleaseLockResponse.Reader);
         
             internal void Release()
@@ -54,7 +54,7 @@ namespace DotNext.Net.Cluster.DistributedServices
                 var released = false;
                 if(IsRegistered)
                 {
-                    var task = ReleaseCoreAsync();
+                    var task = Release(CancellationToken.None);
                     try
                     {
                         released = task.Wait(Timeout) ? task.Result : throw new TimeoutException();
@@ -75,7 +75,8 @@ namespace DotNext.Net.Cluster.DistributedServices
 
             internal async void ReleaseAsync()
             {
-                if(!(IsRegistered && await ReleaseCoreAsync().ConfigureAwait(false)))
+                using var timeoutSource = new CancellationTokenSource(Timeout);
+                if(!(IsRegistered && await Release(timeoutSource.Token).ConfigureAwait(false)))
                     throw new SynchronizationLockException(ExceptionMessages.LockConflict);
             }
         }
