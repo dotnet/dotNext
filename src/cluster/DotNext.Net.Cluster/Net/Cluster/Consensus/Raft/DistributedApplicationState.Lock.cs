@@ -81,7 +81,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly Guid owner, version;
             private readonly TimeSpan leaseTime;
 
-            internal AcquireLockCommand(string name, DistributedLockInfo lockInfo, long term)
+            internal AcquireLockCommand(string name, DistributedLock lockInfo, long term)
             {
                 this.term = term;
                 timestamp = lockInfo.CreationTime;
@@ -105,12 +105,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await writer.WriteAsync(leaseTime, token).ConfigureAwait(false);
             }
 
-            internal static async ValueTask<(string, DistributedLockInfo)> ReadAsync(LogEntry entry)
+            internal static async ValueTask<(string, DistributedLock)> ReadAsync(LogEntry entry)
             {
                 var context = new DecodingContext(Encoding.UTF8, true);
-                (string Name, DistributedLockInfo Info) lockData;
+                (string Name, DistributedLock Info) lockData;
                 lockData.Name = await entry.ReadStringAsync(StringLengthEncoding.Plain, context).ConfigureAwait(false);
-                lockData.Info = new DistributedLockInfo
+                lockData.Info = new DistributedLock
                 {
                     Owner = await entry.ReadAsync<Guid>().ConfigureAwait(false),
                     Version = await entry.ReadAsync<Guid>().ConfigureAwait(false),
@@ -121,7 +121,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         //copy-on-write semantics
-        private volatile ImmutableDictionary<string, DistributedLockInfo> acquiredLocks = ImmutableDictionary.Create<string, DistributedLockInfo>(StringComparer.Ordinal, BitwiseComparer<DistributedLockInfo>.Instance);
+        private volatile ImmutableDictionary<string, DistributedLock> acquiredLocks = ImmutableDictionary.Create<string, DistributedLock>(StringComparer.Ordinal, BitwiseComparer<DistributedLock>.Instance);
         private readonly DirectoryInfo lockPersistentStateStorage;
         private readonly AsyncManualResetEvent releaseEvent = new AsyncManualResetEvent(false);
         private readonly AsyncManualResetEvent acquireEvent = new AsyncManualResetEvent(false);
@@ -193,7 +193,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             builder.Clear();    //help GC
         }
 
-        private async Task<bool> RegisterAsync(string name, DistributedLockInfo newLock, CancellationToken token)
+        private async Task<bool> RegisterAsync(string name, DistributedLock newLock, CancellationToken token)
         {
             using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
             if (acquiredLocks.TryGetValue(name, out var existingLock) && !existingLock.IsExpired)
@@ -204,7 +204,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return true;
         }
 
-        Task<bool> IDistributedLockEngine.RegisterAsync(string name, DistributedLockInfo lockInfo, CancellationToken token)
+        Task<bool> IDistributedLockEngine.RegisterAsync(string name, DistributedLock lockInfo, CancellationToken token)
             => lockInfo.IsExpired ? FalseTask.Task : RegisterAsync(name, lockInfo, token);
 
         async Task<bool> IDistributedLockEngine.UnregisterAsync(string name, Guid owner, Guid version, CancellationToken token)
@@ -249,7 +249,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private static string LockNameToFileName(DirectoryInfo lockStorage, string lockName)
             => Path.Combine(lockStorage.FullName, LockNameToFileName(lockName));
 
-        private async ValueTask SaveLockAsync(string lockName, DistributedLockInfo lockInfo)
+        private async ValueTask SaveLockAsync(string lockName, DistributedLock lockInfo)
         {
             lockName = LockNameToFileName(lockPersistentStateStorage, lockName);
             using var lockFile = new FileStream(lockName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, BufferSize, true);
@@ -277,7 +277,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             foreach (var lockFile in lockPersistentStateStorage.EnumerateFiles())
                 using (var fs = new FileStream(lockFile.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, BufferSize, true))
                 {
-                    var state = await fs.ReadAsync<DistributedLockInfo>(buffer.Memory, token).ConfigureAwait(false);
+                    var state = await fs.ReadAsync<DistributedLock>(buffer.Memory, token).ConfigureAwait(false);
                     builder.Add(FileNameToLockName(lockFile.Name), state);
                 }
             acquiredLocks = builder.ToImmutable();

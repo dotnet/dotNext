@@ -182,7 +182,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             var request = new AcquireLockRequest 
             { 
                 LockName = lockName,
-                LockInfo = new DistributedLockInfo
+                LockInfo = new DistributedLock
                 {
                     Owner = engine.NodeId,
                     Version = lockVersion,

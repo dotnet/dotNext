@@ -1,10 +1,10 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace DotNext.Threading
+namespace DotNext.Net.Cluster.DistributedServices
 {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct DistributedLockInfo : IEquatable<DistributedLockInfo>
+    internal struct DistributedLock : IEquatable<DistributedLock>
     {
         private DateTimeOffset creationTime;
 
@@ -32,10 +32,10 @@ namespace DotNext.Threading
 
         internal void Renew() => creationTime = DateTimeOffset.UtcNow;
 
-        public bool Equals(DistributedLockInfo other)
+        public bool Equals(DistributedLock other)
             => Owner == other.Owner && Version == other.Version && creationTime == other.creationTime;
 
-        public override bool Equals(object other) => other is DistributedLockInfo lockInfo && Equals(lockInfo);
+        public override bool Equals(object other) => other is DistributedLock lockInfo && Equals(lockInfo);
 
         public override int GetHashCode() => HashCode.Combine(Owner, Version, creationTime);          
     }

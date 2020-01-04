@@ -4,9 +4,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.DistributedServices
 {
-    using Threading;
     using IDistributedApplicationState = IO.Log.IDistributedApplicationState;
-    using DistributedLockInfo = Threading.DistributedLockInfo;
 
     /// <summary>
     /// Represents engine of distributed services.
@@ -26,7 +24,7 @@ namespace DotNext.Net.Cluster.DistributedServices
 
         //writes the log entry describing lock acquisition
         //but doesn't wait for commit    
-        Task<bool> RegisterAsync(string name, DistributedLockInfo lockInfo, CancellationToken token);
+        Task<bool> RegisterAsync(string name, DistributedLock lockInfo, CancellationToken token);
         
         //write the log entry describing lock release
         //but doesn't wait for commit

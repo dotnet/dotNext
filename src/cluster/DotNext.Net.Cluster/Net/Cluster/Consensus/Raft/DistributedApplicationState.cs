@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using DistributedLockInfo = Threading.DistributedLockInfo;
+    using DistributedLock = DistributedServices.DistributedLock;
 
     /// <summary>
     /// Represents persistent state of distributed application.
@@ -65,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private void ReleaseManagedMemory()
         {
-            acquiredLocks = ImmutableDictionary<string, DistributedLockInfo>.Empty;
+            acquiredLocks = ImmutableDictionary<string, DistributedLock>.Empty;
             acquireEvent.Dispose();
             releaseEvent.Dispose();
         }

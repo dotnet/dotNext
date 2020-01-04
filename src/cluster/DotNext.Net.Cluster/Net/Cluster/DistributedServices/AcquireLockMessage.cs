@@ -9,18 +9,17 @@ namespace DotNext.Net.Cluster.DistributedServices
     using IO;
     using Messaging;
     using Text;
-    using DistributedLockInfo = Threading.DistributedLockInfo;
 
     internal sealed class AcquireLockRequest : LockMessage, IMessage, IDataTransferObject.IDecoder<AcquireLockRequest>
     {
         internal const string Name = "AcquireDistributedLockRequest";
-        internal DistributedLockInfo LockInfo;
+        internal DistributedLock LockInfo;
 
         string IMessage.Name => Name;
 
         bool IDataTransferObject.IsReusable => true;
 
-        long? IDataTransferObject.Length => Unsafe.SizeOf<DistributedLockInfo>() + Encoding.GetByteCount(LockName);
+        long? IDataTransferObject.Length => Unsafe.SizeOf<DistributedLock>() + Encoding.GetByteCount(LockName);
 
         async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
@@ -33,7 +32,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         {
             var context = new DecodingContext(Encoding, true);
             LockName = await reader.ReadStringAsync(StringLengthEncoding.Plain, context, token).ConfigureAwait(false);
-            LockInfo = await reader.ReadAsync<DistributedLockInfo>(token).ConfigureAwait(false);
+            LockInfo = await reader.ReadAsync<DistributedLock>(token).ConfigureAwait(false);
             return this;
         }
     }
