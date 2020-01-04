@@ -66,8 +66,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private void ReleaseManagedMemory()
         {
             acquiredLocks = ImmutableDictionary<string, DistributedLockInfo>.Empty;
-            acquireEventSource.Clear();
-            releaseEventSource.Clear();
+            acquireEvent.Dispose();
+            releaseEvent.Dispose();
         }
 
         protected override void Dispose(bool disposing)

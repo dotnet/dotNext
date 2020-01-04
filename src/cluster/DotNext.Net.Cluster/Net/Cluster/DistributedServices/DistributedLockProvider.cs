@@ -111,75 +111,45 @@ namespace DotNext.Net.Cluster.DistributedServices
         public static bool IsMessageSupported(IMessage message, bool oneWay)
             => oneWay ? message.Name.IsOneOf(ForcedUnlockRequest.Name) : message.Name.IsOneOf(AcquireLockRequest.Name, ReleaseLockRequest.Name);
 
-        private Action ReleaseAction(string lockName, Guid version, TimeSpan timeout)
-            => new Action(() => Unlock(lockName, version, timeout));
+        private TimeSpan GetLeaseTime(string lockName)
+            => (lockConfig?.Invoke(lockName) ?? DefaultOptions).LeaseTime;
 
         private async Task<Action?> TryAcquireLockAsync(string lockName, Timeout timeout, CancellationToken token)
         {
-            var options = lockConfig?.Invoke(lockName) ?? DefaultOptions;
+            var leaseTime = GetLeaseTime(lockName);
+            var lockVersion = Guid.NewGuid();
+            TimeSpan remainingTime;
             //send Acquire message to leader node
             //if leader doesn't confirm that the lock is acquired then wait for Release log entry
             //in local audit trail and then try again
-            var timeoutSource = new TimeoutTokenSource(timeout, token);
-            var eventListener = engine.OnRelease(timeoutSource.Token);
-            var lockVersion = Guid.NewGuid();
-            try
-            {
-                for(var request = new AcquireLockRequest { LockName = lockName }; ; await eventListener.SuspendAsync().ConfigureAwait(false))
+            var request = new AcquireLockRequest 
+            { 
+                LockName = lockName,
+                LockInfo = new DistributedLockInfo
                 {
-                    request.LockInfo = new DistributedLockInfo
-                    {
-                        Owner = engine.NodeId,
-                        Version = lockVersion,
-                        CreationTime = DateTimeOffset.Now,
-                        LeaseTime = options.LeaseTime
-                    };
-                    if(await messageBus.SendMessageToLeaderAsync(request, AcquireLockResponse.Reader, timeoutSource.Token).ConfigureAwait(false))
-                        break;
+                    Owner = engine.NodeId,
+                    Version = lockVersion,
+                    LeaseTime = leaseTime
                 }
-            }
-            catch(OperationCanceledException) when(timeout.IsExpired)    //timeout detected
+            };
+            while(true)
             {
-                return null;
-            }
-            finally
-            {
-                await eventListener.ConfigureAwait(false).DisposeAsync();
-                timeoutSource.Dispose();
+                request.LockInfo.CreationTime = DateTimeOffset.Now;
+                if(await messageBus.SendMessageToLeaderAsync(request, AcquireLockResponse.Reader, token).ConfigureAwait(false))
+                    break;
+                if(timeout.RemainingTime.TryGetValue(out remainingTime) && await engine.WaitForLockEventAsync(false, remainingTime, token))
+                    continue;
+                goto acquisition_failed;
             }
             //acquisition confirmed by leader node so need to wait until the acquire command will be committed
-            timeoutSource = new TimeoutTokenSource(timeout, token);
-            eventListener = engine.OnAcquire(timeoutSource.Token);
-            try
+            do
             {
-                while(!engine.IsRegistered(lockName, lockVersion))
-                    await eventListener.SuspendAsync().ConfigureAwait(false);
+                if(engine.IsRegistered(lockName, lockVersion))
+                    return new Action(() => Unlock(lockName, lockVersion, leaseTime));
             }
-            catch(OperationCanceledException) when(timeout.IsExpired)    //timeout detected
-            {
-                return null;
-            }
-            finally
-            {
-                await eventListener.ConfigureAwait(false).DisposeAsync();
-                timeoutSource.Dispose();
-            }
-            //finally check the timeout
-            return timeout.RemainingTime.HasValue ?
-                ReleaseAction(lockName, lockVersion, options.LeaseTime) :
-                null;
-        }
-
-        private async Task UnlockAsync(string lockName, Guid version)
-        {
-            var request = new ReleaseLockRequest
-            {
-                Owner = engine.NodeId,
-                Version = version,
-                LockName = lockName
-            };
-            if(!(await messageBus.SendMessageToLeaderAsync(request, ReleaseLockResponse.Reader).ConfigureAwait(false)))
-                throw new SynchronizationLockException(ExceptionMessages.LockConflict);
+            while(timeout.RemainingTime.TryGetValue(out remainingTime) && await engine.WaitForLockEventAsync(true, remainingTime, token));
+        acquisition_failed:
+            return null;
         }
 
         private void Unlock(string lockName, Guid version, TimeSpan timeout)
@@ -188,11 +158,13 @@ namespace DotNext.Net.Cluster.DistributedServices
             if(!engine.IsRegistered(lockName, version))
                 throw new SynchronizationLockException(ExceptionMessages.LockConflict);
             //slow path - inform the leader node
-            var task = UnlockAsync(lockName, version);
+            var task = messageBus.SendMessageToLeaderAsync(new ReleaseLockRequest { Owner = engine.NodeId, Version = version, LockName = lockName }, ReleaseLockResponse.Reader);
             try
             {
                 if(!task.Wait(timeout))
                     throw new TimeoutException();
+                if(!task.Result)
+                    throw new SynchronizationLockException(ExceptionMessages.LockConflict); 
             }
             catch(AggregateException e)
             {

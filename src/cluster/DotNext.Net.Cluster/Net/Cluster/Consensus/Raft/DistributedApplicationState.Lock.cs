@@ -123,14 +123,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         //copy-on-write semantics
         private volatile ImmutableDictionary<string, DistributedLockInfo> acquiredLocks = ImmutableDictionary.Create<string, DistributedLockInfo>(StringComparer.Ordinal, BitwiseComparer<DistributedLockInfo>.Instance);
         private readonly DirectoryInfo lockPersistentStateStorage;
-        private readonly AsyncEventSource releaseEventSource = new AsyncEventSource();
-        private readonly AsyncEventSource acquireEventSource = new AsyncEventSource();
+        private readonly AsyncManualResetEvent releaseEvent = new AsyncManualResetEvent(false);
+        private readonly AsyncManualResetEvent acquireEvent = new AsyncManualResetEvent(false);
 
         private void RemoveLock(string lockName)
         {
             acquiredLocks = acquiredLocks.Remove(lockName);
             RemoveLockFile(lockName);
-            releaseEventSource.Resume();
+            releaseEvent.Set(true);
         }
 
         private async ValueTask ApplyAcquireLockCommandAsync(LogEntry entry)
@@ -143,7 +143,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 acquiredLocks = acquiredLocks.SetItem(lockName, lockInfo);
                 //save lock state to file
                 await SaveLockAsync(lockName, lockInfo).ConfigureAwait(false);
-                acquireEventSource.Resume();
+                acquireEvent.Set(true);
             }
         }
 
@@ -162,11 +162,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await task.ConfigureAwait(false);
         }
 
-        AsyncEventListener IDistributedLockEngine.OnRelease(CancellationToken token) => new AsyncEventListener(releaseEventSource, token);
+        Task<bool> IDistributedLockEngine.WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token)
+            => acquireEvent ? this.acquireEvent.WaitAsync(timeout, token) : releaseEvent.WaitAsync(timeout, token);
 
-        AsyncEventListener IDistributedLockEngine.OnAcquire(CancellationToken token) => new AsyncEventListener(acquireEventSource, token);
-
-        Task IDistributedLockEngine.CollectGarbage(CancellationToken token) => Task.CompletedTask;
+        Task IDistributedLockEngine.CollectGarbage(Predicate<Guid> ownershipChecker, CancellationToken token) => Task.CompletedTask;
 
         private async Task<bool> ReportAcquisition(string name, DistributedLockInfo newLock, CancellationToken token)
         {

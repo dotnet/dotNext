@@ -17,9 +17,7 @@ namespace DotNext.Net.Cluster.DistributedServices
 
         Task RestoreAsync(CancellationToken token);
 
-        AsyncEventListener OnRelease(CancellationToken token);
-
-        AsyncEventListener OnAcquire(CancellationToken token);
+        Task<bool> WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token);
 
         bool IsRegistered(string lockName, Guid version);
 
