@@ -367,7 +367,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             leaderResetEvent.WaitOne(2000);
             NotNull(leaderResetEvent.Leader);
             False(leaderResetEvent.Leader.IsRemote);
-            Equal("TestNode", (await leaderResetEvent.Leader.GetMetadata())["nodeName"]);
+            Equal("TestNode", (await leaderResetEvent.Leader.GetMetadataAsync())["nodeName"]);
             await host.StopAsync();
         }
 
