@@ -288,7 +288,7 @@ namespace DotNext.Reflection
         {
             if (obj is T instance)
             {
-                value = this[instance];
+                value = this[instance]!;
                 return true;
             }
             else
