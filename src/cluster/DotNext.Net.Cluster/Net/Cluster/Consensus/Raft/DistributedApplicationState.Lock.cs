@@ -165,43 +165,66 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool> IDistributedLockEngine.WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token)
             => acquireEvent ? this.acquireEvent.WaitAsync(timeout, token) : releaseEvent.WaitAsync(timeout, token);
 
-        Task IDistributedLockEngine.CollectGarbage(Predicate<Guid> ownershipChecker, CancellationToken token) => Task.CompletedTask;
-
-        private async Task<bool> ReportAcquisition(string name, DistributedLockInfo newLock, CancellationToken token)
+        async Task IDistributedLockEngine.CollectGarbage(Predicate<Guid> healthStatus, CancellationToken token)
         {
-            using (await WriteLock.AcquireAsync(token).ConfigureAwait(false))
-                if (acquiredLocks.TryGetValue(name, out var existingLock) && !existingLock.IsExpired)
-                    return false;
-                else
-                    acquiredLocks = acquiredLocks.SetItem(name, newLock);
+            using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
+            var acquiredLocks = this.acquiredLocks;
+            var builder = acquiredLocks.ToBuilder();
+            bool modified = false, released = false;
+            foreach(var (name, info) in acquiredLocks)
+            {
+                if(info.IsExpired)
+                {
+                    builder.Remove(name);
+                    RemoveLockFile(name);
+                    modified = released = true;
+                }
+                if(healthStatus(info.Owner))
+                {
+                    info.Renew();
+                    builder[name] = info;
+                    modified = true;
+                }
+            }
+            if(modified)
+                this.acquiredLocks = builder.ToImmutable();
+            if(released)
+                releaseEvent.Set(true);
+            builder.Clear();    //help GC
+        }
+
+        private async Task<bool> RegisterAsync(string name, DistributedLockInfo newLock, CancellationToken token)
+        {
+            using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
+            if (acquiredLocks.TryGetValue(name, out var existingLock) && !existingLock.IsExpired)
+                return false;
+            acquiredLocks = acquiredLocks.SetItem(name, newLock);    
             //log entry can be added only out of write-lock scope
-            await AppendAsync(new AcquireLockCommand(name, newLock, Term), token).ConfigureAwait(false);
+            await AppendAsync(writeLock, new AcquireLockCommand(name, newLock, Term), token).ConfigureAwait(false);
             return true;
         }
 
         Task<bool> IDistributedLockEngine.RegisterAsync(string name, DistributedLockInfo lockInfo, CancellationToken token)
-            => lockInfo.IsExpired ? FalseTask.Task : ReportAcquisition(name, lockInfo, token);
+            => lockInfo.IsExpired ? FalseTask.Task : RegisterAsync(name, lockInfo, token);
 
         async Task<bool> IDistributedLockEngine.UnregisterAsync(string name, Guid owner, Guid version, CancellationToken token)
         {
-            using (await WriteLock.AcquireAsync(token).ConfigureAwait(false))
-                if (acquiredLocks.TryGetValue(name, out var existingLock) && existingLock.Owner == owner && existingLock.Version == version)
-                    acquiredLocks = acquiredLocks.Remove(name);
-                else
-                    return false;
-            //log entry can be added only out of write-lock scope
-            await AppendAsync(new ReleaseLockCommand(name, Term), token).ConfigureAwait(false);
-            return true;
+            using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
+            if (acquiredLocks.TryGetValue(name, out var existingLock) && existingLock.Owner == owner && existingLock.Version == version)
+            {
+                acquiredLocks = acquiredLocks.Remove(name);
+                //log entry can be added only out of write-lock scope
+                await AppendAsync(writeLock, new ReleaseLockCommand(name, Term), token).ConfigureAwait(false);
+                return true;
+            }
+            return false;
         }
 
         async Task IDistributedLockEngine.UnregisterAsync(string name, CancellationToken token)
         {
-            using (await WriteLock.AcquireAsync(token).ConfigureAwait(false))
-                if (acquiredLocks.ContainsKey(name))
-                    acquiredLocks = acquiredLocks.Remove(name);
-                else
-                    return;
-            await AppendAsync(new ReleaseLockCommand(name, Term), token).ConfigureAwait(false);
+            using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
+            if(ImmutableInterlocked.TryRemove(ref acquiredLocks, name, out _))
+                await AppendAsync(writeLock, new ReleaseLockCommand(name, Term), token).ConfigureAwait(false);
         }
 
         bool IDistributedLockEngine.IsRegistered(string lockName, Guid version)
@@ -247,7 +270,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async Task IDistributedLockEngine.RestoreAsync(CancellationToken token)
         {
-            var builder = ImmutableDictionary.CreateBuilder<string, DistributedLockInfo>(acquiredLocks.KeyComparer);
+            var builder = acquiredLocks.ToBuilder();
             //restore lock state from file system
             const int fileBuffer = 1024;
             using var buffer = new ArrayRental<byte>(fileBuffer);

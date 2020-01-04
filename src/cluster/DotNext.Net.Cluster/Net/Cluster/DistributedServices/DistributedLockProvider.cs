@@ -165,10 +165,6 @@ namespace DotNext.Net.Cluster.DistributedServices
         public static bool IsMessageSupported(IMessage message, bool oneWay)
             => oneWay ? message.Name.IsOneOf(ForcedUnlockRequest.Name) : message.Name.IsOneOf(AcquireLockRequest.Name, ReleaseLockRequest.Name);
 
-        
-
-        
-
         private Action CreateReleaseAction(string lockName, Guid version, DistributedLockOptions options)
         {
             var closure = new ReleaseActionClosure(engine, messageBus, lockName, version) { Timeout = options.LeaseTime };
@@ -212,8 +208,6 @@ namespace DotNext.Net.Cluster.DistributedServices
         acquisition_failed:
             return null;
         }
-
-        
 
         /// <summary>
         /// Initializes distributed lock infrastructure.

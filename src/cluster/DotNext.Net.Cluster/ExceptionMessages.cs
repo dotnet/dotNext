@@ -38,5 +38,7 @@ namespace DotNext
         internal static string LockConflict => Resources.GetString("LockConflict");
 
         internal static string LockNameIsEmpty => Resources.GetString("LockNameIsEmpty");
+
+        internal static string InvalidLockToken => Resources.GetString("InvalidLockToken");
     }
 }

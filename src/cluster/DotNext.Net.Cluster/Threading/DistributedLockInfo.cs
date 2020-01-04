@@ -30,9 +30,6 @@ namespace DotNext.Threading
             }
         }
 
-        /// <summary>
-        /// Renews the lifetime of this lock.
-        /// </summary>
         internal void Renew() => creationTime = DateTimeOffset.UtcNow;
 
         public bool Equals(DistributedLockInfo other)

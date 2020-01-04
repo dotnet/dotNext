@@ -12,3 +12,4 @@ NoAvailableReadSessions=Lack of available read sessions is encountered by persis
 LockNameTooLong=Lock name cannot contain more than 63 characters
 LockNameIsEmpty=Lock name is empty string
 LockConflict=The lock conflict detected
+InvalidLockToken=Write lock token is invalid
