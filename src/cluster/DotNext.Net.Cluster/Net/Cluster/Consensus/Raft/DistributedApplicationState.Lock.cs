@@ -165,27 +165,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool> IDistributedLockEngine.WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token)
             => acquireEvent ? this.acquireEvent.WaitAsync(timeout, token) : releaseEvent.WaitAsync(timeout, token);
 
-        async Task IDistributedLockEngine.CollectGarbage(Predicate<Guid> healthStatus, CancellationToken token)
+        async Task IDistributedLockEngine.ProvideSponsorshipAsync(Sponsor<DistributedLock> sponsor, CancellationToken token)
         {
             using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
             var acquiredLocks = this.acquiredLocks;
             var builder = acquiredLocks.ToBuilder();
             bool modified = false, released = false;
-            foreach(var (name, info) in acquiredLocks)
-            {
-                if(info.IsExpired)
+            using(var enumerator = acquiredLocks.GetEnumerator())
+                while(enumerator.MoveNext())
                 {
-                    builder.Remove(name);
-                    RemoveLockFile(name);
-                    modified = released = true;
+                    var (name, info) = enumerator.Current;
+                    switch(sponsor(ref info))
+                    {
+                        case LeaseState.Expired:
+                            modified = true;
+                            released = true;
+                            builder.Remove(name);
+                            RemoveLockFile(name);
+                            continue;
+                        case LeaseState.Renewed:
+                            modified = true;
+                            builder[name] = info;
+                            continue;
+                    }
                 }
-                if(healthStatus(info.Owner))
-                {
-                    info.Renew();
-                    builder[name] = info;
-                    modified = true;
-                }
-            }
             if(modified)
                 this.acquiredLocks = builder.ToImmutable();
             if(released)

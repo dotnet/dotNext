@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Net.Cluster.DistributedServices
 {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct DistributedLock : IEquatable<DistributedLock>
+    internal struct DistributedLock : IDistributedObject, IEquatable<DistributedLock>
     {
         private DateTimeOffset creationTime;
 
@@ -29,6 +29,8 @@ namespace DotNext.Net.Cluster.DistributedServices
                 return CreationTime + LeaseTime <= currentTime;
             }
         }
+
+        Guid IDistributedObject.Owner => Owner;
 
         internal void Renew() => creationTime = DateTimeOffset.UtcNow;
 

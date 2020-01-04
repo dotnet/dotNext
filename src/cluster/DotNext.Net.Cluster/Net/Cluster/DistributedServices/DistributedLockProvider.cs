@@ -246,6 +246,9 @@ namespace DotNext.Net.Cluster.DistributedServices
             await messageBus.SendSignalToLeaderAsync(new ForcedUnlockRequest { LockName = lockName }).ConfigureAwait(false);
         }
 
+        internal override Task RefreshAsync(ISponsor sponsor, CancellationToken token)
+            => engine.ProvideSponsorshipAsync(sponsor.Renewal, token);
+
         /// <summary>
         /// Attempts to create distributed lock provider.
         /// </summary>

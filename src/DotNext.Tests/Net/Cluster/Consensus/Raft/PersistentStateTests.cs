@@ -48,7 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             ClusterMemberStatus IClusterMember.Status => ClusterMemberStatus.Unknown;
 
-            ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh, CancellationToken token)
+            ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
                 => throw new NotImplementedException();
 
             Task<bool> IClusterMember.ResignAsync(CancellationToken token) => throw new NotImplementedException();

@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
     /// </summary>
-    public abstract class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine
+    public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine
         where TMember : class, IRaftClusterMember, IDisposable
     {
         private static readonly Action<TMember> CancelPendingRequests = DelegateHelpers.CreateOpenDelegate<Action<TMember>>(member => member.CancelPendingRequests());
