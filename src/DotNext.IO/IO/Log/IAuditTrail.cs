@@ -150,7 +150,6 @@ namespace DotNext.IO.Log
         /// <param name="entry">The uncommitted log entry to be added into this audit trail.</param>
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with the new entry.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="entry"/> is <see langword="null"/>.</exception>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
         ValueTask AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex) where TEntryImpl : notnull, TEntry;
 
@@ -164,7 +163,7 @@ namespace DotNext.IO.Log
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <typeparam name="TEntryImpl">The actual type of the supplied log entry.</typeparam>
         /// <returns>The index of the added entry.</returns>
-        /// <exception cref="InvalidOperationException">The collection of entries contains the snapshot entry.</exception>
+        /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
         ValueTask<long> AppendAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
             where TEntryImpl : notnull, TEntry
             => AppendAsync(new SingleEntryProducer<TEntryImpl>(entry), token);
