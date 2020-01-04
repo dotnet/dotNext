@@ -27,6 +27,59 @@ namespace DotNext.Net.Cluster.DistributedServices
          * 3. Requester waits until leader responded with `true`. Timeout control is implemented at this step
          * 4. If requester receives `true` then wait for the commit of the lock acquisition at its local audit trail 
          */
+
+        private sealed class ReleaseActionClosure
+        {
+            private readonly IDistributedLockEngine engine;
+            private readonly IMessageBus bus;
+            private readonly string name;
+            private readonly Guid version;
+            internal TimeSpan Timeout;
+
+            internal ReleaseActionClosure(IDistributedLockEngine engine, IMessageBus bus, string lockName, Guid lockVer)
+            {
+                this.engine = engine;
+                this.bus = bus;
+                version = lockVer;
+                name = lockName;
+            }
+
+            private bool IsRegistered => engine.IsRegistered(name, version);
+
+            private Task<bool> ReleaseCoreAsync()
+                => bus.SendMessageToLeaderAsync(new ReleaseLockRequest { Owner = engine.NodeId, Version = version, LockName = name }, ReleaseLockResponse.Reader);
+        
+            internal void Release()
+            {
+                var released = false;
+                if(IsRegistered)
+                {
+                    var task = ReleaseCoreAsync();
+                    try
+                    {
+                        released = task.Wait(Timeout) ? task.Result : throw new TimeoutException();
+                    }
+                    catch(AggregateException e)
+                    {
+                        throw e.InnerException;
+                    }
+                    finally
+                    {
+                        if(task.IsCompleted)
+                            task.Dispose();
+                    }
+                }
+                if(!released)
+                    throw new SynchronizationLockException(ExceptionMessages.LockConflict);
+            }
+
+            internal async void ReleaseAsync()
+            {
+                if(!(IsRegistered && await ReleaseCoreAsync().ConfigureAwait(false)))
+                    throw new SynchronizationLockException(ExceptionMessages.LockConflict);
+            }
+        }
+
         private DistributedLockConfigurationProvider? lockConfig;
         private readonly IDistributedLockEngine engine;
         private readonly IMessageBus messageBus;
@@ -111,47 +164,14 @@ namespace DotNext.Net.Cluster.DistributedServices
         public static bool IsMessageSupported(IMessage message, bool oneWay)
             => oneWay ? message.Name.IsOneOf(ForcedUnlockRequest.Name) : message.Name.IsOneOf(AcquireLockRequest.Name, ReleaseLockRequest.Name);
 
-        private Task<bool> ReleaseAsync(string lockName, Guid version)
-            => messageBus.SendMessageToLeaderAsync(new ReleaseLockRequest { Owner = engine.NodeId, Version = version, LockName = lockName }, ReleaseLockResponse.Reader);
+        
 
-        private void Release(string lockName, Guid version, TimeSpan timeout)
-        {
-            var released = false;
-            if(engine.IsRegistered(lockName, version))
-            {
-                var task = ReleaseAsync(lockName, version);
-                try
-                {
-                    released = task.Wait(timeout) ? task.Result : throw new TimeoutException();
-                }
-                catch(AggregateException e)
-                {
-                    throw e.InnerException;
-                }
-                finally
-                {
-                    if(task.IsCompleted)
-                        task.Dispose();
-                }
-            }
-            if(!released)
-                throw new SynchronizationLockException(ExceptionMessages.LockConflict);
-        }
-
-        private async void Release(string lockName, Guid version)
-        {
-            if(!(engine.IsRegistered(lockName, version) && await ReleaseAsync(lockName, version).ConfigureAwait(false)))
-                throw new SynchronizationLockException(ExceptionMessages.LockConflict);
-        }
+        
 
         private Action CreateReleaseAction(string lockName, Guid version, DistributedLockOptions options)
         {
-            if(options.ReleaseSynchronously)
-            {
-                var releaseTimeout = options.LeaseTime; //to avoid capturing of entire options object
-                return () => Release(lockName, version, releaseTimeout);
-            }
-            return () => Release(lockName, version);
+            var closure = new ReleaseActionClosure(engine, messageBus, lockName, version) { Timeout = options.LeaseTime };
+            return options.ReleaseSynchronously ? new Action(closure.Release) : new Action(closure.ReleaseAsync);
         }
 
         private async Task<Action?> TryAcquireLockAsync(string lockName, Timeout timeout, CancellationToken token)
