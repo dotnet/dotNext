@@ -21,5 +21,14 @@ namespace DotNext.Threading
             get => leaseTime ?? TimeSpan.FromMinutes(1);
             set => leaseTime = value;
         }
+
+        /// <summary>
+        /// Indicates how the lock should be released.
+        /// </summary>
+        public bool ReleaseSynchronously
+        {
+            get;
+            set;
+        }
     }
 }

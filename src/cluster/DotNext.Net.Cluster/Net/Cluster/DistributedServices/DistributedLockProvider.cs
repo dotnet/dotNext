@@ -111,12 +111,52 @@ namespace DotNext.Net.Cluster.DistributedServices
         public static bool IsMessageSupported(IMessage message, bool oneWay)
             => oneWay ? message.Name.IsOneOf(ForcedUnlockRequest.Name) : message.Name.IsOneOf(AcquireLockRequest.Name, ReleaseLockRequest.Name);
 
-        private TimeSpan GetLeaseTime(string lockName)
-            => (lockConfig?.Invoke(lockName) ?? DefaultOptions).LeaseTime;
+        private Task<bool> ReleaseAsync(string lockName, Guid version)
+            => messageBus.SendMessageToLeaderAsync(new ReleaseLockRequest { Owner = engine.NodeId, Version = version, LockName = lockName }, ReleaseLockResponse.Reader);
+
+        private void Release(string lockName, Guid version, TimeSpan timeout)
+        {
+            var released = false;
+            if(engine.IsRegistered(lockName, version))
+            {
+                var task = ReleaseAsync(lockName, version);
+                try
+                {
+                    released = task.Wait(timeout) ? task.Result : throw new TimeoutException();
+                }
+                catch(AggregateException e)
+                {
+                    throw e.InnerException;
+                }
+                finally
+                {
+                    if(task.IsCompleted)
+                        task.Dispose();
+                }
+            }
+            if(!released)
+                throw new SynchronizationLockException(ExceptionMessages.LockConflict);
+        }
+
+        private async void Release(string lockName, Guid version)
+        {
+            if(!(engine.IsRegistered(lockName, version) && await ReleaseAsync(lockName, version).ConfigureAwait(false)))
+                throw new SynchronizationLockException(ExceptionMessages.LockConflict);
+        }
+
+        private Action CreateReleaseAction(string lockName, Guid version, DistributedLockOptions options)
+        {
+            if(options.ReleaseSynchronously)
+            {
+                var releaseTimeout = options.LeaseTime; //to avoid capturing of entire options object
+                return () => Release(lockName, version, releaseTimeout);
+            }
+            return () => Release(lockName, version);
+        }
 
         private async Task<Action?> TryAcquireLockAsync(string lockName, Timeout timeout, CancellationToken token)
         {
-            var leaseTime = GetLeaseTime(lockName);
+            var options = lockConfig?.Invoke(lockName) ?? DefaultOptions;
             var lockVersion = Guid.NewGuid();
             TimeSpan remainingTime;
             //send Acquire message to leader node
@@ -129,7 +169,7 @@ namespace DotNext.Net.Cluster.DistributedServices
                 {
                     Owner = engine.NodeId,
                     Version = lockVersion,
-                    LeaseTime = leaseTime
+                    LeaseTime = options.LeaseTime
                 }
             };
             while(true)
@@ -145,37 +185,14 @@ namespace DotNext.Net.Cluster.DistributedServices
             do
             {
                 if(engine.IsRegistered(lockName, lockVersion))
-                    return new Action(() => Unlock(lockName, lockVersion, leaseTime));
+                    return CreateReleaseAction(lockName, lockVersion, options);
             }
             while(timeout.RemainingTime.TryGetValue(out remainingTime) && await engine.WaitForLockEventAsync(true, remainingTime, token));
         acquisition_failed:
             return null;
         }
 
-        private void Unlock(string lockName, Guid version, TimeSpan timeout)
-        {
-            //fail fast - check the local state
-            if(!engine.IsRegistered(lockName, version))
-                throw new SynchronizationLockException(ExceptionMessages.LockConflict);
-            //slow path - inform the leader node
-            var task = messageBus.SendMessageToLeaderAsync(new ReleaseLockRequest { Owner = engine.NodeId, Version = version, LockName = lockName }, ReleaseLockResponse.Reader);
-            try
-            {
-                if(!task.Wait(timeout))
-                    throw new TimeoutException();
-                if(!task.Result)
-                    throw new SynchronizationLockException(ExceptionMessages.LockConflict); 
-            }
-            catch(AggregateException e)
-            {
-                throw e.InnerException;
-            }
-            finally
-            {
-                if(task.IsCompleted)
-                    task.Dispose();
-            }
-        }
+        
 
         /// <summary>
         /// Initializes distributed lock infrastructure.
