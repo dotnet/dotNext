@@ -470,5 +470,21 @@ namespace DotNext
             count = FromHex(chars, buffer.Span);
             return buffer.Span.Slice(0, count).ToArray();
         }
+
+        /// <summary>
+        /// Reads the value of blittable type
+        /// from the block of memory and advances the original span.
+        /// </summary>
+        /// <param name="bytes">The block of memory.</param>
+        /// <typeparam name="T">The blittable type.</typeparam>
+        /// <returns>The deserialized value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is smaller than <typeparamref name="T"/>.</exception>
+        public unsafe static T Read<T>(ref ReadOnlySpan<byte> bytes)
+            where T : unmanaged
+        {
+            var result = MemoryMarshal.Read<T>(bytes);
+            bytes = bytes.Slice(0, sizeof(T));
+            return result;
+        }
     }
 }
