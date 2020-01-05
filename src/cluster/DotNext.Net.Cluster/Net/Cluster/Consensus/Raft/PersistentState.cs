@@ -109,6 +109,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <remarks>
         /// The buffer cannot be used concurrently. Access to it should be synchronized
         /// using <see cref="AcquireWriteLockAsync(CancellationToken)"/> method.
+        /// However, synchronization is not needed inside of <see cref="ApplyAsync(LogEntry)"/>
+        /// method.
         /// </remarks>
         protected Memory<byte> Buffer => sessionManager.WriteSession.Buffer;
 
