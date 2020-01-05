@@ -32,6 +32,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [CLSCompliant(false)]
         protected virtual IEnumerable<DistributedServiceProvider> DistributedServices => Enumerable.Empty<DistributedServiceProvider>();
 
+        /// <summary>
+        /// Resolves identifier of 
+        /// </summary>
+        /// <remarks>
+        /// If Raft cluster supports distributed services
+        /// then this method should be overridden as well as <see cref="DistributedServices"/>.
+        /// </remarks>
+        /// <param name="member">The member instance.</param>
+        /// <returns>The identifier of the member.</returns>
+        /// <seealso cref="PersistentState.NodeId"/>
+        protected virtual Guid? GetMemberId(TMember member) => null;
+
         internal async Task ReplicationFinished(CancellationToken token)
         {
             var members = this.members;
