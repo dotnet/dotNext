@@ -483,7 +483,7 @@ namespace DotNext
             where T : unmanaged
         {
             var result = MemoryMarshal.Read<T>(bytes);
-            bytes = bytes.Slice(0, sizeof(T));
+            bytes = bytes.Slice(sizeof(T));
             return result;
         }
     }

@@ -147,5 +147,21 @@ namespace DotNext
             ReadOnlySpan<char> hex = ToHexSlow(data);
             Equal(data, hex.FromHex());
         }
+
+        private struct TwoIDs
+        {
+            internal Guid First;
+            internal Guid Second;
+        }
+
+        [Fact]
+        public static void ReadValues()
+        {
+            var ids = new TwoIDs { First = Guid.NewGuid(), Second = Guid.NewGuid() };
+            var span = Runtime.Intrinsics.AsReadOnlySpan(in ids);
+            Equal(ids.First, Span.Read<Guid>(ref span));
+            Equal(ids.Second, Span.Read<Guid>(ref span));
+            True(span.IsEmpty);
+        }
     }
 }
