@@ -6,7 +6,7 @@ using Enumerable = System.Linq.Enumerable;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Buffers;
+    using IDistributedApplicationState = IO.Log.IDistributedApplicationState;
     using DistributedServices;
 
     public partial class RaftCluster<TMember>
@@ -28,24 +28,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Gets all exposed distributed services.
         /// </summary>
-        /// <returns>The collection of exposed distributed services.</returns>
+        /// <value>The collection of exposed distributed services.</value>
         [CLSCompliant(false)]
         protected virtual IEnumerable<DistributedServiceProvider> DistributedServices => Enumerable.Empty<DistributedServiceProvider>();
 
         /// <summary>
-        /// Resolves identifier of 
+        /// Resolves identifier of the cluster member.
         /// </summary>
         /// <remarks>
         /// If Raft cluster supports distributed services
-        /// then this method should be overridden as well as <see cref="DistributedServices"/>.
+        /// then this property should be overridden as well as <see cref="DistributedServices"/>.
         /// </remarks>
         /// <param name="member">The member instance.</param>
-        /// <returns>The identifier of the member.</returns>
-        /// <seealso cref="PersistentState.NodeId"/>
-        protected virtual Guid? GetMemberId(TMember member) => null;
+        /// <returns>The identifier of the member; or <see langword="null"/> if identifier is not known.</returns>
+        /// <seealso cref="IO.Log.IDistributedApplicationState.NodeId"/>
+        protected virtual Guid? this[TMember member]
+        {
+            get => !member.IsRemote && auditTrail is IDistributedApplicationState state ? state.NodeId : new Guid?();
+        }
 
         internal async Task ReplicationFinished(CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
             var members = this.members;
         }
     }

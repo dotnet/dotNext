@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             private bool IsRegistered => engine.IsRegistered(name, version);
 
             private Task<bool> Release(CancellationToken token)
-                => bus.SendMessageToLeaderAsync(new ReleaseLockRequest { Owner = engine.NodeId, Version = version, LockName = name }, ReleaseLockResponse.Reader);
+                => bus.SendMessageToLeaderAsync(new ReleaseLockRequest { Owner = engine.NodeId, Version = version, LockName = name }, ReleaseLockResponse.Reader, token);
         
             internal void Release()
             {
