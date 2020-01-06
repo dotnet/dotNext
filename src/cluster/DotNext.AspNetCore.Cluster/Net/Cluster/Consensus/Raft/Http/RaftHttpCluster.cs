@@ -281,7 +281,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             response.OnCompleted(async delegate ()
             {
                 await using(buffered)
-                    await handler.ReceiveSignal(sender, buffered, null).ConfigureAwait(false);
+                    await handler.ReceiveSignal(sender, buffered, null, token).ConfigureAwait(false);
             });
         }
 
@@ -292,7 +292,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (response.HttpContext.Features.Get<DuplicateRequestDetector>().IsDuplicated(request))
                 return Task.CompletedTask;
             Task? task = reliable ? 
-                handlers.TryReceiveSignal(sender, request.Message, response.HttpContext) :
+                handlers.TryReceiveSignal(sender, request.Message, response.HttpContext, token) :
                 ReceiveOneWayMessageFastAck(sender, request.Message, handlers, response, token);
             if(task is null)
             {
@@ -305,7 +305,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private static async Task ReceiveMessage(ISubscriber sender, CustomMessage request, IEnumerable<IMessageHandler> handlers, HttpResponse response, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
-            var task = handlers.TryReceiveMessage(sender, request.Message, response.HttpContext);
+            var task = handlers.TryReceiveMessage(sender, request.Message, response.HttpContext, token);
             if(task is null)
                 response.StatusCode = StatusCodes.Status501NotImplemented;
             else
