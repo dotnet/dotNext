@@ -51,5 +51,17 @@ namespace DotNext.Net.Cluster.Messaging
         /// <returns>The task representing execution of this method.</returns>
         /// <exception cref="InvalidOperationException">Leader node is not present in the cluster.</exception>
         Task SendSignalToLeaderAsync(IMessage message, CancellationToken token = default);
+
+        /// <summary>
+        /// Adds message handler.
+        /// </summary>
+        /// <param name="handler">The message handler.</param>
+        void AddMessageHandler(IMessageHandler handler);
+
+        /// <summary>
+        /// Removes message handler.
+        /// </summary>
+        /// <param name="handler">The message handler.</param>
+        void RemoveMessageHandler(IMessageHandler handler);
     }
 }

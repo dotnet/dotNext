@@ -14,6 +14,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="messageName">The name of the message.</param>
         /// <param name="oneWay"><see langword="true"/> if message is one-way; <see langword="false"/> if message is request message that requires a response.</param>
         /// <returns><see langword="true"/> if message can be processed by this handler; otherwise, <see langword="false"/>.</returns>
+        [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         bool IsSupported(string messageName, bool oneWay) => true;
 
         /// <summary>

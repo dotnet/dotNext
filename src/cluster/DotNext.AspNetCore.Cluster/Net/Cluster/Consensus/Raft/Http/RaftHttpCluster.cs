@@ -5,10 +5,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
@@ -22,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     internal abstract class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IDistributedApplicationEnvironment
     {
         private readonly IClusterMemberLifetime configurator;
-        private readonly IEnumerable<IMessageHandler> messageHandlers;
+        private volatile ImmutableList<IMessageHandler> messageHandlers;
 
         private readonly IDisposable configurationTracker;
         private volatile MemberMetadata metadata;
@@ -53,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             protocolVersion = config.ProtocolVersion;
             //dependencies
             configurator = dependencies.GetService<IClusterMemberLifetime>();
-            messageHandlers = dependencies.GetServices<IMessageHandler>();
+            messageHandlers = ImmutableList.CreateRange(dependencies.GetServices<IMessageHandler>());
             AuditTrail = dependencies.GetService<IPersistentState>() ?? new InMemoryAuditTrail();
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
@@ -75,6 +77,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal bool IsDistributedServicesSupported => distributedLock != null;
 
         IDistributedLockProvider IDistributedApplicationEnvironment.LockProvider => distributedLock ?? throw new NotSupportedException(ExceptionMessages.DistributedServicesAreUnavailable);
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        void IMessageBus.AddMessageHandler(IMessageHandler handler)
+            => messageHandlers = messageHandlers.Add(handler);
+
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        void IMessageBus.RemoveMessageHandler(IMessageHandler handler)
+            => messageHandlers = messageHandlers.Remove(handler);
 
         private protected void ConfigureMember(RaftClusterMember member)
         {
