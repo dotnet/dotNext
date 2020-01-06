@@ -402,6 +402,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 configurationTracker.Dispose();
                 duplicationDetector.Dispose();
                 distributedLock = null;
+                messageHandlers = ImmutableList<IMessageHandler>.Empty;
             }
 
             base.Dispose(disposing);
