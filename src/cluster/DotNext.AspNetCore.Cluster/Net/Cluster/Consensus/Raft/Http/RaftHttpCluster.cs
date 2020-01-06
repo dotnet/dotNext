@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -20,19 +19,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IDistributedApplicationEnvironment
     {
-        private readonly IClusterMemberLifetime configurator;
-        private volatile ImmutableList<IMessageHandler> messageHandlers;
-
+        private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
-        private volatile MemberMetadata metadata;
-        private volatile ISet<IPNetwork> allowedNetworks;
+        
 
         [SuppressMessage("Usage", "CA2213", Justification = "This object is disposed via RaftCluster.members collection")]
         private RaftClusterMember? localMember;
-
-        private readonly IHttpMessageHandlerFactory httpHandlerFactory;
+        private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
         private readonly TimeSpan requestTimeout;
-        private readonly DuplicateRequestDetector duplicationDetector;
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;

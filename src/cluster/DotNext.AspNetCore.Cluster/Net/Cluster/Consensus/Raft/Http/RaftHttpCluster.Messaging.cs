@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
@@ -15,6 +16,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal partial class RaftHttpCluster
     {
+        private readonly DuplicateRequestDetector duplicationDetector;
+        private volatile ISet<IPNetwork> allowedNetworks;
+        private volatile ImmutableList<IMessageHandler> messageHandlers;
+        private volatile MemberMetadata metadata;
+
         [MethodImpl(MethodImplOptions.Synchronized)]
         void IMessageBus.AddMessageHandler(IMessageHandler handler)
             => messageHandlers = messageHandlers.Add(handler);
