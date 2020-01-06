@@ -1,6 +1,8 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace DotNext.Net.Cluster
 {
@@ -10,10 +12,25 @@ namespace DotNext.Net.Cluster
     /// Represents unique identifier of cluster member.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>
+    [Serializable]
+    public readonly struct ClusterMemberId : IEquatable<ClusterMemberId>, ISerializable
     {
+        private const string AddressSerData = "A";
+        private const string PortSerData = "P";
+        private const string LengthSerData = "L";
+        private const string FamilySerData = "F";
+
         private readonly Guid address;
         private readonly int port, length, family;
+
+        [SuppressMessage("Usage", "CA1801", Justification = "context is required by .NET serialization framework")]
+        private ClusterMemberId(SerializationInfo info, StreamingContext context)
+        {
+            address = (Guid)info.GetValue(AddressSerData, typeof(Guid));
+            port = info.GetInt32(PortSerData);
+            length = info.GetInt32(LengthSerData);
+            family = info.GetInt32(FamilySerData);
+        }
 
         internal ClusterMemberId(IPEndPoint endpoint)
         {
@@ -38,9 +55,21 @@ namespace DotNext.Net.Cluster
             family = Span.Read<int>(ref bytes);
         }
 
+        /// <summary>
+        /// Determines whether the current identifier is equal
+        /// to another identifier.
+        /// </summary>
+        /// <param name="other">The identifier to compare.</param>
+        /// <returns><see langword="true"/> if this identifier is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(ClusterMemberId other)
             => address == other.address && port == other.port && length == other.length && family == other.family;
         
+        /// <summary>
+        /// Determines whether the current identifier is equal
+        /// to another identifier.
+        /// </summary>
+        /// <param name="other">The identifier to compare.</param>
+        /// <returns><see langword="true"/> if this identifier is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object other) => other is ClusterMemberId id && Equals(id);
 
         /// <summary>
@@ -56,10 +85,30 @@ namespace DotNext.Net.Cluster
         public override string ToString()
             => Intrinsics.AsReadOnlySpan(this).ToHex();
 
+        /// <summary>
+        /// Determines whether the two identifiers are equal.
+        /// </summary>
+        /// <param name="x">The first identifier to compare.</param>
+        /// <param name="y">The second identifier to compare.</param>
+        /// <returns><see langword="true"/> if both identifiers are equal; otherwise, <see langword="false"/>.</returns>
         public static bool operator ==(in ClusterMemberId x, in ClusterMemberId y)
             => x.address == y.address && x.port == y.port && x.length == y.length && x.family == y.family;
-    
+
+        /// <summary>
+        /// Determines whether the two identifiers are not equal.
+        /// </summary>
+        /// <param name="x">The first identifier to compare.</param>
+        /// <param name="y">The second identifier to compare.</param>
+        /// <returns><see langword="true"/> if both identifiers are not equal; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in ClusterMemberId x, in ClusterMemberId y)
             => x.address != y.address || x.port != y.port || x.length != y.length || x.family != y.family;
+    
+        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            info.AddValue(AddressSerData, address);
+            info.AddValue(PortSerData, port);
+            info.AddValue(LengthSerData, length);
+            info.AddValue(FamilySerData, family);
+        }
     }
 }
