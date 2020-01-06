@@ -17,6 +17,11 @@ namespace DotNext.Net.Cluster
         IPEndPoint Endpoint { get; }
 
         /// <summary>
+        /// Gets unique identifier of this member.
+        /// </summary>
+        ClusterMemberId Id => new ClusterMemberId(Endpoint);
+
+        /// <summary>
         /// Indicates that executing host is a leader node in the cluster.
         /// </summary>
         bool IsLeader { get; }
