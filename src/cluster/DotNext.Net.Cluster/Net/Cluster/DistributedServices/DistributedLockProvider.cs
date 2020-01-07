@@ -30,14 +30,14 @@ namespace DotNext.Net.Cluster.DistributedServices
 
         private DistributedLockConfigurationProvider? lockConfig;
         private readonly IDistributedLockEngine engine;
-        private readonly IMessageBus messageBus;
+        private readonly IOutputChannel leaderChannel;
         private readonly ClusterMemberId owner;
 
-        internal DistributedLockProvider(IDistributedLockEngine engine, IMessageBus messageBus, ClusterMemberId owner)
+        internal DistributedLockProvider(IDistributedLockEngine engine, IOutputChannel leaderChannel, ClusterMemberId owner)
         {
             this.owner = owner;
             this.engine = engine;
-            this.messageBus = messageBus;
+            this.leaderChannel = leaderChannel;
             DefaultOptions = new DistributedLockOptions();
         }
 
@@ -88,7 +88,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             => oneWay ? messageName.IsOneOf(ForcedUnlockRequest.Name) : messageName.IsOneOf(AcquireLockRequest.Name, ReleaseLockRequest.Name);
 
         private Task<bool> Release(string lockName, Guid version, CancellationToken token)
-            => messageBus.SendMessageToLeaderAsync(new ReleaseLockRequest { Owner = owner, Version = version, LockName = lockName }, ReleaseLockResponse.Reader, token);
+            => leaderChannel.SendMessageAsync(new ReleaseLockRequest { Owner = owner, Version = version, LockName = lockName }, ReleaseLockResponse.Reader, token);
         
         private void Release(string lockName, in Guid version, TimeSpan timeout)
         {
@@ -152,7 +152,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             while(true)
             {
                 request.LockInfo.CreationTime = DateTimeOffset.Now;
-                if(await messageBus.SendMessageToLeaderAsync(request, AcquireLockResponse.Reader, token).ConfigureAwait(false))
+                if(await leaderChannel.SendMessageAsync(request, AcquireLockResponse.Reader, token).ConfigureAwait(false))
                     break;
                 if(timeout.RemainingTime.TryGetValue(out remainingTime) && await engine.WaitForLockEventAsync(false, remainingTime, token))
                     continue;
@@ -201,7 +201,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         public async void ForceUnlock(string lockName)
         {
             engine.ValidateName(lockName);
-            await messageBus.SendSignalToLeaderAsync(new ForcedUnlockRequest { LockName = lockName }).ConfigureAwait(false);
+            await leaderChannel.SendSignalAsync(new ForcedUnlockRequest { LockName = lockName }).ConfigureAwait(false);
         }
     }
 }

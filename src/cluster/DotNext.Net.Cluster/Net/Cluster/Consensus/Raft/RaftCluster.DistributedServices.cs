@@ -52,6 +52,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [CLSCompliant(false)]
         protected static DistributedLockProvider? TryCreateLockProvider<TCluster>(TCluster cluster, TMember localMember)
             where TCluster : RaftCluster<TMember>, IMessageBus
-            => !localMember.IsRemote && cluster.auditTrail is IDistributedLockEngine engine ? new DistributedLockProvider(engine, cluster, localMember.Id) : null;
+            => !localMember.IsRemote && cluster.auditTrail is IDistributedLockEngine engine ? new DistributedLockProvider(engine, cluster.LeaderRouter, localMember.Id) : null;
     }
 }
