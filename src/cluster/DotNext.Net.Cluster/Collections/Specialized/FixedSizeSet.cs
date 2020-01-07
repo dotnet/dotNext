@@ -7,6 +7,7 @@ namespace DotNext.Collections.Specialized
 {
     using Buffers;
 
+    [StructLayout(LayoutKind.Auto)]
     internal struct FixedSizeSet<T> : IDisposable
     {
         [StructLayout(LayoutKind.Auto)]
