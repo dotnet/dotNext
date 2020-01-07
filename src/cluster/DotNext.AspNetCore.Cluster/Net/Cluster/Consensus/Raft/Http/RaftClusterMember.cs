@@ -154,8 +154,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         internal Task SendSignalAsync(CustomMessage message, CancellationToken token) =>
             SendAsync<IMessage, CustomMessage>(message, token);
 
-
-        Task IOutputChannel.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
+        Task ISubscriber.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
         {
             var request = new CustomMessage(context.LocalEndpoint, message, requiresConfirmation);
             return SendSignalAsync(request, token);

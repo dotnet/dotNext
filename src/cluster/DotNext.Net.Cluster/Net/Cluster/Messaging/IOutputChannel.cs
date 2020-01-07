@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Messaging
     public interface IOutputChannel
     {
         /// <summary>
-        /// Sends a message to the cluster member.
+        /// Sends a request message.
         /// </summary>
         /// <remarks>
         /// The message content may be available inside of <paramref name="responseReader"/> only.
@@ -21,17 +21,16 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <param name="responseReader">The response reader.</param>
         /// <returns>The message representing response; or <see langword="null"/> if request message in one-way.</returns>
-        /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable member.</exception>
+        /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable endpoint.</exception>
         Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token = default);
 
         /// <summary>
-        /// Sends one-way message to the cluster member.
+        /// Sends one-way message.
         /// </summary>
         /// <param name="message">The message to be sent.</param>
-        /// <param name="requiresConfirmation"><see langword="true"/> to wait for confirmation of delivery from receiver; otherwise, <see langword="false"/>.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing execution of this method.</returns>
-        /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable member.</exception>
-        Task SendSignalAsync(IMessage message, bool requiresConfirmation = true, CancellationToken token = default);
+        /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable endpoint.</exception>
+        Task SendSignalAsync(IMessage message, CancellationToken token = default);
     }
 }

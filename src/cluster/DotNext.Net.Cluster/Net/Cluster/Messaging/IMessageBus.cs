@@ -25,43 +25,21 @@ namespace DotNext.Net.Cluster.Messaging
         IReadOnlyCollection<IClusterMember> ICluster.Members => Members;
 
         /// <summary>
-        /// Sends a message to the cluster leader.
+        /// Allows to route messages to the leader 
+        /// even if it is changed during transmission.
         /// </summary>
-        /// <remarks>
-        /// <paramref name="message"/> should be reusable because <see cref="IO.IDataTransferObject.WriteToAsync{TWriter}"/> 
-        /// can be called multiple times.
-        /// </remarks>
-        /// <typeparam name="TResponse">The type of the parsed response message.</typeparam>
-        /// <param name="message">The message to be sent.</param>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-        /// <param name="responseReader">The response reader.</param>
-        /// <returns>The message representing response; or <see langword="null"/> if request message in one-way.</returns>
-        /// <exception cref="InvalidOperationException">Leader node is not present in the cluster.</exception>
-        Task<TResponse> SendMessageToLeaderAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token = default);
-
-        /// <summary>
-        /// Sends one-way message to the cluster leader.
-        /// </summary>
-        /// <remarks>
-        /// <paramref name="message"/> should be reusable because <see cref="IO.IDataTransferObject.WriteToAsync{TWriter}"/> 
-        /// can be called multiple times.
-        /// </remarks>
-        /// <param name="message">The message to be sent.</param>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-        /// <returns>The task representing execution of this method.</returns>
-        /// <exception cref="InvalidOperationException">Leader node is not present in the cluster.</exception>
-        Task SendSignalToLeaderAsync(IMessage message, CancellationToken token = default);
+        IOutputChannel LeaderRouter { get; }
 
         /// <summary>
         /// Adds message handler.
         /// </summary>
         /// <param name="handler">The message handler.</param>
-        void AddMessageHandler(IInputChannel handler);
+        void AddListener(IInputChannel handler);
 
         /// <summary>
         /// Removes message handler.
         /// </summary>
         /// <param name="handler">The message handler.</param>
-        void RemoveMessageHandler(IInputChannel handler);
+        void RemoveListener(IInputChannel handler);
     }
 }

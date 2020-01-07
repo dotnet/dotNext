@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
 
-    internal partial class RaftHttpCluster
+    internal partial class RaftHttpCluster : IOutputChannel
     {
         private readonly DuplicateRequestDetector duplicationDetector;
         private volatile ISet<IPNetwork> allowedNetworks;
@@ -22,14 +22,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private volatile MemberMetadata metadata;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        void IMessageBus.AddMessageHandler(IInputChannel handler)
+        void IMessageBus.AddListener(IInputChannel handler)
             => messageHandlers = messageHandlers.Add(handler);
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        void IMessageBus.RemoveMessageHandler(IInputChannel handler)
+        void IMessageBus.RemoveListener(IInputChannel handler)
             => messageHandlers = messageHandlers.Remove(handler);
 
-        async Task<TResponse> IMessageBus.SendMessageToLeaderAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
+        async Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
         {
             if (!token.CanBeCanceled)
                 token = Token;
@@ -53,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             throw new OperationCanceledException(token);
         }
 
-        async Task IMessageBus.SendSignalToLeaderAsync(IMessage message, CancellationToken token)
+        async Task IOutputChannel.SendSignalAsync(IMessage message, CancellationToken token)
         {
             if (!token.CanBeCanceled)
                 token = Token;
@@ -82,6 +82,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             while (!token.IsCancellationRequested);
             throw new OperationCanceledException(token);
         }
+
+        IOutputChannel IMessageBus.LeaderRouter => this;
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
         private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
