@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             set => lockName = value;
         }
 
-        public ContentType Type => new ContentType(MediaTypeNames.Application.Octet);
+        public ContentType Type { get; } = new ContentType(MediaTypeNames.Application.Octet);
 
         private protected static Encoding Encoding => Encoding.Unicode;
     }

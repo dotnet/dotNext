@@ -42,5 +42,7 @@ namespace DotNext
         internal static string InvalidLockToken => Resources.GetString("InvalidLockToken");
     
         internal static string UnsupportedAddressFamily => Resources.GetString("UnsupportedAddressFamily");
+
+        internal static string UnresolvedLocalMember => Resources.GetString("UnresolvedLocalMember");
     }
 }

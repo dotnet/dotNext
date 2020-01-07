@@ -46,7 +46,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             protocolVersion = config.ProtocolVersion;
             //dependencies
             configurator = dependencies.GetService<IClusterMemberLifetime>();
-            messageHandlers = ImmutableList.CreateRange(dependencies.GetServices<IMessageHandler>());
+            messageHandlers = ImmutableList.CreateRange(dependencies.GetServices<IInputChannel>());
             AuditTrail = dependencies.GetService<IPersistentState>() ?? new InMemoryAuditTrail();
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
@@ -158,7 +158,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 configurationTracker.Dispose();
                 duplicationDetector.Dispose();
                 distributedLock = null;
-                messageHandlers = ImmutableList<IMessageHandler>.Empty;
+                messageHandlers = ImmutableList<IInputChannel>.Empty;
             }
 
             base.Dispose(disposing);

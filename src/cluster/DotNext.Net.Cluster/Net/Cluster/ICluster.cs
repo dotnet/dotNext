@@ -32,6 +32,6 @@ namespace DotNext.Net.Cluster
         Task<bool> ResignAsync(CancellationToken token);
 
         object? IServiceProvider.GetService(Type serviceType)
-            => serviceType.IsAssignableFrom(GetType()) ? this : null;
+            => serviceType.IsAssignableFrom(GetType()) ? this : null; 
     }
 }

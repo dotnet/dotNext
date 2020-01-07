@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Messaging
 {
     /// <summary>
-    /// Represents incoming message handler that can be registered in DI container.
+    /// Defines the interface that a channel must implement to receive a message.
     /// </summary>
-    public interface IMessageHandler
+    public interface IInputChannel
     {
         /// <summary>
         /// Determines whether the specified message can be processed by this handler.

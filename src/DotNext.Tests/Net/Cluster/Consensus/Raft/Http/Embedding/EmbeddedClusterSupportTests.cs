@@ -108,9 +108,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             //ensure that leader is elected
             WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
 
-            var box1 = host1.Services.GetRequiredService<IMessageHandler>() as Mailbox;
-            var box2 = host2.Services.GetRequiredService<IMessageHandler>() as Mailbox;
-            var box3 = host3.Services.GetRequiredService<IMessageHandler>() as Mailbox;
+            var box1 = host1.Services.GetRequiredService<IInputChannel>() as Mailbox;
+            var box2 = host2.Services.GetRequiredService<IInputChannel>() as Mailbox;
+            var box3 = host3.Services.GetRequiredService<IInputChannel>() as Mailbox;
 
 
             await host1.Services.GetRequiredService<IMessageBus>().SendSignalToLeaderAsync(new TextMessage("Message to leader", "simple"));
@@ -165,7 +165,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host2.StartAsync();
 
             var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(member => member.Endpoint.Port == 3263);
-            var messageBox = host2.Services.GetService<IMessageHandler>() as Mailbox;
+            var messageBox = host2.Services.GetService<IInputChannel>() as Mailbox;
             NotNull(messageBox);
             //request-reply test
             var response = await client.SendTextMessageAsync<StreamMessage>(CreateBufferedMessageAsync, "Request", "Ping");

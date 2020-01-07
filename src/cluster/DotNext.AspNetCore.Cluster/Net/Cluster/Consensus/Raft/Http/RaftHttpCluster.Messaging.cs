@@ -18,15 +18,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private readonly DuplicateRequestDetector duplicationDetector;
         private volatile ISet<IPNetwork> allowedNetworks;
-        private volatile ImmutableList<IMessageHandler> messageHandlers;
+        private volatile ImmutableList<IInputChannel> messageHandlers;
         private volatile MemberMetadata metadata;
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        void IMessageBus.AddMessageHandler(IMessageHandler handler)
+        void IMessageBus.AddMessageHandler(IInputChannel handler)
             => messageHandlers = messageHandlers.Add(handler);
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        void IMessageBus.RemoveMessageHandler(IMessageHandler handler)
+        void IMessageBus.RemoveMessageHandler(IInputChannel handler)
             => messageHandlers = messageHandlers.Remove(handler);
 
         async Task<TResponse> IMessageBus.SendMessageToLeaderAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
@@ -84,9 +84,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
-        private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IEnumerable<IMessageHandler> handlers, HttpResponse response, CancellationToken token)
+        private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
         {
-            IMessageHandler? handler = handlers.FirstOrDefault(message.IsSignalSupported);
+            IInputChannel? handler = handlers.FirstOrDefault(message.IsSignalSupported);
             if(handlers is null)
                 return;
             IBufferedMessage buffered;
@@ -103,7 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             });
         }
 
-        private static Task ReceiveOneWayMessage(ISubscriber sender, CustomMessage request, IEnumerable<IMessageHandler> handlers, bool reliable, HttpResponse response, CancellationToken token)
+        private static Task ReceiveOneWayMessage(ISubscriber sender, CustomMessage request, IEnumerable<IInputChannel> handlers, bool reliable, HttpResponse response, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status204NoContent;
             //drop duplicated request
@@ -120,7 +120,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return task;
         }
 
-        private static async Task ReceiveMessage(ISubscriber sender, CustomMessage request, IEnumerable<IMessageHandler> handlers, HttpResponse response, CancellationToken token)
+        private static async Task ReceiveMessage(ISubscriber sender, CustomMessage request, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
             var task = handlers.TryReceiveMessage(sender, request.Message, response.HttpContext, token);

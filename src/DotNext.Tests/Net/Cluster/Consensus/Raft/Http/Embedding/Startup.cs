@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                     options.ShutdownTimeout = System.TimeSpan.FromMinutes(2);
                 })
                 .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
-                .AddSingleton<IMessageHandler, Mailbox>()
+                .AddSingleton<IInputChannel, Mailbox>()
                 .AddSingleton<MetricsCollector, TestMetricsCollector>();
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,7 +7,6 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.DistributedServices
 {
     using Messaging;
-    using Replication;
     using Threading;
     using static IO.DataTransferObject;
     
@@ -18,7 +18,7 @@ namespace DotNext.Net.Cluster.DistributedServices
     /// </remarks>
     [EditorBrowsable(EditorBrowsableState.Never)]
     [CLSCompliant(false)]
-    public sealed class DistributedLockProvider : IDistributedLockProvider, IMessageHandler
+    public sealed class DistributedLockProvider : IDistributedLockProvider, IInputChannel
     {
         /*
          * Lock acquisition algorithm:
@@ -31,10 +31,11 @@ namespace DotNext.Net.Cluster.DistributedServices
         private DistributedLockConfigurationProvider? lockConfig;
         private readonly IDistributedLockEngine engine;
         private readonly IMessageBus messageBus;
-        private ClusterMemberId owner;
+        private readonly ClusterMemberId owner;
 
-        private DistributedLockProvider(IDistributedLockEngine engine, IMessageBus messageBus)
+        internal DistributedLockProvider(IDistributedLockEngine engine, IMessageBus messageBus, ClusterMemberId owner)
         {
+            this.owner = owner;
             this.engine = engine;
             this.messageBus = messageBus;
             DefaultOptions = new DistributedLockOptions();
@@ -70,20 +71,20 @@ namespace DotNext.Net.Cluster.DistributedServices
             await engine.UnregisterAsync(request.LockName, token).ConfigureAwait(false);
         }
 
-        Task IMessageHandler.ReceiveSignal(ISubscriber sender, IMessage signal, object? context, CancellationToken token) => signal.Name switch
+        Task IInputChannel.ReceiveSignal(ISubscriber sender, IMessage signal, object? context, CancellationToken token) => signal.Name switch
         {
             ForcedUnlockRequest.Name => ForceUnlockAsync(signal, token),
             _ => Task.FromException<IMessage>(new NotSupportedException())
         };
 
-        Task<IMessage> IMessageHandler.ReceiveMessage(ISubscriber sender, IMessage message, object? context, CancellationToken token) => message.Name switch
+        Task<IMessage> IInputChannel.ReceiveMessage(ISubscriber sender, IMessage message, object? context, CancellationToken token) => message.Name switch
         {
             AcquireLockRequest.Name => AcquireLockAsync(message, token),
             ReleaseLockRequest.Name => ReleaseLockAsync(message, token),
             _ => Task.FromException<IMessage>(new NotSupportedException())
         }; 
 
-        bool IMessageHandler.IsSupported(string messageName, bool oneWay)
+        bool IInputChannel.IsSupported(string messageName, bool oneWay)
             => oneWay ? messageName.IsOneOf(ForcedUnlockRequest.Name) : messageName.IsOneOf(AcquireLockRequest.Name, ReleaseLockRequest.Name);
 
         private Task<bool> Release(string lockName, Guid version, CancellationToken token)
@@ -190,21 +191,17 @@ namespace DotNext.Net.Cluster.DistributedServices
         {
             set => lockConfig = value;
         }
-
+        
+        /// <summary>
+        /// Releases the lock even if it was not acquired
+        /// by the current cluster member.
+        /// </summary>
+        /// <param name="lockName">The name of the lock to release.</param>
+        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string; or contains invalid characters.</exception>
         public async void ForceUnlock(string lockName)
         {
             engine.ValidateName(lockName);
             await messageBus.SendSignalToLeaderAsync(new ForcedUnlockRequest { LockName = lockName }).ConfigureAwait(false);
         }
-
-        /// <summary>
-        /// Attempts to create distributed lock provider.
-        /// </summary>
-        /// <typeparam name="TCluster">The type implementing cluster infrastructure.</typeparam>
-        /// <param name="cluster">The cluster instance.</param>
-        /// <returns>The lock provider; or <see langword="null"/> if cluster infrastructure is not compatible with distributed lock.</returns>
-        public static DistributedLockProvider? TryCreate<TCluster>(TCluster cluster)
-            where TCluster : class, IMessageBus, IReplicationCluster
-            => cluster.GetService(typeof(IDistributedLockEngine)) is IDistributedLockEngine lockEngine ? new DistributedLockProvider(lockEngine, cluster) : null;
     }
 }

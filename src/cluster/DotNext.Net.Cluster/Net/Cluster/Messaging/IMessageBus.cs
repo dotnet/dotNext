@@ -56,12 +56,12 @@ namespace DotNext.Net.Cluster.Messaging
         /// Adds message handler.
         /// </summary>
         /// <param name="handler">The message handler.</param>
-        void AddMessageHandler(IMessageHandler handler);
+        void AddMessageHandler(IInputChannel handler);
 
         /// <summary>
         /// Removes message handler.
         /// </summary>
         /// <param name="handler">The message handler.</param>
-        void RemoveMessageHandler(IMessageHandler handler);
+        void RemoveMessageHandler(IInputChannel handler);
     }
 }
