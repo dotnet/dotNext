@@ -30,8 +30,5 @@ namespace DotNext.Net.Cluster
         /// </summary>
         /// <returns><see langword="true"/> if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
         Task<bool> ResignAsync(CancellationToken token);
-
-        object? IServiceProvider.GetService(Type serviceType)
-            => serviceType.IsAssignableFrom(GetType()) ? this : null; 
     }
 }
