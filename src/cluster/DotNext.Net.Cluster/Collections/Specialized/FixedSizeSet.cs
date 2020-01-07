@@ -68,15 +68,9 @@ namespace DotNext.Collections.Specialized
                 goto method_exit;
             var index = GetRowIndex(comparer.GetHashCode(item));
             ref Node lookup = ref buffer.Span[index];
-            for (var offset = 0; offset < size; offset++, lookup = ref Unsafe.Add(ref lookup, 1))
-            {
-                if (lookup.HasValue)
-                    if (comparer.Equals(item, lookup.Value))
-                        return true;
-                    else
-                        continue;
-                break;
-            }
+            for (var offset = 0; offset < size && lookup.HasValue; offset++, lookup = ref Unsafe.Add(ref lookup, 1))
+                if (comparer.Equals(item, lookup.Value))
+                    return true;
             method_exit:
             return false;
         }
