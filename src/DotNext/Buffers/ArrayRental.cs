@@ -106,7 +106,14 @@ namespace DotNext.Buffers
         [EditorBrowsable(EditorBrowsableState.Never)]
         public ref T GetPinnableReference() => ref array[0];
 
-        
+        /// <summary>
+        /// Sets all elements of the rented array to default value of type <typeparamref name="T"/>.
+        /// </summary>
+        public void Clear()
+        {
+            if (array != null)
+                Array.Clear(array, 0, Length);
+        }
 
         /// <summary>
         /// Gets textual representation of the rented memory.

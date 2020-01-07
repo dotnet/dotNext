@@ -57,5 +57,18 @@ namespace DotNext.Buffers
             rental.Dispose();
             Empty(rental.Segment);
         }
+
+        [Fact]
+        public static void CleanElements()
+        {
+            using var array = new ArrayRental<string>(new string[] { "1", "2", "3" });
+            Equal("1", array[0]);
+            Equal("2", array[1]);
+            Equal("3", array[2]);
+            array.Clear();
+            Null(array[0]);
+            Null(array[1]);
+            Null(array[2]);
+        }
     }
 }
