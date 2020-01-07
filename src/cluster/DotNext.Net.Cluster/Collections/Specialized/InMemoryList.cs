@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace DotNext.Collections.Generic
+namespace DotNext.Collections.Specialized
 {
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct InMemoryList<T> : IReadOnlyList<T>

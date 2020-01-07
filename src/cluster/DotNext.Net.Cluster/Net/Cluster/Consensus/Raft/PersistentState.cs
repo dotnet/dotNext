@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Collections.Generic;
+    using Collections.Specialized;
     using IO;
     using IO.Log;
     using Replication;
