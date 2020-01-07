@@ -77,8 +77,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly long term;
             private readonly DateTimeOffset timestamp;
             private readonly ReadOnlyMemory<char> name;
-            //it is struct for faster serialization with writer
-            private readonly Guid owner, version;
+            private readonly ClusterMemberId owner;
+            private readonly Guid version;
             private readonly TimeSpan leaseTime;
 
             internal AcquireLockCommand(string name, DistributedLock lockInfo, long term)
@@ -112,7 +112,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 lockData.Name = await entry.ReadStringAsync(StringLengthEncoding.Plain, context).ConfigureAwait(false);
                 lockData.Info = new DistributedLock
                 {
-                    Owner = await entry.ReadAsync<Guid>().ConfigureAwait(false),
+                    Owner = await entry.ReadAsync<ClusterMemberId>().ConfigureAwait(false),
                     Version = await entry.ReadAsync<Guid>().ConfigureAwait(false),
                     LeaseTime = await entry.ReadAsync<TimeSpan>().ConfigureAwait(false)
                 };
@@ -165,7 +165,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool> IDistributedLockEngine.WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token)
             => acquireEvent ? this.acquireEvent.WaitAsync(timeout, token) : releaseEvent.WaitAsync(timeout, token);
 
-        async Task IDistributedLockEngine.ProvideSponsorshipAsync(Sponsor<DistributedLock> sponsor, CancellationToken token)
+        async Task IDistributedLockEngine.ProvideSponsorshipAsync<TSponsor>(TSponsor sponsor, CancellationToken token)
         {
             using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
             var acquiredLocks = this.acquiredLocks;
@@ -175,7 +175,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 while(enumerator.MoveNext())
                 {
                     var (name, info) = enumerator.Current;
-                    switch(sponsor(ref info))
+                    switch(sponsor.UpdateLease(ref info))
                     {
                         case LeaseState.Expired:
                             modified = true;
@@ -183,7 +183,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                             builder.Remove(name);
                             RemoveLockFile(name);
                             continue;
-                        case LeaseState.Renewed:
+                        case LeaseState.Prolonged:
                             modified = true;
                             builder[name] = info;
                             continue;
@@ -210,7 +210,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool> IDistributedLockEngine.RegisterAsync(string name, DistributedLock lockInfo, CancellationToken token)
             => lockInfo.IsExpired ? FalseTask.Task : RegisterAsync(name, lockInfo, token);
 
-        async Task<bool> IDistributedLockEngine.UnregisterAsync(string name, Guid owner, Guid version, CancellationToken token)
+        async Task<bool> IDistributedLockEngine.UnregisterAsync(string name, ClusterMemberId owner, Guid version, CancellationToken token)
         {
             using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
             if (acquiredLocks.TryGetValue(name, out var existingLock) && existingLock.Owner == owner && existingLock.Version == version)
@@ -230,8 +230,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await AppendAsync(writeLock, new ReleaseLockCommand(name, Term), token).ConfigureAwait(false);
         }
 
-        bool IDistributedLockEngine.IsRegistered(string lockName, Guid version)
-            => acquiredLocks.TryGetValue(lockName, out var lockInfo) && lockInfo.Version == version && lockInfo.Owner == NodeId;
+        bool IDistributedLockEngine.IsRegistered(string lockName, in ClusterMemberId owner, in Guid version)
+            => acquiredLocks.TryGetValue(lockName, out var lockInfo) && lockInfo.Version == version && lockInfo.Owner == owner;
 
         private static string FileNameToLockName(string fileName) 
         {

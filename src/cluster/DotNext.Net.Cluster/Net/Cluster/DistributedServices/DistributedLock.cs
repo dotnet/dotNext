@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.DistributedServices
     {
         private DateTimeOffset creationTime;
 
-        internal Guid Owner;
+        internal ClusterMemberId Owner;
 
         //it is needed to distinguish different versions of the same lock
         internal Guid Version;  
@@ -30,7 +30,7 @@ namespace DotNext.Net.Cluster.DistributedServices
             }
         }
 
-        Guid IDistributedObject.Owner => Owner;
+        ClusterMemberId IDistributedObject.Owner => Owner;
 
         internal void Renew() => creationTime = DateTimeOffset.UtcNow;
 

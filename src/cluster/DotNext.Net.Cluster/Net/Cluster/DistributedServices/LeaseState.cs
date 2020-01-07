@@ -7,6 +7,6 @@ namespace DotNext.Net.Cluster.DistributedServices
     {
         Active = 0,
         Expired,
-        Renewed
+        Prolonged
     }
 }

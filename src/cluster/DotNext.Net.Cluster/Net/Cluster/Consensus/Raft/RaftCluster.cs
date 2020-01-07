@@ -1,7 +1,7 @@
-﻿using DotNext.Net.Cluster.Replication;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -13,6 +13,7 @@ using static System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
+    using Replication;
     using Threading;
     using static Threading.Tasks.ValueTaskSynchronization;
 
@@ -23,6 +24,46 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         where TMember : class, IRaftClusterMember, IDisposable
     {
         private static readonly Action<TMember> CancelPendingRequests = DelegateHelpers.CreateOpenDelegate<Action<TMember>>(member => member.CancelPendingRequests());
+        private static readonly IMemberCollection EmptyCollection = new EmptyMemberCollection();
+
+        internal interface IMemberCollection : ICollection<TMember>, IReadOnlyCollection<TMember>
+        {
+            
+        }
+
+        private sealed class EmptyMemberCollection : IMemberCollection
+        {
+            public int Count => 0;
+
+            void ICollection<TMember>.Add(TMember member) => throw new NotSupportedException();
+        
+            void ICollection<TMember>.Clear() { }
+
+            bool ICollection<TMember>.Contains(TMember member) => false;
+
+            bool ICollection<TMember>.Remove(TMember member) => false;
+
+            bool ICollection<TMember>.IsReadOnly => true;
+
+            void ICollection<TMember>.CopyTo(TMember[] array, int arrayIndex) { }
+
+            public IEnumerator<TMember> GetEnumerator() => Enumerable.Empty<TMember>().GetEnumerator();
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
+        private sealed class MemberCollection : LinkedList<TMember>, IMemberCollection
+        {
+            internal MemberCollection()
+            {
+
+            }
+
+            internal MemberCollection(IEnumerable<TMember> members)
+                : base(members)
+            {
+            }
+        }
 
         /// <summary>
         /// Represents cluster member.
@@ -73,7 +114,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents collection of cluster members stored in the memory of the current process.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        protected readonly ref struct MutableMemberCollection
+        protected readonly ref struct MemberCollectionBuilder
         {
             /// <summary>
             /// Represents enumerator over cluster members.
@@ -109,12 +150,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 public MemberHolder Current => new MemberHolder(current);
             }
 
-            private readonly LinkedList<TMember> members;
+            private readonly MemberCollection members;
 
-            internal MutableMemberCollection(IEnumerable<TMember> members) => this.members = new LinkedList<TMember>(members);
+            internal MemberCollectionBuilder(IEnumerable<TMember> members) => this.members = new MemberCollection(members);
 
-            internal MutableMemberCollection(out ICollection<TMember> members)
-                => members = this.members = new LinkedList<TMember>();
+            internal MemberCollectionBuilder(out IMemberCollection members)
+                => members = this.members = new MemberCollection();
 
             /// <summary>
             /// Adds new cluster member.
@@ -128,17 +169,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <returns>The enumerator over cluster members.</returns>
             public Enumerator GetEnumerator() => new Enumerator(members);
 
-            internal LinkedList<TMember> AsLinkedList() => members;
+            internal IMemberCollection Build() => members;
         }
 
         /// <summary>
         /// Represents mutator of collection of members.
         /// </summary>
         /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
-        protected delegate void MemberCollectionMutator(MutableMemberCollection members);
+        protected delegate void MemberCollectionMutator(MemberCollectionBuilder members);
 
 
-        private volatile ICollection<TMember> members;
+        private volatile IMemberCollection members;
 
         private AsyncLock transitionSync;  //used to synchronize state transitions
 
@@ -157,12 +198,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="config">The configuration of the local node.</param>
         /// <param name="members">The collection of members that can be modified at construction stage.</param>
-        protected RaftCluster(IClusterMemberConfiguration config, out MutableMemberCollection members)
+        protected RaftCluster(IClusterMemberConfiguration config, out MemberCollectionBuilder members)
         {
             electionTimeoutProvider = config.ElectionTimeout;
             electionTimeout = electionTimeoutProvider.RandomTimeout();
             allowPartitioning = config.Partitioning;
-            members = new MutableMemberCollection(out var collection);
+            members = new MemberCollectionBuilder(out var collection);
             this.members = collection;
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
@@ -204,9 +245,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private void ChangeMembers(MemberCollectionMutator mutator)
         {
-            var members = new MutableMemberCollection(this.members);
+            var members = new MemberCollectionBuilder(this.members);
             mutator(members);
-            this.members = members.AsLinkedList();
+            this.members = members.Build();
         }
 
         /// <summary>
@@ -225,7 +266,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Gets members of Raft-based cluster.
         /// </summary>
         /// <returns>A collection of cluster member.</returns>
-        public IReadOnlyCollection<TMember> Members => state is null ? Array.Empty<TMember>() : (IReadOnlyCollection<TMember>)members;
+        public IReadOnlyCollection<TMember> Members => state is null ? EmptyCollection : members;
 
         IEnumerable<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
@@ -549,7 +590,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (disposing)
             {
-                var members = Interlocked.Exchange(ref this.members, Array.Empty<TMember>());
+                ICollection<TMember> members = Interlocked.Exchange(ref this.members, EmptyCollection);
                 Dispose(members);
                 if (members.Count > 0)
                     members.Clear();

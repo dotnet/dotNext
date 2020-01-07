@@ -1,5 +1,3 @@
-using System;
-
 namespace DotNext.Net.Cluster.DistributedServices
 {
     internal interface IDistributedObject
@@ -7,6 +5,6 @@ namespace DotNext.Net.Cluster.DistributedServices
         /// <summary>
         /// Gets the owner of this distributed object.
         /// </summary>
-        Guid Owner { get; }
+        ClusterMemberId Owner { get; }
     }
 }

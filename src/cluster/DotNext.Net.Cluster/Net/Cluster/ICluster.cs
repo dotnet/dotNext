@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,7 +8,7 @@ namespace DotNext.Net.Cluster
     /// <summary>
     /// Represents cluster node in distributed environment.
     /// </summary>
-    public interface ICluster
+    public interface ICluster : IServiceProvider
     {
         /// <summary>
         /// Gets the leader node.
@@ -29,5 +30,8 @@ namespace DotNext.Net.Cluster
         /// </summary>
         /// <returns><see langword="true"/> if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
         Task<bool> ResignAsync(CancellationToken token);
+
+        object? IServiceProvider.GetService(Type serviceType)
+            => serviceType.IsAssignableFrom(GetType()) ? this : null;
     }
 }

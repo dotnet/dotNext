@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace DotNext.Runtime.CompilerServices
 {
     /// <summary>
-    /// Marks property as a provide of distributed service.
+    /// Marks property as a provider of distributed service.
     /// </summary>
     /// <remarks>
     /// This attribute is not indendent to be used directly in your code.

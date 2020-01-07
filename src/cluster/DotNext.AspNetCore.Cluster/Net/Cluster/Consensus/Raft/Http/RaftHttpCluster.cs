@@ -34,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private IDistributedLockProvider? distributedLock;
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
-        private RaftHttpCluster(RaftClusterMemberConfiguration config, IServiceProvider dependencies, out MutableMemberCollection members, Func<Action<RaftClusterMemberConfiguration, string>, IDisposable> configTracker)
+        private RaftHttpCluster(RaftClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<RaftClusterMemberConfiguration, string>, IDisposable> configTracker)
             : base(config, out members)
         {
             openConnectionForEachRequest = config.OpenConnectionForEachRequest;
@@ -55,12 +55,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             configurationTracker = configTracker(ConfigurationChanged);
         }
 
-        private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MutableMemberCollection members)
+        private RaftHttpCluster(IOptionsMonitor<RaftClusterMemberConfiguration> config, IServiceProvider dependencies, out MemberCollectionBuilder members)
             : this(config.CurrentValue, dependencies, out members, config.OnChange)
         {
         }
 
-        private protected RaftHttpCluster(IServiceProvider dependencies, out MutableMemberCollection members)
+        private protected RaftHttpCluster(IServiceProvider dependencies, out MemberCollectionBuilder members)
             : this(dependencies.GetRequiredService<IOptionsMonitor<RaftClusterMemberConfiguration>>(), dependencies, out members)
         {
         }

@@ -1,9 +1,8 @@
-using System;
-
 namespace DotNext.Net.Cluster.DistributedServices
 {
-    internal interface ISponsor
+    internal interface ISponsor<TObject>
+        where TObject : IDistributedObject
     {
-        bool IsAvailable(Guid owner);
+        LeaseState UpdateLease(ref TObject obj);
     }
 }

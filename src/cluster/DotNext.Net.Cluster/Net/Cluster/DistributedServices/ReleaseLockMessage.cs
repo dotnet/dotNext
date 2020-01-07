@@ -13,7 +13,8 @@ namespace DotNext.Net.Cluster.DistributedServices
     {
         internal const string Name = "ReleaseDistributedLockRequest";
         
-        internal Guid Owner, Version;
+        internal ClusterMemberId Owner;
+        internal Guid Version;
 
         string IMessage.Name => Name;
 
@@ -34,7 +35,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         {
             var context = new DecodingContext(Encoding, true);
             LockName = await reader.ReadStringAsync(StringLengthEncoding.Plain, context, token).ConfigureAwait(false);
-            Owner = await reader.ReadAsync<Guid>(token).ConfigureAwait(false);
+            Owner = await reader.ReadAsync<ClusterMemberId>(token).ConfigureAwait(false);
             Version = await reader.ReadAsync<Guid>(token).ConfigureAwait(false);
             return this;
         }

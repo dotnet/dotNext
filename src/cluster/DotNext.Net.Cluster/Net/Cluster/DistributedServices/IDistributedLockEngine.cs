@@ -4,12 +4,10 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.DistributedServices
 {
-    using IDistributedApplicationState = IO.Log.IDistributedApplicationState;
-
     /// <summary>
     /// Represents engine of distributed services.
     /// </summary>
-    internal interface IDistributedLockEngine : IDistributedApplicationState
+    internal interface IDistributedLockEngine
     {
         void ValidateName(string name);
 
@@ -17,10 +15,11 @@ namespace DotNext.Net.Cluster.DistributedServices
 
         Task<bool> WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token);
 
-        bool IsRegistered(string lockName, Guid version);
+        bool IsRegistered(string lockName, in ClusterMemberId owner, in Guid version);
 
         //releases all expired locks
-        Task ProvideSponsorshipAsync(Sponsor<DistributedLock> sponsor, CancellationToken token);
+        Task ProvideSponsorshipAsync<TSponsor>(TSponsor sponsor, CancellationToken token)
+            where TSponsor : ISponsor<DistributedLock>;
 
         //writes the log entry describing lock acquisition
         //but doesn't wait for commit    
@@ -28,7 +27,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         
         //write the log entry describing lock release
         //but doesn't wait for commit
-        Task<bool> UnregisterAsync(string name, Guid owner, Guid version, CancellationToken token);
+        Task<bool> UnregisterAsync(string name, ClusterMemberId owner, Guid version, CancellationToken token);
 
         //write the log entry describing lock release
         //but doesn't wait for commit
