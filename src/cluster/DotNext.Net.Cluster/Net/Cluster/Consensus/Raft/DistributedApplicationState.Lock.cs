@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -120,6 +121,70 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        /// <summary>
+        /// Represents interpreter of distributed lock management commands.
+        /// </summary>
+        /// <remarks>
+        /// This type should be inside of <see cref="PersistentState.SnapshotBuilder"/> custom implementation.
+        /// </remarks>
+        protected readonly struct LockSnapshotBuilder
+        {
+            private readonly IDictionary<string, DistributedLock> table;
+
+            internal LockSnapshotBuilder(int count, IEqualityComparer<string> lockNameComparer) => table = new Dictionary<string, DistributedLock>(count, lockNameComparer);
+
+            private async ValueTask ApplyAcquireLockCommandAsync(LogEntry entry)
+            {
+                var (lockName, lockInfo) = await AcquireLockCommand.ReadAsync(entry).ConfigureAwait(false);
+                table[lockName] = lockInfo;
+            }
+
+            private async ValueTask ApplyReleaseLockCommandAsync(LogEntry entry) => table.Remove(await ReleaseLockCommand.ReadAsync(entry).ConfigureAwait(false));
+
+            private ValueTask InstallSnapshotAsync(LogEntry entry) => ApplySnapshotAsync(entry, table);
+
+            private async ValueTask InstallEntryAsync(LogEntry entry)
+            {
+                var command = await entry.ReadAsync<LockCommand>().ConfigureAwait(false);
+                var task = command switch
+                {
+                    LockCommand.Nop => new ValueTask(),
+                    LockCommand.Acquire => ApplyAcquireLockCommandAsync(entry),
+                    LockCommand.Release => ApplyReleaseLockCommandAsync(entry),
+                    _ => throw new InvalidDataException()
+                };
+                await task.ConfigureAwait(false);
+            }
+
+            /// <summary>
+            /// Appens a new command to this builder.
+            /// </summary>
+            /// <param name="entry">The log entry containing lock management command.</param>
+            /// <returns>The task representing state of asynchronous execution.</returns>
+            /// <exception cref="InvalidDataException"><paramref name="entry"/> is corrupted.</exception>
+            public ValueTask AppendAsync(LogEntry entry) => entry.IsSnapshot ? InstallSnapshotAsync(entry) : InstallEntryAsync(entry);
+
+            /// <summary>
+            /// Writes captured snapshot of distributed locks.
+            /// </summary>
+            /// <typeparam name="TWriter">The type of the binary writer.</typeparam>
+            /// <param name="writer">The binary writer.</param>
+            /// <param name="token">The token that can be used to cancel the operation.</param>
+            /// <returns>The task representing state of asynchronous execution.</returns>
+            public async ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+                where TWriter : IAsyncBinaryWriter
+            {
+                //implementation should be in sync with ApplySnapshotAsync method
+                await writer.WriteAsync(table.Count, token).ConfigureAwait(false);
+                var context = new EncodingContext(Encoding.UTF8, true);
+                foreach(var (name, info) in table)
+                {
+                    await writer.WriteAsync(name.AsMemory(), context, StringLengthEncoding.Plain, token).ConfigureAwait(false);
+                    await writer.WriteAsync(info, token).ConfigureAwait(false);
+                }
+            }
+        }
+
         //copy-on-write semantics
         private volatile ImmutableDictionary<string, DistributedLock> acquiredLocks = ImmutableDictionary.Create<string, DistributedLock>(StringComparer.Ordinal, BitwiseComparer<DistributedLock>.Instance);
         private readonly DirectoryInfo lockPersistentStateStorage;
@@ -155,11 +220,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var command = await entry.ReadAsync<LockCommand>().ConfigureAwait(false);
             ValueTask task = command switch
             {
+                LockCommand.Nop => new ValueTask(),
                 LockCommand.Acquire => ApplyAcquireLockCommandAsync(entry),
                 LockCommand.Release => ApplyReleaseLockCommandAsync(entry),
-                _ => throw new InvalidOperationException()
+                _ => throw new InvalidDataException()
             };
             await task.ConfigureAwait(false);
+        }
+
+        private static async ValueTask ApplySnapshotAsync(LogEntry entry, IDictionary<string, DistributedLock> output)
+        {
+            var count = await entry.ReadAsync<int>().ConfigureAwait(false);
+            var context = new DecodingContext(Encoding.UTF8, true);
+            while (count-- > 0)
+            {
+                var name = await entry.ReadStringAsync(StringLengthEncoding.Plain, context).ConfigureAwait(false);
+                var info = await entry.ReadAsync<DistributedLock>().ConfigureAwait(false);
+                output[name] = info;
+            }
         }
 
         Task<bool> IDistributedLockEngine.WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token)
@@ -226,8 +304,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async Task IDistributedLockEngine.UnregisterAsync(string name, CancellationToken token)
         {
             using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
-            if(ImmutableInterlocked.TryRemove(ref acquiredLocks, name, out _))
+#pragma warning disable CS0420
+            if (ImmutableInterlocked.TryRemove(ref acquiredLocks, name, out _))
                 await AppendAsync(writeLock, new ReleaseLockCommand(name, Term), token).ConfigureAwait(false);
+#pragma warning restore CS0420
+        }
+
+        /// <summary>
+        /// Creates a new 
+        /// </summary>
+        /// <remarks>
+        /// This method should be called inside of <see cref="PersistentState.CreateSnapshotBuilder"/> method
+        /// to construct separated builder for the distributed lock table.
+        /// </remarks>
+        /// <returns>A new instance of snapshot builder.</returns>
+        protected LockSnapshotBuilder CreateLockSnapshotBuilder()
+        {
+            var acquiredLocks = this.acquiredLocks;
+            return new LockSnapshotBuilder(acquiredLocks.Count, acquiredLocks.KeyComparer);
         }
 
         bool IDistributedLockEngine.IsRegistered(string lockName, in ClusterMemberId owner, in Guid version)

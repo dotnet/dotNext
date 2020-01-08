@@ -38,12 +38,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="command">The command identifier.</param>
         /// <param name="entry">The log entry containing the command.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="command"/> is invalid command identifier.</exception>
+        /// <exception cref="InvalidDataException"><paramref name="entry"/> is corrupted.</exception>
         /// <seealso cref="LockCommandId"/>
         [CLSCompliant(false)]
         protected ValueTask ApplyAsync(uint command, LogEntry entry) => command switch
         {
             LockCommandId => ApplyLockCommandAsync(entry),
-            _ => throw new ArgumentOutOfRangeException(nameof(command)),
+            _ => throw new ArgumentOutOfRangeException(nameof(command))
         };
 
         /// <summary>
