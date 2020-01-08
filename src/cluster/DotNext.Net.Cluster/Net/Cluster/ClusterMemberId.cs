@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
@@ -84,6 +85,19 @@ namespace DotNext.Net.Cluster
         /// <returns>The hexadecimal representation of this identifier.</returns>
         public override string ToString()
             => Intrinsics.AsReadOnlySpan(this).ToHex();
+
+        /// <summary>
+        /// Attempts to parse cluster member identifier.
+        /// </summary>
+        /// <param name="identifier">The hexadecimal representation of identifier.</param>
+        /// <param name="value">The parsed identifier.</param>
+        /// <returns><see langword="true"/> if identifier parsed successfully; otherwise, <see langword="false"/>.</returns>
+        public static bool TryParse(ReadOnlySpan<char> identifier, out ClusterMemberId value)
+        {
+            value = default;
+            var bytes = Intrinsics.AsSpan(ref value);
+            return identifier.FromHex(bytes) == bytes.Length;
+        }
 
         /// <summary>
         /// Determines whether the two identifiers are equal.

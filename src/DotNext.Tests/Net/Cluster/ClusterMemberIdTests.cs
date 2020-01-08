@@ -39,5 +39,13 @@ namespace DotNext.Net.Cluster
             var id2 = new ClusterMemberId(bytes);
             Equal(id1, id2);
         }
+
+        [Fact]
+        public static void Parsing()
+        {
+            var expected = new Random().Next<ClusterMemberId>();
+            True(ClusterMemberId.TryParse(expected.ToString().AsSpan(), out var actual));
+            Equal(expected, actual);
+        }
     }
 }
