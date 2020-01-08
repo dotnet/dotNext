@@ -10,7 +10,7 @@
         /// Initializes a new constant equal to default value of type <typeparamref name="T"/>.
         /// </summary>
         public DefaultConst()
-            : base(default)
+            : base(default!)
         {
         }
     }

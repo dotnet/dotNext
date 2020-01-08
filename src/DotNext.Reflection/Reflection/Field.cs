@@ -353,7 +353,7 @@ namespace DotNext.Reflection
         public ref V this[[DisallowNull]in T @this]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref provider(@this);
+            get => ref provider(@this)!;
         }
 
         private static Field<T, V>? Reflect(string fieldName, bool nonPublic)
@@ -493,7 +493,7 @@ namespace DotNext.Reflection
         public ref V Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref provider();
+            get => ref provider()!;
         }
 
         private static Field<V>? Reflect(Type declaringType, string fieldName, bool nonPublic)

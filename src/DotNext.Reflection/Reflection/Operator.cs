@@ -148,8 +148,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="op">The reflected operator.</param>
         [return: NotNullIfNotNull("op")]
-        [return: MaybeNull]
-        public static implicit operator D([AllowNull]Operator<D>? op) => op?.Invoker;
+        public static implicit operator D?(Operator<D>? op) => op?.Invoker;
 
         /// <summary>
         /// Gets type of operator.

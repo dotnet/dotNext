@@ -127,7 +127,7 @@ namespace DotNext.Reflection
         public static Optional<T> TryConvert<U>(U value)
         {
             Operator<U, T>? converter = Type<U>.Operator.Get<T>(UnaryOperator.Convert);
-            return converter is null ? Optional<T>.Empty : converter(value);
+            return converter is null ? Optional<T>.Empty : converter(value)!;
         }
 
         /// <summary>
