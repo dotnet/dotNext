@@ -46,6 +46,8 @@ namespace DotNext.Net.Cluster
             var expected = new Random().Next<ClusterMemberId>();
             True(ClusterMemberId.TryParse(expected.ToString().AsSpan(), out var actual));
             Equal(expected, actual);
+            var invalidHex = "AB142244";
+            False(ClusterMemberId.TryParse(invalidHex.AsSpan(), out _));
         }
     }
 }
