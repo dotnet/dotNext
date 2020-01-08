@@ -28,7 +28,7 @@ namespace DotNext.Threading
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task containing delegate that can be used to release the lock. If delegate is <see langword="null"/> then lock is not acquired.</returns>
-        public delegate Task<Action?> Acquisition(TimeSpan timeout, CancellationToken token = default); 
+        public delegate Task<Func<Task>?> Acquisition(TimeSpan timeout, CancellationToken token = default); 
 
         internal enum Type : byte
         {
@@ -50,7 +50,7 @@ namespace DotNext.Threading
         /// The lock can be released by calling <see cref="Dispose()"/>.
         /// </remarks>
         [StructLayout(LayoutKind.Auto)]
-        public struct Holder : IDisposable
+        public struct Holder : IDisposable, IAsyncDisposable
         {
             private readonly object lockedObject;
             private readonly Type type;
@@ -59,6 +59,20 @@ namespace DotNext.Threading
             {
                 this.lockedObject = lockedObject;
                 this.type = type;
+            }
+
+            private static void ReleaseAsync(Func<Task> action)
+            {
+                var task = action();
+                try
+                {
+                    task.Wait();
+                }
+                finally
+                {
+                    if(task.IsCompleted)
+                        task.Dispose();
+                }
             }
 
             /// <summary>
@@ -91,10 +105,48 @@ namespace DotNext.Threading
                         As<AsyncSharedLock>(lockedObject).Release();
                         break;
                     case Type.Custom:
-                        As<Action>(lockedObject).Invoke();
+                        ReleaseAsync(As<Func<Task>>(lockedObject));
                         break;
                 }
                 this = default;
+            }
+
+            /// <summary>
+            /// Releases the acquired lock asynchronously.
+            /// </summary>
+            /// <remarks>
+            /// This object is not reusable after calling of this method.
+            /// </remarks>
+            public ValueTask DisposeAsync()
+            {
+                var task = default(ValueTask);
+                switch (type)
+                {
+                    case Type.Exclusive:
+                        As<AsyncExclusiveLock>(lockedObject).Release();
+                        break;
+                    case Type.ReadLock:
+                        As<AsyncReaderWriterLock>(lockedObject).ExitReadLock();
+                        break;
+                    case Type.WriteLock:
+                        As<AsyncReaderWriterLock>(lockedObject).ExitWriteLock();
+                        break;
+                    case Type.UpgradeableReadLock:
+                        As<AsyncReaderWriterLock>(lockedObject).ExitUpgradeableReadLock();
+                        break;
+                    case Type.Semaphore:
+                        As<SemaphoreSlim>(lockedObject).Release(1);
+                        break;
+                    case Type.Strong:
+                    case Type.Weak:
+                        As<AsyncSharedLock>(lockedObject).Release();
+                        break;
+                    case Type.Custom:
+                        task = new ValueTask(As<Func<Task>>(lockedObject).Invoke());
+                        break;
+                }
+                this = default;
+                return task;
             }
 
             /// <summary>
@@ -257,11 +309,11 @@ namespace DotNext.Threading
         /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
         public readonly async Task<Holder> TryAcquireAsync(TimeSpan timeout, CancellationToken token, bool suppressCancellation = false)
         {
-            static Task<Action?> TryAcquireCustomAsync(Acquisition acquisition, TimeSpan timeout, CancellationToken token, bool suppressCancellation)
+            static Task<Func<Task>?> TryAcquireCustomAsync(Acquisition acquisition, TimeSpan timeout, CancellationToken token, bool suppressCancellation)
             {
                 var releaseTask = acquisition(timeout, token);
                 return suppressCancellation && token.CanBeCanceled ?
-                    releaseTask.OnCanceled<Action?, DefaultConst<Action?>>() :
+                    releaseTask.OnCanceled<Func<Task>?, DefaultConst<Func<Task>?>>() :
                     releaseTask;
             }
 
