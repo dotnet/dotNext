@@ -113,7 +113,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             var box3 = host3.Services.GetRequiredService<IInputChannel>() as Mailbox;
 
 
-            await host1.Services.GetRequiredService<IMessageBus>().SendSignalToLeaderAsync(new TextMessage("Message to leader", "simple"));
+            await host1.Services.GetRequiredService<IMessageBus>().LeaderRouter.SendSignalAsync(new TextMessage("Message to leader", "simple"));
 
             //ensure that one of the boxes is not empty
             var success = false;

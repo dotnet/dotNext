@@ -138,8 +138,8 @@ namespace DotNext.Net.Cluster.DistributedServices
             //send Acquire message to leader node
             //if leader doesn't confirm that the lock is acquired then wait for Release log entry
             //in local audit trail and then try again
-            var request = new AcquireLockRequest 
-            { 
+            var request = new AcquireLockRequest
+            {
                 LockName = lockName,
                 LockInfo = new DistributedLock
                 {
@@ -148,23 +148,23 @@ namespace DotNext.Net.Cluster.DistributedServices
                     LeaseTime = options.LeaseTime
                 }
             };
-            while(true)
+            while (true)
             {
                 request.LockInfo.CreationTime = DateTimeOffset.Now;
-                if(await leaderChannel.SendMessageAsync(request, AcquireLockResponse.Reader, token).ConfigureAwait(false))
+                if (await leaderChannel.SendMessageAsync(request, AcquireLockResponse.Reader, token).ConfigureAwait(false))
                     break;
-                if(timeout.RemainingTime.TryGetValue(out remainingTime) && await engine.WaitForLockEventAsync(false, remainingTime, token))
+                if (timeout.RemainingTime.TryGetValue(out remainingTime) && await engine.WaitForLockEventAsync(false, remainingTime, token).ConfigureAwait(false))
                     continue;
                 goto acquisition_failed;
             }
             //acquisition confirmed by leader node so need to wait until the acquire command will be committed
             do
             {
-                if(engine.IsRegistered(lockName, in owner, in lockVersion))
+                if (engine.IsRegistered(lockName, in owner, in lockVersion))
                     return CreateReleaseAction(lockName, lockVersion, options);
             }
-            while(timeout.RemainingTime.TryGetValue(out remainingTime) && await engine.WaitForLockEventAsync(true, remainingTime, token));
-        acquisition_failed:
+            while (timeout.RemainingTime.TryGetValue(out remainingTime) && await engine.WaitForLockEventAsync(true, remainingTime, token).ConfigureAwait(false));
+            acquisition_failed:
             return null;
         }
 
@@ -197,7 +197,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         /// </summary>
         /// <param name="lockName">The name of the lock to release.</param>
         /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string; or contains invalid characters.</exception>
-        public async void ForceUnlock(string lockName)
+        public async Task ForceUnlockAsync(string lockName)
         {
             engine.ValidateName(lockName);
             await leaderChannel.SendSignalAsync(new ForcedUnlockRequest { LockName = lockName }).ConfigureAwait(false);

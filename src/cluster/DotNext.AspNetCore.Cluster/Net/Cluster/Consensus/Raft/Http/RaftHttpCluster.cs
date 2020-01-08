@@ -139,7 +139,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (localMember is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             configurator?.Initialize(this, metadata);
-            distributedLock = DistributedLockProvider.TryCreate(this);
+            //distributedLock = DistributedLockProvider.TryCreate(this);
             return base.StartAsync(token);
         }
 

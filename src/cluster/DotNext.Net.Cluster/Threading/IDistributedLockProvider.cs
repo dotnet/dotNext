@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace DotNext.Threading
 {
@@ -7,7 +8,6 @@ namespace DotNext.Threading
     /// </summary>
     public interface IDistributedLockProvider 
     {
-
         /// <summary>
         /// Gets the distributed lock.
         /// </summary>
@@ -32,6 +32,6 @@ namespace DotNext.Threading
         /// </remarks>
         /// <param name="lockName">The name of the lock to release.</param>
         /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string; or contains invalid characters.</exception>
-        void ForceUnlock(string lockName);
+        Task ForceUnlockAsync(string lockName);
     }
 }
