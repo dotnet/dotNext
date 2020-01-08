@@ -40,7 +40,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 SnapshotIndex = metadata.Index;
             }
 
-            bool ILogEntry.IsSnapshot => SnapshotIndex.HasValue;
+            /// <summary>
+            /// Gets a value indicating that this entry is a snapshot entry.
+            /// </summary>
+            public bool IsSnapshot => SnapshotIndex.HasValue;
 
             /// <summary>
             /// Gets length of the log entry content, in bytes.

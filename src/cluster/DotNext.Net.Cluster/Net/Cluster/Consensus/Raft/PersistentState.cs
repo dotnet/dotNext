@@ -539,7 +539,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     break;  //enumeration is sorted by partition number so we don't need to enumerate over all partitions
             }
             Debug.Assert(compactionScope.Count > 0);
-            //2. Do compaction
+            //2. Initialize builder with snapshot record
+            if (snapshot.Length > 0L)
+                await builder.ApplyCoreAsync(await snapshot.ReadAsync(sessionManager.WriteSession, token).ConfigureAwait(false));
+            //3. Do compaction
             var snapshotIndex = 0L;
             foreach (var partition in compactionScope.Values)
             {
@@ -553,10 +556,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     }
                 snapshotIndex = partition.LastIndex;
             }
-            //3. Persist snapshot
+            //4. Persist snapshot
             await snapshot.WriteAsync(sessionManager.WriteSession, builder, snapshotIndex, token).ConfigureAwait(false);
             await snapshot.FlushAsync().ConfigureAwait(false);
-            //4. Remove snapshotted partitions
+            //5. Remove snapshotted partitions
             RemovePartitions(compactionScope);
             compactionScope.Clear();
         }
