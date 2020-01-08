@@ -127,7 +127,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <remarks>
         /// This type should be inside of <see cref="PersistentState.SnapshotBuilder"/> custom implementation.
         /// </remarks>
-        protected readonly struct LockSnapshotBuilder
+        protected readonly struct LockSnapshotBuilder : IDisposable
         {
             private readonly IDictionary<string, DistributedLock> table;
 
@@ -141,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private async ValueTask ApplyReleaseLockCommandAsync(LogEntry entry) => table.Remove(await ReleaseLockCommand.ReadAsync(entry).ConfigureAwait(false));
 
-            private ValueTask InstallSnapshotAsync(LogEntry entry) => ApplySnapshotAsync(entry, table);
+            private ValueTask InstallSnapshotAsync(LogEntry entry) => ApplyLockSnapshotAsync(entry, table);
 
             private async ValueTask InstallEntryAsync(LogEntry entry)
             {
@@ -174,7 +174,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public async ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
                 where TWriter : IAsyncBinaryWriter
             {
-                //implementation should be in sync with ApplySnapshotAsync method
+                //implementation should be in sync with ApplyLockSnapshotAsync method
                 await writer.WriteAsync(table.Count, token).ConfigureAwait(false);
                 var context = new EncodingContext(Encoding.UTF8, true);
                 foreach(var (name, info) in table)
@@ -183,6 +183,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await writer.WriteAsync(info, token).ConfigureAwait(false);
                 }
             }
+
+            /// <summary>
+            /// Releases all resources associated with this builder.
+            /// </summary>
+            public void Dispose() => table?.Clear();
         }
 
         //copy-on-write semantics
@@ -228,8 +233,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await task.ConfigureAwait(false);
         }
 
-        private static async ValueTask ApplySnapshotAsync(LogEntry entry, IDictionary<string, DistributedLock> output)
+        private static async ValueTask ApplyLockSnapshotAsync(LogEntry entry, IDictionary<string, DistributedLock> output)
         {
+            //should be in sync with LockSnapshotBuilder.WriteAsync method
             var count = await entry.ReadAsync<int>().ConfigureAwait(false);
             var context = new DecodingContext(Encoding.UTF8, true);
             while (count-- > 0)
@@ -238,6 +244,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var info = await entry.ReadAsync<DistributedLock>().ConfigureAwait(false);
                 output[name] = info;
             }
+        }
+
+        /// <summary>
+        /// Installs snapshot of all distributed locks atomically.
+        /// </summary>
+        /// <remarks>
+        /// This method should be called inside of <see cref="ApplyAsync(LogEntry)"/>
+        /// method if <see cref="PersistentState.LogEntry.IsSnapshot"/> equals to <see langword="true"/>. 
+        /// </remarks>
+        /// <param name="snapshot">The log entry adjusted to the snapshot of distributed locks.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        protected async ValueTask ApplyLockSnapshotAsync(LogEntry snapshot)
+        {
+            var builder = ImmutableDictionary.CreateBuilder<string, DistributedLock>(acquiredLocks.KeyComparer);
+            await ApplyLockSnapshotAsync(snapshot, builder).ConfigureAwait(false);
+            //remove  all locks from target table
+            foreach(var name in acquiredLocks.Keys)
+                if(!builder.ContainsKey(name))
+                    RemoveLockFile(name);
+            //install locks from snapshot
+            foreach(var (name, info) in builder)
+                await SaveLockAsync(name, info).ConfigureAwait(false);
+            acquiredLocks = builder.ToImmutable();
+            releaseEvent.Set(true);
+            acquireEvent.Set(true);
+            builder.Clear();    //help GC
         }
 
         Task<bool> IDistributedLockEngine.WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token)

@@ -720,7 +720,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Releases unmanaged resources asynchronously.
         /// </summary>
-        /// <returns>A task that represents the asynchronous dispose operation.</returns>
+        /// <returns>A task representing state of asynchronous execution.</returns>
         public virtual async ValueTask DisposeAsync()
         {
             foreach (var partition in partitionTable.Values)

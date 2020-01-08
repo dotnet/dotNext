@@ -12,9 +12,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </summary>
     /// <remarks>
     /// This class is mandatory in order to support distributed services.
+    /// Derived class must override <see cref="ApplyAsync(PersistentState.LogEntry)"/>
+    /// and <see cref="CreateSnapshotBuilder"/> methods.
     /// </remarks>
     public partial class DistributedApplicationState : PersistentState
     {
+        private sealed class DefaultSnapshotBuilder : SnapshotBuilder
+        {
+            private readonly LockSnapshotBuilder lockBuilder;
+
+            internal DefaultSnapshotBuilder(LockSnapshotBuilder lockBuilder)
+            {
+                this.lockBuilder = lockBuilder;
+            }
+
+            protected override ValueTask ApplyAsync(LogEntry entry)
+                => lockBuilder.AppendAsync(entry);
+
+            public override ValueTask WriteToAsync<TWriter>(TWriter writer, System.Threading.CancellationToken token)
+                => lockBuilder.WriteToAsync(writer, token);
+            
+            protected override void Dispose(bool disposing)
+            {
+                if(disposing)
+                    lockBuilder.Dispose();
+                base.Dispose(disposing);
+            }
+        }
+
         private readonly bool isOverloaded;
 
         /// <summary>
@@ -52,8 +77,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Interprets the committed log entry.
         /// </summary>
         /// <remarks>
-        /// If you want to override this method then you need to decode the command identifier manually from the log entry and then call <see cref="ApplyAsync(uint, LogEntry)"/>
-        /// instead of base implementation.
+        /// Derived class must override this method
+        /// and call <see cref="ApplyAsync(uint, LogEntry)"/> instead
+        /// of base implementation.
         /// </remarks>
         /// <param name="entry">The committed log entry.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
@@ -62,7 +88,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (isOverloaded)
                 throw new NotImplementedException();
-            await ApplyAsync(await entry.ReadAsync<uint>().ConfigureAwait(false), entry).ConfigureAwait(false);
+            if(entry.IsSnapshot)
+                await ApplyLockSnapshotAsync(entry).ConfigureAwait(false);
+            else
+                await ApplyAsync(await entry.ReadAsync<uint>().ConfigureAwait(false), entry).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Creates a new snapshot builder.
+        /// </summary>
+        /// <remarks>
+        /// Derived class must override this method and do not call
+        /// base implementation.
+        /// </remarks>
+        /// <returns>The snapshot builder.</returns>
+        protected override SnapshotBuilder CreateSnapshotBuilder()
+        {
+            if(isOverloaded)
+                throw new NotImplementedException();
+            return new DefaultSnapshotBuilder(CreateLockSnapshotBuilder());
         }
 
         private void ReleaseManagedMemory()
@@ -72,13 +116,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             releaseEvent.Dispose();
         }
 
+        /// <summary>
+        /// Releases all resources associated with this application state.
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> if called from <see cref="IDisposable.Dispose()"/>; <see langword="false"/> if called from finalizer.</param>
         protected override void Dispose(bool disposing)
         {
             if(disposing)
                 ReleaseManagedMemory();
             base.Dispose(disposing);
         }
-
+        
+        /// <summary>
+        /// Releases unmanaged resources asynchronously.
+        /// </summary>
+        /// <returns>A task representing state of asynchronous execution.</returns>
         public override ValueTask DisposeAsync()
         {
             ReleaseManagedMemory();

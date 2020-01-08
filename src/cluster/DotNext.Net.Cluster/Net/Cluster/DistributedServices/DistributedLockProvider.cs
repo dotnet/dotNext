@@ -86,51 +86,25 @@ namespace DotNext.Net.Cluster.DistributedServices
         bool IInputChannel.IsSupported(string messageName, bool oneWay)
             => oneWay ? messageName.IsOneOf(ForcedUnlockRequest.Name) : messageName.IsOneOf(AcquireLockRequest.Name, ReleaseLockRequest.Name);
 
-        private Task<bool> Release(string lockName, Guid version, CancellationToken token)
+        private Task<bool> ReleaseAsync(string lockName, Guid version, CancellationToken token)
             => leaderChannel.SendMessageAsync(new ReleaseLockRequest { Owner = owner, Version = version, LockName = lockName }, ReleaseLockResponse.Reader, token);
-        
-        private void Release(string lockName, in Guid version, TimeSpan timeout)
-        {
-            var released = false;
-            if(engine.IsRegistered(lockName, in owner, version))
-            {
-                var task = Release(lockName, version, CancellationToken.None);
-                try
-                {
-                    released = task.Wait(timeout) ? task.Result : throw new TimeoutException();
-                }
-                catch(AggregateException e)
-                {
-                    throw e.InnerException;
-                }
-                finally
-                {
-                    if(task.IsCompleted)
-                        task.Dispose();
-                }
-            }
-            if(!released)
-                throw new SynchronizationLockException(ExceptionMessages.LockConflict);
-        }
 
-        internal async void ReleaseAsync(string lockName, Guid version, TimeSpan timeout)
+        internal async Task ReleaseAsync(string lockName, Guid version, TimeSpan timeout)
         {
             if(engine.IsRegistered(lockName, in owner, in version))
                 using(var timeoutSource = new CancellationTokenSource(timeout))
-                    if(await Release(lockName, version, timeoutSource.Token).ConfigureAwait(false))
+                    if(await ReleaseAsync(lockName, version, timeoutSource.Token).ConfigureAwait(false))
                         return;
             throw new SynchronizationLockException(ExceptionMessages.LockConflict);
         }
 
-        private Action CreateReleaseAction(string lockName, Guid version, DistributedLockOptions options)
+        private Func<Task> CreateReleaseAction(string lockName, Guid version, DistributedLockOptions options)
         {
-            var timeout = options.LeaseTime;
-            return options.ReleaseSynchronously ?
-                new Action(() => Release(lockName, version, timeout)) :
-                new Action(() => ReleaseAsync(lockName, version, timeout));
+            var timeout = options.LeaseTime;    //avoid capturing of entire options
+            return () => ReleaseAsync(lockName, version, timeout);
         }
 
-        private async Task<Action?> TryAcquireLockAsync(string lockName, Timeout timeout, CancellationToken token)
+        private async Task<Func<Task>?> TryAcquireLockAsync(string lockName, Timeout timeout, CancellationToken token)
         {
             var options = lockConfig?.Invoke(lockName) ?? DefaultOptions;
             var lockVersion = Guid.NewGuid();
