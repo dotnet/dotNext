@@ -291,7 +291,8 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="method">The reflected method.</param>
         [return: NotNullIfNotNull("method")]
-        public static implicit operator D?(Method<D>? method) => method?.Invoker;
+        [return: MaybeNull]
+        public static implicit operator D([AllowNull]Method<D>? method) => method?.Invoker;
 
         MethodInfo IMember<MethodInfo>.RuntimeMember => method;
         D IMember<MethodInfo, D>.Invoker => Invoker;

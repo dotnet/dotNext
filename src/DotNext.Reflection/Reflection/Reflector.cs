@@ -51,6 +51,7 @@ namespace DotNext.Reflection
         /// <typeparam name="V">The field type.</typeparam>
         /// <param name="field">The field to unreflect.</param>
         /// <returns>The managed pointer to the field.</returns>
+        [return: MaybeNull]
         public static ref V Unreflect<V>(this FieldInfo field) => ref Field<V>.GetOrCreate(field).Value;
 
         /// <summary>

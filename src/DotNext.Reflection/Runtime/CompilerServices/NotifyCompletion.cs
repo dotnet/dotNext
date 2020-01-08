@@ -17,7 +17,7 @@ namespace DotNext.Runtime.CompilerServices
     public static class NotifyCompletion<TAwaiter>
         where TAwaiter : INotifyCompletion
     {
-        private static readonly MemberGetter<TAwaiter, bool> isCompleted = Type<TAwaiter>.Property<bool>.GetGetter(nameof(TaskAwaiter.IsCompleted));
+        private static readonly MemberGetter<TAwaiter, bool> isCompleted = Type<TAwaiter>.Property<bool>.RequireGetter(nameof(TaskAwaiter.IsCompleted));
 
         /// <summary>
         /// Gets a value that indicates whether the asynchronous task has completed.

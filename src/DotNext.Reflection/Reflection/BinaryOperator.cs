@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -140,6 +141,7 @@ namespace DotNext.Reflection
         /// <param name="second">Second operand.</param>
         /// <returns>Result of binary operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public R Invoke(in Op1 first, in Op2 second) => Invoker(in first, in second);
 
         /// <summary>

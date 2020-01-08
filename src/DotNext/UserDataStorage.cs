@@ -63,6 +63,8 @@ namespace DotNext
             {
             }
 
+            [return: NotNullIfNotNull("defaultValue")]
+            [return: MaybeNull]
             internal V Get<V>(UserDataSlot<V> slot, [AllowNull]V defaultValue)
             {
                 lockState.EnterReadLock();
@@ -158,7 +160,8 @@ namespace DotNext
 		/// <param name="defaultValue">Default value to be returned if no user data contained in this collection.</param>
 		/// <returns>User data.</returns>
         [return: NotNullIfNotNull("defaultValue")]
-        public V Get<V>(UserDataSlot<V> slot, V defaultValue)
+        [return: MaybeNull]
+        public V Get<V>(UserDataSlot<V> slot, [AllowNull]V defaultValue)
         {
             var storage = GetStorage();
             return storage is null ? defaultValue : storage.Get(slot, defaultValue);

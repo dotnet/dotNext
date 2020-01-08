@@ -328,7 +328,7 @@ namespace DotNext.Reflection
             }
             else
             {
-                value = GetMethod.Invoke();
+                value = GetMethod.Invoke()!;
                 return true;
             }
         }
@@ -423,7 +423,7 @@ namespace DotNext.Reflection
             }
             else
             {
-                value = GetMethod.Invoke(thisArg);
+                value = GetMethod.Invoke(thisArg)!;
                 return true;
             }
         }

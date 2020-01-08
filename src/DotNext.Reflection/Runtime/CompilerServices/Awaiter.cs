@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -20,7 +21,7 @@ namespace DotNext.Runtime.CompilerServices
     public readonly struct Awaiter<[Constraint(typeof(NotifyCompletion<>))]TAwaiter, R> : INotifyCompletion
         where TAwaiter : INotifyCompletion
     {
-        private static readonly MemberGetter<TAwaiter, R> getResult = Type<TAwaiter>.Method.Get<MemberGetter<TAwaiter, R>>(nameof(TaskAwaiter<R>.GetResult), MethodLookup.Instance);
+        private static readonly MemberGetter<TAwaiter, R> getResult = Type<TAwaiter>.Method.Require<MemberGetter<TAwaiter, R>>(nameof(TaskAwaiter<R>.GetResult), MethodLookup.Instance);
 
         static Awaiter() => Concept.Assert(typeof(NotifyCompletion<TAwaiter>));
 
@@ -38,6 +39,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <returns>The result of the completed task.</returns>
         /// <exception cref="TaskCanceledException">The task was cancelled.</exception>
         /// <exception cref="Exception">Task is in faulted state.</exception>
+        [return: MaybeNull]
         public R GetResult() => GetResult(in awaiter);
 
         /// <summary>
@@ -61,6 +63,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <exception cref="TaskCanceledException">The task was cancelled.</exception>
         /// <exception cref="Exception">Task is in faulted state.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R GetResult(in TAwaiter awaiter) => getResult(in awaiter);
     }
 
@@ -80,7 +83,7 @@ namespace DotNext.Runtime.CompilerServices
 
         static Awaiter() => Concept.Assert(typeof(NotifyCompletion<TAwaiter>));
 
-        private static readonly GetResultMethod getResult = Type<TAwaiter>.Method.Get<GetResultMethod>(nameof(TaskAwaiter.GetResult), MethodLookup.Instance);
+        private static readonly GetResultMethod getResult = Type<TAwaiter>.Method.Require<GetResultMethod>(nameof(TaskAwaiter.GetResult), MethodLookup.Instance);
 
         private readonly TAwaiter awaiter;
 

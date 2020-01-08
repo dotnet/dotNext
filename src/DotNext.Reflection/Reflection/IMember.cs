@@ -55,6 +55,7 @@ namespace DotNext.Reflection
         /// <param name="arguments">Invocation arguments placed onto stack.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<M, A, R>(this IMember<M, Function<A, R>> member, [DisallowNull]in A arguments)
             where M : MemberInfo
             where A : struct
@@ -72,6 +73,7 @@ namespace DotNext.Reflection
         /// <param name="arguments">Invocation arguments placed onto stack.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<M, T, A, R>(this IMember<M, Function<T, A, R>> member, [DisallowNull]in T @this, in A arguments)
             where M : MemberInfo
             where A : struct
@@ -87,6 +89,7 @@ namespace DotNext.Reflection
         /// <param name="this"><c>this</c> argument.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<M, T, R>(this IMember<M, Function<T, ValueTuple, R>> member, [DisallowNull]in T @this)
             where M : MemberInfo
             => member.Invoke(in @this, default);
@@ -99,6 +102,7 @@ namespace DotNext.Reflection
         /// <param name="member">Callable member.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<M, R>(this IMember<M, Function<ValueTuple, R>> member)
             where M : MemberInfo
             => member.Invoke(default);

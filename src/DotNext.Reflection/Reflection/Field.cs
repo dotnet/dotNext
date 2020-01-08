@@ -431,7 +431,7 @@ namespace DotNext.Reflection
         {
             if (obj is null)
             {
-                value = Value;
+                value = Value!;
                 return true;
             }
             else
