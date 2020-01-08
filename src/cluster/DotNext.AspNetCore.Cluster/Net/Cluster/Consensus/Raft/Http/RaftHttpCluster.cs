@@ -13,11 +13,9 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    using DistributedServices;
     using Messaging;
-    using Threading;
 
-    internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IDistributedApplicationEnvironment
+    internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
         private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
@@ -30,8 +28,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly bool openConnectionForEachRequest;
         private readonly string clientHandlerName;
         private readonly HttpVersion protocolVersion;
-        //distributed services
-        private IDistributedLockProvider? distributedLock;
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The member will be disposed in RaftCluster.Dispose method")]
         private RaftHttpCluster(RaftClusterMemberConfiguration config, IServiceProvider dependencies, out MemberCollectionBuilder members, Func<Action<RaftClusterMemberConfiguration, string>, IDisposable> configTracker)
@@ -64,10 +60,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             : this(dependencies.GetRequiredService<IOptionsMonitor<RaftClusterMemberConfiguration>>(), dependencies, out members)
         {
         }
-
-        internal bool IsDistributedServicesSupported => distributedLock != null;
-
-        IDistributedLockProvider IDistributedApplicationEnvironment.LockProvider => distributedLock ?? throw new NotSupportedException(ExceptionMessages.DistributedServicesAreUnavailable);
 
         private protected void ConfigureMember(RaftClusterMember member)
         {
@@ -135,11 +127,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public override Task StartAsync(CancellationToken token)
         {
             //detect local member
-            localMember = FindMember(LocalMemberFinder);
-            if (localMember is null)
-                throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+            var localMember = this.localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             configurator?.Initialize(this, metadata);
-            //distributedLock = DistributedLockProvider.TryCreate(this);
+            InitializeDistributedServices(localMember);
             return base.StartAsync(token);
         }
 
@@ -147,6 +137,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             configurator?.Shutdown(this);
             duplicationDetector.Trim(100);
+            distributedLock = null;
             return base.StopAsync(token);
         }
 

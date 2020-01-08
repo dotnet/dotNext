@@ -17,12 +17,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using DistributedServiceProviderAttribute = Runtime.CompilerServices.DistributedServiceProviderAttribute;
     internal static class RaftHttpConfigurator
     {
-        private static IDistributedApplicationEnvironment GetDistributedServices(IServiceProvider services)
-        {
-            var cluster = services.GetRequiredService<RaftHttpCluster>();
-            return cluster.IsDistributedServicesSupported ? cluster : throw new NotSupportedException(ExceptionMessages.DistributedServicesAreUnavailable);
-        }
-
         private static object GetDistributedService(this Func<IDistributedApplicationEnvironment, object> propertyGetter, IServiceProvider services)
             => propertyGetter(services.GetRequiredService<IDistributedApplicationEnvironment>());
 
@@ -49,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 .Configure<RaftClusterMemberConfiguration>(memberConfig)
                 .AddSingleton<TCluster>()
                 .AddSingleton(clusterNodeCast)
-                .AddSingleton(GetDistributedServices)
+                .AddSingleton<IDistributedApplicationEnvironment>(clusterNodeCast)
                 .RegisterDistributedServices()
                 .AddSingleton<IHostedService>(clusterNodeCast)
                 .AddSingleton<ICluster>(clusterNodeCast)
