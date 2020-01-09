@@ -59,7 +59,7 @@ namespace DotNext.IO.Log
         /// Ensures that all committed entries are applied to the underlying data state machine known as database engine.
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>The task representing asynchronous state of the method.</returns>
+        /// <returns>A task representing state of the asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
         Task EnsureConsistencyAsync(CancellationToken token = default);
     }
