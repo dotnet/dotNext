@@ -70,7 +70,7 @@ namespace DotNext.Net.Cluster
         /// </summary>
         /// <param name="other">The identifier to compare.</param>
         /// <returns><see langword="true"/> if this identifier is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ClusterMemberId id && Equals(id);
+        public override bool Equals(object? other) => other is ClusterMemberId id && Equals(id);
 
         /// <summary>
         /// Gets the hash code of this identifier.
