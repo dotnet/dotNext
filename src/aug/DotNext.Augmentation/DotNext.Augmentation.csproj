@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DebugType>none</DebugType>
@@ -32,8 +32,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fody" Version="6.0.5" PrivateAssets="None" />
-    <PackageReference Include="FodyPackaging" Version="6.0.5" PrivateAssets="All" />
+    <PackageReference Include="Fody" Version="6.0.6" PrivateAssets="None" />
+    <PackageReference Include="FodyPackaging" Version="6.0.6" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
