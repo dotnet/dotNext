@@ -555,11 +555,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var count = entries.RemainingCount;
             if (count == 0L)
                 return;
+            var term = auditTrail.Term;
             var index = await auditTrail.AppendAsync(entries, transitionCancellation.Token).ConfigureAwait(false);
             if (!(state is LeaderState leaderState))
                 throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
             if (waitForCommit)
                 await auditTrail.WaitForCommitAsync(index + count - 1L, timeout, leaderState.Token).ConfigureAwait(false);
+            //ensure that term was not changed
+            if(term != auditTrail.Term)
+                throw new InvalidOperationException(ExceptionMessages.ChangesRejected);
         }
 
         /// <summary>

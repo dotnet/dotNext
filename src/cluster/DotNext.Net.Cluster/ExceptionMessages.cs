@@ -44,5 +44,7 @@ namespace DotNext
         internal static string UnsupportedAddressFamily => Resources.GetString("UnsupportedAddressFamily");
 
         internal static string UnresolvedLocalMember => Resources.GetString("UnresolvedLocalMember");
+    
+        internal static string ChangesRejected => Resources.GetString("ChangesRejected");
     }
 }
