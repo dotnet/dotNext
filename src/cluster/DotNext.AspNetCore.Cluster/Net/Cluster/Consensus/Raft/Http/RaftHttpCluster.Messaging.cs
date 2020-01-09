@@ -31,6 +31,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         async Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
         {
+            static async Task<TResponse> TryReceiveMessage(RaftClusterMember sender, IMessage message, IEnumerable<IInputChannel> handlers, MessageReader<TResponse> responseReader, CancellationToken token)
+            {
+                var responseMsg = await (handlers.TryReceiveMessage(sender, message, null, token) ?? throw new UnexpectedStatusCodeException(new NotImplementedException())).ConfigureAwait(false);
+                return await responseReader(responseMsg, token).ConfigureAwait(false);
+            }
+
             if (!token.CanBeCanceled)
                 token = Token;
             do
@@ -40,7 +46,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
                 try
                 {
-                    return await leader.SendMessageAsync(message, responseReader, true, token).ConfigureAwait(false);
+                    return await (leader.IsRemote ? 
+                        leader.SendMessageAsync(message, responseReader, true, token) : 
+                        TryReceiveMessage(leader, message, messageHandlers, responseReader, token))
+                        .ConfigureAwait(false);
                 }
                 catch (MemberUnavailableException)
                 {
@@ -67,7 +76,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
                 try
                 {
-                    await leader.SendSignalAsync(signal, token).ConfigureAwait(false);
+                    var response = leader.IsRemote ?
+                        leader.SendSignalAsync(signal, token) :
+                        (messageHandlers.TryReceiveSignal(leader, signal.Message, null, token) ?? throw new UnexpectedStatusCodeException(new NotImplementedException()));
+                    await response.ConfigureAwait(false);
                 }
                 catch (MemberUnavailableException)
                 {

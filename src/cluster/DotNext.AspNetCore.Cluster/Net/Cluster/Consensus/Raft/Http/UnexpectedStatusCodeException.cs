@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     internal sealed class UnexpectedStatusCodeException : RaftProtocolException
     {
-        private readonly HttpRequestException exception;
+        private readonly Exception exception;
         internal readonly HttpStatusCode StatusCode;
         internal readonly string Reason;
 
@@ -15,6 +15,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             StatusCode = response.StatusCode;
             Reason = response.ReasonPhrase;
+            exception = e;
+        }
+
+        internal UnexpectedStatusCodeException(NotImplementedException e)
+            : base(e.Message)
+        {
+            StatusCode = HttpStatusCode.NotImplemented;
+            Reason = string.Empty;
             exception = e;
         }
 
