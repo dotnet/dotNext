@@ -129,28 +129,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </remarks>
         protected readonly struct LockSnapshotBuilder : IDisposable
         {
-            private readonly IDictionary<string, DistributedLock> table;
+            private readonly Dictionary<string, DistributedLock> table;
 
             internal LockSnapshotBuilder(int count, IEqualityComparer<string> lockNameComparer) => table = new Dictionary<string, DistributedLock>(count, lockNameComparer);
 
-            private async ValueTask ApplyAcquireLockCommandAsync(LogEntry entry)
+            private static async ValueTask ApplyAcquireLockCommandAsync(IDictionary<string, DistributedLock> table, LogEntry entry)
             {
                 var (lockName, lockInfo) = await AcquireLockCommand.ReadAsync(entry).ConfigureAwait(false);
                 table[lockName] = lockInfo;
             }
 
-            private async ValueTask ApplyReleaseLockCommandAsync(LogEntry entry) => table.Remove(await ReleaseLockCommand.ReadAsync(entry).ConfigureAwait(false));
+            private static async ValueTask ApplyReleaseLockCommandAsync(IDictionary<string, DistributedLock> table, LogEntry entry) => table.Remove(await ReleaseLockCommand.ReadAsync(entry).ConfigureAwait(false));
 
-            private ValueTask InstallSnapshotAsync(LogEntry entry) => ApplyLockSnapshotAsync(entry, table);
-
-            private async ValueTask InstallEntryAsync(LogEntry entry)
+            private static async ValueTask InstallEntryAsync(IDictionary<string, DistributedLock> table, LogEntry entry)
             {
                 var command = await entry.ReadAsync<LockCommand>().ConfigureAwait(false);
                 var task = command switch
                 {
                     LockCommand.Nop => new ValueTask(),
-                    LockCommand.Acquire => ApplyAcquireLockCommandAsync(entry),
-                    LockCommand.Release => ApplyReleaseLockCommandAsync(entry),
+                    LockCommand.Acquire => ApplyAcquireLockCommandAsync(table, entry),
+                    LockCommand.Release => ApplyReleaseLockCommandAsync(table, entry),
                     _ => throw new InvalidDataException()
                 };
                 await task.ConfigureAwait(false);
@@ -162,7 +160,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="entry">The log entry containing lock management command.</param>
             /// <returns>The task representing state of asynchronous execution.</returns>
             /// <exception cref="InvalidDataException"><paramref name="entry"/> is corrupted.</exception>
-            public ValueTask AppendAsync(LogEntry entry) => entry.IsSnapshot ? InstallSnapshotAsync(entry) : InstallEntryAsync(entry);
+            public ValueTask AppendAsync(LogEntry entry) => entry.IsSnapshot ? ApplyLockSnapshotAsync(table, entry) : InstallEntryAsync(table, entry);
+
+            private static async ValueTask WriteToAsync<TWriter>(TWriter writer, IReadOnlyDictionary<string, DistributedLock> table, CancellationToken token)
+                where TWriter : IAsyncBinaryWriter
+            {
+                //implementation should be in sync with ApplyLockSnapshotAsync method
+                await writer.WriteAsync(table.Count, token).ConfigureAwait(false);
+                var context = new EncodingContext(Encoding.UTF8, true);
+                foreach (var (name, info) in table)
+                {
+                    await writer.WriteAsync(name.AsMemory(), context, StringLengthEncoding.Plain, token).ConfigureAwait(false);
+                    await writer.WriteAsync(info, token).ConfigureAwait(false);
+                }
+            }
 
             /// <summary>
             /// Writes captured snapshot of distributed locks.
@@ -171,18 +182,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <param name="writer">The binary writer.</param>
             /// <param name="token">The token that can be used to cancel the operation.</param>
             /// <returns>The task representing state of asynchronous execution.</returns>
-            public async ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
-                where TWriter : IAsyncBinaryWriter
-            {
-                //implementation should be in sync with ApplyLockSnapshotAsync method
-                await writer.WriteAsync(table.Count, token).ConfigureAwait(false);
-                var context = new EncodingContext(Encoding.UTF8, true);
-                foreach(var (name, info) in table)
-                {
-                    await writer.WriteAsync(name.AsMemory(), context, StringLengthEncoding.Plain, token).ConfigureAwait(false);
-                    await writer.WriteAsync(info, token).ConfigureAwait(false);
-                }
-            }
+            public ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token) where TWriter : IAsyncBinaryWriter => WriteToAsync(writer, table, token);
 
             /// <summary>
             /// Releases all resources associated with this builder.
@@ -233,7 +233,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await task.ConfigureAwait(false);
         }
 
-        private static async ValueTask ApplyLockSnapshotAsync(LogEntry entry, IDictionary<string, DistributedLock> output)
+        private static async ValueTask ApplyLockSnapshotAsync(IDictionary<string, DistributedLock> output, LogEntry entry)
         {
             //should be in sync with LockSnapshotBuilder.WriteAsync method
             var count = await entry.ReadAsync<int>().ConfigureAwait(false);
@@ -258,7 +258,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected async ValueTask ApplyLockSnapshotAsync(LogEntry snapshot)
         {
             var builder = ImmutableDictionary.CreateBuilder<string, DistributedLock>(acquiredLocks.KeyComparer);
-            await ApplyLockSnapshotAsync(snapshot, builder).ConfigureAwait(false);
+            await ApplyLockSnapshotAsync(builder, snapshot).ConfigureAwait(false);
             //remove  all locks from target table
             foreach(var name in acquiredLocks.Keys)
                 if(!builder.ContainsKey(name))
