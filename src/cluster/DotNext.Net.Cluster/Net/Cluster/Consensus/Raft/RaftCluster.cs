@@ -314,7 +314,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public virtual async Task StartAsync(CancellationToken token)
         {
-            await auditTrail.EnsureConsistencyAsync(token).ConfigureAwait(false);
+            await auditTrail.InitializeAsync(token).ConfigureAwait(false);
             //start node in Follower state
             state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
         }

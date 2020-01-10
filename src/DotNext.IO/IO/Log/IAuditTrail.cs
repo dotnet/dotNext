@@ -81,6 +81,18 @@ namespace DotNext.IO.Log
         /// <exception cref="InvalidDataException">The backup is corrupted.</exception>
         Task RestoreFromBackupAsync(Stream input, CancellationToken token = default) 
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
+
+        /// <summary>
+        /// Initializes audit trail.
+        /// </summary>
+        /// <remarks>
+        /// This action may perform cache initialization or other internal data structures.
+        /// It can save the performance of the first modification performed to this log.
+        /// </remarks>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>A task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        Task InitializeAsync(CancellationToken token = default);
     }
 
     /// <summary>
