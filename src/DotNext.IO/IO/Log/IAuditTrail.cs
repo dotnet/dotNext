@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -56,12 +57,30 @@ namespace DotNext.IO.Log
         ValueTask<long> CommitAsync(CancellationToken token = default);
 
         /// <summary>
-        /// Ensures that all committed entries are applied to the underlying data state machine known as database engine.
+        /// Creates backup of this audit trail.
         /// </summary>
+        /// <param name="output">The stream used to store backup.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>A task representing state of the asynchronous execution.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        Task EnsureConsistencyAsync(CancellationToken token = default);
+        /// <returns>A task representing state of asynchronous execution.</returns>
+        /// <exception cref="NotSupportedException">Backup is not supported by this implementation of audit trail.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        Task CreateBackupAsync(Stream output, CancellationToken token = default) 
+            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
+
+        /// <summary>
+        /// Restores this audit trail from the backup.
+        /// </summary>
+        /// <remarks>
+        /// This method rewrites entire content of this audit trail.
+        /// </remarks>
+        /// <param name="input">The stream containing backup of this audit trail.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>A task representing state of asynchronous execution.</returns>
+        /// <exception cref="NotSupportedException">Backup is not supported by this implementation of audit trail.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="InvalidDataException">The backup is corrupted.</exception>
+        Task RestoreFromBackupAsync(Stream input, CancellationToken token = default) 
+            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
     }
 
     /// <summary>
