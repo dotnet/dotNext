@@ -68,21 +68,6 @@ namespace DotNext.IO.Log
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
 
         /// <summary>
-        /// Restores this audit trail from the backup.
-        /// </summary>
-        /// <remarks>
-        /// This method rewrites entire content of this audit trail.
-        /// </remarks>
-        /// <param name="input">The stream containing backup of this audit trail.</param>
-        /// <param name="token">The token that can be used to cancel the operation.</param>
-        /// <returns>A task representing state of asynchronous execution.</returns>
-        /// <exception cref="NotSupportedException">Backup is not supported by this implementation of audit trail.</exception>
-        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <exception cref="InvalidDataException">The backup is corrupted.</exception>
-        Task RestoreFromBackupAsync(Stream input, CancellationToken token = default) 
-            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
-
-        /// <summary>
         /// Initializes audit trail.
         /// </summary>
         /// <remarks>
