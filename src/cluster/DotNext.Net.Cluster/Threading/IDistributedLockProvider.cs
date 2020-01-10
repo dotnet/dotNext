@@ -13,7 +13,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="lockName">The name of distributed lock.</param>
         /// <returns>The distributed lock.</returns>
-        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string; or contains invalid characters</exception>
+        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string.</exception>
         AsyncLock this[string lockName] { get; }
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace DotNext.Threading
         /// and its owner crashed. In normal situation, this method can cause acquisition of the same lock by multiple requesters in a splitted cluster.
         /// </remarks>
         /// <param name="lockName">The name of the lock to release.</param>
-        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string; or contains invalid characters.</exception>
+        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string.</exception>
         Task ForceUnlockAsync(string lockName);
     }
 }

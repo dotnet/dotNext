@@ -43,17 +43,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly bool isOverloaded;
 
         /// <summary>
-        /// Initializes a new persistent storage of distributed application state.
+        /// Initializes a new persistent state of distributed application.
         /// </summary>
-        /// <param name="path">The path to the directory used to store </param>
-        /// <param name="recordsPerPartition"></param>
-        /// <param name="configuration"></param>
+        /// <param name="path">The path to the folder to be used by audit trail.</param>
+        /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
+        /// <param name="configuration">The configuration of the persistent audit trail.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
         public DistributedApplicationState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
             : base(path, recordsPerPartition, configuration)
         {
-            lockPersistentStateStorage = new DirectoryInfo(Path.Combine(path.FullName, LockDirectoryName));
-            if (!lockPersistentStateStorage.Exists)
-                lockPersistentStateStorage.Create();
             isOverloaded = GetType() != typeof(DistributedApplicationState);
         }
 

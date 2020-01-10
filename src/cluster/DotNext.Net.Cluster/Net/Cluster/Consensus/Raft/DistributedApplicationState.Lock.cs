@@ -19,12 +19,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
     public partial class DistributedApplicationState : IDistributedLockEngine
     {
-        //each file in directory contains description of distributed lock
-        //file name is hex encoded lock name to avoid case sensitivity issues 
-        private const int MaxLockNameLength = 63;   //255 max file name / 4 bytes per character ~ 63
-        private const int BufferSize = 1024;
-        private const string LockDirectoryName = "locks";
-
         /// <summary>
         /// Gets the prefix of log entry that represents
         /// distributed lock command.
@@ -192,33 +186,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         //copy-on-write semantics
         private volatile ImmutableDictionary<string, DistributedLock> acquiredLocks = ImmutableDictionary.Create<string, DistributedLock>(StringComparer.Ordinal, BitwiseComparer<DistributedLock>.Instance);
-        private readonly DirectoryInfo lockPersistentStateStorage;
         private readonly AsyncManualResetEvent releaseEvent = new AsyncManualResetEvent(false);
         private readonly AsyncManualResetEvent acquireEvent = new AsyncManualResetEvent(false);
-
-        private void RemoveLock(string lockName)
-        {
-            acquiredLocks = acquiredLocks.Remove(lockName);
-            RemoveLockFile(lockName);
-            releaseEvent.Set(true);
-        }
 
         private async ValueTask ApplyAcquireLockCommandAsync(LogEntry entry)
         {
             var (lockName, lockInfo) = await AcquireLockCommand.ReadAsync(entry).ConfigureAwait(false);
             if (lockInfo.IsExpired)
-                RemoveLock(lockName);
+            {
+                acquiredLocks = acquiredLocks.Remove(lockName);
+                releaseEvent.Set(true);
+            }
             else
             {
                 acquiredLocks = acquiredLocks.SetItem(lockName, lockInfo);
-                //save lock state to file
-                await SaveLockAsync(lockName, lockInfo).ConfigureAwait(false);
                 acquireEvent.Set(true);
             }
         }
 
         private async ValueTask ApplyReleaseLockCommandAsync(LogEntry entry)
-            => RemoveLock(await ReleaseLockCommand.ReadAsync(entry).ConfigureAwait(false));
+        {
+            var lockName = await ReleaseLockCommand.ReadAsync(entry).ConfigureAwait(false);
+            acquiredLocks = acquiredLocks.Remove(lockName);
+            releaseEvent.Set(true);
+        }
 
         private async ValueTask ApplyLockCommandAsync(LogEntry entry)
         {
@@ -259,13 +250,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var builder = ImmutableDictionary.CreateBuilder<string, DistributedLock>(acquiredLocks.KeyComparer);
             await ApplyLockSnapshotAsync(builder, snapshot).ConfigureAwait(false);
-            //remove  all locks from target table
-            foreach(var name in acquiredLocks.Keys)
-                if(!builder.ContainsKey(name))
-                    RemoveLockFile(name);
-            //install locks from snapshot
-            foreach(var (name, info) in builder)
-                await SaveLockAsync(name, info).ConfigureAwait(false);
             acquiredLocks = builder.ToImmutable();
             releaseEvent.Set(true);
             acquireEvent.Set(true);
@@ -291,7 +275,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                             modified = true;
                             released = true;
                             builder.Remove(name);
-                            RemoveLockFile(name);
                             continue;
                         case LeaseState.Prolonged:
                             modified = true;
@@ -358,58 +341,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         bool IDistributedLockEngine.IsRegistered(string lockName, in ClusterMemberId owner, in Guid version)
             => acquiredLocks.TryGetValue(lockName, out var lockInfo) && lockInfo.Version == version && lockInfo.Owner == owner;
-
-        private static string FileNameToLockName(string fileName) 
-        {
-            //4 characters = 1 decoded Unicode character
-            var count = fileName.Length / 4;
-            if(count == 0)
-                return string.Empty;
-            if(count >= MaxLockNameLength)
-                throw new ArgumentOutOfRangeException(nameof(fileName), ExceptionMessages.LockNameTooLong);
-            Span<char> chars = stackalloc char[count];
-            count = fileName.AsSpan().FromHex(MemoryMarshal.AsBytes(chars)) / 2;
-            return new string(chars.Slice(0, count));
-        }
-
-        private static string LockNameToFileName(string lockName) 
-            => lockName.Length <= MaxLockNameLength ? MemoryMarshal.AsBytes(lockName.AsSpan()).ToHex() : throw new ArgumentOutOfRangeException(nameof(lockName), ExceptionMessages.LockNameTooLong);
-
-        private static string LockNameToFileName(DirectoryInfo lockStorage, string lockName)
-            => Path.Combine(lockStorage.FullName, LockNameToFileName(lockName));
-
-        private async ValueTask SaveLockAsync(string lockName, DistributedLock lockInfo)
-        {
-            lockName = LockNameToFileName(lockPersistentStateStorage, lockName);
-            using var lockFile = new FileStream(lockName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None, BufferSize, true);
-            //lockInfo has fixed size so no need to truncate file stream
-            await lockFile.WriteAsync(lockInfo).ConfigureAwait(false);
-            await lockFile.FlushAsync().ConfigureAwait(false);
-        }
-
-        private void RemoveLockFile(string lockName) => File.Delete(LockNameToFileName(lockPersistentStateStorage, lockName));
-
-        void IDistributedLockEngine.ValidateName(string name)
-        {
-            if (name.Length == 0)
-                throw new ArgumentException(ExceptionMessages.LockNameIsEmpty, nameof(name));
-            if (name.Length > MaxLockNameLength)
-                throw new ArgumentOutOfRangeException(nameof(name), ExceptionMessages.LockNameTooLong);
-        }
-
-        async Task IDistributedLockEngine.RestoreAsync(CancellationToken token)
-        {
-            var builder = acquiredLocks.ToBuilder();
-            //restore lock state from file system
-            const int fileBuffer = 1024;
-            using var buffer = new ArrayRental<byte>(fileBuffer);
-            foreach (var lockFile in lockPersistentStateStorage.EnumerateFiles())
-                using (var fs = new FileStream(lockFile.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, BufferSize, true))
-                {
-                    var state = await fs.ReadAsync<DistributedLock>(buffer.Memory, token).ConfigureAwait(false);
-                    builder.Add(FileNameToLockName(lockFile.Name), state);
-                }
-            acquiredLocks = builder.ToImmutable();
-        }
     }
 }

@@ -147,12 +147,13 @@ namespace DotNext.Net.Cluster.DistributedServices
         /// </summary>
         /// <param name="lockName">The name of distributed lock.</param>
         /// <returns>The distributed lock.</returns>
-        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string; or contains invalid characters</exception>
+        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string.</exception>
         public AsyncLock this[string lockName]
         {
             get
             {
-                engine.ValidateName(lockName);
+                if (lockName.Length == 0)
+                    throw new ArgumentException(ExceptionMessages.LockNameIsEmpty, nameof(lockName));
                 return new AsyncLock((timeout, token) => TryAcquireLockAsync(lockName, new Timeout(timeout), token));
             }
         }
@@ -170,10 +171,11 @@ namespace DotNext.Net.Cluster.DistributedServices
         /// by the current cluster member.
         /// </summary>
         /// <param name="lockName">The name of the lock to release.</param>
-        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string; or contains invalid characters.</exception>
+        /// <exception cref="ArgumentException"><paramref name="lockName"/> is empty string.</exception>
         public async Task ForceUnlockAsync(string lockName)
         {
-            engine.ValidateName(lockName);
+            if (lockName.Length == 0)
+                    throw new ArgumentException(ExceptionMessages.LockNameIsEmpty, nameof(lockName));
             await leaderChannel.SendSignalAsync(new ForcedUnlockRequest { LockName = lockName }).ConfigureAwait(false);
         }
     }

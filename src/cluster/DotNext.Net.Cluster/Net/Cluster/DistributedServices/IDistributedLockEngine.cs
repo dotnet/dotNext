@@ -9,10 +9,6 @@ namespace DotNext.Net.Cluster.DistributedServices
     /// </summary>
     internal interface IDistributedLockEngine
     {
-        void ValidateName(string name);
-
-        Task RestoreAsync(CancellationToken token);
-
         Task<bool> WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token);
 
         bool IsRegistered(string lockName, in ClusterMemberId owner, in Guid version);
