@@ -131,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                (state as IDisposable)?.Dispose();
+                await (state as IAsyncDisposable).DisposeAsync();
             }
             //now open state again to check persistence
             state = new PersistentState(dir, RecordsPerPartition);
@@ -503,6 +503,64 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return default;
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 1, CancellationToken.None);
+            }
+        }
+
+        [Fact]
+        public static async Task RestoreBackup()
+        {
+            var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+            var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
+            var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
+            var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
+            var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var backupFile = Path.GetTempFileName();
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            var member = new ClusterMemberMock(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
+            try
+            {
+                //define node state
+                Equal(1, await state.IncrementTermAsync());
+                await state.UpdateVotedForAsync(member);
+                True(state.IsVotedFor(member));
+                //define log entries
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
+                //commit some of them
+                Equal(2L, await state.CommitAsync(2L));
+                //save backup
+                await using var backupStream = new FileStream(backupFile, FileMode.Truncate, FileAccess.Write, FileShare.None, 1024, true);
+                await state.CreateBackupAsync(backupStream);
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
+            }
+            //restore state from backup
+            await using(var backupStream = new FileStream(backupFile, FileMode.Open, FileAccess.Read, FileShare.None, 1024, true))
+            {
+                await PersistentState.RestoreFromBackupAsync(backupStream, new DirectoryInfo(dir));
+            }
+            //ensure that all entries are recovered successfully
+            state = new PersistentState(dir, RecordsPerPartition);
+            try
+            {
+                Equal(5, state.GetLastIndex(false));
+                Equal(2, state.GetLastIndex(true));
+                Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker = (entries, snapshotIndex) =>
+                {
+                    Equal(entry1.Term, entries[0].Term);
+                    Equal(entry2.Term, entries[1].Term);
+                    Equal(entry3.Term, entries[2].Term);
+                    Equal(entry4.Term, entries[3].Term);
+                    Equal(entry5.Term, entries[4].Term);
+                    return new ValueTask();
+                };
+                await state.ReadAsync<TestReader, DBNull>(checker, 1L, 5L);
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
             }
         }
     }
