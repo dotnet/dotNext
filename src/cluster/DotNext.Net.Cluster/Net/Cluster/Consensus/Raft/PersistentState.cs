@@ -49,6 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly MemoryPool<LogEntryMetadata>? metadataPool;
         private readonly StreamSegment nullSegment;
         private readonly int bufferSize;
+        private readonly bool replayOnInitialize;
 
         /// <summary>
         /// Initializes a new persistent audit trail.
@@ -65,6 +66,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(recordsPerPartition));
             if (!path.Exists)
                 path.Create();
+            replayOnInitialize = configuration.ReplayOnInitialize;
             bufferSize = configuration.BufferSize;
             location = path;
             this.recordsPerPartition = recordsPerPartition;
@@ -644,39 +646,68 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected virtual ValueTask FlushAsync() => new ValueTask();
 
-        private async ValueTask ApplyAsync(CancellationToken token)
+        private async ValueTask ApplyAsync(long startIndex, CancellationToken token)
         {
-            Partition? partition = null;
-            for (var i = state.LastApplied + 1L; i <= state.CommitIndex; state.LastApplied = i++)
-                if (TryGetPartition(i, ref partition, out var switched))
+            for (Partition? partition = null; startIndex <= state.CommitIndex; state.LastApplied = startIndex++)
+                if (TryGetPartition(startIndex, ref partition, out var switched))
                 {
-                    var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, true, switched, token).ConfigureAwait(false)).Value;
+                    var entry = (await partition.ReadAsync(sessionManager.WriteSession, startIndex, true, switched, token).ConfigureAwait(false)).Value;
                     entry.Reset();
                     await ApplyAsync(entry).ConfigureAwait(false);
                 }
                 else
-                    Debug.Fail($"Log entry with index {i} doesn't have partition");
+                    Debug.Fail($"Log entry with index {startIndex} doesn't have partition");
             state.Flush();
             await FlushAsync().ConfigureAwait(false);
         }
 
+        private ValueTask ApplyAsync(CancellationToken token)
+            => ApplyAsync(state.LastApplied + 1L, token);
+
         /// <summary>
-        /// Ensures that all committed entries are applied to the underlying data state machine known as database engine.
+        /// Reconstructs dataset by calling <see cref="ApplyAsync(LogEntry)"/>
+        /// for each committed entry.
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
-        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        public async Task EnsureConsistencyAsync(CancellationToken token)
+        public async Task ReplayAsync(CancellationToken token)
         {
             await syncRoot.AcquireAsync(true, token).ConfigureAwait(false);
             try
             {
-                await ApplyAsync(token).ConfigureAwait(false);
+                LogEntry entry;
+                long startIndex;
+                //1. Apply snapshot if it not empty
+                if(snapshot.Length > 0L)
+                {
+                    entry = await snapshot.ReadAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
+                    await ApplyAsync(entry).ConfigureAwait(false);
+                    startIndex = snapshot.Index;
+                }
+                else
+                    startIndex = 0L;
+                //2. Apply all committed entries
+                await ApplyAsync(startIndex + 1L, token).ConfigureAwait(false);
             }
             finally
             {
                 syncRoot.Release();
             }
+        }
+
+        /// <summary>
+        /// Initializes this state asynchronously.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of the method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+        public Task InitializeAsync(CancellationToken token)
+        {
+            if(token.IsCancellationRequested)
+                return Task.FromCanceled(token);
+            if(replayOnInitialize)
+                return ReplayAsync(token);
+            return Task.CompletedTask;
         }
 
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref initialEntry;

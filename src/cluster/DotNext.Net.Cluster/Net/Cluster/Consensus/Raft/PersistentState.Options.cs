@@ -60,6 +60,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     concurrencyLevel = value;
                 }
             }
+
+            /// <summary>
+            /// Gets value indicating that dataset
+            /// should be reconstructed when <see cref="InitializeAsync(System.Threading.CancellationToken)"/>
+            /// method is called.
+            /// </summary>
+            /// <remarks>
+            /// The default value is <see langword="true"/>.
+            /// </remarks>
+            public bool ReplayOnInitialize { get; set; } = true;
         }
     }
 }

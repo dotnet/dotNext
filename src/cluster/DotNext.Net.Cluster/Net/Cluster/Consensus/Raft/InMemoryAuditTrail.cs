@@ -296,11 +296,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await FlushAsync().ConfigureAwait(false);
         }
 
-        async Task IAuditTrail.EnsureConsistencyAsync(CancellationToken token)
-        {
-            using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
-                await ApplyAsync(token).ConfigureAwait(false);
-        }
+        Task IAuditTrail.InitializeAsync(CancellationToken token)
+            => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
 
         Task IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
             => index >= 0L ? CommitEvent.WaitForCommitAsync(this, commitEvent, index, timeout, token) : Task.FromException(new ArgumentOutOfRangeException(nameof(index)));
