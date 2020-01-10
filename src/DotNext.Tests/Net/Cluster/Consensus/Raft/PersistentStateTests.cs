@@ -462,6 +462,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 await state.AppendAsync(new LogEntryList(entries));
                 await state.CommitAsync(CancellationToken.None);
+                Equal(entries.Length + 41L, state.Value);
                 checker = (readResult, snapshotIndex) =>
                 {
                     Equal(1, readResult.Count);
@@ -492,7 +493,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return default;
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 1, 6, CancellationToken.None);
-
+                Equal(0L, state.Value);
                 checker = (readResult, snapshotIndex) =>
                 {
                     Equal(3, readResult.Count);
@@ -561,6 +562,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             finally
             {
                 (state as IDisposable)?.Dispose();
+            }
+        }
+
+        [Fact]
+        public static async Task Reconstruction()
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            using (var state = new TestAuditTrail(dir, true))
+            {
+                await state.AppendAsync(new LogEntryList(entries));
+                await state.CommitAsync(CancellationToken.None);
+                Equal(entries.Length + 41L, state.Value);
+            }
+
+            //reconstruct state
+            using (var state = new TestAuditTrail(dir, true))
+            {
+                Equal(0L, state.Value);
+                await state.InitializeAsync();
+                Equal(entries.Length + 41L, state.Value);
             }
         }
     }

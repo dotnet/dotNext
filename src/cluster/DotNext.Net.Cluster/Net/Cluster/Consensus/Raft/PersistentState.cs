@@ -671,7 +671,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
-        public async Task ReplayAsync(CancellationToken token)
+        public async Task ReplayAsync(CancellationToken token = default)
         {
             await syncRoot.AcquireAsync(true, token).ConfigureAwait(false);
             try
@@ -702,7 +702,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        public Task InitializeAsync(CancellationToken token)
+        public Task InitializeAsync(CancellationToken token = default)
         {
             if(token.IsCancellationRequested)
                 return Task.FromCanceled(token);
