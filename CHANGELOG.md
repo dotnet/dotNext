@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 01-12-2020
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.11">DotNext.Net.Cluster 1.2.11</a>
+* Ability to reconstruct internal state using `PersistentState.ReplayAsync` method
+
 # 01-11-2020
 <a href="https://www.nuget.org/packages/dotnext/1.2.10">DotNext 1.2.10</a>
 * Fixed invalid behavior of `StreamSegment.Position` property
