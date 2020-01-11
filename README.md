@@ -41,8 +41,11 @@ All these things are implemented in 100% managed code on top of existing .NET St
 # What's new
 Release Date: 12-06-2019
 
-<a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.10">DotNext.Unsafe 1.2.10</a>
-* Fixed invalid usage of `GC.RemoveMemoryPressure` in `Reallocate` methods
+<a href="https://www.nuget.org/packages/dotnext/1.2.10">DotNext 1.2.10</a>
+* Fixed invalid behavior of `StreamSegment.Position` property
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.10">DotNext.Net.Cluster 1.2.10</a>
+* Removed redundant validation of log entry index in `PersistentState`
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
