@@ -1147,8 +1147,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 else if (entry.IsSnapshot)
                     await InstallSnapshot(entry, startIndex).ConfigureAwait(false);
-                else if (startIndex <= state.CommitIndex)
-                    throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 else if (startIndex > state.LastIndex + 1)
                     throw new ArgumentOutOfRangeException(nameof(startIndex));
                 else
