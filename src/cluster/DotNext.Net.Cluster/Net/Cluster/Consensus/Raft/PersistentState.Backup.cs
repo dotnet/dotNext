@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 archive = new ZipArchive(output, ZipArchiveMode.Create, true);
                 foreach(var file in location.EnumerateFiles())
-                    await using(var source = new FileStream(file.FullName, FileMode.Open, FileAccess.ReadWrite, FileShare.Read, Buffer.Length, true))
+                    await using(var source = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, Buffer.Length, true))
                     {
                         var entry = archive.CreateEntry(file.Name, backupCompression);
                         entry.LastWriteTime = file.LastWriteTime;
