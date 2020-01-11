@@ -90,6 +90,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             await task;
             True(engine.IsRegistered("lock1", id1, version1));
             False(engine.IsRegistered("lock1", id2, version1));
+            //release lock
+            True(await engine.UnregisterAsync("lock1", id1, version1, CancellationToken.None));
+            task = engine.WaitForLockEventAsync(false, TimeSpan.FromMinutes(10), CancellationToken.None);
+            ThreadPool.QueueUserWorkItem<IPersistentState>(async state => 
+            {
+                await state.CommitAsync(CancellationToken.None);
+            }, state, false);
+            await task;
+            False(engine.IsRegistered("lock1", id1, version1));
         }
 
         [Fact]
