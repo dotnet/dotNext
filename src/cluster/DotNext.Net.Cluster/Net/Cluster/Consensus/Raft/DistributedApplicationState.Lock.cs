@@ -263,29 +263,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async Task IDistributedLockEngine.ProvideSponsorshipAsync<TSponsor>(TSponsor sponsor, CancellationToken token)
         {
-            using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
-            var acquiredLocks = this.acquiredLocks;
-            var builder = acquiredLocks.ToBuilder();
             bool modified = false, released = false;
-            using(var enumerator = acquiredLocks.GetEnumerator())
-                while(enumerator.MoveNext())
-                {
-                    var (name, info) = enumerator.Current;
-                    switch(sponsor.UpdateLease(ref info))
+            ImmutableDictionary<string, DistributedLock>.Builder builder;
+            using(await AcquireWriteLockAsync(token).ConfigureAwait(false))
+            {
+                builder = acquiredLocks.ToBuilder();
+                using(var enumerator = acquiredLocks.GetEnumerator())
+                    while(enumerator.MoveNext())
                     {
-                        case LeaseState.Expired:
-                            modified = true;
-                            released = true;
-                            builder.Remove(name);
-                            continue;
-                        case LeaseState.Prolonged:
-                            modified = true;
-                            builder[name] = info;
-                            continue;
+                        var (name, info) = enumerator.Current;
+                        switch(sponsor.UpdateLease(ref info))
+                        {
+                            case LeaseState.Expired:
+                                modified = released = true;
+                                builder.Remove(name);
+                                continue;
+                            case LeaseState.Prolonged:
+                                modified = true;
+                                builder[name] = info;
+                                continue;
+                        }
                     }
-                }
-            if(modified)
-                this.acquiredLocks = builder.ToImmutable();
+                if(modified)
+                    acquiredLocks = builder.ToImmutable();
+            }
             if(released)
                 releaseEvent.Set(true);
             builder.Clear();    //help GC
