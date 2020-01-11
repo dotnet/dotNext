@@ -39,13 +39,10 @@ All these things are implemented in 100% managed code on top of existing .NET St
 * [NuGet Packages](https://www.nuget.org/profiles/rvsakno)
 
 # What's new
-Release Date: 12-06-2019
+Release Date: 01-12-2020
 
-<a href="https://www.nuget.org/packages/dotnext/1.2.10">DotNext 1.2.10</a>
-* Fixed invalid behavior of `StreamSegment.Position` property
-
-<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.10">DotNext.Net.Cluster 1.2.10</a>
-* Removed redundant validation of log entry index in `PersistentState`
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.11">DotNext.Net.Cluster 1.2.11</a>
+* Ability to reconstruct internal state using `PersistentState.ReplayAsync` method
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
