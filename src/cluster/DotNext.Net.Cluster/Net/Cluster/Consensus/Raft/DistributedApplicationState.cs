@@ -26,8 +26,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 this.lockBuilder = lockBuilder;
             }
 
+            private ValueTask ApplySnapshotAsync(LogEntry entry)
+            {
+                return lockBuilder.AppendAsync(entry);
+            }
+
+            private async ValueTask ApplyEntryAsync(LogEntry entry)
+            {
+                var command = await entry.ReadAsync<uint>().ConfigureAwait(false);
+                var task = command switch
+                {
+                    LockCommandId => lockBuilder.AppendAsync(entry),
+                    _ => throw new ArgumentOutOfRangeException(nameof(entry))
+                };
+                await task.ConfigureAwait(false);
+            }
+
             protected override ValueTask ApplyAsync(LogEntry entry)
-                => lockBuilder.AppendAsync(entry);
+                => entry.IsSnapshot ? ApplySnapshotAsync(entry) : ApplyEntryAsync(entry);
 
             public override ValueTask WriteToAsync<TWriter>(TWriter writer, System.Threading.CancellationToken token)
                 => lockBuilder.WriteToAsync(writer, token);
@@ -49,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="recordsPerPartition">The maximum number of log entries that can be stored in the single file called partition.</param>
         /// <param name="configuration">The configuration of the persistent audit trail.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="recordsPerPartition"/> is less than 2.</exception>
-        public DistributedApplicationState(DirectoryInfo path, int recordsPerPartition, Options? configuration = null)
+        public DistributedApplicationState(string path, int recordsPerPartition, Options? configuration = null)
             : base(path, recordsPerPartition, configuration)
         {
             isOverloaded = GetType() != typeof(DistributedApplicationState);

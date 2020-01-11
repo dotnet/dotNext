@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Buffers;
     using DistributedServices;
     using IO;
     using IO.Log;
@@ -54,6 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
+                await writer.WriteAsync(LockCommandId, token).ConfigureAwait(false);
                 await writer.WriteAsync(LockCommand.Release, token).ConfigureAwait(false);
                 var context = new EncodingContext(Encoding.UTF8, true);
                 await writer.WriteAsync(name, context, StringLengthEncoding.Plain, token).ConfigureAwait(false);
@@ -92,6 +92,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
+                await writer.WriteAsync(LockCommandId, token).ConfigureAwait(false);
                 await writer.WriteAsync(LockCommand.Acquire, token).ConfigureAwait(false);
                 var context = new EncodingContext(Encoding.UTF8, true);
                 await writer.WriteAsync(name, context, StringLengthEncoding.Plain, token).ConfigureAwait(false);
@@ -107,6 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 lockData.Name = await entry.ReadStringAsync(StringLengthEncoding.Plain, context).ConfigureAwait(false);
                 lockData.Info = new DistributedLock
                 {
+                    CreationTime = entry.Timestamp,
                     Owner = await entry.ReadAsync<ClusterMemberId>().ConfigureAwait(false),
                     Version = await entry.ReadAsync<Guid>().ConfigureAwait(false),
                     LeaseTime = await entry.ReadAsync<TimeSpan>().ConfigureAwait(false)
