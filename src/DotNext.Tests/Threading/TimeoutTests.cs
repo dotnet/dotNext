@@ -1,9 +1,10 @@
-using System;
+using System.Diagnostics.CodeAnalysis;
 using static System.Threading.Timeout;
 using Xunit;
 
 namespace DotNext.Threading
 {
+    [ExcludeFromCodeCoverage]
     public sealed class TimeoutTests : Assert
     {
         private static void InfiniteTest(Timeout timeout)

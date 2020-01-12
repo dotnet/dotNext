@@ -7,8 +7,6 @@ using Xunit;
 
 namespace DotNext.Security.Cryptography
 {
-    using IO.Pipelines;
-
     [ExcludeFromCodeCoverage]
     public sealed class HashAlgorithmTests : Assert
     {
