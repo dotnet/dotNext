@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -13,5 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         void MoveToCandidateState();
 
         void MoveToLeaderState(IRaftClusterMember leader);
+
+        Task NotifyBroadcastFinished(CancellationToken token);
     }
 }

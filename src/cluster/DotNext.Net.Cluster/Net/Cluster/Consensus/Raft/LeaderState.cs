@@ -196,8 +196,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail)
         {
             var token = timerCancellation.Token;
-            while (await DoHeartbeats(auditTrail, token).ConfigureAwait(false))
-                await forcedReplication.WaitAsync(period, token).ConfigureAwait(false);
+            for (Timeout timeout; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); await forcedReplication.WaitAsync(timeout.RemainingTime ?? TimeSpan.Zero, token).ConfigureAwait(false))
+            {
+                timeout = new Timeout(period);
+                await stateMachine.NotifyBroadcastFinished(token).ConfigureAwait(false);
+            }
         }
 
         internal void ForceReplication() => forcedReplication.Set(true);

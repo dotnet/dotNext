@@ -261,7 +261,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<bool> IDistributedLockEngine.WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token)
             => acquireEvent ? this.acquireEvent.WaitAsync(timeout, token) : releaseEvent.WaitAsync(timeout, token);
 
-        async Task IDistributedLockEngine.ProvideSponsorshipAsync<TSponsor>(TSponsor sponsor, CancellationToken token)
+        async Task IDistributedObjectManager<DistributedLock>.ProvideSponsorshipAsync<TSponsor>(TSponsor sponsor, CancellationToken token)
         {
             bool modified = false, released = false;
             ImmutableDictionary<string, DistributedLock>.Builder builder;

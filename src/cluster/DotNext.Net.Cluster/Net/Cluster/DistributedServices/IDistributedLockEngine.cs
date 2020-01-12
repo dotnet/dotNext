@@ -7,15 +7,11 @@ namespace DotNext.Net.Cluster.DistributedServices
     /// <summary>
     /// Represents engine of distributed services.
     /// </summary>
-    internal interface IDistributedLockEngine
+    internal interface IDistributedLockEngine : IDistributedObjectManager<DistributedLock>
     {
         Task<bool> WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token);
 
         bool IsRegistered(string lockName, in ClusterMemberId owner, in Guid version);
-
-        //releases all expired locks
-        Task ProvideSponsorshipAsync<TSponsor>(TSponsor sponsor, CancellationToken token)
-            where TSponsor : ISponsor<DistributedLock>;
 
         //writes the log entry describing lock acquisition
         //but doesn't wait for commit    
