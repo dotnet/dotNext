@@ -3,6 +3,7 @@
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using DistributedServices;
+    using Messaging;
     using Threading;
 
     internal partial class RaftHttpCluster : IDistributedApplicationEnvironment
@@ -12,9 +13,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         IDistributedLockProvider IDistributedApplicationEnvironment.LockProvider => distributedLock ?? throw new NotSupportedException(ExceptionMessages.DistributedServicesAreUnavailable);
 
+        private void ActivateDistributedLock(RaftClusterMember localMember)
+        {
+            var distributedLock = TryCreateLockProvider(this, localMember);
+            if(distributedLock != null)
+            {
+                this.distributedLock = distributedLock;
+                messageHandlers = messageHandlers.Insert(0, distributedLock);
+            }
+        }
+
         private void InitializeDistributedServices(RaftClusterMember localMember)
         {
-            distributedLock = TryCreateLockProvider(this, localMember);
+            ActivateDistributedLock(localMember);
         }
     }
 }
