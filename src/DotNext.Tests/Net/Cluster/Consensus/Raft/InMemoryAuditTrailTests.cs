@@ -25,6 +25,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Fact]
+        public static async Task EmptyLogEntry()
+        {
+            IPersistentState auditTrail = new InMemoryAuditTrail();
+            await auditTrail.AppendAsync(new LogEntryList(new EmptyEntry(10)));
+            Equal(1, auditTrail.GetLastIndex(false));
+            await auditTrail.CommitAsync(1L);
+            Equal(1, auditTrail.GetLastIndex(true));
+            Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker = (entries, snapshotIndex) =>
+            {
+                Equal(10, entries[0].Term);
+                Equal(0, entries[0].Length);
+                True(entries[0].IsReusable);
+                False(entries[0].IsSnapshot);
+                return new ValueTask();
+            };
+            await auditTrail.ReadAsync<TestReader, DBNull>(checker, 1L);
+        }
+
+        [Fact]
         public static async Task Appending()
         {
             IPersistentState auditTrail = new InMemoryAuditTrail();

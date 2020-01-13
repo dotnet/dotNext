@@ -148,6 +148,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [Fact]
+        public static async Task EmptyLogEntry()
+        {
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            using var auditTrail = new PersistentState(dir, RecordsPerPartition);
+            await auditTrail.AppendAsync(new EmptyEntry(10), CancellationToken.None);
+            Equal(1, auditTrail.GetLastIndex(false));
+            await auditTrail.CommitAsync(1L, CancellationToken.None);
+            Equal(1, auditTrail.GetLastIndex(true));
+            Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker = (entries, snapshotIndex) =>
+            {
+                Equal(10, entries[0].Term);
+                Equal(0, entries[0].Length);
+                False(entries[0].IsReusable);
+                False(entries[0].IsSnapshot);
+                return new ValueTask();
+            };
+            await auditTrail.ReadAsync<TestReader, DBNull>(checker, 1L, CancellationToken.None);
+        }
+
+        [Fact]
         public static async Task QueryAppendEntries()
         {
             var entry = new TestLogEntry("SET X = 0") { Term = 42L };
