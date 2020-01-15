@@ -95,7 +95,7 @@ namespace DotNext
             Equal(new int[] { 1, 3, 5, 7, 9 }, array1.Concat(array2, array1.Length));
             Equal(array2, array1.Concat(array2, 0));
             Equal(new int[] { 1, 7, 9 }, array1.Concat(array2, 1));
-            Equal(Array.Empty<int>(), array1.Concat(default, 0));
+            Equal(Array.Empty<int>(), array1.Concat(Array.Empty<int>(), 0));
             Equal(array2, Array.Empty<int>().Concat(array2, 0));
         }
     }
