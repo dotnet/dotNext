@@ -86,5 +86,17 @@ namespace DotNext
             Equal(3, array[0]);
             Equal(4, array[1]);
         }
+
+        [Fact]
+        public static void Concatenation()
+        {
+            int[] array1 = { 1, 3, 5 };
+            int[] array2 = { 7, 9 };
+            Equal(new int[] { 1, 3, 5, 7, 9 }, array1.Concat(array2, array1.Length));
+            Equal(array2, array1.Concat(array2, 0));
+            Equal(new int[] { 1, 7, 9 }, array1.Concat(array2, 1));
+            Equal(Array.Empty<int>(), array1.Concat(default, 0));
+            Equal(array2, Array.Empty<int>().Concat(array2, 0));
+        }
     }
 }
