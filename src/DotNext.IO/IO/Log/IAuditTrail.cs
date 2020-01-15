@@ -191,7 +191,7 @@ namespace DotNext.IO.Log
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The actual number of dropped entries.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> represents index of the committed entry.</exception>
-        ValueTask<long> DropAsync(long startIndex, CancellationToken token);
+        ValueTask<long> DropAsync(long startIndex, CancellationToken token = default);
 
         /// <summary>
         /// Gets the first ephemeral log entry that is present in the empty log.
