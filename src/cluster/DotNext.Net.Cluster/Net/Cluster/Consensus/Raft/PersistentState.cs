@@ -329,7 +329,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TEntry : notnull, IRaftLogEntry
         {
             if (startIndex <= state.CommitIndex)
-                    throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+                throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
             else if (entry.IsSnapshot)
                 await InstallSnapshot(entry, startIndex).ConfigureAwait(false);
             else if (startIndex > state.LastIndex + 1L)
