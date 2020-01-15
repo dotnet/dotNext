@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO;
+    using IO.Log;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -13,15 +14,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     [StructLayout(LayoutKind.Auto)]
     public readonly struct EmptyEntry : IRaftLogEntry
     {
+        private readonly bool isSnapshot;
+
+        internal EmptyEntry(long term, bool snapshot)
+        {
+            Term = term;
+            Timestamp = DateTimeOffset.UtcNow;
+            isSnapshot = snapshot;
+        }
+
         /// <summary>
         /// Initializes a new empty log entry.
         /// </summary>
         /// <param name="term">The term value.</param>
         public EmptyEntry(long term)
+            : this(term, false)
         {
-            Term = term;
-            Timestamp = DateTimeOffset.UtcNow;
         }
+
+        bool ILogEntry.IsSnapshot => isSnapshot;
 
         long? IDataTransferObject.Length => 0;
 
