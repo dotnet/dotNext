@@ -103,5 +103,12 @@ namespace DotNext.IO.Log
                 source.Clear();
             return new ValueTask();
         }
+
+        /// <summary>
+        /// Constructs producer of single log entry.
+        /// </summary>
+        /// <param name="entry">The entry to be exposed by producer.</param>
+        /// <returns>The producer of single log entry.</returns>
+        public static ILogEntryProducer<TEntry> Of(TEntry entry) => new SingleEntryProducer<TEntry>(entry);
     }
 }
