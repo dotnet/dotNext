@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
-    using System.Collections;
     using Threading;
 
     /// <summary>
@@ -21,41 +22,45 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private static readonly IRaftLogEntry First = new EmptyEntry(0L);
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct EntryList : IReadOnlyList<EmptyEntry>
         {
-            private readonly long count, uncommittedIndex, snapshotTerm;
+            private readonly long count, offset, snapshotTerm;
             private readonly long[] terms;
 
-            internal EntryList(long[] log, long count, long firstUncommitted, long snapshotTerm)
+            internal EntryList(long[] log, long count, long offset, long snapshotTerm)
             {
+                Debug.Assert(offset + count <= log.LongLength);
                 terms = log;
                 this.count = count;
-                uncommittedIndex = firstUncommitted;
+                this.offset = offset;
                 this.snapshotTerm = snapshotTerm;
             }
 
-            public EmptyEntry this[int index]
+            public EmptyEntry this[long index]
             {
                 get
                 {
-                    if (index < 0 || index >= count)
+                    if(index < 0L || index >= count)
                         throw new ArgumentOutOfRangeException(nameof(index));
-                    return new EmptyEntry(index >= uncommittedIndex ? terms[index] : snapshotTerm);
+                    index += offset;
+                    return index < 0L ? new EmptyEntry(snapshotTerm, true) : new EmptyEntry(terms[index], false);
                 }
             }
-
+            EmptyEntry IReadOnlyList<EmptyEntry>.this[int index]
+                => this[index];
 
             int IReadOnlyCollection<EmptyEntry>.Count => (int)count;
 
             public IEnumerator<EmptyEntry> GetEnumerator()
             {
-                throw new NotImplementedException();
+                if(offset < 0)
+                    yield return new EmptyEntry(snapshotTerm, true);
+                for(var i = 0L; i < count + offset; i++)
+                    yield return new EmptyEntry(terms[i], false);
             }
 
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                throw new NotImplementedException();
-            }
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
         private long term, commitIndex, lastTerm, index;
@@ -71,7 +76,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask<long> AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long? startIndex, bool skipCommitted, CancellationToken token)
             where TEntryImpl : notnull, IRaftLogEntry
         {
-            token.ThrowIfCancellationRequested();
             long skip;
             if (startIndex is null)
                 startIndex = index + 1L;
@@ -91,10 +95,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 //skip entries
                 var newEntries = new long[count];
-                while (skip-- > 0)
+                for ( ; skip-- > 0; token.ThrowIfCancellationRequested())
                     await entries.MoveNextAsync().ConfigureAwait(false);
                 //copy terms
-                for (var i = 0; await entries.MoveNextAsync().ConfigureAwait(false) && i < newEntries.LongLength; i++)
+                for (var i = 0; await entries.MoveNextAsync().ConfigureAwait(false) && i < newEntries.LongLength; i++, token.ThrowIfCancellationRequested())
                     newEntries[i] = entries.Current.Term;
                 //now concat existing array of terms
                 log = log.Concat(newEntries, startIndex.Value - commitIndex - 1L);
@@ -122,7 +126,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex)
         {
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(LogEntryProducer<TEntryImpl>.Of(entry), null, false, CancellationToken.None).ConfigureAwait(false);
+                await AppendAsync(LogEntryProducer<TEntryImpl>.Of(entry), startIndex, false, CancellationToken.None).ConfigureAwait(false);
         }
 
         private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
@@ -131,10 +135,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
             {
                 var startIndex = commitIndex.VolatileRead() + 1L;
-                count = (endIndex ?? GetLastIndex(false)) - startIndex + 1L;
+                count = (endIndex ?? index.VolatileRead()) - startIndex + 1L;
                 if (count > 0)
                 {
                     commitIndex.VolatileWrite(startIndex + count - 1);
+                    lastTerm.VolatileWrite(log[count - 1]);
                     //count indicates how many elements should be removed from log
                     log = log.RemoveFirst(count);
                     commitEvent.Set(true);
@@ -158,6 +163,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 count = index.VolatileRead() - startIndex + 1L;
                 index.VolatileWrite(startIndex - 1L);
+                log = log.RemoveLast(count);
             }
             return count;
         }
@@ -181,6 +187,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return lastVote is null || ReferenceEquals(lastVote, member);
         }
 
+        private ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
+            where TReader : notnull, ILogEntryConsumer<IRaftLogEntry, TResult>
+        {
+            var commitIndex = this.commitIndex.VolatileRead();
+            var offset = startIndex - commitIndex - 1L;
+            return reader.ReadAsync<EmptyEntry, EntryList>(new EntryList(log, endIndex - startIndex + 1, offset, lastTerm.VolatileRead()), offset >= 0 ? null : new long?(commitIndex), token);
+        }
+
         async ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex < 0L)
@@ -189,18 +203,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(endIndex));
             if (endIndex < startIndex)
                 return await reader.ReadAsync<EmptyEntry, EmptyEntry[]>(Array.Empty<EmptyEntry>(), null, token);
-            using (await syncRoot.AcquireWriteLockAsync(token).ConfigureAwait(false))
-            {
-                endIndex = Math.Max(index.VolatileRead() + 1, endIndex);
-                startIndex = Math.Max(0, startIndex);
-                var firstOfUncommitted = commitIndex.VolatileRead() - startIndex;
-                return await reader.ReadAsync<EmptyEntry, EntryList>(new EntryList(log, endIndex - startIndex + 1, firstOfUncommitted, lastTerm), firstOfUncommitted == 0 ? null : new long?(commitIndex.VolatileRead()), token).ConfigureAwait(false);
-            }
+            using (await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false))
+                return await ReadAsync<TReader, TResult>(reader, startIndex, endIndex, token).ConfigureAwait(false);
         }
 
-        public ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default) where TReader : notnull, ILogEntryConsumer<IRaftLogEntry, TResult>
+        async ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
         {
-            throw new NotImplementedException();
+            if (startIndex < 0L)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            using (await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false))
+                return await ReadAsync<TReader, TResult>(reader, startIndex, index.VolatileRead(), token).ConfigureAwait(false);
         }
 
         ValueTask IPersistentState.UpdateTermAsync(long value)
