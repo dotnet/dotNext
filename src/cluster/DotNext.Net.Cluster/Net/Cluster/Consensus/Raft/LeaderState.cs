@@ -161,7 +161,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     quorum += 1;
                     commitQuorum += result.Value ? 1 : -1;
                 }
-                catch (MemberUnavailableException e)
+                catch (MemberUnavailableException)
                 {
                     quorum -= 1;
                     commitQuorum -= 1;
