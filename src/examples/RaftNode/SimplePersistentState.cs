@@ -18,9 +18,7 @@ namespace RaftNode
             private long value;
 
             protected override async ValueTask ApplyAsync(LogEntry entry)
-            {
-                value = await entry.ReadAsync<long>().ConfigureAwait(false);
-            }
+                => value = await entry.ReadAsync<long>().ConfigureAwait(false);
 
             public override ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
                 => writer.WriteAsync(value, token);
@@ -40,8 +38,15 @@ namespace RaftNode
 
         long IValueProvider.Value => content.VolatileRead();
 
-        protected override async ValueTask ApplyAsync(LogEntry entry)
-            => content.VolatileWrite(await entry.ReadAsync<long>().ConfigureAwait(false));
+        private async ValueTask UpdateValue(LogEntry entry)
+        {
+            var value = await entry.ReadAsync<long>().ConfigureAwait(false);
+            content.VolatileWrite(value);
+            Console.WriteLine($"Accepting value {value}");
+        }
+
+        protected override ValueTask ApplyAsync(LogEntry entry)
+            => entry.Length == 0L ? new ValueTask() : UpdateValue(entry);
 
         protected override SnapshotBuilder CreateSnapshotBuilder()
         {
