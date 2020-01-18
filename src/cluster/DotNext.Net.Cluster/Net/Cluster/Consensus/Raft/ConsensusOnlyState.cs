@@ -67,11 +67,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile IRaftClusterMember? votedFor;
         private readonly AsyncReaderWriterLock syncRoot = new AsyncReaderWriterLock();
         private readonly AsyncManualResetEvent commitEvent = new AsyncManualResetEvent(false);
+        private readonly long[] singleEntryTerm = new long[1];  //cached array with 1 element
         private volatile long[] log = Array.Empty<long>();    //log of uncommitted entries
 
         long IPersistentState.Term => term.VolatileRead();
 
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref First;
+
+        private void Append(long[] terms, long startIndex)
+        {
+            log = log.Concat(terms, startIndex - commitIndex.VolatileRead() - 1L);
+            index.VolatileWrite(startIndex + terms.LongLength - 1L);
+        }
 
         private async ValueTask<long> AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long? startIndex, bool skipCommitted, CancellationToken token)
             where TEntryImpl : notnull, IRaftLogEntry
@@ -99,10 +106,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await entries.MoveNextAsync().ConfigureAwait(false);
                 //copy terms
                 for (var i = 0; await entries.MoveNextAsync().ConfigureAwait(false) && i < newEntries.LongLength; i++, token.ThrowIfCancellationRequested())
-                    newEntries[i] = entries.Current.Term;
+                    if (entries.Current.IsSnapshot)
+                        throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
+                    else
+                        newEntries[i] = entries.Current.Term;
                 //now concat existing array of terms
-                log = log.Concat(newEntries, startIndex.Value - commitIndex - 1L);
-                index.VolatileWrite(startIndex.Value + count - 1L);
+                Append(newEntries, startIndex.Value);
             }
             return startIndex.Value;
         }
@@ -126,7 +135,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, long startIndex)
         {
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(LogEntryProducer<TEntry>.Of(entry), startIndex, false, CancellationToken.None).ConfigureAwait(false);
+                if (startIndex <= commitIndex.VolatileRead())
+                    throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+                else if(entry.IsSnapshot)
+                {
+                    lastTerm.VolatileWrite(entry.Term);
+                    commitIndex.VolatileWrite(startIndex);
+                    index.VolatileWrite(startIndex);
+                    log = Array.Empty<long>();
+                    commitEvent.Set(true);
+                }
+                else if (startIndex > index.VolatileRead() + 1L)
+                    throw new ArgumentOutOfRangeException(nameof(startIndex));
+                else
+                {
+                    singleEntryTerm[0] = entry.Term;
+                    Append(singleEntryTerm, startIndex);
+                }
         }
 
         async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, CancellationToken token)

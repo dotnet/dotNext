@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task EmptyLogEntry()
         {
             IPersistentState auditTrail = new ConsensusOnlyState();
-            await auditTrail.AppendAsync(new LogEntryList(new EmptyEntry(10)));
+            await auditTrail.AppendAsync(new EmptyEntry(10));
             Equal(1, auditTrail.GetLastIndex(false));
             await auditTrail.CommitAsync(1L);
             Equal(1, auditTrail.GetLastIndex(true));
