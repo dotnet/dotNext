@@ -95,7 +95,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         private Task<bool> ReleaseAsync(string lockName, Guid version, CancellationToken token)
             => leaderChannel.SendMessageAsync(new ReleaseLockRequest { Owner = owner, Version = version, LockName = lockName }, ReleaseLockResponse.Reader, token);
 
-        internal async Task ReleaseAsync(string lockName, Guid version, TimeSpan timeout)
+        private async Task ReleaseAsync(string lockName, Guid version, TimeSpan timeout)
         {
             if(engine.IsRegistered(lockName, in owner, in version))
             {
