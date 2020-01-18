@@ -293,6 +293,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (acquiredLocks.TryGetValue(name, out var existingLock) && existingLock.Owner == owner && existingLock.Version == version)
             {
                 await AppendAsync(writeLock, new ReleaseLockCommand(name, Term), token).ConfigureAwait(false);
+                acquiredLocks = acquiredLocks.Remove(name);
                 return true;
             }
             return false;
