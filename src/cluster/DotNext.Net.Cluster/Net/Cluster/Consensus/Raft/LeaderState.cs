@@ -29,6 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal Replicator(IRaftClusterMember member,
                 long commitIndex,
+                long currentIndex,
                 long term,
                 long precedingIndex,
                 long precedingTerm,
@@ -39,6 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 this.precedingIndex = precedingIndex;
                 this.precedingTerm = precedingTerm;
                 this.commitIndex = commitIndex;
+                this.currentIndex = currentIndex;
                 this.term = term;
                 this.logger = logger;
                 this.token = token;
@@ -48,7 +50,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal ValueTask<Result<bool>> Start(IAuditTrail<IRaftLogEntry> auditTrail)
             {
-                var currentIndex = this.currentIndex = auditTrail.GetLastIndex(false);
                 logger.ReplicationStarted(member.Endpoint, currentIndex);
                 return currentIndex >= member.NextIndex ?
                     auditTrail.ReadAsync<Replicator, Result<bool>>(this, member.NextIndex, token) :
@@ -140,14 +141,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var timeStamp = Timestamp.Current;
             var tasks = new LinkedList<ValueTask<Result<bool>>>();
-            //send heartbeat in parallel
-            var commitIndex = auditTrail.GetLastIndex(true);
+            
+            long commitIndex = auditTrail.GetLastIndex(true), currentIndex = auditTrail.GetLastIndex(false);
             var term = currentTerm;
+            //send heartbeat in parallel
             foreach (var member in stateMachine.Members)
                 if (member.IsRemote)
                 {
                     long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token);
-                    tasks.AddLast(new Replicator(member, commitIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).Start(auditTrail));
+                    tasks.AddLast(new Replicator(member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).Start(auditTrail));
                 }
             var quorum = 1;  //because we know that the entry is replicated in this node
             var commitQuorum = 1;
@@ -159,7 +161,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     quorum += 1;
                     commitQuorum += result.Value ? 1 : -1;
                 }
-                catch (MemberUnavailableException)
+                catch (MemberUnavailableException e)
                 {
                     quorum -= 1;
                     commitQuorum -= 1;
@@ -180,7 +182,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //majority of nodes accept entries with a least one entry from current term
             if (commitQuorum > 0)
             {
-                var count = await auditTrail.CommitAsync(token).ConfigureAwait(false); //commit all entries started from first uncommitted index to the end
+                var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); //commit all entries started from first uncommitted index to the end
                 stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
                 return CheckTerm(term);
             }
