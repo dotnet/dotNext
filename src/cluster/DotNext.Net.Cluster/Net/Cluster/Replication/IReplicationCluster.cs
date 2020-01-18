@@ -40,12 +40,11 @@ namespace DotNext.Net.Cluster.Replication
         /// <param name="entries">The number of commands to be committed into the audit trail.</param>
         /// <param name="concern">The value describing level of acknowledgment from cluster.</param>
         /// <param name="timeout">The timeout of the asynchronous operation.</param>
-        /// <returns>The task representing asynchronous state of this operation.</returns>
+        /// <returns><see langword="false"/> if timeout occurred or changeset is rejected due to conflict; <see langword="true"/> if changeset is committed successfully.</returns>
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
         /// <exception cref="NotSupportedException">The specified level of acknowledgment is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        /// <exception cref="TimeoutException">The timeout is occurred.</exception>
-        Task WriteAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, WriteConcern concern, TimeSpan timeout)
+        Task<bool> WriteAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, WriteConcern concern, TimeSpan timeout)
             where TEntryImpl : TEntry;
     }
 }
