@@ -541,9 +541,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     break;  //enumeration is sorted by partition number so we don't need to enumerate over all partitions
             }
             Debug.Assert(compactionScope.Count > 0);
+            LogEntry entry;
             //2. Initialize builder with snapshot record
             if (snapshot.Length > 0L)
-                await builder.ApplyCoreAsync(await snapshot.ReadAsync(sessionManager.WriteSession, token).ConfigureAwait(false));
+            {
+                entry = await snapshot.ReadAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
+                entry.Reset();
+                await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
+            }
             //3. Do compaction
             var snapshotIndex = 0L;
             foreach (var partition in compactionScope.Values)
@@ -552,7 +557,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 for (var i = 0; i < partition.Capacity; i++)
                     if (partition.FirstIndex > 0L || i > 0L) //ignore the ephemeral entry
                     {
-                        var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false)).Value;
+                        entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false)).Value;
                         entry.Reset();
                         await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
                     }
