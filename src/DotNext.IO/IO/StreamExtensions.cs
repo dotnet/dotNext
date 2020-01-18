@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Diagnostics.Debug;
-using BinaryPrimitives = System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.IO
 {
