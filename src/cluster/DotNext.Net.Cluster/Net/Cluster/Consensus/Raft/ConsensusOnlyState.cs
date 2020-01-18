@@ -115,7 +115,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
         }
 
-        async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, CancellationToken token)
+        async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token)
         {
             if (entries.RemainingCount == 0L)
                 throw new ArgumentException(ExceptionMessages.EntrySetIsEmpty);
@@ -123,10 +123,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return await AppendAsync(entries, null, false, token).ConfigureAwait(false);
         }
 
-        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex)
+        async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, long startIndex)
         {
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
-                await AppendAsync(LogEntryProducer<TEntryImpl>.Of(entry), startIndex, false, CancellationToken.None).ConfigureAwait(false);
+                await AppendAsync(LogEntryProducer<TEntry>.Of(entry), startIndex, false, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, CancellationToken token)
+        {
+            using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
+                return await AppendAsync(LogEntryProducer<TEntry>.Of(entry), null, false, CancellationToken.None).ConfigureAwait(false);
         }
 
         private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
@@ -227,10 +233,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return new ValueTask();
         }
 
-        public Task WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token = default)
+        Task<bool> IAuditTrail.WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
+            => commitEvent.WaitAsync(timeout, token);
+
+        private async Task EnsureConsistency(TimeSpan timeout, CancellationToken token)
         {
-            return Task.CompletedTask;
+            for(var timeoutTracker = new Timeout(timeout); term.VolatileRead() > lastTerm.VolatileRead(); await commitEvent.WaitAsync(timeout, token).ConfigureAwait(false))
+                timeoutTracker.ThrowIfExpired(out timeout);
         }
+
+        Task IPersistentState.EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token)
+            => term.VolatileRead() <= lastTerm.VolatileRead() ? Task.CompletedTask : EnsureConsistency(timeout, token);
 
         /// <summary>
         /// Releases all resources associated with this audit trail.
