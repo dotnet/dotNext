@@ -282,6 +282,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
 
             await ApplyAsync(await this.snapshot.ReadAsync(sessionManager.WriteSession, CancellationToken.None).ConfigureAwait(false));
+            lastTerm.VolatileWrite(snapshot.Term);
             state.LastApplied = snapshotIndex;
             state.Flush();
             await FlushAsync().ConfigureAwait(false);
@@ -520,14 +521,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Waits for the commit.
         /// </summary>
-        /// <param name="index">The index of the log record to be committed.</param>
         /// <param name="timeout">The timeout used to wait for the commit.</param>
         /// <param name="token">The token that can be used to cancel waiting.</param>
-        /// <returns>The task representing waiting operation.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than 1.</exception>
+        /// <returns><see langword="true"/> if log entry is committed; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        public Task WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
-            => index >= 0L ? CommitEvent.WaitForCommitAsync(this, commitEvent, index, timeout, token) : Task.FromException(new ArgumentOutOfRangeException(nameof(index)));
+        public Task<bool> WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
+            => commitEvent.WaitAsync(timeout, token);
 
         private async ValueTask ForceCompaction(SnapshotBuilder builder, CancellationToken token)
         {
@@ -655,6 +654,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     var entry = (await partition.ReadAsync(sessionManager.WriteSession, startIndex, true, switched, token).ConfigureAwait(false)).Value;
                     entry.Reset();
                     await ApplyAsync(entry).ConfigureAwait(false);
+                    lastTerm.VolatileWrite(entry.Term);
                 }
                 else
                     Debug.Fail($"Log entry with index {startIndex} doesn't have partition");
@@ -683,6 +683,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     entry = await snapshot.ReadAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
                     await ApplyAsync(entry).ConfigureAwait(false);
+                    lastTerm.VolatileWrite(entry.Term);
                     startIndex = snapshot.Index;
                 }
                 else
@@ -710,6 +711,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return ReplayAsync(token);
             return Task.CompletedTask;
         }
+
+        private async Task EnsureConsistencyImpl(TimeSpan timeout, CancellationToken token)
+        {
+            for(var timeoutTracker = new Timeout(timeout); state.Term > lastTerm.VolatileRead(); await commitEvent.WaitAsync(timeout, token).ConfigureAwait(false))
+                timeoutTracker.ThrowIfExpired(out timeout);
+        }
+
+        /// <summary>
+        /// Suspens the caller until the log entry with term equal to <see cref="Term"/>
+        /// will be committed.
+        /// </summary>
+        /// <param name="timeout">The time to wait.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of the asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="TimeoutException">Timeout occurred.</exception>
+        public Task EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token)
+            => state.Term <= lastTerm.VolatileRead() ? Task.CompletedTask : EnsureConsistencyImpl(timeout, token);
 
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref initialEntry;
 
