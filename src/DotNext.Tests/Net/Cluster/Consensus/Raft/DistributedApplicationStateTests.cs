@@ -74,7 +74,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IDistributedLockEngine engine = state;
             GenerateIds(out var id1, out var id2);
             var version1 = Guid.NewGuid();
-            var task = engine.WaitForLockEventAsync(true, TimeSpan.FromMinutes(10), CancellationToken.None);
+            var task = state.WaitForCommitAsync(TimeSpan.FromMinutes(10), CancellationToken.None);
             True(await engine.RegisterAsync("lock1", new DistributedLock
             {
                 Owner = id1,
@@ -87,17 +87,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 await state.CommitAsync(CancellationToken.None);
             }, state, false);
-            await task;
+            True(await task);
             True(engine.IsRegistered("lock1", id1, version1));
             False(engine.IsRegistered("lock1", id2, version1));
             //release lock
             True(await engine.UnregisterAsync("lock1", id1, version1, CancellationToken.None));
-            task = engine.WaitForLockEventAsync(false, TimeSpan.FromMinutes(10), CancellationToken.None);
+            task = state.WaitForCommitAsync(TimeSpan.FromMinutes(10), CancellationToken.None);
             ThreadPool.QueueUserWorkItem<IPersistentState>(async state => 
             {
                 await state.CommitAsync(CancellationToken.None);
             }, state, false);
-            await task;
+            True(await task);
             False(engine.IsRegistered("lock1", id1, version1));
         }
 

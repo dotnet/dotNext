@@ -50,21 +50,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"}
+                {"members:2", "http://localhost:3264"},
+                {"lowerElectionTimeout", "500" },
+                {"upperElectionTimeout", "1000" },
             };
             var config2 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"}
+                {"members:2", "http://localhost:3264"},
+                {"lowerElectionTimeout", "500" },
+                {"upperElectionTimeout", "1000" },
             };
             var config3 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
                 {"members:0", "http://localhost:3262"},
                 {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"}
+                {"members:2", "http://localhost:3264"},
+                {"lowerElectionTimeout", "500" },
+                {"upperElectionTimeout", "1000" },
             };
             using var host1 = CreateHost<Startup>(3262, true, config1);
             using var host2 = CreateHost<Startup>(3263, true, config2);
@@ -83,11 +89,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             {
                 await Task.Delay(20);
             }
+            Console.WriteLine("LEADER ELECTED");
             await using(await cluster1.LockProvider["lock1"].AcquireAsync(TimeSpan.FromMinutes(10)))
             {
                 //attempts to acquire the same lock
-                var holder = await cluster2.LockProvider["lock1"].TryAcquireAsync(TimeSpan.FromMilliseconds(400));
+                var holder = await cluster2.LockProvider["lock1"].TryAcquireAsync(TimeSpan.FromSeconds(2));
                 if(holder) throw new Xunit.Sdk.XunitException();
+                await ThrowsAsync<TimeoutException>(() => cluster2.LockProvider["lock1"].AcquireAsync(TimeSpan.FromSeconds(2)));
             }
 
             await host3.StopAsync();

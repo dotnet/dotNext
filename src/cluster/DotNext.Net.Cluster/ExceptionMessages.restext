@@ -14,4 +14,3 @@ LockConflict=The lock conflict detected
 InvalidLockToken=Write lock token is invalid
 UnsupportedAddressFamily=Unsupported endpoint address family
 UnresolvedLocalMember=Local member is unresolved
-ChangesRejected=The changes were rejected because leader has changed during commit

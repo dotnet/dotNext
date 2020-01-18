@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using System;
 using System.ComponentModel;
 using System.Threading;
@@ -8,6 +9,7 @@ namespace DotNext.Net.Cluster.DistributedServices
     using Messaging;
     using Threading;
     using static IO.DataTransferObject;
+    using IAuditTrail = IO.Log.IAuditTrail;
     
     /// <summary>
     /// Represents default implementation of distributed lock provider.
@@ -31,12 +33,16 @@ namespace DotNext.Net.Cluster.DistributedServices
         private readonly IDistributedLockEngine engine;
         private readonly IOutputChannel leaderChannel;
         private readonly ClusterMemberId owner;
+        private readonly IAuditTrail auditTrail;
+        private readonly ILogger logger;
 
-        internal DistributedLockProvider(IDistributedLockEngine engine, IOutputChannel leaderChannel, ClusterMemberId owner)
+        internal DistributedLockProvider(IDistributedLockEngine engine, IOutputChannel leaderChannel, ClusterMemberId owner, IAuditTrail auditTrail, ILogger logger)
         {
             this.owner = owner;
             this.engine = engine;
             this.leaderChannel = leaderChannel;
+            this.auditTrail = auditTrail;
+            this.logger = logger;
             DefaultOptions = new DistributedLockOptions();
         }
 
@@ -92,9 +98,16 @@ namespace DotNext.Net.Cluster.DistributedServices
         internal async Task ReleaseAsync(string lockName, Guid version, TimeSpan timeout)
         {
             if(engine.IsRegistered(lockName, in owner, in version))
+            {
+                logger.ReleasingLock(lockName);
                 using(var timeoutSource = new CancellationTokenSource(timeout))
                     if(await ReleaseAsync(lockName, version, timeoutSource.Token).ConfigureAwait(false))
+                    {
+                        logger.ReleaseLockConfirm(lockName);
                         return;
+                    }
+            }
+            logger.FailedToUnlock(lockName);
             throw new SynchronizationLockException(ExceptionMessages.LockConflict);
         }
 
@@ -122,23 +135,34 @@ namespace DotNext.Net.Cluster.DistributedServices
                     LeaseTime = options.LeaseTime
                 }
             };
+            long commitIndex;   //used for tracking commits
             while (true)
             {
                 request.LockInfo.CreationTime = DateTimeOffset.Now;
+                commitIndex = auditTrail.GetLastIndex(true);
+                logger.AttemptsToAcquire(lockName);
                 if (await leaderChannel.SendMessageAsync(request, AcquireLockResponse.Reader, token).ConfigureAwait(false))
                     break;
-                if (timeout.RemainingTime.TryGetValue(out remainingTime) && await engine.WaitForLockEventAsync(false, remainingTime, token).ConfigureAwait(false))
+                if (timeout.RemainingTime.TryGetValue(out remainingTime) && await auditTrail.WaitForCommitAsync(commitIndex + 1L, remainingTime, token).ConfigureAwait(false))
+                {
+                    logger.PendingLockConfirmation(lockName);
                     continue;
+                }
                 goto acquisition_failed;
             }
+            logger.AcquireLockConfirm(lockName);
             //acquisition confirmed by leader node so need to wait until the acquire command will be committed
             do
             {
                 if (engine.IsRegistered(lockName, in owner, in lockVersion))
                     return CreateReleaseAction(lockName, lockVersion, options);
+                else
+                    commitIndex = auditTrail.GetLastIndex(true);
+                logger.PendingLockCommit(lockName);
             }
-            while (timeout.RemainingTime.TryGetValue(out remainingTime) && await engine.WaitForLockEventAsync(true, remainingTime, token).ConfigureAwait(false));
+            while (timeout.RemainingTime.TryGetValue(out remainingTime) && await auditTrail.WaitForCommitAsync(commitIndex + 1L, remainingTime, token).ConfigureAwait(false));
             acquisition_failed:
+            logger.AcquireLockTimeout(lockName);
             return null;
         }
 

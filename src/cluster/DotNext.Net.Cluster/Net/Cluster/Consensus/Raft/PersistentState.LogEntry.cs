@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO;
-    using IO.Log;
     using Text;
 
     public partial class PersistentState
@@ -49,6 +48,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets length of the log entry content, in bytes.
             /// </summary>
             public long Length => metadata.Length;
+
+            internal bool IsEmpty => metadata.Length == 0L;
 
             internal void Reset()
                 => content.Adjust(metadata.Offset, Length);

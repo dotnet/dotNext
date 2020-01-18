@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,7 +32,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal ValueTask ApplyCoreAsync(LogEntry entry)
             {
                 term = Math.Max(entry.Term, term);
-                return ApplyAsync(entry);
+                //drop empty log entries during snapshot construction
+                return entry.IsEmpty ? new ValueTask() : ApplyAsync(entry);
             }
 
             long? IDataTransferObject.Length => null;

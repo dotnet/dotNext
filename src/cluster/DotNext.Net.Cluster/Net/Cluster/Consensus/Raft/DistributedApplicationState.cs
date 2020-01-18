@@ -102,9 +102,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (isOverloaded)
                 throw new NotImplementedException();
-            if(entry.IsSnapshot)
+            else if(entry.IsSnapshot)
                 await ApplyLockSnapshotAsync(entry).ConfigureAwait(false);
-            else
+            else if(!entry.IsEmpty)
                 await ApplyAsync(await entry.ReadAsync<uint>().ConfigureAwait(false), entry).ConfigureAwait(false);
         }
 
@@ -126,8 +126,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private void ReleaseManagedMemory()
         {
             acquiredLocks = ImmutableDictionary<string, DistributedLock>.Empty;
-            acquireEvent.Dispose();
-            releaseEvent.Dispose();
         }
 
         /// <summary>

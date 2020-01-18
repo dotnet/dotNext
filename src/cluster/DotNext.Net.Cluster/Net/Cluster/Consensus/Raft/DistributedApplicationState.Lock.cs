@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -13,9 +14,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using IO;
     using IO.Log;
     using Text;
-    using Threading;
     using FalseTask = Threading.Tasks.CompletedTask<bool, Generic.BooleanConst.False>;
-
+        
     public partial class DistributedApplicationState : IDistributedLockEngine
     {
         /// <summary>
@@ -188,30 +188,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         //copy-on-write semantics
         private volatile ImmutableDictionary<string, DistributedLock> acquiredLocks = ImmutableDictionary.Create<string, DistributedLock>(StringComparer.Ordinal, BitwiseComparer<DistributedLock>.Instance);
-        private readonly AsyncManualResetEvent releaseEvent = new AsyncManualResetEvent(false);
-        private readonly AsyncManualResetEvent acquireEvent = new AsyncManualResetEvent(false);
 
         private async ValueTask ApplyAcquireLockCommandAsync(LogEntry entry)
         {
             var (lockName, lockInfo) = await AcquireLockCommand.ReadAsync(entry).ConfigureAwait(false);
-            if (lockInfo.IsExpired)
-            {
-                acquiredLocks = acquiredLocks.Remove(lockName);
-                releaseEvent.Set(true);
-            }
-            else
-            {
-                acquiredLocks = acquiredLocks.SetItem(lockName, lockInfo);
-                acquireEvent.Set(true);
-            }
+            acquiredLocks = lockInfo.IsExpired ?
+                acquiredLocks.Remove(lockName) :
+                acquiredLocks.SetItem(lockName, lockInfo);
         }
 
         private async ValueTask ApplyReleaseLockCommandAsync(LogEntry entry)
-        {
-            var lockName = await ReleaseLockCommand.ReadAsync(entry).ConfigureAwait(false);
-            acquiredLocks = acquiredLocks.Remove(lockName);
-            releaseEvent.Set(true);
-        }
+            => acquiredLocks = acquiredLocks.Remove(await ReleaseLockCommand.ReadAsync(entry).ConfigureAwait(false));
 
         private async ValueTask ApplyLockCommandAsync(LogEntry entry)
         {
@@ -253,17 +240,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var builder = ImmutableDictionary.CreateBuilder<string, DistributedLock>(acquiredLocks.KeyComparer);
             await ApplyLockSnapshotAsync(builder, snapshot).ConfigureAwait(false);
             acquiredLocks = builder.ToImmutable();
-            releaseEvent.Set(true);
-            acquireEvent.Set(true);
             builder.Clear();    //help GC
         }
 
-        Task<bool> IDistributedLockEngine.WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token)
-            => acquireEvent ? this.acquireEvent.WaitAsync(timeout, token) : releaseEvent.WaitAsync(timeout, token);
-
         async Task IDistributedObjectManager<DistributedLock>.ProvideSponsorshipAsync<TSponsor>(TSponsor sponsor, CancellationToken token)
         {
-            bool modified = false, released = false;
+            var modified = false;
             ImmutableDictionary<string, DistributedLock>.Builder builder;
             using(await AcquireWriteLockAsync(token).ConfigureAwait(false))
             {
@@ -275,7 +257,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         switch(sponsor.UpdateLease(ref info))
                         {
                             case LeaseState.Expired:
-                                modified = released = true;
+                                modified = true;
                                 builder.Remove(name);
                                 continue;
                             case LeaseState.Prolonged:
@@ -287,18 +269,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if(modified)
                     acquiredLocks = builder.ToImmutable();
             }
-            if(released)
-                releaseEvent.Set(true);
             builder.Clear();    //help GC
         }
 
         private async Task<bool> RegisterAsync(string name, DistributedLock newLock, CancellationToken token)
         {
+            await EnsureConsistencyAsync(InfiniteTimeSpan, token).ConfigureAwait(false);
             using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
             if (acquiredLocks.TryGetValue(name, out var existingLock) && !existingLock.IsExpired)
-                return false;
+                return newLock.Owner == existingLock.Owner && newLock.Version == existingLock.Version;
             acquiredLocks = acquiredLocks.SetItem(name, newLock);    
-            //log entry can be added only out of write-lock scope
             await AppendAsync(writeLock, new AcquireLockCommand(name, newLock, Term), token).ConfigureAwait(false);
             return true;
         }
@@ -308,11 +288,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async Task<bool> IDistributedLockEngine.UnregisterAsync(string name, ClusterMemberId owner, Guid version, CancellationToken token)
         {
+            await EnsureConsistencyAsync(InfiniteTimeSpan, token).ConfigureAwait(false);
             using var writeLock = await AcquireWriteLockAsync(token).ConfigureAwait(false);
             if (acquiredLocks.TryGetValue(name, out var existingLock) && existingLock.Owner == owner && existingLock.Version == version)
             {
-                acquiredLocks = acquiredLocks.Remove(name);
-                //log entry can be added only out of write-lock scope
                 await AppendAsync(writeLock, new ReleaseLockCommand(name, Term), token).ConfigureAwait(false);
                 return true;
             }

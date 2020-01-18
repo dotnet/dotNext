@@ -44,6 +44,9 @@
     <EmbeddedResource Include="Net/Cluster/Consensus/Raft/LogMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="Net/Cluster/DistributedServices/LogMessages.restext">
+      <Generator></Generator>
+    </EmbeddedResource>
     <None Include="../../../logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>

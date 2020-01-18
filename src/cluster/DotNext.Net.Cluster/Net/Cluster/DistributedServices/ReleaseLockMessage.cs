@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.DistributedServices
         bool IDataTransferObject.IsReusable => true;
 
         long? IDataTransferObject.Length 
-            => Unsafe.SizeOf<Guid>() * 2  + Encoding.GetByteCount(LockName);
+            => Unsafe.SizeOf<Guid>() + Unsafe.SizeOf<DistributedLock>() + sizeof(int) +  Encoding.GetByteCount(LockName);
     
         async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {

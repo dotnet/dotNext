@@ -207,7 +207,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.members = collection;
             transitionSync = AsyncLock.Exclusive();
             transitionCancellation = new CancellationTokenSource();
-            auditTrail = new InMemoryAuditTrail();
+            auditTrail = new ConsensusOnlyState();
             heartbeatThreshold = config.HeartbeatThreshold;
         }
 
@@ -544,28 +544,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Leader = newLeader as TMember;
                 state = new LeaderState(this, allowPartitioning, auditTrail.Term) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
                     auditTrail);
+                await auditTrail.AppendNoOpEntry(transitionCancellation.Token);
                 Metrics?.MovedToLeaderState();
                 Logger.TransitionToLeaderStateCompleted();
             }
         }
 
-        private async Task WriteAsync<TEntry>(ILogEntryProducer<TEntry> entries, bool waitForCommit, TimeSpan timeout)
+        private async Task<bool> WriteAsync<TEntry>(ILogEntryProducer<TEntry> entries, bool waitForCommit, TimeSpan timeout)
             where TEntry : IRaftLogEntry
         {
             var count = entries.RemainingCount;
             if (count == 0L)
-                return;
+                return true;
             var term = auditTrail.Term;
             var index = await auditTrail.AppendAsync(entries, transitionCancellation.Token).ConfigureAwait(false);
-            if(state is LeaderState leaderState)
-            {
-                if (waitForCommit)
-                    await auditTrail.WaitForCommitAsync(index + count - 1L, timeout, leaderState.Token).ConfigureAwait(false);
-                //ensure that term was not changed
-                if(term != auditTrail.Term)
-                    throw new InvalidOperationException(ExceptionMessages.ChangesRejected);
-            }
-            else
+            return state is LeaderState leaderState ?
+                (!waitForCommit || await auditTrail.WaitForCommitAsync(index + count - 1L, timeout, leaderState.Token).ConfigureAwait(false)) && term == auditTrail.Term ://ensure that term was not changed
                 throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
         }
 
@@ -580,13 +574,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
         /// <exception cref="NotSupportedException">The specified level of acknowledgment is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task WriteAsync<TEntry>(ILogEntryProducer<TEntry> entries, WriteConcern concern, TimeSpan timeout)
+        public Task<bool> WriteAsync<TEntry>(ILogEntryProducer<TEntry> entries, WriteConcern concern, TimeSpan timeout)
             where TEntry : IRaftLogEntry
             => concern switch
             {
                 WriteConcern.None => WriteAsync(entries, false, timeout),
                 WriteConcern.LeaderOnly => WriteAsync(entries, true, timeout),
-                _ => Task.FromException(new NotSupportedException())
+                _ => Task.FromException<bool>(new NotSupportedException())
             };
 
         /// <summary>

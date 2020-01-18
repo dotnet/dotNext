@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Net;
 using System.Threading;
@@ -155,6 +154,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private readonly NodeState state;
+        private long lastTerm;  //term of last committed entry
 
         /// <summary>
         /// Gets index of the committed or last log entry.

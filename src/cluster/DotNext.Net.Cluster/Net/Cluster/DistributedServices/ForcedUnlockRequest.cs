@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.DistributedServices
 
         bool IDataTransferObject.IsReusable => true;
 
-        long? IDataTransferObject.Length => Encoding.GetByteCount(LockName);
+        long? IDataTransferObject.Length => Encoding.GetByteCount(LockName) + sizeof(int);
 
         async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
