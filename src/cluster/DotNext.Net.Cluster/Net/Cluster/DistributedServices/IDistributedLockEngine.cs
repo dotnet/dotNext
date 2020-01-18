@@ -9,8 +9,6 @@ namespace DotNext.Net.Cluster.DistributedServices
     /// </summary>
     internal interface IDistributedLockEngine : IDistributedObjectManager<DistributedLock>
     {
-        Task<bool> WaitForLockEventAsync(bool acquireEvent, TimeSpan timeout, CancellationToken token);
-
         bool IsRegistered(string lockName, in ClusterMemberId owner, in Guid version);
 
         //writes the log entry describing lock acquisition
