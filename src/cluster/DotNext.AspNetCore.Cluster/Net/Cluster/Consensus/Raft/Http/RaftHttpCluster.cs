@@ -43,7 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             //dependencies
             configurator = dependencies.GetService<IClusterMemberLifetime>();
             messageHandlers = ImmutableList.CreateRange(dependencies.GetServices<IInputChannel>());
-            AuditTrail = dependencies.GetService<IPersistentState>() ?? new InMemoryAuditTrail();
+            AuditTrail = dependencies.GetService<IPersistentState>() ?? new ConsensusOnlyState();
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
             Metrics = dependencies.GetService<MetricsCollector>();
