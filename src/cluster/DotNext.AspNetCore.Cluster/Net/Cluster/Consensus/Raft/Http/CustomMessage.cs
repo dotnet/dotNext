@@ -122,14 +122,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             base.PrepareRequest(request);
         }
 
-        public Task SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
+        internal static async Task SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
             response.ContentType = message.Type.ToString();
             response.ContentLength = message.Length;
             response.Headers.Add(MessageNameHeader, message.Name);
-            return message.WriteToAsync(response.BodyWriter, token).AsTask();
+            await response.StartAsync(token).ConfigureAwait(false);
+            await message.WriteToAsync(response.BodyWriter, token).ConfigureAwait(false);
+            await response.BodyWriter.FlushAsync(token).ConfigureAwait(false);   
         }
+
+        Task IHttpMessageWriter<IMessage>.SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
+            => SaveResponse(response, message, token);
 
         //do not parse response because this is one-way message
         Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response, CancellationToken token) => NullMessage.Task;
