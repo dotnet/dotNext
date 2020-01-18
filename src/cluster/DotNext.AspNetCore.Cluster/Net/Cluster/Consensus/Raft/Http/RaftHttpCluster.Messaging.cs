@@ -51,11 +51,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                         TryReceiveMessage(leader, message, messageHandlers, responseReader, token))
                         .ConfigureAwait(false);
                 }
-                catch (MemberUnavailableException)
+                catch (MemberUnavailableException e)
                 {
+                    Logger.FailedToRouteMessage(message.Name, e);
                 }
                 catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.BadRequest) //keep in sync with ReceiveMessage behavior
                 {
+                    Logger.FailedToRouteMessage(message.Name, e);
                 }
             }
             while (!token.IsCancellationRequested);
@@ -80,16 +82,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                         leader.SendSignalAsync(signal, token) :
                         (messageHandlers.TryReceiveSignal(leader, signal.Message, null, token) ?? throw new UnexpectedStatusCodeException(new NotImplementedException()));
                     await response.ConfigureAwait(false);
+                    return;
                 }
-                catch (MemberUnavailableException)
+                catch (MemberUnavailableException e)
                 {
-                    continue;
+                    Logger.FailedToRouteMessage(message.Name, e);
                 }
                 catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.ServiceUnavailable) //keep in sync with ReceiveMessage behavior
                 {
-                    continue;
+                    Logger.FailedToRouteMessage(message.Name, e);
                 }
-                return;
             }
             while (!token.IsCancellationRequested);
             throw new OperationCanceledException(token);
@@ -141,18 +143,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if(task is null)
                 response.StatusCode = StatusCodes.Status501NotImplemented;
             else
-                await request.SaveResponse(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);
+                await CustomMessage.SaveResponse(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);
         }
 
         private Task ReceiveMessage(CustomMessage message, HttpResponse response)
         {
             var sender = FindMember(message.Sender.Represents);
-            Task task;
+            var task = Task.CompletedTask;
             if (sender is null)
-            {
                 response.StatusCode = StatusCodes.Status404NotFound;
-                task = Task.CompletedTask;
-            }
             else if (!message.RespectLeadership || IsLeaderLocal)
                 switch (message.Mode)
                 {
@@ -167,14 +166,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                         break;
                     default:
                         response.StatusCode = StatusCodes.Status400BadRequest;
-                        task = Task.CompletedTask;
                         break;
                 }
             else
-            {
                 response.StatusCode = StatusCodes.Status503ServiceUnavailable;
-                task = Task.CompletedTask;
-            }
 
             sender?.Touch();
             return task;
