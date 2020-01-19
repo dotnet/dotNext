@@ -30,7 +30,7 @@ namespace DotNext.Reflection
         /// <remarks>
         /// For reference types, this delegate always calls <see cref="object.GetHashCode"/> virtual method.
         /// For value type, it calls <see cref="object.GetHashCode"/> if it is overridden by the value type; otherwise,
-        /// it calls <see cref="BitwiseComparer{T}.GetHashCode(T, bool)"/>.
+        /// it calls <see cref="BitwiseComparer{T}.GetHashCode(in T, bool)"/>.
         /// </remarks>
         public static new readonly Operator<T, int> GetHashCode;
 
