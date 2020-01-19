@@ -537,7 +537,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
             Logger.TransitionToLeaderStateStarted();
-            using var lockHolder = await transitionSync.AcquireAsync(transitionCancellation.Token).ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false);
             if (lockHolder && state is CandidateState candidateState && candidateState.Term == auditTrail.Term)
             {
                 candidateState.Dispose();
