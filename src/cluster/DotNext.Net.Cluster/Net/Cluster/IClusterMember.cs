@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster
     /// <summary>
     /// Represents cluster member.
     /// </summary>
-    public interface IClusterMember : IEquatable<IClusterMember>
+    public interface IClusterMember
     {
         /// <summary>
         /// Represents cluster member endpoint that can be used to send messages specific to consensus protocol.

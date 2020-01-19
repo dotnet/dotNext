@@ -143,8 +143,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         ClusterMemberStatus IClusterMember.Status
             => Endpoint.Equals(context.LocalEndpoint) ? ClusterMemberStatus.Available : status.Value;
 
-        bool IEquatable<IClusterMember>.Equals(IClusterMember other) => Endpoint.Equals(other?.Endpoint);
-
         internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
             => SendAsync<TResponse, CustomMessage<TResponse>>(new CustomMessage<TResponse>(context.LocalEndpoint, message, responseReader) { RespectLeadership = respectLeadership }, token);
 
