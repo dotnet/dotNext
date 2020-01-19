@@ -248,7 +248,8 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task returning the acquired lock holder.</returns>
-        public Task<Holder> AcquireAsync(CancellationToken token) => TryAcquireAsync(InfiniteTimeSpan, token: token);
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task<Holder> AcquireAsync(CancellationToken token) => AcquireAsync(InfiniteTimeSpan, token);
 
         /// <summary>
         /// Acquires the lock asynchronously.
@@ -257,6 +258,7 @@ namespace DotNext.Threading
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task returning the acquired lock holder.</returns>
         /// <exception cref="TimeoutException">The lock cannot be acquired during the specified amount of time.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public readonly async Task<Holder> AcquireAsync(TimeSpan timeout, CancellationToken token = default)
         {
             Task task;
@@ -297,16 +299,10 @@ namespace DotNext.Threading
         /// Tries to acquire the lock asynchronously.
         /// </summary>
         /// <param name="timeout">The interval to wait for the lock.</param>
-        /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
-        public readonly Task<Holder> TryAcquireAsync(TimeSpan timeout) => TryAcquireAsync(timeout, CancellationToken.None);
-
-        /// <summary>
-        /// Tries to acquire the lock asynchronously.
-        /// </summary>
-        /// <param name="timeout">The interval to wait for the lock.</param>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <param name="suppressCancellation"><see langword="true"/> to return empty lock holder instead of throwing <see cref="OperationCanceledException"/>.</param>
         /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled and <paramref name="suppressCancellation"/> is <see langword="false"/>.</exception>
         public readonly async Task<Holder> TryAcquireAsync(TimeSpan timeout, bool suppressCancellation, CancellationToken token)
         {
             static Task<Func<Task>?> TryAcquireCustomAsync(Acquisition acquisition, TimeSpan timeout, CancellationToken token, bool suppressCancellation)
@@ -359,7 +355,8 @@ namespace DotNext.Threading
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task returning the acquired lock holder; or empty lock holder if lock has not been acquired.</returns>
-        public readonly Task<Holder> TryAcquireAsync(TimeSpan timeout, CancellationToken token)
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public readonly Task<Holder> TryAcquireAsync(TimeSpan timeout, CancellationToken token = default)
             => TryAcquireAsync(timeout, false, token);
 
         /// <summary>
