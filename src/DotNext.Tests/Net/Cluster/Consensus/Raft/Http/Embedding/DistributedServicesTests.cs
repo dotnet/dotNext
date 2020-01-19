@@ -17,17 +17,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
     [ExcludeFromCodeCoverage]
     public sealed class DistributedServicesTests : Assert
     {
-        private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration)
+        private static IHost CreateHost<TStartup>(int port, IDictionary<string, string> configuration)
             where TStartup : class
         {
             return new HostBuilder()
-                .ConfigureWebHost(webHost => webHost.UseKestrel(options =>
-                {
-                    if (localhost)
-                        options.ListenLocalhost(port);
-                    else
-                        options.ListenAnyIP(port);
-                })
+                .ConfigureWebHost(webHost => webHost.UseKestrel(options => options.ListenLocalhost(port))
                     .UseShutdownTimeout(TimeSpan.FromMinutes(2))
                     .ConfigureServices(services =>
                     {
@@ -48,33 +42,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             var config1 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"},
+                {"members:0", "http://localhost:3265"},
+                {"members:1", "http://localhost:3266"},
+                {"members:2", "http://localhost:3267"},
                 {"lowerElectionTimeout", "500" },
                 {"upperElectionTimeout", "1000" },
             };
             var config2 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"},
+                {"members:0", "http://localhost:3265"},
+                {"members:1", "http://localhost:3266"},
+                {"members:2", "http://localhost:3267"},
                 {"lowerElectionTimeout", "500" },
                 {"upperElectionTimeout", "1000" },
             };
             var config3 = new Dictionary<string, string>
             {
                 {"partitioning", "false"},
-                {"members:0", "http://localhost:3262"},
-                {"members:1", "http://localhost:3263"},
-                {"members:2", "http://localhost:3264"},
+                {"members:0", "http://localhost:3265"},
+                {"members:1", "http://localhost:3266"},
+                {"members:2", "http://localhost:3267"},
                 {"lowerElectionTimeout", "500" },
                 {"upperElectionTimeout", "1000" },
             };
-            using var host1 = CreateHost<Startup>(3262, true, config1);
-            using var host2 = CreateHost<Startup>(3263, true, config2);
-            using var host3 = CreateHost<Startup>(3264, true, config3);
+            using var host1 = CreateHost<Startup>(3265, config1);
+            using var host2 = CreateHost<Startup>(3266, config2);
+            using var host3 = CreateHost<Startup>(3267, config3);
             await host1.StartAsync();
             await host2.StartAsync();
             await host3.StartAsync();
