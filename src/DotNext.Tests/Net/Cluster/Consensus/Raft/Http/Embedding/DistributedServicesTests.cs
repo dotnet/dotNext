@@ -89,7 +89,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             {
                 await Task.Delay(20);
             }
-            Console.WriteLine("LEADER ELECTED");
             await using(await cluster1.LockProvider["lock1"].AcquireAsync(TimeSpan.FromMinutes(10)))
             {
                 //attempts to acquire the same lock
