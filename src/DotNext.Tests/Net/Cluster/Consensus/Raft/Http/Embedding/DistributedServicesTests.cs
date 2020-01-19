@@ -36,6 +36,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
                 .Build();
         }
 
+        private static async Task WaitForLeader(ICluster cluster, params ICluster[] clusters)
+        {
+            leader_check:
+            var leader = cluster.Leader?.Endpoint;
+            foreach(var lookup in clusters)
+                if(leader is null || !object.Equals(leader, lookup.Leader?.Endpoint))
+                {
+                    await Task.Delay(300);
+                    goto leader_check;
+                }
+        }
+
         [Fact]
         public static async Task AcquireRelease()
         {
@@ -76,13 +88,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             var cluster1 = host1.Services.GetRequiredService<IDistributedApplicationEnvironment>();
             var cluster2 = host2.Services.GetRequiredService<IDistributedApplicationEnvironment>();
             var cluster3 = host3.Services.GetRequiredService<IDistributedApplicationEnvironment>();
-            while(cluster1.Leader is null || 
-                !object.Equals(cluster1.Leader?.Endpoint, cluster2.Leader?.Endpoint) || 
-                !object.Equals(cluster1.Leader?.Endpoint, cluster3.Leader?.Endpoint) ||
-                !object.Equals(cluster2.Leader?.Endpoint, cluster3.Leader?.Endpoint))
-            {
-                await Task.Delay(20);
-            }
+            await WaitForLeader(cluster1, cluster2, cluster3);
             await using(await cluster1.LockProvider["lock1"].AcquireAsync(TimeSpan.FromMinutes(10)))
             {
                 //attempts to acquire the same lock
