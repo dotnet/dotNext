@@ -34,8 +34,6 @@ Bitwise equality method has the better performance than field-by-field equality 
 # Equality of Arrays
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs) compares performance of [ReadOnlySpan.SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__), [OneDimensionalArray.BitwiseEquals](./api/DotNext.OneDimensionalArray.yml) and manual equality check between two arrays using `for` loop. The benchmark is applied to the array of [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) elements.
 
-`SequenceEqual` requires that array element type should implement [IEquatable&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1) interface and calls `Equals(T other)` for each element.
-
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
 | `Guid[].BitwiseEquals`, small arrays (~10 elements) |  10.66 ns | 0.2459 ns |  0.5397 ns |
