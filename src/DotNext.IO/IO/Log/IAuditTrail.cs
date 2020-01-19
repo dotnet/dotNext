@@ -98,6 +98,41 @@ namespace DotNext.IO.Log
         /// <returns>A task representing state of asynchronous execution.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task InitializeAsync(CancellationToken token = default);
+
+        /// <summary>
+        /// Gets log entries in the specified range.
+        /// </summary>
+        /// <remarks>
+        /// This method may return less entries than <c>endIndex - startIndex + 1</c>. It may happen if the requested entries are committed entries and squashed into the single entry called snapshot.
+        /// In this case the first entry in the collection is a snapshot entry. Additionally, the caller must call <see cref="IDisposable.Dispose"/> to release resources associated
+        /// with the audit trail segment with entries.
+        /// </remarks>
+        /// <typeparam name="TReader">The type of the reader.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="reader">The reader of the log entries.</param>
+        /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
+        /// <param name="endIndex">The index of the last requested log entry, inclusively.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The collection of log entries.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
+        /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
+        /// <seealso cref="ILogEntry.IsSnapshot"/>
+        ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token = default)
+            where TReader : notnull, ILogEntryConsumer<ILogEntry, TResult>;
+        
+        /// <summary>
+        /// Gets log entries starting from the specified index to the last log entry.
+        /// </summary>
+        /// <typeparam name="TReader">The type of the reader.</typeparam>
+        /// <typeparam name="TResult">The type of the result.</typeparam>
+        /// <param name="reader">The reader of the log entries.</param>
+        /// <param name="startIndex">The index of the first requested log entry, inclusively.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The collection of log entries.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
+        /// <seealso cref="ILogEntry.IsSnapshot"/>
+        ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default)
+            where TReader : notnull, ILogEntryConsumer<ILogEntry, TResult>;
     }
 
     /// <summary>
@@ -125,8 +160,11 @@ namespace DotNext.IO.Log
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> or <paramref name="endIndex"/> is negative.</exception>
         /// <exception cref="IndexOutOfRangeException"><paramref name="endIndex"/> is greater than the index of the last added entry.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token = default)
+        new ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token = default)
             where TReader : notnull, ILogEntryConsumer<TEntry, TResult>;
+
+        ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
+            => ReadAsync<TReader, TResult>(reader, startIndex, endIndex, token);
 
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
@@ -139,8 +177,11 @@ namespace DotNext.IO.Log
         /// <returns>The collection of log entries.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is negative.</exception>
         /// <seealso cref="ILogEntry.IsSnapshot"/>
-        ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default)
+        new ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default)
             where TReader : notnull, ILogEntryConsumer<TEntry, TResult>;
+        
+        ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
+            => ReadAsync<TReader, TResult>(reader, startIndex, token);
 
         /// <summary>
         /// Adds uncommitted log entries into this log.

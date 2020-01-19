@@ -207,6 +207,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
+            => ReadAsync<TReader, TResult>(reader, startIndex, endIndex, token);
+
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
         /// </summary>
@@ -234,6 +237,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 syncRoot.Release();
             }
         }
+
+        ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
+            => ReadAsync<TReader, TResult>(reader, startIndex, token);
 
         private async ValueTask InstallSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
             where TSnapshot : notnull, IRaftLogEntry

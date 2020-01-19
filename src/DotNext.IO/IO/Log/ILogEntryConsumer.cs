@@ -13,7 +13,7 @@ namespace DotNext.IO.Log
     /// </remarks>
     /// <typeparam name="TEntry">The interface type of the log entries supported by audit trail.</typeparam>
     /// <typeparam name="TResult">The type of the result produced by the reader.</typeparam>
-    public interface ILogEntryConsumer<TEntry, TResult>
+    public interface ILogEntryConsumer<in TEntry, TResult>
         where TEntry : class, ILogEntry
     {
         /// <summary>
