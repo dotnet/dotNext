@@ -237,9 +237,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing state of asynchronous execution.</returns>
         protected async ValueTask ApplyLockSnapshotAsync(LogEntry snapshot)
         {
-            var builder = ImmutableDictionary.CreateBuilder<string, DistributedLock>(acquiredLocks.KeyComparer);
+            var acquiredLocks = this.acquiredLocks;
+            var builder = ImmutableDictionary.CreateBuilder<string, DistributedLock>(acquiredLocks.KeyComparer, acquiredLocks.ValueComparer);
             await ApplyLockSnapshotAsync(builder, snapshot).ConfigureAwait(false);
-            acquiredLocks = builder.ToImmutable();
+            this.acquiredLocks = builder.ToImmutable();
             builder.Clear();    //help GC
         }
 
