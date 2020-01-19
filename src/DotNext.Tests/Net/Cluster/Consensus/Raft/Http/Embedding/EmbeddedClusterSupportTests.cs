@@ -106,7 +106,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host3.StartAsync();
 
             //ensure that leader is elected
-            WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
+            WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 }, TimeSpan.FromMinutes(2));
 
             var box1 = host1.Services.GetRequiredService<IInputChannel>() as Mailbox;
             var box2 = host2.Services.GetRequiredService<IInputChannel>() as Mailbox;
@@ -236,7 +236,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await Task.Delay(delay);
             await host3.StartAsync();
 
-            WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
+            WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 }, TimeSpan.FromMinutes(2));
 
             IClusterMember leader1, leader2, leader3;
 
@@ -287,21 +287,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             {
                 case 1:
                     //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener2, listener3 });
+                    WaitHandle.WaitAll(new WaitHandle[] { listener2, listener3 }, TimeSpan.FromMinutes(2));
                     NotNull(listener2.Leader);
                     NotNull(listener3.Leader);
                     CheckLeadership(listener2.Leader, listener3.Leader);
                     break;
                 case 2:
                     //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener3 });
+                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener3 }, TimeSpan.FromMinutes(2));
                     NotNull(listener1.Leader);
                     NotNull(listener3.Leader);
                     CheckLeadership(listener1.Leader, listener3.Leader);
                     break;
                 case 3:
                     //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2 });
+                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2 }, TimeSpan.FromMinutes(2));
                     NotNull(listener1.Leader);
                     NotNull(listener2.Leader);
                     CheckLeadership(listener1.Leader, listener2.Leader);
