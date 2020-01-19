@@ -22,12 +22,12 @@ The configuration of all benchmarks:
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
-| `BitwiseComparer<Guid>.Equals` | 3.3515 ns | 0.1013 ns | 0.0947 ns |
-| `Guid.Equals` |  2.1770 ns | 0.0130 ns | 0.0115 ns |
-| `ReadOnlySpan.SequenceEqual` for `Guid` |  3.5874 ns | 0.0078 ns | 0.0069 ns |
-| `BitwiseComparer<LargeStruct>.Equals` | 21.3028 ns | 0.0286 ns | 0.0253 ns |
-| `LargeStruct.Equals` | 42.8777 ns | 0.0979 ns | 0.0868 ns |
-| `ReadOnlySpan.SequenceEqual` for `LargeStruct` | 23.5955 ns | 0.4219 ns | 0.3947 ns |
+| `BitwiseComparer<Guid>.Equals` | 3.4263 ns | 0.0101 ns | 0.0089 ns |
+| `Guid.Equals` | 11.5436 ns | 0.0186 ns | 0.0165 ns |
+| `ReadOnlySpan.SequenceEqual` for `Guid` | 3.7136 ns | 0.0270 ns | 0.0240 ns |
+| `BitwiseComparer<LargeStruct>.Equals` | 14.4231 ns | 0.0389 ns | 0.0364 ns |
+| `LargeStruct.Equals` | 43.1880 ns | 0.1217 ns | 0.0950 ns |
+| `ReadOnlySpan.SequenceEqual` for `LargeStruct` | 23.9918 ns | 0.0375 ns | 0.0313 ns |
 
 Bitwise equality method has the better performance than field-by-field equality check because `BitwiseEquals` utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD. Additionally, it uses [aligned memory access](https://en.wikipedia.org/wiki/Data_structure_alignment) in constrast to [SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal) method.
 
