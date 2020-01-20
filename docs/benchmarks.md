@@ -34,14 +34,14 @@ Bitwise equality method has the better performance than field-by-field equality 
 # Equality of Arrays
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs) compares performance of [ReadOnlySpan.SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__), [OneDimensionalArray.BitwiseEquals](./api/DotNext.OneDimensionalArray.yml) and manual equality check between two arrays using `for` loop. The benchmark is applied to the array of [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) elements.
 
-| Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- |
-| `Guid[].BitwiseEquals`, small arrays (~10 elements) |  10.66 ns | 0.2459 ns |  0.5397 ns |
-| `ReadOnlySpan<Guid>.SequenceEqual`, small arrays (~10 elements) |  34.89 ns | 0.6313 ns |  0.5272 ns |
-| `for` loop, small arrays (~10 elements) |  65.20 ns | 1.3086 ns |  1.2853 ns |
-| `Guid[].BitwiseEquals`, large arrays (~100 elements) |  50.82 ns | 1.0471 ns |  1.9408 ns |
-| `ReadOnlySpan<Guid>.SequenceEqual`, large arrays (~100 elements) | 339.25 ns | 6.6708 ns | 12.8525 ns |
-| `for` loop, large arrays (~100 elements) | 584.56 ns | 4.2687 ns |  3.9930 ns |
+| Method | Mean | Error | StdDev | Median  |
+| ---- | ---- | ---- | ---- | ---- |
+| `Guid[].BitwiseEquals`, small arrays (~10 elements) | 9.598 ns |  0.0664 ns |  0.0588 ns |   9.583 ns |
+| `ReadOnlySpan<Guid>.SequenceEqual`, small arrays (~10 elements) | 43.881 ns |  0.9075 ns |  1.0803 ns |  43.154 ns |
+| `for` loop, small arrays (~10 elements) | 59.514 ns |  0.1883 ns |  0.1762 ns |  59.414 ns |
+| `Guid[].BitwiseEquals`, large arrays (~100 elements) | 53.360 ns |  1.0054 ns |  0.8912 ns |  53.167 ns |
+| `ReadOnlySpan<Guid>.SequenceEqual`, large arrays (~100 elements) | 422.073 ns |  8.3324 ns | 12.2135 ns | 418.354 ns |
+| `for` loop, large arrays (~100 elements) | 627.617 ns | 17.9460 ns | 19.9470 ns | 622.371 ns |
 
 Bitwise equality is an absolute winner for equality check between arrays of any size.
 
