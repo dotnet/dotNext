@@ -144,20 +144,21 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 
 | Method | Mean | Error | StdDev | Median |
 | ---- | ---- | ---- | ---- | ---- |
-| Atomic | 494.2 us | 8.263 us | 71.95 us | 482.1 us |
-| Synchronized | 938.1 us | 7.746 us | 72.56 us | 926.9 us |
+| Atomic | 333.4 us |  8.04 us |  76.01 us |   324.5 us |
+| Synchronized | 892.3 us |  7.64 us |  71.24 us |   884.0 us |
+| SpinLock | 1,756.7 us | 61.96 us | 589.24 us | 1,637.0 us |
 
 # Value Delegate
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](./api/DotNext.Threading.Atomic-1.yml) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
 
-| Method | Mean | Error | StdDev | Median |
-| ---- | ---- | ---- | ---- | --- |
-| Instance method, regular delegate, has implicit **this** |  3.042 ns | 0.0969 ns | 0.2842 ns |  2.880 ns |
-| Instance method, Value Delegate, has implicit **this** |  4.209 ns | 0.1174 ns | 0.1793 ns |  4.243 ns |
-| Static method, regular delegate, large size of param type, no implicitly captured object | 20.651 ns | 0.1441 ns | 0.1277 ns | 20.650 ns |
-| Static method, Value Delegate, large size of param type, no implicitly captured object | 27.066 ns | 0.2038 ns | 0.1807 ns | 27.046 ns |
-| Static method, regular delegate, small size of param type, no implicitly captured object | 78.562 ns | 0.4298 ns | 0.3810 ns | 78.526 ns |
-| Static method, Value Delegate, small size of param type, no implicitly captured object | 68.681 ns | 1.0735 ns | 0.9517 ns | 68.466 ns |
+| Method | Mean | Error | StdDev |
+| ---- | ---- | ---- | ---- |
+| Instance method, regular delegate, has implicit **this** | 0.9273 ns | 0.0072 ns | 0.0060 ns |
+| Instance method, Value Delegate, has implicit **this** | 1.8824 ns | 0.0495 ns | 0.0463 ns |
+| Static method, regular delegate, large size of param type, no implicitly captured object | 14.5560 ns | 0.0440 ns | 0.0367 ns |
+| Static method, Value Delegate, large size of param type, no implicitly captured object | 15.7549 ns | 0.0731 ns | 0.0684 ns |
+| Static method, regular delegate, small size of param type, no implicitly captured object | 23.2037 ns | 0.3844 ns | 0.3408 ns |
+| Static method, Value Delegate, small size of param type, no implicitly captured object | 21.8213 ns | 0.1073 ns | 0.0896 ns |
 
 _Large size of param type_ means that the type of the parameter is larger than 64 bit.
 
