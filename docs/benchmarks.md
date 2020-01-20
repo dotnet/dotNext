@@ -48,14 +48,14 @@ Bitwise equality is an absolute winner for equality check between arrays of any 
 # Bitwise Hash Code
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseHashCodeBenchmark.cs) compares performance of [BitwiseComparer&lt;T&gt;.GetHashCode](./api/DotNext.BitwiseComparer-1.yml) and `GetHashCode` instance method for the types [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
-| Method | Mean | Error | StdDev | Median |
-| ---- | ---- | ---- | ---- | ---- |
-| `Guid.GetHashCode` |  2.637 ns | 0.0121 ns | 0.0101 ns |
-| `BitwiseComparer<Guid>.GetHashCode` |  6.924 ns | 0.0240 ns | 0.0225 ns |
-| `BitwiseComparer<LargeStructure>.GetHashCode` | 23.206 ns | 0.4926 ns | 0.6743 ns |
-| `LargeStructure.GetHashCode` | 51.915 ns | 0.0751 ns | 0.0666 ns |
+| Method | Mean | Error | StdDev |
+| ---- | ---- | ---- | ---- |
+| `Guid.GetHashCode` | 1.870 ns | 0.0812 ns | 0.1712 ns |
+| `BitwiseComparer<Guid>.GetHashCode` |  5.138 ns | 0.0207 ns | 0.0183 ns |
+| `BitwiseComparer<LargeStructure>.GetHashCode` | 40.846 ns | 0.6004 ns | 0.5323 ns |
+| `LargeStructure.GetHashCode` | 25.804 ns | 0.5559 ns | 1.1480 ns |
 
-Bitwise hash code algorithm is very efficient for hashing of large value types.
+Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET Core 3.1 but still convenient in complex cases.
 
 # Fast Reflection
 The next series of benchmarks demonstrate performance of strongly typed reflection provided by DotNext Reflection library.
