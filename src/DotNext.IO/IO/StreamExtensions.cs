@@ -183,7 +183,7 @@ namespace DotNext.IO
             stream.WriteLength(bytesCount, lengthFormat);
             if (bytesCount == 0)
                 return;
-            using MemoryRental<byte> buffer = bytesCount <= 1024 ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
+            using MemoryRental<byte> buffer = bytesCount <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[bytesCount] : new MemoryRental<byte>(bytesCount);
             encoding.GetBytes(value, buffer.Span);
             stream.Write(buffer.Span);
         }
@@ -313,7 +313,7 @@ namespace DotNext.IO
             if (maxChars == 0)
                 throw new ArgumentException(ExceptionMessages.BufferTooSmall, nameof(buffer));
             var decoder = context.GetDecoder();
-            using var result = length <= 1024 ? stackalloc char[length] : new MemoryRental<char>(length);
+            using var result = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc char[length] : new MemoryRental<char>(length);
             var resultOffset = 0;
             while (length > 0)
             {
@@ -407,8 +407,8 @@ namespace DotNext.IO
         {
             if (length == 0)
                 return string.Empty;
-            using MemoryRental<byte> bytesBuffer = length <= 1024 ? stackalloc byte[length] : new MemoryRental<byte>(length);
-            using MemoryRental<char> charBuffer = length <= 1024 ? stackalloc char[length] : new MemoryRental<char>(length);
+            using MemoryRental<byte> bytesBuffer = length <= MemoryRental<byte>.StackallocThreshold ? stackalloc byte[length] : new MemoryRental<byte>(length);
+            using MemoryRental<char> charBuffer = length <= MemoryRental<char>.StackallocThreshold ? stackalloc char[length] : new MemoryRental<char>(length);
             if (bytesBuffer.Length != stream.Read(bytesBuffer.Span))
                 throw new EndOfStreamException();
             var charCount = encoding.GetChars(bytesBuffer.Span, charBuffer.Span);

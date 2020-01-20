@@ -62,7 +62,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public unsafe string ReadString(int length, in DecodingContext context)
         {
-            if(length > 1024)
+            if(length > MemoryRental<char>.StackallocThreshold)
             {
                 var buffer = new ArrayBuffer<char>(length);
                 return Read<string, StringReader<ArrayBuffer<char>>>(new StringReader<ArrayBuffer<char>>(in context, buffer));

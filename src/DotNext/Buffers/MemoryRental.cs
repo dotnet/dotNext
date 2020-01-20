@@ -14,6 +14,23 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public readonly ref struct MemoryRental<T>
     {
+        private const int StackallocThresholdInBytes = 1024;
+
+        /// <summary>
+        /// Global recommended number of elements that can be allocated on the stack.
+        /// </summary>
+        /// <remarks>
+        /// This property is for internal purposes only and should not be referenced
+        /// directly in your code.
+        /// </remarks>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [CLSCompliant(false)]
+        public static int StackallocThreshold
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => StackallocThresholdInBytes / Unsafe.SizeOf<T>();
+        }
+
         private readonly IMemoryOwner<T>? owner;
         private readonly Span<T> memory;
 
