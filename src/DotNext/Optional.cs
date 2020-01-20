@@ -169,13 +169,14 @@ namespace DotNext
                 type = ReferenceType;
         }
 
+        [AllowNull]
         private readonly T value;
 
         /// <summary>
         /// Constructs non-empty container.
         /// </summary>
         /// <param name="value">A value to be placed into container.</param>
-        public Optional(T value)
+        public Optional([AllowNull]T value)
         {
             this.value = value;
             HasValue = type switch
@@ -415,7 +416,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">The value to convert.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static implicit operator Optional<T>(T value) => new Optional<T>(value);
+        public static implicit operator Optional<T>([AllowNull]T value) => new Optional<T>(value);
 
         /// <summary>
         /// Extracts value stored in the Optional container.

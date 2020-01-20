@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.IO.Pipelines;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -13,8 +12,6 @@ using static System.Buffers.Binary.BinaryPrimitives;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO;
-    using IO.Pipelines;
-    using static Messaging.Messenger;
     using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
     [ExcludeFromCodeCoverage]
@@ -51,7 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             ClusterMemberStatus IClusterMember.Status => ClusterMemberStatus.Unknown;
 
-            ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadata(bool refresh, CancellationToken token)
+            ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
                 => throw new NotImplementedException();
 
             Task<bool> IClusterMember.ResignAsync(CancellationToken token) => throw new NotImplementedException();
@@ -95,19 +92,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private sealed class SimpleSnapshotBuilder : SnapshotBuilder
             {
                 private long currentValue;
-                private readonly Memory<byte> sharedBuffer;
 
-                internal SimpleSnapshotBuilder(Memory<byte> buffer) => sharedBuffer = buffer;
-
-                public override ValueTask CopyToAsync(Stream output, CancellationToken token)
+                protected override async ValueTask ApplyAsync(LogEntry entry)
                 {
-                    return output.WriteAsync(currentValue, sharedBuffer, token);
+                    currentValue = await entry.ReadAsync<long>();
                 }
 
-                public override async ValueTask CopyToAsync(PipeWriter output, CancellationToken token)
-                    => (await output.WriteAsync(currentValue, token)).ThrowIfCancellationRequested(token);
-
-                protected override async ValueTask ApplyAsync(LogEntry entry) => currentValue = await Decode(entry);
+                public override ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+                    => writer.WriteAsync(currentValue, token);
             }
 
             internal TestAuditTrail(string path, bool useCaching)
@@ -115,11 +107,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
             }
 
-            private static async Task<long> Decode(LogEntry entry) => ReadInt64LittleEndian((await entry.ReadAsync(sizeof(long))).Span);
+            protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await entry.ReadAsync<long>();
 
-            protected override async ValueTask ApplyAsync(LogEntry entry) => Value = await Decode(entry);
-
-            protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder(Buffer);
+            protected override SnapshotBuilder CreateSnapshotBuilder() => new SimpleSnapshotBuilder();
         }
 
         private const int RecordsPerPartition = 4;
@@ -141,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                (state as IDisposable)?.Dispose();
+                await (state as IAsyncDisposable).DisposeAsync();
             }
             //now open state again to check persistence
             state = new PersistentState(dir, RecordsPerPartition);
@@ -155,6 +145,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 (state as IDisposable)?.Dispose();
             }
+        }
+
+        [Fact]
+        public static async Task EmptyLogEntry()
+        {
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            using var auditTrail = new PersistentState(dir, RecordsPerPartition);
+            await auditTrail.AppendAsync(new EmptyEntry(10), CancellationToken.None);
+            Equal(1, auditTrail.GetLastIndex(false));
+            await auditTrail.CommitAsync(1L, CancellationToken.None);
+            Equal(1, auditTrail.GetLastIndex(true));
+            Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker = (entries, snapshotIndex) =>
+            {
+                Equal(10, entries[0].Term);
+                Equal(0, entries[0].Length);
+                False(entries[0].IsReusable);
+                False(entries[0].IsSnapshot);
+                return new ValueTask();
+            };
+            await auditTrail.ReadAsync<TestReader, DBNull>(checker, 1L, CancellationToken.None);
         }
 
         [Fact]
@@ -175,14 +185,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
 
-                Equal(1L, await state.AppendAsync(new LogEntryList(entry)));
+                Equal(1L, await state.AppendAsync(entry));
                 checker = async (entries, snapshotIndex) =>
                 {
                     Null(snapshotIndex);
                     Equal(2, entries.Count);
                     Equal(state.First, entries[0]);
                     Equal(42L, entries[1].Term);
-                    Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
             }
@@ -207,7 +217,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(2, entries.Count);
                     Equal(state.First, entries[0]);
                     Equal(42L, entries[1].Term);
-                    Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                 };
                 Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker1 = async (entries, snapshotIndex) =>
                 {
@@ -215,7 +225,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(2, entries.Count);
                     Equal(state.First, entries[0]);
                     Equal(42L, entries[1].Term);
-                    Equal(entry.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     //execute reader inside of another reader which is not possible for InMemoryAuditTrail
                     await state.ReadAsync<TestReader, DBNull>(checker2, 0L, CancellationToken.None);
                 };
@@ -276,7 +286,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Null(snapshotIndex);
                     Equal(1, entries.Count);
                     False(entries[0].IsSnapshot);
-                    Equal(entry1.Content, await entries[0].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry1.Content, await entries[0].ToStringAsync(Encoding.UTF8));
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 1L, CancellationToken.None);
             }
@@ -317,19 +327,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     False(entries[0].IsSnapshot);
                     Equal(state.First, entries[0]);
                     Equal(42L, entries[1].Term);
-                    Equal(entry1.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     Equal(entry1.Timestamp, entries[1].Timestamp);
                     Equal(43L, entries[2].Term);
-                    Equal(entry2.Content, await entries[2].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry2.Content, await entries[2].ToStringAsync(Encoding.UTF8));
                     Equal(entry2.Timestamp, entries[2].Timestamp);
                     Equal(44L, entries[3].Term);
-                    Equal(entry3.Content, await entries[3].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry3.Content, await entries[3].ToStringAsync(Encoding.UTF8));
                     Equal(entry3.Timestamp, entries[3].Timestamp);
                     Equal(45L, entries[4].Term);
-                    Equal(entry4.Content, await entries[4].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry4.Content, await entries[4].ToStringAsync(Encoding.UTF8));
                     Equal(entry4.Timestamp, entries[4].Timestamp);
                     Equal(46L, entries[5].Term);
-                    Equal(entry5.Content, await entries[5].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry5.Content, await entries[5].ToStringAsync(Encoding.UTF8));
                     Equal(entry5.Timestamp, entries[5].Timestamp);
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
@@ -350,19 +360,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Equal(6, entries.Count);
                     Equal(state.First, entries[0]);
                     Equal(42L, entries[1].Term);
-                    Equal(entry1.Content, await entries[1].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry1.Content, await entries[1].ToStringAsync(Encoding.UTF8));
                     Equal(entry1.Timestamp, entries[1].Timestamp);
                     Equal(43L, entries[2].Term);
-                    Equal(entry2.Content, await entries[2].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry2.Content, await entries[2].ToStringAsync(Encoding.UTF8));
                     Equal(entry2.Timestamp, entries[2].Timestamp);
                     Equal(44L, entries[3].Term);
-                    Equal(entry3.Content, await entries[3].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry3.Content, await entries[3].ToStringAsync(Encoding.UTF8));
                     Equal(entry3.Timestamp, entries[3].Timestamp);
                     Equal(45L, entries[4].Term);
-                    Equal(entry4.Content, await entries[4].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry4.Content, await entries[4].ToStringAsync(Encoding.UTF8));
                     Equal(entry4.Timestamp, entries[4].Timestamp);
                     Equal(46L, entries[5].Term);
-                    Equal(entry5.Content, await entries[5].ReadAsTextAsync(Encoding.UTF8));
+                    Equal(entry5.Content, await entries[5].ToStringAsync(Encoding.UTF8));
                     Equal(entry5.Timestamp, entries[5].Timestamp);
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 0L, CancellationToken.None);
@@ -472,6 +482,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 await state.AppendAsync(new LogEntryList(entries));
                 await state.CommitAsync(CancellationToken.None);
+                Equal(entries.Length + 41L, state.Value);
                 checker = (readResult, snapshotIndex) =>
                 {
                     Equal(1, readResult.Count);
@@ -502,7 +513,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return default;
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 1, 6, CancellationToken.None);
-
+                Equal(0L, state.Value);
                 checker = (readResult, snapshotIndex) =>
                 {
                     Equal(3, readResult.Count);
@@ -513,6 +524,86 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return default;
                 };
                 await state.ReadAsync<TestReader, DBNull>(checker, 1, CancellationToken.None);
+            }
+        }
+
+        [Fact]
+        public static async Task RestoreBackup()
+        {
+            var entry1 = new TestLogEntry("SET X = 0") { Term = 42L };
+            var entry2 = new TestLogEntry("SET Y = 1") { Term = 43L };
+            var entry3 = new TestLogEntry("SET Z = 2") { Term = 44L };
+            var entry4 = new TestLogEntry("SET U = 3") { Term = 45L };
+            var entry5 = new TestLogEntry("SET V = 4") { Term = 46L };
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            var backupFile = Path.GetTempFileName();
+            IPersistentState state = new PersistentState(dir, RecordsPerPartition);
+            var member = new ClusterMemberMock(new IPEndPoint(IPAddress.IPv6Loopback, 3232));
+            try
+            {
+                //define node state
+                Equal(1, await state.IncrementTermAsync());
+                await state.UpdateVotedForAsync(member);
+                True(state.IsVotedFor(member));
+                //define log entries
+                Equal(1L, await state.AppendAsync(new LogEntryList(entry1, entry2, entry3, entry4, entry5)));
+                //commit some of them
+                Equal(2L, await state.CommitAsync(2L));
+                //save backup
+                await using var backupStream = new FileStream(backupFile, FileMode.Truncate, FileAccess.Write, FileShare.None, 1024, true);
+                await state.CreateBackupAsync(backupStream);
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
+            }
+            //restore state from backup
+            await using(var backupStream = new FileStream(backupFile, FileMode.Open, FileAccess.Read, FileShare.None, 1024, true))
+            {
+                await PersistentState.RestoreFromBackupAsync(backupStream, new DirectoryInfo(dir));
+            }
+            //ensure that all entries are recovered successfully
+            state = new PersistentState(dir, RecordsPerPartition);
+            try
+            {
+                Equal(5, state.GetLastIndex(false));
+                Equal(2, state.GetLastIndex(true));
+                Func<IReadOnlyList<IRaftLogEntry>, long?, ValueTask> checker = (entries, snapshotIndex) =>
+                {
+                    Equal(entry1.Term, entries[0].Term);
+                    Equal(entry2.Term, entries[1].Term);
+                    Equal(entry3.Term, entries[2].Term);
+                    Equal(entry4.Term, entries[3].Term);
+                    Equal(entry5.Term, entries[4].Term);
+                    return new ValueTask();
+                };
+                await state.ReadAsync<TestReader, DBNull>(checker, 1L, 5L);
+            }
+            finally
+            {
+                (state as IDisposable)?.Dispose();
+            }
+        }
+
+        [Fact]
+        public static async Task Reconstruction()
+        {
+            var entries = new Int64LogEntry[RecordsPerPartition * 2 + 1];
+            entries.ForEach((ref Int64LogEntry entry, long index) => entry = new Int64LogEntry(42L + index) { Term = index });
+            var dir = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            using (var state = new TestAuditTrail(dir, true))
+            {
+                await state.AppendAsync(new LogEntryList(entries));
+                await state.CommitAsync(CancellationToken.None);
+                Equal(entries.Length + 41L, state.Value);
+            }
+
+            //reconstruct state
+            using (var state = new TestAuditTrail(dir, true))
+            {
+                Equal(0L, state.Value);
+                await state.InitializeAsync();
+                Equal(entries.Length + 41L, state.Value);
             }
         }
     }

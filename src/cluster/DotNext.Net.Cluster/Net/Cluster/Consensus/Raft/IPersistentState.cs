@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -39,7 +41,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Persists the item that was voted for on in the last vote.
         /// </summary>
         /// <param name="member">The member which identifier should be stored inside of persistence storage. May be <see langword="null"/>.</param>
-        /// <returns>The task representing asynchronous execution of the operation.</returns>
+        /// <returns>The task representing state of the asynchronous execution.</returns>
         ValueTask UpdateVotedForAsync(IRaftClusterMember? member);
+
+        /// <summary>
+        /// Suspens the caller until the log entry with term equal to <see cref="Term"/>
+        /// will be committed.
+        /// </summary>
+        /// <param name="timeout">The time to wait.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing state of the asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="TimeoutException">Timeout occurred.</exception>
+        Task EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token = default);
     }
 }

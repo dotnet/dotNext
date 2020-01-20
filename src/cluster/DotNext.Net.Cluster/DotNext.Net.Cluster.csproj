@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>Consensus;Raft;ASP.NET Core</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
+    <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>https://github.com/sakno/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
 
@@ -23,11 +23,17 @@
     <CodeAnalysisRuleSet>../../DotNext.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Bench|AnyCPU'">
+    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>../../dotnext.snk</AssemblyOriginatorKeyFile>
+    <Optimize>true</Optimize>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
@@ -38,16 +44,30 @@
     <EmbeddedResource Include="Net/Cluster/Consensus/Raft/LogMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="Net/Cluster/DistributedServices/LogMessages.restext">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <None Include="../../../logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.7.0" />
     <PackageReference Include="System.IO.Pipelines" Version="4.7.0" />
-    <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.Threading" Version="[2.0.0, 3)" Condition="'$(Configuration)'=='Release'" />
-    <ProjectReference Include="..\..\DotNext.IO\DotNext.IO.csproj" Condition="'$(Configuration)'=='Debug'" />
-    <PackageReference Include="DotNext.IO" Version="[2.0.0, 3)" Condition="'$(Configuration)'=='Release'" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)'!='Release'">
+    <ProjectReference Include="..\..\DotNext.Threading\DotNext.Threading.csproj" />
+    <ProjectReference Include="..\..\DotNext.IO\DotNext.IO.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(Configuration)'=='Release'">
+    <PackageReference Include="DotNext.Threading" Version="[2.0.0, 3)" />
+    <PackageReference Include="DotNext.IO" Version="[2.0.0, 3)" />
   </ItemGroup>
 </Project>

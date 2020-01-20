@@ -11,6 +11,10 @@ using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
+    using IDistributedApplicationEnvironment = DistributedServices.IDistributedApplicationEnvironment;
+    using IMessageBus = Messaging.IMessageBus;
+    using IReplicationCluster = Replication.IReplicationCluster;
+
     [ExcludeFromCodeCoverage]
     public sealed class HostedClusterSupportTests : Assert
     {
@@ -63,6 +67,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                     count += 1;
             Equal(1, count);
             service = host.Services.GetService<IExpandableCluster>();
+            NotNull(service);
+            service = host.Services.GetService<IDistributedApplicationEnvironment>();
+            NotNull(service);
+            service = host.Services.GetService<IMessageBus>();
+            NotNull(service);
+            service = host.Services.GetService<IReplicationCluster>();
             NotNull(service);
             service = host.Services.GetService<IRaftCluster>();
             NotNull(service);

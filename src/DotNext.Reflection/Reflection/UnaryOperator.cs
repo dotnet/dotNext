@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -109,6 +110,7 @@ namespace DotNext.Reflection
         /// <param name="operand">An operand.</param>
         /// <returns>Result of unary operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public R Invoke(in T operand) => Invoker(in operand);
 
         private static Expression<Operator<T, R>>? MakeUnary(Operator.Kind @operator, Operator.Operand operand, out MethodInfo? overloaded)

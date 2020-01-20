@@ -30,7 +30,7 @@ namespace DotNext.Reflection
         /// <remarks>
         /// For reference types, this delegate always calls <see cref="object.GetHashCode"/> virtual method.
         /// For value type, it calls <see cref="object.GetHashCode"/> if it is overridden by the value type; otherwise,
-        /// it calls <see cref="BitwiseComparer{T}.GetHashCode(T, bool)"/>.
+        /// it calls <see cref="BitwiseComparer{T}.GetHashCode(in T, bool)"/>.
         /// </remarks>
         public static new readonly Operator<T, int> GetHashCode;
 
@@ -59,7 +59,7 @@ namespace DotNext.Reflection
                 {
                     method = typeof(BitwiseComparer<>)
                                 .MakeGenericType(RuntimeType)
-                                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { RuntimeType, typeof(bool) });
+                                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { RuntimeType.MakeByRefType(), typeof(bool) });
                     Debug.Assert(!(method is null));
                     GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
                 }
@@ -127,7 +127,7 @@ namespace DotNext.Reflection
         public static Optional<T> TryConvert<U>(U value)
         {
             Operator<U, T>? converter = Type<U>.Operator.Get<T>(UnaryOperator.Convert);
-            return converter is null ? Optional<T>.Empty : converter(value);
+            return converter is null ? Optional<T>.Empty : converter(value)!;
         }
 
         /// <summary>

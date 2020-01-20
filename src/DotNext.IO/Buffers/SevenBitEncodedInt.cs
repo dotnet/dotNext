@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
 
-namespace DotNext.IO
+namespace DotNext.Buffers
 {
     internal static class SevenBitEncodedInt
     {

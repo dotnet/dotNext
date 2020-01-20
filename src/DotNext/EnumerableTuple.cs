@@ -81,6 +81,19 @@ namespace DotNext
         public int Count => tuple.Length;
 
         /// <summary>
+        /// Copies tuple items into specified memory span.
+        /// </summary>
+        /// <param name="output">The memory span to be written.</param>
+        /// <returns>The actual of modified elements in memory span.</returns>
+        public int CopyTo(Span<I> output)
+        {
+            int count;
+            for (count = 0; count < Math.Min(output.Length, tuple.Length); count++)
+                output[count] = this[count];
+            return count;
+        }
+
+        /// <summary>
         /// Gets enumerator over items in the tuple.
         /// </summary>
         /// <returns>The enumerator over items.</returns>

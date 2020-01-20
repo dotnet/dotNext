@@ -1,15 +1,37 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
+    using ByteBuffer = Buffers.ArrayRental<byte>;
+
     /// <summary>
-    /// Represents data unit that can be transferred over wire.
+    /// Represents structured data unit that can be transferred over wire.
     /// </summary>
+    /// <seealso cref="IAsyncBinaryReader"/>
+    /// <seealso cref="IAsyncBinaryWriter"/>
     public interface IDataTransferObject
     {
+        /// <summary>
+        /// Represents DTO transformation.
+        /// </summary>
+        /// <typeparam name="TResult">The result type.</typeparam>
+        public interface IDecoder<TResult>
+        {
+            /// <summary>
+            /// Parses DTO content asynchronously.
+            /// </summary>
+            /// <param name="reader">The reader of DTO content.</param>
+            /// <param name="token">The token that can be used to cancel the operation.</param>
+            /// <typeparam name="TReader">The type of binary reader.</typeparam>
+            /// <returns>The converted DTO content.</returns>
+            ValueTask<TResult> ReadAsync<TReader>(TReader reader, CancellationToken token)
+                where TReader : notnull, IAsyncBinaryReader;
+        }
+
         /// <summary>
         /// Indicates that the content of this object can be copied to the output stream or pipe multiple times.
         /// </summary>
@@ -24,18 +46,82 @@ namespace DotNext.IO
         long? Length { get; }
 
         /// <summary>
-        /// Copies the object content into the specified stream.
+        /// Transforms this object to serialized form.
         /// </summary>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-        /// <param name="output">The output stream receiving object content.</param>
-        ValueTask CopyToAsync(Stream output, CancellationToken token = default);
+        /// <param name="writer">The binary writer.</param>
+        /// <param name="token">The toke that can be used to cancel the operation.</param>
+        /// <typeparam name="TWriter">The type of writer.</typeparam>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            where TWriter : IAsyncBinaryWriter;
+        
+        /// <summary>
+        /// Decodes the stream.
+        /// </summary>
+        /// <param name="input">The stream to decode.</param>
+        /// <param name="transformation">The decoder.</param>
+        /// <param name="resetStream"><see langword="true"/> to reset stream position after decoding.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <returns>The decoded stream.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        protected static async ValueTask<TResult> DecodeAsync<TResult, TDecoder>(Stream input, TDecoder transformation, bool resetStream, CancellationToken token)
+            where TDecoder : notnull, IDecoder<TResult>
+        {
+            const int bufferSize = 1024;
+            var buffer = new ByteBuffer(bufferSize);
+            try
+            {
+                return await transformation.ReadAsync(new AsyncStreamBinaryReader(input, buffer.Memory), token).ConfigureAwait(false);
+            }
+            finally
+            {
+                buffer.Dispose();
+                if(resetStream && input.CanSeek)
+                    input.Seek(0L, SeekOrigin.Begin);
+            }
+        }
 
         /// <summary>
-        /// Copies the object content into the specified pipe writer.
+        /// Decodes the data using pipe reader.
         /// </summary>
-        /// <param name="output">The writer.</param>
-        /// <param name="token">The token that can be used to cancel operation.</param>
-        /// <returns>The task representing asynchronous execution of this method.</returns>
-        ValueTask CopyToAsync(PipeWriter output, CancellationToken token = default);
+        /// <param name="input">The pipe reader used for decoding.</param>
+        /// <param name="transformation">The decoder.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <returns>The decoded stream.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        protected static ValueTask<TResult> DecodeAsync<TResult, TDecoder>(PipeReader input, TDecoder transformation, CancellationToken token)
+            where TDecoder : notnull, IDecoder<TResult>
+            => transformation.ReadAsync(new Pipelines.PipeBinaryReader(input), token);
+
+        /// <summary>
+        /// Converts data transfer object to another type.
+        /// </summary>
+        /// <remarks>
+        /// The default implementation copies the content into memory
+        /// before parsing.
+        /// </remarks>
+        /// <param name="parser">The parser instance.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <returns>The converted DTO content.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        async ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
+            where TDecoder : notnull, IDecoder<TResult>
+        {
+            const int bufferSize = 1024;
+            using var ms = Length.TryGetValue(out var length) && length <= int.MaxValue ?
+                new RentedMemoryStream((int)length) :
+                new MemoryStream(bufferSize);
+            using var buffer = new ByteBuffer(bufferSize);
+            await WriteToAsync(new AsyncStreamBinaryWriter(ms, buffer.Memory), token).ConfigureAwait(false);
+            ms.Position = 0;
+            return await parser.ReadAsync(new AsyncStreamBinaryReader(ms, buffer.Memory), token).ConfigureAwait(false);
+        }
     }
 }

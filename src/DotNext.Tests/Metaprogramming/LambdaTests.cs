@@ -3,6 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -180,6 +181,33 @@ namespace DotNext.Metaprogramming
                 Return(typeof(int).CallStatic(nameof(int.Parse), result));
             }).Compile();
             Equal(423, lambda().GetResult(TimeSpan.FromMinutes(1)));
+        }
+
+        [Fact]
+        public static async Task AsyncWithoutReturnTypeValueTask()
+        {
+            var lambda = AsyncLambda<Func<StringBuilder, ValueTask>>(fun =>
+            {
+                Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));
+                Call(fun[0], "Append", "Hello, world!".Const());
+            }).Compile();
+            var builder = new StringBuilder(40);
+            await lambda(builder);
+            Equal("Hello, world!", builder.ToString());
+        }
+
+        [Fact]
+        public static async Task AsyncWithoutReturnType()
+        {
+            var lambda = AsyncLambda<Func<StringBuilder, Task>>(fun =>
+            {
+                Await(typeof(Task).CallStatic(nameof(Task.Delay), 0.Const()));
+                Call(fun[0], "Append", "Hello, world!".Const());
+                Return();
+            }).Compile();
+            var builder = new StringBuilder(40);
+            await lambda(builder);
+            Equal("Hello, world!", builder.ToString());
         }
 
         [Fact]

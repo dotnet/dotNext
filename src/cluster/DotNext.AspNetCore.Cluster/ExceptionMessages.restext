@@ -3,5 +3,6 @@ MissingHeader=Raft protocol header {0} is missing
 IncorrectResponse=Incorrect response according with Raft protocol
 UnresolvedLocalMember=Configured list of members in cluster doesn't contain address of entire application
 MessagingNotSupported=Message exchange is not supported by remote member
-UnavailableMember=Member is not reachable through network
+UnavailableMember=Member is not reachable through the network
 LeaderIsUnavailable=Leader node is not yet elected
+DistributedServicesAreUnavailable=Distributed services are unavailable in the current configuration of cluster

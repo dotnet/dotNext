@@ -288,7 +288,7 @@ namespace DotNext.Reflection
         {
             if (obj is T instance)
             {
-                value = this[instance];
+                value = this[instance]!;
                 return true;
             }
             else
@@ -353,7 +353,7 @@ namespace DotNext.Reflection
         public ref V this[[DisallowNull]in T @this]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref provider(@this);
+            get => ref provider(@this)!;
         }
 
         private static Field<T, V>? Reflect(string fieldName, bool nonPublic)
@@ -431,7 +431,7 @@ namespace DotNext.Reflection
         {
             if (obj is null)
             {
-                value = Value;
+                value = Value!;
                 return true;
             }
             else
@@ -493,7 +493,7 @@ namespace DotNext.Reflection
         public ref V Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => ref provider();
+            get => ref provider()!;
         }
 
         private static Field<V>? Reflect(Type declaringType, string fieldName, bool nonPublic)

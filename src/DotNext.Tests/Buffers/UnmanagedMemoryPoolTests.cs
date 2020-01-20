@@ -18,6 +18,11 @@ namespace DotNext.Buffers
             array[0] = 10;
             array[1] = 20;
             array[2] = 30;
+            Equal(new ushort[] { 10, 20, 30 }, owner.ToArray());
+            True(owner.BitwiseCompare(new ushort[] { 10, 20, 30 }) == 0);
+            True(owner.BitwiseEquals(new ushort[] { 10, 20, 30 }));
+            False(owner.BitwiseEquals(new ushort[] { 10, 20, 40 }));
+            True(owner.BitwiseCompare(new ushort[] { 10, 20, 40 }) < 0);
             Equal(3, array.Length);
             Equal(3, owner.Length);
             Equal(6, owner.Size);
@@ -69,10 +74,16 @@ namespace DotNext.Buffers
             array2[2] = 30;
 
             True(array1.BitwiseEquals(array2));
+            True(owner1.BitwiseEquals(owner2));
+            True(owner1.BitwiseCompare(owner2) == 0);
+            True(owner1.BitwiseEquals(owner2.Pointer));
             Equal(0, array1.BitwiseCompare(array2));
 
             array2[1] = 50;
             False(array1.BitwiseEquals(array2));
+            False(owner1.BitwiseEquals(owner2));
+            True(owner1.BitwiseCompare(owner2) < 0);
+            False(owner1.BitwiseEquals(owner2.Pointer));
             NotEqual(0, array1.BitwiseCompare(array2));
         }
 

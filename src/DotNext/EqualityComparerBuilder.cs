@@ -75,7 +75,7 @@ namespace DotNext
         {
             var method = typeof(BitwiseComparer<>)
                 .MakeGenericType(expr.Type)
-                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { expr.Type, typeof(bool) });
+                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { expr.Type.MakeByRefType(), typeof(bool) });
             return Expression.Call(method, expr, salted);
         }
 

@@ -14,8 +14,8 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using IO;
     using Messaging;
-    using IDataTransferObject = IO.IDataTransferObject;
     using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage, Generic.DefaultConst<Messaging.IMessage>>;
 
     internal class CustomMessage : HttpMessage, IHttpMessageWriter<IMessage>, IHttpMessageReader<IMessage>
@@ -72,9 +72,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 }
             }
 
-            ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => new ValueTask(requestStream.CopyToAsync(output, token));
-
-            ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask(requestStream.CopyToAsync(output, token));
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+                => new ValueTask(writer.CopyFromAsync(requestStream, token));
+        
+            ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
+                => IDataTransferObject.DecodeAsync<TResult, TDecoder>(requestStream, parser, false, token);
         }
 
         internal new const string MessageType = "CustomMessage";
@@ -120,14 +122,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             base.PrepareRequest(request);
         }
 
-        public Task SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
+        internal static async Task SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
             response.ContentType = message.Type.ToString();
             response.ContentLength = message.Length;
             response.Headers.Add(MessageNameHeader, message.Name);
-            return message.CopyToAsync(response.Body, token).AsTask();
+            await response.StartAsync(token).ConfigureAwait(false);
+            await message.WriteToAsync(response.BodyWriter, token).ConfigureAwait(false);
+            await response.BodyWriter.FlushAsync(token).ConfigureAwait(false);   
         }
+
+        Task IHttpMessageWriter<IMessage>.SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
+            => SaveResponse(response, message, token);
 
         //do not parse response because this is one-way message
         Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response, CancellationToken token) => NullMessage.Task;

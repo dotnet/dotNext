@@ -18,7 +18,7 @@ namespace DotNext.Generic
         /// Initializes a new generic-level constant.
         /// </summary>
         /// <param name="constVal">Constant value.</param>
-        protected Constant([AllowNull]T constVal)
+        protected Constant(T constVal)
         {
             Value = constVal;
         }

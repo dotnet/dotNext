@@ -121,14 +121,17 @@ namespace DotNext.Runtime
         public static bool IsDefault<T>(T value)
         {
             Sizeof(typeof(T));
-            Conv_I8();
-            Pop(out long size);
+            Pop(out uint size);
             switch (size)
             {
                 default:
                     Push(ref value);
                     Push(size);
+                    Conv_I8();
                     Call(new M(typeof(Intrinsics), nameof(IsZero)));
+                    break;
+                case 0U:
+                    Ldc_I4_1();
                     break;
                 case sizeof(byte):
                     Push(ref value);
@@ -142,12 +145,18 @@ namespace DotNext.Runtime
                     Ldc_I4_0();
                     Ceq();
                     break;
+                case 3:
+                    goto default;
                 case sizeof(uint):
                     Push(ref value);
                     Ldind_I4();
                     Ldc_I4_0();
                     Ceq();
                     break;
+                case 5:
+                case 6:
+                case 7:
+                    goto default;
                 case sizeof(ulong):
                     Push(ref value);
                     Ldind_I8();
@@ -431,6 +440,7 @@ namespace DotNext.Runtime
                     length -= sizeof(byte);
                 else
                     goto exit;
+            //TODO: Workaround for https://github.com/dotnet/coreclr/issues/13549
             result = true;
             exit:
             return result;
@@ -572,9 +582,9 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type of the element.</typeparam>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Copy<T>(ref T source, ref T destination, long count)
+        public static unsafe void Copy<T>(in T source, ref T destination, long count)
             where T : unmanaged
-            => Copy(ref Unsafe.As<T, byte>(ref source), ref Unsafe.As<T, byte>(ref destination), checked(count * sizeof(T)));
+            => Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(source)), ref Unsafe.As<T, byte>(ref destination), checked(count * sizeof(T)));
 
         /// <summary>
         /// Swaps two values.
@@ -687,6 +697,8 @@ namespace DotNext.Runtime
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = hashFunction.Invoke(hash, source);
                     break;
+                case 0L:
+                    break;
                 case sizeof(byte):
                     hash = hashFunction.Invoke(hash, source);
                     break;
@@ -716,6 +728,8 @@ namespace DotNext.Runtime
                         hash = FNV1a64.GetHashCode(hash, Unsafe.ReadUnaligned<long>(ref source));
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = FNV1a64.GetHashCode(hash, source);
+                    break;
+                case 0L:
                     break;
                 case sizeof(byte):
                     hash = FNV1a64.GetHashCode(hash, source);
@@ -812,6 +826,8 @@ namespace DotNext.Runtime
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = hashFunction.Invoke(hash, source);
                     break;
+                case 0L:
+                    break;
                 case sizeof(byte):
                     hash = hashFunction.Invoke(hash, source);
                     break;
@@ -832,6 +848,8 @@ namespace DotNext.Runtime
                         hash = FNV1a32.GetHashCode(hash, Unsafe.ReadUnaligned<int>(ref source));
                     for (; length > 0L; source = ref source.Advance<byte>(&length))
                         hash = FNV1a32.GetHashCode(hash, source);
+                    break;
+                case 0L:
                     break;
                 case sizeof(byte):
                     hash = FNV1a32.GetHashCode(hash, source);

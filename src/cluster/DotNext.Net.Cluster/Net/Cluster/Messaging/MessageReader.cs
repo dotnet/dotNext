@@ -10,5 +10,5 @@ namespace DotNext.Net.Cluster.Messaging
     /// <param name="message">The message to be deserialized.</param>
     /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
     /// <returns>The object representing deserialied message content.</returns>
-    public delegate Task<T> MessageReader<T>(IMessage message, CancellationToken token);
+    public delegate ValueTask<T> MessageReader<T>(IMessage message, CancellationToken token);
 }

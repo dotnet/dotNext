@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Missing = System.Reflection.Missing;
 
 namespace DotNext.IO.Pipelines
 {
@@ -21,78 +22,6 @@ namespace DotNext.IO.Pipelines
     /// </summary>
     public static class PipeExtensions
     {
-        private interface IBufferReader<out T>
-        {
-            int RemainingBytes { get; }
-
-            void Append(ReadOnlySpan<byte> block, ref int consumedBytes);
-
-            T Complete();
-
-            void EndOfStream() => throw new EndOfStreamException();
-        }
-
-        [StructLayout(LayoutKind.Auto)]
-        private struct StringReader : IBufferReader<string>
-        {
-            private readonly Decoder decoder;
-            private readonly Encoding encoding;
-            private int length, resultOffset;
-            private readonly Memory<char> result;
-
-            internal StringReader(in DecodingContext context, Memory<char> result)
-            {
-                decoder = context.GetDecoder();
-                encoding = context.Encoding;
-                length = result.Length;
-                this.result = result;
-                resultOffset = 0;
-            }
-
-            readonly int IBufferReader<string>.RemainingBytes => length;
-
-            readonly string IBufferReader<string>.Complete() => new string(result.Span.Slice(0, resultOffset));
-
-            void IBufferReader<string>.Append(ReadOnlySpan<byte> bytes, ref int consumedBytes)
-            {
-                length -= bytes.Length;
-                resultOffset += decoder.GetChars(bytes, result.Span.Slice(resultOffset), length == 0);
-            }
-        }
-
-        [StructLayout(LayoutKind.Auto)]
-        private struct SevenBitEncodedIntReader : IBufferReader<int>
-        {
-            private int remainingBytes;
-            private SevenBitEncodedInt.Reader reader;
-
-            internal SevenBitEncodedIntReader(int remainingBytes)
-            {
-                this.remainingBytes = remainingBytes;
-                reader = new SevenBitEncodedInt.Reader();
-            }
-
-            readonly int IBufferReader<int>.RemainingBytes => remainingBytes;
-
-            void IBufferReader<int>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
-            {
-                consumedBytes = 0;
-                foreach (var b in block)
-                {
-                    consumedBytes += 1;
-                    if (reader.Append(b))
-                        remainingBytes -= 1;
-                    else
-                    {
-                        remainingBytes = 0;
-                        break;
-                    }
-                }
-            }
-
-            readonly int IBufferReader<int>.Complete() => (int)reader.Result;
-        }
-
         [StructLayout(LayoutKind.Auto)]
         private struct HashReader : IBufferReader<HashBuilder>
         {
@@ -129,24 +58,6 @@ namespace DotNext.IO.Pipelines
                     remainingBytes -= block.Length;
             }
         }
-    
-        [StructLayout(LayoutKind.Auto)]
-        private struct ValueReader<T> : IBufferReader<T>
-            where T : unmanaged
-        {
-            private T result;
-            private int offset;
-
-            unsafe readonly int IBufferReader<T>.RemainingBytes => sizeof(T) - offset;
-
-            readonly T IBufferReader<T>.Complete() => result;
-
-            void IBufferReader<T>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
-            {
-                block.CopyTo(Intrinsics.AsSpan(ref result).Slice(offset));
-                offset += block.Length;
-            }
-        }
 
         [StructLayout(LayoutKind.Auto)]
         private struct LengthWriter : SevenBitEncodedInt.IWriter
@@ -159,28 +70,11 @@ namespace DotNext.IO.Pipelines
                 writer = output.GetMemory(5);
                 offset = 0;
             }
-
             internal readonly int Count => offset;
-
             void SevenBitEncodedInt.IWriter.WriteByte(byte value)
             {
                 writer.Span[offset++] = value;
             }
-        }
-
-        private static void Append<TResult, TParser>(this ref TParser parser, in ReadOnlySequence<byte> input, out SequencePosition consumed)
-            where TParser : struct, IBufferReader<TResult>
-        {
-            consumed = input.Start;
-            if(input.Length > 0)
-                for (int bytesToConsume; parser.RemainingBytes > 0 && input.TryGet(ref consumed, out var block, false) && block.Length > 0; consumed = input.GetPosition(bytesToConsume, consumed))
-                {
-                    bytesToConsume = Math.Min(block.Length, parser.RemainingBytes);
-                    block = block.Slice(0, bytesToConsume);
-                    parser.Append(block.Span, ref bytesToConsume);
-                }
-            else
-                parser.EndOfStream();
         }
 
         private static async ValueTask<TResult> ReadAsync<TResult, TParser>(this PipeReader reader, TParser parser, CancellationToken token)
@@ -219,8 +113,8 @@ namespace DotNext.IO.Pipelines
         {
             if (length == 0)
                 return string.Empty;
-            using var resultBuffer = new ArrayRental<char>(length);
-            return await ReadAsync<string, StringReader>(reader, new StringReader(context, resultBuffer.Memory), token);
+            using var resultBuffer = new ArrayBuffer<char>(length);
+            return await ReadAsync<string, StringReader<ArrayBuffer<char>>>(reader, new StringReader<ArrayBuffer<char>>(context, resultBuffer), token);
         }
 
         private static async ValueTask<int> ReadLengthAsync(this PipeReader reader, StringLengthEncoding lengthFormat, CancellationToken token)
@@ -274,6 +168,16 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<T> ReadAsync<T>(this PipeReader reader, CancellationToken token = default)
             where T : unmanaged
             => ReadAsync<T, ValueReader<T>>(reader, new ValueReader<T>(), token);
+
+        /// <summary>
+        /// Reads the block of memory.
+        /// </summary>
+        /// <param name="reader">The pipe reader.</param>
+        /// <param name="output">The block of memory to fill from the pipe.</param>
+        /// <param name="token">The token that can be used to cancel operation.</param>
+        /// <returns>The task representing asynchronous state of the operation.</returns>
+        public static async ValueTask ReadAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
+            => await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(output), token).ConfigureAwait(false);
 
         /// <summary>
         /// Encodes value of blittable type.
@@ -334,7 +238,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="value">The block of characters to encode.</param>
         /// <param name="context">The text encoding context.</param>
         /// <param name="bufferSize">The buffer size (in bytes) used for encoding.</param>
-        /// <param name="lengthFormat">Represents string length encoding format.</param>
+        /// <param name="lengthFormat">String length encoding format; or <see langword="null"/> to prevent encoding of string length.</param>
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The result of operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>

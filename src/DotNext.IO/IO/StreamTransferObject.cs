@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,26 +26,60 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Loads the content from another data transfer object.
+        /// </summary>
+        /// <param name="source">The content source.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of content loading.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="NotSupportedException">The underlying stream does not support seeking.</exception>
+        public async ValueTask LoadFromAsync(IDataTransferObject source, CancellationToken token = default)
+        {
+            if(content.CanSeek && content.CanWrite)
+                try
+                {
+                    await source.WriteToAsync(content, DefaultBufferSize, token).ConfigureAwait(false);
+                }
+                finally
+                {
+                    content.Seek(0, SeekOrigin.Begin);
+                }
+            else
+                throw new NotSupportedException();
+        }
+
+        /// <summary>
         /// Indicates that the content of this message can be copied to the output stream or pipe multiple times.
         /// </summary>
         public virtual bool IsReusable => content.CanSeek;
 
         long? IDataTransferObject.Length => content.CanSeek ? content.Length : default(long?);
 
-
-        async ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
+        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
-            await content.CopyToAsync(output, DefaultBufferSize, token).ConfigureAwait(false);
-            if (content.CanSeek)
-                content.Seek(0, SeekOrigin.Begin);
+            try
+            {
+                await writer.CopyFromAsync(content, token).ConfigureAwait(false);
+            }
+            finally
+            {
+                if(content.CanSeek)
+                    content.Seek(0, SeekOrigin.Begin);
+            }
         }
 
-        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
-        {
-            await content.CopyToAsync(output, token).ConfigureAwait(false);
-            if (content.CanSeek)
-                content.Seek(0, SeekOrigin.Begin);
-        }
+        /// <summary>
+        /// Parses the encapsulated stream. 
+        /// </summary>
+        /// <param name="parser">The parser instance.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <typeparam name="TDecoder">The type of parser.</typeparam>
+        /// <returns>The converted DTO content.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public ValueTask<TResult> GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token = default)
+            where TDecoder : IDataTransferObject.IDecoder<TResult>
+            => IDataTransferObject.DecodeAsync<TResult, TDecoder>(content, parser, true, token);
 
         /// <summary>
         /// Releases resources associated with this object.

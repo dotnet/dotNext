@@ -9,12 +9,17 @@ namespace DotNext.Net.Cluster
     /// <summary>
     /// Represents cluster member.
     /// </summary>
-    public interface IClusterMember : IEquatable<IClusterMember>
+    public interface IClusterMember
     {
         /// <summary>
         /// Represents cluster member endpoint that can be used to send messages specific to consensus protocol.
         /// </summary>
         IPEndPoint Endpoint { get; }
+
+        /// <summary>
+        /// Gets unique identifier of this member.
+        /// </summary>
+        ClusterMemberId Id => new ClusterMemberId(Endpoint);
 
         /// <summary>
         /// Indicates that executing host is a leader node in the cluster.
@@ -46,7 +51,7 @@ namespace DotNext.Net.Cluster
         /// </remarks>
         /// <returns>The task representing metadata read operation.</returns>
         /// <exception cref="MemberUnavailableException">This member is not reachable through the network.</exception>
-        ValueTask<IReadOnlyDictionary<string, string>> GetMetadata(bool refresh = false, CancellationToken token = default);
+        ValueTask<IReadOnlyDictionary<string, string>> GetMetadataAsync(bool refresh = false, CancellationToken token = default);
 
         /// <summary>
         /// Revokes leadership.

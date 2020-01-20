@@ -5,6 +5,7 @@ namespace DotNext
 {
     using ByteBuffer = Buffers.MemoryRental<byte>;
     using CharBuffer = Buffers.MemoryRental<char>;
+    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Provides random data generation.
@@ -178,6 +179,34 @@ namespace DotNext
             double result = random.Next();
             //normalize to range [0, 1)
             return result / (result + 1D);
+        }
+
+        /// <summary>
+        /// Generates random value of blittable type.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <typeparam name="T">The blittable type.</typeparam>
+        /// <returns>The randomly generated value.</returns>
+        public static T Next<T>(this Random random)
+            where T : unmanaged
+        {
+            var result = default(T);
+            random.NextBytes(Intrinsics.AsSpan(ref result));
+            return result;
+        }
+
+        /// <summary>
+        /// Generates random value of blittable type.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <typeparam name="T">The blittable type.</typeparam>
+        /// <returns>The randomly generated value.</returns>
+        public static T Next<T>(this RandomNumberGenerator random)
+            where T : unmanaged
+        {
+            var result = default(T);
+            random.GetBytes(Intrinsics.AsSpan(ref result));
+            return result;
         }
     }
 }

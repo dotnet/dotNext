@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 12-XX-2019
+# 01-XX-2020
 Major release of version 2.0 is completely finished and contains polished existing and new API. All libraries in .NEXT family are upgraded. Migration guide for 1.x users is [here](https://sakno.github.io/dotNext/migration/1.html). **Automatic upgrade via NuGet package manager is not supported**. The version should be fixed in `csproj` manually. This is done consciously because the new version is not fully backward compatible with 1.x.
 
 Major version is here for the following reasons:
@@ -16,9 +16,21 @@ What is done in this release:
 1. Introduced [DotNext.IO](https://www.nuget.org/packages/DotNext.IO/) library with unified asynchronous API surface for .NET streams and I/O [pipelines](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines). This API provides high-level methods for encoding and decoding of data such as strings and blittable types. In other words, if you want to have [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader) or [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter) for pipelines then welcome!
 1. Ability to obtain result of [task](https://docs.microsoft.com/en-us/dotnet/api/system.threading.tasks.task-1) asynchronously when its result type is not known at compile-time
 1. Additional optimizations of performance in [Write-Ahead Log](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html)
+1. Implementation of distributed lock based on Raft consensus algorithm
 1. Increased test coverage and fixed bugs
 1. Fixed issue [#4](https://github.com/sakno/dotNext/issues/4)
 1. Migration to C# 8 and nullable reference types
+
+# 01-12-2020
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.11">DotNext.Net.Cluster 1.2.11</a>
+* Ability to reconstruct internal state using `PersistentState.ReplayAsync` method
+
+# 01-11-2020
+<a href="https://www.nuget.org/packages/dotnext/1.2.10">DotNext 1.2.10</a>
+* Fixed invalid behavior of `StreamSegment.Position` property
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/1.2.10">DotNext.Net.Cluster 1.2.10</a>
+* Removed redundant validation of log entry index in `PersistentState`
 
 # 12-06-2019
 <a href="https://www.nuget.org/packages/dotnext.unsafe/1.2.10">DotNext.Unsafe 1.2.10</a>

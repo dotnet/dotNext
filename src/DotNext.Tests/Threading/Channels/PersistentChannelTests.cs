@@ -114,13 +114,19 @@ namespace DotNext.Threading.Channels
                 await channel.Writer.WriteAsync(g2);
                 await channel.Writer.WriteAsync(g3);
                 await channel.Writer.WriteAsync(g4);
+                Equal(0D, channel.Throughput);
                 Equal(g1, await channel.Reader.ReadAsync());
+                Equal(0.25D, channel.Throughput);
             }
             using (var channel = new SerializationChannel<Guid>(options))
             {
+                Equal(0.25D, channel.Throughput);
                 Equal(g2, await channel.Reader.ReadAsync());
+                Equal(0.5D, channel.Throughput);
                 Equal(g3, await channel.Reader.ReadAsync());
+                Equal(0.75D, channel.Throughput);
                 Equal(g4, await channel.Reader.ReadAsync());
+                Equal(1D, channel.Throughput);
             }
         }
 

@@ -1,9 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace RaftNode
+﻿namespace RaftNode
 {
     internal interface IValueProvider
     {
-        Task<long> GetValueAsync();
+        long Value { get; }
     }
 }

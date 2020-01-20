@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.IO.Compression;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -60,6 +61,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     concurrencyLevel = value;
                 }
             }
+
+            /// <summary>
+            /// Gets value indicating that dataset
+            /// should be reconstructed when <see cref="InitializeAsync(System.Threading.CancellationToken)"/>
+            /// method is called.
+            /// </summary>
+            /// <remarks>
+            /// The default value is <see langword="true"/>.
+            /// </remarks>
+            public bool ReplayOnInitialize { get; set; } = true;
+
+            /// <summary>
+            /// Gets or sets compression level used
+            /// to create backup archive.
+            /// </summary>
+            public CompressionLevel BackupCompression { get; set; } = CompressionLevel.Optimal;
         }
     }
 }

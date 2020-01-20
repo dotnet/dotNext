@@ -20,12 +20,6 @@ namespace DotNext
 
         internal static string InterfaceNotImplemented(Type t, Type i) => string.Format(Resources.GetString("InterfaceNotImplemented"), t.FullName, i.FullName);
 
-        internal static string MissingMethod(string methodName, Type t) => string.Format(Resources.GetString("MissingMethod"), methodName, t.FullName);
-
-        internal static string MissingProperty(string propertyName, Type t) => string.Format(Resources.GetString("MissingProperty"), propertyName, t.FullName);
-
-        internal static string MissingCtor(Type t) => string.Format(Resources.GetString("MissingCtor"), t.FullName);
-
         internal static string EnumerablePatternExpected => Resources.GetString("EnumerablePatternExpected");
 
         internal static string DisposePatternExpected(Type t) => string.Format(Resources.GetString("DisposePatternExpected"), t.FullName);

@@ -17,7 +17,7 @@ namespace DotNext.Runtime.CompilerServices
     public readonly struct Awaitable<T, [Constraint(typeof(Awaiter<>))] TAwaiter>
         where TAwaiter : ICriticalNotifyCompletion
     {
-        private static readonly Operator<T, TAwaiter> getAwaiter = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance);
+        private static readonly Operator<T, TAwaiter> getAwaiter = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance)!;
 
         static Awaitable() => Concept.Assert<Awaiter<TAwaiter>>();
 
@@ -47,7 +47,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="obj">The object representing asynchronous computing.</param>
         /// <returns>An awaiter instance.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TAwaiter GetAwaiter(in T obj) => getAwaiter(in obj);
+        public static TAwaiter GetAwaiter(in T obj) => getAwaiter(in obj)!;
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ namespace DotNext.Runtime.CompilerServices
     public readonly struct Awaitable<T, [Constraint(typeof(Awaiter<,>))] TAwaiter, R>
         where TAwaiter : ICriticalNotifyCompletion
     {
-        private static readonly Operator<T, TAwaiter> getAwaiter = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance);
+        private static readonly Operator<T, TAwaiter> getAwaiter = Type<T>.Method.Require<Operator<T, TAwaiter>>(nameof(Task.GetAwaiter), MethodLookup.Instance)!;
 
         static Awaitable() => Concept.Assert<Awaiter<TAwaiter, R>>();
 
@@ -92,6 +92,6 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="obj">The object representing asynchronous computing.</param>
         /// <returns>An awaiter instance.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TAwaiter GetAwaiter(in T obj) => getAwaiter(in obj);
+        public static TAwaiter GetAwaiter(in T obj) => getAwaiter(in obj)!;
     }
 }

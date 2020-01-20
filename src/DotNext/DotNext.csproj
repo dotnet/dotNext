@@ -17,20 +17,27 @@
     <Copyright>Copyright © Roman Sakno 2019</Copyright>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	<Description>Provides various extensions of .NET Base Class Library</Description>
-	<PackageIconUrl>https://raw.githubusercontent.com/sakno/dotNext/develop/logo.png</PackageIconUrl>
-	<PackageReleaseNotes>https://github.com/sakno/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
+    <PackageIcon>logo.png</PackageIcon>
+  <PackageReleaseNotes>https://github.com/sakno/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
+  </PropertyGroup>
+  
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
-	<CodeAnalysisRuleSet>../DotNext.ruleset</CodeAnalysisRuleSet>
-	<DefineConstants></DefineConstants>
+	  <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+	  <CodeAnalysisRuleSet>../DotNext.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Bench|AnyCPU'">
+    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
+    <Optimize>true</Optimize>
+	  <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
@@ -46,7 +53,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.7.0" />
-    <PackageReference Include="Fody" Version="6.0.5" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.0.6" PrivateAssets="all" />
     <PackageReference Include="DotNext.Augmentation.Fody" Version="1.2.4" PrivateAssets="all" />
     <PackageReference Include="InlineIL.Fody" Version="1.3.4" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
@@ -56,6 +63,10 @@
     <EmbeddedResource Include="ExceptionMessages.restext">
       <Generator></Generator>
     </EmbeddedResource>
+    <None Include="../../logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

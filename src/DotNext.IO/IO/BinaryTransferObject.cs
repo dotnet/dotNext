@@ -1,12 +1,36 @@
 ﻿using System;
 using System.Buffers;
-using System.IO;
-using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
+    /// <summary>
+    /// Represents transfer object for value of blittable type.
+    /// </summary>
+    /// <typeparam name="T">The type of encapsulated value.</typeparam>
+    public class BinaryTransferObject<T> : IDataTransferObject
+        where T : unmanaged
+    {
+        /// <summary>
+        /// Gets or sets a value of blittable type encapsulated by this object.
+        /// </summary>
+        public T Content
+        {
+            get;
+            set;
+        }
+
+        bool IDataTransferObject.IsReusable => true;
+
+        private unsafe static int Length => sizeof(T);
+
+        long? IDataTransferObject.Length => Length;
+    
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            => writer.WriteAsync(Content, token);
+    }
+
     /// <summary>
     /// Represents binary object.
     /// </summary>
@@ -36,22 +60,10 @@ namespace DotNext.IO
 
         long? IDataTransferObject.Length => Content.Length;
 
-        async ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
+        async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             foreach (var segment in Content)
-                await output.WriteAsync(segment, token).ConfigureAwait(false);
-        }
-
-        async ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token)
-        {
-            foreach (var segment in Content)
-            {
-                var result = await output.WriteAsync(segment, token).ConfigureAwait(false);
-                if (result.IsCompleted)
-                    break;
-                if (result.IsCanceled)
-                    throw new OperationCanceledException(token);
-            }
+                await writer.WriteAsync(segment, token).ConfigureAwait(false);
         }
     }
 }

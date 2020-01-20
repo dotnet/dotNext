@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,7 +32,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal ValueTask ApplyCoreAsync(LogEntry entry)
             {
                 term = Math.Max(entry.Term, term);
-                return ApplyAsync(entry);
+                //drop empty log entries during snapshot construction
+                return entry.IsEmpty ? new ValueTask() : ApplyAsync(entry);
             }
 
             long? IDataTransferObject.Length => null;
@@ -48,20 +47,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             bool ILogEntry.IsSnapshot => true;
 
             /// <summary>
-            /// Copies the reduced command into the specified stream.
+            /// Serializes the snapshotted entry.
             /// </summary>
-            /// <param name="output">The write-only stream.</param>
+            /// <param name="writer">The binary writer.</param>
             /// <param name="token">The token that can be used to cancel the operation.</param>
-            /// <returns>The task representing asynchronous state of this operation.</returns>
-            public abstract ValueTask CopyToAsync(Stream output, CancellationToken token);
-
-            /// <summary>
-            /// Copies the reduced command into the specified pipe.
-            /// </summary>
-            /// <param name="output">The write-only representation of the pipe.</param>
-            /// <param name="token">The token that can be used to cancel the operation.</param>
-            /// <returns>The task representing asynchronous state of this operation.</returns>
-            public abstract ValueTask CopyToAsync(PipeWriter output, CancellationToken token);
+            /// <typeparam name="TWriter">The type of binary writer.</typeparam>
+            /// <returns>The task representing state of asynchronous execution.</returns>
+            public abstract ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+                where TWriter : IAsyncBinaryWriter;
         }
 
         /// <summary>

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Xunit;
 
 namespace DotNext.Text
 {
+    [ExcludeFromCodeCoverage]
     public sealed class EncodingDecodingContextTests : Assert
     {
         [Fact]

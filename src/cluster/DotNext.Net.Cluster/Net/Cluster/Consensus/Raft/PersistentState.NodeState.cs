@@ -154,6 +154,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private readonly NodeState state;
+        private long lastTerm;  //term of last committed entry
 
         /// <summary>
         /// Gets index of the committed or last log entry.

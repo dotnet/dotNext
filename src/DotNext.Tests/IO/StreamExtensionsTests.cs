@@ -191,9 +191,10 @@ namespace DotNext.IO
             var buffer = new byte[bufferSize];
             await ms.WriteStringAsync(value.AsMemory(), encoding, buffer, lengthEnc);
             ms.Position = 0;
+            var reader = IAsyncBinaryReader.Create(ms, buffer);
             var result = await (lengthEnc is null ?
-                ms.ReadStringAsync(encoding.GetByteCount(value), encoding, buffer) :
-                ms.ReadStringAsync(lengthEnc.Value, encoding, buffer));
+                reader.ReadStringAsync(encoding.GetByteCount(value), encoding) :
+                reader.ReadStringAsync(lengthEnc.Value, encoding));
             Equal(value, result);
         }
 
@@ -276,6 +277,31 @@ namespace DotNext.IO
             ms.Write(10M);
             ms.Position = 0;
             Equal(10M, ms.Read<decimal>());
+        }
+
+        [Fact]
+        public static async Task ReadWriteBlittableTypeUsingReader()
+        {
+            using var ms = new MemoryStream();
+            ms.Write(10M);
+            ms.Position = 0;
+            var reader = IAsyncBinaryReader.Create(ms, new byte[128]);
+            Equal(10M, await reader.ReadAsync<decimal>());
+        }
+
+        [Fact]
+        public static async Task ReadWriteMemoryUsingReader()
+        {
+            using var ms = new MemoryStream();
+            ms.Write(new byte[]{1, 5, 7, 9});
+            ms.Position = 0;
+            var reader = IAsyncBinaryReader.Create(ms, new byte[128]);
+            var memory = new byte[4];
+            await reader.ReadAsync(memory);
+            Equal(1, memory[0]);
+            Equal(5, memory[1]);
+            Equal(7, memory[2]);
+            Equal(9, memory[3]);
         }
 
         [Fact]

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO;
-    using IO.Log;
     using Text;
 
     public partial class PersistentState
@@ -17,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Represents persistent log entry.
         /// </summary>
         [StructLayout(LayoutKind.Auto)]
-        protected readonly struct LogEntry : IRaftLogEntry
+        protected readonly struct LogEntry : IRaftLogEntry, IAsyncBinaryReader
         {
             private readonly StreamSegment content;
             private readonly LogEntryMetadata metadata;
@@ -40,95 +39,100 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 SnapshotIndex = metadata.Index;
             }
 
-            bool ILogEntry.IsSnapshot => SnapshotIndex.HasValue;
+            /// <summary>
+            /// Gets a value indicating that this entry is a snapshot entry.
+            /// </summary>
+            public bool IsSnapshot => SnapshotIndex.HasValue;
 
             /// <summary>
             /// Gets length of the log entry content, in bytes.
             /// </summary>
             public long Length => metadata.Length;
 
-            internal Stream AdjustPosition()
+            internal bool IsEmpty => metadata.Length == 0L;
+
+            internal void Reset()
+                => content.Adjust(metadata.Offset, Length);
+
+            /// <summary>
+            /// Reads the value of blittable type from the log entry
+            /// and advances position in the underlying stream.
+            /// </summary>
+            /// <param name="token">The token that can be used to cancel the operation.</param>
+            /// <typeparam name="T">The type of value to read.</typeparam>
+            /// <returns>Decoded value of blittable type.</returns>
+            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+            /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+            public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
+                where T : unmanaged
+                => content.ReadAsync<T>(buffer, token);
+            
+            private static async ValueTask ReadAsync(Stream input, Memory<byte> output, CancellationToken token)
             {
-                content.Adjust(metadata.Offset, Length);
-                return content;
+                if((await input.ReadAsync(output, token).ConfigureAwait(false)) != output.Length)
+                    throw new EndOfStreamException();
             }
 
             /// <summary>
-            /// Reads the number of bytes using the pre-allocated buffer.
+            /// Reads the data of exact size.
             /// </summary>
-            /// <remarks>
-            /// You can use <see cref="System.Buffers.Binary.BinaryPrimitives"/> to decode the returned bytes.
-            /// </remarks>
-            /// <param name="count">The number of bytes to read.</param>
-            /// <returns>The span of bytes representing buffer segment.</returns>
-            /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
-            public ReadOnlySpan<byte> Read(int count)
-            {
-                var result = buffer.Slice(0, count).Span;
-                return content.Read(result) == count ? result : throw new EndOfStreamException();
-            }
-
+            /// <param name="output">The buffer to be modified with the data from log entry.</param>
+            /// <param name="token">The token that can be used to cancel the operation.</param>
+            /// <returns>The task representing state of asynchronous execution.</returns>
+            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+            /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+            public ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default)
+                => ReadAsync(content, output, token);
+            
             /// <summary>
-            /// Reads asynchronously the number of bytes using the pre-allocated buffer.
+            /// Reads the string of the specified encoding and length.
             /// </summary>
-            /// <remarks>
-            /// You can use <see cref="System.Buffers.Binary.BinaryPrimitives"/> to decode the returned bytes.
-            /// </remarks>
-            /// <param name="count">The number of bytes to read.</param>
-            /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-            /// <returns>The span of bytes representing buffer segment.</returns>
-            /// <exception cref="EndOfStreamException">End of stream is reached.</exception>
-            public async ValueTask<ReadOnlyMemory<byte>> ReadAsync(int count, CancellationToken token = default)
-            {
-                var result = buffer.Slice(0, count);
-                return await content.ReadAsync(result, token).ConfigureAwait(false) == count ? result : throw new EndOfStreamException();
-            }
-
-            /// <summary>
-            /// Reads the string using the specified encoding.
-            /// </summary>
-            /// <remarks>
-            /// The characters should be prefixed with the length in the underlying stream.
-            /// </remarks>
             /// <param name="length">The length of the string, in bytes.</param>
-            /// <param name="context">The decoding context.</param>
-            /// <returns>The string decoded from the log entry content stream.</returns>
-            public string ReadString(int length, in DecodingContext context) => content.ReadString(length, context, buffer.Span);
-
-            /// <summary>
-            /// Reads the string asynchronously using the specified encoding.
-            /// </summary>
-            /// <remarks>
-            /// The characters should be prefixed with the length in the underlying stream.
-            /// </remarks>
-            /// <param name="length">The length of the string, in bytes.</param>
-            /// <param name="context">The decoding context.</param>
-            /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-            /// <returns>The string decoded from the log entry content stream.</returns>
+            /// <param name="context">The context of string decoding.</param>
+            /// <param name="token">The token that can be used to cancel the operation.</param>
+            /// <returns>The decoded string.</returns>
+            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+            /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
             public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
                 => content.ReadStringAsync(length, context, buffer, token);
-
+            
             /// <summary>
-            /// Copies the object content into the specified stream.
+            /// Reads the string of the specified encoding.
             /// </summary>
-            /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-            /// <param name="output">The output stream receiving object content.</param>
-            public async ValueTask CopyToAsync(Stream output, CancellationToken token) => await AdjustPosition().CopyToAsync(output, buffer, token).ConfigureAwait(false);
-
+            /// <param name="lengthFormat">Indicates how the string length is encoded in underlying stream.</param>
+            /// <param name="context">The context of string decoding.</param>
+            /// <param name="token">The token that can be used to cancel the operation.</param>
+            /// <returns>The decoded string.</returns>
+            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+            /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+            public ValueTask<string> ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
+                => content.ReadStringAsync(lengthFormat, context, buffer, token);
+            
             /// <summary>
-            /// Copies the object content into the specified stream synchronously.
+            /// Copies the remaining content from this log entry to the specified stream.
             /// </summary>
-            /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-            /// <param name="output">The output stream receiving object content.</param>
-            public void CopyTo(Stream output, CancellationToken token) => AdjustPosition().CopyTo(output, buffer.Span, token);
-
+            /// <param name="output">The stream used as copy destination.</param>
+            /// <param name="token">The token that can be used to cancel the operation.</param>
+            /// <returns>The task representing state of asynchronous execution.</returns>
+            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+            public Task CopyToAsync(Stream output, CancellationToken token = default)
+                => content.CopyToAsync(output, token);
+            
             /// <summary>
-            /// Copies the log entry content into the specified pipe writer.
+            /// Copies the remaining content from this log entry to the specified stream.
             /// </summary>
-            /// <param name="output">The writer.</param>
-            /// <param name="token">The token that can be used to cancel operation.</param>
-            /// <returns>The task representing asynchronous execution of this method.</returns>
-            public ValueTask CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask(AdjustPosition().CopyToAsync(output, token));
+            /// <param name="output">The stream used as copy destination.</param>
+            /// <param name="token">The token that can be used to cancel the operation.</param>
+            /// <returns>The task representing state of asynchronous execution.</returns>
+            /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+            public Task CopyToAsync(PipeWriter output, CancellationToken token = default)
+                => content.CopyToAsync(output, token);
+            
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            {
+                Reset();
+                return new ValueTask(writer.CopyFromAsync(content, token));
+            }
 
             long? IDataTransferObject.Length => Length;
             bool IDataTransferObject.IsReusable => false;
@@ -142,6 +146,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets timestamp of this log entry.
             /// </summary>
             public DateTimeOffset Timestamp => new DateTimeOffset(metadata.Timestamp, TimeSpan.Zero);
+
+            ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
+            {
+                Reset();
+                return IDataTransferObject.DecodeAsync<TResult, TDecoder>(content, parser, false, token);
+            }
         }
     }
 }

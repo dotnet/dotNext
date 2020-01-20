@@ -13,7 +13,7 @@ namespace DotNext.IO.Log
     /// </remarks>
     /// <typeparam name="TEntry">The interface type of the log entries supported by audit trail.</typeparam>
     /// <typeparam name="TResult">The type of the result produced by the reader.</typeparam>
-    public interface ILogEntryConsumer<TEntry, TResult>
+    public interface ILogEntryConsumer<in TEntry, TResult>
         where TEntry : class, ILogEntry
     {
         /// <summary>
@@ -32,7 +32,7 @@ namespace DotNext.IO.Log
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The result returned by the reader.</returns>
         ValueTask<TResult> ReadAsync<TEntryImpl, TList>(TList entries, long? snapshotIndex, CancellationToken token)
-            where TEntryImpl : TEntry
-            where TList : IReadOnlyList<TEntryImpl>;
+            where TEntryImpl : notnull, TEntry
+            where TList : notnull, IReadOnlyList<TEntryImpl>;
     }
 }

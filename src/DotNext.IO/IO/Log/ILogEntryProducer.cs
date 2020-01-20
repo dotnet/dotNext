@@ -9,7 +9,7 @@ namespace DotNext.IO.Log
     /// </summary>
     /// <typeparam name="TEntry">The type of the supplied log entries.</typeparam>
     public interface ILogEntryProducer<out TEntry> : IAsyncEnumerator<TEntry>
-        where TEntry : ILogEntry
+        where TEntry : notnull, ILogEntry
     {
         /// <summary>
         /// Gets the remaining count of log entries in this object.
@@ -18,13 +18,42 @@ namespace DotNext.IO.Log
         long RemainingCount { get; }
     }
 
+    internal sealed class SingleEntryProducer<TEntry> : ILogEntryProducer<TEntry>
+        where TEntry : notnull, ILogEntry
+    {
+        private bool available;
+
+        internal SingleEntryProducer(TEntry entry)
+        {
+            Current = entry;
+            available = true;
+        }
+
+        long ILogEntryProducer<TEntry>.RemainingCount => available.ToInt32();
+
+        public TEntry Current { get; }
+
+        ValueTask<bool> IAsyncEnumerator<TEntry>.MoveNextAsync()
+        {
+            var result = available;
+            available = false;
+            return new ValueTask<bool>(result);
+        }
+
+        ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            available = false;
+            return new ValueTask();
+        }
+    }
+
     /// <summary>
     /// Represents default implementation of <see cref="ILogEntryProducer{TEntry}"/> backed by the list
     /// of the log entries.
     /// </summary>
     /// <typeparam name="TEntry">The type of the entries supplied by this</typeparam>
     public sealed class LogEntryProducer<TEntry> : ILogEntryProducer<TEntry>
-        where TEntry : ILogEntry
+        where TEntry : notnull, ILogEntry
     {
         private const int InitialPosition = -1;
         private int currentIndex;
@@ -68,6 +97,18 @@ namespace DotNext.IO.Log
         /// </summary>
         public void Reset() => currentIndex = InitialPosition;
 
-        ValueTask IAsyncDisposable.DisposeAsync() => new ValueTask();
+        ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            if(!source.IsReadOnly)
+                source.Clear();
+            return new ValueTask();
+        }
+
+        /// <summary>
+        /// Constructs producer of single log entry.
+        /// </summary>
+        /// <param name="entry">The entry to be exposed by producer.</param>
+        /// <returns>The producer of single log entry.</returns>
+        public static ILogEntryProducer<TEntry> Of(TEntry entry) => new SingleEntryProducer<TEntry>(entry);
     }
 }

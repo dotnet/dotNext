@@ -1,15 +1,11 @@
 using System;
-using System.IO;
-using System.IO.Pipelines;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
-    using Buffers;
     using IO;
-    using IO.Pipelines;
     using static Mime.ContentTypeExtensions;
 
     /// <summary>
@@ -17,8 +13,6 @@ namespace DotNext.Net.Cluster.Messaging
     /// </summary>
     public class TextMessage : IMessage
     {
-        private const int DefaultBufferSize = 128;
-
         /// <summary>
         /// Initializes a new text message.
         /// </summary>
@@ -56,13 +50,8 @@ namespace DotNext.Net.Cluster.Messaging
         /// </summary>
         public string Content { get; }
 
-        async ValueTask IDataTransferObject.CopyToAsync(Stream output, CancellationToken token)
-        {
-            using var buffer = new ArrayRental<byte>(DefaultBufferSize);
-            await output.WriteStringAsync(Content.AsMemory(), Type.GetEncoding(), buffer.Memory, null, token).ConfigureAwait(false);
-        }
-
-        ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => output.WriteStringAsync(Content.AsMemory(), Type.GetEncoding(), DefaultBufferSize, null, token);
+        ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+            => writer.WriteAsync(Content.AsMemory(), Type.GetEncoding(), null, token);
 
         /// <summary>
         /// MIME type of the message.

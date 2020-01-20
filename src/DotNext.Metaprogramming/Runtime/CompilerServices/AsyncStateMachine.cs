@@ -15,43 +15,32 @@ namespace DotNext.Runtime.CompilerServices
     /// This type allows to implement custom async/await flow
     /// and intended for expert-level developers.
     /// </remarks>
-    /// <typeparam name="STATE">The local state of async function used to store computation state.</typeparam>
+    /// <typeparam name="TState">The local state of async function used to store computation state.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    internal struct AsyncStateMachine<STATE> : IAsyncStateMachine<STATE>
-        where STATE : struct
+    internal struct AsyncStateMachine<TState> : IAsyncStateMachine<TState>
+        where TState : struct
     {
-        /// <summary>
-        /// Represents state-transition function.
-        /// </summary>
-        /// <param name="stateMachine">A state to modify during transition.</param>
-        public delegate void Transition(ref AsyncStateMachine<STATE> stateMachine);
-
-        /// <summary>
-        /// Represents final state identifier of async state machine.
-        /// </summary>
-        public const uint FINAL_STATE = 0;
-
         /// <summary>
         /// Runtime state associated with this state machine.
         /// </summary>
-        public STATE State;
+        public TState State;
 
         private AsyncValueTaskMethodBuilder builder;
-        private readonly Transition transition;
+        private readonly Transition<TState, AsyncStateMachine<TState>> transition;
         private ExceptionDispatchInfo? exception;
         private uint guardedRegionsCounter;    //number of entries into try-clause
 
-        private AsyncStateMachine(Transition transition, STATE state)
+        private AsyncStateMachine(Transition<TState, AsyncStateMachine<TState>> transition, TState state)
         {
             builder = AsyncValueTaskMethodBuilder.Create();
             this.transition = transition;
             State = state;
-            StateId = FINAL_STATE;
+            StateId = IAsyncStateMachine<TState>.FINAL_STATE;
             exception = null;
             guardedRegionsCounter = 0;
         }
 
-        STATE IAsyncStateMachine<STATE>.State => State;
+        readonly TState IAsyncStateMachine<TState>.State => State;
 
         /// <summary>
         /// Gets state identifier.
@@ -59,7 +48,7 @@ namespace DotNext.Runtime.CompilerServices
         public uint StateId
         {
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-            get;
+            readonly get;
             private set;
         }
 
@@ -100,23 +89,22 @@ namespace DotNext.Runtime.CompilerServices
         public bool TryRecover<E>([NotNullWhen(true)] out E? restoredException)
             where E : Exception
         {
-            if (exception?.SourceException is E typed)
+            switch (exception?.SourceException)
             {
-                exception = null;
-                restoredException = typed;
-                return true;
-            }
-            else
-            {
-                restoredException = null;
-                return false;
+                case E typed:
+                    exception = null;
+                    restoredException = typed;
+                    return true;
+                default:
+                    restoredException = null;
+                    return false;
             }
         }
 
         /// <summary>
         /// Indicates that this async state machine is not in exceptional state.
         /// </summary>
-        public bool HasNoException
+        public readonly bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
@@ -127,7 +115,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Re-throws capture exception.
         /// </summary>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public void Rethrow() => exception?.Throw();
+        public readonly void Rethrow() => exception?.Throw();
 
         void IAsyncStateMachine.MoveNext()
         {
@@ -144,7 +132,7 @@ namespace DotNext.Runtime.CompilerServices
                     goto begin;
             }
             //finalize state machine
-            if (StateId == FINAL_STATE)
+            if (StateId == IAsyncStateMachine<TState>.FINAL_STATE)
             {
                 if (exception is null)
                     builder.SetResult();
@@ -171,11 +159,8 @@ namespace DotNext.Runtime.CompilerServices
             //avoid boxing of this state machine through continuation action if awaiter is completed already
             if (Awaiter<TAwaiter>.IsCompleted(ref awaiter))
                 return true;
-            else
-            {
-                builder.AwaitOnCompleted(ref awaiter, ref this);
-                return false;
-            }
+            builder.AwaitOnCompleted(ref awaiter, ref this);
+            return false;
         }
 
         /// <summary>
@@ -183,7 +168,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        public void Complete() => StateId = FINAL_STATE;
+        public void Complete() => StateId = IAsyncStateMachine<TState>.FINAL_STATE;
 
         private ValueTask Start()
         {
@@ -197,10 +182,10 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="transition">Async function which execution is controlled by state machine.</param>
         /// <param name="initialState">Initial state.</param>
         /// <returns>The task representing execution of async function.</returns>
-        public static ValueTask Start(Transition transition, STATE initialState = default)
-            => new AsyncStateMachine<STATE>(transition, initialState).Start();
+        public static ValueTask Start(Transition<TState, AsyncStateMachine<TState>> transition, TState initialState = default)
+            => new AsyncStateMachine<TState>(transition, initialState).Start();
 
-        void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
+        readonly void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
     }
 
     /// <summary>
@@ -210,33 +195,27 @@ namespace DotNext.Runtime.CompilerServices
     /// This type allows to implement custom async/await flow
     /// and intended for expert-level developers.
     /// </remarks>
-    /// <typeparam name="STATE">The local state of async function used to store computation state.</typeparam>
-    /// <typeparam name="R">Result type of asynchronous function.</typeparam>
+    /// <typeparam name="TState">The local state of async function used to store computation state.</typeparam>
+    /// <typeparam name="TResult">Result type of asynchronous function.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    internal struct AsyncStateMachine<STATE, R> : IAsyncStateMachine<STATE>
-        where STATE : struct
+    internal struct AsyncStateMachine<TState, TResult> : IAsyncStateMachine<TState>
+        where TState : struct
     {
-        /// <summary>
-        /// Represents state-transition function.
-        /// </summary>
-        /// <param name="stateMachine"></param>
-        public delegate void Transition(ref AsyncStateMachine<STATE, R> stateMachine);
-
         /// <summary>
         /// Represents internal state.
         /// </summary>
-        public STATE State;
-        private AsyncValueTaskMethodBuilder<R> builder;
-        private readonly Transition transition;
+        public TState State;
+        private AsyncValueTaskMethodBuilder<TResult> builder;
+        private readonly Transition<TState, AsyncStateMachine<TState, TResult>> transition;
         private ExceptionDispatchInfo? exception;
         private uint guardedRegionsCounter;    //number of entries into try-clause
         [AllowNull]
-        private R result;
+        private TResult result;
 
-        private AsyncStateMachine(Transition transition, STATE state)
+        private AsyncStateMachine(Transition<TState, AsyncStateMachine<TState, TResult>> transition, TState state)
         {
-            builder = AsyncValueTaskMethodBuilder<R>.Create();
-            StateId = AsyncStateMachine<STATE>.FINAL_STATE;
+            builder = AsyncValueTaskMethodBuilder<TResult>.Create();
+            StateId = IAsyncStateMachine<TState>.FINAL_STATE;
             State = state;
             this.transition = transition;
             guardedRegionsCounter = 0;
@@ -244,7 +223,7 @@ namespace DotNext.Runtime.CompilerServices
             result = default;
         }
 
-        STATE IAsyncStateMachine<STATE>.State => State;
+        readonly TState IAsyncStateMachine<TState>.State => State;
 
         /// <summary>
         /// Gets state identifier.
@@ -252,7 +231,7 @@ namespace DotNext.Runtime.CompilerServices
         public uint StateId
         {
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-            get;
+            readonly get;
             private set;
         }
 
@@ -292,23 +271,22 @@ namespace DotNext.Runtime.CompilerServices
         public bool TryRecover<E>([NotNullWhen(true)]out E? restoredException)
             where E : Exception
         {
-            if (exception?.SourceException is E typed)
+            switch (exception?.SourceException)
             {
-                exception = null;
-                restoredException = typed;
-                return true;
-            }
-            else
-            {
-                restoredException = null;
-                return false;
+                case E typed:
+                    exception = null;
+                    restoredException = typed;
+                    return true;
+                default:
+                    restoredException = null;
+                    return false;
             }
         }
 
         /// <summary>
         /// Indicates that this async state machine is not in exceptional state.
         /// </summary>
-        public bool HasNoException
+        public readonly bool HasNoException
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
@@ -319,9 +297,9 @@ namespace DotNext.Runtime.CompilerServices
         /// Re-throws capture exception.
         /// </summary>
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.MayFail)]
-        public void Rethrow() => exception?.Throw();
+        public readonly void Rethrow() => exception?.Throw();
 
-        private ValueTask<R> Start()
+        private ValueTask<TResult> Start()
         {
             builder.Start(ref this);
             return builder.Task;
@@ -333,19 +311,19 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="transition">Async function which execution is controlled by state machine.</param>
         /// <param name="initialState">Initial state.</param>
         /// <returns>The task representing execution of async function.</returns>
-        public static ValueTask<R> Start(Transition transition, STATE initialState = default)
-            => new AsyncStateMachine<STATE, R>(transition, initialState).Start();
+        public static ValueTask<TResult> Start(Transition<TState, AsyncStateMachine<TState, TResult>> transition, TState initialState = default)
+            => new AsyncStateMachine<TState, TResult>(transition, initialState).Start();
 
         /// <summary>
         /// Sets result of async state machine and marks current state as final state.
         /// </summary>
-        public R Result
+        public TResult Result
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
             set
             {
-                StateId = AsyncStateMachine<STATE>.FINAL_STATE;
+                StateId = IAsyncStateMachine<TState>.FINAL_STATE;
                 exception = null;
                 result = value;
             }
@@ -387,7 +365,7 @@ namespace DotNext.Runtime.CompilerServices
                     goto begin;
             }
             //finalize state machine
-            if (StateId == AsyncStateMachine<STATE>.FINAL_STATE)
+            if (StateId == IAsyncStateMachine<TState>.FINAL_STATE)
             {
                 if (exception is null)
                     builder.SetResult(result);
@@ -401,6 +379,6 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
-        void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
+        readonly void IAsyncStateMachine.SetStateMachine(IAsyncStateMachine stateMachine) => builder.SetStateMachine(stateMachine);
     }
 }

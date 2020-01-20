@@ -106,14 +106,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host3.StartAsync();
 
             //ensure that leader is elected
-            WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
+            WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 }, TimeSpan.FromMinutes(2));
 
-            var box1 = host1.Services.GetRequiredService<IMessageHandler>() as Mailbox;
-            var box2 = host2.Services.GetRequiredService<IMessageHandler>() as Mailbox;
-            var box3 = host3.Services.GetRequiredService<IMessageHandler>() as Mailbox;
+            var box1 = host1.Services.GetRequiredService<IInputChannel>() as Mailbox;
+            var box2 = host2.Services.GetRequiredService<IInputChannel>() as Mailbox;
+            var box3 = host3.Services.GetRequiredService<IInputChannel>() as Mailbox;
 
 
-            await host1.Services.GetRequiredService<IMessageBus>().SendSignalToLeaderAsync(new TextMessage("Message to leader", "simple"));
+            await host1.Services.GetRequiredService<IMessageBus>().LeaderRouter.SendSignalAsync(new TextMessage("Message to leader", "simple"));
 
             //ensure that one of the boxes is not empty
             var success = false;
@@ -131,6 +131,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host3.StopAsync();
             await host2.StopAsync();
             await host1.StopAsync();
+        }
+
+        private static async ValueTask<StreamMessage> CreateBufferedMessageAsync(IMessage message, CancellationToken token)
+        {
+            var result = new StreamMessage(message.Name, message.Type);
+            await result.LoadFromAsync(message, token);
+            return result;
         }
 
         [Fact]
@@ -158,10 +165,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await host2.StartAsync();
 
             var client = host1.Services.GetService<IMessageBus>().Members.FirstOrDefault(member => member.Endpoint.Port == 3263);
-            var messageBox = host2.Services.GetService<IMessageHandler>() as Mailbox;
+            var messageBox = host2.Services.GetService<IInputChannel>() as Mailbox;
             NotNull(messageBox);
             //request-reply test
-            var response = await client.SendTextMessageAsync(StreamMessage.CreateBufferedMessageAsync, "Request", "Ping");
+            var response = await client.SendTextMessageAsync<StreamMessage>(CreateBufferedMessageAsync, "Request", "Ping");
             True(response.IsReusable);
             NotNull(response);
             Equal("Reply", response.Name);
@@ -229,7 +236,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             await Task.Delay(delay);
             await host3.StartAsync();
 
-            WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 });
+            WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2, listener3 }, TimeSpan.FromMinutes(2));
 
             IClusterMember leader1, leader2, leader3;
 
@@ -280,21 +287,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             {
                 case 1:
                     //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener2, listener3 });
+                    WaitHandle.WaitAll(new WaitHandle[] { listener2, listener3 }, TimeSpan.FromMinutes(2));
                     NotNull(listener2.Leader);
                     NotNull(listener3.Leader);
                     CheckLeadership(listener2.Leader, listener3.Leader);
                     break;
                 case 2:
                     //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener3 });
+                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener3 }, TimeSpan.FromMinutes(2));
                     NotNull(listener1.Leader);
                     NotNull(listener3.Leader);
                     CheckLeadership(listener1.Leader, listener3.Leader);
                     break;
                 case 3:
                     //wait for new leader
-                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2 });
+                    WaitHandle.WaitAll(new WaitHandle[] { listener1, listener2 }, TimeSpan.FromMinutes(2));
                     NotNull(listener1.Leader);
                     NotNull(listener2.Leader);
                     CheckLeadership(listener1.Leader, listener2.Leader);
@@ -360,7 +367,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
             leaderResetEvent.WaitOne(2000);
             NotNull(leaderResetEvent.Leader);
             False(leaderResetEvent.Leader.IsRemote);
-            Equal("TestNode", (await leaderResetEvent.Leader.GetMetadata())["nodeName"]);
+            Equal("TestNode", (await leaderResetEvent.Leader.GetMetadataAsync())["nodeName"]);
             await host.StopAsync();
         }
 

@@ -118,15 +118,18 @@ namespace DotNext.Threading
         /// <param name="update">The value that replaces the stored value if the comparison results in equality.</param>
         /// <param name="expected">The value that is compared to the stored value.</param>
         /// <param name="result">The origin value stored in this container before modification.</param>
-        public void CompareExchange(in T update, in T expected, out T result)
+        /// <returns><see langword="true"/> if the current value is replaced by <paramref name="update"/>; otherwise, <see langword="false"/>.</returns>
+        public bool CompareExchange(in T update, in T expected, out T result)
         {
+            bool successful;
             lockState.Acquire();
             Increment(ref version);
             var current = value;
-            if (BitwiseComparer<T>.Equals(current, expected))
+            if (successful = BitwiseComparer<T>.Equals(current, expected))
                 Copy(in update, out value);
             Copy(in current, out result);
             lockState.Release();
+            return successful;
         }
 
         /// <summary>

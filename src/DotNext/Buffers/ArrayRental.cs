@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
@@ -89,7 +90,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets the rented array.
         /// </summary>
-        public ArraySegment<T> Segment => array is null ? default : new ArraySegment<T>(array, 0, Length);
+        public ArraySegment<T> Segment => array is null ? ArraySegment<T>.Empty : new ArraySegment<T>(array, 0, Length);
 
         /// <summary>
         /// Gets the array element by its index.
@@ -106,14 +107,13 @@ namespace DotNext.Buffers
         public ref T GetPinnableReference() => ref array[0];
 
         /// <summary>
-        /// Obtains rented array.
+        /// Sets all elements of the rented array to default value of type <typeparamref name="T"/>.
         /// </summary>
-        /// <remarks>
-        /// This operation is potentially unsafe because the length of
-        /// the returned array may differs from <see cref="Length"/>.
-        /// </remarks>
-        /// <param name="rental">Array rental.</param>
-        public static explicit operator T[](in ArrayRental<T> rental) => rental.array ?? Array.Empty<T>();
+        public void Clear()
+        {
+            if (array != null)
+                Array.Clear(array, 0, Length);
+        }
 
         /// <summary>
         /// Gets textual representation of the rented memory.

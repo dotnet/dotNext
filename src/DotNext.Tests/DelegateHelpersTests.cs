@@ -74,11 +74,45 @@ namespace DotNext
         private static int GetLength(string value) => value.Length;
 
         [Fact]
-        public static void BindUnbind()
+        public static void BindUnbind1()
         {
             var func = new Func<string, int>(GetLength).Bind("abc");
             Equal(3, func());
             Equal(4, func.Unbind<string, int>().Invoke("abcd"));
+        }
+
+        [Fact]
+        public static void BindUnbind2()
+        {
+            var func = new Func<string, string, string>(string.Concat).Bind("abc");
+            Equal("abcde", func("de"));
+            Equal("abcde", func.Unbind<string, string, string>().Invoke("ab", "cde"));
+        }
+
+        [Fact]
+        public static void BindUnbind3()
+        {
+            var func = new Func<string, string, string, string>(string.Concat).Bind("abc");
+            Equal("abcde", func("d", "e"));
+            Equal("abcde", func.Unbind<string, string, string, string>().Invoke("ab", "cd", "e"));
+        }
+
+        [Fact]
+        public static void BindUnbind4()
+        {
+            var func = new Func<string, string, string, string, string>(string.Concat).Bind("abc");
+            Equal("abcdef", func("d", "e", "f"));
+            Equal("abcdef", func.Unbind<string, string, string, string, string>().Invoke("ab", "cd", "e", "f"));
+        }
+
+        [Fact]
+        public static void BindUnbind5()
+        {
+            static string Concat(string str1, string str2, string str3, string str4, string str5)
+                => str1 + str2 + str3 + str4 + str5;
+            var func = new Func<string, string, string, string, string, string>(Concat).Bind("abc");
+            Equal("abcdefg", func("d", "e", "f", "g"));
+            Equal("abcdefg", func.Unbind<string, string, string, string, string, string>().Invoke("ab", "cd", "e", "f", "g"));
         }
 
         [Fact]

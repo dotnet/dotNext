@@ -36,7 +36,7 @@ namespace DotNext.Reflection
         /// <exception cref="MissingConstructorException">Constructor doesn't exist.</exception>
         public static T NewInstance<A>(in A args, bool nonPublic = false)
             where A : struct
-             => RequireConstructor<A>(nonPublic).Invoke(args);
+             => RequireConstructor<A>(nonPublic).Invoke(args)!;
 
         /// <summary>
         /// Provides access to constructor of type <typeparamref name="T"/> without parameters.

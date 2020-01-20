@@ -10,6 +10,7 @@ using Xunit;
 namespace DotNext.Net.Cluster.Messaging
 {
     using Buffers;
+    using IO;
 
     [ExcludeFromCodeCoverage]
     public sealed class MessageTests : Assert
@@ -19,7 +20,7 @@ namespace DotNext.Net.Cluster.Messaging
         {
             IMessage message = new TextMessage("Hello, world!", "msg");
             using var content = new MemoryStream(1024);
-            await message.CopyToAsync(content).ConfigureAwait(false);
+            await message.WriteToAsync(content).ConfigureAwait(false);
             content.Seek(0, SeekOrigin.Begin);
             using var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true);
             Equal("Hello, world!", reader.ReadToEnd());
@@ -32,7 +33,7 @@ namespace DotNext.Net.Cluster.Messaging
             IMessage message = new TextMessage("Hello, world!", "msg");
             ThreadPool.QueueUserWorkItem(async state =>
             {
-                await message.CopyToAsync(pipe.Writer).ConfigureAwait(false);
+                await message.WriteToAsync(pipe.Writer).ConfigureAwait(false);
                 pipe.Writer.Complete();
             });
             var content = new MemoryStream();
@@ -61,7 +62,7 @@ namespace DotNext.Net.Cluster.Messaging
             IMessage message = new BinaryMessage((ReadOnlySequence<byte>)new ChunkSequence<byte>(bytes, 2), "msg");
             ThreadPool.QueueUserWorkItem(async state =>
             {
-                await message.CopyToAsync(pipe.Writer).ConfigureAwait(false);
+                await message.WriteToAsync(pipe.Writer).ConfigureAwait(false);
                 pipe.Writer.Complete();
             });
             var content = new MemoryStream();

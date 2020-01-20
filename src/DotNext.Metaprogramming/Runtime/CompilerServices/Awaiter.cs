@@ -1,3 +1,4 @@
+using System;
 using System.Runtime.CompilerServices;
 using static System.Linq.Expressions.Expression;
 
@@ -10,7 +11,7 @@ namespace DotNext.Runtime.CompilerServices
 
         internal static readonly IsCompletedGetter IsCompleted;
 
-        private static bool NotCompleted(ref TAwaiter awaiter) => false;
+        private static bool NotCompleted(ref TAwaiter awaiter) => throw new MissingMemberException(awaiter.GetType().FullName, nameof(IsCompleted));
 
         static Awaiter()
         {

@@ -20,6 +20,25 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Concatenates the array with the specified span of elements.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the array.</typeparam>
+        /// <param name="left">The array to concatenate.</param>
+        /// <param name="right">The tail of concatenation.</param>
+        /// <param name="startIndex">The starting index in <paramref name="left"/> at which <paramref name="right"/> should be inserted.</param>
+        /// <returns>The array representing all elements from <paramref name="left"/> up to <paramref name="startIndex"/> exclusively including elements from <paramref name="right"/>.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="startIndex"/> is less than 0 or greater than length of <paramref name="left"/> array.</exception>
+        public static T[] Concat<T>(this T[] left, T[] right, long startIndex)
+        {
+            if (startIndex < 0 || startIndex > left.Length)
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
+            var result = new T[startIndex + right.Length];
+            Array.Copy(left, result, startIndex);
+            Array.Copy(right, 0L, result, startIndex, right.Length);
+            return result;
+        }
+
+        /// <summary>
         /// Indicates that array is <see langword="null"/> or empty.
         /// </summary>
         /// <typeparam name="T">Type of elements in the array.</typeparam>
