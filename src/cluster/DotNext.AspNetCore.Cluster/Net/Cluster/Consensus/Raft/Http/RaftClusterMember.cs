@@ -27,6 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private long nextIndex;
         internal IHttpClientMetrics? Metrics;
         internal HttpVersion ProtocolVersion;
+        internal readonly DuplicationControlContext Duplication;
 
         internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
             : base(context.CreateHttpHandler(), true)
@@ -37,6 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             BaseAddress = remoteMember;
             Endpoint = remoteMember.ToEndPoint() ?? throw new UriFormatException(ExceptionMessages.UnresolvedHostName(remoteMember.Host));
             DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue(UserAgent, (GetType().Assembly.GetName().Version ?? new Version()).ToString()));
+            Duplication = new DuplicationControlContext();
         }
 
         event ClusterMemberStatusChanged? IClusterMember.MemberStatusChanged
@@ -144,7 +146,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             => Endpoint.Equals(context.LocalEndpoint) ? ClusterMemberStatus.Available : status.Value;
 
         internal Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, bool respectLeadership, CancellationToken token)
-            => SendAsync<TResponse, CustomMessage<TResponse>>(new CustomMessage<TResponse>(context.LocalEndpoint, message, responseReader) { RespectLeadership = respectLeadership }, token);
+        {
+            var request = new CustomMessage<TResponse>(context.LocalEndpoint, message, responseReader) { RespectLeadership = respectLeadership };
+            context.PrepareOutboundMessage(request);
+            return SendAsync<TResponse, CustomMessage<TResponse>>(request, token);
+        }
 
         Task<TResponse> IOutputChannel.SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token)
             => SendMessageAsync(message, responseReader, false, token);
@@ -155,6 +161,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         Task ISubscriber.SendSignalAsync(IMessage message, bool requiresConfirmation, CancellationToken token)
         {
             var request = new CustomMessage(context.LocalEndpoint, message, requiresConfirmation);
+            context.PrepareOutboundMessage(request);
             return SendSignalAsync(request, token);
         }
 

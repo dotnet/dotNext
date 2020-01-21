@@ -16,7 +16,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
     internal partial class RaftHttpCluster : IOutputChannel
     {
-        private readonly DuplicateRequestDetector duplicationDetector;
         private volatile ISet<IPNetwork> allowedNetworks;
         private volatile ImmutableList<IInputChannel> messageHandlers;
         private volatile MemberMetadata metadata;
@@ -68,9 +67,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             if (!token.CanBeCanceled)
                 token = Token;
+            var localMember = this.localMember;
             Assert(localMember != null);
             //keep the same message between retries for correct identification of duplicate messages
             var signal = new CustomMessage(localMember.Endpoint, message, true) { RespectLeadership = true };
+            localMember.Duplication.GetControlData(out signal.NodeVersion, out signal.SequenceNumber);
             do
             {
                 var leader = Leader;
@@ -99,6 +100,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         IOutputChannel IMessageBus.LeaderRouter => this;
 
+        void IHostingContext.PrepareOutboundMessage(HttpMessage message)
+            => localMember?.Duplication.GetControlData(out message.NodeVersion, out message.SequenceNumber);
+
         [SuppressMessage("Reliability", "CA2000", Justification = "Buffered message will be destroyed in OnCompleted method")]
         private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
         {
@@ -119,15 +123,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             });
         }
 
-        private static Task ReceiveOneWayMessage(ISubscriber sender, CustomMessage request, IEnumerable<IInputChannel> handlers, bool reliable, HttpResponse response, CancellationToken token)
+        private static Task ReceiveOneWayMessage(RaftClusterMember sender, CustomMessage request, IEnumerable<IInputChannel> handlers, bool reliable, HttpResponse response, CancellationToken token)
         {
+            Task? task;
             response.StatusCode = StatusCodes.Status204NoContent;
             //drop duplicated request
-            if (response.HttpContext.Features.Get<DuplicateRequestDetector>().IsDuplicated(request))
-                return Task.CompletedTask;
-            Task? task = reliable ? 
-                handlers.TryReceiveSignal(sender, request.Message, response.HttpContext, token) :
-                ReceiveOneWayMessageFastAck(sender, request.Message, handlers, response, token);
+            if (sender.Duplication.IsDuplicated(request) && sender.IsRemote)
+                task = Task.CompletedTask;
+            else if(reliable)
+                task = handlers.TryReceiveSignal(sender, request.Message, response.HttpContext, token);
+            else
+                task = ReceiveOneWayMessageFastAck(sender, request.Message, handlers, response, token);
             if(task is null)
             {
                 response.StatusCode = StatusCodes.Status501NotImplemented;
@@ -243,7 +249,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 context.Response.StatusCode = StatusCodes.Status403Forbidden;
                 return Task.CompletedTask;
             }
-            context.Features.Set(duplicationDetector);
             //process request
             switch (HttpMessage.GetMessageType(context.Request))
             {
