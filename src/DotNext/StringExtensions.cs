@@ -8,7 +8,8 @@ using Var = InlineIL.LocalVar;
 
 namespace DotNext
 {
-    using Buffers;
+    using CharBuffer = Buffers.MemoryRental<char>;
+    using CharSequence = Buffers.ChunkSequence<char>;
 
     /// <summary>
     /// Represents various extension methods for type <see cref="string"/>.
@@ -40,7 +41,7 @@ namespace DotNext
         {
             if (str.Length == 0)
                 return str;
-            using MemoryRental<char> result = str.Length <= 1024 ? stackalloc char[str.Length] : new MemoryRental<char>(str.Length);
+            using CharBuffer result = str.Length <= CharBuffer.StackallocThreshold ? stackalloc char[str.Length] : new CharBuffer(str.Length);
             str.AsSpan().CopyTo(result.Span);
             result.Span.Reverse();
             return new string(result.Span);
@@ -72,7 +73,7 @@ namespace DotNext
         /// <param name="str">The string to split.</param>
         /// <param name="chunkSize">The maximum length of the substring in the sequence.</param>
         /// <returns>The sequence of substrings.</returns>
-        public static ChunkSequence<char> Split(this string str, int chunkSize) => new ChunkSequence<char>(str.AsMemory(), chunkSize);
+        public static CharSequence Split(this string str, int chunkSize) => new CharSequence(str.AsMemory(), chunkSize);
 
         /// <summary>
         /// Gets managed pointer to the first character in the string.

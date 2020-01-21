@@ -432,7 +432,7 @@ namespace DotNext
             var count = bytes.Length * 2;
             if (count == 0)
                 return string.Empty;
-            using CharBuffer buffer = count <= 1024 ? stackalloc char[count] : new CharBuffer(count);
+            using CharBuffer buffer = count <= CharBuffer.StackallocThreshold ? stackalloc char[count] : new CharBuffer(count);
             count = ToHex(bytes, buffer.Span);
             return new string(buffer.Span.Slice(0, count));
         }
@@ -466,7 +466,7 @@ namespace DotNext
             var count = chars.Length / 2;
             if (count == 0)
                 return Array.Empty<byte>();
-            using ByteBuffer buffer = count <= 1024 ? stackalloc byte[count] : new ByteBuffer(count);
+            using ByteBuffer buffer = count <= ByteBuffer.StackallocThreshold ? stackalloc byte[count] : new ByteBuffer(count);
             count = FromHex(chars, buffer.Span);
             return buffer.Span.Slice(0, count).ToArray();
         }

@@ -41,7 +41,7 @@ namespace DotNext
             void IRandomStringGenerator.NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars)
             {
                 var offset = buffer.Length * sizeof(int);
-                using ByteBuffer bytes = offset <= 1024 ? stackalloc byte[offset] : new ByteBuffer(offset);
+                using ByteBuffer bytes = offset <= ByteBuffer.StackallocThreshold ? stackalloc byte[offset] : new ByteBuffer(offset);
                 rng.GetBytes(bytes.Span);
                 offset = 0;
                 foreach (ref var element in buffer)
@@ -60,9 +60,8 @@ namespace DotNext
                 throw new ArgumentOutOfRangeException(nameof(length));
             if (length == 0)
                 return string.Empty;
-            const short smallStringLength = 1024;
             //use stack allocation for small strings, which is 99% of all use cases
-            using CharBuffer result = length <= smallStringLength ? stackalloc char[length] : new CharBuffer(length);
+            using CharBuffer result = length <= CharBuffer.StackallocThreshold ? stackalloc char[length] : new CharBuffer(length);
             generator.NextString(result.Span, allowedChars);
             return new string(result.Span);
         }
