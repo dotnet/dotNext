@@ -437,7 +437,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <typeparam name="TEntry">The actual type of the supplied log entry.</typeparam>
         /// <returns>The index of the added entry.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
-        public async ValueTask<long> AppendAsync<TEntry>(TEntry entry, CancellationToken token)
+        public async ValueTask<long> AppendAsync<TEntry>(TEntry entry, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
             if(entry.IsSnapshot)

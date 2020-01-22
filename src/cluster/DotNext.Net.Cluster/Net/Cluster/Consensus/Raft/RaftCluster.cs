@@ -16,6 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using Replication;
     using Threading;
     using static Threading.Tasks.ValueTaskSynchronization;
+    using FalseTask = Threading.Tasks.CompletedTask<bool, Generic.BooleanConst.False>;
 
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
@@ -550,38 +551,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private async Task<bool> WriteAsync<TEntry>(ILogEntryProducer<TEntry> entries, bool waitForCommit, TimeSpan timeout)
-            where TEntry : IRaftLogEntry
-        {
-            var count = entries.RemainingCount;
-            if (count == 0L)
-                return true;
-            var term = auditTrail.Term;
-            var index = await auditTrail.AppendAsync(entries, transitionCancellation.Token).ConfigureAwait(false);
-            return state is LeaderState leaderState ?
-                (!waitForCommit || await auditTrail.WaitForCommitAsync(index + count - 1L, timeout, leaderState.Token).ConfigureAwait(false)) && term == auditTrail.Term ://ensure that term was not changed
-                throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
-        }
-
         /// <summary>
-        /// Writes message into the cluster according with the specified concern.
+        /// Forces replication.
         /// </summary>
-        /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
-        /// <param name="entries">The number of commands to be committed into the audit trail.</param>
-        /// <param name="concern">The value describing level of acknowledgment from cluster.</param>
-        /// <param name="timeout">The timeout of the asynchronous operation.</param>
-        /// <returns>The task representing asynchronous state of this operation.</returns>
+        /// <param name="timeout">The time to wait until replication ends.</param>
+        /// <param name="token">The token that can be used to cancel waiting.</param>
+        /// <returns><see langword="true"/> if replication is completed; <see langword="false"/>.</returns>
         /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
-        /// <exception cref="NotSupportedException">The specified level of acknowledgment is not supported.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<bool> WriteAsync<TEntry>(ILogEntryProducer<TEntry> entries, WriteConcern concern, TimeSpan timeout)
-            where TEntry : IRaftLogEntry
-            => concern switch
-            {
-                WriteConcern.None => WriteAsync(entries, false, timeout),
-                WriteConcern.LeaderOnly => WriteAsync(entries, true, timeout),
-                _ => Task.FromException<bool>(new NotSupportedException())
-            };
+        public Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
+            => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
 
         /// <summary>
         /// Releases managed and unmanaged resources associated with this object.

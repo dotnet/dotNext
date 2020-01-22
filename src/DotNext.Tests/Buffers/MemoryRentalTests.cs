@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+using static System.Runtime.CompilerServices.Unsafe;
 using Xunit;
 
 namespace DotNext.Buffers
@@ -52,7 +52,7 @@ namespace DotNext.Buffers
             {
                 Equal(10, *ptr);
             }
-            True(Unsafe.AreSame(ref rental[0], ref array[0]));
+            True(AreSame(ref rental[0], ref array[0]));
         }
 
         [Fact]

@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
+using static System.Runtime.CompilerServices.Unsafe;
 using Xunit;
 
 namespace DotNext.Reflection
@@ -103,7 +103,7 @@ namespace DotNext.Reflection
             ref var field = ref GetType().GetField(nameof(staticField), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly).Unreflect<int>();
             field = 42;
             Equal(staticField, field);
-            True(Unsafe.AreSame(ref field, ref staticField));
+            True(AreSame(ref field, ref staticField));
         }
 
         [Fact]
@@ -112,7 +112,7 @@ namespace DotNext.Reflection
             ref var field = ref GetType().GetField(nameof(instanceField), System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.NonPublic).Unreflect<ReflectorTests, int>(this);
             field = 56;
             Equal(instanceField, field);
-            True(Unsafe.AreSame(ref field, ref instanceField));
+            True(AreSame(ref field, ref instanceField));
         }
     }
 }
