@@ -9,30 +9,4 @@ Static methods inside of these classes accept raw pointer to the unmanaged funct
 * _Cdecl_ is widely used by Linux OS
 * _Stdcall_ is widely adopted by Windows OS
 
-The name of the static methods reflects the calling convention to be applied to the target function. 
-
-Additionally, these classes are very helpful when you need to write COM component in C# with callback capabilities.
-```csharp
-using DotNext.Runtime.InteropServices;
-using System.Runtime.InteropServices;
-using PCallback = System.IntPtr;
-
-[Guid("EAA4976A-45C3-4BC5-BC0B-E474F4C3C83F")]
-[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-public interface IComComponent
-{
-	void DoCallback(PCallback pFunc);	//C equivalent is void(__stdcall *pFunc)(int, int)
-}
-
-[Guid("0D53A3E8-E51A-49C7-944E-E72A2064F938")]
-[ClassInterface(ClassInterfaceType.None)]
-public sealed class ComComponent : IComComponent
-{
-	private int x, y;	
-
-	public DoCallback(PCallback pFunc)
-	{
-		UnmanagedFunction.StdCall(pFunc, x, y);
-	}
-}
-```
+The name of the static methods reflects the calling convention to be applied to the target function.
