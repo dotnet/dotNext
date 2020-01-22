@@ -24,14 +24,12 @@ The memory can be resized on-the-fly. Resizing causes re-allocation of the memor
 using DotNext.Buffers;
 
 using var block = UnmanagedMemoryPool<double>.Allocate(10); //block.Length == 10L
-{
-    Span<double> array = block.Memory.Span;
-    array[0] = 10;
-    array[1] = 30;
-    block.Reallocate(20);  //causes re-allocation of the array
-    array = memory.Memory.Span;
-    var i = array[0] + array[1];    //i == 40
-}
+Span<double> array = block.Memory.Span;
+array[0] = 10;
+array[1] = 30;
+block.Reallocate(20);  //causes re-allocation of the array
+array = memory.Memory.Span;
+var i = array[0] + array[1];    //i == 40
 ```
 
 `Reallocate` method accepts the new length of the array, not size in bytes.
@@ -69,7 +67,6 @@ using var memory = UnmanagedMemoryPool<Complex>.Allocate(1);
 ref Complex ptr = ref memory.Pointer.Value;
 ptr.Image = 20;
 ptr.Real = 30;
-}
 ```
 
 Direct memory manipulations available using typed pointer:
@@ -88,7 +85,6 @@ Pointer<double> pImage = c.Pointer.As<double>();
 Pointer<double> pReal = pImage + 1;
 pImage.Value = 1;
 pReal.Value = 2;
-}
 ```
 
 Byte-level manipulations can be organized in two ways:
