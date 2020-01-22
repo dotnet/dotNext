@@ -104,8 +104,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        //null means that node is unreachable
-
         Task<Result<bool>> IRaftClusterMember.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             => Endpoint.Equals(context.LocalEndpoint)
                 ? Task.FromResult(new Result<bool>(term, true))
