@@ -1,10 +1,10 @@
-﻿using DotNext.IO;
-using DotNext.Net.Cluster.Consensus.Raft;
+﻿using DotNext.Net.Cluster.Consensus.Raft;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static DotNext.Threading.AtomicInt64;
+using IAuditTrail = DotNext.IO.Log.IAuditTrail;
 
 namespace RaftNode
 {
@@ -47,6 +47,13 @@ namespace RaftNode
 
         protected override ValueTask ApplyAsync(LogEntry entry)
             => entry.Length == 0L ? new ValueTask() : UpdateValue(entry);
+        
+        async Task IValueProvider.UpdateValueAsync(long value, TimeSpan timeout, CancellationToken token)
+        {
+            var commitIndex = GetLastIndex(true);
+            await AppendAsync(new Int64LogEntry { Content = value, Term = Term}, token);
+            await ((IAuditTrail)this).WaitForCommitAsync(commitIndex + 1L, timeout, token);
+        }
 
         protected override SnapshotBuilder CreateSnapshotBuilder()
         {
