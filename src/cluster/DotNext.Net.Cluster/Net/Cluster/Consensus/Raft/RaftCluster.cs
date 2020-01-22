@@ -16,6 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using Replication;
     using Threading;
     using static Threading.Tasks.ValueTaskSynchronization;
+    using FalseTask = Threading.Tasks.CompletedTask<bool, Generic.BooleanConst.False>;
 
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
@@ -549,6 +550,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Logger.TransitionToLeaderStateCompleted();
             }
         }
+
+        /// <summary>
+        /// Forces replication.
+        /// </summary>
+        /// <param name="timeout">The time to wait until replication ends.</param>
+        /// <param name="token">The token that can be used to cancel waiting.</param>
+        /// <returns><see langword="true"/> if replication is completed; <see langword="false"/>.</returns>
+        /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default)
+            => state is LeaderState leaderState ? leaderState.ForceReplicationAsync(timeout, token) : throw new InvalidOperationException(ExceptionMessages.LocalNodeNotLeader);
 
         private async Task<bool> WriteAsync<TEntry>(ILogEntryProducer<TEntry> entries, bool waitForCommit, TimeSpan timeout)
             where TEntry : IRaftLogEntry

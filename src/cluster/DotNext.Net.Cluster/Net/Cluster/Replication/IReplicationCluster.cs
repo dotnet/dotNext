@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Replication
@@ -46,5 +47,15 @@ namespace DotNext.Net.Cluster.Replication
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task<bool> WriteAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, WriteConcern concern, TimeSpan timeout)
             where TEntryImpl : TEntry;
+        
+        /// <summary>
+        /// Forces replication.
+        /// </summary>
+        /// <param name="timeout">The time to wait until replication ends.</param>
+        /// <param name="token">The token that can be used to cancel waiting.</param>
+        /// <returns><see langword="true"/> if replication is completed; <see langword="false"/>.</returns>
+        /// <exception cref="InvalidOperationException">The local cluster member is not a leader.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token = default);
     }
 }
