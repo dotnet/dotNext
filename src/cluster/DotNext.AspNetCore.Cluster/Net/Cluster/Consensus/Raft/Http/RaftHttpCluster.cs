@@ -37,6 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             allowedNetworks = config.AllowedNetworks;
             metadata = new MemberMetadata(config.Metadata);
             requestTimeout = TimeSpan.FromMilliseconds(config.UpperElectionTimeout);
+            duplicationDetector = new DuplicateRequestDetector(config.RequestJournal);
             clientHandlerName = config.ClientHandlerName;
             protocolVersion = config.ProtocolVersion;
             //dependencies
@@ -127,7 +128,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             //detect local member
             var localMember = this.localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            localMember.Duplication.Initialize();
             configurator?.Initialize(this, metadata);
             InitializeDistributedServices(localMember);
             return base.StartAsync(token);
@@ -136,6 +136,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public override Task StopAsync(CancellationToken token)
         {
             configurator?.Shutdown(this);
+            duplicationDetector.Trim(100);
             distributedLock = null;
             return base.StopAsync(token);
         }
@@ -146,6 +147,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             {
                 localMember = null;
                 configurationTracker.Dispose();
+                duplicationDetector.Dispose();
                 distributedLock = null;
                 messageHandlers = ImmutableList<IInputChannel>.Empty;
             }

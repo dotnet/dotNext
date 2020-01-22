@@ -11,8 +11,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IsLeader(IRaftClusterMember member);
 
-        void PrepareOutboundMessage(HttpMessage message);
-
         ILogger Logger { get; }
 
         IPEndPoint LocalEndpoint { get; }

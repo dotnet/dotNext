@@ -25,7 +25,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private static readonly ValueParser<int> Int32Parser = int.TryParse;
         private static readonly ValueParser<IPAddress> IpAddressParser = IPAddress.TryParse;
         private protected static readonly ValueParser<bool> BooleanParser = bool.TryParse;
-        private static readonly ValueParser<Guid> GuidParser = Guid.TryParse;
+        private static readonly Random RequestIdGenerator = new Random();
+        private const string RequestIdAllowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*-+=~";
+        private const int RequestIdLength = 32;
 
         //request - represents IP of sender node
         private const string NodeIpHeader = "X-Raft-Node-IP";
@@ -36,11 +38,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         //request - represents request message type
         private const string MessageTypeHeader = "X-Raft-Message-Type";
 
-        //request - version of node (duplication request control)
-        private const string NodeVersionHeader = "X-Node-Version";
-
-        //requests - sequence number of request (duplication request control)
-        private const string SequenceNumberHeader = "X-Sequence-Number";
+        //request - represents unique request identifier
+        private const string RequestIdHeader = "X-Request-ID";
 
         private protected class OutboundTransferObject : HttpContent
         {
@@ -54,8 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 => dto.Length.TryGetValue(out length);
         }
 
-        internal Guid NodeVersion;
-        internal long SequenceNumber;
+        internal readonly string Id;
         internal readonly IPEndPoint Sender;
         internal readonly string MessageType;
 
@@ -63,6 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             Sender = sender;
             MessageType = messageType;
+            Id = RequestIdGenerator.NextString(RequestIdAllowedChars, RequestIdLength);
         }
 
         private protected HttpMessage(HeadersReader<StringValues> headers)
@@ -71,8 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             var port = ParseHeader(NodePortHeader, headers, Int32Parser);
             Sender = new IPEndPoint(address, port);
             MessageType = GetMessageType(headers);
-            NodeVersion = ParseHeader(NodeVersionHeader, headers, GuidParser);
-            SequenceNumber = ParseHeader(SequenceNumberHeader, headers, Int64Parser);
+            Id = ParseHeader(RequestIdHeader, headers);
         }
 
         private static string GetMessageType(HeadersReader<StringValues> headers) =>
@@ -85,8 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             request.Headers.Add(NodeIpHeader, Sender.Address.ToString());
             request.Headers.Add(NodePortHeader, Sender.Port.ToString(InvariantCulture));
             request.Headers.Add(MessageTypeHeader, MessageType);
-            request.Headers.Add(NodeVersionHeader, NodeVersion.ToString());
-            request.Headers.Add(SequenceNumberHeader, SequenceNumber.ToString("X", InvariantCulture));
+            request.Headers.Add(RequestIdHeader, Id);
             request.Method = HttpMethod.Post;
         }
 
