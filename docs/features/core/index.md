@@ -246,3 +246,18 @@ Result<dynamic> result = t.GetResult(CancellationToken.None);
 //obtain result asynchronously
 dynamic result = await t.AsDynamic();
 ```
+
+# Hex Converter
+[BitConverter.ToString](https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring) method from .NET standard library allow to convert array of bytes to its hexadecimal representation. However, it doesn't support `Span<byte>` data type and therefore cannot be used in situations when bytes come from different source such as stack-allocated memory or segment of another array. Moreover, the method cannot place its result to variable of `Span<char>` type and allocates new string every time. It may be unacceptable in low-latency scenario when number of memory allocations should be reduced.
+
+[Span](../../api/DotNext.Span.yml) static class exposes two static methods for fast hexadecimal conversion:
+* `ToHex` allows to convert `ReadOnlySpan<byte>` to hexadecimal representation and places result to `Span<char>`
+* `FromHex` allows to convert hexadecimal string in the from of `ReadOnlySpan<char>` to bytes and places result to `Span<byte>`
+
+```csharp
+using DotNext;
+
+ReadOnlySpan<byte> bytes = stackalloc byte[] {8, 16, 24};
+Span<char> hex = new stackalloc[bytes.Length * 2];
+Span.ToHex(bytes, hex); //now hex == 081018
+```

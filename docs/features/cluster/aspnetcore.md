@@ -278,17 +278,81 @@ public void Configure(IApplicationBuilder app)
 ```
 
 # Messaging
-.NEXT extension for ASP.NET Core supports messaging beween nodes through HTTP out-of-the-box. However, the infrastructure don't know how to handle custom messages. Therefore, if you want to utilize this functionality then you need to implement [IMessageHandler](../../api/DotNext.Net.Cluster.Messaging.IMessageHandler.yml) interface.
+.NEXT extension for ASP.NET Core supports messaging beween nodes through HTTP out-of-the-box. However, the infrastructure don't know how to handle custom messages. Therefore, if you want to utilize this functionality then you need to implement [IInputChannel](../../api/DotNext.Net.Cluster.Messaging.IInputChannel.yml) interface.
 
-Messaging inside of cluster supports redirection to the leader as well as for external client. But this mechanism implemented differently and represented by the following methods declared in [IMessageBus](../../api/DotNext.Net.Cluster.Messaging.IMessageBus.yml) interface:
-* `SendMessageToLeaderAsync` to send _Request-Reply_ message to the leader
-* `SendSignalToLeaderAsync` to send _One Way_ message to the leader
+Messaging inside of cluster supports redirection to the leader as well as for external client. But this mechanism implemented differently and exposed as `IInputChannel` interface via [IMessageBus.LeaderRouter](../../api/DotNext.Net.Cluster.Messaging.IMessageBus.yml) property.
 
 # Replication
 Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface. By default, it is implemented as [in-memory storage](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html) which is suitable only for applications that doesn't have replicated state. If your application has it then use [PersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.yml) class or implement this interface manually and use reliable storage such as disk. The implementation can be injected explicitly via `AuditTrail` property of [IRaftCluster](../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.yml) interface or implicitly via Dependency Injection. The explicit should be done inside of the user-defined implementation of [IClusterMemberLifetime](../../api/DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.yml) interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of singleton service which implements [IPersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.yml) interface.
 
 ## Reliable State
-Information about reliable persistent state which uses disk for storing write ahead log located in the separated [article](./wal.md).
+Information about reliable persistent state which uses disk for storing write ahead log located in the separated [article](./wal.md). However, its usage turns your microservice into stateful service because its state persisted on disk. Consider this fact if you are using containerization technologies such as Docker or LXC.
+
+# Distributed Services
+Consensus algorithm and persistent log provide necessary foundation for building distributed services that are usually provided by popular In-Memory Data Grid solutions such as [Hazelcast](https://hazelcast.org/). Distributed services may include distributed lock, distributed cache, distributed list, distributed atomic operations etc.
+
+.NEXT library supports the following distributed services:
+* Distributed exclusive non-reentrant lock
+
+These services are exposed via [IDistributedApplicationEnvironment](../../api/DotNext.Net.Cluster.DistributedServices.IDistributedApplicationEnvironment.yml) interface that can be injected using DI.
+
+This feature is enabled only if [DistributedApplicationState](../../api/DotNext.Net.Cluster.Consensus.Raft.DistributedApplicationState.yml) is used as audit trail service. However, you don't need to register it manually. Instead of this you can use special configuration method to enable distributed services.
+
+```csharp
+using DotNext.Net.Cluster.Consensus.Raft;
+using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+const int RecordsPerPartition = 10;
+
+IHost host = new HostBuilder()
+    .ConfigureWebHost(webHost => webHost.UseKestrel(options => options.ListenLocalhost(80))
+        .ConfigureServices((context, services) =>
+        {
+            var pathToLog = context.Configuration["PathToLog"];
+            services.EnableDistributedServices(dir, RecordsPerPartition);
+        })
+        .UseStartup<TStartup>()
+    )
+    .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
+    .ConfigureLogging(builder => builder.AddDebug().SetMinimumLevel(LogLevel.Debug))
+    .JoinCluster()
+    .Build();
+```
+
+Path to persistent log is required configuration property that defines location to the directory used by log to store log entries on disk. The number of records per partition is not a configuration property and should be defined in source code since it cannot be changed in future.
+
+## Distributed Lock
+Distributed lock allows to achieve cluster-wide exclusive access to external resource. The only one cluster member can capture the lock at the same time. It can be obtained from `IDistributedApplicationEnvironment` interface or injected directly as [IDistributedLockProvider](../../api/DotNext.Threading.IDistributedLockProvider.yml). It exposes access to named distributed locks. Each lock can be configured using configuration provider established via `Configuration` property inside of `IClusterMemberLifetime` interface implementation as described above or using registration of singleton service that has type [DistributedLockConfigurationProvider](../../api/DotNext.Threading.DistributedLockConfigurationProvider.yml). The provider is a delegate which is called every time when distributed lock requested.
+
+The lock can be obtained by its name and it is represented by [AsyncLock](../../api/DotNext.Threading.AsyncLock.yml) value type. It is uniform representation of all asynchronous locks provided by .NEXT library so there is no different between regular lock such as [AsyncExclusiveLock](../../api/DotNext.Threading.AsyncExclusiveLock.yml) and distributed lock from API point of view.
+
+```csharp
+using DotNext.Threading;
+using System.Threading;
+using System.Threading.Tasks;
+
+class MyService
+{
+    private readonly AsyncLock distributedLock;
+
+    //injected by DI container
+    public MyService(IDistributedLockProvider provider)
+    {
+        distributedLock = provider["lockName"];
+    }
+
+    public async Task DoSynchronizedOperation(CancellationToken token)
+    {
+        await using(var holder = await distributedLock.AcquireAsync(token))
+        {
+            //this code is protected by distributed lock
+        }
+    }
+}
+```
 
 # Metrics
 It is possible to measure runtime metrics of Raft node internals using [HttpMetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html) class. The reporting mechanism is agnostic  to the underlying metrics delivery library such as [AppMetrics](https://github.com/AppMetrics/AppMetrics).
@@ -354,7 +418,7 @@ dotnet run -- 3264
 
 Every instance should be launched in separated Terminal session. After that, you will see diagnostics messages in `stdout` about election process. Press _Ctrl+C_ in the window related to the leader node and ensure that new leader will be elected.
 
-Optionally, you can test replication powered by persistent WAL and [WriteConcern](../../api/DotNext.Net.Cluster.Replication.WriteConcern.yml). To do that, you need to specify the name of folder which is used to store Write Ahead Log files
+Optionally, you can test replication powered by persistent WAL. To do that, you need to specify the name of folder which is used to store Write Ahead Log files
 ```bash
 cd <dotnext>/src/examples/RaftNode
 dotnet run -- 3262 node1

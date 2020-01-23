@@ -100,5 +100,7 @@
       href: cluster/aspnetcore.md
     - name: Persistent Log
       href: cluster/wal.md
+    - name: Raft
+      href: cluster/raft.md
 - name: Augmented Compilation
   href: aug.md

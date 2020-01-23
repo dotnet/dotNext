@@ -19,13 +19,14 @@ Typically, `PersistentState` class is not used directly because it is not aware 
 
 Internally, persistent WAL uses files to store the state of cluster member and log entries. The journal with log entries is not continuous. Each file represents the partition of the entire journal. Each partition is a chunk of sequential log entries. The maximum number of log entries per partition depends on the settings.
 
-`PersistentState` has a rich set of tunable configuration parameters to achieve the best performance according with application needs:
+`PersistentState` has a rich set of tunable configuration parameters and overridable methods to achieve the best performance according with application needs:
 * `recordsPerPartition` allows to define maximum number of log entries that can be stored continuously in the single partition. Log compaction algorithm depends on this value directly. When all records from the partition are committed and applied to the underlying state machine the infrastructure calls the snapshot builder and squashed all the entries in such partition. After that, write ahead log records the snapshot into the separated file and removes the partition file from the file system. The log compaction is expensive operation. So if you want to reduce the number of compactions then you need to increase the maximum number of log entries per partition. However, the partition file will take more disk space.
 * `BufferSize` is the numbers of bytes that is allocated by persistent WAL in the memory to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.
 * `InitialPartitionSize` represents the initial pre-allocated size, in bytes, of the empty partition file. This parameter allows to avoid fragmentation of the partition file at file-system level.
 * `UseCaching` is `bool` flag that allows to enable or disable in-memory caching of log entries metadata. `true` value allows to improve the performance or read/write operations by the cost of additional heap memory. `false` reduces the memory footprint by the cost of the read/write performance
 * `CreateMemoryPool` generic method used for renting memory and can be overridden
-* `MaxConcurrentReads` is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory. 
+* `MaxConcurrentReads` is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory.
+* `ReplayOnInitialize` is a flag indicating that state of underlying database engine should be reconstructed when `InitializeAsync` is called by infrastructure. It can be done manually using `ReplayAsync` method.
 
 Choose `recordsPerPartition` value with care because it cannot be changed for the existing persistent WAL.
 
@@ -88,7 +89,10 @@ The following methods allows to implement this scenario:
 * `AppendAsync` adds a series of log entries to the log. All appended entries are in uncommitted state. Additionally, it can be used to replace entries with another entries
 * `DropAsync` removes the uncommitted entries from the log
 * `CommitAsync` marks appended entries as committed. Optionally, it can force log compaction
-* `EnsureConsistencyAsync` applies the committed entries to the underlying state machine or database engine. Usually, `CommitAsync` doing this automatically. This method can be called once at application startup to ensure that the database is up to date with latest committed changes
-* `WaitForCommitAsync` waits for the specific commit
+* `EnsureConsistencyAsync` suspends the caller and waits until the last committed entry is from leader's term
+* `WaitForCommitAsync` waits for the specific or any commit
 
 `ReadAsync` method can be used to obtain committed or uncommitted entries in stream-like manner.
+
+# State Reconstruction
+`PersistentState` is designed with assumption that underlying state machine can be reconstructed through sequential interpretation of each committed log entry stored in the log. When persistent WAL used in combination with other Raft infrastructure such as extensions for ASP.NET Core provided by **DotNext.AspNetCore.Cluster** library then this action performed automatically in host initialization code. However, if WAL used separately then reconstruction process should be initiated manually. To do that you need to call `ReplayAsync` method which reads all committed log entry and pass each entry to `ApplyAsync` protected method. Usually, `ApplyAsync` method implementation implements data state machine logic so sequential processing of all committed entries can restore its state correctly.
