@@ -235,7 +235,7 @@ namespace DotNext.Linq.Expressions
             expr = 42.Const().Or(43.Const());
             Equal(ExpressionType.Or, expr.NodeType);
 
-            expr = 42.Const().Power(43.Const());
+            expr = 42D.Const().Power(2D.Const());
             Equal(ExpressionType.Power, expr.NodeType);
         }
 
