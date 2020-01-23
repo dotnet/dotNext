@@ -336,7 +336,7 @@ using System.Threading.Tasks;
 
 class MyService
 {
-    private readonly AsyncLock distributedLock;
+    private AsyncLock distributedLock;
 
     //injected by DI container
     public MyService(IDistributedLockProvider provider)
