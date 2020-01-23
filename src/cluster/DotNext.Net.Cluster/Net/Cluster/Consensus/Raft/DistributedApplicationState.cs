@@ -72,6 +72,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
+        /// Prints debug information.
+        /// </summary>
+        /// <param name="output">The text writer used to write debug information.</param>
+        /// <returns>The task representing state of asynchronous execution.</returns>
+        public async Task PrintDebugInfoAsync(TextWriter output)
+        {
+            await output.PrintLockInfoTitle().ConfigureAwait(false);
+            foreach(var (name, info) in acquiredLocks)
+                await output.PrintLockInfo(name, info.Owner.ToString(), info.Version, info.CreationTime, info.LeaseTime).ConfigureAwait(false);
+        }
+
+        /// <summary>
         /// Interprets the log entry containing the command related to distributed application management.
         /// </summary>
         /// <param name="command">The command identifier.</param>

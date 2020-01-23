@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -54,6 +55,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Version = Guid.NewGuid(), 
                 LeaseTime = TimeSpan.FromHours(1)  
             }, CancellationToken.None));
+            var sb = new StringBuilder(1024);
+            string newLine;
+            using(var writer = new StringWriter(sb))
+            {
+                newLine = writer.NewLine;
+                await state.PrintDebugInfoAsync(writer);
+                await writer.FlushAsync();
+            }
+            var lines = sb.ToString().Split(newLine);
+            Equal(4, lines.Length);
             //check registration
             True(engine.IsRegistered("lock1", id1, version1));
             True(engine.IsRegistered("lock2", id2, version2));
