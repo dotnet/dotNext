@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
+    using DistributedLockConfigurationProvider = Threading.DistributedLockConfigurationProvider;
 
     internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
@@ -47,6 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
             Metrics = dependencies.GetService<MetricsCollector>();
+            distributedLockConfig = dependencies.GetService<DistributedLockConfigurationProvider>();
             //track changes in configuration
             configurationTracker = configTracker(ConfigurationChanged);
         }
