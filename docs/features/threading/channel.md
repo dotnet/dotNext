@@ -15,13 +15,13 @@ using System.Threading.Tasks;
 private static async Task Produce(ChannelWriter<decimal> writer)
 {
   for (decimal i = 0M; i < 500M; i++)
-    await writer.WriteAsync(i).ConfigureAwait(false);
+    await writer.WriteAsync(i);
 }
 
 private static async Task Consume(ChannelReader<decimal> reader)
 {
   for (decimal i = 0M; i < 500M; i++)
-    Equal(i, await reader.ReadAsync().ConfigureAwait(false));
+    Assert.Equal(i, await reader.ReadAsync());
 }
 
 public static async Task ProduceConsumeConcurrently()
@@ -30,7 +30,7 @@ public static async Task ProduceConsumeConcurrently()
   {
     var consumer = Consume(channel.Reader);
     var producer = Produce(channel.Writer);
-    await Task.WhenAll(consumer, producer).ConfigureAwait(false);
+    await Task.WhenAll(consumer, producer);
   }
 }
 
