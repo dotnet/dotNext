@@ -354,6 +354,8 @@ class MyService
 }
 ```
 
+`await using` statement means that `DisposeAsync` is used instead of synchronous `Dispose` to release the lock.
+
 # Metrics
 It is possible to measure runtime metrics of Raft node internals using [HttpMetricsCollector](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html) class. The reporting mechanism is agnostic  to the underlying metrics delivery library such as [AppMetrics](https://github.com/AppMetrics/AppMetrics).
 
