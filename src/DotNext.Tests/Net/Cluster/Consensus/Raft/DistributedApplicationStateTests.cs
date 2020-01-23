@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using DistributedServices;
 
+    [ExcludeFromCodeCoverage]
     public sealed class DistributedApplicationStateTests : Assert
     {
         private const int RecordsPerPartition = 4;
