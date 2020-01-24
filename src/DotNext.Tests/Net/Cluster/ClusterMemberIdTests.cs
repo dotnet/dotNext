@@ -1,10 +1,12 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using Xunit;
 
 namespace DotNext.Net.Cluster
 {
     using Intrinsics = Runtime.Intrinsics;
 
+    [ExcludeFromCodeCoverage]
     public sealed class ClusterMemberIdTests : Assert
     {
         [Fact]

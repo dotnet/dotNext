@@ -13,10 +13,8 @@ using static System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
-    using Replication;
     using Threading;
     using static Threading.Tasks.ValueTaskSynchronization;
-    using FalseTask = Threading.Tasks.CompletedTask<bool, Generic.BooleanConst.False>;
 
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.

@@ -1,8 +1,0 @@
-ReleasingLock=Releasing distributed lock {LockName}
-ReleaseLockConfirm=Distributed lock {LockName} is released by leader node
-FailedToUnlock=Distributed lock {LockName} was not registered locally or has invalid version 
-AttemptsToAcquire=Attempts to acquire distributed lock {LockName}
-AcquireLockConfirm=Acquisition of distributed lock {LockName} is confirmed by leader node
-PendingLockConfirmation=Acquisition of distributed lock {LockName} is rejected by leader node. Probably it was acquired by another node so wait for release
-AcquireLockTimeout=Distributed lock {LockName} is not acquired due to timeout
-PendingLockCommit=Acquisition of distributed lock {LockName} was confirmed by leader node but not yet committed by local node

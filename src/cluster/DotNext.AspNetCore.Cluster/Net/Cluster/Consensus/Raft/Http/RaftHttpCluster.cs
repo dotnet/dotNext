@@ -129,7 +129,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             //detect local member
             var localMember = this.localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             configurator?.Initialize(this, metadata);
-            InitializeDistributedServices(localMember);
             return base.StartAsync(token);
         }
 
@@ -137,7 +136,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             configurator?.Shutdown(this);
             duplicationDetector.Trim(100);
-            distributedLock = null;
             return base.StopAsync(token);
         }
 
@@ -148,7 +146,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 localMember = null;
                 configurationTracker.Dispose();
                 duplicationDetector.Dispose();
-                distributedLock = null;
                 messageHandlers = ImmutableList<IInputChannel>.Empty;
             }
 

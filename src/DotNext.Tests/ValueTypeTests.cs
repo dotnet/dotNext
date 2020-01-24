@@ -18,6 +18,8 @@ namespace DotNext
             False(second.LessThan(first));
             True(second.GreaterThan(first));
             True(second.GreaterThanOrEqual(first));
+            True(first.LessThanOrEqual(second));
+            False(second.LessThanOrEqual(first));
         }
 
         [Require64BitProcess]
@@ -91,6 +93,18 @@ namespace DotNext
             Equal(new UIntPtr(1U), new UIntPtr(1U).Xor(default));
             Equal(default, new UIntPtr().Xor(default));
             Equal(default, new UIntPtr(1U).Xor(new UIntPtr(1U)));
+        }
+
+        [Fact]
+        public static void UIntPtrComparison()
+        {
+            True(new UIntPtr(10).GreaterThan(new UIntPtr(9)));
+            False(new UIntPtr(10).GreaterThan(new UIntPtr(10)));
+            True(new UIntPtr(10).GreaterThanOrEqual(new UIntPtr(10)));
+            False(new UIntPtr(10).GreaterThanOrEqual(new UIntPtr(11)));
+            True(new UIntPtr(10).LessThan(new UIntPtr(11)));
+            False(new UIntPtr(10).LessThan(new UIntPtr(10)));
+            True(new UIntPtr(10).LessThanOrEqual(new UIntPtr(10)));
         }
 
         [Require64BitProcess]

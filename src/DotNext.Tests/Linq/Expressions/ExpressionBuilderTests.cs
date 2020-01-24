@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using Xunit;
@@ -118,6 +119,215 @@ namespace DotNext.Linq.Expressions
             Equal(10, lambda(__makeref(i)));
             lambda(__makeref(i)) = 20;
             Equal(20, i);
+        }
+
+        [Fact]
+        public static void AndBuilder()
+        {
+            var expr = true.Const().And(false.Const());
+            Equal(ExpressionType.And, expr.NodeType);
+            Equal(ExpressionType.Constant, expr.Left.NodeType);
+            Equal(ExpressionType.Constant, expr.Right.NodeType);
+        }
+
+        [Fact]
+        public static void AssignToIndexer()
+        {
+            var item = typeof(IList<int>).GetProperty("Item");
+            NotNull(item);
+            var indexer = Expression.MakeIndex(Expression.Constant(new int[0]), item, new[] { 0.Const() });
+            var expr = indexer.Assign(42.Const());
+            Equal(ExpressionType.Assign, expr.NodeType);
+            Equal(ExpressionType.Constant, expr.Right.NodeType);
+            Equal(ExpressionType.Index, expr.Left.NodeType);
+            expr = indexer.AssignDefault();
+            Equal(ExpressionType.Assign, expr.NodeType);
+            Equal(ExpressionType.Default, expr.Right.NodeType);
+            Equal(ExpressionType.Index, expr.Left.NodeType);
+        }
+
+        [Fact]
+        public static void AssignToVariable()
+        {
+            var expr = Expression.Parameter(typeof(long)).AssignDefault();
+            Equal(ExpressionType.Assign, expr.NodeType);
+            Equal(ExpressionType.Default, expr.Right.NodeType);
+        }
+
+        [Fact]
+        public static void GotoLabel()
+        {
+            var label = Expression.Label();
+            var expr = label.Break();
+            Equal(ExpressionType.Goto, expr.NodeType);
+            Equal(GotoExpressionKind.Break, expr.Kind);
+
+            expr = label.Continue();
+            Equal(ExpressionType.Goto, expr.NodeType);
+            Equal(GotoExpressionKind.Continue, expr.Kind);
+
+            expr = label.Goto();
+            Equal(ExpressionType.Goto, expr.NodeType);
+            Equal(GotoExpressionKind.Goto, expr.Kind);
+
+            expr = label.Return();
+            Equal(ExpressionType.Goto, expr.NodeType);
+            Equal(GotoExpressionKind.Return, expr.Kind);
+
+            label = Expression.Label(typeof(int));
+            expr = label.Break(typeof(int).Default());
+            Equal(ExpressionType.Goto, expr.NodeType);
+            Equal(GotoExpressionKind.Break, expr.Kind);
+
+            expr = label.Goto(42.Const());
+            Equal(ExpressionType.Goto, expr.NodeType);
+            Equal(GotoExpressionKind.Goto, expr.Kind);
+
+            expr = label.Return(42.Const());
+            Equal(ExpressionType.Goto, expr.NodeType);
+            Equal(GotoExpressionKind.Return, expr.Kind);
+
+            var site = label.LandingSite(42.Const());
+            Equal(ExpressionType.Label, site.NodeType);
+            Equal(ExpressionType.Constant, site.DefaultValue.NodeType);
+        }
+
+        [Fact]
+        public static void ArrayElement()
+        {
+            var indexer = new int[0].Const().ElementAt(1.Const());
+            Equal(ExpressionType.Index, indexer.NodeType);
+            Equal(ExpressionType.Constant, indexer.Object.NodeType);
+        }
+
+        [Fact]
+        public static void InvokeDelegate()
+        {
+            var expr = new Action(ArrayElement).Const().Invoke();
+            Equal(ExpressionType.Invoke, expr.NodeType);
+            Equal(ExpressionType.Constant, expr.Expression.NodeType);
+        }
+
+        [Fact]
+        public static void BinaryOperations()
+        {
+            var expr = 42.Const().GreaterThanOrEqual(43.Const());
+            Equal(ExpressionType.GreaterThanOrEqual, expr.NodeType);
+
+            expr = 42.Const().LeftShift(2.Const());
+            Equal(ExpressionType.LeftShift, expr.NodeType);
+
+            expr = 42.Const().RightShift(2.Const());
+            Equal(ExpressionType.RightShift, expr.NodeType);
+
+            expr = 42.Const().LessThanOrEqual(43.Const());
+            Equal(ExpressionType.LessThanOrEqual, expr.NodeType);
+
+            expr = 42.Const().Modulo(43.Const());
+            Equal(ExpressionType.Modulo, expr.NodeType);
+
+            expr = 42.Const().NotEqual(43.Const());
+            Equal(ExpressionType.NotEqual, expr.NodeType);
+
+            expr = 42.Const().Xor(43.Const());
+            Equal(ExpressionType.ExclusiveOr, expr.NodeType);
+
+            expr = 42.Const().Or(43.Const());
+            Equal(ExpressionType.Or, expr.NodeType);
+
+            expr = 42D.Const().Power(2D.Const());
+            Equal(ExpressionType.Power, expr.NodeType);
+        }
+
+        [Fact]
+        public static void UnaryOperators()
+        {
+            var expr = 20.Const().Negate();
+            Equal(ExpressionType.Negate, expr.NodeType);
+
+            expr = (-20).Const().UnaryPlus();
+            Equal(ExpressionType.UnaryPlus, expr.NodeType);
+
+            expr = "".Const().TryConvert<IEnumerable<char>>();
+            Equal(ExpressionType.TypeAs, expr.NodeType);
+
+            expr = new object().Const().Unbox<int>();
+            Equal(ExpressionType.Unbox, expr.NodeType);
+        }
+
+        [Fact]
+        public static void IncrementDecrement()
+        {
+            var variable = Expression.Parameter(typeof(long));
+
+            var expr = variable.PreDecrementAssign();
+            Equal(ExpressionType.PreDecrementAssign, expr.NodeType);
+
+            expr = variable.PreIncrementAssign();
+            Equal(ExpressionType.PreIncrementAssign, expr.NodeType);
+
+            expr = variable.PostIncrementAssign();
+            Equal(ExpressionType.PostIncrementAssign, expr.NodeType);
+
+            expr = variable.PreIncrementAssign();
+            Equal(ExpressionType.PreIncrementAssign, expr.NodeType);
+
+            var index = new int[0].Const().ElementAt(0.Const());
+            expr = index.PreDecrementAssign();
+            Equal(ExpressionType.PreDecrementAssign, expr.NodeType);
+
+            expr = index.PreIncrementAssign();
+            Equal(ExpressionType.PreIncrementAssign, expr.NodeType);
+
+            expr = index.PostIncrementAssign();
+            Equal(ExpressionType.PostIncrementAssign, expr.NodeType);
+
+            expr = index.PreIncrementAssign();
+            Equal(ExpressionType.PreIncrementAssign, expr.NodeType);
+        }
+
+        [Fact]
+        public static void ThrowExceptionExpr()
+        {
+            var expr = typeof(Exception).New().Throw();
+            Equal(typeof(void), expr.Type);
+            Equal(ExpressionType.Throw, expr.NodeType);
+        }
+
+        [Fact]
+        public static void NewString()
+        {
+            var expr = typeof(string).Const().New('a'.Const().Convert<object>(), 2.Const().Convert<object>());
+            var lambda = Expression.Lambda<Func<object>>(expr).Compile();
+            Equal("aa", lambda());
+        }
+
+        [Fact]
+        public static void WithObject()
+        {
+            var expr = "abc".Const().With(obj =>
+            {
+                Equal(ExpressionType.Parameter, obj.NodeType);
+                return obj.Property(nameof(string.Length));
+            });
+            True(expr.CanReduce);
+            Equal(ExpressionType.Extension, expr.NodeType);
+            Equal(typeof(int), expr.Type);
+        }
+
+        [Fact]
+        public static void ForEachLoop()
+        {
+            var expr = new int[3].Const().ForEach((current, continueLabel, breakLabel) =>
+            {
+                Equal(typeof(int), current.Type);
+                Equal(ExpressionType.MemberAccess, current.NodeType);
+                Equal("Current", current.Member.Name);
+                return current;
+            });
+            True(expr.CanReduce);
+            Equal(ExpressionType.Extension, expr.NodeType);
+            Equal(typeof(void), expr.Type);
         }
     }
 }
