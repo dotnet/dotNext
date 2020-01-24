@@ -15,7 +15,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         void MoveToCandidateState();
 
         void MoveToLeaderState(IRaftClusterMember leader);
-
-        Task NotifyBroadcastFinished(CancellationToken token);
     }
 }

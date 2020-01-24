@@ -11,7 +11,6 @@ using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
-    using IDistributedApplicationEnvironment = DistributedServices.IDistributedApplicationEnvironment;
     using IMessageBus = Messaging.IMessageBus;
     using IReplicationCluster = Replication.IReplicationCluster;
 
@@ -67,8 +66,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
                     count += 1;
             Equal(1, count);
             service = host.Services.GetService<IExpandableCluster>();
-            NotNull(service);
-            service = host.Services.GetService<IDistributedApplicationEnvironment>();
             NotNull(service);
             service = host.Services.GetService<IMessageBus>();
             NotNull(service);

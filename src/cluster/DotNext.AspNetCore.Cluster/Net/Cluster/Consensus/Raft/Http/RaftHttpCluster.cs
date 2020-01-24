@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
-    using DistributedLockConfigurationProvider = Threading.DistributedLockConfigurationProvider;
 
     internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
     {
@@ -48,7 +47,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             httpHandlerFactory = dependencies.GetService<IHttpMessageHandlerFactory>();
             Logger = dependencies.GetRequiredService<ILoggerFactory>().CreateLogger(GetType());
             Metrics = dependencies.GetService<MetricsCollector>();
-            distributedLockConfig = dependencies.GetService<DistributedLockConfigurationProvider>();
             //track changes in configuration
             configurationTracker = configTracker(ConfigurationChanged);
         }
@@ -131,7 +129,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             //detect local member
             var localMember = this.localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             configurator?.Initialize(this, metadata);
-            InitializeDistributedServices(localMember);
             return base.StartAsync(token);
         }
 
@@ -139,7 +136,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             configurator?.Shutdown(this);
             duplicationDetector.Trim(100);
-            distributedLock = null;
             return base.StopAsync(token);
         }
 
@@ -150,7 +146,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 localMember = null;
                 configurationTracker.Dispose();
                 duplicationDetector.Dispose();
-                distributedLock = null;
                 messageHandlers = ImmutableList<IInputChannel>.Empty;
             }
 
