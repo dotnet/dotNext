@@ -165,6 +165,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return new ValueTask();
             };
             await auditTrail.ReadAsync<TestReader, DBNull>(checker, 1L, CancellationToken.None);
+            Equal(0L, await auditTrail.CommitAsync(CancellationToken.None));
         }
 
         [Fact]
