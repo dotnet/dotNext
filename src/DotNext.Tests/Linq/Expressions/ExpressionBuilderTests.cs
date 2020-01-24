@@ -209,7 +209,7 @@ namespace DotNext.Linq.Expressions
         }
 
         [Fact]
-        public static void VariousOperators()
+        public static void BinaryOperations()
         {
             var expr = 42.Const().GreaterThanOrEqual(43.Const());
             Equal(ExpressionType.GreaterThanOrEqual, expr.NodeType);
@@ -240,6 +240,53 @@ namespace DotNext.Linq.Expressions
         }
 
         [Fact]
+        public static void UnaryOperators()
+        {
+            var expr = 20.Const().Negate();
+            Equal(ExpressionType.Negate, expr.NodeType);
+
+            expr = (-20).Const().UnaryPlus();
+            Equal(ExpressionType.UnaryPlus, expr.NodeType);
+
+            expr = "".Const().TryConvert<IEnumerable<char>>();
+            Equal(ExpressionType.TypeAs, expr.NodeType);
+
+            expr = new object().Const().Unbox<int>();
+            Equal(ExpressionType.Unbox, expr.NodeType);
+        }
+
+        [Fact]
+        public static void IncrementDecrement()
+        {
+            var variable = Expression.Parameter(typeof(long));
+
+            var expr = variable.PreDecrementAssign();
+            Equal(ExpressionType.PreDecrementAssign, expr.NodeType);
+
+            expr = variable.PreIncrementAssign();
+            Equal(ExpressionType.PreIncrementAssign, expr.NodeType);
+
+            expr = variable.PostIncrementAssign();
+            Equal(ExpressionType.PostIncrementAssign, expr.NodeType);
+
+            expr = variable.PreIncrementAssign();
+            Equal(ExpressionType.PreIncrementAssign, expr.NodeType);
+
+            var index = new int[0].Const().ElementAt(0.Const());
+            expr = index.PreDecrementAssign();
+            Equal(ExpressionType.PreDecrementAssign, expr.NodeType);
+
+            expr = index.PreIncrementAssign();
+            Equal(ExpressionType.PreIncrementAssign, expr.NodeType);
+
+            expr = index.PostIncrementAssign();
+            Equal(ExpressionType.PostIncrementAssign, expr.NodeType);
+
+            expr = index.PreIncrementAssign();
+            Equal(ExpressionType.PreIncrementAssign, expr.NodeType);
+        }
+
+        [Fact]
         public static void ThrowExceptionExpr()
         {
             var expr = typeof(Exception).New().Throw();
@@ -253,6 +300,34 @@ namespace DotNext.Linq.Expressions
             var expr = typeof(string).Const().New('a'.Const().Convert<object>(), 2.Const().Convert<object>());
             var lambda = Expression.Lambda<Func<object>>(expr).Compile();
             Equal("aa", lambda());
+        }
+
+        [Fact]
+        public static void WithObject()
+        {
+            var expr = "abc".Const().With(obj =>
+            {
+                Equal(ExpressionType.Parameter, obj.NodeType);
+                return obj.Property(nameof(string.Length));
+            });
+            True(expr.CanReduce);
+            Equal(ExpressionType.Extension, expr.NodeType);
+            Equal(typeof(int), expr.Type);
+        }
+
+        [Fact]
+        public static void ForEachLoop()
+        {
+            var expr = new int[3].Const().ForEach((current, continueLabel, breakLabel) =>
+            {
+                Equal(typeof(int), current.Type);
+                Equal(ExpressionType.MemberAccess, current.NodeType);
+                Equal("Current", current.Member.Name);
+                return current;
+            });
+            True(expr.CanReduce);
+            Equal(ExpressionType.Extension, expr.NodeType);
+            Equal(typeof(void), expr.Type);
         }
     }
 }
