@@ -120,6 +120,11 @@ namespace DotNext.Runtime.InteropServices
             Equal(12, ptr.Value);
             False(ptr.CompareAndSetValue(10, 20));
             Equal(12, ptr.Value);
+            Func<long, long, long> sum = (x, y) => x + y;
+            Equal(32L, ptr.AccumulateAndGetValue(20L, sum));
+            Equal(32L, ptr.Value);
+            Equal(32L, ptr.GetAndAccumulateValue(8L, sum));
+            Equal(40L, ptr.Value);
         }
 
         [Fact]
@@ -138,6 +143,11 @@ namespace DotNext.Runtime.InteropServices
             Equal(12, ptr.Value);
             False(ptr.CompareAndSetValue(10, 20));
             Equal(12, ptr.Value);
+            Func<int, int, int> sum = (x, y) => x + y;
+            Equal(32, ptr.AccumulateAndGetValue(20, sum));
+            Equal(32, ptr.Value);
+            Equal(32, ptr.GetAndAccumulateValue(8, sum));
+            Equal(40, ptr.Value);
         }
 
         [Fact]
@@ -156,6 +166,11 @@ namespace DotNext.Runtime.InteropServices
             Equal(new IntPtr(12), ptr.Value);
             False(ptr.CompareAndSetValue(new IntPtr(10), new IntPtr(20)));
             Equal(new IntPtr(12), ptr.Value);
+            Func<IntPtr, IntPtr, IntPtr> sum = ValueTypeExtensions.Add;
+            Equal(new IntPtr(32), ptr.AccumulateAndGetValue(new IntPtr(20), sum));
+            Equal(new IntPtr(32), ptr.Value);
+            Equal(new IntPtr(32), ptr.GetAndAccumulateValue(new IntPtr(8), sum));
+            Equal(new IntPtr(40), ptr.Value);
         }
 
         [Fact]
@@ -192,6 +207,95 @@ namespace DotNext.Runtime.InteropServices
             Equal(12D, ptr.Value);
             False(ptr.CompareAndSetValue(10D, 20D));
             Equal(12D, ptr.Value);
+        }
+
+        [Fact]
+        public static unsafe void VolatileReadWriteUInt64()
+        {
+            Pointer<ulong> ptr = stackalloc ulong[3];
+            ptr.VolatileWrite(1UL);
+            Equal(1UL, ptr.Value);
+            Equal(1UL, ptr.Get());
+            ptr.Value += 10UL;
+            Equal(11UL, ptr.Value);
+            Equal(11UL, ptr.Get());
+            Equal(11UL, ptr.VolatileRead());
+        }
+
+        [Fact]
+        public static unsafe void VolatileReadWriteUInt32()
+        {
+            Pointer<uint> ptr = stackalloc uint[3];
+            ptr.VolatileWrite(1U);
+            Equal(1U, ptr.Value);
+            Equal(1U, ptr.Get());
+            ptr.Value += 10U;
+            Equal(11UL, ptr.Value);
+            Equal(11UL, ptr.Get());
+            Equal(11UL, ptr.VolatileRead());
+        }
+
+        [Fact]
+        public static unsafe void VolatileReadWriteUIntPtr()
+        {
+            Pointer<UIntPtr> ptr = stackalloc UIntPtr[3];
+            ptr.VolatileWrite(new UIntPtr(1));
+            Equal(new UIntPtr(1), ptr.Value);
+            ptr.Value = ptr.Value.AddChecked(new UIntPtr(10));
+            Equal(new UIntPtr(11), ptr.Value);
+            Equal(new UIntPtr(11), ptr.VolatileRead());
+        }
+
+        [Fact]
+        public static unsafe void VolatileReadWriteInt16()
+        {
+            Pointer<short> ptr = stackalloc short[3];
+            ptr.VolatileWrite(1);
+            Equal(1, ptr.Value);
+            Equal(1, ptr.Get());
+            ptr.Value += 10;
+            Equal(11, ptr.Value);
+            Equal(11, ptr.Get());
+            Equal(11, ptr.VolatileRead());
+        }
+
+        [Fact]
+        public static unsafe void VolatileReadWriteUInt16()
+        {
+            Pointer<ushort> ptr = stackalloc ushort[3];
+            ptr.VolatileWrite(1);
+            Equal(1, ptr.Value);
+            Equal(1, ptr.Get());
+            ptr.Value += 10;
+            Equal(11, ptr.Value);
+            Equal(11, ptr.Get());
+            Equal(11, ptr.VolatileRead());
+        }
+
+        [Fact]
+        public static unsafe void VolatileReadWriteUInt8()
+        {
+            Pointer<byte> ptr = stackalloc byte[3];
+            ptr.VolatileWrite(1);
+            Equal(1, ptr.Value);
+            Equal(1, ptr.Get());
+            ptr.Value += 10;
+            Equal(11, ptr.Value);
+            Equal(11, ptr.Get());
+            Equal(11, ptr.VolatileRead());
+        }
+
+        [Fact]
+        public static unsafe void VolatileReadWriteInt8()
+        {
+            Pointer<sbyte> ptr = stackalloc sbyte[3];
+            ptr.VolatileWrite(1);
+            Equal(1, ptr.Value);
+            Equal(1, ptr.Get());
+            ptr.Value += 10;
+            Equal(11, ptr.Value);
+            Equal(11, ptr.Get());
+            Equal(11, ptr.VolatileRead());
         }
 
         [Fact]
