@@ -152,7 +152,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var timeStamp = Timestamp.Current;
             var tasks = new LinkedList<ValueTask<Result<bool>>>();
-            
+
             long commitIndex = auditTrail.GetLastIndex(true), currentIndex = auditTrail.GetLastIndex(false);
             var term = currentTerm;
             //send heartbeat in parallel
@@ -208,7 +208,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private void DrainReplicationQueue()
         {
-            foreach(var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
+            foreach (var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
                 waiter.SetResult(true);
         }
 
@@ -256,7 +256,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 forcedReplication.Dispose();
                 heartbeatTask = null;
                 //cancel queue
-                foreach(var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
+                foreach (var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
                     waiter.SetCanceled();
             }
             base.Dispose(disposing);

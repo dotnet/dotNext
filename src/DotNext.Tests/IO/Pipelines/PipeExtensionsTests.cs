@@ -35,7 +35,7 @@ namespace DotNext.IO.Pipelines
             }
 
             var pipe = new Pipe();
-            WriteValueAsync(new byte[]{ 1, 5, 8, 9, 10}, pipe.Writer);
+            WriteValueAsync(new byte[] { 1, 5, 8, 9, 10 }, pipe.Writer);
             var portion1 = new byte[3];
             var portion2 = new byte[2];
             await pipe.Reader.ReadAsync(portion1);

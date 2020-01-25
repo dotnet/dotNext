@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using static System.Linq.Enumerable;
 
 namespace DotNext.Net.Cluster.Messaging
@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster.Messaging
     {
         internal static bool IsSignalSupported(this IMessage signal, IInputChannel handler)
             => handler.IsSupported(signal.Name, true);
-        
+
         private static bool IsMessageSupported(this IMessage request, IInputChannel handler)
             => handler.IsSupported(request.Name, false);
 

@@ -559,7 +559,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 (state as IDisposable)?.Dispose();
             }
             //restore state from backup
-            await using(var backupStream = new FileStream(backupFile, FileMode.Open, FileAccess.Read, FileShare.None, 1024, true))
+            await using (var backupStream = new FileStream(backupFile, FileMode.Open, FileAccess.Read, FileShare.None, 1024, true))
             {
                 await PersistentState.RestoreFromBackupAsync(backupStream, new DirectoryInfo(dir));
             }

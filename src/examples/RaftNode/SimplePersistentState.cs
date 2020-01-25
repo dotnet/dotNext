@@ -47,11 +47,11 @@ namespace RaftNode
 
         protected override ValueTask ApplyAsync(LogEntry entry)
             => entry.Length == 0L ? new ValueTask() : UpdateValue(entry);
-        
+
         async Task IValueProvider.UpdateValueAsync(long value, TimeSpan timeout, CancellationToken token)
         {
             var commitIndex = GetLastIndex(true);
-            await AppendAsync(new Int64LogEntry { Content = value, Term = Term}, token);
+            await AppendAsync(new Int64LogEntry { Content = value, Term = Term }, token);
             await ((IAuditTrail)this).WaitForCommitAsync(commitIndex + 1L, timeout, token);
         }
 

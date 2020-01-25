@@ -293,7 +293,7 @@ namespace DotNext.IO
         public static async Task ReadWriteMemoryUsingReader()
         {
             using var ms = new MemoryStream();
-            ms.Write(new byte[]{1, 5, 7, 9});
+            ms.Write(new byte[] { 1, 5, 7, 9 });
             ms.Position = 0;
             var reader = IAsyncBinaryReader.Create(ms, new byte[128]);
             var memory = new byte[4];
@@ -327,7 +327,7 @@ namespace DotNext.IO
         public static async Task BinaryWriterInterop()
         {
             using var ms = new MemoryStream();
-            using(var writer = new BinaryWriter(ms, Encoding.UTF8, true))
+            using (var writer = new BinaryWriter(ms, Encoding.UTF8, true))
             {
                 writer.Write("ABC");
             }

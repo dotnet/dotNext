@@ -421,7 +421,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public ValueTask<long> AppendAsync<TEntry>(in WriteLockToken writeLock, TEntry entry, CancellationToken token)
             where TEntry : notnull, IRaftLogEntry
         {
-            if(entry.IsSnapshot)
+            if (entry.IsSnapshot)
                 throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
             return IsValidToken(in writeLock) ? UnsafeAppendAsync(entry, token) : throw new ArgumentException(ExceptionMessages.InvalidLockToken, nameof(writeLock));
         }
@@ -440,7 +440,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public async ValueTask<long> AppendAsync<TEntry>(TEntry entry, CancellationToken token = default)
             where TEntry : notnull, IRaftLogEntry
         {
-            if(entry.IsSnapshot)
+            if (entry.IsSnapshot)
                 throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
             await syncRoot.AcquireAsync(true, token).ConfigureAwait(false);
             long startIndex;
@@ -690,7 +690,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 LogEntry entry;
                 long startIndex;
                 //1. Apply snapshot if it not empty
-                if(snapshot.Length > 0L)
+                if (snapshot.Length > 0L)
                 {
                     entry = await snapshot.ReadAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
                     await ApplyAsync(entry).ConfigureAwait(false);
@@ -716,16 +716,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
         public Task InitializeAsync(CancellationToken token = default)
         {
-            if(token.IsCancellationRequested)
+            if (token.IsCancellationRequested)
                 return Task.FromCanceled(token);
-            if(replayOnInitialize)
+            if (replayOnInitialize)
                 return ReplayAsync(token);
             return Task.CompletedTask;
         }
 
         private async Task EnsureConsistencyImpl(TimeSpan timeout, CancellationToken token)
         {
-            for(var timeoutTracker = new Timeout(timeout); state.Term > lastTerm.VolatileRead(); await commitEvent.WaitAsync(timeout, token).ConfigureAwait(false))
+            for (var timeoutTracker = new Timeout(timeout); state.Term > lastTerm.VolatileRead(); await commitEvent.WaitAsync(timeout, token).ConfigureAwait(false))
                 timeoutTracker.ThrowIfExpired(out timeout);
         }
 

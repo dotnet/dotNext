@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Messaging
 
     internal interface IBufferedMessage : IDisposableMessage
     {
-        ValueTask LoadFromAsync(IDataTransferObject source, CancellationToken token);     
+        ValueTask LoadFromAsync(IDataTransferObject source, CancellationToken token);
         void PrepareForReuse();
     }
 }

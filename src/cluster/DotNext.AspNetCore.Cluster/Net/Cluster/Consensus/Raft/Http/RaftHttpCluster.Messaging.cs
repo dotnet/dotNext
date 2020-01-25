@@ -46,8 +46,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                     throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
                 try
                 {
-                    return await (leader.IsRemote ? 
-                        leader.SendMessageAsync(message, responseReader, true, token) : 
+                    return await (leader.IsRemote ?
+                        leader.SendMessageAsync(message, responseReader, true, token) :
                         TryReceiveMessage(leader, message, messageHandlers, responseReader, token))
                         .ConfigureAwait(false);
                 }
@@ -103,7 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private static async Task ReceiveOneWayMessageFastAck(ISubscriber sender, IMessage message, IEnumerable<IInputChannel> handlers, HttpResponse response, CancellationToken token)
         {
             IInputChannel? handler = handlers.FirstOrDefault(message.IsSignalSupported);
-            if(handlers is null)
+            if (handlers is null)
                 return;
             IBufferedMessage buffered;
             if (message.Length.TryGetValue(out var length) && length < FileMessage.MinSize)
@@ -114,7 +114,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             buffered.PrepareForReuse();
             response.OnCompleted(async delegate ()
             {
-                await using(buffered)
+                await using (buffered)
                     await handler.ReceiveSignal(sender, buffered, null, token).ConfigureAwait(false);
             });
         }
@@ -125,10 +125,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             //drop duplicated request
             if (response.HttpContext.Features.Get<DuplicateRequestDetector>().IsDuplicated(request))
                 return Task.CompletedTask;
-            Task? task = reliable ? 
+            Task? task = reliable ?
                 handlers.TryReceiveSignal(sender, request.Message, response.HttpContext, token) :
                 ReceiveOneWayMessageFastAck(sender, request.Message, handlers, response, token);
-            if(task is null)
+            if (task is null)
             {
                 response.StatusCode = StatusCodes.Status501NotImplemented;
                 task = Task.CompletedTask;
@@ -140,7 +140,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             response.StatusCode = StatusCodes.Status200OK;
             var task = handlers.TryReceiveMessage(sender, request.Message, response.HttpContext, token);
-            if(task is null)
+            if (task is null)
                 response.StatusCode = StatusCodes.Status501NotImplemented;
             else
                 await CustomMessage.SaveResponse(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);

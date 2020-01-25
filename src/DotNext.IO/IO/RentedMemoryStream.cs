@@ -38,7 +38,7 @@ namespace DotNext.IO
         /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
                 pool.Return(GetBuffer());
             base.Dispose(disposing);
         }

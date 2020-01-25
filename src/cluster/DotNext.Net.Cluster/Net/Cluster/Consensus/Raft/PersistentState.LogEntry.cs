@@ -66,10 +66,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
                 where T : unmanaged
                 => content.ReadAsync<T>(buffer, token);
-            
+
             private static async ValueTask ReadAsync(Stream input, Memory<byte> output, CancellationToken token)
             {
-                if((await input.ReadAsync(output, token).ConfigureAwait(false)) != output.Length)
+                if ((await input.ReadAsync(output, token).ConfigureAwait(false)) != output.Length)
                     throw new EndOfStreamException();
             }
 
@@ -83,7 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
             public ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default)
                 => ReadAsync(content, output, token);
-            
+
             /// <summary>
             /// Reads the string of the specified encoding and length.
             /// </summary>
@@ -95,7 +95,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
             public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
                 => content.ReadStringAsync(length, context, buffer, token);
-            
+
             /// <summary>
             /// Reads the string of the specified encoding.
             /// </summary>
@@ -107,7 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
             public ValueTask<string> ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
                 => content.ReadStringAsync(lengthFormat, context, buffer, token);
-            
+
             /// <summary>
             /// Copies the remaining content from this log entry to the specified stream.
             /// </summary>
@@ -117,7 +117,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
             public Task CopyToAsync(Stream output, CancellationToken token = default)
                 => content.CopyToAsync(output, token);
-            
+
             /// <summary>
             /// Copies the remaining content from this log entry to the specified stream.
             /// </summary>
@@ -127,7 +127,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
             public Task CopyToAsync(PipeWriter output, CancellationToken token = default)
                 => content.CopyToAsync(output, token);
-            
+
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
                 Reset();

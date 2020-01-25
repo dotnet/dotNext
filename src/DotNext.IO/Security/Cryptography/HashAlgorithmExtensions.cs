@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace DotNext.Security.Cryptography
 {
     using static IO.Pipelines.PipeExtensions;
-    
+
     /// <summary>
     /// Supports hashing of the content exposed by <see cref="PipeReader"/>.
     /// </summary>

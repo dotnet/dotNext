@@ -24,13 +24,13 @@ namespace DotNext.Security.Cryptography
 
         private static readonly HashMethod HashCore;
         private static readonly TryHashFinalMethod TryHashFinal;
-        
+
         static HashBuilder()
         {
             Ldtoken(new MR(typeof(HashAlgorithm), nameof(HashCore), typeof(ReadOnlySpan<byte>)));
             Pop(out RuntimeMethodHandle handle);
             HashCore = Unsafe.As<MethodInfo>(MethodBase.GetMethodFromHandle(handle)).CreateDelegate<HashMethod>();
-            
+
             Ldtoken(new MR(typeof(HashAlgorithm), nameof(TryHashFinal), typeof(Span<byte>), typeof(int).MakeByRefType()));
             Pop(out handle);
             TryHashFinal = Unsafe.As<MethodInfo>(MethodBase.GetMethodFromHandle(handle)).CreateDelegate<TryHashFinalMethod>();
@@ -83,7 +83,7 @@ namespace DotNext.Security.Cryptography
 
         int ICryptoTransform.TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[]? outputBuffer, int outputOffset)
             => algorithm?.TransformBlock(inputBuffer, inputOffset, inputCount, outputBuffer, outputOffset) ?? 0;
-        
+
         byte[] ICryptoTransform.TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
             => algorithm?.TransformFinalBlock(inputBuffer, inputOffset, inputCount) ?? Array.Empty<byte>();
 
@@ -100,7 +100,7 @@ namespace DotNext.Security.Cryptography
         /// <param name="bytes">The bytes to add to the hash code.</param>
         public void Add(ReadOnlySequence<byte> bytes)
         {
-            foreach(var segment in bytes)
+            foreach (var segment in bytes)
                 Add(segment.Span);
         }
 
@@ -133,7 +133,7 @@ namespace DotNext.Security.Cryptography
         /// </summary>
         public void Dispose()
         {
-            if(disposeAlg)
+            if (disposeAlg)
                 algorithm.Dispose();
         }
     }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using M = InlineIL.MethodRef;
@@ -32,7 +31,7 @@ namespace DotNext
         /// <returns>The instance of this comparer.</returns>
         public static BitwiseComparer<T> Instance { get; } = new BitwiseComparer<T>();
 
-         /// <summary>
+        /// <summary>
         /// Checks bitwise equality between two values of different value types.
         /// </summary>
         /// <remarks>

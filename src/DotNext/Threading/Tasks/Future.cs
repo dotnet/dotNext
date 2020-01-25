@@ -75,7 +75,7 @@ namespace DotNext.Threading.Tasks
 
             private void Invoke()
             {
-                switch(context)
+                switch (context)
                 {
                     case SynchronizationContext ctx:
                         callback.InvokeInContext(ctx);
@@ -92,10 +92,10 @@ namespace DotNext.Threading.Tasks
             internal static Action Create(Action callback)
             {
                 var context = SynchronizationContext.Current?.CreateCopy();
-                if(context != null)
+                if (context != null)
                     return new Continuation(callback, context).Invoke;
                 var scheduler = TaskScheduler.Current;
-                if(ReferenceEquals(scheduler, TaskScheduler.Default))
+                if (ReferenceEquals(scheduler, TaskScheduler.Default))
                     return callback.InvokeInThreadPool;
                 return new Continuation(callback, scheduler).Invoke;
             }

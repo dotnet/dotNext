@@ -85,8 +85,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             public override async ValueTask DisposeAsync()
             {
-                foreach(Stream? reader in readers)
-                    if(reader != null)
+                foreach (Stream? reader in readers)
+                    if (reader != null)
                         await reader.DisposeAsync().ConfigureAwait(false);
                 Array.Clear(readers, 0, readers.Length);
                 await base.DisposeAsync().ConfigureAwait(false);

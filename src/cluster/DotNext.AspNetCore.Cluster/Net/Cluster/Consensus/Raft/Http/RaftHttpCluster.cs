@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     {
         private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
-        
+
 
         [SuppressMessage("Usage", "CA2213", Justification = "This object is disposed via RaftCluster.members collection")]
         private RaftClusterMember? localMember;

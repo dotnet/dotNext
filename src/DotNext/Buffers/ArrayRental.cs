@@ -1,7 +1,6 @@
 using System;
 using System.Buffers;
 using System.ComponentModel;
-using System.IO;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers

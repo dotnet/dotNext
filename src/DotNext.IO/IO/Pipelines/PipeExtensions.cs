@@ -32,7 +32,7 @@ namespace DotNext.IO.Pipelines
             internal HashReader(HashAlgorithm algorithm, int? count)
             {
                 builder = new HashBuilder(algorithm);
-                if(count.HasValue)
+                if (count.HasValue)
                 {
                     limited = true;
                     remainingBytes = count.Value;
@@ -45,7 +45,7 @@ namespace DotNext.IO.Pipelines
             }
 
             readonly int IBufferReader<HashBuilder>.RemainingBytes => remainingBytes;
-        
+
             readonly HashBuilder IBufferReader<HashBuilder>.Complete() => builder;
 
             void IBufferReader<HashBuilder>.EndOfStream()
@@ -54,7 +54,7 @@ namespace DotNext.IO.Pipelines
             void IBufferReader<HashBuilder>.Append(ReadOnlySpan<byte> block, ref int consumedBytes)
             {
                 builder.Add(block);
-                if(limited)
+                if (limited)
                     remainingBytes -= block.Length;
             }
         }
@@ -121,7 +121,7 @@ namespace DotNext.IO.Pipelines
         {
             ValueTask<int> result;
             var littleEndian = BitConverter.IsLittleEndian;
-            switch(lengthFormat)
+            switch (lengthFormat)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
@@ -204,12 +204,12 @@ namespace DotNext.IO.Pipelines
         private static ValueTask<FlushResult> WriteLengthAsync(this PipeWriter writer, ReadOnlyMemory<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, CancellationToken token)
         {
             ValueTask<FlushResult> result;
-            if(lengthFormat is null)
+            if (lengthFormat is null)
                 result = new ValueTask<FlushResult>(new FlushResult(false, false));
             else
             {
                 var length = encoding.GetByteCount(value.Span);
-                switch(lengthFormat.Value)
+                switch (lengthFormat.Value)
                 {
                     default:
                         throw new ArgumentOutOfRangeException(nameof(lengthFormat));

@@ -26,7 +26,7 @@ namespace DotNext.IO
         private unsafe static int Length => sizeof(T);
 
         long? IDataTransferObject.Length => Length;
-    
+
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => writer.WriteAsync(Content, token);
     }

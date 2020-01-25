@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal interface IMemberCollection : ICollection<TMember>, IReadOnlyCollection<TMember>
         {
-            
+
         }
 
         private sealed class EmptyMemberCollection : IMemberCollection
@@ -35,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public int Count => 0;
 
             void ICollection<TMember>.Add(TMember member) => throw new NotSupportedException();
-        
+
             void ICollection<TMember>.Clear() { }
 
             bool ICollection<TMember>.Contains(TMember member) => false;

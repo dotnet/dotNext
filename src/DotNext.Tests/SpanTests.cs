@@ -92,7 +92,7 @@ namespace DotNext
             Equal(2, span[1]);
         }
 
-        private static string ToHexSlow(byte[] data) 
+        private static string ToHexSlow(byte[] data)
             => string.Join(string.Empty, Array.ConvertAll(data, i => i.ToString("X2", null)));
 
         [Theory]
@@ -110,7 +110,7 @@ namespace DotNext
         [Fact]
         public static void ToHexConversionVarLength()
         {
-            ReadOnlySpan<byte> data = new byte[] {1, 2};
+            ReadOnlySpan<byte> data = new byte[] { 1, 2 };
             char[] encoded = new char[1];
             Equal(0, data.ToHex(encoded));
             encoded = new char[2];
@@ -122,7 +122,7 @@ namespace DotNext
         [Fact]
         public static void FromHexConversionVarLength()
         {
-            ReadOnlySpan<char> data = new char[] {'F', 'F', 'A'};
+            ReadOnlySpan<char> data = new char[] { 'F', 'F', 'A' };
             var decoded = new byte[1];
             Equal(1, data.FromHex(decoded));
             Equal(byte.MaxValue, decoded[0]);

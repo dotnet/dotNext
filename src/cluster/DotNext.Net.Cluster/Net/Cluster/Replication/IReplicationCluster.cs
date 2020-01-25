@@ -30,7 +30,7 @@ namespace DotNext.Net.Cluster.Replication
         new IAuditTrail<TEntry> AuditTrail { get; }
 
         IAuditTrail IReplicationCluster.AuditTrail => AuditTrail;
-        
+
         /// <summary>
         /// Forces replication.
         /// </summary>

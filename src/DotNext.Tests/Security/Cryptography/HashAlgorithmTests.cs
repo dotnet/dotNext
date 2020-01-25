@@ -13,11 +13,11 @@ namespace DotNext.Security.Cryptography
         [Fact]
         public static async Task HashEntirePipe()
         {
-            byte[] data = {1, 2, 3, 5, 8, 13};
+            byte[] data = { 1, 2, 3, 5, 8, 13 };
             using var alg = new SHA256Managed();
             var hash = new byte[alg.HashSize / 8];
             var pipe = new Pipe();
-            ThreadPool.QueueUserWorkItem(async state => 
+            ThreadPool.QueueUserWorkItem(async state =>
             {
                 await pipe.Writer.WriteAsync(data);
                 pipe.Writer.Complete();
@@ -30,7 +30,7 @@ namespace DotNext.Security.Cryptography
         [Fact]
         public static async Task HashPipe()
         {
-            byte[] data = {1, 2, 3, 5, 8, 13};
+            byte[] data = { 1, 2, 3, 5, 8, 13 };
             using var alg = new SHA256Managed();
             var hash = new byte[alg.HashSize / 8];
             var pipe = new Pipe();
