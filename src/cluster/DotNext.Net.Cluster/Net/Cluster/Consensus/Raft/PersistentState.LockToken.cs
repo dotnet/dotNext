@@ -1,7 +1,7 @@
 using System;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <exception cref="InvalidOperationException">This token is invalid.</exception>
             public void Dispose()
             {
-                if(state.lockVersion.CompareAndSet(version, version + 1L))
+                if (state.lockVersion.CompareAndSet(version, version + 1L))
                     state.syncRoot.Release();
                 else
                     throw new InvalidOperationException(ExceptionMessages.InvalidLockToken);

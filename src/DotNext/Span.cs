@@ -1,16 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
 using Debug = System.Diagnostics.Debug;
-using static System.Globalization.CultureInfo;
 using NumberStyles = System.Globalization.NumberStyles;
 
 namespace DotNext
 {
     using Runtime;
-    using CharBuffer = Buffers.MemoryRental<char>;
     using ByteBuffer = Buffers.MemoryRental<byte>;
+    using CharBuffer = Buffers.MemoryRental<char>;
 
     /// <summary>
     /// Provides extension methods for type <see cref="Span{T}"/> and <see cref="ReadOnlySpan{T}"/>.
@@ -412,7 +412,7 @@ namespace DotNext
             ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
             ref char charPtr = ref MemoryMarshal.GetReference(output);
             ref HexByte firstHex = ref MemoryMarshal.GetReference(HexLookupTable.Span);
-            for(var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
+            for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
             {
                 var hexInfo = Add(ref firstHex, Add(ref firstByte, i));
                 charPtr = hexInfo.High;

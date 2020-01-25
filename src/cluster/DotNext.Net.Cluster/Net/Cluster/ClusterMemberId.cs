@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster
         {
             address = default;
             var bytes = Intrinsics.AsSpan(ref address);
-            if(!endpoint.Address.TryWriteBytes(bytes, out length))
+            if (!endpoint.Address.TryWriteBytes(bytes, out length))
                 throw new ArgumentException(ExceptionMessages.UnsupportedAddressFamily, nameof(endpoint));
             port = endpoint.Port;
             family = (int)endpoint.AddressFamily;
@@ -63,7 +63,7 @@ namespace DotNext.Net.Cluster
         /// <returns><see langword="true"/> if this identifier is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
         public bool Equals(ClusterMemberId other)
             => address == other.address && port == other.port && length == other.length && family == other.family;
-        
+
         /// <summary>
         /// Determines whether the current identifier is equal
         /// to another identifier.
@@ -115,7 +115,7 @@ namespace DotNext.Net.Cluster
         /// <returns><see langword="true"/> if both identifiers are not equal; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(in ClusterMemberId x, in ClusterMemberId y)
             => x.address != y.address || x.port != y.port || x.length != y.length || x.family != y.family;
-    
+
         void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue(AddressSerData, address);

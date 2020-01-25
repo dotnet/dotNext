@@ -34,10 +34,10 @@ namespace DotNext.IO.Log
         /// <exception cref="TimeoutException">Timeout occurred.</exception>
         async Task<bool> WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token = default)
         {
-            if(index < 0L)
+            if (index < 0L)
                 throw new ArgumentOutOfRangeException(nameof(index));
             for (var timeoutMeasurement = new Timeout(timeout); GetLastIndex(true) < index; await WaitForCommitAsync(timeout, token).ConfigureAwait(false))
-                if(!timeoutMeasurement.RemainingTime.TryGetValue(out timeout))
+                if (!timeoutMeasurement.RemainingTime.TryGetValue(out timeout))
                     return false;
             return true;
         }
@@ -84,7 +84,7 @@ namespace DotNext.IO.Log
         /// <returns>A task representing state of asynchronous execution.</returns>
         /// <exception cref="NotSupportedException">Backup is not supported by this implementation of audit trail.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task CreateBackupAsync(Stream output, CancellationToken token = default) 
+        Task CreateBackupAsync(Stream output, CancellationToken token = default)
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.FromException(new NotSupportedException());
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace DotNext.IO.Log
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token = default)
             where TReader : notnull, ILogEntryConsumer<ILogEntry, TResult>;
-        
+
         /// <summary>
         /// Gets log entries starting from the specified index to the last log entry.
         /// </summary>
@@ -179,7 +179,7 @@ namespace DotNext.IO.Log
         /// <seealso cref="ILogEntry.IsSnapshot"/>
         new ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default)
             where TReader : notnull, ILogEntryConsumer<TEntry, TResult>;
-        
+
         ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
             => ReadAsync<TReader, TResult>(reader, startIndex, token);
 

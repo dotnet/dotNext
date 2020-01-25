@@ -8,14 +8,14 @@ using Xunit;
 namespace DotNext.IO
 {
     using Buffers;
-    
+
     [ExcludeFromCodeCoverage]
     public sealed class SequenceBinaryReaderTests : Assert
     {
         [Fact]
         public static async Task ReadMemory()
         {
-            var sequence = new ChunkSequence<byte>(new byte[] {1, 5, 8, 9}, 2).ToReadOnlySequence();
+            var sequence = new ChunkSequence<byte>(new byte[] { 1, 5, 8, 9 }, 2).ToReadOnlySequence();
             False(sequence.IsSingleSegment);
             var result = new byte[3];
             IAsyncBinaryReader reader = IAsyncBinaryReader.Create(sequence);

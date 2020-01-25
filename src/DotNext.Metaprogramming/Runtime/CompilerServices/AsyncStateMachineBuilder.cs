@@ -8,8 +8,8 @@ namespace DotNext.Runtime.CompilerServices
 {
     using Linq.Expressions;
     using Reflection;
-    using static Reflection.TypeExtensions;
     using static Collections.Generic.Dictionary;
+    using static Reflection.TypeExtensions;
 
     /// <summary>
     /// Provides initial transformation of async method.

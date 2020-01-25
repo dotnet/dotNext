@@ -90,10 +90,10 @@ namespace DotNext.IO
 
         private static void WriteLength(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat)
         {
-            if(lengthFormat is null)
+            if (lengthFormat is null)
                 return;
             var length = encoding.GetByteCount(value);
-            switch(lengthFormat.Value)
+            switch (lengthFormat.Value)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
@@ -190,10 +190,10 @@ namespace DotNext.IO
 
         private static ValueTask WriteLengthAsync(this Stream stream, ReadOnlySpan<char> value, Encoding encoding, StringLengthEncoding? lengthFormat, Memory<byte> buffer, CancellationToken token)
         {
-            if(lengthFormat is null)
+            if (lengthFormat is null)
                 return new ValueTask();
             var length = encoding.GetByteCount(value);
-            switch(lengthFormat.Value)
+            switch (lengthFormat.Value)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
@@ -246,21 +246,21 @@ namespace DotNext.IO
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static ValueTask WriteLengthAsync(this Stream stream, int length, StringLengthEncoding? lengthFormat, Memory<byte> buffer, CancellationToken token)
         {
-            switch(lengthFormat)
+            switch (lengthFormat)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
                 case null:
                     return new ValueTask();
-                case StringLengthEncoding.Plain: 
+                case StringLengthEncoding.Plain:
                     return stream.WriteAsync(length, token);
-                case StringLengthEncoding.PlainLittleEndian: 
+                case StringLengthEncoding.PlainLittleEndian:
                     length.ReverseIfNeeded(true);
                     goto case StringLengthEncoding.Plain;
                 case StringLengthEncoding.PlainBigEndian:
                     length.ReverseIfNeeded(false);
                     goto case StringLengthEncoding.Plain;
-                case StringLengthEncoding.Compressed: 
+                case StringLengthEncoding.Compressed:
                     return stream.Write7BitEncodedIntAsync(length, buffer, token);
             }
         }
@@ -286,7 +286,7 @@ namespace DotNext.IO
             await stream.WriteLengthAsync(bytesCount, lengthFormat, buffer.Memory, token).ConfigureAwait(false);
             if (bytesCount == 0)
                 return;
-            
+
             encoding.GetBytes(value.Span, buffer.Span);
             await stream.WriteAsync(buffer.Memory, token).ConfigureAwait(false);
         }
@@ -330,7 +330,7 @@ namespace DotNext.IO
         {
             int result;
             var littleEndian = BitConverter.IsLittleEndian;
-            switch(lengthFormat)
+            switch (lengthFormat)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
@@ -355,7 +355,7 @@ namespace DotNext.IO
         {
             ValueTask<int> result;
             var littleEndian = BitConverter.IsLittleEndian;
-            switch(lengthFormat)
+            switch (lengthFormat)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));

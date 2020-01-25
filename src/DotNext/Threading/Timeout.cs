@@ -24,12 +24,12 @@ namespace DotNext.Threading
         public Timeout(TimeSpan timeout)
         {
             created = Timestamp.Current;
-            if(timeout == InfiniteTimeSpan)
+            if (timeout == InfiniteTimeSpan)
                 this.timeout = null;
-            else if(timeout < TimeSpan.Zero)
+            else if (timeout < TimeSpan.Zero)
                 throw new ArgumentOutOfRangeException(nameof(timeout));
             else
-                this.timeout = timeout; 
+                this.timeout = timeout;
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Indicates that timeout is occurred.
         /// </summary>
-        public bool IsExpired 
+        public bool IsExpired
             => this.timeout.TryGetValue(out var timeout) && created.Elapsed > timeout;
 
         /// <summary>
@@ -58,10 +58,10 @@ namespace DotNext.Threading
         /// <param name="remaining">The remaining time before timeout.</param>
         public void ThrowIfExpired(out TimeSpan remaining)
         {
-            if(!RemainingTime.TryGetValue(out remaining))
+            if (!RemainingTime.TryGetValue(out remaining))
                 throw new TimeoutException();
         }
-        
+
         /// <summary>
         /// Gets the remaining time.
         /// </summary>
@@ -70,7 +70,7 @@ namespace DotNext.Threading
         {
             get
             {
-                if(this.timeout.TryGetValue(out var timeout))
+                if (this.timeout.TryGetValue(out var timeout))
                 {
                     var remaining = timeout - created.Elapsed;
                     return remaining >= TimeSpan.Zero ? new TimeSpan?(remaining) : null;

@@ -2,7 +2,6 @@
 using DotNext.IO.Log;
 using DotNext.Net.Cluster.Consensus.Raft;
 using System;
-using System.Buffers.Binary;
 
 namespace RaftNode
 {

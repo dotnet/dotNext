@@ -99,7 +99,7 @@ namespace DotNext.IO.Log
 
         ValueTask IAsyncDisposable.DisposeAsync()
         {
-            if(!source.IsReadOnly)
+            if (!source.IsReadOnly)
                 source.Clear();
             return new ValueTask();
         }

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Pipelines;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -74,7 +73,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
                 => new ValueTask(writer.CopyFromAsync(requestStream, token));
-        
+
             ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
                 => IDataTransferObject.DecodeAsync<TResult, TDecoder>(requestStream, parser, false, token);
         }
@@ -130,7 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             response.Headers.Add(MessageNameHeader, message.Name);
             await response.StartAsync(token).ConfigureAwait(false);
             await message.WriteToAsync(response.BodyWriter, token).ConfigureAwait(false);
-            await response.BodyWriter.FlushAsync(token).ConfigureAwait(false);   
+            await response.BodyWriter.FlushAsync(token).ConfigureAwait(false);
         }
 
         Task IHttpMessageWriter<IMessage>.SaveResponse(HttpResponse response, IMessage message, CancellationToken token)

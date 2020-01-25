@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using static System.Runtime.CompilerServices.Unsafe;
 using Xunit;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Buffers
 {

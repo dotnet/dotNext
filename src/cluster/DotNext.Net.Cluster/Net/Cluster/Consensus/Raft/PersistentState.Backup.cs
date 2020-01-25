@@ -26,8 +26,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 archive = new ZipArchive(output, ZipArchiveMode.Create, true);
-                foreach(var file in location.EnumerateFiles())
-                    await using(var source = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, Buffer.Length, true))
+                foreach (var file in location.EnumerateFiles())
+                    await using (var source = new FileStream(file.FullName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, Buffer.Length, true))
                     {
                         var entry = archive.CreateEntry(file.Name, backupCompression);
                         entry.LastWriteTime = file.LastWriteTime;
@@ -59,12 +59,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static async Task RestoreFromBackupAsync(Stream backup, DirectoryInfo destination, CancellationToken token = default)
         {
             //cleanup directory
-            foreach(var file in destination.EnumerateFiles())
+            foreach (var file in destination.EnumerateFiles())
                 file.Delete();
             //extract files from archive
             using var archive = new ZipArchive(backup, ZipArchiveMode.Read, true);
-            foreach(var entry in archive.Entries)
-                await using(var fs = new FileStream(Path.Combine(destination.FullName, entry.Name), FileMode.Create, FileAccess.Write, FileShare.None, 1024, true))
+            foreach (var entry in archive.Entries)
+                await using (var fs = new FileStream(Path.Combine(destination.FullName, entry.Name), FileMode.Create, FileAccess.Write, FileShare.None, 1024, true))
                 {
                     await using var entryStream = entry.Open();
                     await entryStream.CopyToAsync(fs, token).ConfigureAwait(false);

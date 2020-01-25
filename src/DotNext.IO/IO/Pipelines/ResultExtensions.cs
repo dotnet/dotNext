@@ -20,7 +20,7 @@ namespace DotNext.IO.Pipelines
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ThrowIfCancellationRequested(this in FlushResult result, CancellationToken token = default)
         {
-            if(result.IsCanceled)
+            if (result.IsCanceled)
                 throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
         }
 
@@ -33,7 +33,7 @@ namespace DotNext.IO.Pipelines
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ThrowIfCancellationRequested(this in ReadResult result, CancellationToken token = default)
         {
-            if(result.IsCanceled)
+            if (result.IsCanceled)
                 throw new OperationCanceledException(token.IsCancellationRequested ? token : new CancellationToken(true));
         }
     }

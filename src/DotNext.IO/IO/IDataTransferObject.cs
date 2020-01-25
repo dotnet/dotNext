@@ -55,7 +55,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             where TWriter : IAsyncBinaryWriter;
-        
+
         /// <summary>
         /// Decodes the stream.
         /// </summary>
@@ -79,7 +79,7 @@ namespace DotNext.IO
             finally
             {
                 buffer.Dispose();
-                if(resetStream && input.CanSeek)
+                if (resetStream && input.CanSeek)
                     input.Seek(0L, SeekOrigin.Begin);
             }
         }

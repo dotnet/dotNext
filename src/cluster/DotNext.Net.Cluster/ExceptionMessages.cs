@@ -32,13 +32,13 @@ namespace DotNext
         internal static string UnexpectedError => Resources.GetString("UnexpectedError");
 
         internal static string NoAvailableReadSessions => Resources.GetString("NoAvailableReadSessions");
-    
+
         internal static string LockConflict => Resources.GetString("LockConflict");
 
         internal static string LockNameIsEmpty => Resources.GetString("LockNameIsEmpty");
 
         internal static string InvalidLockToken => Resources.GetString("InvalidLockToken");
-    
+
         internal static string UnsupportedAddressFamily => Resources.GetString("UnsupportedAddressFamily");
 
         internal static string UnresolvedLocalMember => Resources.GetString("UnresolvedLocalMember");

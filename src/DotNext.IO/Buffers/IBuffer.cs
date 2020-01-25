@@ -27,7 +27,7 @@ namespace DotNext.Buffers
 
         Span<T> IBuffer<T>.Span => new Span<T>(ptr, length);
     }
-    
+
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct ArrayBuffer<T> : IBuffer<T>, IDisposable
         where T : unmanaged

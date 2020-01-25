@@ -29,7 +29,7 @@ namespace DotNext
 
         [ParamsSource(nameof(RandomArrays))]
         public ByteArrayParam Bytes;
-        
+
         public static IEnumerable<ByteArrayParam> RandomArrays
         {
             get

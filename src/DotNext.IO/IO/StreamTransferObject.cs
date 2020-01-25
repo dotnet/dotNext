@@ -35,7 +35,7 @@ namespace DotNext.IO
         /// <exception cref="NotSupportedException">The underlying stream does not support seeking.</exception>
         public async ValueTask LoadFromAsync(IDataTransferObject source, CancellationToken token = default)
         {
-            if(content.CanSeek && content.CanWrite)
+            if (content.CanSeek && content.CanWrite)
                 try
                 {
                     await source.WriteToAsync(content, DefaultBufferSize, token).ConfigureAwait(false);
@@ -63,7 +63,7 @@ namespace DotNext.IO
             }
             finally
             {
-                if(content.CanSeek)
+                if (content.CanSeek)
                     content.Seek(0, SeekOrigin.Begin);
             }
         }

@@ -90,7 +90,7 @@ namespace DotNext
                     try
                     {
                         userData = valueFactory.Invoke();
-                        if(userData != null)
+                        if (userData != null)
                             slot.SetUserData(this, userData);
                     }
                     finally

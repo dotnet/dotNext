@@ -76,7 +76,7 @@ namespace DotNext.Threading
             [MethodImpl(MethodImplOptions.Synchronized)]
             internal Task<Func<Task>> TryAcquireAsync(TimeSpan timeout, CancellationToken token)
             {
-                if(state is null)
+                if (state is null)
                 {
                     state = new TaskCompletionSource<bool>();
                     return Task.FromResult<Func<Task>>(Release);
@@ -99,12 +99,12 @@ namespace DotNext.Threading
             var lockManager = new DummyLock();
             using var customLock = new AsyncLock(lockManager.TryAcquireAsync);
             False(lockManager.IsLockHeld);
-            using(await customLock.AcquireAsync(TimeSpan.Zero))
+            using (await customLock.AcquireAsync(TimeSpan.Zero))
             {
                 True(lockManager.IsLockHeld);
             }
             False(lockManager.IsLockHeld);
-            using(await customLock.TryAcquireAsync(TimeSpan.Zero))
+            using (await customLock.TryAcquireAsync(TimeSpan.Zero))
             {
                 True(lockManager.IsLockHeld);
             }

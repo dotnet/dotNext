@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
-using static System.Threading.Timeout;
 using Xunit;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -11,7 +11,7 @@ namespace DotNext.Threading
         {
             False(timeout.IsExpired);
             True(timeout.IsInfinite);
-            if(timeout) throw new Xunit.Sdk.XunitException();
+            if (timeout) throw new Xunit.Sdk.XunitException();
             Equal(InfiniteTimeSpan, timeout);
             Equal(InfiniteTimeSpan, timeout.RemainingTime);
         }
@@ -21,6 +21,6 @@ namespace DotNext.Threading
         {
             InfiniteTest(default);
             InfiniteTest(new Timeout(InfiniteTimeSpan));
-        }       
+        }
     }
 }

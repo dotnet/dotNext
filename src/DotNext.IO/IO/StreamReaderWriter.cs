@@ -1,9 +1,9 @@
 using System;
 using System.IO;
 using System.IO.Pipelines;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 
 namespace DotNext.IO
 {
@@ -23,14 +23,14 @@ namespace DotNext.IO
             this.input = input;
             this.buffer = buffer;
         }
-        
-        public ValueTask<T> ReadAsync<T>(CancellationToken token = default) 
+
+        public ValueTask<T> ReadAsync<T>(CancellationToken token = default)
             where T : unmanaged
             => StreamExtensions.ReadAsync<T>(input, buffer, token);
 
         private static async ValueTask ReadAsync(Stream input, Memory<byte> output, CancellationToken token)
         {
-            if((await input.ReadAsync(output, token).ConfigureAwait(false)) != output.Length)
+            if ((await input.ReadAsync(output, token).ConfigureAwait(false)) != output.Length)
                 throw new EndOfStreamException();
         }
 
@@ -38,17 +38,17 @@ namespace DotNext.IO
 
         public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
             => StreamExtensions.ReadStringAsync(input, length, context, buffer, token);
-        
+
         public ValueTask<string> ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token = default)
             => StreamExtensions.ReadStringAsync(input, lengthFormat, context, buffer, token);
-    
+
         Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
             => input.CopyToAsync(output, token);
 
         Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
             => input.CopyToAsync(output, token);
     }
-    
+
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct AsyncStreamBinaryWriter : IAsyncBinaryWriter
     {
@@ -64,13 +64,13 @@ namespace DotNext.IO
         public ValueTask WriteAsync<T>(T value, CancellationToken token)
             where T : unmanaged
             => output.WriteAsync(value, buffer, token);
-        
+
         public ValueTask WriteAsync(ReadOnlyMemory<byte> input, CancellationToken token)
             => output.WriteAsync(input, token);
-        
+
         public ValueTask WriteAsync(ReadOnlyMemory<char> chars, EncodingContext context, StringLengthEncoding? lengthFormat, CancellationToken token)
             => output.WriteStringAsync(chars, context, buffer, lengthFormat, token);
-        
+
         Task IAsyncBinaryWriter.CopyFromAsync(Stream input, CancellationToken token)
             => input.CopyToAsync(output, token);
 

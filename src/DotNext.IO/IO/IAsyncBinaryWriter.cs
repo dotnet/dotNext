@@ -24,7 +24,7 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         ValueTask WriteAsync<T>(T value, CancellationToken token)
             where T : unmanaged;
-        
+
         /// <summary>
         /// Encodes a block of memory.
         /// </summary>
@@ -75,9 +75,9 @@ namespace DotNext.IO
         /// <param name="output">The stream instance.</param>
         /// <param name="buffer">The buffer used for encoding binary data.</param>
         /// <returns>The stream writer.</returns>
-        public static IAsyncBinaryWriter Create(Stream output, Memory<byte> buffer) 
+        public static IAsyncBinaryWriter Create(Stream output, Memory<byte> buffer)
             => new AsyncStreamBinaryWriter(output, buffer);
-        
+
         /// <summary>
         /// Creates default implementation of binary writer for the pipe.
         /// </summary>

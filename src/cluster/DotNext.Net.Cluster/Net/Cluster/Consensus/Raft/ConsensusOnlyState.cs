@@ -41,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 get
                 {
-                    if(index < 0L || index >= count)
+                    if (index < 0L || index >= count)
                         throw new ArgumentOutOfRangeException(nameof(index));
                     index += offset;
                     return index < 0L ? new EmptyEntry(snapshotTerm, true) : new EmptyEntry(terms[index], false);
@@ -54,9 +54,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             public IEnumerator<EmptyEntry> GetEnumerator()
             {
-                if(offset < 0)
+                if (offset < 0)
                     yield return new EmptyEntry(snapshotTerm, true);
-                for(var i = 0L; i < count + offset; i++)
+                for (var i = 0L; i < count + offset; i++)
                     yield return new EmptyEntry(terms[i], false);
             }
 
@@ -102,7 +102,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 //skip entries
                 var newEntries = new long[count];
-                for ( ; skip-- > 0; token.ThrowIfCancellationRequested())
+                for (; skip-- > 0; token.ThrowIfCancellationRequested())
                     await entries.MoveNextAsync().ConfigureAwait(false);
                 //copy terms
                 for (var i = 0; await entries.MoveNextAsync().ConfigureAwait(false) && i < newEntries.LongLength; i++, token.ThrowIfCancellationRequested())
@@ -137,7 +137,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
                 if (startIndex <= commitIndex.VolatileRead())
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
-                else if(entry.IsSnapshot)
+                else if (entry.IsSnapshot)
                 {
                     lastTerm.VolatileWrite(entry.Term);
                     commitIndex.VolatileWrite(startIndex);
@@ -263,7 +263,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async Task EnsureConsistency(TimeSpan timeout, CancellationToken token)
         {
-            for(var timeoutTracker = new Timeout(timeout); term.VolatileRead() > lastTerm.VolatileRead(); await commitEvent.WaitAsync(timeout, token).ConfigureAwait(false))
+            for (var timeoutTracker = new Timeout(timeout); term.VolatileRead() > lastTerm.VolatileRead(); await commitEvent.WaitAsync(timeout, token).ConfigureAwait(false))
                 timeoutTracker.ThrowIfExpired(out timeout);
         }
 

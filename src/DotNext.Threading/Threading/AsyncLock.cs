@@ -28,7 +28,7 @@ namespace DotNext.Threading
         /// <param name="timeout">The interval to wait for the lock.</param>
         /// <param name="token">The token that can be used to abort acquisition operation.</param>
         /// <returns>The task containing delegate that can be used to release the lock. If delegate is <see langword="null"/> then lock is not acquired.</returns>
-        public delegate Task<Func<Task>?> Acquisition(TimeSpan timeout, CancellationToken token = default); 
+        public delegate Task<Func<Task>?> Acquisition(TimeSpan timeout, CancellationToken token = default);
 
         internal enum Type : byte
         {
@@ -70,7 +70,7 @@ namespace DotNext.Threading
                 }
                 finally
                 {
-                    if(task.IsCompleted)
+                    if (task.IsCompleted)
                         task.Dispose();
                 }
             }
@@ -314,7 +314,7 @@ namespace DotNext.Threading
             }
 
             Task<bool> task;
-            switch(type)
+            switch (type)
             {
                 default:
                     task = CompletedTask<bool, BooleanConst.False>.Task;
@@ -322,7 +322,7 @@ namespace DotNext.Threading
                 case Type.Exclusive:
                     task = As<AsyncExclusiveLock>(lockedObject).TryAcquireAsync(timeout, token);
                     break;
-                case Type.ReadLock: 
+                case Type.ReadLock:
                     task = As<AsyncReaderWriterLock>(lockedObject).TryEnterReadLockAsync(timeout, token);
                     break;
                 case Type.UpgradeableReadLock:
@@ -331,10 +331,10 @@ namespace DotNext.Threading
                 case Type.WriteLock:
                     task = As<AsyncReaderWriterLock>(lockedObject).TryEnterWriteLockAsync(timeout, token);
                     break;
-                case Type.Semaphore: 
+                case Type.Semaphore:
                     task = As<SemaphoreSlim>(lockedObject).WaitAsync(timeout, token);
                     break;
-                case Type.Strong: 
+                case Type.Strong:
                     task = As<AsyncSharedLock>(lockedObject).TryAcquireAsync(true, timeout, token);
                     break;
                 case Type.Weak:

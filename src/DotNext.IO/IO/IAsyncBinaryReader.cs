@@ -80,7 +80,7 @@ namespace DotNext.IO
         /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         Task CopyToAsync(PipeWriter output, CancellationToken token = default);
-        
+
         /// <summary>
         /// Creates default implementation of binary reader for the stream.
         /// </summary>

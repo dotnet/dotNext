@@ -62,7 +62,7 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         public unsafe string ReadString(int length, in DecodingContext context)
         {
-            if(length > MemoryRental<char>.StackallocThreshold)
+            if (length > MemoryRental<char>.StackallocThreshold)
             {
                 var buffer = new ArrayBuffer<char>(length);
                 return Read<string, StringReader<ArrayBuffer<char>>>(new StringReader<ArrayBuffer<char>>(in context, buffer));
@@ -85,7 +85,7 @@ namespace DotNext.IO
         {
             int length;
             var littleEndian = BitConverter.IsLittleEndian;
-            switch(lengthFormat)
+            switch (lengthFormat)
             {
                 default:
                     throw new ArgumentOutOfRangeException(nameof(lengthFormat));
@@ -113,7 +113,7 @@ namespace DotNext.IO
 
         ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
         {
-            if(token.IsCancellationRequested)
+            if (token.IsCancellationRequested)
                 return new ValueTask(Task.FromCanceled(token));
             Read(output);
             return new ValueTask();
@@ -131,17 +131,17 @@ namespace DotNext.IO
 
         async Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
         {
-            while(sequence.TryGet(ref position, out var block))
+            while (sequence.TryGet(ref position, out var block))
                 await output.WriteAsync(block, token).ConfigureAwait(false);
         }
 
         async Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
         {
-            while(sequence.TryGet(ref position, out var block))
+            while (sequence.TryGet(ref position, out var block))
             {
                 var result = await output.WriteAsync(block, token).ConfigureAwait(false);
                 result.ThrowIfCancellationRequested();
-                if(result.IsCompleted)
+                if (result.IsCompleted)
                     break;
             }
         }

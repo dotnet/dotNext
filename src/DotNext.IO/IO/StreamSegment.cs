@@ -297,7 +297,7 @@ namespace DotNext.IO
         /// <returns>A task that represents the asynchronous dispose operation.</returns>
         public override async ValueTask DisposeAsync()
         {
-            if(!leaveOpen)
+            if (!leaveOpen)
                 await BaseStream.DisposeAsync().ConfigureAwait(false);
             await base.DisposeAsync().ConfigureAwait(false);
         }
