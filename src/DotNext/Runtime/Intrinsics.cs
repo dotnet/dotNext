@@ -118,14 +118,14 @@ namespace DotNext.Runtime
         /// </summary>
         /// <param name="value">Value to check.</param>
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
-        public static bool IsDefault<T>(T value)
+        public static bool IsDefault<T>(in T value)
         {
             Sizeof(typeof(T));
             Pop(out uint size);
             switch (size)
             {
                 default:
-                    Push(ref value);
+                    Ldarg(nameof(value));
                     Push(size);
                     Conv_I8();
                     Call(new M(typeof(Intrinsics), nameof(IsZero)));
@@ -134,13 +134,13 @@ namespace DotNext.Runtime
                     Ldc_I4_1();
                     break;
                 case sizeof(byte):
-                    Push(ref value);
+                    Ldarg(nameof(value));
                     Ldind_I1();
                     Ldc_I4_0();
                     Ceq();
                     break;
                 case sizeof(ushort):
-                    Push(ref value);
+                    Ldarg(nameof(value));
                     Ldind_I2();
                     Ldc_I4_0();
                     Ceq();
@@ -148,7 +148,7 @@ namespace DotNext.Runtime
                 case 3:
                     goto default;
                 case sizeof(uint):
-                    Push(ref value);
+                    Ldarg(nameof(value));
                     Ldind_I4();
                     Ldc_I4_0();
                     Ceq();
@@ -158,7 +158,7 @@ namespace DotNext.Runtime
                 case 7:
                     goto default;
                 case sizeof(ulong):
-                    Push(ref value);
+                    Ldarg(nameof(value));
                     Ldind_I8();
                     Ldc_I8(0L);
                     Ceq();
@@ -560,7 +560,7 @@ namespace DotNext.Runtime
             where T : unmanaged
             => Copy(in input[0], out output[0]);
 
-        private static void Copy(ref byte source, ref byte destination, long length)
+        private static void Copy([In] ref byte source, [In] ref byte destination, long length)
         {
             for (int count; length > 0L; length -= count, source = ref Unsafe.Add(ref source, count), destination = ref Unsafe.Add(ref destination, count))
             {
@@ -627,7 +627,7 @@ namespace DotNext.Runtime
             return Return<bool>();
         }
 
-        private static unsafe ref byte Advance<T>(this ref byte address, [In, Out]long* length)
+        private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out]long* length)
             where T : unmanaged
         {
             Push(length);
@@ -641,7 +641,7 @@ namespace DotNext.Runtime
             return ref address.AddOffset<T>();
         }
 
-        private static unsafe bool IsZero(ref byte address, long length)
+        private static unsafe bool IsZero([In] ref byte address, long length)
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
@@ -687,7 +687,7 @@ namespace DotNext.Runtime
 
         #region Bitwise Hash Code
 
-        internal static unsafe long GetHashCode64(ref byte source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
+        internal static unsafe long GetHashCode64([In] ref byte source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted)
         {
             switch (length)
             {
@@ -718,7 +718,7 @@ namespace DotNext.Runtime
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
-        internal static unsafe long GetHashCode64(ref byte source, long length, bool salted)
+        internal static unsafe long GetHashCode64([In] ref byte source, long length, bool salted)
         {
             var hash = FNV1a64.Offset;
             switch (length)
@@ -764,7 +764,7 @@ namespace DotNext.Runtime
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
 		/// <returns>Hash code of the memory block.</returns>
 		[CLSCompliant(false)]
-        public static unsafe long GetHashCode64(void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
+        public static unsafe long GetHashCode64([In] void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
             => GetHashCode64(source, length, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
 
         /// <summary>
@@ -781,7 +781,7 @@ namespace DotNext.Runtime
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
-        public static unsafe long GetHashCode64(void* source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
+        public static unsafe long GetHashCode64([In] void* source, long length, long hash, in ValueFunc<long, long, long> hashFunction, bool salted = true)
             => GetHashCode64(ref ((byte*)source)[0], length, hash, in hashFunction, salted);
 
         /// <summary>
@@ -796,7 +796,7 @@ namespace DotNext.Runtime
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
-        public static unsafe long GetHashCode64(void* source, long length, bool salted = true)
+        public static unsafe long GetHashCode64([In] void* source, long length, bool salted = true)
             => GetHashCode64(ref ((byte*)source)[0], length, salted);
 
         /// <summary>
@@ -813,10 +813,10 @@ namespace DotNext.Runtime
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
-        public static unsafe int GetHashCode32(void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
+        public static unsafe int GetHashCode32([In] void* source, long length, int hash, Func<int, int, int> hashFunction, bool salted = true)
             => GetHashCode32(source, length, hash, new ValueFunc<int, int, int>(hashFunction, true), salted);
 
-        internal static unsafe int GetHashCode32(ref byte source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
+        internal static unsafe int GetHashCode32([In] ref byte source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
         {
             switch (length)
             {
@@ -838,7 +838,7 @@ namespace DotNext.Runtime
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
-        internal static unsafe int GetHashCode32(ref byte source, long length, bool salted)
+        internal static unsafe int GetHashCode32([In] ref byte source, long length, bool salted)
         {
             var hash = FNV1a32.Offset;
             switch (length)
@@ -875,7 +875,7 @@ namespace DotNext.Runtime
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Hash code of the memory block.</returns>
         [CLSCompliant(false)]
-        public static unsafe int GetHashCode32(void* source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
+        public static unsafe int GetHashCode32([In] void* source, long length, int hash, in ValueFunc<int, int, int> hashFunction, bool salted = true)
             => GetHashCode32(ref ((byte*)source)[0], length, hash, in hashFunction, salted);
 
         /// <summary>
@@ -890,7 +890,7 @@ namespace DotNext.Runtime
         /// <returns>Content hash code.</returns>
         /// <seealso href="http://www.isthe.com/chongo/tech/comp/fnv/#FNV-1a">FNV-1a</seealso>
         [CLSCompliant(false)]
-        public static unsafe int GetHashCode32(void* source, long length, bool salted = true)
+        public static unsafe int GetHashCode32([In] void* source, long length, bool salted = true)
             => GetHashCode32(ref ((byte*)source)[0], length, salted);
         #endregion
 
