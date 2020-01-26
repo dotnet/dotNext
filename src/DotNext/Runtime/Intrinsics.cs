@@ -63,6 +63,7 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type for which default value should be obtained.</typeparam>
         /// <returns>The default value of type <typeparamref name="T"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static T DefaultOf<T>()
         {
             DeclareLocals(true, new Var(typeof(T)));
