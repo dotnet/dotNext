@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using static System.Linq.Expressions.Expression;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
@@ -137,7 +138,7 @@ namespace DotNext.Reflection
         /// <param name="value">The value to be converted.</param>
         /// <param name="result">The conversion result.</param>
         /// <returns><see langword="true"/>, if conversion is supported by the given type; otherwise, <see langword="false"/>.</returns>
-        public static bool TryConvert<U>(U value, out T result) => TryConvert(value).TryGet(out result);
+        public static bool TryConvert<U>(U value, [NotNullWhen(true)]out T result) => TryConvert(value).TryGet(out result);
 
         /// <summary>
         /// Converts object into type <typeparamref name="T"/>.
@@ -150,6 +151,7 @@ namespace DotNext.Reflection
         /// <typeparam name="U">Type of value to convert.</typeparam>
         /// <returns>Converted value.</returns>
         /// <exception cref="InvalidCastException">Cannot convert values.</exception>
+        [return: NotNull]
         public static T Convert<U>(U value) => TryConvert(value).OrThrow<InvalidCastException>();
     }
 }
