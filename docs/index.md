@@ -38,7 +38,7 @@ This library provides a rich API to write and execute code on-the-fly. It extend
 This library provides a special types to work with unmanaged memory in type-safe manner:
 * Structured access to unmanaged memory
 * Unstructured access to unmanaged memory
-* Typed unmanaged array and list
+* Interop with unmanaged memory via [Memory](https://docs.microsoft.com/en-us/dotnet/api/system.memory-1) value type
 * CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.
 * Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc, volatile access
 * Calling unmanaged functions by pointer
@@ -62,9 +62,7 @@ But this is not all features of this library. Read more [here](./features/thread
 
 # DotNext.Net.Cluster
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?logo=NuGet"></a><br/>
-Provides basic framework for building [clustered microservices](https://en.wikipedia.org/wiki/Computer_cluster) based on network consensus and distributed messaging. Additionally, the libarary provides transport-agnostic implementation of [Raft Consensus Algoritm](https://raft.github.io/) that can be adopted for any communication protocol.
-
-Additionally, the library contains high-performance Write Ahead Log used for log replication by Raft algorithm. However, it can be used as general-purpose log.
+Provides rich framework for building [clustered microservices](https://en.wikipedia.org/wiki/Computer_cluster) based on network consensus and distributed messaging. It includes transport-agnostic implementation of [Raft Consensus Algoritm](https://raft.github.io/) that can be adopted for any communication protocol and high-performance persistent Write Ahead Log suitable for general-purpose usage.
 
 # DotNext.AspNetCore.Cluster
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?logo=NuGet"></a><br/>

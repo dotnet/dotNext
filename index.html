@@ -97,7 +97,7 @@ This library provides a special types to work with unmanaged memory in type-safe
 <ul>
 <li>Structured access to unmanaged memory</li>
 <li>Unstructured access to unmanaged memory</li>
-<li>Typed unmanaged array and list</li>
+<li>Interop with unmanaged memory via <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memory-1">Memory</a> value type</li>
 <li>CLS-compliant generic pointer type for .NET languages without direct support of such type. Use this feature to work with pointers from VB.NET or F#.</li>
 <li>Atomic thread-safe operations applicable to data placed into unmanaged memory: increment, decrement, compare-and-set etc, volatile access</li>
 <li>Calling unmanaged functions by pointer</li>
@@ -143,8 +143,7 @@ The library allows you to reuse experience of blocking synchronization with help
 <p>But this is not all features of this library. Read more <a href="features/threading/index.html">here</a>.</p>
 <h1 id="dotnextnetcluster">DotNext.Net.Cluster</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?logo=NuGet"></a><br>
-Provides basic framework for building <a href="https://en.wikipedia.org/wiki/Computer_cluster">clustered microservices</a> based on network consensus and distributed messaging. Additionally, the libarary provides transport-agnostic implementation of <a href="https://raft.github.io/">Raft Consensus Algoritm</a> that can be adopted for any communication protocol.</p>
-<p>Additionally, the library contains high-performance Write Ahead Log used for log replication by Raft algorithm. However, it can be used as general-purpose log.</p>
+Provides rich framework for building <a href="https://en.wikipedia.org/wiki/Computer_cluster">clustered microservices</a> based on network consensus and distributed messaging. It includes transport-agnostic implementation of <a href="https://raft.github.io/">Raft Consensus Algoritm</a> that can be adopted for any communication protocol and high-performance persistent Write Ahead Log suitable for general-purpose usage.</p>
 <h1 id="dotnextaspnetcorecluster">DotNext.AspNetCore.Cluster</h1>
 <p><a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.aspnetcore.cluster.svg?logo=NuGet"></a><br>
 Allows to build clustered microservices which rely on network consensus and distributed messaging with <a href="https://docs.microsoft.com/en-us/aspnet/core/">ASP.NET Core</a> framework. This library contains HTTP-based implementation of <a href="https://raft.github.io/">Raft</a> Consensus Algorithm, HTTP-based distributed messaging across cluster nodes, cluster leader detection, automatic redirection to leader node and many other things.</p>
@@ -159,7 +158,7 @@ Allows to build clustered microservices which rely on network consensus and dist
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

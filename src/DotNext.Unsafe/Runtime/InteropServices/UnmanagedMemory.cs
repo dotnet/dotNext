@@ -42,7 +42,7 @@ namespace DotNext.Runtime.InteropServices
             if (diff > 0L)
                 GC.AddMemoryPressure(diff);
             else if (diff < 0L)
-                GC.RemoveMemoryPressure(diff & long.MaxValue);  //remove sign bit
+                GC.RemoveMemoryPressure(Math.Abs(diff));
             this.size = size;
         }
 
@@ -340,7 +340,7 @@ namespace DotNext.Runtime.InteropServices
             if (diff > 0L)
                 GC.AddMemoryPressure(diff);
             else if (diff < 0L)
-                GC.RemoveMemoryPressure(diff & long.MaxValue);
+                GC.RemoveMemoryPressure(Math.Abs(diff));
         }
 
         /// <summary>

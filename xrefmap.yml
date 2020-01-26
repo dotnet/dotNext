@@ -12869,23 +12869,19 @@ references:
   fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.DotNext.IDataTransferObject.Length
   nameWithType: PersistentState.LogEntry.IDataTransferObject.Length
   nameWithType.vb: PersistentState.LogEntry.DotNext.IDataTransferObject.Length
-- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.DotNext#Net#Cluster#Replication#ILogEntry#IsSnapshot
-  name: ILogEntry.IsSnapshot
-  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_DotNext_Net_Cluster_Replication_ILogEntry_IsSnapshot
-  commentId: P:DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.DotNext#Net#Cluster#Replication#ILogEntry#IsSnapshot
-  name.vb: DotNext.Net.Cluster.Replication.ILogEntry.IsSnapshot
-  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.DotNext.Net.Cluster.Replication.ILogEntry.IsSnapshot
-  nameWithType: PersistentState.LogEntry.ILogEntry.IsSnapshot
-  nameWithType.vb: PersistentState.LogEntry.DotNext.Net.Cluster.Replication.ILogEntry.IsSnapshot
-- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.DotNext#Net#Cluster#Replication#ILogEntry#IsSnapshot*
-  name: ILogEntry.IsSnapshot
-  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_DotNext_Net_Cluster_Replication_ILogEntry_IsSnapshot_
-  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.DotNext#Net#Cluster#Replication#ILogEntry#IsSnapshot
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.IsSnapshot
+  name: IsSnapshot
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_IsSnapshot
+  commentId: P:DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.IsSnapshot
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.IsSnapshot
+  nameWithType: PersistentState.LogEntry.IsSnapshot
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.IsSnapshot*
+  name: IsSnapshot
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_IsSnapshot_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.IsSnapshot
   isSpec: "True"
-  name.vb: DotNext.Net.Cluster.Replication.ILogEntry.IsSnapshot
-  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.DotNext.Net.Cluster.Replication.ILogEntry.IsSnapshot
-  nameWithType: PersistentState.LogEntry.ILogEntry.IsSnapshot
-  nameWithType.vb: PersistentState.LogEntry.DotNext.Net.Cluster.Replication.ILogEntry.IsSnapshot
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.IsSnapshot
+  nameWithType: PersistentState.LogEntry.IsSnapshot
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.Length
   name: Length
   href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.LogEntry.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_Length
@@ -13073,6 +13069,19 @@ references:
   fullName.vb: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReadAsync(Of TReader, TResult)(TReader, System.Int64, System.Int64, CancellationToken)
   nameWithType: PersistentState.ReadAsync<TReader, TResult>(TReader, Int64, Int64, CancellationToken)
   nameWithType.vb: PersistentState.ReadAsync(Of TReader, TResult)(TReader, Int64, Int64, CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReplayAsync(CancellationToken)
+  name: ReplayAsync(CancellationToken)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReplayAsync_CancellationToken_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReplayAsync(CancellationToken)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReplayAsync(CancellationToken)
+  nameWithType: PersistentState.ReplayAsync(CancellationToken)
+- uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReplayAsync*
+  name: ReplayAsync
+  href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html#DotNext_Net_Cluster_Consensus_Raft_PersistentState_ReplayAsync_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReplayAsync
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.PersistentState.ReplayAsync
+  nameWithType: PersistentState.ReplayAsync
 - uid: DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder
   name: PersistentState.SnapshotBuilder
   href: api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.SnapshotBuilder.html

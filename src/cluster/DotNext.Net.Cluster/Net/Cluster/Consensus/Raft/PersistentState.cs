@@ -121,7 +121,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 SnapshotIndex = metadata.Index;
             }
 
-            bool ILogEntry.IsSnapshot => SnapshotIndex.HasValue;
+            /// <summary>
+            /// Gets a value indicating that this log entry is snapshot entry.
+            /// </summary>
+            public bool IsSnapshot => SnapshotIndex.HasValue;
 
             /// <summary>
             /// Gets length of the log entry content, in bytes.
@@ -1147,8 +1150,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 else if (entry.IsSnapshot)
                     await InstallSnapshot(entry, startIndex).ConfigureAwait(false);
-                else if (startIndex <= state.CommitIndex)
-                    throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
                 else if (startIndex > state.LastIndex + 1)
                     throw new ArgumentOutOfRangeException(nameof(startIndex));
                 else
@@ -1368,21 +1369,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of this method.</returns>
         protected virtual ValueTask FlushAsync() => new ValueTask();
 
-        private async ValueTask ApplyAsync(CancellationToken token)
+        private async ValueTask ApplyAsync(long startIndex, CancellationToken token)
         {
-            Partition partition = null;
-            for (var i = state.LastApplied + 1L; i <= state.CommitIndex; state.LastApplied = i++)
-                if (TryGetPartition(i, ref partition, out var switched))
+            for (Partition partition = null; startIndex <= state.CommitIndex; state.LastApplied = startIndex++)
+                if (TryGetPartition(startIndex, ref partition, out var switched))
                 {
-                    var entry = (await partition.ReadAsync(sessionManager.WriteSession, i, true, switched, token).ConfigureAwait(false)).Value;
+                    var entry = (await partition.ReadAsync(sessionManager.WriteSession, startIndex, true, switched, token).ConfigureAwait(false)).Value;
                     entry.AdjustPosition();
                     await ApplyAsync(entry).ConfigureAwait(false);
                 }
                 else
-                    Debug.Fail($"Log entry with index {i} doesn't have partition");
+                    Debug.Fail($"Log entry with index {startIndex} doesn't have partition");
             state.Flush();
             await FlushAsync().ConfigureAwait(false);
         }
+
+        private ValueTask ApplyAsync(CancellationToken token)
+            => ApplyAsync(state.LastApplied + 1L, token);
 
         /// <summary>
         /// Ensures that all committed entries are applied to the underlying data state machine known as database engine.
@@ -1390,12 +1393,45 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
-        public async Task EnsureConsistencyAsync(CancellationToken token)
+        [Obsolete("Use ReplayAsync to recover state correctly")]
+        public async Task EnsureConsistencyAsync(CancellationToken token = default)
         {
             await syncRoot.Acquire(true, token).ConfigureAwait(false);
             try
             {
                 await ApplyAsync(token).ConfigureAwait(false);
+            }
+            finally
+            {
+                syncRoot.Release();
+            }
+        }
+
+        /// <summary>
+        /// Reconstucts dataset by calling <see cref="ApplyAsync(LogEntry)"/>
+        /// for each committed entry.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous state of the method.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+        public async Task ReplayAsync(CancellationToken token = default)
+        {
+            await syncRoot.Acquire(true, token).ConfigureAwait(false);
+            try
+            {
+                LogEntry entry;
+                long startIndex;
+                //1. Apply snapshot if not empty
+                if (snapshot.Length > 0L)
+                {
+                    entry = await snapshot.ReadAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
+                    await ApplyAsync(entry).ConfigureAwait(false);
+                    startIndex = snapshot.Index;
+                }
+                else
+                    startIndex = 0L;
+                //2. Apply all committed entries
+                await ApplyAsync(startIndex + 1L, token).ConfigureAwait(false);
             }
             finally
             {
