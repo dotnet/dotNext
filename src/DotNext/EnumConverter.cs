@@ -6,6 +6,7 @@ using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static System.Globalization.CultureInfo;
 using CallSiteDescr = InlineIL.StandAloneMethodSig;
+using M = InlineIL.MethodRef;
 
 namespace DotNext
 {
@@ -39,12 +40,22 @@ namespace DotNext
             if (type.IsEnum)
                 type = type.GetEnumUnderlyingType();
             //find conversion method using Reflection
-            var method = typeof(Convert).GetMethod(conversionMethod, new[] { type }) ?? new Func<I, O>(ConvertSlow).Method;
+            var method = typeof(Convert).GetMethod(conversionMethod, new[] { type }) ?? MethodBase.GetMethodFromHandle(ConvertSlowMethodHandle);
             Debug.Assert(method.IsStatic & method.IsPublic);
             converter = method.MethodHandle.GetFunctionPointer();
         }
 
         private static O ConvertSlow(I value) => (O)value.ToType(typeof(O), CurrentCulture);
+
+        private static RuntimeMethodHandle ConvertSlowMethodHandle
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                Ldtoken(new M(typeof(EnumConverter<I, O>), nameof(ConvertSlow), typeof(I)));
+                return Return<RuntimeMethodHandle>();
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static O Convert(I value)
