@@ -86,7 +86,7 @@ namespace DotNext.IO
             get => position;
             set
             {
-                if (position < 0L || position > length)
+                if (value < 0L || value > length)
                     throw new ArgumentOutOfRangeException(nameof(value));
                 position = value;
             }

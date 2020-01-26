@@ -80,11 +80,11 @@
 </div>
 <p>The first feature is CLS compliant pointer data type with low-level memory manipulation methods. The second feature is a set of value types representing structured access to the off-heap memory:</p>
 <ol>
-<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.yml">UnmanagedMemory&lt;T&gt;</a> provides structured access to the unmanaged memory.</li>
-<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory.yml">UnmanagedMemory</a> provides unstructured access to the unmanaged memory.</li>
+<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory-1.html">UnmanagedMemory&lt;T&gt;</a> provides structured access to the unmanaged memory.</li>
+<li><a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemory.html">UnmanagedMemory</a> provides unstructured access to the unmanaged memory.</li>
 </ol>
 <p>All unmanaged data types are not thread-safe. However, there are various extension methods in <a href="../../api/DotNext.Threading.AtomicPointer.html">AtomicPointer</a> class supporting thread-safe manipulations with unmanaged memory. Additionally, these types are implicitly convertible into <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type.</p>
-<p>Both types are inherited from <a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.yml">UnmanagedMemoryHandle</a>. Direct manipulations with the memory are possible using the following approaches:</p>
+<p>Both types are inherited from <a href="../../api/DotNext.Runtime.InteropServices.UnmanagedMemoryHandle.html">UnmanagedMemoryHandle</a>. Direct manipulations with the memory are possible using the following approaches:</p>
 <ul>
 <li><code>Pointer</code> property provides flexible manipulations using typed pointer to the memory. It is unsafe way because the pointer doesn't provide bound checks</li>
 <li><code>Bytes</code> property provides memory access using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.span-1">Span</a> data type. It is less flexible in comparison with pointer but safe because it implements bound checks</li>
@@ -145,7 +145,7 @@ i = ptr.IncrementAndGetValue(); //i == 43
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/features/unsafe/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/unsafe/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
