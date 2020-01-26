@@ -63,6 +63,6 @@ namespace DotNext.Reflection
         /// <param name="instance">The object that contains instance field.</param>
         /// <returns>The managed pointer to the field.</returns>
         [return: MaybeNull]
-        public static ref V Unreflect<T, V>(this FieldInfo field, [DisallowNull]in T instance) => ref Field<T, V>.GetOrCreate(field)[instance]!;
+        public static ref V Unreflect<T, V>(this FieldInfo field, in T instance) where T : notnull => ref Field<T, V>.GetOrCreate(field)[instance]!;
     }
 }
