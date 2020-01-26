@@ -17,6 +17,12 @@ The configuration of all benchmarks:
 | Logical Cores | 8 |
 | RAM | 24 GB |
 
+You can run benchmarks using `Bench` build configuration as follows:
+```bash
+cd <dotnext-clone-path>/DotNext.Benchmarks
+dotnet run -c Bench
+```
+
 # Bitwise Equality
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs) compares performance of [BitwiseComparer&lt;T&gt;.Equals](./api/DotNext.BitwiseComparer-1.yml) with overloaded equality `==` operator. Testing data types: [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
