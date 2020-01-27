@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     /// as singleton service in DI container.
     /// </remarks>
     [CLSCompliant(false)]
-    public interface IDedicatedHostBuilder: IHostingStartup
+    public interface IDedicatedHostBuilder : IHostingStartup
     {
         /// <summary>
         /// Configures application dedicated for Raft 

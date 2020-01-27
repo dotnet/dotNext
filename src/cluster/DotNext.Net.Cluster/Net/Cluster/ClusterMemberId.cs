@@ -6,8 +6,6 @@ using System.Runtime.Serialization;
 
 namespace DotNext.Net.Cluster
 {
-    using Intrinsics = Runtime.Intrinsics;
-
     /// <summary>
     /// Represents unique identifier of cluster member.
     /// </summary>
@@ -35,7 +33,7 @@ namespace DotNext.Net.Cluster
         internal ClusterMemberId(IPEndPoint endpoint)
         {
             address = default;
-            var bytes = Intrinsics.AsSpan(ref address);
+            var bytes = Span.AsBytes(ref address);
             if (!endpoint.Address.TryWriteBytes(bytes, out length))
                 throw new ArgumentException(ExceptionMessages.UnsupportedAddressFamily, nameof(endpoint));
             port = endpoint.Port;
@@ -83,7 +81,7 @@ namespace DotNext.Net.Cluster
         /// </summary>
         /// <returns>The hexadecimal representation of this identifier.</returns>
         public override string ToString()
-            => Intrinsics.AsReadOnlySpan(this).ToHex();
+            => Span.AsReadOnlyBytes(this).ToHex();
 
         /// <summary>
         /// Attempts to parse cluster member identifier.
@@ -94,7 +92,7 @@ namespace DotNext.Net.Cluster
         public static bool TryParse(ReadOnlySpan<char> identifier, out ClusterMemberId value)
         {
             value = default;
-            var bytes = Intrinsics.AsSpan(ref value);
+            var bytes = Span.AsBytes(ref value);
             return identifier.FromHex(bytes) == bytes.Length;
         }
 

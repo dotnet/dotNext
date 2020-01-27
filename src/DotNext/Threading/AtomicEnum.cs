@@ -285,7 +285,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-        public readonly override bool Equals(object? other) => other switch
+        public override readonly bool Equals(object? other) => other switch
         {
             E b => Equals(b),
             AtomicEnum<E> b => b.value.VolatileRead() == Unsafe.AsRef(in value).VolatileRead(),
@@ -296,13 +296,13 @@ namespace DotNext.Threading
         /// Computes hash code for the stored value.
         /// </summary>
         /// <returns>The hash code of the stored boolean value.</returns>
-        public readonly override int GetHashCode() => Unsafe.AsRef(in value).VolatileRead().GetHashCode();
+        public override readonly int GetHashCode() => Unsafe.AsRef(in value).VolatileRead().GetHashCode();
 
         /// <summary>
         /// Converts the value in this container to its textual representation.
         /// </summary>
         /// <returns>The value in this container converted to string.</returns>
-        public readonly override string ToString() => Value.ToString();
+        public override readonly string ToString() => Value.ToString();
 
         readonly void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
             => info.AddValue(ValueSerData, value);

@@ -6,8 +6,6 @@ using Xunit;
 
 namespace DotNext.IO
 {
-    using Intrinsics = Runtime.Intrinsics;
-
     [ExcludeFromCodeCoverage]
     public sealed class DataTransferObjectTests : Assert
     {
@@ -42,7 +40,7 @@ namespace DotNext.IO
         public static async Task ToBlittableType()
         {
             var bytes = new byte[sizeof(decimal)];
-            Intrinsics.AsReadOnlySpan(42M).CopyTo(bytes);
+            Span.AsReadOnlyBytes(42M).CopyTo(bytes);
             var dto = new BinaryTransferObject(bytes);
             Equal(42M, await dto.ToType<decimal, BinaryTransferObject>());
         }

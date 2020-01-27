@@ -268,19 +268,19 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other lock to compare.</param>
         /// <returns><see langword="true"/> if this lock is the same as the specified lock; otherwise, <see langword="false"/>.</returns>
-        public readonly override bool Equals(object? other) => other is Lock @lock && Equals(@lock);
+        public override readonly bool Equals(object? other) => other is Lock @lock && Equals(@lock);
 
         /// <summary>
         /// Computes hash code of this lock.
         /// </summary>
         /// <returns>The hash code of this lock.</returns>
-        public readonly override int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
+        public override readonly int GetHashCode() => HashCode.Combine(lockedObject, type, owner);
 
         /// <summary>
         /// Returns actual type of this lock in the form of the string.
         /// </summary>
         /// <returns>The actual type of this lock.</returns>
-        public readonly override string ToString() => type.ToString();
+        public override readonly string ToString() => type.ToString();
 
         /// <summary>
         /// Determines whether two locks are the same.

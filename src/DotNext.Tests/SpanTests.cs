@@ -158,7 +158,7 @@ namespace DotNext
         public static void ReadValues()
         {
             var ids = new TwoIDs { First = Guid.NewGuid(), Second = Guid.NewGuid() };
-            var span = Runtime.Intrinsics.AsReadOnlySpan(in ids);
+            var span = Span.AsReadOnlyBytes(in ids);
             Equal(ids.First, Span.Read<Guid>(ref span));
             Equal(ids.Second, Span.Read<Guid>(ref span));
             True(span.IsEmpty);

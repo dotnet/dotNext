@@ -155,7 +155,7 @@ namespace DotNext.Runtime.InteropServices
         /// <summary>
         /// Converts this pointer into span of bytes.
         /// </summary>
-        public unsafe Span<byte> Bytes => IsNull ? default : Intrinsics.AsSpan(value);
+        public unsafe Span<byte> Bytes => IsNull ? default : Span.AsBytes(value);
 
         /// <summary>
 		/// Gets or sets pointer value at the specified position in the memory.
@@ -254,7 +254,7 @@ namespace DotNext.Runtime.InteropServices
             return count;
         }
 
-        private unsafe static void WriteToSteam(byte* source, long length, Stream destination)
+        private static unsafe void WriteToSteam(byte* source, long length, Stream destination)
         {
             while (length > 0L)
             {
@@ -344,7 +344,7 @@ namespace DotNext.Runtime.InteropServices
             return count;
         }
 
-        private unsafe static long ReadFromStream(Stream source, byte* destination, long length)
+        private static unsafe long ReadFromStream(Stream source, byte* destination, long length)
         {
             var total = 0L;
             while (length > 0)
@@ -810,7 +810,7 @@ namespace DotNext.Runtime.InteropServices
         /// </summary>
         /// <param name="handle">The memory handle.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public unsafe static explicit operator Pointer<T>(in MemoryHandle handle) => new Pointer<T>(new IntPtr(handle.Pointer));
+        public static unsafe explicit operator Pointer<T>(in MemoryHandle handle) => new Pointer<T>(new IntPtr(handle.Pointer));
 
         /// <summary>
         /// Checks whether this pointer is not zero.

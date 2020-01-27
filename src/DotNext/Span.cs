@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
@@ -479,12 +480,42 @@ namespace DotNext
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The deserialized value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is smaller than <typeparamref name="T"/>.</exception>
-        public unsafe static T Read<T>(ref ReadOnlySpan<byte> bytes)
+        public static unsafe T Read<T>(ref ReadOnlySpan<byte> bytes)
             where T : unmanaged
         {
             var result = MemoryMarshal.Read<T>(bytes);
             bytes = bytes.Slice(sizeof(T));
             return result;
         }
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="Span{T}"/>.
+        /// </summary>
+        /// <param name="value">The managed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<byte> AsBytes<T>(ref T value) where T : unmanaged => MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref value, 1));
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="ReadOnlySpan{T}"/>.
+        /// </summary>
+        /// <param name="value">The managed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T value) where T : unmanaged => MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref AsRef(in value), 1));
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="Span{T}"/>.
+        /// </summary>
+        /// <param name="pointer">The typed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
+        [CLSCompliant(false)]
+        public static unsafe Span<byte> AsBytes<T>(T* pointer) where T : unmanaged => AsBytes(ref pointer[0]);
     }
 }

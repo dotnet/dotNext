@@ -4,8 +4,6 @@ using Xunit;
 
 namespace DotNext.Net.Cluster
 {
-    using Intrinsics = Runtime.Intrinsics;
-
     [ExcludeFromCodeCoverage]
     public sealed class ClusterMemberIdTests : Assert
     {
@@ -37,7 +35,7 @@ namespace DotNext.Net.Cluster
         public static unsafe void RestoreFromBytes()
         {
             var id1 = new Random().Next<ClusterMemberId>();
-            var bytes = Intrinsics.AsReadOnlySpan(id1);
+            var bytes = Span.AsReadOnlyBytes(id1);
             var id2 = new ClusterMemberId(bytes);
             Equal(id1, id2);
         }

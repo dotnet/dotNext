@@ -5,7 +5,6 @@ namespace DotNext
 {
     using ByteBuffer = Buffers.MemoryRental<byte>;
     using CharBuffer = Buffers.MemoryRental<char>;
-    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Provides random data generation.
@@ -149,7 +148,7 @@ namespace DotNext
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>].</returns>
-        public unsafe static int Next(this RandomNumberGenerator random)
+        public static unsafe int Next(this RandomNumberGenerator random)
         {
             int buffer = 0;
             random.GetBytes(new Span<byte>(&buffer, sizeof(int)));
@@ -173,7 +172,7 @@ namespace DotNext
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>Randomly generated floating-point number.</returns>
-        public unsafe static double NextDouble(this RandomNumberGenerator random)
+        public static unsafe double NextDouble(this RandomNumberGenerator random)
         {
             double result = random.Next();
             //normalize to range [0, 1)
@@ -190,7 +189,7 @@ namespace DotNext
             where T : unmanaged
         {
             var result = default(T);
-            random.NextBytes(Intrinsics.AsSpan(ref result));
+            random.NextBytes(Span.AsBytes(ref result));
             return result;
         }
 
@@ -204,7 +203,7 @@ namespace DotNext
             where T : unmanaged
         {
             var result = default(T);
-            random.GetBytes(Intrinsics.AsSpan(ref result));
+            random.GetBytes(Span.AsBytes(ref result));
             return result;
         }
     }

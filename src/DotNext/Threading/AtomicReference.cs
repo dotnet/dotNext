@@ -433,7 +433,7 @@ namespace DotNext.Threading
         /// Returns textual representation of the stored value.
         /// </summary>
         /// <returns>The textual representation of the stored value.</returns>
-		public readonly override string ToString() => Value?.ToString() ?? "NULL";
+		public override readonly string ToString() => Value?.ToString() ?? "NULL";
 
         /// <summary>
         /// Checks whether the stored value is equal to the given value.
@@ -447,14 +447,14 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if the stored value is equal to <paramref name="other"/> value.</returns>
-        public readonly override bool Equals(object? other)
+        public override readonly bool Equals(object? other)
             => other is AtomicReference<T> atomic ? Equals(atomic.Value) : Equals(other, Value);
 
         /// <summary>
         /// Computes hash code for the stored value.
         /// </summary>
         /// <returns>The hash code of the stored value.</returns>
-		public readonly override int GetHashCode() => Value?.GetHashCode() ?? 0;
+		public override readonly int GetHashCode() => Value?.GetHashCode() ?? 0;
 
         /// <summary>
         /// Modifies value of the container atomically.

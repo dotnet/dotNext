@@ -358,39 +358,6 @@ namespace DotNext.Runtime
             return ref ReturnRef<byte>();
         }
 
-        /// <summary>
-        /// Converts contiguous memory identified by the specified pointer
-        /// into <see cref="Span{T}"/>.
-        /// </summary>
-        /// <param name="value">The managed pointer.</param>
-        /// <typeparam name="T">The type of the pointer.</typeparam>
-        /// <returns>The span of contiguous memory.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe Span<byte> AsSpan<T>(ref T value) where T : unmanaged => MemoryMarshal.CreateSpan(ref Unsafe.As<T, byte>(ref value), sizeof(T));
-
-        private static ReadOnlySpan<T> CreateReadOnlySpan<T>(in T address, int count = 1)
-            => MemoryMarshal.CreateSpan<T>(ref Unsafe.AsRef(in address), count);
-
-        /// <summary>
-        /// Converts contiguous memory identified by the specified pointer
-        /// into <see cref="ReadOnlySpan{T}"/>.
-        /// </summary>
-        /// <param name="value">The managed pointer.</param>
-        /// <typeparam name="T">The type of the pointer.</typeparam>
-        /// <returns>The span of contiguous memory.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySpan<byte> AsReadOnlySpan<T>(in T value) where T : unmanaged => MemoryMarshal.AsBytes(CreateReadOnlySpan<T>(in value, 1));
-
-        /// <summary>
-        /// Converts contiguous memory identified by the specified pointer
-        /// into <see cref="Span{T}"/>.
-        /// </summary>
-        /// <param name="pointer">The typed pointer.</param>
-        /// <typeparam name="T">The type of the pointer.</typeparam>
-        /// <returns>The span of contiguous memory.</returns>
-        [CLSCompliant(false)]
-        public static unsafe Span<byte> AsSpan<T>(T* pointer) where T : unmanaged => AsSpan(ref pointer[0]);
-
         internal static int Compare(ref byte first, ref byte second, long length)
         {
             var comparison = 0;
@@ -422,7 +389,7 @@ namespace DotNext.Runtime
         public static unsafe int Compare(void* first, void* second, long length)
             => Compare(ref Unsafe.AsRef<byte>(first), ref Unsafe.AsRef<byte>(second), length);
 
-        internal unsafe static bool EqualsAligned(ref byte first, ref byte second, long length)
+        internal static unsafe bool EqualsAligned(ref byte first, ref byte second, long length)
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
@@ -900,6 +867,6 @@ namespace DotNext.Runtime
         /// </summary>
         /// <typeparam name="T">Blittable type.</typeparam>
         /// <param name="value">The value which bytes should be reversed.</param>
-        public static void Reverse<T>(ref T value) where T : unmanaged => AsSpan(ref value).Reverse();
+        public static void Reverse<T>(ref T value) where T : unmanaged => Span.AsBytes(ref value).Reverse();
     }
 }
