@@ -130,9 +130,11 @@ namespace DotNext.Threading.Channels
             }
         }
 
-        private static async Task Produce(ChannelWriter<decimal> writer)
+        private static Task Produce(ChannelWriter<decimal> writer) => Produce(writer, 0M, 500M);
+
+        private static async Task Produce(ChannelWriter<decimal> writer, decimal start, decimal count)
         {
-            for (decimal i = 0M; i < 500M; i++)
+            for (decimal i = start; i < count; i++)
                 await writer.WriteAsync(i);
         }
 
@@ -140,6 +142,14 @@ namespace DotNext.Threading.Channels
         {
             for (decimal i = 0M; i < 500M; i++)
                 Equal(i, await reader.ReadAsync());
+        }
+
+        private static async Task ConsumeInRange(ChannelReader<decimal> reader)
+        {
+            const decimal LowerBound = 0M;
+            const decimal UpperBound = 500M;
+            for (decimal i = LowerBound; i < UpperBound; i++)
+                True((await reader.ReadAsync()).Between(LowerBound, UpperBound, BoundType.LeftClosed));
         }
 
         [Theory]
@@ -151,6 +161,20 @@ namespace DotNext.Threading.Channels
             var consumer = Consume(channel.Reader);
             var producer = Produce(channel.Writer);
             await Task.WhenAll(consumer, producer);
+        }
+        
+        [Theory]
+        [InlineData(0L, true)]
+        [InlineData(102400L, true)]
+        [InlineData(0L, false)]
+        [InlineData(102400L, false)]
+        public static async Task ProduceConsumeInParallel(long initialSize, bool singleReader)
+        {
+            using var channel = new SerializationChannel<decimal>(new PersistentChannelOptions { SingleReader = singleReader, SingleWriter = false, PartitionCapacity = 100, InitialPartitionSize = initialSize });
+            var consumer = ConsumeInRange(channel.Reader);
+            var producer1 = Produce(channel.Writer, 0M, 250M);
+            var producer2 = Produce(channel.Writer, 250M, 500M);
+            await Task.WhenAll(consumer, producer1, producer2);
         }
     }
 }
