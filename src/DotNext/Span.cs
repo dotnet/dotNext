@@ -40,12 +40,6 @@ namespace DotNext
                 low = str[1];
             }
 
-            private HexByte(char high, char low)
-            {
-                this.high = high;
-                this.low = low;
-            }
-
             //standard C# operators are replaced with Add and Subtract intrisics here
             //because I don't need redundant conv.u instruction when converting back from int32 to char
             //conv.u instruction adds overhead for each hex character
