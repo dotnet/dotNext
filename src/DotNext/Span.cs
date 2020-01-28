@@ -46,9 +46,20 @@ namespace DotNext
                 this.low = low;
             }
 
-            internal char GetHigh(bool uppercase) => uppercase ? high : char.ToLowerInvariant(high);
+            private static char ToLowerFast(char ch) => ch switch
+            {
+                'A' => 'a',
+                'B' => 'b',
+                'C' => 'c',
+                'D' => 'd',
+                'E' => 'e',
+                'F' => 'f',
+                _ => char.ToLowerInvariant(ch)
+            };
 
-            internal char GetLow(bool uppercase) => uppercase ? low : char.ToLowerInvariant(low);
+            internal char GetHigh(bool uppercase) => uppercase ? high : ToLowerFast(high);
+
+            internal char GetLow(bool uppercase) => uppercase ? low : ToLowerFast(low);
 
             public static implicit operator ReadOnlySpan<char>(in HexByte hex) => MemoryMarshal.CreateReadOnlySpan(ref AsRef(in hex.high), 2);
         }
