@@ -46,16 +46,7 @@ namespace DotNext
                 this.low = low;
             }
 
-            private static char ToLowerFast(char ch) => ch switch
-            {
-                'A' => 'a',
-                'B' => 'b',
-                'C' => 'c',
-                'D' => 'd',
-                'E' => 'e',
-                'F' => 'f',
-                _ => char.ToLowerInvariant(ch)
-            };
+            private static char ToLowerFast(char ch) => ch >= 'A' && ch <= 'F' ? (char)('a' + (ch - 'A')) : ch;
 
             internal char GetHigh(bool uppercase) => uppercase ? high : ToLowerFast(high);
 
