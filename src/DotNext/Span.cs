@@ -46,7 +46,10 @@ namespace DotNext
                 this.low = low;
             }
 
-            private static char ToLowerFast(char ch) => ch >= 'A' && ch <= 'F' ? (char)('a' + (ch - 'A')) : ch;
+            //standard C# operators are replaced with Add and Subtract intrisics here
+            //because I don't need redundant conv.u instruction when converting back from int32 to char
+            //conv.u instruction adds overhead for each hex character
+            private static char ToLowerFast(char ch) => ch >= 'A' && ch <= 'F' ? 'a'.Add(ch.Subtract('A')) : ch;
 
             internal char GetHigh(bool uppercase) => uppercase ? high : ToLowerFast(high);
 
