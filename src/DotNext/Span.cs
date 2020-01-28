@@ -506,7 +506,7 @@ namespace DotNext
         /// <typeparam name="T">The type of the pointer.</typeparam>
         /// <returns>The span of contiguous memory.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T value) where T : unmanaged => MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref AsRef(in value), 1));
+        public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T value) where T : unmanaged => AsBytes(ref AsRef(in value));
 
         /// <summary>
         /// Converts contiguous memory identified by the specified pointer
