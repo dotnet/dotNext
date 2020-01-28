@@ -30,15 +30,27 @@ namespace DotNext
         [StructLayout(LayoutKind.Sequential)]
         private readonly struct HexByte
         {
-            internal readonly char High, Low;
+            private readonly char high, low;
 
             internal HexByte(byte value)
             {
                 var str = value.ToString("X2", InvariantCulture);
                 Debug.Assert(str.Length == 2);
-                High = str[0];
-                Low = str[1];
+                high = str[0];
+                low = str[1];
             }
+
+            private HexByte(char high, char low)
+            {
+                this.high = high;
+                this.low = low;
+            }
+
+            internal char GetHigh(bool uppercase) => uppercase ? high : char.ToLowerInvariant(high);
+
+            internal char GetLow(bool uppercase) => uppercase ? low : char.ToLowerInvariant(low);
+
+            public static implicit operator ReadOnlySpan<char>(in HexByte hex) => MemoryMarshal.CreateReadOnlySpan(ref AsRef(in hex.high), 2);
         }
 
         private static readonly ReadOnlyMemory<HexByte> HexLookupTable;
@@ -404,8 +416,9 @@ namespace DotNext
         /// </summary>
         /// <param name="bytes">The bytes to convert.</param>
         /// <param name="output">The buffer used to write hexadecimal representation of bytes.</param>
+        /// <param name="uppercase"><see langword="true"/> to return uppercased hex string; <see langword="false"/> to return lowercased hex string.</param>
         /// <returns>The actual number of characters in <paramref name="output"/> written by the method.</returns>
-        public static int ToHex(this ReadOnlySpan<byte> bytes, Span<char> output)
+        public static int ToHex(this ReadOnlySpan<byte> bytes, Span<char> output, bool uppercase = true)
         {
             if (bytes.IsEmpty || output.IsEmpty)
                 return 0;
@@ -416,9 +429,9 @@ namespace DotNext
             for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
             {
                 var hexInfo = Add(ref firstHex, Add(ref firstByte, i));
-                charPtr = hexInfo.High;
+                charPtr = hexInfo.GetHigh(uppercase);
                 charPtr = ref Add(ref charPtr, 1);
-                charPtr = hexInfo.Low;
+                charPtr = hexInfo.GetLow(uppercase);
             }
             return bytesCount * 2;
         }
@@ -427,14 +440,15 @@ namespace DotNext
         /// Converts set of bytes into hexadecimal representation.
         /// </summary>
         /// <param name="bytes">The bytes to convert.</param>
+        /// <param name="uppercase"><see langword="true"/> to return uppercased hex string; <see langword="false"/> to return lowercased hex string.</param>
         /// <returns>The hexadecimal representation of bytes.</returns>
-        public static string ToHex(this ReadOnlySpan<byte> bytes)
+        public static string ToHex(this ReadOnlySpan<byte> bytes, bool uppercase = true)
         {
             var count = bytes.Length * 2;
             if (count == 0)
                 return string.Empty;
             using CharBuffer buffer = count <= CharBuffer.StackallocThreshold ? stackalloc char[count] : new CharBuffer(count);
-            count = ToHex(bytes, buffer.Span);
+            count = ToHex(bytes, buffer.Span, uppercase);
             return new string(buffer.Span.Slice(0, count));
         }
 
@@ -453,7 +467,7 @@ namespace DotNext
             ref HexByte pair = ref As<char, HexByte>(ref MemoryMarshal.GetReference(chars));
             ref byte bytePtr = ref MemoryMarshal.GetReference(output);
             for (var i = 0; i < charCount; i += 2, bytePtr = ref Add(ref bytePtr, 1), pair = ref Add(ref pair, 1))
-                bytePtr = byte.Parse(MemoryMarshal.CreateSpan(ref AsRef(in pair.High), 2), NumberStyles.AllowHexSpecifier, InvariantCulture);
+                bytePtr = byte.Parse(pair, NumberStyles.AllowHexSpecifier, InvariantCulture);
             return charCount / 2;
         }
 
