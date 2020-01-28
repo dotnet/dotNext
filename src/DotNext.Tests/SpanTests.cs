@@ -92,8 +92,8 @@ namespace DotNext
             Equal(2, span[1]);
         }
 
-        private static string ToHexSlow(byte[] data, bool uppercase)
-            => string.Join(string.Empty, Array.ConvertAll(data, i => i.ToString(uppercase ? "X2" : "x2", null)));
+        private static string ToHexSlow(byte[] data, bool lowercased)
+            => string.Join(string.Empty, Array.ConvertAll(data, i => i.ToString(lowercased ? "x2" : "X2", null)));
 
         [Theory]
         [InlineData(0, true)]
@@ -102,12 +102,12 @@ namespace DotNext
         [InlineData(0, false)]
         [InlineData(128, false)]
         [InlineData(2048, false)]
-        public static void ToHexConversion(int arraySize, bool uppercase)
+        public static void ToHexConversion(int arraySize, bool lowercased)
         {
             var data = new byte[arraySize];
             var rnd = new Random();
             rnd.NextBytes(data);
-            Equal(ToHexSlow(data, uppercase), new ReadOnlySpan<byte>(data).ToHex(uppercase));
+            Equal(ToHexSlow(data, lowercased), new ReadOnlySpan<byte>(data).ToHex(lowercased));
         }
 
         [Fact]
@@ -149,12 +149,12 @@ namespace DotNext
         [InlineData(0, false)]
         [InlineData(128, false)]
         [InlineData(2048, false)]
-        public static void FromHexConversion(int arraySize, bool uppercase)
+        public static void FromHexConversion(int arraySize, bool lowercased)
         {
             var data = new byte[arraySize];
             var rnd = new Random();
             rnd.NextBytes(data);
-            ReadOnlySpan<char> hex = ToHexSlow(data, uppercase);
+            ReadOnlySpan<char> hex = ToHexSlow(data, lowercased);
             Equal(data, hex.FromHex());
         }
 
