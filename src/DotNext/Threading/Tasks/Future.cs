@@ -119,13 +119,7 @@ namespace DotNext.Threading.Tasks
         /// Moves this Future into completed state and execute all attached continuations.
         /// </summary>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        protected void Complete()
-        {
-            if (continuation is null)
-                return;
-            continuation();
-            continuation = null;
-        }
+        protected void Complete() => Interlocked.Exchange(ref continuation, null)?.Invoke();
 
         /// <summary>
         /// Attaches the callback that will be invoked on completion.
