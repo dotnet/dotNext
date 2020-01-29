@@ -18,12 +18,13 @@ namespace DotNext
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T Clamp<T>(this T value, T min, T max)
             where T : notnull, IComparable<T>
-            => (Math.Sign(value.CompareTo(min)) + Math.Sign(value.CompareTo(max))) switch
-            {
-                2 => max,
-                -2 => min,
-                _ => value
-            };
+        {
+            if(value.CompareTo(min) < 0)
+                return min;
+            if(value.CompareTo(max) > 0)
+                return max;
+            return value;
+        }
 
         /// <summary>
 		/// Checks whether specified value is in range.
