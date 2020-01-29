@@ -23,7 +23,7 @@ namespace DotNext
     {
         private const BindingFlags PublicStaticFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
         private bool salted;
-        private ICollection<string> excludedFields;
+        private ICollection<string>? excludedFields;
 
         /// <summary>
         /// Sets an array of excluded field names.
