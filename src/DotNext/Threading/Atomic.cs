@@ -295,7 +295,7 @@ namespace DotNext.Threading
         /// Converts the stored value into string atomically.
         /// </summary>
         /// <returns>The string returned from <see cref="object.ToString"/> method called on the stored value.</returns>
-        public readonly override string ToString()
+        public override readonly string ToString()
         {
             Read(out var result);
             return result.ToString();

@@ -254,7 +254,7 @@ namespace DotNext.Threading
         /// Computes hash code for the stored value.
         /// </summary>
         /// <returns>The hash code of the stored boolean value.</returns>
-        public readonly override int GetHashCode() => Unsafe.AsRef(in value).VolatileRead();
+        public override readonly int GetHashCode() => Unsafe.AsRef(in value).VolatileRead();
 
         /// <summary>
         /// Determines whether stored value is equal to
@@ -262,7 +262,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="other">Other value to compare.</param>
         /// <returns><see langword="true"/>, if stored value is equal to other value; otherwise, <see langword="false"/>.</returns>
-        public readonly override bool Equals(object? other) => other switch
+        public override readonly bool Equals(object? other) => other switch
         {
             bool b => Equals(b),
             AtomicBoolean b => Value == b.Value,
@@ -273,7 +273,7 @@ namespace DotNext.Threading
         /// Returns stored boolean value in the form of <see cref="string"/>.
         /// </summary>
         /// <returns>Textual representation of stored boolean value.</returns>
-        public readonly override string ToString() => value.ToBoolean() ? bool.TrueString : bool.FalseString;
+        public override readonly string ToString() => value.ToBoolean() ? bool.TrueString : bool.FalseString;
 
         readonly void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
             => info.AddValue(ValueSerData, value);

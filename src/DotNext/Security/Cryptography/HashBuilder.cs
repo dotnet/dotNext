@@ -10,8 +10,6 @@ using MR = InlineIL.MethodRef;
 
 namespace DotNext.Security.Cryptography
 {
-    using Intrinsics = Runtime.Intrinsics;
-
     /// <summary>
     /// Represents convenient facade for <see cref="HashAlgorithm"/>
     /// to avoid memory allocations during hash computing.
@@ -111,7 +109,7 @@ namespace DotNext.Security.Cryptography
         /// <typeparam name="T">The type of the value to add to the hash code.</typeparam>        
         public void Add<T>(in T value)
             where T : unmanaged
-            => Add(Intrinsics.AsReadOnlySpan(in value));
+            => Add(Span.AsReadOnlyBytes(in value));
 
         /// <summary>
         /// Resets internal state of hash algorithm.

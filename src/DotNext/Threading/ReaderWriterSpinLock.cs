@@ -45,13 +45,13 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="other">The lock stamp to compare.</param>
             /// <returns><see langword="true"/> of this stamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-            public readonly override bool Equals(object? other) => other is LockStamp stamp && Equals(stamp);
+            public override readonly bool Equals(object? other) => other is LockStamp stamp && Equals(stamp);
 
             /// <summary>
             /// Computes hash code for this stamp.
             /// </summary>
             /// <returns>The hash code of this stamp.</returns>
-            public readonly override int GetHashCode() => version;
+            public override readonly int GetHashCode() => version;
 
             /// <summary>
             /// Determines whether the first stamp represents the same version of the lock state

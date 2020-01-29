@@ -6,7 +6,6 @@ using Xunit;
 namespace DotNext.Security.Cryptography
 {
     using Buffers;
-    using Intrinsics = Runtime.Intrinsics;
 
     [ExcludeFromCodeCoverage]
     public sealed class HashBuilderTests : Assert
@@ -71,7 +70,7 @@ namespace DotNext.Security.Cryptography
             var hash2 = hash.Clone() as byte[];
             Array.Clear(hash2, 0, hash2.Length);
             NotEqual(hash, hash2);
-            True(alg.TryComputeHash(Intrinsics.AsReadOnlySpan(in data), hash2, out _));
+            True(alg.TryComputeHash(Span.AsReadOnlyBytes(in data), hash2, out _));
             Equal(hash, hash2);
         }
     }

@@ -23,7 +23,7 @@ namespace DotNext
     {
         private const BindingFlags PublicStaticFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly;
         private bool salted;
-        private ICollection<string> excludedFields;
+        private ICollection<string>? excludedFields;
 
         /// <summary>
         /// Sets an array of excluded field names.
@@ -86,7 +86,7 @@ namespace DotNext
                 typeof(OneDimensionalArray)
                         .GetMethod(nameof(OneDimensionalArray.BitwiseEquals), 1, PublicStaticFlags, null, new[] { arrayType, arrayType }, null)!
                         .MakeGenericMethod(itemType)
-                : new Func<IEnumerable<object>, IEnumerable<object>, bool>(Sequence.SequenceEqual).Method;
+                : new Func<IEnumerable<object>?, IEnumerable<object>?, bool>(Sequence.SequenceEqual).Method;
         }
 
         private static MethodCallExpression EqualsMethodForArrayElementType(MemberExpression fieldX, MemberExpression fieldY)

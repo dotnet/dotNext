@@ -11,7 +11,7 @@ namespace DotNext.Buffers
     }
 
     [StructLayout(LayoutKind.Auto)]
-    internal unsafe readonly struct UnsafeBuffer<T> : IBuffer<T>
+    internal readonly unsafe struct UnsafeBuffer<T> : IBuffer<T>
         where T : unmanaged
     {
         private readonly T* ptr;

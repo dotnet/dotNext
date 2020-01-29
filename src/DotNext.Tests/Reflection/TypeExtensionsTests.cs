@@ -84,5 +84,31 @@ namespace DotNext.Reflection
             Throws<InvalidCastException>(() => typeof(int).Cast(null));
             Throws<InvalidCastException>(() => typeof(int).Cast("abc"));
         }
+
+        [Fact]
+        public static void Devirtualization()
+        {
+            var toStringMethod = typeof(object).GetMethod(nameof(ToString));
+            var overriddenMethod = typeof(string).Devirtualize(toStringMethod);
+            NotEqual(toStringMethod, overriddenMethod);
+            Equal(typeof(string), overriddenMethod.DeclaringType);
+        }
+
+        [Fact]
+        public static void IntefaceMethodResolution()
+        {
+            var toInt32Method = typeof(IConvertible).GetMethod(nameof(IConvertible.ToInt32));
+            var overriddenMethod = typeof(int).Devirtualize(toInt32Method);
+            NotEqual(toInt32Method, overriddenMethod);
+            Equal(typeof(int), overriddenMethod.DeclaringType);
+        }
+
+        [Fact]
+        public static void EqualsMethodResolution()
+        {
+            var getTypeMethod = typeof(object).GetMethod(nameof(GetType));
+            var overriddenMethod = typeof(string).Devirtualize(getTypeMethod);
+            Equal(getTypeMethod, overriddenMethod);
+        }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -50,9 +49,8 @@ namespace DotNext.Reflection
         /// </summary>
         /// <typeparam name="V">The field type.</typeparam>
         /// <param name="field">The field to unreflect.</param>
-        /// <returns>The managed pointer to the field.</returns>
-        [return: MaybeNull]
-        public static ref V Unreflect<V>(this FieldInfo field) => ref Field<V>.GetOrCreate(field).Value!;
+        /// <returns>Unreflected static field.</returns>
+        public static Field<V> Unreflect<V>(this FieldInfo field) => Field<V>.GetOrCreate(field);
 
         /// <summary>
         /// Obtains managed pointer to the instance field.
@@ -60,9 +58,7 @@ namespace DotNext.Reflection
         /// <typeparam name="T">The type of the object that declares instance field.</typeparam>
         /// <typeparam name="V">The field type.</typeparam>
         /// <param name="field">The field to unreflect.</param>
-        /// <param name="instance">The object that contains instance field.</param>
-        /// <returns>The managed pointer to the field.</returns>
-        [return: MaybeNull]
-        public static ref V Unreflect<T, V>(this FieldInfo field, [DisallowNull]in T instance) => ref Field<T, V>.GetOrCreate(field)[instance]!;
+        /// <returns>Unreflected instance field.</returns>
+        public static Field<T, V> Unreflect<T, V>(this FieldInfo field) where T : notnull => Field<T, V>.GetOrCreate(field);
     }
 }

@@ -92,19 +92,22 @@ namespace DotNext
             Equal(2, span[1]);
         }
 
-        private static string ToHexSlow(byte[] data)
-            => string.Join(string.Empty, Array.ConvertAll(data, i => i.ToString("X2", null)));
+        private static string ToHexSlow(byte[] data, bool lowercased)
+            => string.Join(string.Empty, Array.ConvertAll(data, i => i.ToString(lowercased ? "x2" : "X2", null)));
 
         [Theory]
-        [InlineData(0)]
-        [InlineData(128)]
-        [InlineData(2048)]
-        public static void ToHexConversion(int arraySize)
+        [InlineData(0, true)]
+        [InlineData(128, true)]
+        [InlineData(2048, true)]
+        [InlineData(0, false)]
+        [InlineData(128, false)]
+        [InlineData(2048, false)]
+        public static void ToHexConversion(int arraySize, bool lowercased)
         {
             var data = new byte[arraySize];
             var rnd = new Random();
             rnd.NextBytes(data);
-            Equal(ToHexSlow(data), new ReadOnlySpan<byte>(data).ToHex());
+            Equal(ToHexSlow(data, lowercased), new ReadOnlySpan<byte>(data).ToHex(lowercased));
         }
 
         [Fact]
@@ -131,20 +134,27 @@ namespace DotNext
             Equal(2, data.FromHex(decoded));
             Equal(0xAB, decoded[0]);
             Equal(0xBA, decoded[1]);
+            data = "abba".AsSpan();
+            Equal(2, data.FromHex(decoded));
+            Equal(0xAB, decoded[0]);
+            Equal(0xBA, decoded[1]);
             data = default;
             Equal(0, data.FromHex(decoded));
         }
 
         [Theory]
-        [InlineData(0)]
-        [InlineData(128)]
-        [InlineData(2048)]
-        public static void FromHexConversion(int arraySize)
+        [InlineData(0, true)]
+        [InlineData(128, true)]
+        [InlineData(2048, true)]
+        [InlineData(0, false)]
+        [InlineData(128, false)]
+        [InlineData(2048, false)]
+        public static void FromHexConversion(int arraySize, bool lowercased)
         {
             var data = new byte[arraySize];
             var rnd = new Random();
             rnd.NextBytes(data);
-            ReadOnlySpan<char> hex = ToHexSlow(data);
+            ReadOnlySpan<char> hex = ToHexSlow(data, lowercased);
             Equal(data, hex.FromHex());
         }
 
@@ -158,7 +168,7 @@ namespace DotNext
         public static void ReadValues()
         {
             var ids = new TwoIDs { First = Guid.NewGuid(), Second = Guid.NewGuid() };
-            var span = Runtime.Intrinsics.AsReadOnlySpan(in ids);
+            var span = Span.AsReadOnlyBytes(in ids);
             Equal(ids.First, Span.Read<Guid>(ref span));
             Equal(ids.Second, Span.Read<Guid>(ref span));
             True(span.IsEmpty);

@@ -11,7 +11,6 @@ namespace DotNext.IO
 {
     using Buffers;
     using Text;
-    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Represents high-level read/write methods for the stream.
@@ -544,7 +543,7 @@ namespace DotNext.IO
             where T : unmanaged
         {
             var result = default(T);
-            return stream.Read(Intrinsics.AsSpan(ref result)) == sizeof(T) ? result : throw new EndOfStreamException();
+            return stream.Read(Span.AsBytes(ref result)) == sizeof(T) ? result : throw new EndOfStreamException();
         }
 
         /// <summary>
@@ -584,7 +583,7 @@ namespace DotNext.IO
         /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The value to be written into the stream.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
-        public static unsafe void Write<T>(this Stream stream, in T value) where T : unmanaged => stream.Write(Intrinsics.AsReadOnlySpan(in value));
+        public static unsafe void Write<T>(this Stream stream, in T value) where T : unmanaged => stream.Write(Span.AsReadOnlyBytes(in value));
 
         /// <summary>
         /// Asynchronously serializes value to the stream.

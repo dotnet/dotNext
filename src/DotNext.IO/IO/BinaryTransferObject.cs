@@ -23,7 +23,7 @@ namespace DotNext.IO
 
         bool IDataTransferObject.IsReusable => true;
 
-        private unsafe static int Length => sizeof(T);
+        private static unsafe int Length => sizeof(T);
 
         long? IDataTransferObject.Length => Length;
 

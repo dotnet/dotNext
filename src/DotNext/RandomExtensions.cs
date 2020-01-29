@@ -1,11 +1,12 @@
 using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 namespace DotNext
 {
     using ByteBuffer = Buffers.MemoryRental<byte>;
     using CharBuffer = Buffers.MemoryRental<char>;
-    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Provides random data generation.
@@ -19,6 +20,7 @@ namespace DotNext
             void NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars);
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct PseudoRandomStringGenerator : IRandomStringGenerator
         {
             private readonly Random rng;
@@ -27,11 +29,13 @@ namespace DotNext
 
             void IRandomStringGenerator.NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars)
             {
+                ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
                 foreach (ref var element in buffer)
-                    element = allowedChars[rng.Next(0, allowedChars.Length)];
+                    element = Unsafe.Add(ref firstChar, rng.Next(0, allowedChars.Length));
             }
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct RandomStringGenerator : IRandomStringGenerator
         {
             private readonly RandomNumberGenerator rng;
@@ -44,10 +48,11 @@ namespace DotNext
                 using ByteBuffer bytes = offset <= ByteBuffer.StackallocThreshold ? stackalloc byte[offset] : new ByteBuffer(offset);
                 rng.GetBytes(bytes.Span);
                 offset = 0;
+                ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
                 foreach (ref var element in buffer)
                 {
                     var randomNumber = (BitConverter.ToInt32(bytes.Span.Slice(offset)) & int.MaxValue) % allowedChars.Length;
-                    element = allowedChars[randomNumber];
+                    element = Unsafe.Add(ref firstChar, randomNumber);
                     offset += sizeof(int);
                 }
             }
@@ -58,7 +63,7 @@ namespace DotNext
         {
             if (length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
-            if (length == 0)
+            if (length == 0 || allowedChars.IsEmpty)
                 return string.Empty;
             //use stack allocation for small strings, which is 99% of all use cases
             using CharBuffer result = length <= CharBuffer.StackallocThreshold ? stackalloc char[length] : new CharBuffer(length);
@@ -149,12 +154,8 @@ namespace DotNext
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>].</returns>
-        public unsafe static int Next(this RandomNumberGenerator random)
-        {
-            int buffer = 0;
-            random.GetBytes(new Span<byte>(&buffer, sizeof(int)));
-            return buffer & int.MaxValue;  //remove sign bit. Abs function may cause OverflowException
-        }
+        public static unsafe int Next(this RandomNumberGenerator random)
+            => random.Next<int>() & int.MaxValue; //remove sign bit. Abs function may cause OverflowException
 
         /// <summary>
         /// Generates random boolean value.
@@ -173,7 +174,7 @@ namespace DotNext
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>Randomly generated floating-point number.</returns>
-        public unsafe static double NextDouble(this RandomNumberGenerator random)
+        public static unsafe double NextDouble(this RandomNumberGenerator random)
         {
             double result = random.Next();
             //normalize to range [0, 1)
@@ -186,11 +187,11 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The randomly generated value.</returns>
-        public static T Next<T>(this Random random)
+        public static unsafe T Next<T>(this Random random)
             where T : unmanaged
         {
             var result = default(T);
-            random.NextBytes(Intrinsics.AsSpan(ref result));
+            random.NextBytes(new Span<byte>(&result, sizeof(T)));
             return result;
         }
 
@@ -200,11 +201,11 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The randomly generated value.</returns>
-        public static T Next<T>(this RandomNumberGenerator random)
+        public static unsafe T Next<T>(this RandomNumberGenerator random)
             where T : unmanaged
         {
             var result = default(T);
-            random.GetBytes(Intrinsics.AsSpan(ref result));
+            random.GetBytes(new Span<byte>(&result, sizeof(T)));
             return result;
         }
     }

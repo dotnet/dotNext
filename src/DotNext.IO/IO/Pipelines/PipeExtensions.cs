@@ -15,7 +15,6 @@ namespace DotNext.IO.Pipelines
     using Buffers;
     using Security.Cryptography;
     using Text;
-    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Represents extension method for parsing data stored in pipe.
@@ -190,7 +189,7 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<FlushResult> WriteAsync<T>(this PipeWriter writer, T value, CancellationToken token = default)
             where T : unmanaged
         {
-            writer.Write(Intrinsics.AsReadOnlySpan(in value));
+            writer.Write(Span.AsReadOnlyBytes(in value));
             return writer.FlushAsync(token);
         }
 

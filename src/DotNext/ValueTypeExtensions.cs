@@ -67,6 +67,28 @@ namespace DotNext
             return nullable.HasValue;
         }
 
+        //use this method carefully because it doesn't
+        //control overflow
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static char Add(this char x, char y)
+        {
+            Push(x);
+            Push(y);
+            Emit.Add();
+            return Return<char>();
+        }
+
+        //use this method carefully because it doesn't
+        //control overflow
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static char Subtract(this char x, char y)
+        {
+            Push(x);
+            Push(y);
+            Sub();
+            return Return<char>();
+        }
+
         /// <summary>
         /// Converts <see cref="IntPtr"/> into <see cref="UIntPtr"/>.
         /// </summary>

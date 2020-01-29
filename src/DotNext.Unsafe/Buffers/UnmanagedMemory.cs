@@ -20,7 +20,7 @@ namespace DotNext.Buffers
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private protected unsafe static long SizeOf(int length) => Math.BigMul(length, sizeof(T));
+        private protected static unsafe long SizeOf(int length) => Math.BigMul(length, sizeof(T));
 
         private protected unsafe UnmanagedMemory(int length, bool zeroMem)
         {
@@ -51,9 +51,9 @@ namespace DotNext.Buffers
                 GC.RemoveMemoryPressure(Math.Abs(diff));
         }
 
-        public unsafe sealed override Span<T> GetSpan() => new Span<T>(address.ToPointer(), Length);
+        public sealed override unsafe Span<T> GetSpan() => new Span<T>(address.ToPointer(), Length);
 
-        public unsafe sealed override MemoryHandle Pin(int elementIndex = 0)
+        public sealed override unsafe MemoryHandle Pin(int elementIndex = 0)
         {
             if (address == default)
                 throw new ObjectDisposedException(GetType().Name);

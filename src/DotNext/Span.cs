@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
@@ -38,6 +39,8 @@ namespace DotNext
                 High = str[0];
                 Low = str[1];
             }
+
+            public static implicit operator ReadOnlySpan<char>(in HexByte hex) => MemoryMarshal.CreateReadOnlySpan(ref AsRef(in hex.High), 2);
         }
 
         private static readonly ReadOnlyMemory<HexByte> HexLookupTable;
@@ -382,12 +385,9 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return;
-            ref var reference = ref span[0];
-            for (var i = 0; i < span.Length; i++)
-            {
+            ref var reference = ref MemoryMarshal.GetReference(span);
+            for (var i = 0; i < span.Length; i++, reference = ref Add(ref reference, 1))
                 action.Invoke(ref reference, i);
-                reference = ref Add(ref reference, 1);
-            }
         }
 
         /// <summary>
@@ -398,13 +398,27 @@ namespace DotNext
         /// <param name="action">The action to be applied for each element of the span.</param>
         public static void ForEach<T>(this Span<T> span, RefAction<T, int> action) => ForEach(span, new ValueRefAction<T, int>(action, true));
 
+        private static void ToLowerFast(Span<char> output)
+        {
+            //standard C# operators are replaced with Add and Subtract intrisics here
+            //because I don't need redundant conv.u instruction when converting back from int32 to char
+            //conv.u instruction adds overhead for each hex character
+            foreach(ref var charPtr in output)
+            {
+                char ch = charPtr;
+                if(ch >= 'A' && ch <= 'F')
+                    charPtr = 'a'.Add(ch.Subtract('A'));
+            }
+        }
+
         /// <summary>
         /// Converts set of bytes into hexadecimal representation.
         /// </summary>
         /// <param name="bytes">The bytes to convert.</param>
         /// <param name="output">The buffer used to write hexadecimal representation of bytes.</param>
+        /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
         /// <returns>The actual number of characters in <paramref name="output"/> written by the method.</returns>
-        public static int ToHex(this ReadOnlySpan<byte> bytes, Span<char> output)
+        public static int ToHex(this ReadOnlySpan<byte> bytes, Span<char> output, bool lowercased = false)
         {
             if (bytes.IsEmpty || output.IsEmpty)
                 return 0;
@@ -419,6 +433,8 @@ namespace DotNext
                 charPtr = ref Add(ref charPtr, 1);
                 charPtr = hexInfo.Low;
             }
+            if(lowercased)
+                ToLowerFast(output);
             return bytesCount * 2;
         }
 
@@ -426,14 +442,15 @@ namespace DotNext
         /// Converts set of bytes into hexadecimal representation.
         /// </summary>
         /// <param name="bytes">The bytes to convert.</param>
+        /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
         /// <returns>The hexadecimal representation of bytes.</returns>
-        public static string ToHex(this ReadOnlySpan<byte> bytes)
+        public static string ToHex(this ReadOnlySpan<byte> bytes, bool lowercased = false)
         {
             var count = bytes.Length * 2;
             if (count == 0)
                 return string.Empty;
             using CharBuffer buffer = count <= CharBuffer.StackallocThreshold ? stackalloc char[count] : new CharBuffer(count);
-            count = ToHex(bytes, buffer.Span);
+            count = ToHex(bytes, buffer.Span, lowercased);
             return new string(buffer.Span.Slice(0, count));
         }
 
@@ -452,7 +469,7 @@ namespace DotNext
             ref HexByte pair = ref As<char, HexByte>(ref MemoryMarshal.GetReference(chars));
             ref byte bytePtr = ref MemoryMarshal.GetReference(output);
             for (var i = 0; i < charCount; i += 2, bytePtr = ref Add(ref bytePtr, 1), pair = ref Add(ref pair, 1))
-                bytePtr = byte.Parse(MemoryMarshal.CreateSpan(ref AsRef(in pair.High), 2), NumberStyles.AllowHexSpecifier, InvariantCulture);
+                bytePtr = byte.Parse(pair, NumberStyles.AllowHexSpecifier, InvariantCulture);
             return charCount / 2;
         }
 
@@ -479,12 +496,42 @@ namespace DotNext
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The deserialized value.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is smaller than <typeparamref name="T"/>.</exception>
-        public unsafe static T Read<T>(ref ReadOnlySpan<byte> bytes)
+        public static unsafe T Read<T>(ref ReadOnlySpan<byte> bytes)
             where T : unmanaged
         {
             var result = MemoryMarshal.Read<T>(bytes);
             bytes = bytes.Slice(sizeof(T));
             return result;
         }
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="Span{T}"/>.
+        /// </summary>
+        /// <param name="value">The managed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<byte> AsBytes<T>(ref T value) where T : unmanaged => MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref value, 1));
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="ReadOnlySpan{T}"/>.
+        /// </summary>
+        /// <param name="value">The managed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T value) where T : unmanaged => AsBytes(ref AsRef(in value));
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="Span{T}"/>.
+        /// </summary>
+        /// <param name="pointer">The typed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
+        [CLSCompliant(false)]
+        public static unsafe Span<byte> AsBytes<T>(T* pointer) where T : unmanaged => AsBytes(ref pointer[0]);
     }
 }
