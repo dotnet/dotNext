@@ -30,14 +30,14 @@ namespace DotNext.Threading
         {
             using var ev = new ManualResetEvent(false);
             ThreadPool.QueueUserWorkItem(state => ev.Set());
-            await ev.WaitAsync();
+            await ev.WaitAsync(TestSettings.Timeout);
         }
 
         [Fact]
         public static void IncompletedFuture()
         {
             using var ev = new ManualResetEvent(false);
-            var future = ev.WaitAsync().GetAwaiter();
+            var future = ev.WaitAsync(TestSettings.Timeout).GetAwaiter();
             ThrowsAny<InvalidOperationException>(() => future.GetResult());
         }
 
@@ -45,7 +45,7 @@ namespace DotNext.Threading
         public static void AlreadySignaled()
         {
             using var ev = new ManualResetEvent(true);
-            True(ev.WaitAsync().IsCompleted);
+            True(ev.WaitAsync(TestSettings.Timeout).IsCompleted);
         }
     }
 }

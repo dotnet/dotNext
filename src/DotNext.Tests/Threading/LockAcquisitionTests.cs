@@ -47,11 +47,11 @@ namespace DotNext.Threading
         public static void ReaderWriterLock()
         {
             var obj = new object();
-            var holder1 = obj.AcquireReadLock();
+            var holder1 = obj.AcquireReadLock(TestSettings.Timeout);
             if (holder1) { }
             else throw new Exception();
 
-            var holder2 = obj.AcquireReadLock();
+            var holder2 = obj.AcquireReadLock(TestSettings.Timeout);
             if (holder2) { }
             else throw new Exception();
 
@@ -69,9 +69,9 @@ namespace DotNext.Threading
         public static async Task InvalidLock()
         {
             var obj = string.Intern("Interned string");
-            Throws<InvalidOperationException>(() => obj.AcquireReadLock());
-            Throws<InvalidOperationException>(() => obj.AcquireWriteLock());
-            Throws<InvalidOperationException>(() => obj.AcquireUpgradeableReadLock());
+            Throws<InvalidOperationException>(() => obj.AcquireReadLock(TestSettings.Timeout));
+            Throws<InvalidOperationException>(() => obj.AcquireWriteLock(TestSettings.Timeout));
+            Throws<InvalidOperationException>(() => obj.AcquireUpgradeableReadLock(TestSettings.Timeout));
 
             await ThrowsAsync<InvalidOperationException>(() => obj.AcquireLockAsync(TimeSpan.Zero));
             await ThrowsAsync<InvalidOperationException>(() => obj.AcquireReadLockAsync(TimeSpan.Zero));

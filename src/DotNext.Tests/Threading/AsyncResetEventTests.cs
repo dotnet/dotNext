@@ -16,7 +16,7 @@ namespace DotNext.Threading
             False(resetEvent.IsSet);
             var t = new Thread(() =>
             {
-                resetEvent.WaitAsync().Wait();
+                resetEvent.WaitAsync(TestSettings.Timeout).Wait(TestSettings.Timeout);
             })
             {
                 IsBackground = true
@@ -28,7 +28,7 @@ namespace DotNext.Threading
             False(resetEvent.IsSet);
             t = new Thread(() =>
             {
-                resetEvent.WaitAsync().Wait();
+                resetEvent.WaitAsync(TestSettings.Timeout).Wait(TestSettings.Timeout);
             })
             {
                 IsBackground = true
@@ -60,7 +60,7 @@ namespace DotNext.Threading
             False(resetEvent.IsSet);
             var t = new Thread(() =>
             {
-                resetEvent.WaitAsync().Wait();
+                resetEvent.WaitAsync(TestSettings.Timeout).Wait(TestSettings.Timeout);
             })
             {
                 IsBackground = true

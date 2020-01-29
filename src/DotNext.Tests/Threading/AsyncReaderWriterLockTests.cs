@@ -79,7 +79,7 @@ namespace DotNext.Threading
                 rwLock.ExitWriteLock();
                 task.SetResult(true);
             });
-            are.WaitOne();
+            are.WaitOne(TestSettings.Timeout);
             rwLock.ExitWriteLock();
             await task.Task;
         }
@@ -99,7 +99,7 @@ namespace DotNext.Threading
                 rwLock.ExitReadLock();
                 task.SetResult(true);
             });
-            are.WaitOne();
+            are.WaitOne(TestSettings.Timeout);
             rwLock.ExitWriteLock();
             await task.Task;
         }
@@ -119,7 +119,7 @@ namespace DotNext.Threading
                 rwLock.ExitUpgradeableReadLock();
                 task.SetResult(true);
             });
-            are.WaitOne();
+            are.WaitOne(TestSettings.Timeout);
             rwLock.ExitWriteLock();
             await task.Task;
         }

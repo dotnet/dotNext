@@ -34,7 +34,7 @@ namespace DotNext.Threading
             using var counter = new Counter();
             using var timer = new AsyncTimer(counter.Run);
             True(timer.Start(TimeSpan.FromMilliseconds(10)));
-            counter.WaitOne(10_000);
+            True(counter.WaitOne(TestSettings.Timeout));
             True(timer.IsRunning);
             False(await timer.StopAsync());
             False(timer.IsRunning);

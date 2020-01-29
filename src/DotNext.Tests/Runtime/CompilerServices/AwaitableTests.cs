@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace DotNext.Runtime.CompilerServices
         public static void TaskWithResultTest()
         {
             var task = Task<long>.Factory.StartNew(() => 42);
-            task.Wait();
+            task.Wait(TestSettings.Timeout);
             var awaiter = Awaitable<Task<long>, TaskAwaiter<long>, long>.GetAwaiter(task);
             True(NotifyCompletion<TaskAwaiter<long>>.IsCompleted(awaiter));
             Equal(42, Awaiter<TaskAwaiter<long>, long>.GetResult(awaiter));
@@ -30,7 +31,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             var holder = new ValueHolder();
             var task = Task.Factory.StartNew(holder.ChangeValue);
-            task.Wait();
+            task.Wait(TestSettings.Timeout);
             var awaiter = Awaitable<Task, TaskAwaiter>.GetAwaiter(task);
             True(NotifyCompletion<TaskAwaiter>.IsCompleted(awaiter));
             Awaiter<TaskAwaiter>.GetResult(awaiter);

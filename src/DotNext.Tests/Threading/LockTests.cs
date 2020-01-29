@@ -20,9 +20,9 @@ namespace DotNext.Threading
             if (holder)
                 throw new Exception();
 
-            Throws<TimeoutException>(() => @lock.Acquire(TimeSpan.FromHours(1)));
+            Throws<TimeoutException>(() => @lock.Acquire(TestSettings.Timeout));
 
-            False(@lock.TryAcquire(TimeSpan.FromHours(1), out holder));
+            False(@lock.TryAcquire(TestSettings.Timeout, out holder));
 
             holder.Dispose();
         }
@@ -37,7 +37,7 @@ namespace DotNext.Threading
             holder.Dispose();
             False(Monitor.IsEntered(syncRoot));
 
-            holder = @lock.Acquire();
+            holder = @lock.Acquire(TestSettings.Timeout);
             True(Monitor.IsEntered(syncRoot));
             holder.Dispose();
             False(Monitor.IsEntered(syncRoot));

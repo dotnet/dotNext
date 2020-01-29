@@ -76,7 +76,7 @@ namespace DotNext
             {
                 var disposable = new DisposeCallback(resetEvent);
                 disposable.DisposeAsync();
-                True(resetEvent.Wait(TimeSpan.FromMinutes(2)));
+                True(resetEvent.Wait(TestSettings.Timeout));
             }
         }
 

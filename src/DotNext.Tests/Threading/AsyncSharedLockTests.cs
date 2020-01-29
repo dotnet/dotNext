@@ -53,15 +53,15 @@ namespace DotNext.Threading
             AcquireWeakLockAndRelease(sharedLock, acquireEvent);
             AcquireWeakLockAndRelease(sharedLock, acquireEvent);
             AcquireWeakLockAndRelease(sharedLock, acquireEvent);
-            await acquireEvent.WaitAsync();
-            await sharedLock.AcquireAsync(true, TimeSpan.FromMinutes(1));
+            True(await acquireEvent.WaitAsync(TestSettings.Timeout));
+            await sharedLock.AcquireAsync(true, TestSettings.Timeout);
 
             Equal(0, sharedLock.RemainingCount);
         }
 
         private static async void AcquireWeakLock(AsyncSharedLock sharedLock, AsyncCountdownEvent acquireEvent)
         {
-            await sharedLock.AcquireAsync(false, CancellationToken.None);
+            await sharedLock.AcquireAsync(false, TestSettings.Timeout, CancellationToken.None);
             acquireEvent.Signal();
         }
 
@@ -74,7 +74,7 @@ namespace DotNext.Threading
             AcquireWeakLock(sharedLock, acquireEvent);
             AcquireWeakLock(sharedLock, acquireEvent);
             sharedLock.Release();
-            True(await acquireEvent.WaitAsync(TimeSpan.FromMinutes(1)));
+            True(await acquireEvent.WaitAsync(TestSettings.Timeout));
             Equal(1, sharedLock.RemainingCount);
         }
 

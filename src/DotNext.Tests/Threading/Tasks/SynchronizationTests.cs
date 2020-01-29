@@ -25,7 +25,7 @@ namespace DotNext.Threading.Tasks
         {
             using var source = new CancellationTokenSource(100);
             var task = new TaskCompletionSource<bool>().Task;
-            await ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(InfiniteTimeSpan, source.Token));
+            await ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(TestSettings.Timeout, source.Token));
         }
 
         [Fact]

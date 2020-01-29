@@ -32,11 +32,11 @@ namespace DotNext.Threading
             {
                 False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10)));
                 True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
-                await @lock.AcquireAsync(InfiniteTimeSpan);
+                await @lock.AcquireAsync(TestSettings.Timeout);
                 @lock.Release();
                 task.SetResult(true);
             });
-            True(are.WaitOne(TimeSpan.FromMinutes(1)));
+            True(are.WaitOne(TestSettings.Timeout));
             @lock.Release();
             await task.Task;
         }
