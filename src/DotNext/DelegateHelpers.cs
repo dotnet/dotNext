@@ -2,6 +2,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace DotNext
@@ -26,6 +27,7 @@ namespace DotNext
             ActionInvoker = Runtime.Intrinsics.UnsafeInvoke;
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct TargetRewriter : ITargetRewriter
         {
             private readonly object target;
@@ -35,6 +37,7 @@ namespace DotNext
             object ITargetRewriter.Rewrite(Delegate d) => this.target;
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct EmptyTargetRewriter : ITargetRewriter
         {
             object ITargetRewriter.Rewrite(Delegate d) => d.Target;
