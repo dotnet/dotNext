@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
@@ -121,6 +122,8 @@ namespace DotNext
 
         private Func<T, T, bool> BuildEquals()
         {
+            if(!RuntimeFeature.IsDynamicCodeSupported)
+                throw new PlatformNotSupportedException();
             var x = Expression.Parameter(typeof(T));
             if (x.Type.IsPrimitive)
                 return EqualityComparer<T>.Default.Equals;
@@ -155,6 +158,8 @@ namespace DotNext
 
         private Func<T, int> BuildGetHashCode()
         {
+            if(!RuntimeFeature.IsDynamicCodeSupported)
+                throw new PlatformNotSupportedException();
             Expression expr;
             var inputParam = Expression.Parameter(typeof(T));
             if (inputParam.Type.IsPrimitive)
@@ -203,6 +208,7 @@ namespace DotNext
         /// </summary>
         /// <param name="equals">The implementation of equality check.</param>
         /// <param name="hashCode">The implementation of hash code.</param>
+        /// <exception cref="PlatformNotSupportedException">CLR implementation doesn't support dynamic code generation.</exception>
         public void Build(out Func<T, T, bool> equals, out Func<T, int> hashCode)
         {
             equals = BuildEquals();
@@ -213,6 +219,7 @@ namespace DotNext
         /// Generates implementation of equality comparer.
         /// </summary>
         /// <returns>The generated equality comparer.</returns>
+        /// <exception cref="PlatformNotSupportedException">CLR implementation doesn't support dynamic code generation.</exception>
         public IEqualityComparer<T> Build()
             => typeof(T).IsPrimitive ? (IEqualityComparer<T>)EqualityComparer<T>.Default : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
     }
