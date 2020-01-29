@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 namespace DotNext
@@ -18,6 +20,7 @@ namespace DotNext
             void NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars);
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct PseudoRandomStringGenerator : IRandomStringGenerator
         {
             private readonly Random rng;
@@ -26,11 +29,13 @@ namespace DotNext
 
             void IRandomStringGenerator.NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars)
             {
+                ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
                 foreach (ref var element in buffer)
-                    element = allowedChars[rng.Next(0, allowedChars.Length)];
+                    element = Unsafe.Add(ref firstChar, rng.Next(0, allowedChars.Length));
             }
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct RandomStringGenerator : IRandomStringGenerator
         {
             private readonly RandomNumberGenerator rng;
@@ -43,10 +48,11 @@ namespace DotNext
                 using ByteBuffer bytes = offset <= ByteBuffer.StackallocThreshold ? stackalloc byte[offset] : new ByteBuffer(offset);
                 rng.GetBytes(bytes.Span);
                 offset = 0;
+                ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
                 foreach (ref var element in buffer)
                 {
                     var randomNumber = (BitConverter.ToInt32(bytes.Span.Slice(offset)) & int.MaxValue) % allowedChars.Length;
-                    element = allowedChars[randomNumber];
+                    element = Unsafe.Add(ref firstChar, randomNumber);
                     offset += sizeof(int);
                 }
             }
@@ -57,7 +63,7 @@ namespace DotNext
         {
             if (length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
-            if (length == 0)
+            if (length == 0 || allowedChars.IsEmpty)
                 return string.Empty;
             //use stack allocation for small strings, which is 99% of all use cases
             using CharBuffer result = length <= CharBuffer.StackallocThreshold ? stackalloc char[length] : new CharBuffer(length);
