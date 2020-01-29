@@ -155,11 +155,7 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>].</returns>
         public static unsafe int Next(this RandomNumberGenerator random)
-        {
-            int buffer = 0;
-            random.GetBytes(new Span<byte>(&buffer, sizeof(int)));
-            return buffer & int.MaxValue;  //remove sign bit. Abs function may cause OverflowException
-        }
+            => random.Next<int>() & int.MaxValue; //remove sign bit. Abs function may cause OverflowException
 
         /// <summary>
         /// Generates random boolean value.
@@ -191,11 +187,11 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The randomly generated value.</returns>
-        public static T Next<T>(this Random random)
+        public static unsafe T Next<T>(this Random random)
             where T : unmanaged
         {
             var result = default(T);
-            random.NextBytes(Span.AsBytes(ref result));
+            random.NextBytes(new Span<byte>(&result, sizeof(T)));
             return result;
         }
 
@@ -205,11 +201,11 @@ namespace DotNext
         /// <param name="random">The source of random numbers.</param>
         /// <typeparam name="T">The blittable type.</typeparam>
         /// <returns>The randomly generated value.</returns>
-        public static T Next<T>(this RandomNumberGenerator random)
+        public static unsafe T Next<T>(this RandomNumberGenerator random)
             where T : unmanaged
         {
             var result = default(T);
-            random.GetBytes(Span.AsBytes(ref result));
+            random.GetBytes(new Span<byte>(&result, sizeof(T)));
             return result;
         }
     }
