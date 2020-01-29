@@ -120,7 +120,7 @@ predicate = predicate.Xor(Predicate.IsNull<string>());
 ```
 
 # Comparable data types
-Related class: [Comparable](../../api/DotNext.Comparable.yml)
+Related class: [Comparison](../../api/DotNext.Comparison.yml)
 
 ## Range check
 Checks whether the given value is in specific range.
