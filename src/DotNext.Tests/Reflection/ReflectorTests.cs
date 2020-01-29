@@ -100,7 +100,7 @@ namespace DotNext.Reflection
         [Fact]
         public void UnreflectStaticField()
         {
-            ref var field = ref GetType().GetField(nameof(staticField), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly).Unreflect<int>();
+            ref var field = ref GetType().GetField(nameof(staticField), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly).Unreflect<int>().Value;
             field = 42;
             Equal(staticField, field);
             True(AreSame(ref field, ref staticField));
@@ -109,7 +109,7 @@ namespace DotNext.Reflection
         [Fact]
         public void UnreflectInstanceField()
         {
-            ref var field = ref GetType().GetField(nameof(instanceField), System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.NonPublic).Unreflect<ReflectorTests, int>(this);
+            ref var field = ref GetType().GetField(nameof(instanceField), System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.NonPublic).Unreflect<ReflectorTests, int>()[this];
             field = 56;
             Equal(instanceField, field);
             True(AreSame(ref field, ref instanceField));
