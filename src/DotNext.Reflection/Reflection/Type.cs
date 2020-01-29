@@ -104,7 +104,7 @@ namespace DotNext.Reflection
         /// <remarks>
         /// This method doesn't call static constructor if type is already initialized.
         /// </remarks>
-        public static void Initialize() => RunClassConstructor(RuntimeType.TypeHandle);
+        public static void Initialize() => RunClassConstructor(Intrinsics.TypeOf<T>());
 
         /// <summary>
         /// Determines whether an instance of a specified type can be assigned to an instance of the current type.
