@@ -77,7 +77,7 @@ namespace DotNext.Threading
         private const int WriteLockState = int.MinValue;
         private const int NoLockState = default;
 
-        private volatile int state; //
+        private volatile int state;
         private int version;    //volatile
 
         /// <summary>
