@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.Linq.Expressions
 {
     [ExcludeFromCodeCoverage]
-    public sealed class UniversalExpressionTests : Assert
+    public sealed class UniversalExpressionTests : Test
     {
         private sealed class MyClass
         {

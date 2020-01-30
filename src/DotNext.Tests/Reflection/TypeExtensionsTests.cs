@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Reflection
 {
     [ExcludeFromCodeCoverage]
-    public sealed class TypeExtensionsTests : Assert
+    public sealed class TypeExtensionsTests : Test
     {
         public sealed class MyList : List<string>
         {

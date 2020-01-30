@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class AsyncSharedLockTests : Assert
+    public sealed class AsyncSharedLockTests : Test
     {
         [Fact]
         public static async Task WeakLocks()
@@ -53,15 +53,15 @@ namespace DotNext.Threading
             AcquireWeakLockAndRelease(sharedLock, acquireEvent);
             AcquireWeakLockAndRelease(sharedLock, acquireEvent);
             AcquireWeakLockAndRelease(sharedLock, acquireEvent);
-            await acquireEvent.WaitAsync();
-            await sharedLock.AcquireAsync(true, TimeSpan.FromMinutes(1));
+            True(await acquireEvent.WaitAsync(DefaultTimeout));
+            await sharedLock.AcquireAsync(true, DefaultTimeout);
 
             Equal(0, sharedLock.RemainingCount);
         }
 
         private static async void AcquireWeakLock(AsyncSharedLock sharedLock, AsyncCountdownEvent acquireEvent)
         {
-            await sharedLock.AcquireAsync(false, CancellationToken.None);
+            await sharedLock.AcquireAsync(false, DefaultTimeout, CancellationToken.None);
             acquireEvent.Signal();
         }
 
@@ -74,7 +74,7 @@ namespace DotNext.Threading
             AcquireWeakLock(sharedLock, acquireEvent);
             AcquireWeakLock(sharedLock, acquireEvent);
             sharedLock.Release();
-            True(await acquireEvent.WaitAsync(TimeSpan.FromMinutes(1)));
+            True(await acquireEvent.WaitAsync(DefaultTimeout));
             Equal(1, sharedLock.RemainingCount);
         }
 

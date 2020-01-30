@@ -9,7 +9,7 @@ using static System.Threading.Timeout;
 namespace DotNext.Threading.Tasks
 {
     [ExcludeFromCodeCoverage]
-    public sealed class SynchronizationTests : Assert
+    public sealed class SynchronizationTests : Test
     {
         [Fact]
         public static async Task WaitAsyncWithTimeout()
@@ -25,7 +25,7 @@ namespace DotNext.Threading.Tasks
         {
             using var source = new CancellationTokenSource(100);
             var task = new TaskCompletionSource<bool>().Task;
-            await ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(InfiniteTimeSpan, source.Token));
+            await ThrowsAnyAsync<OperationCanceledException>(() => task.WaitAsync(DefaultTimeout, source.Token));
         }
 
         [Fact]

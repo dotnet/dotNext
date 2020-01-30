@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Collections.Generic
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ListTests : Assert
+    public sealed class ListTests : Test
     {
         [Fact]
         public static void ToArray()

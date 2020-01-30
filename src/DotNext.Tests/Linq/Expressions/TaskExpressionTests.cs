@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Linq.Expressions
 {
     [ExcludeFromCodeCoverage]
-    public sealed class TaskExpressionTests : Assert
+    public sealed class TaskExpressionTests : Test
     {
         [Fact]
         public static void NonVoidReturn()

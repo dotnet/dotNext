@@ -9,7 +9,7 @@ namespace DotNext.Threading.Tasks
     using Generic;
 
     [ExcludeFromCodeCoverage]
-    public sealed class ContinuationTest : Assert
+    public sealed class ContinuationTest : Test
     {
         [Fact]
         public static async Task OnCompletedContinuation()

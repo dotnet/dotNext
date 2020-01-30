@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ResultTests : Assert
+    public sealed class ResultTests : Test
     {
         [Fact]
         public static void EmptyResult()
@@ -51,9 +51,9 @@ namespace DotNext
         public static void Serialization()
         {
             Result<decimal> r = 10M;
-            Equal(10M, SerializationTestHelper.SerializeDeserialize(r).Value);
+            Equal(10M, SerializeDeserialize(r).Value);
             r = new Result<decimal>(new ArithmeticException());
-            IsType<ArithmeticException>(SerializationTestHelper.SerializeDeserialize(r).Error);
+            IsType<ArithmeticException>(SerializeDeserialize(r).Error);
         }
 
         [Fact]

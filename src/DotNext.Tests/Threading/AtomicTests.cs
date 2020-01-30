@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class AtomicTests : Assert
+    public sealed class AtomicTests : Test
     {
         [Fact]
         public static void AtomicArrayTest()
@@ -265,9 +265,9 @@ namespace DotNext.Threading
         [Fact]
         public static void Serialization()
         {
-            True(SerializationTestHelper.SerializeDeserialize(new AtomicBoolean(true)).Value);
-            Equal("Frank Underwood", SerializationTestHelper.SerializeDeserialize(new AtomicReference<string>("Frank Underwood")).Value);
-            Equal(EnvironmentVariableTarget.Machine, SerializationTestHelper.SerializeDeserialize(new AtomicEnum<EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine)).Value);
+            True(SerializeDeserialize(new AtomicBoolean(true)).Value);
+            Equal("Frank Underwood", SerializeDeserialize(new AtomicReference<string>("Frank Underwood")).Value);
+            Equal(EnvironmentVariableTarget.Machine, SerializeDeserialize(new AtomicEnum<EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine)).Value);
         }
 
         [Fact]

@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ConcurrentObjectPoolTests : Assert
+    public sealed class ConcurrentObjectPoolTests : Test
     {
         [Fact]
         public static void RoundRobinAlgorithmCheck()

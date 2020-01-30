@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class LockTests : Assert
+    public sealed class LockTests : Test
     {
         [Fact]
         public static void EmptyLock()
@@ -20,9 +20,9 @@ namespace DotNext.Threading
             if (holder)
                 throw new Exception();
 
-            Throws<TimeoutException>(() => @lock.Acquire(TimeSpan.FromHours(1)));
+            Throws<TimeoutException>(() => @lock.Acquire(DefaultTimeout));
 
-            False(@lock.TryAcquire(TimeSpan.FromHours(1), out holder));
+            False(@lock.TryAcquire(DefaultTimeout, out holder));
 
             holder.Dispose();
         }
@@ -37,7 +37,7 @@ namespace DotNext.Threading
             holder.Dispose();
             False(Monitor.IsEntered(syncRoot));
 
-            holder = @lock.Acquire();
+            holder = @lock.Acquire(DefaultTimeout);
             True(Monitor.IsEntered(syncRoot));
             holder.Dispose();
             False(Monitor.IsEntered(syncRoot));

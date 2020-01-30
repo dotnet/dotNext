@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class OneDimensionalArrayTests : Assert
+    public sealed class OneDimensionalArrayTests : Test
     {
         public sealed class Equatable
         {

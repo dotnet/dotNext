@@ -9,7 +9,7 @@ using Xunit;
 namespace DotNext.IO.Pipelines
 {
     [ExcludeFromCodeCoverage]
-    public sealed class PipeExtensionsTests : Assert
+    public sealed class PipeExtensionsTests : Test
     {
         [Fact]
         public static async Task EncodeDecodeValue()

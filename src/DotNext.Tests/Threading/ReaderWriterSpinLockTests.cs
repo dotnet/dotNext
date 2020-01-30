@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ReaderWriterSpinLockTests : Assert
+    public sealed class ReaderWriterSpinLockTests : Test
     {
         [Fact]
         public static void BasicChecks()

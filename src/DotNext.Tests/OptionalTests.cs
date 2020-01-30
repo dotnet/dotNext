@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class OptionalTest : Assert
+    public sealed class OptionalTest : Test
     {
         [Fact]
         public static void NullableTest()
@@ -95,9 +95,9 @@ namespace DotNext
         public static void Serialization()
         {
             Optional<string> opt = default;
-            False(SerializationTestHelper.SerializeDeserialize(opt).HasValue);
+            False(SerializeDeserialize(opt).HasValue);
             opt = "Hello";
-            Equal("Hello", SerializationTestHelper.SerializeDeserialize(opt).Value);
+            Equal("Hello", SerializeDeserialize(opt).Value);
         }
 
         [Fact]

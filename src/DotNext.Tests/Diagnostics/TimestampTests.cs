@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Diagnostics
 {
     [ExcludeFromCodeCoverage]
-    public sealed class TimestampTests : Xunit.Assert
+    public sealed class TimestampTests : Test
     {
         [Fact]
         public static void MeasurementTest()

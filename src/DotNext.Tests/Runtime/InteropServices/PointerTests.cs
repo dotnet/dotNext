@@ -10,7 +10,7 @@ namespace DotNext.Runtime.InteropServices
     using Threading;
 
     [ExcludeFromCodeCoverage]
-    public sealed class PointerTests : Assert
+    public sealed class PointerTests : Test
     {
         [Fact]
         public static unsafe void BitwiseOperations()

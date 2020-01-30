@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class AsyncLazyTests : Assert
+    public sealed class AsyncLazyTests : Test
     {
         [Fact]
         public static void PrecomputedValue()

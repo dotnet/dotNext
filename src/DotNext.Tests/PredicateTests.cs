@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class PredicateTests : Assert
+    public sealed class PredicateTests : Test
     {
         [Fact]
         public static void PredefinedDelegatesTest()

@@ -8,7 +8,7 @@ using Xunit;
 namespace DotNext.Threading.Tasks
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ConversionTests : Assert
+    public sealed class ConversionTests : Test
     {
         [Fact]
         public static void Nullable()

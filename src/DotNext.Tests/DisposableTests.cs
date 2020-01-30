@@ -2,12 +2,13 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class DisposableConceptTest : Assert
+    public sealed class DisposableTests : Test
     {
         public struct DisposableStruct : IDisposable
         {
@@ -75,8 +76,43 @@ namespace DotNext
             {
                 var disposable = new DisposeCallback(resetEvent);
                 disposable.DisposeAsync();
-                True(resetEvent.Wait(TimeSpan.FromMinutes(2)));
+                True(resetEvent.Wait(DefaultTimeout));
             }
+        }
+
+        private sealed class DisposableObject : Disposable, IAsyncDisposable
+        {
+            public new bool IsDisposed => base.IsDisposed;
+
+            ValueTask IAsyncDisposable.DisposeAsync()
+            {
+                base.Dispose(true);
+                return new ValueTask();
+            }
+        }
+
+        [Fact]
+        public static void DisposeMany()
+        {
+            var obj1 = new DisposableObject();
+            var obj2 = new DisposableObject();
+            False(obj1.IsDisposed);
+            False(obj2.IsDisposed);
+            Disposable.Dispose(obj1, obj2, null);
+            True(obj1.IsDisposed);
+            True(obj2.IsDisposed);
+        }
+
+        [Fact]
+        public static async Task DisposeManyAsync()
+        {
+            var obj1 = new DisposableObject();
+            var obj2 = new DisposableObject();
+            False(obj1.IsDisposed);
+            False(obj2.IsDisposed);
+            await Disposable.DisposeAsync(obj1, obj2, null);
+            True(obj1.IsDisposed);
+            True(obj2.IsDisposed);
         }
     }
 }

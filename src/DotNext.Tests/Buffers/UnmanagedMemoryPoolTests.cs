@@ -8,7 +8,7 @@ using Xunit;
 namespace DotNext.Buffers
 {
     [ExcludeFromCodeCoverage]
-    public sealed class UnmanagedMemoryPoolTests : Assert
+    public sealed class UnmanagedMemoryPoolTests : Test
     {
         [Fact]
         public static void ReadWriteTest()

@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class RandomTests : Assert
+    public sealed class RandomTests : Test
     {
         private sealed class DummyRNG : RandomNumberGenerator
         {

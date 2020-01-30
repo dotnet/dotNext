@@ -8,7 +8,7 @@ namespace DotNext.Metaprogramming
     using static CodeGenerator;
 
     [ExcludeFromCodeCoverage]
-    public sealed class SwitchTests : Assert
+    public sealed class SwitchTests : Test
     {
         [Fact]
         public static void IntConversion()

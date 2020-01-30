@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class SequenceTests : Assert
+    public sealed class SequenceTests : Test
     {
         private sealed class Counter<T>
         {

@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.IO.MemoryMappedFiles
 {
     [ExcludeFromCodeCoverage]
-    public sealed class MemoryMappedDirectAccessorTests : Assert
+    public sealed class MemoryMappedDirectAccessorTests : Test
     {
         [Fact]
         public static void EmptyAccessor()

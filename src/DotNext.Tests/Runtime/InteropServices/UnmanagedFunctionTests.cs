@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.Runtime.InteropServices
 {
     [ExcludeFromCodeCoverage]
-    public sealed class UnmanagedFunctionTests : Assert
+    public sealed class UnmanagedFunctionTests : Test
     {
         [OSDependentFact(PlatformID.Win32NT, Skip = "Not yet supported by .NET Core")]
         public static void GetCurrentProcessId()

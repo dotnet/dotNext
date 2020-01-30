@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.IO
 {
     [ExcludeFromCodeCoverage]
-    public sealed class DataTransferObjectTests : Assert
+    public sealed class DataTransferObjectTests : Test
     {
         [Fact]
         public static async Task StreamTransfer()

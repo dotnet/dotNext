@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class AsyncCountdownEventTests : Assert
+    public sealed class AsyncCountdownEventTests : Test
     {
         [Fact]
         public static async Task Counting()

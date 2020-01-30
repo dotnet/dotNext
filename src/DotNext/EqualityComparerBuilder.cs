@@ -208,7 +208,7 @@ namespace DotNext
         /// </summary>
         /// <param name="equals">The implementation of equality check.</param>
         /// <param name="hashCode">The implementation of hash code.</param>
-        /// <exception cref="PlatformNotSupportedException">CLR implementation doesn't support dynamic code generation.</exception>
+        /// <exception cref="PlatformNotSupportedException">Dynamic code generation is not supported by underlying CLR implementation.</exception>
         public void Build(out Func<T, T, bool> equals, out Func<T, int> hashCode)
         {
             equals = BuildEquals();
@@ -219,7 +219,7 @@ namespace DotNext
         /// Generates implementation of equality comparer.
         /// </summary>
         /// <returns>The generated equality comparer.</returns>
-        /// <exception cref="PlatformNotSupportedException">CLR implementation doesn't support dynamic code generation.</exception>
+        /// <exception cref="PlatformNotSupportedException">Dynamic code generation is not supported by underlying CLR implementation.</exception>
         public IEqualityComparer<T> Build()
             => typeof(T).IsPrimitive ? (IEqualityComparer<T>)EqualityComparer<T>.Default : new ConstructedEqualityComparer(BuildEquals(), BuildGetHashCode());
     }

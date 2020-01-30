@@ -8,7 +8,7 @@ using static System.Threading.Timeout;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class AsyncExclusiveLockTests : Assert
+    public sealed class AsyncExclusiveLockTests : Test
     {
         [Fact]
         public static async Task TrivialLock()
@@ -32,11 +32,11 @@ namespace DotNext.Threading
             {
                 False(await @lock.TryAcquireAsync(TimeSpan.FromMilliseconds(10)));
                 True(ThreadPool.QueueUserWorkItem(ev => ev.Set(), are, false));
-                await @lock.AcquireAsync(InfiniteTimeSpan);
+                await @lock.AcquireAsync(DefaultTimeout);
                 @lock.Release();
                 task.SetResult(true);
             });
-            True(are.WaitOne(TimeSpan.FromMinutes(1)));
+            True(are.WaitOne(DefaultTimeout));
             @lock.Release();
             await task.Task;
         }

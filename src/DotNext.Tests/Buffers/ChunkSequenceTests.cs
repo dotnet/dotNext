@@ -9,7 +9,7 @@ using Xunit;
 namespace DotNext.Buffers
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ChunkSequenceTests : Assert
+    public sealed class ChunkSequenceTests : Test
     {
         [Fact]
         public static void EmptySequence()

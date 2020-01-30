@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.Threading.Tasks
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ValueTaskSynchronizerTests : Assert
+    public sealed class ValueTaskSynchronizerTests : Test
     {
         private sealed class SharedCounter
         {
