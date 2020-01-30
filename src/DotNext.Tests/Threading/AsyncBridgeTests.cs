@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class AsyncBridgeTests : Assert
+    public sealed class AsyncBridgeTests : Test
     {
         [Fact]
         public static async Task WaitForCancellationNoThrow()
@@ -30,14 +30,14 @@ namespace DotNext.Threading
         {
             using var ev = new ManualResetEvent(false);
             ThreadPool.QueueUserWorkItem(state => ev.Set());
-            await ev.WaitAsync(TestSettings.Timeout);
+            await ev.WaitAsync(DefaultTimeout);
         }
 
         [Fact]
         public static void IncompletedFuture()
         {
             using var ev = new ManualResetEvent(false);
-            var future = ev.WaitAsync(TestSettings.Timeout).GetAwaiter();
+            var future = ev.WaitAsync(DefaultTimeout).GetAwaiter();
             ThrowsAny<InvalidOperationException>(() => future.GetResult());
         }
 
@@ -45,7 +45,7 @@ namespace DotNext.Threading
         public static void AlreadySignaled()
         {
             using var ev = new ManualResetEvent(true);
-            True(ev.WaitAsync(TestSettings.Timeout).IsCompleted);
+            True(ev.WaitAsync(DefaultTimeout).IsCompleted);
         }
     }
 }

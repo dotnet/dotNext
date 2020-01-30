@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class AtomicContainerTests : Assert
+    public sealed class AtomicContainerTests : Test
     {
         [Fact]
         public static void ReadWrite()

@@ -8,7 +8,7 @@ namespace DotNext.Security.Cryptography
     using Buffers;
 
     [ExcludeFromCodeCoverage]
-    public sealed class HashBuilderTests : Assert
+    public sealed class HashBuilderTests : Test
     {
         [Fact]
         public static void HashBuilding()

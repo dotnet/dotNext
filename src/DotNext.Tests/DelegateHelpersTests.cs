@@ -9,7 +9,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class DelegateHelpersTests : Assert
+    public sealed class DelegateHelpersTests : Test
     {
         [Fact]
         public static void ContravarianceTest()

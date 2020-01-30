@@ -8,7 +8,7 @@ using Xunit;
 namespace DotNext.IO
 {
     [ExcludeFromCodeCoverage]
-    public sealed class StreamExtensionsTests : Assert
+    public sealed class StreamExtensionsTests : Test
     {
         private static void ReadStringUsingEncoding(string value, Encoding encoding, int bufferSize)
         {

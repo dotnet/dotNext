@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class EnumTests : Assert
+    public sealed class EnumTests : Test
     {
         [Fact]
         public static void ValuesTest()
@@ -87,7 +87,7 @@ namespace DotNext
         public static void Serialization()
         {
             var e = Enum<BindingFlags>.GetMember(BindingFlags.Public);
-            Equal(Enum<BindingFlags>.GetMember(BindingFlags.Public), SerializationTestHelper.SerializeDeserialize(e));
+            Equal(Enum<BindingFlags>.GetMember(BindingFlags.Public), SerializeDeserialize(e));
         }
 
         [Fact]

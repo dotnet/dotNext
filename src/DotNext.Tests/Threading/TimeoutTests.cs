@@ -5,7 +5,7 @@ using static System.Threading.Timeout;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class TimeoutTests : Assert
+    public sealed class TimeoutTests : Test
     {
         private static void InfiniteTest(Timeout timeout)
         {

@@ -8,7 +8,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class AsyncBarrierTests : Assert
+    public sealed class AsyncBarrierTests : Test
     {
         [Fact]
         public static async Task RemovingWaitingParticipants()

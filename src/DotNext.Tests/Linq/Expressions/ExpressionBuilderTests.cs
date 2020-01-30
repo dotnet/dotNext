@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.Linq.Expressions
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ExpressionBuilderTests : Assert
+    public sealed class ExpressionBuilderTests : Test
     {
         private static Predicate<T> MakeNullCheck<T>()
         {

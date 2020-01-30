@@ -11,7 +11,7 @@ using Xunit;
 namespace DotNext.Threading.Channels
 {
     [ExcludeFromCodeCoverage]
-    public sealed class PersistentChannelTests : Assert
+    public sealed class PersistentChannelTests : Test
     {
         private sealed class SerializationChannel<T> : PersistentChannel<T, T>
         {

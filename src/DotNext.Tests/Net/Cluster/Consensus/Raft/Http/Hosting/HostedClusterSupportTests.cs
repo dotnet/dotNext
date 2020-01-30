@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     using IReplicationCluster = Replication.IReplicationCluster;
 
     [ExcludeFromCodeCoverage]
-    public sealed class HostedClusterSupportTests : Assert
+    public sealed class HostedClusterSupportTests : Test
     {
         private static IHost CreateHost<TStartup>(int port, bool localhost, IDictionary<string, string> configuration, IClusterMemberLifetime configurator = null)
             where TStartup : class

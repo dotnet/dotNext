@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ValueTypeTests : Assert
+    public sealed class ValueTypeTests : Test
     {
         [Fact]
         public static void IntPtrComparison()

@@ -6,7 +6,7 @@ using static System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.Buffers
 {
     [ExcludeFromCodeCoverage]
-    public sealed class MemoryRentalTests : Assert
+    public sealed class MemoryRentalTests : Test
     {
         [Fact]
         public static unsafe void StackAllocationTest()

@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Buffers
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ArrayRentalTests : Assert
+    public sealed class ArrayRentalTests : Test
     {
         [Fact]
         public static void RentFromPool()

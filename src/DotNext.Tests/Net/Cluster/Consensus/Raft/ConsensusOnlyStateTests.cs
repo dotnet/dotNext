@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
     [ExcludeFromCodeCoverage]
-    public sealed class ConsensusOnlyStateTests : Assert
+    public sealed class ConsensusOnlyStateTests : Test
     {
         [Fact]
         public static async Task RaftPersistentState()

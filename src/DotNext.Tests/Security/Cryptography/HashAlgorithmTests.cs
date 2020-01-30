@@ -8,7 +8,7 @@ using Xunit;
 namespace DotNext.Security.Cryptography
 {
     [ExcludeFromCodeCoverage]
-    public sealed class HashAlgorithmTests : Assert
+    public sealed class HashAlgorithmTests : Test
     {
         [Fact]
         public static async Task HashEntirePipe()

@@ -18,15 +18,14 @@ namespace DotNext
     //I need this attribute to track stuck tests
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
     [ExcludeFromCodeCoverage]
-    public sealed class NotifyBeforeStartedAttribute : BeforeAfterTestAttribute
+    public sealed class LogBeforeAfterTestAttribute : BeforeAfterTestAttribute
     {
         private readonly TraceOutput output;
 
-        internal NotifyBeforeStartedAttribute(TraceOutput output = TraceOutput.Stdout) => this.output = output;
+        internal LogBeforeAfterTestAttribute(TraceOutput output = TraceOutput.Stdout) => this.output = output;
 
-        public override void Before(MethodInfo methodUnderTest)
+        private void WriteLine(string message)
         {
-            var message = $"Starting test {methodUnderTest.Name} inside of class {methodUnderTest.DeclaringType.Name}";
             switch(output)
             {
                 case TraceOutput.Stdout:
@@ -43,5 +42,11 @@ namespace DotNext
                     break;
             }
         }
+
+        public override void Before(MethodInfo methodUnderTest)
+            => WriteLine($"Starting test {methodUnderTest.DeclaringType.Name}/{methodUnderTest.Name}");
+        
+        public override void After(MethodInfo methodUnderTest)
+            => WriteLine($"Test {methodUnderTest.DeclaringType.Name}/{methodUnderTest.Name} is finished");
     }
 }

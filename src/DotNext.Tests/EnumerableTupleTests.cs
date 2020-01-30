@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class EnumerableTupleTests : Assert
+    public sealed class EnumerableTupleTests : Test
     {
         [Fact]
         public static void DefaultEnumerableTuple()

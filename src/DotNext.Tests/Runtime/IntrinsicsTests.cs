@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.Runtime
 {
     [ExcludeFromCodeCoverage]
-    public class IntrinsicsTests : Assert
+    public class IntrinsicsTests : Test
     {
         private Guid field;
         private string str;

@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.VariantType
 {
     [ExcludeFromCodeCoverage]
-    public sealed class VariantTests : Assert
+    public sealed class VariantTests : Test
     {
         [Fact]
         public static void DynamicNull()

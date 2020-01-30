@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class SpanTests : Assert
+    public sealed class SpanTests : Test
     {
         [Fact]
         public static void BitwiseEquality()

@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Linq.Expressions
 {
     [ExcludeFromCodeCoverage]
-    public sealed class InterpolationTests : Assert
+    public sealed class InterpolationTests : Test
     {
         [Fact]
         public static void PlainString()

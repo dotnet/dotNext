@@ -11,7 +11,7 @@ namespace DotNext.Threading
     using AsyncDelegateFuture = Runtime.CompilerServices.AsyncDelegateFuture;
 
     [ExcludeFromCodeCoverage]
-    public sealed class AsyncDelegateTests : Assert
+    public sealed class AsyncDelegateTests : Test
     {
         private sealed class Accumulator
         {

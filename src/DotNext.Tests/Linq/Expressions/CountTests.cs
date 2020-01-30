@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.Linq.Expressions
 {
     [ExcludeFromCodeCoverage]
-    public sealed class CountTests : Assert
+    public sealed class CountTests : Test
     {
         [Fact]
         public static void StringLength()

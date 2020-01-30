@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using LogEntryList = IO.Log.LogEntryProducer<IRaftLogEntry>;
 
     [ExcludeFromCodeCoverage]
-    public sealed class PersistentStateTests : Assert
+    public sealed class PersistentStateTests : Test
     {
         private sealed class ClusterMemberMock : IRaftClusterMember
         {

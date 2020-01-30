@@ -6,7 +6,7 @@ using static System.Runtime.CompilerServices.Unsafe;
 namespace DotNext.Reflection
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ReflectorTests : Assert
+    public sealed class ReflectorTests : Test
     {
         [Fact]
         public static void ConstructorBinding()

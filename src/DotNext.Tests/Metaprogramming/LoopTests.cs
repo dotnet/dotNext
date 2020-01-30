@@ -10,7 +10,7 @@ namespace DotNext.Metaprogramming
     using U = Linq.Expressions.UniversalExpression;
 
     [ExcludeFromCodeCoverage]
-    public sealed class LoopTests : Assert
+    public sealed class LoopTests : Test
     {
         public struct CustomEnumerator
         {

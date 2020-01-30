@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class AsyncLockTests : Assert
+    public sealed class AsyncLockTests : Test
     {
         [Fact]
         public static async Task EmptyLock()
@@ -21,7 +21,7 @@ namespace DotNext.Threading
             if (holder)
                 throw new Exception();
 
-            holder = await @lock.AcquireAsync(TestSettings.Timeout);
+            holder = await @lock.AcquireAsync(DefaultTimeout);
             if (holder)
                 throw new Exception();
 
@@ -33,14 +33,14 @@ namespace DotNext.Threading
         {
             using var syncRoot = new AsyncExclusiveLock();
             using var @lock = AsyncLock.Exclusive(syncRoot);
-            var holder = await @lock.TryAcquireAsync(TestSettings.Timeout, CancellationToken.None);
+            var holder = await @lock.TryAcquireAsync(DefaultTimeout, CancellationToken.None);
             if (holder) { }
             else throw new Exception();
             True(syncRoot.IsLockHeld);
             holder.Dispose();
             False(syncRoot.IsLockHeld);
 
-            holder = await @lock.AcquireAsync(TestSettings.Timeout, CancellationToken.None);
+            holder = await @lock.AcquireAsync(DefaultTimeout, CancellationToken.None);
             True(syncRoot.IsLockHeld);
             holder.Dispose();
             False(syncRoot.IsLockHeld);
@@ -51,7 +51,7 @@ namespace DotNext.Threading
         {
             using var sem = new SemaphoreSlim(3);
             using var @lock = AsyncLock.Semaphore(sem);
-            var holder = await @lock.TryAcquireAsync(TestSettings.Timeout, CancellationToken.None);
+            var holder = await @lock.TryAcquireAsync(DefaultTimeout, CancellationToken.None);
             if (holder) { }
             else throw new Exception();
             Equal(2, sem.CurrentCount);

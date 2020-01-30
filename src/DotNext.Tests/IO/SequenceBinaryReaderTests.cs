@@ -10,7 +10,7 @@ namespace DotNext.IO
     using Buffers;
 
     [ExcludeFromCodeCoverage]
-    public sealed class SequenceBinaryReaderTests : Assert
+    public sealed class SequenceBinaryReaderTests : Test
     {
         [Fact]
         public static async Task ReadMemory()

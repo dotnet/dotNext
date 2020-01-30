@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ObjectExtensionsTests : Assert
+    public sealed class ObjectExtensionsTests : Test
     {
         [Fact]
         public static void OneOfCheck()

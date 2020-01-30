@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.IO
 {
     [ExcludeFromCodeCoverage]
-    public sealed class StreamSegmentTests : Assert
+    public sealed class StreamSegmentTests : Test
     {
         [Fact]
         public static void ReadByteSequentially()

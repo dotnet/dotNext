@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Net.Cluster
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ClusterMemberIdTests : Assert
+    public sealed class ClusterMemberIdTests : Test
     {
         [Fact]
         public static void Equality()
@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster
         public static void SerializationDeserialization()
         {
             var id = new Random().Next<ClusterMemberId>();
-            Equal(id, SerializationTestHelper.SerializeDeserialize(id));
+            Equal(id, SerializeDeserialize(id));
         }
 
         [Fact]

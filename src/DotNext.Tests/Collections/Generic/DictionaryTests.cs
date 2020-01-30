@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Collections.Generic
 {
     [ExcludeFromCodeCoverage]
-    public sealed class DictionaryTests : Assert
+    public sealed class DictionaryTests : Test
     {
         [Fact]
         public static void ReadOnlyIndexer()

@@ -4,7 +4,7 @@ using Xunit;
 namespace DotNext.Reflection
 {
     [ExcludeFromCodeCoverage]
-    public sealed class RefTests : Assert
+    public sealed class RefTests : Test
     {
         [Fact]
         public static void ReferenceEquality()

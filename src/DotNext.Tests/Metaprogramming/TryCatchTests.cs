@@ -10,7 +10,7 @@ namespace DotNext.Metaprogramming
     using U = Linq.Expressions.UniversalExpression;
 
     [ExcludeFromCodeCoverage]
-    public sealed class TryCatchTests : Assert
+    public sealed class TryCatchTests : Test
     {
         [Fact]
         public static void Fault()

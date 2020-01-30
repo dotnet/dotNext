@@ -15,7 +15,7 @@ namespace DotNext.Metaprogramming
     using U = Linq.Expressions.UniversalExpression;
 
     [ExcludeFromCodeCoverage]
-    public sealed class LambdaTests : Assert
+    public sealed class LambdaTests : Test
     {
         private static long Fact(long value)
         {

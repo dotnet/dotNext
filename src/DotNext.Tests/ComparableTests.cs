@@ -4,7 +4,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ComparableTests : Assert
+    public sealed class ComparableTests : Test
     {
         [Fact]
         public static void ClampTest()

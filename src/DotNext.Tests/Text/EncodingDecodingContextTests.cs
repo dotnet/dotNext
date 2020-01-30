@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Text
 {
     [ExcludeFromCodeCoverage]
-    public sealed class EncodingDecodingContextTests : Assert
+    public sealed class EncodingDecodingContextTests : Test
     {
         [Fact]
         public static void EncodingContextInstantiation()

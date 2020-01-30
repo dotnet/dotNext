@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class StringExtensionsTests : Assert
+    public sealed class StringExtensionsTests : Test
     {
         [Fact]
         public static void IfNullOrEmptyTest()

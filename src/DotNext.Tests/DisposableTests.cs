@@ -8,7 +8,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class DisposableTests : Assert
+    public sealed class DisposableTests : Test
     {
         public struct DisposableStruct : IDisposable
         {
@@ -76,7 +76,7 @@ namespace DotNext
             {
                 var disposable = new DisposeCallback(resetEvent);
                 disposable.DisposeAsync();
-                True(resetEvent.Wait(TestSettings.Timeout));
+                True(resetEvent.Wait(DefaultTimeout));
             }
         }
 

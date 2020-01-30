@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class AsyncResetEventTests : Assert
+    public sealed class AsyncResetEventTests : Test
     {
         [Fact]
         public static void ManualResetEvent()
@@ -16,7 +16,7 @@ namespace DotNext.Threading
             False(resetEvent.IsSet);
             var t = new Thread(() =>
             {
-                resetEvent.WaitAsync(TestSettings.Timeout).Wait(TestSettings.Timeout);
+                resetEvent.WaitAsync(DefaultTimeout).Wait(DefaultTimeout);
             })
             {
                 IsBackground = true
@@ -28,7 +28,7 @@ namespace DotNext.Threading
             False(resetEvent.IsSet);
             t = new Thread(() =>
             {
-                resetEvent.WaitAsync(TestSettings.Timeout).Wait(TestSettings.Timeout);
+                resetEvent.WaitAsync(DefaultTimeout).Wait(DefaultTimeout);
             })
             {
                 IsBackground = true
@@ -60,7 +60,7 @@ namespace DotNext.Threading
             False(resetEvent.IsSet);
             var t = new Thread(() =>
             {
-                resetEvent.WaitAsync(TestSettings.Timeout).Wait(TestSettings.Timeout);
+                resetEvent.WaitAsync(DefaultTimeout).Wait(DefaultTimeout);
             })
             {
                 IsBackground = true

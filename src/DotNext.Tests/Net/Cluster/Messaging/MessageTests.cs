@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Messaging
     using IO;
 
     [ExcludeFromCodeCoverage]
-    public sealed class MessageTests : Assert
+    public sealed class MessageTests : Test
     {
         [Fact]
         public static async Task TextMessageUsingStream()

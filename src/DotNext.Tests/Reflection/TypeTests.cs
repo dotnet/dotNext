@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext.Reflection
 {
     [ExcludeFromCodeCoverage]
-    public sealed class TypeTests : Assert
+    public sealed class TypeTests : Test
     {
         internal static event EventHandler StaticEvent;
         private event EventHandler InstanceEvent;
