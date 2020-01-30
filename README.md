@@ -19,6 +19,7 @@
 
 Quick overview of additional features:
 
+* [Hex to bytes](https://sakno.github.io/dotNext/api/DotNext.Span.html) and vice versa at speed of light
 * [Attachment of user data to arbitrary objects](https://sakno.github.io/dotNext/features/core/userdata.html)
 * [Automatic generation of Equals/GetHashCode](https://sakno.github.io/dotNext/features/core/autoeh.html) for arbitrary type at runtime which is much better that Visual Studio compile-time helper for generating these methods
 * Extended set of [atomic operations](https://sakno.github.io/dotNext/features/core/atomic.html). Inspired by [AtomicInteger](https://docs.oracle.com/javase/10/docs/api/java/util/concurrent/atomic/AtomicInteger.html) and friends from Java
