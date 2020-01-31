@@ -53,6 +53,12 @@ namespace DotNext.Threading.Channels
             }
         }
 
+        /// <summary>
+        /// Gets number of unread messages.
+        /// </summary>
+        /// <value>The number of unread messages.</value>
+        public long RemainingCount => ((Writer as IChannelInfo)?.Position ?? 0L) - ((Reader as IChannelInfo)?.Position ?? 0L);
+
         DirectoryInfo IChannel.Location => location;
 
         void IChannelWriter<TInput>.MessageReady() => readTrigger.Signal();

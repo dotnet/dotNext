@@ -42,7 +42,7 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="System.Threading.Channels" Version="4.7.0" />
     <PackageReference Include="Fody" Version="6.0.8" PrivateAssets="all" />
-    <PackageReference Include="DotNext.Augmentation.Fody" Version="1.2.4" PrivateAssets="all" />
+    <PackageReference Include="DotNext.Augmentation.Fody" Version="2.0.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'!='Release'">

@@ -10,7 +10,7 @@
     <Optimize>true</Optimize>
     <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>
-    <AssemblyOriginatorKeyFile>../dotnext.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>../../dotnext.snk</AssemblyOriginatorKeyFile>
     <DebugType>none</DebugType>
   </PropertyGroup>
 
