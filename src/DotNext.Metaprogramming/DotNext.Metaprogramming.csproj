@@ -13,7 +13,7 @@
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sakno/dotNext.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>metaprogramming</PackageTags>
+    <PackageTags>metaprogramming;codegen</PackageTags>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>https://github.com/sakno/dotNext/blob/master/CHANGELOG.md</PackageReleaseNotes>
   </PropertyGroup>
