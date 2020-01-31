@@ -48,7 +48,7 @@ const int memorySize = 1024;
 var ptr1 = Marshal.AllocHGlobal(memorySize);
 var ptr2 = Marshal.AllocHGlobal(memorySize);
 
-Intrinsics.Equals(ptr1, ptr2);
+Intrinsics.Equals(ptr1.ToPointer(), ptr2.ToPointer(), memorySize);
 ```
 
 Most of these methods don't distinguish managed and unmanaged memory regions. It is responsibility of the caller code to pin the block of managed memory to avoid memory reallocations caused by Garbage Collector.
@@ -59,5 +59,5 @@ using DotNext.Runtime;
 using System.Runtime.CompilerServices;
 
 var nullref = Unsafe.AsRef<byte>(default(void*));
-Memory.IsNull(in nullref);
+Intrinsics.IsNull(in nullref);
 ```
