@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class OneDimensionalArrayTests : Assert
+    public sealed class OneDimensionalArrayTests : Test
     {
         public sealed class Equatable
         {
@@ -25,7 +25,11 @@ namespace DotNext
             var array1 = new[] { new Equatable("a"), new Equatable("b") };
             var array2 = new[] { new Equatable("a"), new Equatable("b") };
             True(array1.SequenceEqual(array2));
+            True(array1.SequenceEqual(array2, true));
             Equal(array1.SequenceHashCode(), array2.SequenceHashCode());
+            array2[0] = new Equatable("c");
+            False(array1.SequenceEqual(array2));
+            False(array1.SequenceEqual(array2, true));
         }
 
         [Fact]
@@ -81,6 +85,18 @@ namespace DotNext
             Equal(2, array.LongLength);
             Equal(3, array[0]);
             Equal(4, array[1]);
+        }
+
+        [Fact]
+        public static void Concatenation()
+        {
+            int[] array1 = { 1, 3, 5 };
+            int[] array2 = { 7, 9 };
+            Equal(new int[] { 1, 3, 5, 7, 9 }, array1.Concat(array2, array1.Length));
+            Equal(array2, array1.Concat(array2, 0));
+            Equal(new int[] { 1, 7, 9 }, array1.Concat(array2, 1));
+            Equal(Array.Empty<int>(), array1.Concat(Array.Empty<int>(), 0));
+            Equal(array2, Array.Empty<int>().Concat(array2, 0));
         }
     }
 }

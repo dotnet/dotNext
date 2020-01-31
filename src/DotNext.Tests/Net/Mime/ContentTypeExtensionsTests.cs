@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext.Net.Mime
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ContentTypeExtensionsTests : Assert
+    public sealed class ContentTypeExtensionsTests : Test
     {
         [Fact]
         public static void ParseVariousEncodings()

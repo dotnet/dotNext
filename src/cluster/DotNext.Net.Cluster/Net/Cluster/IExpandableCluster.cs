@@ -8,11 +8,11 @@ namespace DotNext.Net.Cluster
         /// <summary>
         /// An event raised when new cluster member is detected.
         /// </summary>
-        event ClusterChangedEventHandler MemberAdded;
+        event ClusterChangedEventHandler? MemberAdded;
 
         /// <summary>
         /// An event raised when cluster member is removed gracefully.
         /// </summary>
-        event ClusterChangedEventHandler MemberRemoved;
+        event ClusterChangedEventHandler? MemberRemoved;
     }
 }

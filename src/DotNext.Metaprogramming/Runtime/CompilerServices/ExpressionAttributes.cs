@@ -8,14 +8,12 @@ namespace DotNext.Runtime.CompilerServices
     /// </summary>
     internal class ExpressionAttributes
     {
-        private static readonly UserDataSlot<ExpressionAttributes> AttributesSlot = UserDataSlot<ExpressionAttributes>.Allocate();
-
-        private readonly HashSet<LabelTarget> labels = new HashSet<LabelTarget>();
+        private static readonly UserDataSlot<ExpressionAttributes?> AttributesSlot = UserDataSlot<ExpressionAttributes?>.Allocate();
 
         /// <summary>
         /// A set of labels owner by expression.
         /// </summary>
-        internal ISet<LabelTarget> Labels => labels;
+        internal readonly ISet<LabelTarget> Labels = new HashSet<LabelTarget>();
 
         /// <summary>
         /// Indicates that expression contains await expression.
@@ -30,7 +28,7 @@ namespace DotNext.Runtime.CompilerServices
         internal void AttachTo(Expression node)
             => node.GetUserData().Set(AttributesSlot, this);
 
-        internal static ExpressionAttributes Get(Expression node)
-            => node?.GetUserData().Get(AttributesSlot);
+        internal static ExpressionAttributes? Get(Expression node)
+            => node.GetUserData().Get(AttributesSlot);
     }
 }

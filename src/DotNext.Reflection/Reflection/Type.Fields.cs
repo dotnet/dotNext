@@ -14,7 +14,7 @@ namespace DotNext.Reflection
             /// <param name="fieldName">Name of field.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public field.</param>
             /// <returns>Instance field; or <see langword="null"/>, if field doesn't exist.</returns>
-            public static Field<T, V> Get(string fieldName, bool nonPublic = false)
+            public static Field<T, V>? Get(string fieldName, bool nonPublic = false)
                 => Field<T, V>.GetOrCreate(fieldName, nonPublic);
 
             /// <summary>
@@ -33,7 +33,7 @@ namespace DotNext.Reflection
             /// <param name="fieldName">Name of field.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public field.</param>
             /// <returns>Instance field; or <see langword="null"/>, if field doesn't exist.</returns>
-            public static Reflection.Field<V> GetStatic(string fieldName, bool nonPublic = false)
+            public static Reflection.Field<V>? GetStatic(string fieldName, bool nonPublic = false)
                 => Reflection.Field<V>.GetOrCreate<T>(fieldName, nonPublic);
 
             /// <summary>

@@ -12,7 +12,7 @@ namespace DotNext.Metaprogramming
     internal sealed class AsyncLambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>
         where D : Delegate
     {
-        private ParameterExpression recursion;
+        private ParameterExpression? recursion;
         private readonly TaskType taskType;
 
         [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
@@ -35,13 +35,13 @@ namespace DotNext.Metaprogramming
         /// </summary>
         internal override IReadOnlyList<ParameterExpression> Parameters { get; }
 
-        internal override Expression Return(Expression result) => new AsyncResultExpression(result, taskType);
+        internal override Expression Return(Expression? result) => new AsyncResultExpression(result, taskType);
 
         private new Expression<D> Build()
         {
             var body = base.Build();
             if (body.Type != taskType)
-                body = body.AddEpilogue(true, new AsyncResultExpression(taskType));
+                body = body.AddEpilogue(taskType.HasResult, new AsyncResultExpression(taskType));
             Expression<D> lambda;
             using (var builder = new AsyncStateMachineBuilder<D>(Parameters))
             {

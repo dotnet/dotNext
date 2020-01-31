@@ -1,9 +1,11 @@
 using System;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 namespace DotNext
 {
-    using BytesRental = Buffers.ArrayRental<byte>;
+    using ByteBuffer = Buffers.MemoryRental<byte>;
     using CharBuffer = Buffers.MemoryRental<char>;
 
     /// <summary>
@@ -18,6 +20,7 @@ namespace DotNext
             void NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars);
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct PseudoRandomStringGenerator : IRandomStringGenerator
         {
             private readonly Random rng;
@@ -26,11 +29,13 @@ namespace DotNext
 
             void IRandomStringGenerator.NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars)
             {
+                ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
                 foreach (ref var element in buffer)
-                    element = allowedChars[rng.Next(0, allowedChars.Length)];
+                    element = Unsafe.Add(ref firstChar, rng.Next(0, allowedChars.Length));
             }
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct RandomStringGenerator : IRandomStringGenerator
         {
             private readonly RandomNumberGenerator rng;
@@ -39,42 +44,31 @@ namespace DotNext
 
             void IRandomStringGenerator.NextString(Span<char> buffer, ReadOnlySpan<char> allowedChars)
             {
-                //TODO: byte array should be replaced with stack allocated Span in .NET Standard 2.1
-                using (var bytes = new BytesRental(buffer.Length * sizeof(int)))
+                var offset = buffer.Length * sizeof(int);
+                using ByteBuffer bytes = offset <= ByteBuffer.StackallocThreshold ? stackalloc byte[offset] : new ByteBuffer(offset);
+                rng.GetBytes(bytes.Span);
+                offset = 0;
+                ref var firstChar = ref MemoryMarshal.GetReference(allowedChars);
+                foreach (ref var element in buffer)
                 {
-                    rng.GetBytes((byte[])bytes, 0, bytes.Length);
-                    var offset = 0;
-                    foreach (ref var element in buffer)
-                    {
-                        var randomNumber = (BitConverter.ToInt32((byte[])bytes, offset) & int.MaxValue) % allowedChars.Length;
-                        element = allowedChars[randomNumber];
-                        offset += sizeof(int);
-                    }
+                    var randomNumber = (BitConverter.ToInt32(bytes.Span.Slice(offset)) & int.MaxValue) % allowedChars.Length;
+                    element = Unsafe.Add(ref firstChar, randomNumber);
+                    offset += sizeof(int);
                 }
             }
         }
 
-        private static unsafe string NextString<TGenerator>(TGenerator generator, ReadOnlySpan<char> allowedChars, int length)
+        private static string NextString<TGenerator>(TGenerator generator, ReadOnlySpan<char> allowedChars, int length)
             where TGenerator : struct, IRandomStringGenerator
         {
-            //TODO: should be reviewed for .NET Standard 2.1
             if (length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
-            if (length == 0)
+            if (length == 0 || allowedChars.IsEmpty)
                 return string.Empty;
-            const short smallStringLength = 1024;
             //use stack allocation for small strings, which is 99% of all use cases
-            CharBuffer result = length <= smallStringLength ? stackalloc char[length] : new CharBuffer(length);
-            try
-            {
-                generator.NextString(result.Span, allowedChars);
-                fixed (char* ptr = result)
-                    return new string(ptr, 0, length);
-            }
-            finally
-            {
-                result.Dispose();
-            }
+            using CharBuffer result = length <= CharBuffer.StackallocThreshold ? stackalloc char[length] : new CharBuffer(length);
+            generator.NextString(result.Span, allowedChars);
+            return new string(result.Span);
         }
 
         /// <summary>
@@ -160,13 +154,8 @@ namespace DotNext
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>A 32-bit signed integer that is in range [0, <see cref="int.MaxValue"/>].</returns>
-        public static int Next(this RandomNumberGenerator random)
-        {
-            //TODO: GetBytes should work with ReadOnlySpan in .NET Standard 2.1
-            var buffer = new byte[sizeof(int)];
-            random.GetBytes(buffer, 0, buffer.Length);
-            return BitConverter.ToInt32(buffer, 0) & int.MaxValue;  //remove sign bit. Abs function may cause OverflowException
-        }
+        public static unsafe int Next(this RandomNumberGenerator random)
+            => random.Next<int>() & int.MaxValue; //remove sign bit. Abs function may cause OverflowException
 
         /// <summary>
         /// Generates random boolean value.
@@ -185,11 +174,39 @@ namespace DotNext
         /// </summary>
         /// <param name="random">The source of random numbers.</param>
         /// <returns>Randomly generated floating-point number.</returns>
-        public static double NextDouble(this RandomNumberGenerator random)
+        public static unsafe double NextDouble(this RandomNumberGenerator random)
         {
             double result = random.Next();
             //normalize to range [0, 1)
             return result / (result + 1D);
+        }
+
+        /// <summary>
+        /// Generates random value of blittable type.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <typeparam name="T">The blittable type.</typeparam>
+        /// <returns>The randomly generated value.</returns>
+        public static unsafe T Next<T>(this Random random)
+            where T : unmanaged
+        {
+            var result = default(T);
+            random.NextBytes(new Span<byte>(&result, sizeof(T)));
+            return result;
+        }
+
+        /// <summary>
+        /// Generates random value of blittable type.
+        /// </summary>
+        /// <param name="random">The source of random numbers.</param>
+        /// <typeparam name="T">The blittable type.</typeparam>
+        /// <returns>The randomly generated value.</returns>
+        public static unsafe T Next<T>(this RandomNumberGenerator random)
+            where T : unmanaged
+        {
+            var result = default(T);
+            random.GetBytes(new Span<byte>(&result, sizeof(T)));
+            return result;
         }
     }
 }

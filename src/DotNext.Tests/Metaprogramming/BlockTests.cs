@@ -12,7 +12,7 @@ namespace DotNext.Metaprogramming
     using U = Linq.Expressions.UniversalExpression;
 
     [ExcludeFromCodeCoverage]
-    public sealed class BlockTests : Assert
+    public sealed class BlockTests : Test
     {
         private sealed class DisposableClass : Disposable
         {

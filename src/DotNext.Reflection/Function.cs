@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace DotNext
@@ -11,6 +12,7 @@ namespace DotNext
     /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
     /// <typeparam name="R">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
+    [return: MaybeNull]
     public delegate R Function<A, out R>(in A arguments) where A : struct;
 
     /// <summary>
@@ -23,7 +25,9 @@ namespace DotNext
     /// <typeparam name="A">Type of structure with function arguments allocated on the stack.</typeparam>
     /// <typeparam name="R">Type of function return value.</typeparam>
     /// <returns>Function return value.</returns>
-    public delegate R Function<T, A, out R>(in T @this, in A arguments) where A : struct;
+    [return: MaybeNull]
+    public delegate R Function<T, A, out R>([DisallowNull]in T @this, in A arguments)
+        where A : struct;
 
     /// <summary>
     /// Provides extension methods for delegates <see cref="Function{A, R}"/> and <see cref="Function{T, A, R}"/>.
@@ -42,6 +46,7 @@ namespace DotNext
                 this.target = target;
             }
 
+            [return: MaybeNull]
             internal R Invoke(in A arguments) => function(target, arguments);
         }
 
@@ -55,7 +60,9 @@ namespace DotNext
         /// <param name="function">The function to be converted.</param>
         /// <param name="this">The first argument to be captured.</param>
         /// <returns>The function instance.</returns>
-        public static Function<A, R> Capture<T, A, R>(this Function<T, A, R> function, T @this) where A : struct => new Closure<T, A, R>(function, @this).Invoke;
+        public static Function<A, R> Capture<T, A, R>(this Function<T, A, R> function, [DisallowNull]T @this)
+            where A : struct
+            => new Closure<T, A, R>(function, @this).Invoke;
 
         /// <summary>
         /// Invokes function without throwing exception in case of its failure.
@@ -90,7 +97,7 @@ namespace DotNext
         /// <typeparam name="R">Type of function return value.</typeparam>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Result<R> TryInvoke<T, A, R>(this Function<T, A, R> function, in T @this, in A arguments)
+        public static Result<R> TryInvoke<T, A, R>(this Function<T, A, R> function, [DisallowNull]in T @this, in A arguments)
             where A : struct
         {
             try
@@ -137,7 +144,8 @@ namespace DotNext
         /// <param name="instance">Explicit <c>this</c> argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<T, R>(this Function<T, ValueTuple, R> function, in T instance)
+        [return: MaybeNull]
+        public static R Invoke<T, R>(this Function<T, ValueTuple, R> function, [DisallowNull]in T instance)
             => function(in instance, default);
 
         /// <summary>
@@ -147,6 +155,7 @@ namespace DotNext
         /// <param name="function">The function to be invoked.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<R>(this Function<ValueTuple, R> function)
             => function(default);
 
@@ -159,6 +168,7 @@ namespace DotNext
         /// <param name="arg">The first function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<P, R>(this Function<ValueTuple<P>, R> function, P arg)
             => function(new ValueTuple<P>(arg));
 
@@ -173,7 +183,8 @@ namespace DotNext
         /// <param name="arg">The first function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<T, P, R>(this Function<T, ValueTuple<P>, R> function, in T instance, P arg)
+        [return: MaybeNull]
+        public static R Invoke<T, P, R>(this Function<T, ValueTuple<P>, R> function, [DisallowNull]in T instance, P arg)
             => function(in instance, new ValueTuple<P>(arg));
 
         /// <summary>
@@ -187,6 +198,7 @@ namespace DotNext
         /// <param name="arg2">The second function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<P1, P2, R>(this Function<(P1, P2), R> function, P1 arg1, P2 arg2)
             => function((arg1, arg2));
 
@@ -203,7 +215,8 @@ namespace DotNext
         /// <param name="arg2">The second function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<T, P1, P2, R>(this Function<T, (P1, P2), R> function, in T instance, P1 arg1, P2 arg2)
+        [return: MaybeNull]
+        public static R Invoke<T, P1, P2, R>(this Function<T, (P1, P2), R> function, [DisallowNull]in T instance, P1 arg1, P2 arg2)
             => function(in instance, (arg1, arg2));
 
         /// <summary>
@@ -221,7 +234,8 @@ namespace DotNext
         /// <param name="arg3">The third function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<T, P1, P2, P3, R>(this Function<T, (P1, P2, P3), R> function, in T instance, P1 arg1, P2 arg2, P3 arg3)
+        [return: MaybeNull]
+        public static R Invoke<T, P1, P2, P3, R>(this Function<T, (P1, P2, P3), R> function, [DisallowNull]in T instance, P1 arg1, P2 arg2, P3 arg3)
             => function(in instance, (arg1, arg2, arg3));
 
         /// <summary>
@@ -237,6 +251,7 @@ namespace DotNext
         /// <param name="arg3">The third function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<P1, P2, P3, R>(this Function<(P1, P2, P3), R> function, P1 arg1, P2 arg2, P3 arg3)
             => function((arg1, arg2, arg3));
 
@@ -257,7 +272,8 @@ namespace DotNext
         /// <param name="arg4">The fourth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<T, P1, P2, P3, P4, R>(this Function<T, (P1, P2, P3, P4), R> function, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4)
+        [return: MaybeNull]
+        public static R Invoke<T, P1, P2, P3, P4, R>(this Function<T, (P1, P2, P3, P4), R> function, [DisallowNull]in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4)
             => function(in instance, (arg1, arg2, arg3, arg4));
 
         /// <summary>
@@ -275,6 +291,7 @@ namespace DotNext
         /// <param name="arg4">The fourth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<P1, P2, P3, P4, R>(this Function<(P1, P2, P3, P4), R> function, P1 arg1, P2 arg2, P3 arg3, P4 arg4)
             => function((arg1, arg2, arg3, arg4));
 
@@ -297,7 +314,8 @@ namespace DotNext
         /// <param name="arg5">The fifth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<T, P1, P2, P3, P4, P5, R>(this Function<T, (P1, P2, P3, P4, P5), R> function, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5)
+        [return: MaybeNull]
+        public static R Invoke<T, P1, P2, P3, P4, P5, R>(this Function<T, (P1, P2, P3, P4, P5), R> function, [DisallowNull]in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5));
 
         /// <summary>
@@ -317,6 +335,7 @@ namespace DotNext
         /// <param name="arg5">The fifth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<P1, P2, P3, P4, P5, R>(this Function<(P1, P2, P3, P4, P5), R> function, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5)
             => function((arg1, arg2, arg3, arg4, arg5));
 
@@ -341,7 +360,8 @@ namespace DotNext
         /// <param name="arg6">The sixth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<T, P1, P2, P3, P4, P5, P6, R>(this Function<T, (P1, P2, P3, P4, P5, P6), R> function, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6)
+        [return: MaybeNull]
+        public static R Invoke<T, P1, P2, P3, P4, P5, P6, R>(this Function<T, (P1, P2, P3, P4, P5, P6), R> function, [DisallowNull]in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5, arg6));
 
         /// <summary>
@@ -363,6 +383,7 @@ namespace DotNext
         /// <param name="arg6">The sixth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<P1, P2, P3, P4, P5, P6, R>(this Function<(P1, P2, P3, P4, P5, P6), R> function, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6)
             => function((arg1, arg2, arg3, arg4, arg5, arg6));
 
@@ -389,7 +410,8 @@ namespace DotNext
         /// <param name="arg7">The seventh function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<T, P1, P2, P3, P4, P5, P6, P7, R>(this Function<T, (P1, P2, P3, P4, P5, P6, P7), R> function, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7)
+        [return: MaybeNull]
+        public static R Invoke<T, P1, P2, P3, P4, P5, P6, P7, R>(this Function<T, (P1, P2, P3, P4, P5, P6, P7), R> function, [DisallowNull]in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7));
 
         /// <summary>
@@ -413,6 +435,7 @@ namespace DotNext
         /// <param name="arg7">The seventh function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<P1, P2, P3, P4, P5, P6, P7, R>(this Function<(P1, P2, P3, P4, P5, P6, P7), R> function, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7)
             => function((arg1, arg2, arg3, arg4, arg5, arg6, arg7));
 
@@ -441,7 +464,8 @@ namespace DotNext
         /// <param name="arg8">The eighth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<T, P1, P2, P3, P4, P5, P6, P7, P8, R>(this Function<T, (P1, P2, P3, P4, P5, P6, P7, P8), R> function, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8)
+        [return: MaybeNull]
+        public static R Invoke<T, P1, P2, P3, P4, P5, P6, P7, P8, R>(this Function<T, (P1, P2, P3, P4, P5, P6, P7, P8), R> function, [DisallowNull]in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
 
         /// <summary>
@@ -467,6 +491,7 @@ namespace DotNext
         /// <param name="arg8">The eighth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<P1, P2, P3, P4, P5, P6, P7, P8, R>(this Function<(P1, P2, P3, P4, P5, P6, P7, P8), R> function, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8)
             => function((arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
 
@@ -497,7 +522,8 @@ namespace DotNext
         /// <param name="arg9">The ninth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>(this Function<T, (P1, P2, P3, P4, P5, P6, P7, P8, P9), R> function, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9)
+        [return: MaybeNull]
+        public static R Invoke<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, R>(this Function<T, (P1, P2, P3, P4, P5, P6, P7, P8, P9), R> function, [DisallowNull]in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9));
 
         /// <summary>
@@ -525,6 +551,7 @@ namespace DotNext
         /// <param name="arg9">The ninth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<P1, P2, P3, P4, P5, P6, P7, P8, P9, R>(this Function<(P1, P2, P3, P4, P5, P6, P7, P8, P9), R> function, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9)
             => function((arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9));
 
@@ -557,7 +584,8 @@ namespace DotNext
         /// <param name="arg10">The tenth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>(this Function<T, (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10), R> function, in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10)
+        [return: MaybeNull]
+        public static R Invoke<T, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>(this Function<T, (P1, P2, P3, P4, P5, P6, P7, P8, P9, P10), R> function, [DisallowNull]in T instance, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10)
             => function(in instance, (arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10));
 
         /// <summary>
@@ -587,6 +615,7 @@ namespace DotNext
         /// <param name="arg10">The tenth function argument.</param>
         /// <returns>Function return value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, R>(this Function<(P1, P2, P3, P4, P5, P6, P7, P8, P9, P10), R> function, P1 arg1, P2 arg2, P3 arg3, P4 arg4, P5 arg5, P6 arg6, P7 arg7, P8 arg8, P9 arg9, P10 arg10)
             => function((arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10));
     }

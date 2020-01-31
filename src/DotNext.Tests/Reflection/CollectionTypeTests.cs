@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Reflection
 {
     [ExcludeFromCodeCoverage]
-    public sealed class CollectionTypeTests : Assert
+    public sealed class CollectionTypeTests : Test
     {
         [Fact]
         public static void GetItemTypeTest()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace DotNext.Reflection
@@ -43,13 +44,13 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="instance">Object with declared event.</param>
         /// <param name="handler">An event handler to add.</param>
-        void AddEventHandler(in T instance, H handler);
+        void AddEventHandler([DisallowNull]in T instance, H handler);
 
         /// <summary>
         /// Remove event handler.
         /// </summary>
         /// <param name="instance">Object with declared event.</param>
         /// <param name="handler">An event handler to remove.</param>
-        void RemoveEventHandler(in T instance, H handler);
+        void RemoveEventHandler([DisallowNull]in T instance, H handler);
     }
 }

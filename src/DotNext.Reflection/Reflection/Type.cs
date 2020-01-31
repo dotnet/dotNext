@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using static System.Linq.Expressions.Expression;
 using static System.Runtime.CompilerServices.RuntimeHelpers;
@@ -22,6 +23,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Returns default value for this type.
         /// </summary>
+        [MaybeNull]
         public static T Default => Intrinsics.DefaultOf<T>();
 
         /// <summary>
@@ -30,7 +32,7 @@ namespace DotNext.Reflection
         /// <remarks>
         /// For reference types, this delegate always calls <see cref="object.GetHashCode"/> virtual method.
         /// For value type, it calls <see cref="object.GetHashCode"/> if it is overridden by the value type; otherwise,
-        /// it calls <see cref="BitwiseComparer{T}.GetHashCode(T, bool)"/>.
+        /// it calls <see cref="BitwiseComparer{T}.GetHashCode(in T, bool)"/>.
         /// </remarks>
         public static new readonly Operator<T, int> GetHashCode;
 
@@ -50,7 +52,7 @@ namespace DotNext.Reflection
             var inputParam = Parameter(RuntimeType.MakeByRefType(), "obj");
             var secondParam = Parameter(RuntimeType.MakeByRefType(), "other");
             //1. try to resolve equality operator
-            Equals = Operator<T>.Get<bool>(BinaryOperator.Equal, OperatorLookup.Overloaded);
+            Operator<T, T, bool>? equalsOp = Operator<T>.Get<bool>(BinaryOperator.Equal, OperatorLookup.Overloaded);
             if (RuntimeType.IsValueType)
             {
                 //hash code calculator
@@ -59,20 +61,20 @@ namespace DotNext.Reflection
                 {
                     method = typeof(BitwiseComparer<>)
                                 .MakeGenericType(RuntimeType)
-                                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { RuntimeType, typeof(bool) });
+                                .GetMethod(nameof(BitwiseComparer<int>.GetHashCode), new[] { RuntimeType.MakeByRefType(), typeof(bool) });
                     Debug.Assert(!(method is null));
                     GetHashCode = Lambda<Operator<T, int>>(Call(null, method, inputParam, Constant(true)), inputParam).Compile();
                 }
                 else
                     GetHashCode = method.CreateDelegate<Operator<T, int>>();
                 //equality checker
-                if (Equals is null)
+                if (equalsOp is null)
                     //2. try to find IEquatable.Equals implementation
                     if (typeof(IEquatable<T>).IsAssignableFrom(RuntimeType))
                     {
                         method = typeof(IEquatable<T>).GetMethod(nameof(IEquatable<T>.Equals), BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
                         Debug.Assert(!(method is null));
-                        Equals = Lambda<Operator<T, T, bool>>(Call(inputParam, method, secondParam), inputParam, secondParam).Compile();
+                        equalsOp = Lambda<Operator<T, T, bool>>(Call(inputParam, method, secondParam), inputParam, secondParam).Compile();
                     }
                     //3. Use bitwise equality
                     else
@@ -82,7 +84,7 @@ namespace DotNext.Reflection
                             .GetMethod(nameof(BitwiseComparer<int>.Equals), BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public)
                             .MakeGenericMethod(RuntimeType);
                         Debug.Assert(!(method is null));
-                        Equals = Lambda<Operator<T, T, bool>>(Call(null, method, inputParam, secondParam), inputParam, secondParam).Compile();
+                        equalsOp = Lambda<Operator<T, T, bool>>(Call(null, method, inputParam, secondParam), inputParam, secondParam).Compile();
                     }
             }
             else
@@ -90,9 +92,10 @@ namespace DotNext.Reflection
                 //hash code calculator
                 GetHashCode = Lambda<Operator<T, int>>(Call(inputParam, typeof(object).GetHashCodeMethod()), inputParam).Compile();
                 //equality checker
-                if (Equals is null)
-                    Equals = Lambda<Operator<T, T, bool>>(Call(null, typeof(object).GetMethod(nameof(Equals), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly), inputParam, secondParam), inputParam, secondParam).Compile();
+                if (equalsOp is null)
+                    equalsOp = Lambda<Operator<T, T, bool>>(Call(null, typeof(object).GetMethod(nameof(Equals), BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly), inputParam, secondParam), inputParam, secondParam).Compile();
             }
+            Equals = equalsOp;
         }
 
         /// <summary>
@@ -101,7 +104,7 @@ namespace DotNext.Reflection
         /// <remarks>
         /// This method doesn't call static constructor if type is already initialized.
         /// </remarks>
-        public static void Initialize() => RunClassConstructor(RuntimeType.TypeHandle);
+        public static void Initialize() => RunClassConstructor(Intrinsics.TypeOf<T>());
 
         /// <summary>
         /// Determines whether an instance of a specified type can be assigned to an instance of the current type.
@@ -125,8 +128,8 @@ namespace DotNext.Reflection
         /// <returns>Optional conversion result if it is supported for the given type.</returns>
         public static Optional<T> TryConvert<U>(U value)
         {
-            Operator<U, T> converter = Type<U>.Operator.Get<T>(UnaryOperator.Convert);
-            return converter is null ? Optional<T>.Empty : converter(value);
+            Operator<U, T>? converter = Type<U>.Operator.Get<T>(UnaryOperator.Convert);
+            return converter is null ? Optional<T>.Empty : converter(value)!;
         }
 
         /// <summary>
@@ -136,7 +139,7 @@ namespace DotNext.Reflection
         /// <param name="value">The value to be converted.</param>
         /// <param name="result">The conversion result.</param>
         /// <returns><see langword="true"/>, if conversion is supported by the given type; otherwise, <see langword="false"/>.</returns>
-        public static bool TryConvert<U>(U value, out T result) => TryConvert(value).TryGet(out result);
+        public static bool TryConvert<U>(U value, [NotNullWhen(true)]out T result) => TryConvert(value).TryGet(out result);
 
         /// <summary>
         /// Converts object into type <typeparamref name="T"/>.
@@ -149,6 +152,7 @@ namespace DotNext.Reflection
         /// <typeparam name="U">Type of value to convert.</typeparam>
         /// <returns>Converted value.</returns>
         /// <exception cref="InvalidCastException">Cannot convert values.</exception>
+        [return: NotNull]
         public static T Convert<U>(U value) => TryConvert(value).OrThrow<InvalidCastException>();
     }
 }

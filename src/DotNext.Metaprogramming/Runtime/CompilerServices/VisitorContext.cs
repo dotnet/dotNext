@@ -20,7 +20,7 @@ namespace DotNext.Runtime.CompilerServices
             asyncMethodEnd = Expression.Label("end_async_method");
             attributes = new Stack<ExpressionAttributes>();
             statements = new Stack<Statement>();
-            asyncMethodEnd.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId = previousStateId = AsyncStateMachine<ValueTuple>.FINAL_STATE;
+            asyncMethodEnd.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId = previousStateId = IAsyncStateMachine<ValueTuple>.FINAL_STATE;
         }
 
         internal Statement CurrentStatement => statements.Peek();
@@ -35,7 +35,7 @@ namespace DotNext.Runtime.CompilerServices
             return pair;
         }
 
-        private S FindStatement<S>()
+        private S? FindStatement<S>()
             where S : Statement
         {
             foreach (var statement in statements)
@@ -59,7 +59,7 @@ namespace DotNext.Runtime.CompilerServices
             }
         }
 
-        internal ParameterExpression ExceptionHolder => FindStatement<CatchStatement>()?.ExceptionVar;
+        internal ParameterExpression? ExceptionHolder => FindStatement<CatchStatement>()?.ExceptionVar;
 
         private void ContainsAwait()
         {
@@ -74,11 +74,11 @@ namespace DotNext.Runtime.CompilerServices
         {
             if (target is null)
                 return;
-            ExpressionAttributes.Get(CurrentStatement).Labels.Add(target);
+            ExpressionAttributes.Get(CurrentStatement)?.Labels.Add(target);
             target.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId;
         }
 
-        internal O Rewrite<I, O, A>(I expression, Converter<I, O> rewriter, Action<A> initializer = null)
+        internal O Rewrite<I, O, A>(I expression, Converter<I, O> rewriter, Action<A>? initializer = null)
             where I : Expression
             where O : Expression
             where A : ExpressionAttributes, new()
@@ -139,7 +139,7 @@ namespace DotNext.Runtime.CompilerServices
             //iterate through snapshot of statements because collection can be modified
             var statements = this.statements.Clone();
             foreach (var lookup in statements)
-                if (ExpressionAttributes.Get(lookup).Labels.Contains(@goto.Target))
+                if (ExpressionAttributes.Get(lookup)?.Labels.Contains(@goto.Target) ?? false)
                     break;
                 else if (lookup is TryCatchFinallyStatement statement)
                     result.AddLast(statement.InlineFinally(visitor, state));

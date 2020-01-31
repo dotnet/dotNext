@@ -1,11 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
-using static System.Runtime.InteropServices.MemoryMarshal;
+using Debug = System.Diagnostics.Debug;
+using NumberStyles = System.Globalization.NumberStyles;
 
 namespace DotNext
 {
-    using Runtime.InteropServices;
+    using Runtime;
+    using ByteBuffer = Buffers.MemoryRental<byte>;
+    using CharBuffer = Buffers.MemoryRental<char>;
 
     /// <summary>
     /// Provides extension methods for type <see cref="Span{T}"/> and <see cref="ReadOnlySpan{T}"/>.
@@ -19,6 +25,32 @@ namespace DotNext
             internal ValueComparer(IComparer<T> comparer) => this.comparer = comparer;
 
             int ISupplier<T, T, int>.Invoke(T arg1, T arg2) => comparer.Compare(arg1, arg2);
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private readonly struct HexByte
+        {
+            internal readonly char High, Low;
+
+            internal HexByte(byte value)
+            {
+                var str = value.ToString("X2", InvariantCulture);
+                Debug.Assert(str.Length == 2);
+                High = str[0];
+                Low = str[1];
+            }
+
+            public static implicit operator ReadOnlySpan<char>(in HexByte hex) => MemoryMarshal.CreateReadOnlySpan(ref AsRef(in hex.High), 2);
+        }
+
+        private static readonly ReadOnlyMemory<HexByte> HexLookupTable;
+
+        static Span()
+        {
+            var lookup = new HexByte[byte.MaxValue + 1];
+            for (var i = 0; i <= byte.MaxValue; i++)
+                lookup[i] = new HexByte((byte)i);
+            HexLookupTable = lookup;
         }
 
         /// <summary>
@@ -42,8 +74,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? RandomExtensions.BitwiseHashSalt : 0;
-            fixed (T* ptr = span)
-                return Memory.GetHashCode32(ptr, (long)span.Length * sizeof(T), salted);
+            return Intrinsics.GetHashCode32(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), salted);
         }
 
         /// <summary>
@@ -112,8 +143,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
-            fixed (T* ptr = span)
-                return Memory.GetHashCode32(ptr, (long)span.Length * sizeof(T), hash, hashFunction, salted);
+            return Intrinsics.GetHashCode32(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
         }
 
         /// <summary>
@@ -143,8 +173,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
-            fixed (T* ptr = span)
-                return Memory.GetHashCode64(ptr, (long)span.Length * sizeof(T), hash, hashFunction, salted);
+            return Intrinsics.GetHashCode64(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), hash, in hashFunction, salted);
         }
 
         /// <summary>
@@ -156,7 +185,7 @@ namespace DotNext
         /// <param name="hashFunction">Custom hashing algorithm.</param>
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>64-bit hash code of the array content.</returns>
-        public static unsafe long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
+        public static long BitwiseHashCode64<T>(this ReadOnlySpan<T> span, long hash, Func<long, long, long> hashFunction, bool salted = true)
             where T : unmanaged
             => BitwiseHashCode64(span, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
 
@@ -181,8 +210,7 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return salted ? RandomExtensions.BitwiseHashSalt : 0L;
-            fixed (T* ptr = span)
-                return Memory.GetHashCode64(ptr, (long)span.Length * sizeof(T), salted);
+            return Intrinsics.GetHashCode64(ref As<T, byte>(ref MemoryMarshal.GetReference(span)), span.Length * sizeof(T), salted);
         }
 
         /// <summary>
@@ -197,7 +225,7 @@ namespace DotNext
 		/// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
 		public static bool BitwiseEquals<T>(this Span<T> first, Span<T> second)
             where T : unmanaged
-            => AsBytes(first).SequenceEqual(AsBytes(second));
+            => MemoryMarshal.AsBytes(first).SequenceEqual(MemoryMarshal.AsBytes(second));
 
         /// <summary>
         /// Determines whether two memory blocks identified by the given spans contain the same set of elements.
@@ -211,7 +239,7 @@ namespace DotNext
         /// <returns><see langword="true"/>, if both memory blocks are equal; otherwise, <see langword="false"/>.</returns>
         public static bool BitwiseEquals<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
             where T : unmanaged
-            => AsBytes(first).SequenceEqual(AsBytes(second));
+            => MemoryMarshal.AsBytes(first).SequenceEqual(MemoryMarshal.AsBytes(second));
 
         /// <summary>
         /// Compares content of the two memory blocks identified by the given spans.
@@ -222,7 +250,7 @@ namespace DotNext
         /// <returns>Comparison result.</returns>
         public static int BitwiseCompare<T>(this Span<T> first, Span<T> second)
             where T : unmanaged
-            => AsBytes(first).SequenceCompareTo(AsBytes(second));
+            => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
 
         /// <summary>
         /// Compares content of the two memory blocks identified by the given spans.
@@ -233,7 +261,7 @@ namespace DotNext
         /// <returns>Comparison result.</returns>
         public static int BitwiseCompare<T>(this ReadOnlySpan<T> first, ReadOnlySpan<T> second)
             where T : unmanaged
-            => AsBytes(first).SequenceCompareTo(AsBytes(second));
+            => MemoryMarshal.AsBytes(first).SequenceCompareTo(MemoryMarshal.AsBytes(second));
 
         private static int Partition<T, C>(Span<T> span, int startIndex, int endIndex, ref C comparison)
             where C : struct, ISupplier<T, T, int>
@@ -245,11 +273,11 @@ namespace DotNext
                 ref var jptr = ref span[j];
                 if (comparison.Invoke(jptr, pivot) > 0) continue;
                 i += 1;
-                Memory.Swap(ref span[i], ref jptr);
+                Intrinsics.Swap(ref span[i], ref jptr);
             }
 
             i += 1;
-            Memory.Swap(ref span[endIndex], ref span[i]);
+            Intrinsics.Swap(ref span[endIndex], ref span[i]);
             return i;
         }
 
@@ -270,7 +298,7 @@ namespace DotNext
         /// <param name="span">The contiguous region of arbitrary memory to sort.</param>
         /// <param name="comparison">The comparer used for sorting.</param>
         /// <typeparam name="T">The type of the elements.</typeparam>
-        public static void Sort<T>(this Span<T> span, IComparer<T> comparison = null)
+        public static void Sort<T>(this Span<T> span, IComparer<T>? comparison = null)
         {
             var cmp = new ValueComparer<T>(comparison ?? Comparer<T>.Default);
             QuickSort(span, 0, span.Length - 1, ref cmp);
@@ -357,12 +385,9 @@ namespace DotNext
         {
             if (span.IsEmpty)
                 return;
-            ref var reference = ref span[0];
-            for (var i = 0; i < span.Length; i++)
-            {
+            ref var reference = ref MemoryMarshal.GetReference(span);
+            for (var i = 0; i < span.Length; i++, reference = ref Add(ref reference, 1))
                 action.Invoke(ref reference, i);
-                reference = ref Add(ref reference, 1);
-            }
         }
 
         /// <summary>
@@ -372,5 +397,141 @@ namespace DotNext
         /// <param name="span">The span to iterate.</param>
         /// <param name="action">The action to be applied for each element of the span.</param>
         public static void ForEach<T>(this Span<T> span, RefAction<T, int> action) => ForEach(span, new ValueRefAction<T, int>(action, true));
+
+        private static void ToLowerFast(Span<char> output)
+        {
+            //standard C# operators are replaced with Add and Subtract intrisics here
+            //because I don't need redundant conv.u instruction when converting back from int32 to char
+            //conv.u instruction adds overhead for each hex character
+            foreach(ref var charPtr in output)
+            {
+                char ch = charPtr;
+                if(ch >= 'A' && ch <= 'F')
+                    charPtr = 'a'.Add(ch.Subtract('A'));
+            }
+        }
+
+        /// <summary>
+        /// Converts set of bytes into hexadecimal representation.
+        /// </summary>
+        /// <param name="bytes">The bytes to convert.</param>
+        /// <param name="output">The buffer used to write hexadecimal representation of bytes.</param>
+        /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
+        /// <returns>The actual number of characters in <paramref name="output"/> written by the method.</returns>
+        public static int ToHex(this ReadOnlySpan<byte> bytes, Span<char> output, bool lowercased = false)
+        {
+            if (bytes.IsEmpty || output.IsEmpty)
+                return 0;
+            var bytesCount = Math.Min(bytes.Length, output.Length / 2);
+            ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
+            ref char charPtr = ref MemoryMarshal.GetReference(output);
+            ref HexByte firstHex = ref MemoryMarshal.GetReference(HexLookupTable.Span);
+            for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
+            {
+                var hexInfo = Add(ref firstHex, Add(ref firstByte, i));
+                charPtr = hexInfo.High;
+                charPtr = ref Add(ref charPtr, 1);
+                charPtr = hexInfo.Low;
+            }
+            if(lowercased)
+                ToLowerFast(output);
+            return bytesCount * 2;
+        }
+
+        /// <summary>
+        /// Converts set of bytes into hexadecimal representation.
+        /// </summary>
+        /// <param name="bytes">The bytes to convert.</param>
+        /// <param name="lowercased"><see langword="true"/> to return lowercased hex string; <see langword="false"/> to return uppercased hex string.</param>
+        /// <returns>The hexadecimal representation of bytes.</returns>
+        public static string ToHex(this ReadOnlySpan<byte> bytes, bool lowercased = false)
+        {
+            var count = bytes.Length * 2;
+            if (count == 0)
+                return string.Empty;
+            using CharBuffer buffer = count <= CharBuffer.StackallocThreshold ? stackalloc char[count] : new CharBuffer(count);
+            count = ToHex(bytes, buffer.Span, lowercased);
+            return new string(buffer.Span.Slice(0, count));
+        }
+
+        /// <summary>
+        /// Decodes hexadecimal representation of bytes.
+        /// </summary>
+        /// <param name="chars">The hexadecimal representation of bytes.</param>
+        /// <param name="output">The output buffer used to write decoded bytes.</param>
+        /// <returns>The actual number of bytes in <paramref name="output"/> written by the method.</returns>
+        public static int FromHex(this ReadOnlySpan<char> chars, Span<byte> output)
+        {
+            if (chars.IsEmpty || output.IsEmpty)
+                return 0;
+            var charCount = Math.Min(chars.Length, output.Length * 2);
+            charCount -= charCount % 2;
+            ref HexByte pair = ref As<char, HexByte>(ref MemoryMarshal.GetReference(chars));
+            ref byte bytePtr = ref MemoryMarshal.GetReference(output);
+            for (var i = 0; i < charCount; i += 2, bytePtr = ref Add(ref bytePtr, 1), pair = ref Add(ref pair, 1))
+                bytePtr = byte.Parse(pair, NumberStyles.AllowHexSpecifier, InvariantCulture);
+            return charCount / 2;
+        }
+
+        /// <summary>
+        /// Decodes hexadecimal representation of bytes.
+        /// </summary>
+        /// <param name="chars">The characters containing hexadecimal representation of bytes.</param>
+        /// <returns>The decoded array of bytes.</returns>
+        public static byte[] FromHex(this ReadOnlySpan<char> chars)
+        {
+            var count = chars.Length / 2;
+            if (count == 0)
+                return Array.Empty<byte>();
+            using ByteBuffer buffer = count <= ByteBuffer.StackallocThreshold ? stackalloc byte[count] : new ByteBuffer(count);
+            count = FromHex(chars, buffer.Span);
+            return buffer.Span.Slice(0, count).ToArray();
+        }
+
+        /// <summary>
+        /// Reads the value of blittable type
+        /// from the block of memory and advances the original span.
+        /// </summary>
+        /// <param name="bytes">The block of memory.</param>
+        /// <typeparam name="T">The blittable type.</typeparam>
+        /// <returns>The deserialized value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="bytes"/> is smaller than <typeparamref name="T"/>.</exception>
+        public static unsafe T Read<T>(ref ReadOnlySpan<byte> bytes)
+            where T : unmanaged
+        {
+            var result = MemoryMarshal.Read<T>(bytes);
+            bytes = bytes.Slice(sizeof(T));
+            return result;
+        }
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="Span{T}"/>.
+        /// </summary>
+        /// <param name="value">The managed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Span<byte> AsBytes<T>(ref T value) where T : unmanaged => MemoryMarshal.AsBytes(MemoryMarshal.CreateSpan(ref value, 1));
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="ReadOnlySpan{T}"/>.
+        /// </summary>
+        /// <param name="value">The managed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ReadOnlySpan<byte> AsReadOnlyBytes<T>(in T value) where T : unmanaged => AsBytes(ref AsRef(in value));
+
+        /// <summary>
+        /// Converts contiguous memory identified by the specified pointer
+        /// into <see cref="Span{T}"/>.
+        /// </summary>
+        /// <param name="pointer">The typed pointer.</param>
+        /// <typeparam name="T">The type of the pointer.</typeparam>
+        /// <returns>The span of contiguous memory.</returns>
+        [CLSCompliant(false)]
+        public static unsafe Span<byte> AsBytes<T>(T* pointer) where T : unmanaged => AsBytes(ref pointer[0]);
     }
 }

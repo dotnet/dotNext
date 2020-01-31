@@ -44,7 +44,7 @@ namespace DotNext.Threading.Tasks
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Task<T?> ToNullable<T>(this Task<T> task)
             where T : struct
-            => Convert<T, T?>(task, NullableConverter<T>.Value);
+            => Convert(task, NullableConverter<T>.Value);
 
         /// <summary>
         /// Converts one type of task into another.
@@ -56,5 +56,18 @@ namespace DotNext.Threading.Tasks
         /// <returns>The converted task.</returns>
         public static async Task<O> Convert<I, O>(this Task<I> task, Converter<I, Task<O>> converter)
             => await converter(await task.ConfigureAwait(false)).ConfigureAwait(false);
+
+        /// <summary>
+        /// Allows to convert <see cref="Task{TResult}"/> of unknown result type into dynamically
+        /// typed task which result can be obtained as <see cref="object"/>
+        /// or any other data type using <c>dynamic</c> approach.
+        /// </summary>
+        /// <remarks>
+        /// The type of the returned task is not known at compile time and therefore treated as <c>dynamic</c>. The result value returned 
+        /// by <c>await</c> operator is equal to <see cref="System.Reflection.Missing.Value"/> if <paramref name="task"/> is not of type <see cref="Task{TResult}"/>.
+        /// </remarks>
+        /// <param name="task">The arbitrary task of type <see cref="Task{TResult}"/>.</param>
+        /// <returns>The dynamically typed task.</returns>
+        public static DynamicTaskAwaitable AsDynamic(this Task task) => new DynamicTaskAwaitable(task);
     }
 }

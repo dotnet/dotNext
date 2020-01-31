@@ -14,7 +14,7 @@ namespace DotNext.Reflection
             /// <param name="lookup">Operator resolution strategy.</param>
             /// <typeparam name="R">Result of unary operator.</typeparam>
             /// <returns>Unary operator; or <see langword="null"/>, if it doesn't exist.</returns>
-            public static UnaryOperator<T, R> Get<R>(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => UnaryOperator<T, R>.GetOrCreate(op, lookup);
+            public static UnaryOperator<T, R>? Get<R>(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => UnaryOperator<T, R>.GetOrCreate(op, lookup);
 
             /// <summary>
             /// Gets unary operator of the same result type as its operand.
@@ -22,7 +22,7 @@ namespace DotNext.Reflection
             /// <param name="op">Unary operator type.</param>
             /// <param name="lookup">Operator resolution strategy.</param>
             /// <returns>Unary operator; or <see langword="null"/>, if it doesn't exist.</returns>
-            public static UnaryOperator<T, T> Get(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => Get<T>(op, lookup);
+            public static UnaryOperator<T, T>? Get(UnaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => Get<T>(op, lookup);
 
             /// <summary>
             /// Gets unary operator. 
@@ -57,7 +57,7 @@ namespace DotNext.Reflection
             /// <param name="lookup">Operator resolution strategy.</param>
             /// <typeparam name="R">Result of binary operator.</typeparam>
             /// <returns>Binary operator; or <see langword="null"/>, if it doesn't exist.</returns>
-            public static BinaryOperator<T, U, R> Get<R>(BinaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => BinaryOperator<T, U, R>.GetOrCreate(op, lookup);
+            public static BinaryOperator<T, U, R>? Get<R>(BinaryOperator op, OperatorLookup lookup = OperatorLookup.Any) => BinaryOperator<T, U, R>.GetOrCreate(op, lookup);
 
             /// <summary>
             /// Gets binary operator. 

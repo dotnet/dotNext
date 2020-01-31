@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using static System.Diagnostics.Debug;
 using static System.Linq.Enumerable;
 
 namespace DotNext.Runtime.CompilerServices
@@ -8,6 +9,7 @@ namespace DotNext.Runtime.CompilerServices
     using Linq.Expressions;
     using Reflection;
     using static Collections.Generic.Dictionary;
+    using static Reflection.TypeExtensions;
 
     /// <summary>
     /// Provides initial transformation of async method.
@@ -33,7 +35,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         internal readonly TaskType Task;
-        internal readonly IDictionary<ParameterExpression, MemberExpression> Variables;
+        internal readonly IDictionary<ParameterExpression, MemberExpression?> Variables;
         private readonly VisitorContext context;
         //this label indicates end of async method when successful result should be returned
         internal readonly LabelTarget AsyncMethodEnd;
@@ -43,7 +45,7 @@ namespace DotNext.Runtime.CompilerServices
         internal AsyncStateMachineBuilder(Type taskType, IReadOnlyList<ParameterExpression> parameters)
         {
             Task = new TaskType(taskType);
-            Variables = new Dictionary<ParameterExpression, MemberExpression>(new VariableEqualityComparer());
+            Variables = new Dictionary<ParameterExpression, MemberExpression?>(new VariableEqualityComparer());
             for (var position = 0; position < parameters.Count; position++)
             {
                 var parameter = parameters[position];
@@ -117,7 +119,7 @@ namespace DotNext.Runtime.CompilerServices
                     else
                         return result;
                 }
-                if (ExpressionAttributes.Get(node.IfTrue).ContainsAwait || ExpressionAttributes.Get(node.IfFalse).ContainsAwait)
+                if ((ExpressionAttributes.Get(node.IfTrue)?.ContainsAwait ?? false) || (ExpressionAttributes.Get(node.IfFalse)?.ContainsAwait ?? false))
                 {
                     var tempVar = NewStateSlot(node.Type);
                     prologue(Expression.Condition(node.Test, Expression.Assign(tempVar, node.IfTrue), Expression.Assign(tempVar, node.IfFalse), typeof(void)));
@@ -201,7 +203,7 @@ namespace DotNext.Runtime.CompilerServices
             //generate new state and label for it
             var (stateId, transition) = context.NewTransition(stateSwitchTable);
             //convert await expression into TAwaiter.GetResult() expression
-            return node.Reduce(awaiterSlot, stateId, transition.Successful, AsyncMethodEnd, prologue);
+            return node.Reduce(awaiterSlot, stateId, transition.Successful ?? throw new InvalidOperationException(), AsyncMethodEnd, prologue);
         }
 
         private Expression VisitAsyncResult(AsyncResultExpression expr)
@@ -275,8 +277,8 @@ namespace DotNext.Runtime.CompilerServices
             //do not place left operand at statement level because it has no side effects
             if (node.Left is ParameterExpression || node.Left is ConstantExpression || IsAssignment(node))
                 return node;
-            var leftIsAsync = ExpressionAttributes.Get(node.Left).ContainsAwait;
-            var rightIsAsync = ExpressionAttributes.Get(node.Right).ContainsAwait;
+            var leftIsAsync = ExpressionAttributes.Get(node.Left)?.ContainsAwait ?? false;
+            var rightIsAsync = ExpressionAttributes.Get(node.Right)?.ContainsAwait ?? false;
             //left operand should be computed before right, so bump it before await expression
             if (rightIsAsync && !leftIsAsync)
             {
@@ -318,9 +320,7 @@ namespace DotNext.Runtime.CompilerServices
             for (var i = arguments.LongLength - 1L; i >= 0L; i--)
             {
                 ref Expression arg = ref arguments[i];
-                if (ExpressionAttributes.Get(arg).ContainsAwait)
-                    hasAwait = true;
-                else if (hasAwait)
+                if (hasAwait |= ExpressionAttributes.Get(arg)?.ContainsAwait ?? false)
                 {
                     var tempVar = NewStateSlot(arg.Type);
                     codeInsertionPoint(Expression.Assign(tempVar, arg));
@@ -408,10 +408,10 @@ namespace DotNext.Runtime.CompilerServices
             return Expression.Switch(new StateIdExpression(), Expression.Empty(), null, cases);
         }
 
-        private Expression Rewrite(Statement body)
+        private Expression? Rewrite(Statement body)
             => Visit(body)?.Reduce().AddPrologue(false, MakeSwitch()).AddEpilogue(false, AsyncMethodEnd.LandingSite());
 
-        internal Expression Rewrite(Expression body)
+        internal Expression? Rewrite(Expression body)
             => Rewrite(body is BlockExpression block ?
                 new Statement(Expression.Block(typeof(void), block.Variables, block.Expressions)) :
                 new Statement(body));
@@ -428,60 +428,70 @@ namespace DotNext.Runtime.CompilerServices
         where D : Delegate
     {
         private readonly AsyncStateMachineBuilder methodBuilder;
-        private ParameterExpression stateMachine;
+        private ParameterExpression? stateMachine;
 
         internal AsyncStateMachineBuilder(IReadOnlyList<ParameterExpression> parameters)
         {
             var invokeMethod = DelegateType.GetInvokeMethod<D>();
-            methodBuilder = new AsyncStateMachineBuilder(invokeMethod?.ReturnType, parameters);
+            methodBuilder = new AsyncStateMachineBuilder(invokeMethod.ReturnType, parameters);
         }
 
+        private static Type BuildTransitionDelegate(Type stateMachineType)
+            => typeof(Transition<,>)
+                .MakeGenericType(stateMachineType.GetGenericArguments(typeof(IAsyncStateMachine<>))[0], stateMachineType);
+
         private static LambdaExpression BuildStateMachine(Expression body, ParameterExpression stateMachine, bool tailCall)
-        {
-            var delegateType = stateMachine.Type.GetNestedType(nameof(AsyncStateMachine<ValueTuple>.Transition));
-            delegateType = delegateType.MakeGenericType(stateMachine.Type.GetGenericArguments());
-            return Expression.Lambda(delegateType, body, tailCall, stateMachine);
-        }
+            => Expression.Lambda(BuildTransitionDelegate(stateMachine.Type), body, tailCall, stateMachine);
 
         private static MemberExpression GetStateField(ParameterExpression stateMachine)
             => stateMachine.Field(nameof(AsyncStateMachine<int>.State));
 
         private Expression<D> Build(LambdaExpression stateMachineMethod)
         {
+            Assert(stateMachine != null);
             var stateVariable = Expression.Variable(GetStateField(stateMachine).Type);
             var parameters = methodBuilder.Parameters;
             ICollection<Expression> newBody = new LinkedList<Expression>();
             //save all parameters into fields
             foreach (var parameter in parameters)
-                newBody.Add(methodBuilder.Variables[parameter].Update(stateVariable).Assign(parameter));
+                newBody.Add(methodBuilder.Variables[parameter]!.Update(stateVariable).Assign(parameter));
             newBody.Add(methodBuilder.Task.AdjustTaskType(Expression.Call(stateMachine.Type.GetMethod(nameof(AsyncStateMachine<ValueTuple>.Start)), stateMachineMethod, stateVariable)));
             return Expression.Lambda<D>(Expression.Block(new[] { stateVariable }, newBody), true, parameters);
         }
 
-        private static MemberExpression[] CreateStateHolderType(Type returnType, ParameterExpression[] variables, out ParameterExpression stateMachine)
+        private sealed class StateMachineBuilder
         {
-            ParameterExpression sm = null;
-            MemberExpression MakeStateHolder(Type stateType)
+            private readonly Type returnType;
+            internal ParameterExpression? StateMachine;
+
+            internal StateMachineBuilder(Type returnType) => this.returnType = returnType;
+
+            internal MemberExpression Build(Type stateType)
             {
                 var stateMachineType = returnType == typeof(void) ?
                     typeof(AsyncStateMachine<>).MakeGenericType(stateType) :
                     typeof(AsyncStateMachine<,>).MakeGenericType(stateType, returnType);
                 stateMachineType = stateMachineType.MakeByRefType();
-                sm = Expression.Parameter(stateMachineType);
-                return GetStateField(sm);
+                return GetStateField(StateMachine = Expression.Parameter(stateMachineType));
             }
+        }
+
+        private static MemberExpression[] CreateStateHolderType(Type returnType, ParameterExpression[] variables, out ParameterExpression stateMachine)
+        {
+            var sm = new StateMachineBuilder(returnType);
             MemberExpression[] slots;
             using (var builder = new ValueTupleBuilder())
             {
                 foreach (var v in variables)
                     builder.Add(v.Type);
-                slots = builder.Build(MakeStateHolder, out _);
+                slots = builder.Build(sm.Build, out _);
             }
-            stateMachine = sm;
+            Assert(sm.StateMachine != null);
+            stateMachine = sm.StateMachine;
             return slots;
         }
 
-        private static ParameterExpression CreateStateHolderType(Type returnType, IDictionary<ParameterExpression, MemberExpression> variables)
+        private static ParameterExpression CreateStateHolderType(Type returnType, IDictionary<ParameterExpression, MemberExpression?> variables)
         {
             var vars = variables.Keys.ToArray();
             var slots = CreateStateHolderType(returnType, vars, out var stateMachine);
@@ -491,7 +501,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         //replace local variables with appropriate state fields
-        protected override Expression VisitParameter(ParameterExpression node)
+        protected override Expression? VisitParameter(ParameterExpression node)
         {
             if (methodBuilder.Variables.TryGetValue(node, out var stateSlot))
                 return stateSlot;
@@ -501,24 +511,20 @@ namespace DotNext.Runtime.CompilerServices
 
         protected override Expression VisitExtension(Expression node)
         {
-            switch (node)
+            Assert(stateMachine != null);
+            return node switch
             {
-                case StatePlaceholderExpression placeholder:
-                    return placeholder.Reduce();
-                case AsyncResultExpression result:
-                    return Visit(result.Reduce(stateMachine, methodBuilder.AsyncMethodEnd));
-                case StateMachineExpression sme:
-                    return Visit(sme.Reduce(stateMachine));
-                case Statement statement:
-                    return Visit(statement.Reduce());
-                default:
-                    return base.VisitExtension(node);
-            }
+                StatePlaceholderExpression placeholder => placeholder.Reduce(),
+                AsyncResultExpression result => Visit(result.Reduce(stateMachine, methodBuilder.AsyncMethodEnd)),
+                StateMachineExpression sme => Visit(sme.Reduce(stateMachine)),
+                Statement statement => Visit(statement.Reduce()),
+                _ => base.VisitExtension(node),
+            };
         }
 
         internal Expression<D> Build(Expression body, bool tailCall)
         {
-            body = methodBuilder.Rewrite(body);
+            body = methodBuilder.Rewrite(body) ?? Expression.Empty();
             //build state machine type
             stateMachine = CreateStateHolderType(methodBuilder.Task.ResultType, methodBuilder.Variables);
             //replace all special expressions

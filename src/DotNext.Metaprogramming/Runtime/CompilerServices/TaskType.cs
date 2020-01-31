@@ -10,12 +10,11 @@ namespace DotNext.Runtime.CompilerServices
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct TaskType
     {
-        private readonly Type resultType;
+        private readonly Type? resultType;
         private readonly Type taskType;
 
-        internal TaskType(Type resultType, bool isValueTask)
+        internal TaskType(Type? resultType, bool isValueTask)
         {
-            IsValueTask = isValueTask;
             this.resultType = resultType;
             if (resultType is null || resultType == typeof(void))
                 taskType = isValueTask ? typeof(ValueTask) : typeof(Task);
@@ -26,30 +25,19 @@ namespace DotNext.Runtime.CompilerServices
         internal TaskType(Type taskType)
         {
             this.taskType = taskType;
-            if (taskType is null)
-                throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
-            else if (taskType == typeof(ValueTask))
-            {
+            if (taskType.IsOneOf(typeof(ValueTask), typeof(Task)))
                 resultType = null;
-                IsValueTask = true;
-            }
-            else if (taskType == typeof(Task))
-            {
-                resultType = null;
-                IsValueTask = false;
-            }
-            else if (taskType.IsGenericInstanceOf(typeof(Task<>)))
-            {
-                resultType = taskType.GetGenericArguments(typeof(Task<>))[0];
-                IsValueTask = false;
-            }
-            else if (taskType.IsGenericInstanceOf(typeof(ValueTask<>)))
-            {
-                resultType = taskType.GetGenericArguments(typeof(ValueTask<>))[0];
-                IsValueTask = true;
-            }
             else
-                throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
+                using (var supportedTasks = (typeof(Task<>), typeof(ValueTask<>)).AsEnumerable().GetEnumerator())
+                {
+                    move_next:
+                    if (!supportedTasks.MoveNext())
+                        throw new ArgumentException(ExceptionMessages.UnsupportedAsyncType);
+                    if (taskType.IsGenericInstanceOf(supportedTasks.Current))
+                        resultType = taskType.GetGenericArguments(supportedTasks.Current)[0];
+                    else
+                        goto move_next;
+                }
         }
 
         internal MethodCallExpression AdjustTaskType(MethodCallExpression startMachineCall)
@@ -57,8 +45,10 @@ namespace DotNext.Runtime.CompilerServices
 
         internal Type ResultType => resultType ?? typeof(void);
 
-        internal bool IsValueTask { get; }
+        internal bool HasResult => !(resultType is null);
 
-        public static implicit operator Type(TaskType type) => type.taskType ?? typeof(Task);
+        internal bool IsValueTask => taskType?.IsValueType ?? false;
+
+        public static implicit operator Type(in TaskType type) => type.taskType ?? typeof(Task);
     }
 }

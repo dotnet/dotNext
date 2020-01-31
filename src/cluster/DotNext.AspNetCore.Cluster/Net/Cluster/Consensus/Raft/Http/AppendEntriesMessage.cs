@@ -20,8 +20,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Buffers;
     using Collections.Generic;
-    using Replication;
-    using static IO.StreamExtensions;
+    using IO;
+    using IO.Log;
     using EncodingContext = Text.EncodingContext;
 
     internal class AppendEntriesMessage : RaftHttpMessage, IHttpMessageWriter<Result<bool>>
@@ -51,29 +51,51 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             public DateTimeOffset Timestamp { get; }
         }
 
-        private sealed class ReceivedLogEntryReader : MultipartReader, ILogEntryProducer<ReceivedLogEntry>
+        private sealed class ReceivedLogEntryReader : MultipartReader, ILogEntryProducer<ReceivedLogEntry>, IDisposable
         {
             private long count;
+            private ReceivedLogEntry? current;
 
             internal ReceivedLogEntryReader(string boundary, Stream body, long count) : base(boundary, body) => this.count = count;
 
             long ILogEntryProducer<ReceivedLogEntry>.RemainingCount => count;
 
-            public ReceivedLogEntry Current
-            {
-                get;
-                private set;
-            }
+            public ReceivedLogEntry Current => current ?? throw new InvalidOperationException();
 
-            async ValueTask<bool> ILogEntryProducer<ReceivedLogEntry>.MoveNextAsync()
+            async ValueTask<bool> IAsyncEnumerator<ReceivedLogEntry>.MoveNextAsync()
             {
+                await (current?.DisposeAsync() ?? new ValueTask()).ConfigureAwait(false);
                 var section = await ReadNextSectionAsync().ConfigureAwait(false);
                 if (section is null)
                     return false;
-                Current = new ReceivedLogEntry(section);
+                current = new ReceivedLogEntry(section);
                 count -= 1L;
                 return true;
             }
+
+            private void Dispose(bool disposing)
+            {
+                if (disposing)
+                {
+                    current?.Dispose();
+                    current = null;
+                }
+            }
+
+            void IDisposable.Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            ValueTask IAsyncDisposable.DisposeAsync()
+            {
+                var task = current?.DisposeAsync() ?? new ValueTask();
+                current = null;
+                return task;
+            }
+
+            ~ReceivedLogEntryReader() => Dispose(false);
         }
 
         internal readonly long PrevLogIndex;
@@ -148,7 +170,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             private static void WriteHeader(StringBuilder builder, string headerName, string headerValue)
                 => builder.Append(headerName).Append(": ").Append(headerValue).Append(CrLf);
 
-            private static Task EncodeHeadersToStreamAsync(Stream output, StringBuilder builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, byte[] buffer)
+            private static ValueTask EncodeHeadersToStreamAsync(Stream output, StringBuilder builder, TEntry entry, bool writeDivider, string boundary, EncodingContext context, Memory<byte> buffer)
             {
                 builder.Clear();
                 if (writeDivider)
@@ -158,7 +180,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 WriteHeader(builder, HeaderNames.LastModified, HeaderUtils.FormatDate(entry.Timestamp));
                 // Extra CRLF to end headers (even if there are no headers)
                 builder.Append(CrLf);
-                return output.WriteStringAsync(builder.ToString(), context, buffer);
+                return output.WriteStringAsync(builder.ToString().AsMemory(), context, buffer);
             }
 
             protected override async Task SerializeToStreamAsync(Stream stream, TransportContext context)
@@ -168,21 +190,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 using (var encodingBuffer = new ArrayRental<byte>(DefaultHttpEncoding.GetMaxByteCount(maxChars)))
                 {
                     //write start boundary
-                    await stream.WriteStringAsync(DoubleDash + boundary + CrLf, encodingContext, (byte[])encodingBuffer).ConfigureAwait(false);
+                    await stream.WriteStringAsync((DoubleDash + boundary + CrLf).AsMemory(), encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
                     encodingContext.Reset();
                     var builder = new StringBuilder(maxChars);
                     //write each nested content
                     var writeDivider = false;
                     foreach (var entry in entries)
                     {
-                        await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, (byte[])encodingBuffer).ConfigureAwait(false);
+                        await EncodeHeadersToStreamAsync(stream, builder, entry, writeDivider, boundary, encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
                         encodingContext.Reset();
                         Debug.Assert(builder.Length <= maxChars);
                         writeDivider = true;
-                        await entry.CopyToAsync(stream).ConfigureAwait(false);
+                        await entry.WriteToAsync(stream).ConfigureAwait(false);
                     }
                     //write footer
-                    await stream.WriteStringAsync(CrLf + DoubleDash + boundary + DoubleDash + CrLf, encodingContext, (byte[])encodingBuffer).ConfigureAwait(false);
+                    await stream.WriteStringAsync((CrLf + DoubleDash + boundary + DoubleDash + CrLf).AsMemory(), encodingContext, encodingBuffer.Memory).ConfigureAwait(false);
                 }
                 encodingContext.Reset();
             }

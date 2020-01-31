@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.VariantType
 {
     [ExcludeFromCodeCoverage]
-    public sealed class VariantTests : Assert
+    public sealed class VariantTests : Test
     {
         [Fact]
         public static void DynamicNull()
@@ -55,11 +55,11 @@ namespace DotNext.VariantType
         {
             Variant<string, object> obj = new object();
             var result = obj.Convert<string>(Func.Identity<string>().AsConverter(), value => value.ToString());
-            True(result.IsPresent);
+            True(result.HasValue);
             NotNull(result.Value);
             obj = default;
             result = obj.Convert<string>(Func.Identity<string>().AsConverter(), value => value.ToString());
-            False(result.IsPresent);
+            False(result.HasValue);
         }
 
         [Fact]

@@ -11,6 +11,8 @@ using HeaderNames = Microsoft.Net.Http.Headers.HeaderNames;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using IO;
+
     internal sealed class InstallSnapshotMessage : RaftHttpMessage, IHttpMessageReader<Result<bool>>, IHttpMessageWriter<Result<bool>>
     {
         internal new const string MessageType = "InstallSnapshot";
@@ -28,7 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             public long Term { get; }
 
-            bool Replication.ILogEntry.IsSnapshot => true;
+            bool IO.Log.ILogEntry.IsSnapshot => true;
 
             public DateTimeOffset Timestamp { get; }
         }
@@ -43,18 +45,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             Snapshot = snapshot;
         }
 
-        private InstallSnapshotMessage(HeadersReader<StringValues> headers, out long snapshotTerm, out DateTimeOffset timestamp)
+        private InstallSnapshotMessage(HeadersReader<StringValues> headers, Stream body)
             : base(headers)
         {
             Index = ParseHeader(SnapshotIndexHeader, headers, Int64Parser);
-            snapshotTerm = ParseHeader(SnapshotTermHeader, headers, Int64Parser);
-            timestamp = ParseHeader(HeaderNames.LastModified, headers, DateTimeParser);
+            Snapshot = new ReceivedSnapshot(body, ParseHeader(SnapshotTermHeader, headers, Int64Parser), ParseHeader(HeaderNames.LastModified, headers, DateTimeParser));
         }
 
         internal InstallSnapshotMessage(HttpRequest request)
-            : this(request.Headers.TryGetValue, out var snapshotTerm, out var timestamp)
+            : this(request.Headers.TryGetValue, request.Body)
         {
-            Snapshot = new ReceivedSnapshot(request.Body, snapshotTerm, timestamp);
         }
 
         internal override void PrepareRequest(HttpRequestMessage request)

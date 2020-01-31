@@ -20,12 +20,6 @@ namespace DotNext
 
         internal static string InterfaceNotImplemented(Type t, Type i) => string.Format(Resources.GetString("InterfaceNotImplemented"), t.FullName, i.FullName);
 
-        internal static string MissingMethod(string methodName, Type t) => string.Format(Resources.GetString("MissingMethod"), methodName, t.FullName);
-
-        internal static string MissingProperty(string propertyName, Type t) => string.Format(Resources.GetString("MissingProperty"), propertyName, t.FullName);
-
-        internal static string MissingCtor(Type t) => string.Format(Resources.GetString("MissingCtor"), t.FullName);
-
         internal static string EnumerablePatternExpected => Resources.GetString("EnumerablePatternExpected");
 
         internal static string DisposePatternExpected(Type t) => string.Format(Resources.GetString("DisposePatternExpected"), t.FullName);
@@ -59,5 +53,9 @@ namespace DotNext
         internal static string UnsupportedSafeNavigationType(Type type) => string.Format(Resources.GetString("UnsupportedSafeNavigationType"), type);
 
         internal static string TypedReferenceExpected => Resources.GetString("TypedReferenceExpected");
+
+        internal static string UndeclaredVariable(string name) => string.Format(Resources.GetString("UndeclaredVariable"), name);
+
+        internal static string VoidLambda => Resources.GetString("VoidLambda");
     }
 }

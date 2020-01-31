@@ -4,7 +4,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ComparableTests : Assert
+    public sealed class ComparableTests : Test
     {
         [Fact]
         public static void ClampTest()
@@ -12,13 +12,6 @@ namespace DotNext
             Equal(20M, 10M.Clamp(20M, 30M));
             Equal(25M, 25M.Clamp(20M, 30M));
             Equal(30M, 40M.Clamp(20M, 30M));
-        }
-
-        [Fact]
-        public static void RestrictionTest()
-        {
-            Equal(30M, 20M.Max(30M));
-            Equal(10M, 10M.Min(30M));
         }
 
         [Fact]

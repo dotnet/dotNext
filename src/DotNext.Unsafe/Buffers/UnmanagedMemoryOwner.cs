@@ -13,14 +13,20 @@ namespace DotNext.Buffers
     /// unmanaged memory.
     /// </summary>
     /// <typeparam name="T">The type of elements to store in memory.</typeparam>
-    internal sealed class UnmanagedMemoryOwner<T> : UnmanagedMemoryManager<T>, IUnmanagedMemoryOwner<T>
+    internal sealed class UnmanagedMemoryOwner<T> : UnmanagedMemory<T>, IUnmanagedMemoryOwner<T>
         where T : unmanaged
     {
-        internal Action<IUnmanagedMemoryOwner<T>> OnDisposed;
+        private readonly bool fromPool;
 
-        internal UnmanagedMemoryOwner(int length, bool zeroMem)
-            : base(length, zeroMem)
+        internal Action<IUnmanagedMemoryOwner<T>>? OnDisposed;
+
+        internal UnmanagedMemoryOwner(int length, bool zeroMem, bool fromPool) : base(length, zeroMem) => this.fromPool = fromPool;
+
+        unsafe object ICloneable.Clone()
         {
+            var copy = new UnmanagedMemoryOwner<T>(Length, false, fromPool);
+            Buffer.MemoryCopy(address.ToPointer(), copy.address.ToPointer(), Size, Size);
+            return copy;
         }
 
         Pointer<byte> IUnmanagedMemory.Pointer => new Pointer<byte>(address);
@@ -47,11 +53,11 @@ namespace DotNext.Buffers
         /// Sets all bits of allocated memory to zero.
         /// </summary>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-        public void Clear()
+        public unsafe void Clear()
         {
             if (address == default)
                 throw new ObjectDisposedException(GetType().Name);
-            Runtime.InteropServices.Memory.ClearBits(address, Size);
+            Runtime.Intrinsics.ClearBits(address.ToPointer(), Size);
         }
 
         /// <summary>
@@ -72,6 +78,13 @@ namespace DotNext.Buffers
             OnDisposed?.Invoke(this);
             OnDisposed = null;
             base.Dispose(disposing);
+        }
+
+        void IUnmanagedMemoryOwner<T>.Reallocate(int length)
+        {
+            if (fromPool)
+                throw new NotSupportedException();
+            Reallocate(length);
         }
     }
 }

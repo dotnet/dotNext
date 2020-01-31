@@ -14,6 +14,7 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using IO;
     using Messaging;
     using NullMessage = Threading.Tasks.CompletedTask<Messaging.IMessage, Generic.DefaultConst<Messaging.IMessage>>;
 
@@ -71,9 +72,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 }
             }
 
-            Task IDataTransferObject.CopyToAsync(Stream output, CancellationToken token) => requestStream.CopyToAsync(output, 1024, token);
+            ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
+                => new ValueTask(writer.CopyFromAsync(requestStream, token));
 
-            ValueTask IDataTransferObject.CopyToAsync(PipeWriter output, CancellationToken token) => new ValueTask(requestStream.CopyToAsync(output, token));
+            ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
+                => IDataTransferObject.DecodeAsync<TResult, TDecoder>(requestStream, parser, false, token);
         }
 
         internal new const string MessageType = "CustomMessage";
@@ -119,14 +122,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             base.PrepareRequest(request);
         }
 
-        public Task SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
+        internal static async Task SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
         {
             response.StatusCode = StatusCodes.Status200OK;
             response.ContentType = message.Type.ToString();
             response.ContentLength = message.Length;
             response.Headers.Add(MessageNameHeader, message.Name);
-            return message.CopyToAsync(response.Body, token);
+            await response.StartAsync(token).ConfigureAwait(false);
+            await message.WriteToAsync(response.BodyWriter, token).ConfigureAwait(false);
+            await response.BodyWriter.FlushAsync(token).ConfigureAwait(false);
         }
+
+        Task IHttpMessageWriter<IMessage>.SaveResponse(HttpResponse response, IMessage message, CancellationToken token)
+            => SaveResponse(response, message, token);
 
         //do not parse response because this is one-way message
         Task<IMessage> IHttpMessageReader<IMessage>.ParseResponse(HttpResponseMessage response, CancellationToken token) => NullMessage.Task;
@@ -135,8 +143,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             var contentType = new ContentType(response.Content.Headers.ContentType.ToString());
             var name = ParseHeader<IEnumerable<string>>(MessageNameHeader, response.Headers.TryGetValues);
-            using (var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                return await reader(new InboundMessageContent(content, name, contentType, response.Content.Headers.ContentLength), token).ConfigureAwait(false);
+            using var content = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            return await reader(new InboundMessageContent(content, name, contentType, response.Content.Headers.ContentLength), token).ConfigureAwait(false);
         }
     }
 

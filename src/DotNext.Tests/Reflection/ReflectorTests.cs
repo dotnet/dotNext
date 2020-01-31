@@ -1,12 +1,12 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
 using Xunit;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Reflection
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ReflectorTests : Assert
+    public sealed class ReflectorTests : Test
     {
         [Fact]
         public static void ConstructorBinding()
@@ -100,19 +100,19 @@ namespace DotNext.Reflection
         [Fact]
         public void UnreflectStaticField()
         {
-            ref var field = ref GetType().GetField(nameof(staticField), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly).Unreflect<int>();
+            ref var field = ref GetType().GetField(nameof(staticField), System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.DeclaredOnly).Unreflect<int>().Value;
             field = 42;
             Equal(staticField, field);
-            True(Unsafe.AreSame(ref field, ref staticField));
+            True(AreSame(ref field, ref staticField));
         }
 
         [Fact]
         public void UnreflectInstanceField()
         {
-            ref var field = ref GetType().GetField(nameof(instanceField), System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.NonPublic).Unreflect<ReflectorTests, int>(this);
+            ref var field = ref GetType().GetField(nameof(instanceField), System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.DeclaredOnly | System.Reflection.BindingFlags.NonPublic).Unreflect<ReflectorTests, int>()[this];
             field = 56;
             Equal(instanceField, field);
-            True(Unsafe.AreSame(ref field, ref instanceField));
+            True(AreSame(ref field, ref instanceField));
         }
     }
 }

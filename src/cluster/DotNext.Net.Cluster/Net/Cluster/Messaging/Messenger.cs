@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using IO;
+
     /// <summary>
     /// Represents helper methods allow to communicate with remove cluster members
     /// through network.
@@ -38,7 +40,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="mediaType">The media type of the message content.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The reply message.</returns>
-        public static Task<TResponse> SendTextMessageAsync<TResponse>(this ISubscriber messenger, MessageReader<TResponse> responseReader, string messageName, string text, string mediaType = null, CancellationToken token = default)
+        public static Task<TResponse> SendTextMessageAsync<TResponse>(this ISubscriber messenger, MessageReader<TResponse> responseReader, string messageName, string text, string? mediaType = null, CancellationToken token = default)
             => messenger.SendMessageAsync(new TextMessage(messageName, text, mediaType), responseReader, token);
 
         /// <summary>
@@ -51,7 +53,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="requiresConfirmation"><see langword="true"/> to wait for confirmation of delivery from receiver; otherwise, <see langword="false"/>.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        public static Task SendTextSignalAsync(this ISubscriber messenger, string messageName, string text, bool requiresConfirmation = true, string mediaType = null, CancellationToken token = default)
+        public static Task SendTextSignalAsync(this ISubscriber messenger, string messageName, string text, bool requiresConfirmation = true, string? mediaType = null, CancellationToken token = default)
             => messenger.SendSignalAsync(new TextMessage(messageName, text, mediaType), requiresConfirmation, token);
 
         /// <summary>
@@ -61,6 +63,6 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The content of the message.</returns>
         public static Task<string> ReadAsTextAsync(this IMessage message, CancellationToken token = default)
-            => message is TextMessage text ? Task.FromResult(text.Content) : DataTransferObject.ReadAsTextAsync(message, message.Type.GetEncoding(), token);
+            => message is TextMessage text ? Task.FromResult(text.Content) : DataTransferObject.ToStringAsync(message, message.Type.GetEncoding(), token);
     }
 }

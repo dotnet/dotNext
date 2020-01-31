@@ -11,7 +11,7 @@ namespace DotNext.Threading
     public class AsyncLazy<T>
     {
         private const string NotAvailable = "<NotAvailable>";
-        private volatile Task<T> task;
+        private volatile Task<T>? task;
         private ValueFunc<Task<T>> factory;
         private readonly bool resettable;
 
@@ -62,15 +62,12 @@ namespace DotNext.Threading
             get
             {
                 var t = task;
-                switch (t?.Status)
+                return (t?.Status) switch
                 {
-                    case TaskStatus.RanToCompletion:
-                        return new Result<T>(t.Result);
-                    case TaskStatus.Faulted:
-                        return new Result<T>(t.Exception);
-                    default:
-                        return null;
-                }
+                    TaskStatus.RanToCompletion => new Result<T>(t.Result),
+                    TaskStatus.Faulted => new Result<T>(t.Exception),
+                    _ => new Result<T>?()
+                };
             }
         }
 

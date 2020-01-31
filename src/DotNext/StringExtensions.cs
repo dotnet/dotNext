@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
@@ -7,7 +8,8 @@ using Var = InlineIL.LocalVar;
 
 namespace DotNext
 {
-    using Buffers;
+    using CharBuffer = Buffers.MemoryRental<char>;
+    using CharSequence = Buffers.ChunkSequence<char>;
 
     /// <summary>
     /// Represents various extension methods for type <see cref="string"/>.
@@ -27,7 +29,7 @@ namespace DotNext
         /// <param name="str">A string to check.</param>
         /// <param name="alt">Alternative string to be returned if original string is <see langword="null"/> or empty.</param>
         /// <returns>Original or alternative string.</returns>
-        public static string IfNullOrEmpty(this string str, string alt)
+        public static string IfNullOrEmpty(this string? str, string alt)
             => string.IsNullOrEmpty(str) ? alt : str;
 
         /// <summary>
@@ -35,23 +37,14 @@ namespace DotNext
         /// </summary>
         /// <param name="str">The string to reverse.</param>
         /// <returns>The string in inverse order of characters.</returns>
-        public static unsafe string Reverse(this string str)
+        public static string Reverse(this string str)
         {
-            //TODO: Should be rewritten for .NET Standard 2.1
             if (str.Length == 0)
                 return str;
-            MemoryRental<char> result = str.Length <= 1024 ? stackalloc char[str.Length] : new MemoryRental<char>(str.Length);
-            try
-            {
-                str.AsSpan().CopyTo(result.Span);
-                result.Span.Reverse();
-                fixed (char* ptr = result)
-                    return new string(ptr, 0, result.Length);
-            }
-            finally
-            {
-                result.Dispose();
-            }
+            using CharBuffer result = str.Length <= CharBuffer.StackallocThreshold ? stackalloc char[str.Length] : new CharBuffer(str.Length);
+            str.AsSpan().CopyTo(result.Span);
+            result.Span.Reverse();
+            return new string(result.Span);
         }
 
         /// <summary>
@@ -70,7 +63,8 @@ namespace DotNext
         /// <param name="str">Source string.</param>
         /// <param name="maxLength">Maximum length.</param>
         /// <returns>Trimmed string value.</returns>
-        public static string TrimLength(this string str, int maxLength)
+        [return: NotNullIfNotNull("str")]
+        public static string? TrimLength(this string? str, int maxLength)
             => str is null || str.Length <= maxLength ? str : str.Substring(0, maxLength);
 
         /// <summary>
@@ -79,7 +73,7 @@ namespace DotNext
         /// <param name="str">The string to split.</param>
         /// <param name="chunkSize">The maximum length of the substring in the sequence.</param>
         /// <returns>The sequence of substrings.</returns>
-        public static ChunkSequence<char> Split(this string str, int chunkSize) => new ChunkSequence<char>(str.AsMemory(), chunkSize);
+        public static CharSequence Split(this string str, int chunkSize) => new CharSequence(str.AsMemory(), chunkSize);
 
         /// <summary>
         /// Gets managed pointer to the first character in the string.

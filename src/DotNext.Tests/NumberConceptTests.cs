@@ -8,7 +8,7 @@ namespace DotNext
     using ConstraintViolationException = Reflection.ConstraintViolationException;
 
     [ExcludeFromCodeCoverage]
-    public sealed class NumberConceptTests : Assert
+    public sealed class NumberConceptTests : Test
     {
         [Fact]
         public static void ApplyConceptToLong()

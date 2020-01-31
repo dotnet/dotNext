@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class StringExtensionsTests : Assert
+    public sealed class StringExtensionsTests : Test
     {
         [Fact]
         public static void IfNullOrEmptyTest()
@@ -50,6 +50,13 @@ namespace DotNext
             ref readonly var ch = ref str.GetRawData();
             Equal('H', ch);
             Throws<NullReferenceException>(() => default(string).GetRawData());
+        }
+
+        [Fact]
+        public static void Equality()
+        {
+            True("Abc".IsEqualIgnoreCase("abc"));
+            False("abc".IsEqualIgnoreCase("CBA"));
         }
     }
 }

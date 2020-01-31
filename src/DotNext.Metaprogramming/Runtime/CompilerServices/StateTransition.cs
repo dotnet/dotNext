@@ -7,16 +7,18 @@ namespace DotNext.Runtime.CompilerServices
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct StateTransition : IEquatable<StateTransition>
     {
-        internal readonly LabelTarget Successful;
-        internal readonly LabelTarget Failure;
+        internal readonly LabelTarget? Successful;
+        internal readonly LabelTarget? Failure;
 
-        internal StateTransition(LabelTarget successful, LabelTarget failed)
+        internal StateTransition(LabelTarget? successful, LabelTarget? failed)
         {
+            if (successful is null && failed is null)
+                throw new ArgumentNullException(nameof(successful));
             Successful = successful;
             Failure = failed;
         }
 
-        internal void Deconstruct(out LabelTarget successful, out LabelTarget failed)
+        internal void Deconstruct(out LabelTarget? successful, out LabelTarget? failed)
         {
             successful = Successful;
             failed = Failure;
@@ -37,22 +39,9 @@ namespace DotNext.Runtime.CompilerServices
 
         bool IEquatable<StateTransition>.Equals(StateTransition other) => Equals(in other);
 
-        public override bool Equals(object other) => other is StateTransition transition && Equals(transition);
+        public override bool Equals(object? other) => other is StateTransition transition && Equals(transition);
 
-        public override int GetHashCode()
-        {
-            if (Successful is null)
-                return Failure is null ? 0 : Failure.GetHashCode();
-            else if (Failure is null)
-                return Successful.GetHashCode();
-            else
-            {
-                var hashCode = 237146532;
-                hashCode = hashCode * -1521134295 + Successful.GetHashCode();
-                hashCode = hashCode * -1521134295 + Failure.GetHashCode();
-                return hashCode;
-            }
-        }
+        public override int GetHashCode() => HashCode.Combine(Successful, Failure);
 
         public static bool operator ==(in StateTransition first, in StateTransition second) => first.Equals(second);
         public static bool operator !=(in StateTransition first, in StateTransition second) => !first.Equals(second);

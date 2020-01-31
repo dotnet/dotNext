@@ -62,7 +62,7 @@ namespace DotNext.Runtime.CompilerServices
         private const long CompletedState = -1L;
         private long index, totalCount;
         private volatile bool hasErrors;
-        private volatile object exceptions; //has type Exception[] or AggregateException
+        private volatile object? exceptions; //has type Exception[] or AggregateException
 
         private protected AsyncDelegateFuture(CancellationToken token)
             : base(token)
@@ -79,35 +79,34 @@ namespace DotNext.Runtime.CompilerServices
 
         private protected abstract void InvokeOne(D d);
 
-        private void InvokeOne(object d)
+        private void InvokeOneImpl(D d)
         {
-            var errors = (Exception[])exceptions;
+            var errors = (Exception[])exceptions!;
             var currentIndex = index.IncrementAndGet();
-            if (d is D @delegate)
-                try
+            try
+            {
+                if (token.IsCancellationRequested)
                 {
-                    if (token.IsCancellationRequested)
-                    {
-                        errors[currentIndex] = new OperationCanceledException(token);
-                        hasErrors = true;
-                    }
-                    else
-                        InvokeOne(@delegate);
-                }
-                catch (Exception e)
-                {
+                    errors[currentIndex] = new OperationCanceledException(token);
                     hasErrors = true;
-                    errors[currentIndex] = e;
                 }
-                finally
-                {
-                    if (totalCount.DecrementAndGet() == 0)
-                        Complete(hasErrors ? errors : null);
-                }
+                else
+                    InvokeOne(d);
+            }
+            catch (Exception e)
+            {
+                hasErrors = true;
+                errors[currentIndex] = e;
+            }
+            finally
+            {
+                if (totalCount.DecrementAndGet() == 0)
+                    Complete(hasErrors ? errors : null);
+            }
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void Complete(Exception[] errors)
+        private void Complete(Exception[]? errors)
         {
             if (errors != null)
                 exceptions = new AggregateException(errors.SkipNulls());
@@ -125,10 +124,9 @@ namespace DotNext.Runtime.CompilerServices
                 index = -1L;
                 totalCount = list.LongLength;
                 exceptions = new Exception[list.LongLength];
-                //TODO: Should be replaced with typed QueueUserWorkItem in .NET Standard 2.1
-                var invoker = new WaitCallback(InvokeOne);
+                Action<D> invoker = InvokeOneImpl;
                 foreach (D instance in list)
-                    ThreadPool.QueueUserWorkItem(invoker, instance);
+                    ThreadPool.QueueUserWorkItem(invoker, instance, false);
             }
             return this;
         }

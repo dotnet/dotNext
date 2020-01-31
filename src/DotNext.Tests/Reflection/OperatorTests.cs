@@ -4,7 +4,7 @@ using Xunit;
 namespace DotNext.Reflection
 {
     [ExcludeFromCodeCoverage]
-    public sealed class OperatorTests : Assert
+    public sealed class OperatorTests : Test
     {
         public class BaseClass
         {

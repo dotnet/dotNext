@@ -23,25 +23,25 @@ namespace DotNext
         where T : struct, IConvertible, IComparable<T>, IEquatable<T>, IFormattable
     {
         #region Concept Definition
-        private static readonly Operator<T, T> UnaryPlus = Type<T>.Operator.Require<T>(UnaryOperator.Plus, OperatorLookup.Predefined);
-        private static readonly Operator<T, T> UnaryMinus = Type<T>.Operator.Require<T>(UnaryOperator.Negate, OperatorLookup.Predefined);
+        private static readonly Operator<T, T> UnaryPlus = Type<T>.Operator.Require<T>(UnaryOperator.Plus, OperatorLookup.Predefined)!;
+        private static readonly Operator<T, T> UnaryMinus = Type<T>.Operator.Require<T>(UnaryOperator.Negate, OperatorLookup.Predefined)!;
 
-        private static readonly Operator<T, T, T> BinaryPlus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Add, OperatorLookup.Predefined);
+        private static readonly Operator<T, T, T> BinaryPlus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Add, OperatorLookup.Predefined)!;
 
-        private static readonly Operator<T, T, T> BinaryMinus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Subtract, OperatorLookup.Predefined);
+        private static readonly Operator<T, T, T> BinaryMinus = Type<T>.Operator<T>.Require<T>(BinaryOperator.Subtract, OperatorLookup.Predefined)!;
 
-        private static readonly Operator<T, T, T> Multiply = Type<T>.Operator<T>.Require<T>(BinaryOperator.Multiply, OperatorLookup.Predefined);
+        private static readonly Operator<T, T, T> Multiply = Type<T>.Operator<T>.Require<T>(BinaryOperator.Multiply, OperatorLookup.Predefined)!;
 
-        private static readonly Operator<T, T, T> Divide = Type<T>.Operator<T>.Require<T>(BinaryOperator.Divide, OperatorLookup.Predefined);
+        private static readonly Operator<T, T, T> Divide = Type<T>.Operator<T>.Require<T>(BinaryOperator.Divide, OperatorLookup.Predefined)!;
 
-        private static readonly Function<(string text, Ref<T> result), bool> TryParseMethod = Type<T>.RequireStaticMethod<(string, Ref<T>), bool>(nameof(int.TryParse));
-        private static readonly Function<(string text, NumberStyles styles, IFormatProvider provider, Ref<T> result), bool> AdvancedTryParseMethod = Type<T>.RequireStaticMethod<(string, NumberStyles, IFormatProvider, Ref<T>), bool>(nameof(int.TryParse));
+        private static readonly Function<(string text, Ref<T> result), bool> TryParseMethod = Type<T>.RequireStaticMethod<(string, Ref<T>), bool>(nameof(int.TryParse))!;
+        private static readonly Function<(string text, NumberStyles styles, IFormatProvider provider, Ref<T> result), bool> AdvancedTryParseMethod = Type<T>.RequireStaticMethod<(string, NumberStyles, IFormatProvider, Ref<T>), bool>(nameof(int.TryParse))!;
 
-        private static readonly Func<string, T> ParseMethod = Type<T>.Method<string>.GetStatic<T>(nameof(int.Parse));
+        private static readonly Func<string, T> ParseMethod = Type<T>.Method<string>.RequireStatic<T>(nameof(int.Parse))!;
 
-        private static readonly Operator<T, string> ToStringMethod = Type<T>.Method.Require<Operator<T, string>>(nameof(int.ToString), MethodLookup.Instance);
+        private static readonly Operator<T, string> ToStringMethod = Type<T>.Method.Require<Operator<T, string>>(nameof(int.ToString), MethodLookup.Instance)!;
 
-        private static readonly Operator<T, int> GetHashCodeMethod = Type<T>.Method.Require<Operator<T, int>>(nameof(int.GetHashCode), MethodLookup.Instance);
+        private static readonly Operator<T, int> GetHashCodeMethod = Type<T>.Method.Require<Operator<T, int>>(nameof(int.GetHashCode), MethodLookup.Instance)!;
         #endregion
 
         private readonly T value;
@@ -68,7 +68,7 @@ namespace DotNext
         /// Converts the number into string.
         /// </summary>
         /// <returns>The textual representation of the number.</returns>
-        public override string ToString() => ToStringMethod(in value);
+        public override string ToString() => ToStringMethod(in value) ?? string.Empty;
 
         /// <summary>
         /// Computes hash code of the number.
@@ -190,18 +190,12 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The number to compare.</param>
         /// <returns><see langword="true"/>, if two numbers are equal; otherwise, <see langword="false"/>.</returns>
-		public override bool Equals(object other)
+		public override bool Equals(object? other) => other switch
         {
-            switch (other)
-            {
-                case T number:
-                    return Equals(number);
-                case Number<T> number:
-                    return Equals(number);
-                default:
-                    return false;
-            }
-        }
+            T number => Equals(number),
+            Number<T> number => Equals(number),
+            _ => false,
+        };
 
         /// <summary>
         /// Converts the string representation of a number to its typed equivalent.  

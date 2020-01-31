@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -12,22 +13,35 @@ namespace DotNext.Threading
     public readonly struct Timeout
     {
         private readonly Timestamp created;
-        private readonly TimeSpan timeout;
+        //null means that this timeout is infinite
+        private readonly TimeSpan? timeout;
 
         /// <summary>
         /// Constructs a new timeout control object.
         /// </summary>
         /// <param name="timeout">Max duration of operation.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
         public Timeout(TimeSpan timeout)
         {
             created = Timestamp.Current;
-            this.timeout = timeout;
+            if (timeout == InfiniteTimeSpan)
+                this.timeout = null;
+            else if (timeout < TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException(nameof(timeout));
+            else
+                this.timeout = timeout;
         }
 
         /// <summary>
-        /// Indicates that timeout is reached.
+        /// Determines whether this timeout is infinite.
         /// </summary>
-        public bool IsExpired => created.Elapsed > timeout;
+        public bool IsInfinite => timeout is null;
+
+        /// <summary>
+        /// Indicates that timeout is occurred.
+        /// </summary>
+        public bool IsExpired
+            => this.timeout.TryGetValue(out var timeout) && created.Elapsed > timeout;
 
         /// <summary>
         /// Throws <see cref="TimeoutException"/> if timeout occurs.
@@ -44,9 +58,25 @@ namespace DotNext.Threading
         /// <param name="remaining">The remaining time before timeout.</param>
         public void ThrowIfExpired(out TimeSpan remaining)
         {
-            remaining = timeout - created.Elapsed;
-            if (remaining <= TimeSpan.Zero)
+            if (!RemainingTime.TryGetValue(out remaining))
                 throw new TimeoutException();
+        }
+
+        /// <summary>
+        /// Gets the remaining time.
+        /// </summary>
+        /// <value>The remaining time; or <see langword="null"/> if timeout occurs.</value>
+        public TimeSpan? RemainingTime
+        {
+            get
+            {
+                if (this.timeout.TryGetValue(out var timeout))
+                {
+                    var remaining = timeout - created.Elapsed;
+                    return remaining >= TimeSpan.Zero ? new TimeSpan?(remaining) : null;
+                }
+                return InfiniteTimeSpan;
+            }
         }
 
         /// <summary>
@@ -68,6 +98,6 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="timeout">Timeout control object.</param>
         /// <returns>The original timeout value.</returns>
-		public static implicit operator TimeSpan(in Timeout timeout) => timeout.timeout;
+		public static implicit operator TimeSpan(in Timeout timeout) => timeout.timeout ?? InfiniteTimeSpan;
     }
 }

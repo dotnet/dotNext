@@ -7,7 +7,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class MethodPointerTests : Assert
+    public sealed class MethodPointerTests : Test
     {
         private static object CreateObject() => new object();
 
@@ -53,6 +53,13 @@ namespace DotNext
             Null(activator2.Invoke());
             Null(DynamicInvoke(activator2));
             False(activator1.Equals(activator2));
+        }
+
+        [Fact]
+        public static void Conversion()
+        {
+            IConvertible<Func<Guid>> activator = ValueFunc<Guid>.DefaultValueProvider;
+            Equal(default, activator.Convert().Invoke());
         }
 
         [Fact]

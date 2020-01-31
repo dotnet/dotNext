@@ -19,9 +19,9 @@ namespace DotNext.Linq.Expressions
         public delegate Expression Statement(LabelTarget continueLabel, LabelTarget breakLabel);
 
         private readonly bool conditionFirst;
-        private Expression body;
+        private Expression? body;
 
-        internal WhileExpression(Expression test, LabelTarget continueLabel, LabelTarget breakLabel, bool checkConditionFirst)
+        internal WhileExpression(Expression test, LabelTarget? continueLabel, LabelTarget? breakLabel, bool checkConditionFirst)
         {
             if (test is null)
                 throw new ArgumentNullException(nameof(test));

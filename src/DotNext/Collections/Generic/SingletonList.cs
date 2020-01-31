@@ -20,7 +20,7 @@ namespace DotNext.Collections.Generic
 
             public T Current { get; }
 
-            object IEnumerator.Current => Current;
+            object? IEnumerator.Current => Current;
 
             void IDisposable.Dispose() => this = default;
 

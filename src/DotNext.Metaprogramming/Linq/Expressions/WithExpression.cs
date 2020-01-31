@@ -18,8 +18,8 @@ namespace DotNext.Linq.Expressions
         /// <returns>The body of the expression.</returns>
         public delegate Expression Statement(ParameterExpression scopeVar);
 
-        private readonly BinaryExpression assignment;
-        private Expression body;
+        private readonly BinaryExpression? assignment;
+        private Expression? body;
 
         internal WithExpression(Expression expr)
         {

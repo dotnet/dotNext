@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 
 namespace DotNext.Reflection
 {
@@ -23,6 +24,7 @@ namespace DotNext.Reflection
         /// Obtains managed pointer to the static field.
         /// </summary>
         /// <value>The managed pointer to the static field.</value>
+        [MaybeNull]
         ref F Value { get; }
     }
 
@@ -38,6 +40,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="this">A reference to <c>this</c> parameter.</param>
         /// <returns>The managed pointer to the instance field.</returns>
-        ref F this[in T @this] { get; }
+        [MaybeNull]
+        ref F this[[DisallowNull]in T @this] { get; }
     }
 }

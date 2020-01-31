@@ -9,7 +9,7 @@ namespace DotNext.Metaprogramming
     using static CodeGenerator;
 
     [ExcludeFromCodeCoverage]
-    public sealed class MatchTests : Assert
+    public sealed class MatchTests : Test
     {
         [Fact]
         public static void TypeBasedPattern()

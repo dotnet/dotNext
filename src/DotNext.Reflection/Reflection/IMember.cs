@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -27,7 +28,7 @@ namespace DotNext.Reflection
     /// </summary>
     /// <typeparam name="M">Type of reflected member.</typeparam>
     /// <typeparam name="D">Type of delegate.</typeparam>
-    public interface IMember<out M, out D> : IMember<M>
+    public interface IMember<out M, out D> : IMember<M>, IConvertible<D>
         where M : MemberInfo
         where D : Delegate
     {
@@ -35,6 +36,8 @@ namespace DotNext.Reflection
         /// Gets delegate that can be used to invoke member.
         /// </summary>
         D Invoker { get; }
+
+        D IConvertible<D>.Convert() => Invoker;
     }
 
     /// <summary>
@@ -52,7 +55,8 @@ namespace DotNext.Reflection
         /// <param name="arguments">Invocation arguments placed onto stack.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<M, A, R>(this IMember<M, Function<A, R>> member, in A arguments)
+        [return: MaybeNull]
+        public static R Invoke<M, A, R>(this IMember<M, Function<A, R>> member, [DisallowNull]in A arguments)
             where M : MemberInfo
             where A : struct
             => member.Invoker(in arguments);
@@ -69,7 +73,8 @@ namespace DotNext.Reflection
         /// <param name="arguments">Invocation arguments placed onto stack.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<M, T, A, R>(this IMember<M, Function<T, A, R>> member, in T @this, in A arguments)
+        [return: MaybeNull]
+        public static R Invoke<M, T, A, R>(this IMember<M, Function<T, A, R>> member, [DisallowNull]in T @this, in A arguments)
             where M : MemberInfo
             where A : struct
             => member.Invoker(in @this, in arguments);
@@ -84,7 +89,8 @@ namespace DotNext.Reflection
         /// <param name="this"><c>this</c> argument.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static R Invoke<M, T, R>(this IMember<M, Function<T, ValueTuple, R>> member, in T @this)
+        [return: MaybeNull]
+        public static R Invoke<M, T, R>(this IMember<M, Function<T, ValueTuple, R>> member, [DisallowNull]in T @this)
             where M : MemberInfo
             => member.Invoke(in @this, default);
 
@@ -96,6 +102,7 @@ namespace DotNext.Reflection
         /// <param name="member">Callable member.</param>
         /// <returns>Invocation result.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static R Invoke<M, R>(this IMember<M, Function<ValueTuple, R>> member)
             where M : MemberInfo
             => member.Invoke(default);
@@ -633,6 +640,7 @@ namespace DotNext.Reflection
         /// <param name="member">The property or field.</param>
         /// <returns>The member value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static V Invoke<M, V>(this IMember<M, MemberGetter<V>> member)
             where M : MemberInfo
             => member.Invoker();
@@ -647,7 +655,8 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property or field value will be returned.</param>
         /// <returns>The member value.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static V Invoke<M, T, V>(this IMember<M, MemberGetter<T, V>> member, in T @this)
+        [return: MaybeNull]
+        public static V Invoke<M, T, V>(this IMember<M, MemberGetter<T, V>> member, [DisallowNull]in T @this)
             where M : MemberInfo
             => member.Invoker(@this);
 
@@ -659,6 +668,7 @@ namespace DotNext.Reflection
         /// <param name="member">The property or field.</param>
         /// <param name="value">The new value of the field or property.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: MaybeNull]
         public static void Invoke<M, V>(this IMember<M, MemberSetter<V>> member, V value)
             where M : MemberInfo
             => member.Invoker(value);
@@ -673,7 +683,8 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property or field value will be set.</param>
         /// <param name="value">The new value of the field or property.</param>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Invoke<M, T, V>(this IMember<M, MemberSetter<T, V>> member, in T @this, V value)
+        [return: MaybeNull]
+        public static void Invoke<M, T, V>(this IMember<M, MemberSetter<T, V>> member, [DisallowNull]in T @this, V value)
             where M : MemberInfo
             => member.Invoker(@this, value);
 

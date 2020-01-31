@@ -15,7 +15,7 @@ jobs:
           inputs:
             command: test
             projects: $(TestProject)
-            arguments: --configuration Debug --collect "Code coverage"
+            arguments: --configuration Debug --collect "Code coverage" -- RunConfiguration.TestSessionTimeout=300000
             nobuild: false
             testRunTitle: 'Debug on Windows'
             publishTestResults: true
@@ -24,12 +24,16 @@ jobs:
       pool:
         vmImage: ubuntu-18.04
       steps:
+        - task: UseDotNet@2
+          inputs:
+            packageType: 'sdk'
+            version: '3.1.x'
         - task: DotNetCoreCLI@2
           displayName: Test Debug
           inputs:
             command: test
             projects: $(TestProject)
-            arguments: --configuration Debug --collect "Code coverage"
+            arguments: --configuration Debug --collect "Code coverage" -- RunConfiguration.TestSessionTimeout=300000
             nobuild: false
             testRunTitle: 'Debug on Linux'
             publishTestResults: true

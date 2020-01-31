@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Text
 {
     [ExcludeFromCodeCoverage]
-    public sealed class EncodingWithoutPreambleTests : Assert
+    public sealed class EncodingWithoutPreambleTests : Test
     {
         [Fact]
         public static void ByteOrderMark()

@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Runtime.CompilerServices
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ValueTupleBuilderTests : Assert
+    public sealed class ValueTupleBuilderTests : Test
     {
         [Fact]
         public static void TupleTypeConstructionTest()

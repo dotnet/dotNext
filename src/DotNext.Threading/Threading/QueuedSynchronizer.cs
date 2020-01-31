@@ -18,15 +18,14 @@ namespace DotNext.Threading
     /// </remarks>
     public abstract class QueuedSynchronizer : Disposable, ISynchronizer
     {
-        private protected class WaitNode : Synchronizer.WaitNode
+        private protected class WaitNode : ISynchronizer.WaitNode
         {
-            private WaitNode previous;
-            private WaitNode next;
+            private WaitNode? previous;
+            private WaitNode? next;
 
-            internal WaitNode() => previous = next = null;
+            internal WaitNode() { }
 
             internal WaitNode(WaitNode previous)
-                : this()
             {
                 previous.next = this;
                 this.previous = previous;
@@ -41,16 +40,16 @@ namespace DotNext.Threading
                 next = previous = null;
             }
 
-            internal WaitNode CleanupAndGotoNext()
+            internal WaitNode? CleanupAndGotoNext()
             {
                 var next = this.next;
                 this.next = previous = null;
                 return next;
             }
 
-            internal WaitNode Previous => previous;
+            internal WaitNode? Previous => previous;
 
-            internal WaitNode Next => next;
+            internal WaitNode? Next => next;
 
             internal bool IsRoot => previous is null && next is null;
         }
@@ -60,10 +59,10 @@ namespace DotNext.Threading
         {
             bool TryAcquire();  //if true then Wait method can be completed synchronously; otherwise, false.
 
-            N CreateNode(WaitNode tail);
+            N CreateNode(WaitNode? tail);
         }
 
-        private protected WaitNode head, tail;
+        private protected WaitNode? head, tail;
 
         private protected QueuedSynchronizer()
         {
@@ -83,7 +82,7 @@ namespace DotNext.Threading
             return inList;
         }
 
-        private async Task<bool> Wait(WaitNode node, TimeSpan timeout, CancellationToken token)
+        private async Task<bool> WaitAsync(WaitNode node, TimeSpan timeout, CancellationToken token)
         {
             //cannot use Task.WaitAsync here because this method contains side effect in the form of RemoveNode method
             using (var tokenSource = token.CanBeCanceled ? CancellationTokenSource.CreateLinkedTokenSource(token) : new CancellationTokenSource())
@@ -100,7 +99,7 @@ namespace DotNext.Threading
             return await node.Task.ConfigureAwait(false);
         }
 
-        private async Task<bool> Wait(WaitNode node, CancellationToken token)
+        private async Task<bool> WaitAsync(WaitNode node, CancellationToken token)
         {
             if (ReferenceEquals(node.Task, await Task.WhenAny(node.Task, Task.Delay(InfiniteTimeSpan, token)).ConfigureAwait(false)))
                 return true;
@@ -114,7 +113,7 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private protected Task<bool> Wait<M>(ref M manager, TimeSpan timeout, CancellationToken token)
+        private protected Task<bool> WaitAsync<M>(ref M manager, TimeSpan timeout, CancellationToken token)
             where M : struct, ILockManager<WaitNode>
         {
             ThrowIfDisposed();
@@ -126,13 +125,13 @@ namespace DotNext.Threading
                 return CompletedTask<bool, BooleanConst.True>.Task;
             if (timeout == TimeSpan.Zero)
                 return CompletedTask<bool, BooleanConst.False>.Task;    //if timeout is zero fail fast
-            if (head is null)
+            if (tail is null)
                 head = tail = manager.CreateNode(null);
             else
                 tail = manager.CreateNode(tail);
             return timeout == InfiniteTimeSpan ?
-                token.CanBeCanceled ? Wait(tail, token) : tail.Task
-                : Wait(tail, timeout, token);
+                token.CanBeCanceled ? WaitAsync(tail, token) : tail.Task
+                : WaitAsync(tail, timeout, token);
         }
 
         /// <summary>

@@ -1,8 +1,11 @@
-﻿namespace DotNext.Net.Cluster.Consensus.Raft.Http
+﻿using System;
+
+namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     /// <summary>
     /// Represents supported HTTP version by Raft-over-HTTP implementation.
     /// </summary>
+    [Serializable]
     public enum HttpVersion
     {
         /// <summary>

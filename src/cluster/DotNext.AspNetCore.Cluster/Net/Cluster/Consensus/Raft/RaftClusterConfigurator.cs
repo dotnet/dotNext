@@ -13,11 +13,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Registers configurator of <see cref="ICluster"/> service registered as a service
         /// in DI container.
         /// </summary>
-        /// <typeparam name="TConfig">The type implementing <see cref="IRaftClusterConfigurator"/>.</typeparam>
+        /// <typeparam name="TConfig">The type implementing <see cref="IClusterMemberLifetime"/>.</typeparam>
         /// <param name="services">A collection of services provided by DI container.</param>
         /// <returns>A collection of services provided by DI container.</returns>
         public static IServiceCollection ConfigureCluster<TConfig>(this IServiceCollection services)
-            where TConfig : class, IRaftClusterConfigurator
-            => services.AddSingleton<IRaftClusterConfigurator, TConfig>();
+            where TConfig : class, IClusterMemberLifetime
+            => services.AddSingleton<IClusterMemberLifetime, TConfig>();
     }
 }

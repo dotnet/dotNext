@@ -14,6 +14,17 @@ namespace DotNext
     using Runtime.CompilerServices;
     using Intrinsics = Runtime.Intrinsics;
 
+    internal interface IValueDelegate<D> : ICallable<D>, ISupplier<D?>
+        where D : Delegate
+    {
+        /// <summary>
+        /// Indicates that this delegate doesn't refer to any method.
+        /// </summary>
+        bool IsEmpty { get; }
+
+        D? ISupplier<D?>.Invoke() => ToDelegate();
+    }
+
     /// <summary>
     /// Represents a pointer to parameterless method with <see cref="void"/> return type.
     /// </summary>
@@ -21,10 +32,10 @@ namespace DotNext
     /// This method pointer is intended to call managed methods only.
     /// </remarks>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction : ICallable<Action>, IEquatable<ValueAction>
+    public readonly struct ValueAction : IValueDelegate<Action>, IEquatable<ValueAction>
     {
         private readonly IntPtr methodPtr;
-        private readonly Action action;
+        private readonly Action? action;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -89,13 +100,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => action?.Target;
+        public object? Target => action?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Action ToDelegate()
+        public Action? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -131,7 +142,7 @@ namespace DotNext
             Ret();
         }
 
-        object ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
             Invoke();
             return null;
@@ -142,7 +153,7 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Action(in ValueAction pointer) => pointer.ToDelegate();
+        public static explicit operator Action?(in ValueAction pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -162,7 +173,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -195,10 +206,10 @@ namespace DotNext
     /// </remarks>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<R> : ICallable<Func<R>>, IEquatable<ValueFunc<R>>, ISupplier<R>
+    public readonly struct ValueFunc<R> : IValueDelegate<Func<R>>, IEquatable<ValueFunc<R>>, ISupplier<R>
     {
         private readonly IntPtr methodPtr;
-        private readonly Func<R> func;
+        private readonly Func<R>? func;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -296,13 +307,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => func?.Target;
+        public object? Target => func?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{TResult}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Func<R> ToDelegate()
+        public Func<R>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -339,14 +350,14 @@ namespace DotNext
             return Return<R>();
         }
 
-        object ICallable.DynamicInvoke(params object[] args) => Invoke();
+        object? ICallable.DynamicInvoke(params object?[] args) => Invoke();
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{TResult}"/>.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Func<R>(in ValueFunc<R> pointer) => pointer.ToDelegate();
+        public static explicit operator Func<R>?(in ValueFunc<R> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -366,7 +377,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -400,10 +411,10 @@ namespace DotNext
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<T, R> : ICallable<Func<T, R>>, ICallable<Converter<T, R>>, IEquatable<ValueFunc<T, R>>
+    public readonly struct ValueFunc<T, R> : IValueDelegate<Func<T, R>>, IValueDelegate<Converter<T, R>>, IEquatable<ValueFunc<T, R>>
     {
         private readonly IntPtr methodPtr;
-        private readonly Func<T, R> func;
+        private readonly Func<T, R>? func;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -465,7 +476,7 @@ namespace DotNext
             this.methodPtr = methodPtr;
         }
 
-        private Converter<T, R> ToConverter()
+        private Converter<T, R>? ToConverter()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -481,18 +492,18 @@ namespace DotNext
             return Return<Converter<T, R>>();
         }
 
-        Converter<T, R> ICallable<Converter<T, R>>.ToDelegate() => ToConverter();
+        Converter<T, R>? ICallable<Converter<T, R>>.ToDelegate() => ToConverter();
 
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => func?.Target;
+        public object? Target => func?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Func<T, R> ToDelegate()
+        public Func<T, R>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -531,21 +542,21 @@ namespace DotNext
             return Return<R>();
         }
 
-        object ICallable.DynamicInvoke(params object[] args) => Invoke((T)args[0]);
+        object? ICallable.DynamicInvoke(params object?[] args) => Invoke(Intrinsics.Cast<T>(args[0]));
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
         /// </summary>
         /// <param name="func">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Func<T, R>(in ValueFunc<T, R> func) => func.ToDelegate();
+        public static explicit operator Func<T, R>?(in ValueFunc<T, R> func) => func.ToDelegate();
 
         /// <summary>
         /// Converts this pointer into <see cref="Converter{T, TResult}"/>.
         /// </summary>
         /// <param name="func">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Converter<T, R>(in ValueFunc<T, R> func)
+        public static explicit operator Converter<T, R>?(in ValueFunc<T, R> func)
             => func.ToConverter();
 
         /// <summary>
@@ -566,7 +577,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<T, R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<T, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -599,10 +610,10 @@ namespace DotNext
     /// </remarks>
     /// <typeparam name="T">The type of the first method parameter.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction<T> : ICallable<Action<T>>, IEquatable<ValueAction<T>>, IConsumer<T>
+    public readonly struct ValueAction<T> : IValueDelegate<Action<T>>, IEquatable<ValueAction<T>>, IConsumer<T>
     {
         private readonly IntPtr methodPtr;
-        private readonly Action<T> action;
+        private readonly Action<T>? action;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -667,13 +678,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => action?.Target;
+        public object? Target => action?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Action<T> ToDelegate()
+        public Action<T>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -711,9 +722,9 @@ namespace DotNext
             Ret();
         }
 
-        object ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke((T)args[0]);
+            Invoke(Intrinsics.Cast<T>(args[0]));
             return null;
         }
 
@@ -722,7 +733,7 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Action<T>(in ValueAction<T> pointer) => pointer.ToDelegate();
+        public static explicit operator Action<T>?(in ValueAction<T> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -742,7 +753,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction<T> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -777,10 +788,10 @@ namespace DotNext
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<T1, T2, R> : ICallable<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>, ISupplier<T1, T2, R>
+    public readonly struct ValueFunc<T1, T2, R> : IValueDelegate<Func<T1, T2, R>>, IEquatable<ValueFunc<T1, T2, R>>, ISupplier<T1, T2, R>
     {
         private readonly IntPtr methodPtr;
-        private readonly Func<T1, T2, R> func;
+        private readonly Func<T1, T2, R>? func;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -845,13 +856,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => func?.Target;
+        public object? Target => func?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, TResult}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Func<T1, T2, R> ToDelegate()
+        public Func<T1, T2, R>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -893,14 +904,15 @@ namespace DotNext
             return Return<R>();
         }
 
-        object ICallable.DynamicInvoke(params object[] args) => Invoke((T1)args[0], (T2)args[1]);
+        object? ICallable.DynamicInvoke(params object?[] args)
+            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]));
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, TResult}"/>.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Func<T1, T2, R>(in ValueFunc<T1, T2, R> pointer) => pointer.ToDelegate();
+        public static explicit operator Func<T1, T2, R>?(in ValueFunc<T1, T2, R> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -920,7 +932,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<T1, T2, R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<T1, T2, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -954,10 +966,10 @@ namespace DotNext
     /// <typeparam name="T1">The type of the first method parameter.</typeparam>
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction<T1, T2> : ICallable<Action<T1, T2>>, IEquatable<ValueAction<T1, T2>>
+    public readonly struct ValueAction<T1, T2> : IValueDelegate<Action<T1, T2>>, IEquatable<ValueAction<T1, T2>>
     {
         private readonly IntPtr methodPtr;
-        private readonly Action<T1, T2> action;
+        private readonly Action<T1, T2>? action;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -1022,13 +1034,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => action?.Target;
+        public object? Target => action?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1,T2}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Action<T1, T2> ToDelegate()
+        public Action<T1, T2>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -1069,9 +1081,9 @@ namespace DotNext
             Ret();
         }
 
-        object ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke((T1)args[0], (T2)args[1]);
+            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]));
             return null;
         }
 
@@ -1080,7 +1092,7 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Action<T1, T2>(in ValueAction<T1, T2> pointer) => pointer.ToDelegate();
+        public static explicit operator Action<T1, T2>?(in ValueAction<T1, T2> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -1100,7 +1112,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T1, T2> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction<T1, T2> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -1136,10 +1148,10 @@ namespace DotNext
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<T1, T2, T3, R> : ICallable<Func<T1, T2, T3, R>>, IEquatable<ValueFunc<T1, T2, T3, R>>
+    public readonly struct ValueFunc<T1, T2, T3, R> : IValueDelegate<Func<T1, T2, T3, R>>, IEquatable<ValueFunc<T1, T2, T3, R>>
     {
         private readonly IntPtr methodPtr;
-        private readonly Func<T1, T2, T3, R> func;
+        private readonly Func<T1, T2, T3, R>? func;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -1204,13 +1216,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => func?.Target;
+        public object? Target => func?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, TResult}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Func<T1, T2, T3, R> ToDelegate()
+        public Func<T1, T2, T3, R>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -1255,14 +1267,15 @@ namespace DotNext
             return Return<R>();
         }
 
-        object ICallable.DynamicInvoke(params object[] args) => Invoke((T1)args[0], (T2)args[1], (T3)args[2]);
+        object? ICallable.DynamicInvoke(params object?[] args)
+            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]));
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, TResult}"/>.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Func<T1, T2, T3, R>(in ValueFunc<T1, T2, T3, R> pointer) => pointer.ToDelegate();
+        public static explicit operator Func<T1, T2, T3, R>?(in ValueFunc<T1, T2, T3, R> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -1282,7 +1295,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<T1, T2, T3, R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<T1, T2, T3, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -1317,10 +1330,10 @@ namespace DotNext
     /// <typeparam name="T2">The type of the second method parameter.</typeparam>
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction<T1, T2, T3> : ICallable<Action<T1, T2, T3>>, IEquatable<ValueAction<T1, T2, T3>>
+    public readonly struct ValueAction<T1, T2, T3> : IValueDelegate<Action<T1, T2, T3>>, IEquatable<ValueAction<T1, T2, T3>>
     {
         private readonly IntPtr methodPtr;
-        private readonly Action<T1, T2, T3> action;
+        private readonly Action<T1, T2, T3>? action;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -1385,13 +1398,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => action?.Target;
+        public object? Target => action?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1,T2,T3}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Action<T1, T2, T3> ToDelegate()
+        public Action<T1, T2, T3>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -1435,9 +1448,9 @@ namespace DotNext
             Ret();
         }
 
-        object ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke((T1)args[0], (T2)args[1], (T3)args[2]);
+            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]));
             return null;
         }
 
@@ -1446,7 +1459,7 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Action<T1, T2, T3>(in ValueAction<T1, T2, T3> pointer) => pointer.ToDelegate();
+        public static explicit operator Action<T1, T2, T3>?(in ValueAction<T1, T2, T3> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -1466,7 +1479,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T1, T2, T3> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction<T1, T2, T3> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -1503,10 +1516,10 @@ namespace DotNext
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<T1, T2, T3, T4, R> : ICallable<Func<T1, T2, T3, T4, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, R>>
+    public readonly struct ValueFunc<T1, T2, T3, T4, R> : IValueDelegate<Func<T1, T2, T3, T4, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, R>>
     {
         private readonly IntPtr methodPtr;
-        private readonly Func<T1, T2, T3, T4, R> func;
+        private readonly Func<T1, T2, T3, T4, R>? func;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -1571,13 +1584,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => func?.Target;
+        public object? Target => func?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, TResult}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Func<T1, T2, T3, T4, R> ToDelegate()
+        public Func<T1, T2, T3, T4, R>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -1625,14 +1638,15 @@ namespace DotNext
             return Return<R>();
         }
 
-        object ICallable.DynamicInvoke(params object[] args) => Invoke((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3]);
+        object? ICallable.DynamicInvoke(params object?[] args)
+            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]));
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, TResult}"/>.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Func<T1, T2, T3, T4, R>(in ValueFunc<T1, T2, T3, T4, R> pointer) => pointer.ToDelegate();
+        public static explicit operator Func<T1, T2, T3, T4, R>?(in ValueFunc<T1, T2, T3, T4, R> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -1652,7 +1666,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<T1, T2, T3, T4, R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<T1, T2, T3, T4, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -1688,10 +1702,10 @@ namespace DotNext
     /// <typeparam name="T3">The type of the third method parameter.</typeparam>
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction<T1, T2, T3, T4> : ICallable<Action<T1, T2, T3, T4>>, IEquatable<ValueAction<T1, T2, T3, T4>>
+    public readonly struct ValueAction<T1, T2, T3, T4> : IValueDelegate<Action<T1, T2, T3, T4>>, IEquatable<ValueAction<T1, T2, T3, T4>>
     {
         private readonly IntPtr methodPtr;
-        private readonly Action<T1, T2, T3, T4> action;
+        private readonly Action<T1, T2, T3, T4>? action;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -1756,13 +1770,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => action?.Target;
+        public object? Target => action?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1,T2,T3,T4}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Action<T1, T2, T3, T4> ToDelegate()
+        public Action<T1, T2, T3, T4>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -1809,9 +1823,9 @@ namespace DotNext
             Ret();
         }
 
-        object ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3]);
+            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]));
             return null;
         }
 
@@ -1820,7 +1834,7 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Action<T1, T2, T3, T4>(in ValueAction<T1, T2, T3, T4> pointer) => pointer.ToDelegate();
+        public static explicit operator Action<T1, T2, T3, T4>?(in ValueAction<T1, T2, T3, T4> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -1840,7 +1854,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T1, T2, T3, T4> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction<T1, T2, T3, T4> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -1878,10 +1892,10 @@ namespace DotNext
     /// <typeparam name="T5">The type of the fifth method parameter.</typeparam>
     /// <typeparam name="R">The type of the return value of the method that this pointer encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueFunc<T1, T2, T3, T4, T5, R> : ICallable<Func<T1, T2, T3, T4, T5, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>
+    public readonly struct ValueFunc<T1, T2, T3, T4, T5, R> : IValueDelegate<Func<T1, T2, T3, T4, T5, R>>, IEquatable<ValueFunc<T1, T2, T3, T4, T5, R>>
     {
         private readonly IntPtr methodPtr;
-        private readonly Func<T1, T2, T3, T4, T5, R> func;
+        private readonly Func<T1, T2, T3, T4, T5, R>? func;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -1942,13 +1956,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => func?.Target;
+        public object? Target => func?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, T5, TResult}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Func<T1, T2, T3, T4, T5, R> ToDelegate()
+        public Func<T1, T2, T3, T4, T5, R>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -1999,14 +2013,15 @@ namespace DotNext
             return Return<R>();
         }
 
-        object ICallable.DynamicInvoke(params object[] args) => Invoke((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3], (T5)args[4]);
+        object? ICallable.DynamicInvoke(params object?[] args)
+            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]), Intrinsics.Cast<T5>(args[4]));
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, T5, TResult}"/>.
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Func<T1, T2, T3, T4, T5, R>(in ValueFunc<T1, T2, T3, T4, T5, R> pointer) => pointer.ToDelegate();
+        public static explicit operator Func<T1, T2, T3, T4, T5, R>?(in ValueFunc<T1, T2, T3, T4, T5, R> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -2026,7 +2041,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueFunc<T1, T2, T3, T4, T5, R> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueFunc<T1, T2, T3, T4, T5, R> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -2063,10 +2078,10 @@ namespace DotNext
     /// <typeparam name="T4">The type of the fourth method parameter.</typeparam>
     /// <typeparam name="T5">The type of the fifth method parameter.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueAction<T1, T2, T3, T4, T5> : ICallable<Action<T1, T2, T3, T4, T5>>, IEquatable<ValueAction<T1, T2, T3, T4, T5>>
+    public readonly struct ValueAction<T1, T2, T3, T4, T5> : IValueDelegate<Action<T1, T2, T3, T4, T5>>, IEquatable<ValueAction<T1, T2, T3, T4, T5>>
     {
         private readonly IntPtr methodPtr;
-        private readonly Action<T1, T2, T3, T4, T5> action;
+        private readonly Action<T1, T2, T3, T4, T5>? action;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -2127,13 +2142,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => action?.Target;
+        public object? Target => action?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="Action{T1, T2, T3, T4, T5}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public Action<T1, T2, T3, T4, T5> ToDelegate()
+        public Action<T1, T2, T3, T4, T5>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -2183,9 +2198,9 @@ namespace DotNext
             Ret();
         }
 
-        object ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke((T1)args[0], (T2)args[1], (T3)args[2], (T4)args[3], (T5)args[4]);
+            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]), Intrinsics.Cast<T5>(args[4]));
             return null;
         }
 
@@ -2194,7 +2209,7 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator Action<T1, T2, T3, T4, T5>(in ValueAction<T1, T2, T3, T4, T5> pointer) => pointer.ToDelegate();
+        public static explicit operator Action<T1, T2, T3, T4, T5>?(in ValueAction<T1, T2, T3, T4, T5> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -2214,7 +2229,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueAction<T1, T2, T3, T4, T5> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueAction<T1, T2, T3, T4, T5> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -2248,10 +2263,10 @@ namespace DotNext
     /// <typeparam name="T">The type of the object to be passed by reference into the action.</typeparam>
     /// <typeparam name="TArgs">The type of the arguments to be passed into the action.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueRefAction<T, TArgs> : ICallable<RefAction<T, TArgs>>, IEquatable<ValueRefAction<T, TArgs>>
+    public readonly struct ValueRefAction<T, TArgs> : IValueDelegate<RefAction<T, TArgs>>, IEquatable<ValueRefAction<T, TArgs>>
     {
         private readonly IntPtr methodPtr;
-        private readonly RefAction<T, TArgs> action;
+        private readonly RefAction<T, TArgs>? action;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -2316,13 +2331,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => action?.Target;
+        public object? Target => action?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="RefAction{T, TArgs}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public RefAction<T, TArgs> ToDelegate()
+        public RefAction<T, TArgs>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -2363,10 +2378,10 @@ namespace DotNext
             Ret();
         }
 
-        object ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            var reference = (T)args[0];
-            Invoke(ref reference, (TArgs)args[1]);
+            var reference = Intrinsics.Cast<T>(args[0]);
+            Invoke(ref reference, Intrinsics.Cast<TArgs>(args[1]));
             args[0] = reference;
             return null;
         }
@@ -2376,7 +2391,7 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator RefAction<T, TArgs>(in ValueRefAction<T, TArgs> pointer) => pointer.ToDelegate();
+        public static explicit operator RefAction<T, TArgs>?(in ValueRefAction<T, TArgs> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -2396,7 +2411,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueRefAction<T, TArgs> action && Equals(action);
+        public override bool Equals(object? other) => other is ValueRefAction<T, TArgs> action && Equals(action);
 
         /// <summary>
         /// Obtains pointer value in HEX format.
@@ -2431,10 +2446,10 @@ namespace DotNext
     /// <typeparam name="TArgs">The type of the arguments to be passed into the action.</typeparam>
     /// <typeparam name="TResult">The type of the return value of the method that this delegate encapsulates.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ValueRefFunc<T, TArgs, TResult> : ICallable<RefFunc<T, TArgs, TResult>>, IEquatable<ValueRefFunc<T, TArgs, TResult>>
+    public readonly struct ValueRefFunc<T, TArgs, TResult> : IValueDelegate<RefFunc<T, TArgs, TResult>>, IEquatable<ValueRefFunc<T, TArgs, TResult>>
     {
         private readonly IntPtr methodPtr;
-        private readonly RefFunc<T, TArgs, TResult> func;
+        private readonly RefFunc<T, TArgs, TResult>? func;
 
         /// <summary>
         /// Initializes a new pointer to the method.
@@ -2499,13 +2514,13 @@ namespace DotNext
         /// <summary>
         /// Gets the object on which the current pointer invokes the method.
         /// </summary>
-        public object Target => func?.Target;
+        public object? Target => func?.Target;
 
         /// <summary>
         /// Converts this pointer into <see cref="RefFunc{T, TArgs, TResult}"/>.
         /// </summary>
         /// <returns>The delegate created from this method pointer; or <see langword="null"/> if this pointer is zero.</returns>
-        public RefFunc<T, TArgs, TResult> ToDelegate()
+        public RefFunc<T, TArgs, TResult>? ToDelegate()
         {
             const string returnDelegate = "delegate";
             Push(methodPtr);
@@ -2546,10 +2561,10 @@ namespace DotNext
             return Return<TResult>();
         }
 
-        object ICallable.DynamicInvoke(params object[] args)
+        object? ICallable.DynamicInvoke(params object?[] args)
         {
-            var reference = (T)args[0];
-            var result = Invoke(ref reference, (TArgs)args[1]);
+            var reference = Intrinsics.Cast<T>(args[0]);
+            var result = Invoke(ref reference, Intrinsics.Cast<TArgs>(args[1]));
             args[0] = reference;
             return result;
         }
@@ -2559,7 +2574,7 @@ namespace DotNext
         /// </summary>
         /// <param name="pointer">The pointer to convert.</param>
         /// <returns>The delegate created from this method pointer.</returns>
-        public static explicit operator RefFunc<T, TArgs, TResult>(in ValueRefFunc<T, TArgs, TResult> pointer) => pointer.ToDelegate();
+        public static explicit operator RefFunc<T, TArgs, TResult>?(in ValueRefFunc<T, TArgs, TResult> pointer) => pointer.ToDelegate();
 
         /// <summary>
         /// Computes hash code of this pointer.
@@ -2579,7 +2594,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The object implementing <see cref="ICallable{D}"/> to compare.</param>
         /// <returns><see langword="true"/> if both pointers represent the same method; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is ValueRefFunc<T, TArgs, TResult> func && Equals(func);
+        public override bool Equals(object? other) => other is ValueRefFunc<T, TArgs, TResult> func && Equals(func);
 
         /// <summary>
         /// Obtains pointer value in HEX format.

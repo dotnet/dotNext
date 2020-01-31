@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Reflection
 {
     [ExcludeFromCodeCoverage]
-    public sealed class TaskTypeTests : Assert
+    public sealed class TaskTypeTests : Test
     {
         [Fact]
         public static void ReflectTaskType()

@@ -14,7 +14,7 @@ namespace DotNext.Reflection
             /// <param name="propertyName">Name of property.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public property.</param>
             /// <returns>Property field; or <see langword="null"/>, if property doesn't exist.</returns>
-            public static Property<T, V> Get(string propertyName, bool nonPublic = false)
+            public static Property<T, V>? Get(string propertyName, bool nonPublic = false)
                 => Property<T, V>.GetOrCreate(propertyName, nonPublic);
 
             /// <summary>
@@ -33,7 +33,7 @@ namespace DotNext.Reflection
             /// <param name="propertyName">The name of the property.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public property.</param>
             /// <returns>The reflected getter method; or <see langword="null"/>, if getter method doesn't exist.</returns>
-			public static Reflection.Method<MemberGetter<T, V>> GetGetter(string propertyName, bool nonPublic = false)
+			public static Reflection.Method<MemberGetter<T, V>>? GetGetter(string propertyName, bool nonPublic = false)
                 => Get(propertyName, nonPublic)?.GetMethod;
 
             /// <summary>
@@ -52,7 +52,7 @@ namespace DotNext.Reflection
             /// <param name="propertyName">The name of the property.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public property.</param>
             /// <returns>The reflected setter method; or <see langword="null"/>, if setter method doesn't exist.</returns>
-            public static Reflection.Method<MemberSetter<T, V>> GetSetter(string propertyName, bool nonPublic = false)
+            public static Reflection.Method<MemberSetter<T, V>>? GetSetter(string propertyName, bool nonPublic = false)
                 => Get(propertyName, nonPublic)?.SetMethod;
 
             /// <summary>
@@ -71,7 +71,7 @@ namespace DotNext.Reflection
             /// <param name="propertyName">Name of property.</param>
             /// <param name="nonPublic">True to reflect non-public property.</param>
             /// <returns>Instance property; or <see langword="null"/>, if property doesn't exist.</returns>
-            public static Reflection.Property<V> GetStatic(string propertyName, bool nonPublic = false)
+            public static Reflection.Property<V>? GetStatic(string propertyName, bool nonPublic = false)
                 => Reflection.Property<V>.GetOrCreate<T>(propertyName, nonPublic);
 
             /// <summary>
@@ -90,7 +90,7 @@ namespace DotNext.Reflection
             /// <param name="propertyName">The name of the property.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public property.</param>
             /// <returns>The reflected getter method; or <see langword="null"/>, if getter method doesn't exist.</returns>
-            public static Reflection.Method<MemberGetter<V>> GetStaticGetter(string propertyName, bool nonPublic = false)
+            public static Reflection.Method<MemberGetter<V>>? GetStaticGetter(string propertyName, bool nonPublic = false)
                 => GetStatic(propertyName, nonPublic)?.GetMethod;
 
             /// <summary>
@@ -109,7 +109,7 @@ namespace DotNext.Reflection
             /// <param name="propertyName">The name of the property.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public property.</param>
             /// <returns>The reflected setter method; or <see langword="null"/>, if setter method doesn't exist.</returns>
-            public static Reflection.Method<MemberSetter<V>> GetStaticSetter(string propertyName, bool nonPublic = false)
+            public static Reflection.Method<MemberSetter<V>>? GetStaticSetter(string propertyName, bool nonPublic = false)
                 => GetStatic(propertyName, nonPublic)?.SetMethod;
 
             /// <summary>

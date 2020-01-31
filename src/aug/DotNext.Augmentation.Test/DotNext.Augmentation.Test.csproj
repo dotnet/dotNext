@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\DotNext\DotNext.csproj" />
 
-    <PackageReference Include="Fody" Version="6.0.5" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.0.8" PrivateAssets="all" />
     <PackageReference Include="DotNext.Augmentation.Fody" Version="1.2.4" PrivateAssets="all" />
   </ItemGroup>
 

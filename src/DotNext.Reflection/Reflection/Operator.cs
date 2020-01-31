@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using static System.Diagnostics.Debug;
@@ -42,7 +43,7 @@ namespace DotNext.Reflection
             }
 
             public bool Equals(Kind other) => operatorType == other.operatorType && overloaded == other.overloaded;
-            public override bool Equals(object other)
+            public override bool Equals(object? other)
                 => other is Kind key && Equals(key);
             public override int GetHashCode() => overloaded ? (int)operatorType + 100 : (int)operatorType;
 
@@ -122,7 +123,7 @@ namespace DotNext.Reflection
 
         private protected readonly D Invoker;
 
-        private protected Operator(D invoker, ExpressionType type, MethodInfo overloaded)
+        private protected Operator(D invoker, ExpressionType type, MethodInfo? overloaded)
         {
             Type = type;
             Invoker = invoker;
@@ -132,22 +133,29 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the implementing method for the operator.
         /// </summary>
-        public MethodInfo Method { get; }
+        public MethodInfo? Method { get; }
 
-        D IOperator<D>.Invoker => Invoker;
+        private protected abstract Type DeclaringType { get; }
+
+        MemberInfo IMember<MemberInfo>.RuntimeMember => Method ?? (MemberInfo)new BuiltinOperatorInfo(DeclaringType, Type);
+
+        D IMember<MemberInfo, D>.Invoker => Invoker;
+
+        string IMember<MemberInfo>.Name => Type.ToString();
 
         /// <summary>
         /// Returns the delegate instance that can be used to invoke operator.
         /// </summary>
-        /// <param name="operator">The reflected operator.</param>
-        public static implicit operator D(Operator<D> @operator) => @operator?.Invoker;
+        /// <param name="op">The reflected operator.</param>
+        [return: NotNullIfNotNull("op")]
+        public static implicit operator D?(Operator<D>? op) => op?.Invoker;
 
         /// <summary>
         /// Gets type of operator.
         /// </summary>
         public ExpressionType Type { get; }
 
-        private static Expression<D> Convert(ParameterExpression parameter, Expression operand, Type conversionType, bool @checked)
+        private static Expression<D>? Convert(ParameterExpression parameter, Expression operand, Type conversionType, bool @checked)
         {
             try
             {
@@ -167,39 +175,25 @@ namespace DotNext.Reflection
             }
         }
 
-        private protected static Expression<D> MakeConvert<T>(ParameterExpression parameter, bool @checked) => Convert(parameter, parameter, typeof(T), @checked);
+        private protected static Expression<D>? MakeConvert<T>(ParameterExpression parameter, bool @checked) => Convert(parameter, parameter, typeof(T), @checked);
 
         /// <summary>
         /// Determines whether this object reflects the same operator as other object.
         /// </summary>
         /// <param name="other">Other reflected operator to be compared.</param>
         /// <returns><see langword="true"/>, if  this object reflects the same operator as other object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other) => other switch
         {
-            switch (other)
-            {
-                case Operator<D> op:
-                    return Type == op.Type && Method == op.Method;
-                case D invoker:
-                    return Equals(Invoker, invoker);
-                default:
-                    return false;
-            }
-        }
+            Operator<D> op => Type == op.Type && Method == op.Method,
+            D invoker => Equals(this.Invoker, invoker),
+            _ => false,
+        };
 
         /// <summary>
         /// Computes hash code of the reflected operator.
         /// </summary>
         /// <returns>The hash code of the reflected operator.</returns>
-        public override int GetHashCode()
-        {
-            var hashCode = 220548157;
-            hashCode = hashCode * -1521134295 + typeof(D).GetHashCode();
-            hashCode = hashCode * -1521134295 + Type.GetHashCode();
-            if (!(Method is null))
-                hashCode = hashCode * -1521134295 + Method.GetHashCode();
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(typeof(D), Type, Method);
 
         /// <summary>
         /// Returns textual representation of the reflected operator.
@@ -215,6 +209,7 @@ namespace DotNext.Reflection
     /// <typeparam name="T">Type of operand.</typeparam>
     /// <typeparam name="R">Type of operator result.</typeparam>
     /// <returns>Result of unary operation.</returns>
+    [return: MaybeNull]
     public delegate R Operator<T, out R>(in T operand);
 
     /// <summary>
@@ -226,5 +221,6 @@ namespace DotNext.Reflection
     /// <typeparam name="T2">Type of second operand.</typeparam>
     /// <typeparam name="R">Type of operator result.</typeparam>
     /// <returns>Result of binary operator.</returns>
+    [return: MaybeNull]
     public delegate R Operator<T1, T2, out R>(in T1 first, in T2 second);
 }

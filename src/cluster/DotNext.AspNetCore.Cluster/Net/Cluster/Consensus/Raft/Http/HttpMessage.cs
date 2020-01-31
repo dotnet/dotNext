@@ -11,6 +11,8 @@ using static System.Globalization.CultureInfo;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using IO;
+
     internal abstract class HttpMessage
     {
         private static readonly ValueParser<string> StringParser = delegate (string str, out string value)
@@ -45,11 +47,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             internal OutboundTransferObject(IDataTransferObject dto) => this.dto = dto;
 
-            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext context)
-                => dto.CopyToAsync(stream);
+            protected sealed override Task SerializeToStreamAsync(Stream stream, TransportContext context) => dto.WriteToAsync(stream).AsTask();
 
             protected sealed override bool TryComputeLength(out long length)
-                => dto.Length.TryGet(out length);
+                => dto.Length.TryGetValue(out length);
         }
 
         internal readonly string Id;

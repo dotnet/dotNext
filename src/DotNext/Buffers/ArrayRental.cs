@@ -12,7 +12,7 @@ namespace DotNext.Buffers
     [StructLayout(LayoutKind.Auto)]
     public readonly struct ArrayRental<T> : IDisposable
     {
-        private readonly ArrayPool<T> pool;
+        private readonly ArrayPool<T>? pool;
         private readonly T[] array;
         private readonly bool clearArray;
 
@@ -89,7 +89,7 @@ namespace DotNext.Buffers
         /// <summary>
         /// Gets the rented array.
         /// </summary>
-        public ArraySegment<T> Segment => array is null ? default : new ArraySegment<T>(array, 0, Length);
+        public ArraySegment<T> Segment => array is null ? ArraySegment<T>.Empty : new ArraySegment<T>(array, 0, Length);
 
         /// <summary>
         /// Gets the array element by its index.
@@ -106,24 +106,13 @@ namespace DotNext.Buffers
         public ref T GetPinnableReference() => ref array[0];
 
         /// <summary>
-        /// Returns a slice of the rented array.
+        /// Sets all elements of the rented array to default value of type <typeparamref name="T"/>.
         /// </summary>
-        /// <param name="offset">The zero-based index of the first element in the array.</param>
-        /// <param name="count">The number of elements in the range.</param>
-        /// <returns>The segment of the rented array.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count"/> is greater than <see cref="Length"/>.</exception>
-        public ArraySegment<T> Slice(int offset, int count)
-            => count <= Length ? new ArraySegment<T>(array, offset, count) : throw new ArgumentOutOfRangeException(nameof(count));
-
-        /// <summary>
-        /// Obtains rented array.
-        /// </summary>
-        /// <remarks>
-        /// This operation is potentially unsafe because the length of
-        /// the returned array may differs from <see cref="Length"/>.
-        /// </remarks>
-        /// <param name="rental">Array rental.</param>
-        public static explicit operator T[](in ArrayRental<T> rental) => rental.array;
+        public void Clear()
+        {
+            if (array != null)
+                Array.Clear(array, 0, Length);
+        }
 
         /// <summary>
         /// Gets textual representation of the rented memory.

@@ -11,8 +11,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     {
         private readonly IAsyncEvent refreshEvent;
         private readonly CancellationTokenSource trackerCancellation;
-        private Task tracker;
-        internal IFollowerStateMetrics Metrics;
+        private Task? tracker;
+        internal IFollowerStateMetrics? Metrics;
 
         internal FollowerState(IRaftStateMachine stateMachine)
             : base(stateMachine)
@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private static async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, Action candidateState, CancellationToken token)
         {
             //spin loop to wait for the timeout
-            while (await refreshEvent.Wait(timeout, token).ConfigureAwait(false)) { }
+            while (await refreshEvent.WaitAsync(timeout, token).ConfigureAwait(false)) { }
             //timeout happened, move to candidate state
             candidateState();
         }
@@ -38,7 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal override Task StopAsync()
         {
             trackerCancellation.Cancel();
-            return tracker.OnCompleted();
+            return tracker?.OnCompleted() ?? Task.CompletedTask;
         }
 
         internal void Refresh()

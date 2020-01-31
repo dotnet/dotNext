@@ -22,7 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             private readonly Func<HttpResponse, Uri, Task> redirection;
             private readonly PathString pathMatch;
 
-            internal RedirectionMiddleware(RaftHttpCluster cluster, RequestDelegate next, PathString pathMatch, int? applicationPortHint, Func<HttpResponse, Uri, Task> redirection)
+            internal RedirectionMiddleware(RaftHttpCluster cluster, RequestDelegate next, PathString pathMatch, int? applicationPortHint, Func<HttpResponse, Uri, Task>? redirection)
             {
                 this.cluster = cluster;
                 this.next = next;
@@ -72,7 +72,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         /// <param name="applicationPortHint">The port number to be inserted into Location header instead of automatically detected port of the local TCP listener.</param>
         /// <param name="redirection">The redirection logic.</param>
         /// <returns>The request processing pipeline builder.</returns>
-        public static IApplicationBuilder RedirectToLeader(this IApplicationBuilder builder, PathString path, int? applicationPortHint = null, Func<HttpResponse, Uri, Task> redirection = null)
+        public static IApplicationBuilder RedirectToLeader(this IApplicationBuilder builder, PathString path, int? applicationPortHint = null, Func<HttpResponse, Uri, Task>? redirection = null)
         {
             var cluster = builder.ApplicationServices.GetRequiredService<RaftHttpCluster>();
             return builder.Use(next => new RedirectionMiddleware(cluster, next, path, applicationPortHint, redirection).Redirect);

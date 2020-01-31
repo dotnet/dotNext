@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 
@@ -10,24 +9,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
     using Messaging;
 
     [ExcludeFromCodeCoverage]
-    internal sealed class Startup : StartupBase
+    internal sealed class Startup
     {
-        private readonly IConfiguration configuration;
-
-        public Startup(IConfiguration configuration) => this.configuration = configuration;
-
-        public override void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseConsensusProtocolHandler();
         }
 
-        public override void ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddOptions()
+                .Configure<HostOptions>(options =>
+                {
+                    options.ShutdownTimeout = System.TimeSpan.FromMinutes(2);
+                })
                 .AddSingleton<IHttpMessageHandlerFactory, RaftClientHandlerFactory>()
-                .AddSingleton<IMessageHandler, Mailbox>()
-                .AddSingleton<MetricsCollector, TestMetricsCollector>()
-                .BecomeClusterMember(configuration);
+                .AddSingleton<IInputChannel, Mailbox>()
+                .AddSingleton<MetricsCollector, TestMetricsCollector>();
         }
     }
 }

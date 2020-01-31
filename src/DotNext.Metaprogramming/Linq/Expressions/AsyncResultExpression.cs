@@ -18,14 +18,14 @@ namespace DotNext.Linq.Expressions
     {
         private readonly TaskType taskType;
 
-        internal AsyncResultExpression(Expression result, TaskType taskType)
+        internal AsyncResultExpression(Expression? result, TaskType taskType)
         {
             this.taskType = taskType;
-            AsyncResult = result;
+            AsyncResult = result ?? Default(taskType.ResultType);
         }
 
         internal AsyncResultExpression(TaskType taskType)
-            : this(Default(taskType.ResultType), taskType)
+            : this(null, taskType)
         {
         }
 

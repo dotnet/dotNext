@@ -1,5 +1,7 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace DotNext
@@ -9,9 +11,57 @@ namespace DotNext
     /// </summary>
     public static class Sequence
     {
+        private sealed class NotNullEnumerable<T> : IEnumerable<T>
+            where T : class
+        {
+            private sealed class Enumerator : IEnumerator<T>
+            {
+                private readonly IEnumerator<T?> enumerator;
+                private T? current;
+
+                internal Enumerator(IEnumerable<T?> enumerable)
+                    => enumerator = enumerable.GetEnumerator();
+
+                public T Current => current ?? throw new InvalidOperationException();
+
+                object IEnumerator.Current => Current;
+
+                public bool MoveNext()
+                {
+                    for (T? current; enumerator.MoveNext();)
+                    {
+                        current = enumerator.Current;
+                        if (current != null)
+                        {
+                            this.current = current;
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+                public void Reset() => enumerator.Reset();
+
+                void IDisposable.Dispose()
+                {
+                    current = null;
+                    enumerator.Dispose();
+                }
+            }
+
+            private readonly IEnumerable<T?> enumerable;
+
+            internal NotNullEnumerable(IEnumerable<T?> enumerable)
+                => this.enumerable = enumerable;
+
+            public IEnumerator<T> GetEnumerator() => new Enumerator(enumerable);
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
         private const int HashSalt = -1521134295;
 
-        private static int GetHashCode(int hash, object obj) => hash * HashSalt + obj?.GetHashCode() ?? 0;
+        private static int GetHashCode(int hash, object? obj) => hash * HashSalt + obj?.GetHashCode() ?? 0;
 
         /// <summary>
         /// Computes hash code for the sequence of objects.
@@ -19,13 +69,13 @@ namespace DotNext
         /// <param name="sequence">The sequence of elements.</param>
 		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>The hash code computed from each element in the sequence.</returns>
-        public static int SequenceHashCode(this IEnumerable<object> sequence, bool salted = true)
+        public static int SequenceHashCode(this IEnumerable<object?> sequence, bool salted = true)
         {
             var hashCode = sequence.Aggregate(-910176598, GetHashCode);
             return salted ? hashCode * HashSalt + RandomExtensions.BitwiseHashSalt : hashCode;
         }
 
-        internal static bool SequenceEqual(IEnumerable<object> first, IEnumerable<object> second)
+        internal static bool SequenceEqual(IEnumerable<object>? first, IEnumerable<object>? second)
             => first is null || second is null ? ReferenceEquals(first, second) : Enumerable.SequenceEqual(first, second);
 
         /// <summary>
@@ -58,8 +108,8 @@ namespace DotNext
         public static T? FirstOrNull<T>(this IEnumerable<T> seq)
             where T : struct
         {
-            using (var enumerator = seq.GetEnumerator())
-                return enumerator.MoveNext() ? enumerator.Current : new T?();
+            using var enumerator = seq.GetEnumerator();
+            return enumerator.MoveNext() ? enumerator.Current : new T?();
         }
 
         /// <summary>
@@ -68,12 +118,37 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="T">Type of elements in the sequence.</typeparam>
         /// <param name="seq">A sequence to check. Cannot be <see langword="null"/>.</param>
-        /// <returns>First element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
+        /// <returns>The first element in the sequence; or <see cref="Optional{T}.Empty"/> if sequence is empty. </returns>
         public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq)
         {
-            using (var enumerator = seq.GetEnumerator())
-                return enumerator.MoveNext() ? enumerator.Current : Optional<T>.Empty;
+            using var enumerator = seq.GetEnumerator();
+            return enumerator.MoveNext() ? enumerator.Current : Optional<T>.Empty;
         }
+
+        /// <summary>
+        /// Returns the first element in a sequence that satisfies a specified condition.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="seq">A collection to return an element from.</param>
+        /// <param name="filter">A function to test each element for a condition.</param>
+        /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
+        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, in ValueFunc<T, bool> filter)
+        {
+            foreach (var item in seq)
+                if (filter.Invoke(item))
+                    return item;
+            return Optional<T>.Empty;
+        }
+
+        /// <summary>
+        /// Returns the first element in a sequence that satisfies a specified condition.
+        /// </summary>
+        /// <typeparam name="T">The type of the elements of source.</typeparam>
+        /// <param name="seq">A collection to return an element from.</param>
+        /// <param name="filter">A function to test each element for a condition.</param>
+        /// <returns>The first element in the sequence that matches to the specified filter; or empty value.</returns>
+        public static Optional<T> FirstOrEmpty<T>(this IEnumerable<T> seq, Predicate<T> filter)
+            => FirstOrEmpty(seq, filter.AsValueFunc(true));
 
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.
@@ -92,7 +167,7 @@ namespace DotNext
             return true;
         }
 
-        private static bool ElementAt<T>(this IList<T> list, int index, out T element)
+        private static bool ElementAt<T>(this IList<T> list, int index, [NotNullWhen(true)]out T element)
         {
             if (index >= 0 && index < list.Count)
             {
@@ -101,12 +176,12 @@ namespace DotNext
             }
             else
             {
-                element = default;
+                element = default!;
                 return false;
             }
         }
 
-        private static bool ElementAt<T>(this IReadOnlyList<T> list, int index, out T element)
+        private static bool ElementAt<T>(this IReadOnlyList<T> list, int index, [NotNullWhen(true)]out T element)
         {
             if (index >= 0 && index < list.Count)
             {
@@ -115,7 +190,7 @@ namespace DotNext
             }
             else
             {
-                element = default;
+                element = default!;
                 return false;
             }
         }
@@ -132,7 +207,7 @@ namespace DotNext
         /// <param name="index">Index of the element to read.</param>
         /// <param name="element">Obtained element.</param>
         /// <returns><see langword="true"/>, if element is available in the collection and obtained successfully; otherwise, <see langword="false"/>.</returns>
-        public static bool ElementAt<T>(this IEnumerable<T> collection, int index, out T element)
+        public static bool ElementAt<T>(this IEnumerable<T> collection, int index, [NotNullWhen(true)]out T element)
         {
             switch (collection)
             {
@@ -151,7 +226,7 @@ namespace DotNext
                         }
                         else
                         {
-                            element = default;
+                            element = default!;
                             return false;
                         }
                     }
@@ -164,9 +239,9 @@ namespace DotNext
         /// <typeparam name="T">Type of elements in the collection.</typeparam>
         /// <param name="collection">A collection to check. Cannot be <see langword="null"/>.</param>
         /// <returns>Modified lazy collection without <see langword="null"/> values.</returns>
-        public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T> collection)
+        public static IEnumerable<T> SkipNulls<T>(this IEnumerable<T?> collection)
             where T : class
-            => collection.Where(Func.IsNotNull<T>());
+            => new NotNullEnumerable<T>(collection);
 
         /// <summary>
         /// Concatenates each element from the collection into single string.

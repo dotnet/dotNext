@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Channels;
@@ -14,6 +15,8 @@ namespace DotNext.Threading.Channels
     /// <typeparam name="TInput">Specifies the type of data that may be written to the channel.</typeparam>
     /// <typeparam name="TOutput">Specifies the type of data that may be read from the channel.</typeparam>
     public abstract class PersistentChannel<TInput, TOutput> : Channel<TInput, TOutput>, IChannelWriter<TInput>, IChannelReader<TOutput>, IDisposable
+        where TInput : notnull
+        where TOutput : notnull
     {
         private readonly int maxCount;
         private readonly IAsyncEvent readTrigger;
@@ -57,8 +60,7 @@ namespace DotNext.Threading.Channels
         ValueTask IChannelWriter<TInput>.SerializeAsync(TInput input, PartitionStream output, CancellationToken token)
             => SerializeAsync(input, output, token);
 
-        Task IChannelReader<TOutput>.WaitToReadAsync(CancellationToken token)
-            => readTrigger.Wait(token);
+        Task IChannelReader<TOutput>.WaitToReadAsync(CancellationToken token) => readTrigger.WaitAsync(token);
 
         private PartitionStream CreateTopicStream(long partition, in FileCreationOptions options)
         {
@@ -68,7 +70,7 @@ namespace DotNext.Threading.Channels
             return result;
         }
 
-        PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, ref PartitionStream partition, in FileCreationOptions options, bool deleteOnDispose)
+        PartitionStream IChannel.GetOrCreatePartition(ref ChannelCursor state, [NotNull]ref PartitionStream? partition, in FileCreationOptions options, bool deleteOnDispose)
         {
             var partitionNumber = state.Position / maxCount;
             PartitionStream result;

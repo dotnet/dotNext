@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-
+using System.Runtime.CompilerServices;
 
 namespace DotNext.Reflection
 {
@@ -11,15 +12,6 @@ namespace DotNext.Reflection
     public static class TypeExtensions
     {
         private const string IsUnmanagedAttributeName = "System.Runtime.CompilerServices.IsUnmanagedAttribute";
-        //TODO: should be removed in .NET Standard 2.1
-        private const string IsReadOnlyAttributeName = "System.Runtime.CompilerServices.IsReadOnlyAttribute";
-
-        private static bool IsGenericParameter(Type type)
-        {
-            if (type.IsByRef || type.IsArray)
-                type = type.GetElementType();
-            return type?.IsGenericParameter ?? false;
-        }
 
         /// <summary>
         /// Determines whether the type is read-only (immutable) value type.
@@ -32,7 +24,7 @@ namespace DotNext.Reflection
                 return true;
             else if (type.IsValueType)
                 foreach (var attribute in type.GetCustomAttributesData())
-                    if (attribute.AttributeType.FullName == IsReadOnlyAttributeName)
+                    if (attribute.AttributeType == typeof(IsReadOnlyAttribute))
                         return true;
             return false;
         }
@@ -87,7 +79,7 @@ namespace DotNext.Reflection
         /// <param name="type">The type that contains overridden method.</param>
         /// <param name="abstractMethod">The abstract method definition.</param>
         /// <returns>The method that overrides <paramref name="abstractMethod"/>.</returns>
-        public static MethodInfo Devirtualize(this Type type, MethodInfo abstractMethod)
+        public static MethodInfo? Devirtualize(this Type type, MethodInfo abstractMethod)
         {
             if (abstractMethod.IsFinal || !abstractMethod.IsVirtual)
                 return abstractMethod;
@@ -113,52 +105,7 @@ namespace DotNext.Reflection
             return null;
         }
 
-        /// <summary>
-        /// Searches for the generic method in the specified type.
-        /// </summary>
-        /// <param name="type">The type in which search should be performed.</param>
-        /// <param name="methodName">The name of the method to get.</param>
-        /// <param name="flags">A bitmask that specify how the search is conducted.</param>
-        /// <param name="genericParamCount">Number of generic parameters in the method signature.</param>
-        /// <param name="parameters">An array representing the number, order, and type of the parameters for the method to get.</param>
-        /// <returns>Search result; or <see langword="null"/> if search criteria is invalid or method doesn't exist.</returns>
-        /// <remarks>
-        /// Element of the array <paramref name="parameters"/> should be <see langword="null"/> if this parameter of generic type.
-        /// </remarks>
-        public static MethodInfo GetMethod(this Type type, string methodName, BindingFlags flags, long genericParamCount, params Type[] parameters)
-        {
-            //TODO: Should be deprecated for .NET Standard 2.1 and replaced with native implementation
-            foreach (var method in type.GetMethods(flags))
-                if (method.Name == methodName && method.GetGenericArguments().LongLength == genericParamCount)
-                {
-                    bool success;
-                    //check signature
-                    var actualParams = method.GetParameterTypes();
-                    if (success = (actualParams.LongLength == parameters.LongLength))
-                        for (var i = 0L; success && i < actualParams.LongLength; i++)
-                        {
-                            var actual = actualParams[i];
-                            var expected = parameters[i];
-                            success = IsGenericParameter(actual) && expected is null || actual == expected || actual.IsConstructedGenericType && actual.GetGenericTypeDefinition() == expected;
-                        }
-                    if (success)
-                        return method;
-                }
-            return null;
-        }
-
-        /// <summary>
-        /// Searches for the specified method whose parameters match the specified argument types, using the specified binding constraints.
-        /// </summary>
-        /// <param name="type">The type in which search should be performed.</param>
-        /// <param name="name">The name of the method to get.</param>
-        /// <param name="flags">A bitmask that specify how the search is conducted.</param>
-        /// <param name="parameters">An array representing the number, order, and type of the parameters for the method to get.</param>
-        /// <returns>Search result; or <see langword="null"/> if search criteria is invalid or method doesn't exist.</returns>
-		public static MethodInfo GetMethod(this Type type, string name, BindingFlags flags, params Type[] parameters)
-            => type.GetMethod(name, flags, Type.DefaultBinder, parameters, Array.Empty<ParameterModifier>());
-
-        internal static Type FindGenericInstance(this Type type, Type genericDefinition)
+        internal static Type? FindGenericInstance(this Type type, Type genericDefinition)
         {
             bool IsGenericInstanceOf(Type candidate)
                 => candidate.IsGenericType && !candidate.IsGenericTypeDefinition && candidate.GetGenericTypeDefinition() == genericDefinition;
@@ -236,7 +183,8 @@ namespace DotNext.Reflection
         /// If the object is not <see langword="null"/> and is not assignable to the <paramref name="type"/>; 
         /// or if object is <see langword="null"/> and <paramref name="type"/> is value type.
         /// </exception>
-        public static object Cast(this Type type, object obj)
+        [return: NotNullIfNotNull("obj")]
+        public static object? Cast(this Type type, object? obj)
         {
             if (obj is null)
                 return type.IsValueType ? throw new InvalidCastException(ExceptionMessages.CastNullToValueType) : default(object);

@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Reflection
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ExtensionRegistryTest : Assert
+    public sealed class ExtensionRegistryTest : Test
     {
         private delegate void ZeroMethod(ref int value);
         private delegate bool ContainsMethod(ref string value, char ch);

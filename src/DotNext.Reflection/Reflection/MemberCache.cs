@@ -23,12 +23,12 @@ namespace DotNext.Reflection
         {
         }
 
-        private protected abstract V Create(K cacheKey);
+        private protected abstract V? Create(K cacheKey);
 
-        internal V GetOrCreate(K cacheKey)
+        internal V? GetOrCreate(K cacheKey)
         {
             syncObject.EnterReadLock();
-            var exists = elements.TryGetValue(cacheKey, out var item);
+            var exists = elements.TryGetValue(cacheKey, out V? item);
             syncObject.ExitReadLock();
             if (exists)
                 goto exit;
@@ -66,15 +66,9 @@ namespace DotNext.Reflection
 
         public bool Equals(MemberKey other) => NonPublic == other.NonPublic && Name == other.Name;
 
-        public override bool Equals(object other) => other is MemberKey key && Equals(key);
+        public override bool Equals(object? other) => other is MemberKey key && Equals(key);
 
-        public override int GetHashCode()
-        {
-            var hashCode = -910176598;
-            hashCode = hashCode * -1521134295 + NonPublic.GetHashCode();
-            hashCode = hashCode * -1521134295 + Name?.GetHashCode() ?? 0;
-            return hashCode;
-        }
+        public override int GetHashCode() => HashCode.Combine(NonPublic, Name);
     }
 
     internal abstract class MemberCache<M, E> : Cache<MemberKey, E>
@@ -83,11 +77,11 @@ namespace DotNext.Reflection
     {
         private static readonly UserDataSlot<MemberCache<M, E>> Slot = UserDataSlot<MemberCache<M, E>>.Allocate();
 
-        internal E GetOrCreate(string memberName, bool nonPublic) => GetOrCreate(new MemberKey(memberName, nonPublic));
+        internal E? GetOrCreate(string memberName, bool nonPublic) => GetOrCreate(new MemberKey(memberName, nonPublic));
 
-        private protected abstract E Create(string memberName, bool nonPublic);
+        private protected abstract E? Create(string memberName, bool nonPublic);
 
-        private protected sealed override E Create(MemberKey key) => Create(key.Name, key.NonPublic);
+        private protected sealed override E? Create(MemberKey key) => Create(key.Name, key.NonPublic);
 
         internal static MemberCache<M, E> Of<C>(MemberInfo member)
             where C : MemberCache<M, E>, new()

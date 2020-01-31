@@ -6,25 +6,31 @@ using Xunit;
 namespace DotNext.Collections.Generic
 {
     [ExcludeFromCodeCoverage]
-    public sealed class CollectionTests : Assert
+    public sealed class CollectionTests : Test
     {
         [Fact]
-        public static void ReadOnlyIndexer()
+        public static void AddingItems()
         {
-            IReadOnlyList<long> array = new[] { 5L, 6L, 20L };
-            Equal(20L, List.Indexer<long>.ReadOnly(array, 2));
-            Equal(6L, array.IndexerGetter().Invoke(1));
+            var list = new List<int>();
+            list.AddAll(new[] { 1, 3, 5 });
+            Equal(1, list[0]);
+            Equal(3, list[1]);
+            Equal(5, list[2]);
         }
 
         [Fact]
-        public static void Indexer()
+        public static void LinkedListToArray()
         {
-            IList<long> array = new[] { 5L, 6L, 30L };
-            Equal(30L, List.Indexer<long>.Getter(array, 2));
-            List.Indexer<long>.Setter(array, 1, 10L);
-            Equal(10L, array.IndexerGetter().Invoke(1));
-            array.IndexerSetter().Invoke(0, 6L);
-            Equal(6L, array.IndexerGetter().Invoke(0));
+            var list = new LinkedList<int>();
+            list.AddLast(10);
+            list.AddLast(20);
+            list.AddLast(30);
+
+            ICollection<int> collection = list;
+            Equal(new[] { 10, 20, 30 }, Generic.Collection.ToArray(collection));
+
+            IReadOnlyCollection<int> collection2 = list;
+            Equal(new[] { 10, 20, 30 }, Generic.Collection.ToArray(collection2));
         }
 
         [Fact]

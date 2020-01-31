@@ -17,7 +17,7 @@ namespace DotNext.Linq.Expressions
     /// </remarks>
     public readonly struct UniversalExpression : IExpressionBuilder<Expression>, IDynamicMetaObjectProvider, IEquatable<UniversalExpression>
     {
-        private readonly Expression expression;
+        private readonly Expression? expression;
 
         /// <summary>
         /// Wraps regular Expression Tree node into universal expression.
@@ -192,7 +192,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="right">The right operand.</param>
         /// <returns>Binary expression.</returns>
         public static UniversalExpression operator +(UniversalExpression left, UniversalExpression right)
-            => left.Transform(ExpressionBuilder.Add, right.expression);
+            => left.Transform(ExpressionBuilder.Add, right.expression ?? Expression.Empty());
 
         /// <summary>
         /// Binary arithmetic addition expression.
@@ -539,7 +539,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="targetType">The target type.</param>
         /// <returns>The type conversion expression.</returns>
-        public UniversalExpression Convert(Type targetType) => new UniversalExpression(expression.Convert(targetType));
+        public UniversalExpression Convert(Type targetType) => new UniversalExpression((expression ?? Expression.Empty()).Convert(targetType));
 
         /// <summary>
         /// Constructs type conversion expression.
@@ -553,7 +553,8 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="targetType">The target type.</param>
         /// <returns>The type test expression.</returns>
-        public UniversalExpression InstanceOf(Type targetType) => new UniversalExpression(expression?.InstanceOf(targetType) ?? (Expression)false.Const());
+        public UniversalExpression InstanceOf(Type targetType)
+            => new UniversalExpression(expression is null ? (Expression)ExpressionBuilder.Const(false) : expression.InstanceOf(targetType));
 
         /// <summary>
         /// Constructs type check expression.
@@ -592,7 +593,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="other">The second operand.</param>
         /// <returns>Binary expression.</returns>
-        public UniversalExpression OrElse(UniversalExpression other) => OrElse(other.expression ?? Expression.Empty());
+        public UniversalExpression OrElse(UniversalExpression other) => other.expression is null ? this : OrElse(other.expression);
 
         /// <summary>
         /// Constructs binary expression that represents a conditional
@@ -608,7 +609,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="other">The second operand.</param>
         /// <returns>Binary expression.</returns>
-        public UniversalExpression AndAlso(UniversalExpression other) => AndAlso(other.expression ?? Expression.Empty());
+        public UniversalExpression AndAlso(UniversalExpression other) => other.expression is null ? this : AndAlso(other.expression);
 
         /// <summary>
         /// Explicit unboxing.
@@ -747,7 +748,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="ifFalse">Negative branch.</param>
         /// <param name="type">The type of conditional expression. Default is <see cref="void"/>.</param>
         /// <returns>Conditional expression.</returns>
-        public UniversalExpression Condition(Expression ifTrue = null, Expression ifFalse = null, Type type = null)
+        public UniversalExpression Condition(Expression? ifTrue = null, Expression? ifFalse = null, Type? type = null)
             => new UniversalExpression((expression ?? Expression.Empty()).Condition(ifTrue, ifFalse, type));
 
         /// <summary>
@@ -786,26 +787,20 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="other">Other expression to compare.</param>
         /// <returns><see langword="true"/>, if both expressions are equal; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other) => other switch
         {
-            switch (other)
-            {
-                case Expression expr:
-                    return Equals(expression, expr);
-                case UniversalExpression view:
-                    return Equals(view);
-                default:
-                    return false;
-            }
-        }
+            Expression expr => Equals(expression, expr),
+            UniversalExpression view => Equals(view),
+            _ => false,
+        };
 
         /// <summary>
         /// Returns textual representation of this expression.
         /// </summary>
         /// <returns>The textual representation of this expression.</returns>
-        public override string ToString() => expression?.ToString();
+        public override string ToString() => (expression ?? Expression.Empty()).ToString();
 
-        Expression IExpressionBuilder<Expression>.Build() => expression;
+        Expression IExpressionBuilder<Expression>.Build() => expression ?? Expression.Empty();
 
         DynamicMetaObject IDynamicMetaObjectProvider.GetMetaObject(Expression parameter) => new MetaExpression(parameter, this);
     }

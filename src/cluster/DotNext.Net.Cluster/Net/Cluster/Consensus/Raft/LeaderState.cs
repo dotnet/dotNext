@@ -1,15 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using Replication;
+    using IO.Log;
     using Threading;
     using static Threading.Tasks.Continuation;
+    using static Threading.Tasks.Synchronization;
     using Timestamp = Diagnostics.Timestamp;
 
     internal sealed class LeaderState : RaftState
@@ -29,6 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal Replicator(IRaftClusterMember member,
                 long commitIndex,
+                long currentIndex,
                 long term,
                 long precedingIndex,
                 long precedingTerm,
@@ -39,6 +42,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 this.precedingIndex = precedingIndex;
                 this.precedingTerm = precedingTerm;
                 this.commitIndex = commitIndex;
+                this.currentIndex = currentIndex;
                 this.term = term;
                 this.logger = logger;
                 this.token = token;
@@ -48,7 +52,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal ValueTask<Result<bool>> Start(IAuditTrail<IRaftLogEntry> auditTrail)
             {
-                var currentIndex = this.currentIndex = auditTrail.GetLastIndex(false);
                 logger.ReplicationStarted(member.Endpoint, currentIndex);
                 return currentIndex >= member.NextIndex ?
                     auditTrail.ReadAsync<Replicator, Result<bool>>(this, member.NextIndex, token) :
@@ -111,13 +114,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        private sealed class WaitNode : TaskCompletionSource<bool>
+        {
+            internal WaitNode()
+                : base(TaskCreationOptions.RunContinuationsAsynchronously)
+            {
+            }
+        }
 
-        private Task heartbeatTask;
+        private Task? heartbeatTask;
         private readonly long currentTerm;
         private readonly bool allowPartitioning;
         private readonly CancellationTokenSource timerCancellation;
         private readonly AsyncManualResetEvent forcedReplication;
-        internal ILeaderStateMetrics Metrics;
+        private ImmutableQueue<WaitNode> replicationQueue;  //volatile
+        internal ILeaderStateMetrics? Metrics;
 
         internal LeaderState(IRaftStateMachine stateMachine, bool allowPartitioning, long term)
             : base(stateMachine)
@@ -126,6 +137,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.allowPartitioning = allowPartitioning;
             timerCancellation = new CancellationTokenSource();
             forcedReplication = new AsyncManualResetEvent(false);
+            replicationQueue = ImmutableQueue<WaitNode>.Empty;
         }
 
         private bool CheckTerm(long term)
@@ -140,14 +152,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var timeStamp = Timestamp.Current;
             var tasks = new LinkedList<ValueTask<Result<bool>>>();
-            //send heartbeat in parallel
-            var commitIndex = auditTrail.GetLastIndex(true);
+
+            long commitIndex = auditTrail.GetLastIndex(true), currentIndex = auditTrail.GetLastIndex(false);
             var term = currentTerm;
+            //send heartbeat in parallel
             foreach (var member in stateMachine.Members)
                 if (member.IsRemote)
                 {
                     long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token);
-                    tasks.AddLast(new Replicator(member, commitIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).Start(auditTrail));
+                    tasks.AddLast(new Replicator(member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).Start(auditTrail));
                 }
             var quorum = 1;  //because we know that the entry is replicated in this node
             var commitQuorum = 1;
@@ -180,7 +193,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             //majority of nodes accept entries with a least one entry from current term
             if (commitQuorum > 0)
             {
-                var count = await auditTrail.CommitAsync(token).ConfigureAwait(false); //commit all entries started from first uncommitted index to the end
+                var count = await auditTrail.CommitAsync(currentIndex, token).ConfigureAwait(false); //commit all entries started from first uncommitted index to the end
                 stateMachine.Logger.CommitSuccessful(commitIndex + 1, count);
                 return CheckTerm(term);
             }
@@ -193,14 +206,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return false;
         }
 
-        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail)
+        private void DrainReplicationQueue()
         {
-            var token = timerCancellation.Token;
-            while (await DoHeartbeats(auditTrail, token).ConfigureAwait(false))
-                await forcedReplication.Wait(period, token).ConfigureAwait(false);
+            foreach (var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
+                waiter.SetResult(true);
         }
 
-        internal void ForceReplication() => forcedReplication.Set(true);
+        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail)
+        {
+            for (var token = timerCancellation.Token; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); await forcedReplication.WaitAsync(period, token).ConfigureAwait(false))
+                DrainReplicationQueue();
+        }
+
+        internal Task<bool> ForceReplicationAsync(TimeSpan timeout, CancellationToken token)
+        {
+            var waiter = new WaitNode();
+            ImmutableInterlocked.Enqueue(ref replicationQueue, waiter);
+            forcedReplication.Set(true);
+            return waiter.Task.WaitAsync(timeout, token);
+        }
 
         /// <summary>
         /// Starts cluster synchronization.
@@ -221,7 +245,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal override Task StopAsync()
         {
             timerCancellation.Cancel(false);
-            return heartbeatTask.OnCompleted();
+            return heartbeatTask?.OnCompleted() ?? Task.CompletedTask;
         }
 
         protected override void Dispose(bool disposing)
@@ -231,6 +255,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 timerCancellation.Dispose();
                 forcedReplication.Dispose();
                 heartbeatTask = null;
+                //cancel queue
+                foreach (var waiter in Interlocked.Exchange(ref replicationQueue, ImmutableQueue<WaitNode>.Empty))
+                    waiter.SetCanceled();
             }
             base.Dispose(disposing);
         }

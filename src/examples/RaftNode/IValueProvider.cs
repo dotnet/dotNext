@@ -1,9 +1,13 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace RaftNode
 {
     internal interface IValueProvider
     {
-        Task<long> GetValueAsync();
+        long Value { get; }
+
+        Task UpdateValueAsync(long value, TimeSpan timeout, CancellationToken token);
     }
 }

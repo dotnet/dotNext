@@ -119,20 +119,13 @@ namespace DotNext.Linq.Expressions
         public static BinaryExpression Add(this Expression left, Expression right)
             => Expression.Add(left, right);
 
-        private static MethodCallExpression Concat(Expression[] strings)
+        private static MethodCallExpression Concat(Expression[] strings) => strings.LongLength switch
         {
-            switch (strings.LongLength)
-            {
-                case 2:
-                    return CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1]);
-                case 3:
-                    return CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1], strings[2]);
-                case 4:
-                    return CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1], strings[2], strings[3]);
-                default:
-                    return CallStatic(typeof(string), nameof(string.Concat), Expression.NewArrayInit(typeof(string), strings));
-            }
-        }
+            2 => CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1]),
+            3 => CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1], strings[2]),
+            4 => CallStatic(typeof(string), nameof(string.Concat), strings[0], strings[1], strings[2], strings[3]),
+            _ => CallStatic(typeof(string), nameof(string.Concat), Expression.NewArrayInit(typeof(string), strings)),
+        };
 
         /// <summary>
         /// Constructs string concatenation expression.
@@ -262,13 +255,13 @@ namespace DotNext.Linq.Expressions
         public static Expression IsNull(this Expression operand)
         {
             //handle nullable value type
-            var underlyingType = Nullable.GetUnderlyingType(operand.Type);
+            Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
                 return operand.Property(nameof(Nullable<int>.HasValue)).Not();
             //handle optional type
             underlyingType = Optional.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
-                return operand.Property(nameof(Optional<int>.IsPresent)).Not();
+                return operand.Property(nameof(Optional<int>.HasValue)).Not();
             //handle reference type or value type
             return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression)Const<bool>(false) : Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
         }
@@ -284,13 +277,13 @@ namespace DotNext.Linq.Expressions
         public static Expression IsNotNull(this Expression operand)
         {
             //handle nullable value type
-            var underlyingType = Nullable.GetUnderlyingType(operand.Type);
+            Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
                 return operand.Property(nameof(Nullable<int>.HasValue));
             //handle optional type
             underlyingType = Optional.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
-                return operand.Property(nameof(Optional<int>.IsPresent));
+                return operand.Property(nameof(Optional<int>.HasValue));
             //handle reference type or value type
             return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression)Const<bool>(true) : Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type));
         }
@@ -743,9 +736,9 @@ namespace DotNext.Linq.Expressions
         {
             if (!interfaceType.IsAssignableFrom(instance.Type))
                 throw new ArgumentException(ExceptionMessages.InterfaceNotImplemented(instance.Type, interfaceType));
-            var method = interfaceType.GetMethod(methodName, Array.ConvertAll(arguments, GetType));
+            MethodInfo? method = interfaceType.GetMethod(methodName, Array.ConvertAll(arguments, GetType));
             return method is null ?
-                throw new MissingMethodException(ExceptionMessages.MissingMethod(methodName, interfaceType)) :
+                throw new MissingMethodException(interfaceType.FullName, methodName) :
                 instance.Call(method, arguments);
         }
 
@@ -758,9 +751,9 @@ namespace DotNext.Linq.Expressions
         /// <returns>An expression representing static method call.</returns>
         public static MethodCallExpression CallStatic(this Type type, string methodName, params Expression[] arguments)
         {
-            var method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Array.ConvertAll(arguments, GetType), Array.Empty<ParameterModifier>());
+            MethodInfo? method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly, null, Array.ConvertAll(arguments, GetType), Array.Empty<ParameterModifier>());
             return method is null ?
-                throw new MissingMethodException(ExceptionMessages.MissingMethod(methodName, type)) :
+                throw new MissingMethodException(type.FullName, methodName) :
                 Expression.Call(method, arguments);
         }
 
@@ -790,9 +783,9 @@ namespace DotNext.Linq.Expressions
         /// <returns>Property access expression.</returns>
         public static Expression Property(this Expression instance, Type interfaceType, string propertyName, params Expression[] indicies)
         {
-            var property = interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+            PropertyInfo? property = interfaceType.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
             return property is null ?
-                throw new MissingMemberException(ExceptionMessages.MissingProperty(propertyName, interfaceType)) :
+                throw new MissingMemberException(interfaceType.FullName, propertyName) :
                 instance.Property(property, indicies);
         }
 
@@ -998,7 +991,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="ifFalse">Negative branch.</param>
         /// <param name="type">The type of conditional expression. Default is <see cref="void"/>.</param>
         /// <returns>Conditional expression.</returns>
-        public static ConditionalExpression Condition(this Expression test, Expression ifTrue = null, Expression ifFalse = null, Type type = null)
+        public static ConditionalExpression Condition(this Expression test, Expression? ifTrue = null, Expression? ifFalse = null, Type? type = null)
             => Expression.Condition(test, ifTrue ?? Expression.Empty(), ifFalse ?? Expression.Empty(), type ?? typeof(void));
 
         /// <summary>
@@ -1035,7 +1028,7 @@ namespace DotNext.Linq.Expressions
         /// <param name="exception">An exception to be thrown.</param>
         /// <param name="type">The type of expression. Default is <see cref="void"/>.</param>
         /// <returns><c>throw</c> expression.</returns>
-        public static UnaryExpression Throw(this Expression exception, Type type = null) => Expression.Throw(exception, type ?? typeof(void));
+        public static UnaryExpression Throw(this Expression exception, Type? type = null) => Expression.Throw(exception, type ?? typeof(void));
 
         /// <summary>
         /// Converts arbitrary value into constant expression.
@@ -1068,21 +1061,19 @@ namespace DotNext.Linq.Expressions
         {
             if (args.LongLength == 0L)
                 return Expression.New(type);
-            var ctor = type.GetConstructor(Array.ConvertAll(args, arg => arg.Type));
-            if (ctor is null)
-                throw new MissingMethodException(ExceptionMessages.MissingCtor(type));
-            else
-                return Expression.New(ctor, args);
+            ConstructorInfo? ctor = type.GetConstructor(Array.ConvertAll(args, arg => arg.Type));
+            return ctor is null ?
+                throw new MissingMethodException(type.FullName, ConstructorInfo.ConstructorName) :
+                Expression.New(ctor, args);
         }
 
         internal static Expression AddPrologue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
         {
             if (instructions.Count == 0)
                 return expression;
-            else if (expression is BlockExpression block)
+            if (expression is BlockExpression block)
                 return Expression.Block(inferType ? block.Type : typeof(void), block.Variables, instructions.Concat(block.Expressions));
-            else
-                return Expression.Block(inferType ? expression.Type : typeof(void), instructions.Append(expression));
+            return Expression.Block(inferType ? expression.Type : typeof(void), instructions.Append(expression));
         }
 
         internal static Expression AddEpilogue(this Expression expression, bool inferType, IReadOnlyCollection<Expression> instructions)
@@ -1192,7 +1183,7 @@ namespace DotNext.Linq.Expressions
 
         internal static MethodCallExpression Breakpoint() => CallStatic(typeof(Debugger), nameof(Debugger.Break));
 
-        internal static MethodCallExpression Assert(this Expression test, string message)
+        internal static MethodCallExpression Assert(this Expression test, string? message)
         {
             if (test is null)
                 throw new ArgumentNullException(nameof(test));

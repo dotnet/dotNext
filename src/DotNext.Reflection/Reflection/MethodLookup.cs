@@ -1,8 +1,11 @@
+using System;
+
 namespace DotNext.Reflection
 {
     /// <summary>
     /// Represents method declaration type.
     /// </summary>
+    [Serializable]
     public enum MethodLookup : byte
     {
         /// <summary>

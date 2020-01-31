@@ -9,7 +9,7 @@ using Xunit;
 namespace DotNext.Buffers
 {
     [ExcludeFromCodeCoverage]
-    public sealed class ChunkSequenceTests : Assert
+    public sealed class ChunkSequenceTests : Test
     {
         [Fact]
         public static void EmptySequence()
@@ -80,15 +80,11 @@ namespace DotNext.Buffers
         public static async Task CopyByteChunksToStream()
         {
             var bytes = new ChunkSequence<byte>(Encoding.UTF8.GetBytes("Hello, world!"), 3);
-            using (var content = new MemoryStream())
-            {
-                await bytes.CopyToAsync(content).ConfigureAwait(false);
-                content.Seek(0, SeekOrigin.Begin);
-                using (var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true))
-                {
-                    Equal("Hello, world!", reader.ReadToEnd());
-                }
-            }
+            using var content = new MemoryStream();
+            await bytes.CopyToAsync(content).ConfigureAwait(false);
+            content.Seek(0, SeekOrigin.Begin);
+            using var reader = new StreamReader(content, Encoding.UTF8, false, 1024, true);
+            Equal("Hello, world!", reader.ReadToEnd());
         }
 
         [Fact]

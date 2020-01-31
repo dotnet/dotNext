@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -12,7 +13,7 @@ namespace DotNext.Reflection
     /// </summary>
     /// <typeparam name="A">The type representing indexer arguments.</typeparam>
     /// <typeparam name="V">The type of the property.</typeparam>
-	public abstract class IndexerBase<A, V> : PropertyInfo, IProperty, IEquatable<PropertyInfo>
+	public abstract class IndexerBase<A, V> : PropertyInfo, IProperty, IEquatable<PropertyInfo?>
         where A : struct
     {
         private readonly PropertyInfo property;
@@ -26,7 +27,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be returned.</param>
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns>The property value of the specified object.</returns>
-		public override object GetValue(object obj, object[] index) => property.GetValue(obj, index);
+		public override object GetValue(object? obj, object?[] index) => property.GetValue(obj, index);
 
         /// <summary>
         /// Sets the property value of a specified object with optional index values for index properties.
@@ -34,7 +35,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be set.</param>
         /// <param name="value">The new property value.</param>
         /// <param name="index">The property value of the specified object.</param>
-		public override void SetValue(object obj, object value, object[] index) => property.SetValue(obj, value, index);
+		public override void SetValue(object? obj, object? value, object?[] index) => property.SetValue(obj, value, index);
 
         /// <summary>
         /// Gets name of the property.
@@ -69,7 +70,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets the set accessor for this property.
         /// </summary>
-		public sealed override MethodInfo SetMethod => property.SetMethod;
+		public sealed override MethodInfo? SetMethod => property.SetMethod;
 
         /// <summary>
         /// Returns an array whose elements reflect the public and, if specified, non-public get and set accessors of the 
@@ -83,14 +84,14 @@ namespace DotNext.Reflection
         /// Returns a literal value associated with the property by a compiler.
         /// </summary>
         /// <returns>The literal value associated with the property.</returns>
-		public sealed override object GetConstantValue() => property.GetConstantValue();
+		public sealed override object? GetConstantValue() => property.GetConstantValue();
 
         /// <summary>
         /// Returns the public or non-public get accessor for this property.
         /// </summary>
         /// <param name="nonPublic">Indicates whether a non-public get accessor should be returned.</param>
         /// <returns>The object representing the get accessor for this property.</returns>
-		public sealed override MethodInfo GetGetMethod(bool nonPublic) => property.GetGetMethod(nonPublic);
+		public sealed override MethodInfo? GetGetMethod(bool nonPublic) => property.GetGetMethod(nonPublic);
 
         /// <summary>
         /// Returns an array of all the index parameters for the property.
@@ -121,7 +122,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="nonPublic">Indicates whether a non-public set  accessor should be returned.</param>
         /// <returns>The object representing the set accessor for this property.</returns>
-		public sealed override MethodInfo GetSetMethod(bool nonPublic) => property.GetSetMethod(nonPublic);
+		public sealed override MethodInfo? GetSetMethod(bool nonPublic) => property.GetSetMethod(nonPublic);
 
         /// <summary>
         /// Returns the property value of a specified object with index values for indexed properties.
@@ -132,7 +133,7 @@ namespace DotNext.Reflection
         /// <param name="index">Index values for indexed properties.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
         /// <returns>The property value of the specified object.</returns>
-		public override object GetValue(object obj, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
+		public override object GetValue(object? obj, BindingFlags invokeAttr, Binder? binder, object?[] index, CultureInfo culture)
             => property.GetValue(obj, invokeAttr, binder, index, culture);
 
         /// <summary>
@@ -144,7 +145,7 @@ namespace DotNext.Reflection
         /// <param name="binder">Defines a set of properties and enables the binding, coercion of argument types, and invocation of members using reflection.</param>
         /// <param name="index">Index values for indexed properties.</param>
         /// <param name="culture">Used to govern the coercion of types.</param>
-		public override void SetValue(object obj, object value, BindingFlags invokeAttr, Binder binder, object[] index, CultureInfo culture)
+		public override void SetValue(object? obj, object? value, BindingFlags invokeAttr, Binder? binder, object?[] index, CultureInfo culture)
             => property.SetValue(obj, value, invokeAttr, binder, index, culture);
 
         /// <summary>
@@ -213,25 +214,19 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other property to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same property as the specified object; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(PropertyInfo other) => other is IndexerBase<A, V> property ? property.property == this.property : this.property == other;
+        public bool Equals(PropertyInfo? other) => other is IndexerBase<A, V> property ? property.property == this.property : this.property == other;
 
         /// <summary>
         /// Determines whether this property is equal to the given property.
         /// </summary>
         /// <param name="other">Other property to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same property as the specified object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other) => other switch
         {
-            switch (other)
-            {
-                case IndexerBase<A, V> property:
-                    return this.property == property.property;
-                case PropertyInfo property:
-                    return this.property == property;
-                default:
-                    return false;
-            }
-        }
+            IndexerBase<A, V> property => this.property == property.property,
+            PropertyInfo property => this.property == property,
+            _ => false,
+        };
 
         /// <summary>
         /// Computes hash code uniquely identifies the reflected property.
@@ -256,7 +251,7 @@ namespace DotNext.Reflection
     {
         private sealed class Cache<T> : MemberCache<PropertyInfo, Indexer<A, V>>
         {
-            private protected override Indexer<A, V> Create(string propertyName, bool nonPublic) => Reflect(typeof(T), propertyName, nonPublic);
+            private protected override Indexer<A, V>? Create(string propertyName, bool nonPublic) => Reflect(typeof(T), propertyName, nonPublic);
         }
         private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
@@ -266,7 +261,8 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns>The property value.</returns>
-		public delegate V Getter(in A index);
+        [return: MaybeNull]
+        public delegate V Getter(in A index);
 
         /// <summary>
         /// Represents property setter.
@@ -275,7 +271,7 @@ namespace DotNext.Reflection
         /// <param name="value">The new value of the property.</param>
 		public delegate void Setter(in A index, V value);
 
-        private Indexer(PropertyInfo property, Method<Getter> getter, Method<Setter> setter)
+        private Indexer(PropertyInfo property, Method<Getter>? getter, Method<Setter>? setter)
             : base(property)
         {
             GetMethod = getter;
@@ -285,18 +281,19 @@ namespace DotNext.Reflection
         /// <summary>
         /// Gets indexer property getter.
         /// </summary>
-        public new Method<Getter> GetMethod { get; }
+        public new Method<Getter>? GetMethod { get; }
 
         /// <summary>
         /// Gets indexer property setter.
         /// </summary>
-        public new Method<Setter> SetMethod { get; }
+        public new Method<Setter>? SetMethod { get; }
 
         /// <summary>
         /// Gets or sets instance indexer property value.
         /// </summary>
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns>The value of the property.</returns>
+        [MaybeNull]
         public V this[in A index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -315,22 +312,22 @@ namespace DotNext.Reflection
         /// Obtains property getter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
-        public static implicit operator Getter(Indexer<A, V> indexer) => indexer?.GetMethod;
+        public static implicit operator Getter?(Indexer<A, V>? indexer) => indexer?.GetMethod;
 
         /// <summary>
         /// Obtains property setter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
-        public static implicit operator Setter(Indexer<A, V> indexer) => indexer?.SetMethod;
+        public static implicit operator Setter?(Indexer<A, V>? indexer) => indexer?.SetMethod;
 
-        private static Indexer<A, V> Reflect(Type declaringType, string propertyName, bool nonPublic)
+        private static Indexer<A, V>? Reflect(Type declaringType, string propertyName, bool nonPublic)
         {
-            var property = declaringType.GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
+            PropertyInfo? property = declaringType.GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
             if (property is null || property.PropertyType != typeof(V))
                 return null;
             var (actualParams, arglist, input) = Signature.Reflect<A>();
             //reflect getter
-            Method<Getter> getter;
+            Method<Getter>? getter;
             if (property.CanRead)
                 if (property.GetMethod.SignatureEquals(actualParams))
                     getter = new Method<Getter>(property.GetMethod, arglist, new[] { input });
@@ -339,7 +336,7 @@ namespace DotNext.Reflection
             else
                 getter = null;
             //reflect setter
-            Method<Setter> setter;
+            Method<Setter>? setter;
             actualParams = actualParams.Insert(property.PropertyType, actualParams.LongLength);
             if (property.CanWrite)
                 if (property.SetMethod.SignatureEquals(actualParams))
@@ -356,7 +353,7 @@ namespace DotNext.Reflection
             return new Indexer<A, V>(property, getter, setter);
         }
 
-        internal static Indexer<A, V> GetOrCreate<T>(string propertyName, bool nonPublic)
+        internal static Indexer<A, V>? GetOrCreate<T>(string propertyName, bool nonPublic)
             => Cache<T>.Of<Cache<T>>(typeof(T)).GetOrCreate(propertyName, nonPublic);
     }
 
@@ -371,7 +368,7 @@ namespace DotNext.Reflection
     {
         private sealed class Cache : MemberCache<PropertyInfo, Indexer<T, A, V>>
         {
-            private protected override Indexer<T, A, V> Create(string propertyName, bool nonPublic) => Reflect(propertyName, nonPublic);
+            private protected override Indexer<T, A, V>? Create(string propertyName, bool nonPublic) => Reflect(propertyName, nonPublic);
         }
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
@@ -382,7 +379,8 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property value will be returned.</param>
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns>The property value.</returns>
-        public delegate V Getter(in T @this, in A index);
+        [return: MaybeNull]
+        public delegate V Getter([DisallowNull]in T @this, in A index);
 
         /// <summary>
         /// Represents property setter.
@@ -390,9 +388,9 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property value will be set.</param>
         /// <param name="value">The new property value.</param>
         /// <param name="index">The property value of the specified object.</param>
-        public delegate void Setter(in T @this, in A index, V value);
+        public delegate void Setter([DisallowNull]in T @this, in A index, V value);
 
-        private Indexer(PropertyInfo property, Method<Getter> getter, Method<Setter> setter)
+        private Indexer(PropertyInfo property, Method<Getter>? getter, Method<Setter>? setter)
             : base(property)
         {
             GetMethod = getter;
@@ -403,23 +401,23 @@ namespace DotNext.Reflection
         /// Obtains property getter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
-        public static implicit operator Getter(Indexer<T, A, V> indexer) => indexer?.GetMethod;
+        public static implicit operator Getter?(Indexer<T, A, V>? indexer) => indexer?.GetMethod;
 
         /// <summary>
         /// Obtains property setter.
         /// </summary>
         /// <param name="indexer">The reflected property instance.</param>
-        public static implicit operator Setter(Indexer<T, A, V> indexer) => indexer?.SetMethod;
+        public static implicit operator Setter?(Indexer<T, A, V>? indexer) => indexer?.SetMethod;
 
         /// <summary>
         /// Gets indexer property getter.
         /// </summary>
-        public new Method<Getter> GetMethod { get; }
+        public new Method<Getter>? GetMethod { get; }
 
         /// <summary>
         /// Gets indexer property setter.
         /// </summary>
-        public new Method<Setter> SetMethod { get; }
+        public new Method<Setter>? SetMethod { get; }
 
         /// <summary>
         /// Gets or sets instance property.
@@ -427,7 +425,8 @@ namespace DotNext.Reflection
         /// <param name="this">The object whose property value will be set or returned.</param>
         /// <param name="index">Index values for indexed properties.</param>
         /// <returns></returns>
-		public V this[in T @this, in A index]
+        [MaybeNull]
+        public V this[[DisallowNull]in T @this, in A index]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => GetMethod is null ? throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name)) : GetMethod.Invoker(@this, index);
@@ -441,15 +440,15 @@ namespace DotNext.Reflection
             }
         }
 
-        private static Indexer<T, A, V> Reflect(string propertyName, bool nonPublic)
+        private static Indexer<T, A, V>? Reflect(string propertyName, bool nonPublic)
         {
-            var property = typeof(T).GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
+            PropertyInfo? property = typeof(T).GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
             if (property?.DeclaringType is null || property.PropertyType != typeof(V))
                 return null;
             var (actualParams, arglist, input) = Signature.Reflect<A>();
             var thisParam = Expression.Parameter(property.DeclaringType.MakeByRefType(), "this");
             //reflect getter
-            Method<Getter> getter;
+            Method<Getter>? getter;
             if (property.CanRead)
                 if (property.GetMethod.SignatureEquals(actualParams))
                     getter = new Method<Getter>(property.GetMethod, thisParam, arglist, new[] { input });
@@ -458,7 +457,7 @@ namespace DotNext.Reflection
             else
                 getter = null;
             //reflect setter
-            Method<Setter> setter;
+            Method<Setter>? setter;
             actualParams = actualParams.Insert(property.PropertyType, actualParams.LongLength);
             if (property.CanWrite)
                 if (property.SetMethod.SignatureEquals(actualParams))
@@ -474,7 +473,7 @@ namespace DotNext.Reflection
             return new Indexer<T, A, V>(property, getter, setter);
         }
 
-        internal static Indexer<T, A, V> GetOrCreate(string propertyName, bool nonPublic)
+        internal static Indexer<T, A, V>? GetOrCreate(string propertyName, bool nonPublic)
             => Cache.Of<Cache>(typeof(T)).GetOrCreate(propertyName, nonPublic);
     }
 }

@@ -1,10 +1,11 @@
-﻿using System.IO;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Net.Mime;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Messaging
 {
+    using IO;
+
     /// <summary>
     /// Represents message which content is represented by <see cref="Stream"/>.
     /// </summary>
@@ -17,7 +18,7 @@ namespace DotNext.Net.Cluster.Messaging
         /// <param name="leaveOpen"><see langword="true"/> to leave the stream open after <see cref="StreamMessage"/> object is disposed; otherwise, <see langword="false"/>.</param>
         /// <param name="name">The name of the message.</param>
         /// <param name="type">Media type of the message.</param>
-        public StreamMessage(Stream content, bool leaveOpen, string name, ContentType type = null)
+        public StreamMessage(Stream content, bool leaveOpen, string name, ContentType? type = null)
             : base(content, leaveOpen)
         {
             Name = name;
@@ -25,17 +26,17 @@ namespace DotNext.Net.Cluster.Messaging
         }
 
         /// <summary>
-        /// Creates copy of the original message stored in the managed heap.
+        /// Initializes a new empty message of predefined size.
         /// </summary>
-        /// <param name="message">The origin message.</param>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
-        /// <returns>The message which stores the content of the original message in the memory.</returns>
-        public static async Task<StreamMessage> CreateBufferedMessageAsync(IMessage message, CancellationToken token = default)
+        /// <param name="name">The name of the message.</param>
+        /// <param name="type">Media type of the message.</param>
+        /// <param name="size">The initial size of the message, in bytes.</param>
+        /// <param name="growable"><see langword="true"/> if the size is not fixed and can be expanded if necessary; <see langword="false"/> to use strictly limited memory size.</param>
+        [SuppressMessage("Reliability", "CA2000", Justification = "Stream lifetime is controlled by StreamMessage")]
+        public StreamMessage(string name, ContentType type, int size = 1024, bool growable = true)
+            : this(growable ? new MemoryStream(size) : new RentedMemoryStream(size), false, name, type)
         {
-            var content = new MemoryStream(2048);
-            await message.CopyToAsync(content, token).ConfigureAwait(false);
-            content.Seek(0, SeekOrigin.Begin);
-            return new StreamMessage(content, false, message.Name, message.Type);
+
         }
 
         /// <summary>

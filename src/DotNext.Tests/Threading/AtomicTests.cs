@@ -5,7 +5,7 @@ using Xunit;
 namespace DotNext.Threading
 {
     [ExcludeFromCodeCoverage]
-    public sealed class AtomicTests : Assert
+    public sealed class AtomicTests : Test
     {
         [Fact]
         public static void AtomicArrayTest()
@@ -40,6 +40,30 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        public static void AtomicFloatArray()
+        {
+            float[] array = { 10F };
+            Equal(11F, array.IncrementAndGet(0L));
+            Equal(10F, array.DecrementAndGet(0L));
+            array.VolatileWrite(0L, 20F);
+            True(array.CompareAndSet(0L, 20F, 30F));
+            Equal(30F, array.VolatileRead(0L));
+            False(array.CompareAndSet(0L, 20F, 50F));
+            Equal(30F, array.VolatileRead(0L));
+            Equal(80F, array.Add(0L, 50F));
+            Equal(80F, array.VolatileRead(0L));
+            Equal(80F, array.GetAndAccumulate(0L, 10F, (x, y) => x + y));
+            Equal(90F, array.VolatileRead(0L));
+            Equal(10F, array.AccumulateAndGet(0L, 80F, (x, y) => x - y));
+            Equal(10F, array.VolatileRead(0L));
+            Equal(10F, array.GetAndSet(0L, 25F));
+            Equal(25F, array.VolatileRead(0L));
+            Equal(42F, array.UpdateAndGet(0L, current => 42F));
+            Equal(42F, array.GetAndUpdate(0L, current => 52F));
+            Equal(52F, array.VolatileRead(0L));
+        }
+
+        [Fact]
         public static void AtomicDoubleTest()
         {
             double i = 10D;
@@ -61,6 +85,30 @@ namespace DotNext.Threading
             Equal(42D, i.UpdateAndGet(current => 42D));
             Equal(42D, i.GetAndUpdate(current => 52D));
             Equal(52D, i);
+        }
+
+        [Fact]
+        public static void AtomicDoubleArray()
+        {
+            double[] array = { 10D };
+            Equal(11D, array.IncrementAndGet(0L));
+            Equal(10D, array.DecrementAndGet(0L));
+            array.VolatileWrite(0L, 20D);
+            True(array.CompareAndSet(0L, 20D, 30D));
+            Equal(30D, array.VolatileRead(0L));
+            False(array.CompareAndSet(0L, 20D, 50D));
+            Equal(30D, array.VolatileRead(0L));
+            Equal(80D, array.Add(0L, 50D));
+            Equal(80D, array.VolatileRead(0L));
+            Equal(80D, array.GetAndAccumulate(0L, 10D, (x, y) => x + y));
+            Equal(90D, array.VolatileRead(0L));
+            Equal(10D, array.AccumulateAndGet(0L, 80D, (x, y) => x - y));
+            Equal(10D, array.VolatileRead(0L));
+            Equal(10D, array.GetAndSet(0L, 25D));
+            Equal(25D, array.VolatileRead(0L));
+            Equal(42D, array.UpdateAndGet(0L, current => 42D));
+            Equal(42D, array.GetAndUpdate(0L, current => 52D));
+            Equal(52D, array.VolatileRead(0L));
         }
 
         [Fact]
@@ -88,6 +136,30 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        public static void AtomicIntArray()
+        {
+            int[] array = { 10 };
+            Equal(11, array.IncrementAndGet(0L));
+            Equal(10, array.DecrementAndGet(0L));
+            array.VolatileWrite(0L, 20);
+            True(array.CompareAndSet(0L, 20, 30));
+            Equal(30, array.VolatileRead(0L));
+            False(array.CompareAndSet(0L, 20, 50));
+            Equal(30, array.VolatileRead(0L));
+            Equal(80, array.Add(0L, 50));
+            Equal(80, array.VolatileRead(0L));
+            Equal(80, array.GetAndAccumulate(0L, 10, (x, y) => x + y));
+            Equal(90, array.VolatileRead(0L));
+            Equal(10, array.AccumulateAndGet(0L, 80, (x, y) => x - y));
+            Equal(10, array.VolatileRead(0L));
+            Equal(10, array.GetAndSet(0L, 25));
+            Equal(25, array.VolatileRead(0L));
+            Equal(42, array.UpdateAndGet(0L, current => 42));
+            Equal(42, array.GetAndUpdate(0L, current => 52));
+            Equal(52, array.VolatileRead(0L));
+        }
+
+        [Fact]
         public static void AtomicLongTest()
         {
             var i = 10L;
@@ -112,6 +184,30 @@ namespace DotNext.Threading
         }
 
         [Fact]
+        public static void AtomicLongArray()
+        {
+            long[] array = { 10L };
+            Equal(11L, array.IncrementAndGet(0L));
+            Equal(10L, array.DecrementAndGet(0L));
+            array.VolatileWrite(0L, 20L);
+            True(array.CompareAndSet(0L, 20L, 30L));
+            Equal(30L, array.VolatileRead(0L));
+            False(array.CompareAndSet(0L, 20L, 50L));
+            Equal(30L, array.VolatileRead(0L));
+            Equal(80L, array.Add(0L, 50L));
+            Equal(80L, array.VolatileRead(0L));
+            Equal(80L, array.GetAndAccumulate(0L, 10L, (x, y) => x + y));
+            Equal(90L, array.VolatileRead(0L));
+            Equal(10L, array.AccumulateAndGet(0L, 80L, (x, y) => x - y));
+            Equal(10L, array.VolatileRead(0L));
+            Equal(10L, array.GetAndSet(0L, 25L));
+            Equal(25L, array.VolatileRead(0L));
+            Equal(42L, array.UpdateAndGet(0L, current => 42L));
+            Equal(42L, array.GetAndUpdate(0L, current => 52L));
+            Equal(52L, array.VolatileRead(0L));
+        }
+
+        [Fact]
         public static void AtomicReferenceTest()
         {
             var stref = new AtomicReference<string>("");
@@ -127,12 +223,16 @@ namespace DotNext.Threading
             Equal("Hello", stref.SetIfNull(() => "Hello"));
             Equal("Hello", stref.SetIfNull(() => ""));
             Equal("Hello", stref.Value);
+            Equal("Hello", stref.ToString());
+            Equal("Hello".GetHashCode(), stref.GetHashCode());
         }
 
         [Fact]
         public static void AtomicBooleanTest()
         {
             var value = new AtomicBoolean(false);
+            False(value.Equals(true));
+            True(value.Equals(false));
             True(value.FalseToTrue());
             False(value.FalseToTrue());
             True(value.TrueToFalse());
@@ -142,16 +242,69 @@ namespace DotNext.Threading
             False(value.Value);
             value.Value = true;
             True(value.Value);
+            True(value.GetAndSet(false));
+            False(value.Value);
+            True(value.SetAndGet(true));
+            True(value.Value);
+            Equal(bool.TrueString, value.ToString());
+            True(value.GetAndAccumulate(false, (current, update) =>
+            {
+                True(current);
+                False(update);
+                return current & update;
+            }));
+            False(value.Value);
+            True(value.AccumulateAndGet(true, (current, update) => current | update));
+            True(value.Value);
+            True(value.GetAndUpdate(x => !x));
+            False(value.Value);
+            True(value.UpdateAndGet(x => !x));
+            True(value.Value);
+        }
+
+        [Fact]
+        public static void Serialization()
+        {
+            True(SerializeDeserialize(new AtomicBoolean(true)).Value);
+            Equal("Frank Underwood", SerializeDeserialize(new AtomicReference<string>("Frank Underwood")).Value);
+            Equal(EnvironmentVariableTarget.Machine, SerializeDeserialize(new AtomicEnum<EnvironmentVariableTarget>(EnvironmentVariableTarget.Machine)).Value);
         }
 
         [Fact]
         public static void AtomicEnumTest()
         {
             var value = new AtomicEnum<EnvironmentVariableTarget>();
+            True(value.Equals(EnvironmentVariableTarget.Process));
+            False(value.Equals(EnvironmentVariableTarget.User));
             Equal(EnvironmentVariableTarget.Process, value.Value);
             Equal(EnvironmentVariableTarget.Process, value.GetAndSet(EnvironmentVariableTarget.Machine));
             Equal(EnvironmentVariableTarget.Machine, value.Value);
             Equal(EnvironmentVariableTarget.Machine, value.GetAndUpdate(x => EnvironmentVariableTarget.User));
+            Equal(EnvironmentVariableTarget.User, value.Value);
+            Equal(EnvironmentVariableTarget.User.ToString(), value.ToString());
+            value.Value = EnvironmentVariableTarget.Process;
+            Equal(EnvironmentVariableTarget.Machine, value.SetAndGet(EnvironmentVariableTarget.Machine));
+            Equal(EnvironmentVariableTarget.Machine, value.Value);
+            Equal(EnvironmentVariableTarget.User, value.UpdateAndGet(x =>
+            {
+                Equal(EnvironmentVariableTarget.Machine, x);
+                return EnvironmentVariableTarget.User;
+            }));
+            value.Value = EnvironmentVariableTarget.Process;
+            Equal(EnvironmentVariableTarget.Process, value.GetAndAccumulate(EnvironmentVariableTarget.User, (current, update) =>
+            {
+                Equal(EnvironmentVariableTarget.Process, current);
+                Equal(EnvironmentVariableTarget.User, update);
+                return (int)current + update;
+            }));
+            Equal(EnvironmentVariableTarget.User, value.Value);
+            value.Value = EnvironmentVariableTarget.Process;
+            Equal(EnvironmentVariableTarget.User, value.AccumulateAndGet(EnvironmentVariableTarget.User, (current, update) =>
+            {
+                Equal(EnvironmentVariableTarget.Process, current);
+                Equal(EnvironmentVariableTarget.User, update);
+                return (int)current + update;
+            }));
             Equal(EnvironmentVariableTarget.User, value.Value);
         }
 
@@ -175,6 +328,28 @@ namespace DotNext.Threading
             Equal(new IntPtr(42), i.UpdateAndGet(current => new IntPtr(42)));
             Equal(new IntPtr(42), i.GetAndUpdate(current => new IntPtr(52)));
             Equal(new IntPtr(52), i);
+        }
+
+        [Fact]
+        public static void AtomicIntPtrArray()
+        {
+            IntPtr[] array = { new IntPtr(10) };
+            Equal(new IntPtr(11), array.IncrementAndGet(0L));
+            Equal(new IntPtr(10), array.DecrementAndGet(0L));
+            array.VolatileWrite(0L, new IntPtr(20));
+            True(array.CompareAndSet(0L, new IntPtr(20), new IntPtr(30)));
+            Equal(new IntPtr(30), array.VolatileRead(0L));
+            False(array.CompareAndSet(0L, new IntPtr(20), new IntPtr(50)));
+            Equal(new IntPtr(30), array.VolatileRead(0L));
+            Equal(new IntPtr(30), array.GetAndAccumulate(0L, new IntPtr(60), (x, y) => x + y.ToInt32()));
+            Equal(new IntPtr(90), array.VolatileRead(0L));
+            Equal(new IntPtr(10), array.AccumulateAndGet(0L, new IntPtr(80), (x, y) => x - y.ToInt32()));
+            Equal(new IntPtr(10), array.VolatileRead(0L));
+            Equal(new IntPtr(10), array.GetAndSet(0L, new IntPtr(25)));
+            Equal(new IntPtr(25), array.VolatileRead(0L));
+            Equal(new IntPtr(42), array.UpdateAndGet(0L, current => new IntPtr(42)));
+            Equal(new IntPtr(42), array.GetAndUpdate(0L, current => new IntPtr(52)));
+            Equal(new IntPtr(52), array.VolatileRead(0L));
         }
 
         private enum LongEnum : long

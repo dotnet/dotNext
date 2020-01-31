@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -37,6 +38,41 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        Task<bool> Wait(TimeSpan timeout, CancellationToken token);
+        Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token);
+    }
+
+    /// <summary>
+    /// Represents various extension methods for types implementing <see cref="IAsyncEvent"/> interface.
+    /// </summary>
+    public static class AsyncEvent
+    {
+        /// <summary>
+        /// Turns caller into idle state until the current event is set. 
+        /// </summary>
+        /// <param name="event">An event to synchronize with.</param>
+        /// <param name="timeout">The interval to wait for the signaled state.</param>
+        /// <returns><see langword="true"/> if signaled state was set; otherwise, <see langword="false"/>.</returns>
+        public static Task<bool> WaitAsync(this IAsyncEvent @event, TimeSpan timeout) => @event.WaitAsync(timeout, CancellationToken.None);
+
+        /// <summary>
+        /// Turns caller into idle state until the current event is set. 
+        /// </summary>
+        /// <remarks>
+        /// This method can potentially blocks execution of async flow infinitely.
+        /// </remarks>
+        /// <param name="event">An event to synchronize with.</param>
+        /// <param name="token">The token that can be used to abort wait process.</param>
+        /// <returns>A promise of signaled state.</returns>
+        public static Task WaitAsync(this IAsyncEvent @event, CancellationToken token) => @event.WaitAsync(InfiniteTimeSpan, token);
+
+        /// <summary>
+        /// Turns caller into idle state until the current event is set. 
+        /// </summary>
+        /// <remarks>
+        /// This method can potentially blocks execution of async flow infinitely.
+        /// </remarks>
+        /// <param name="event">An event to synchronize with.</param>
+        /// <returns>A promise of signaled state.</returns>
+        public static Task WaitAsync(this IAsyncEvent @event) => @event.WaitAsync(CancellationToken.None);
     }
 }

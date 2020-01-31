@@ -1,14 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace DotNext.Reflection
 {
     [ExcludeFromCodeCoverage]
-    public sealed class TypeExtensionsTests : Assert
+    public sealed class TypeExtensionsTests : Test
     {
         public sealed class MyList : List<string>
         {
@@ -38,22 +36,6 @@ namespace DotNext.Reflection
         {
             Equal(typeof(string), typeof(MyList).GetItemType(out var enumerable));
             Equal(typeof(IEnumerable<string>), enumerable);
-        }
-
-        private static void GenericMethod<T>(T arg, int i)
-        {
-
-        }
-
-        [Fact]
-        public static void GetGenericMethod()
-        {
-            var method = typeof(Task).GetMethod(nameof(Task.FromException), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 0, typeof(Exception));
-            NotNull(method);
-            method = typeof(Task).GetMethod(nameof(Task.FromException), BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, typeof(Exception));
-            NotNull(method);
-            method = typeof(TypeExtensionsTests).GetMethod(nameof(GenericMethod), BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly, 1, null, typeof(int));
-            NotNull(method);
         }
 
         private struct ManagedStruct
@@ -101,6 +83,32 @@ namespace DotNext.Reflection
             Equal("abc", typeof(string).Cast("abc"));
             Throws<InvalidCastException>(() => typeof(int).Cast(null));
             Throws<InvalidCastException>(() => typeof(int).Cast("abc"));
+        }
+
+        [Fact]
+        public static void Devirtualization()
+        {
+            var toStringMethod = typeof(object).GetMethod(nameof(ToString));
+            var overriddenMethod = typeof(string).Devirtualize(toStringMethod);
+            NotEqual(toStringMethod, overriddenMethod);
+            Equal(typeof(string), overriddenMethod.DeclaringType);
+        }
+
+        [Fact]
+        public static void IntefaceMethodResolution()
+        {
+            var toInt32Method = typeof(IConvertible).GetMethod(nameof(IConvertible.ToInt32));
+            var overriddenMethod = typeof(int).Devirtualize(toInt32Method);
+            NotEqual(toInt32Method, overriddenMethod);
+            Equal(typeof(int), overriddenMethod.DeclaringType);
+        }
+
+        [Fact]
+        public static void EqualsMethodResolution()
+        {
+            var getTypeMethod = typeof(object).GetMethod(nameof(GetType));
+            var overriddenMethod = typeof(string).Devirtualize(getTypeMethod);
+            Equal(getTypeMethod, overriddenMethod);
         }
     }
 }

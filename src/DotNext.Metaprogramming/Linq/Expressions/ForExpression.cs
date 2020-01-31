@@ -47,9 +47,9 @@ namespace DotNext.Linq.Expressions
 
             private readonly LabelTarget continueLabel, breakLabel;
             private readonly Expression initialization;
-            private Iteration iteration;
-            private Condition condition;
-            private Statement body;
+            private Iteration? iteration;
+            private Condition? condition;
+            private Statement? body;
 
             internal LoopBuilder(Expression initialization)
             {
@@ -97,11 +97,11 @@ namespace DotNext.Linq.Expressions
             LabelTarget ILoopLabels.BreakLabel => breakLabel;
             LabelTarget ILoopLabels.ContinueLabel => continueLabel;
 
-            Expression IBuilder.MakeCondition(ParameterExpression loopVar) => condition(loopVar);
+            Expression IBuilder.MakeCondition(ParameterExpression loopVar) => condition is null ? Constant(true) : condition(loopVar);
 
-            Expression IBuilder.MakeIteration(ParameterExpression loopVar) => iteration(loopVar);
+            Expression IBuilder.MakeIteration(ParameterExpression loopVar) => iteration is null ? Empty() : iteration(loopVar);
 
-            Expression IBuilder.MakeBody(ParameterExpression loopVar) => body(loopVar, continueLabel, breakLabel);
+            Expression IBuilder.MakeBody(ParameterExpression loopVar) => body is null ? Empty() : body(loopVar, continueLabel, breakLabel);
 
             /// <summary>
             /// Constructs a new instance of <see cref="ForExpression"/>.
@@ -110,7 +110,7 @@ namespace DotNext.Linq.Expressions
             public ForExpression Build() => new ForExpression(initialization, this);
         }
 
-        private Expression body;
+        private Expression? body;
 
         internal ForExpression(Expression initialization, LabelTarget continueLabel, LabelTarget breakLabel, LoopBuilder.Condition condition)
         {

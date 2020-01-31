@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext
 {
@@ -32,10 +33,12 @@ namespace DotNext
         /// <returns>Allocated data slot.</returns>
         public static UserDataSlot<V> Allocate() => new UserDataSlot<V>(UserDataSlot.NewId);
 
-        internal V GetUserData(IDictionary<long, object> storage, V defaultValue)
+        [return: NotNullIfNotNull("defaultValue")]
+        [return: MaybeNull]
+        internal V GetUserData(IDictionary<long, object?> storage, [AllowNull]V defaultValue)
             => storage.TryGetValue(id, out var userData) && userData is V result ? result : defaultValue;
 
-        internal bool GetUserData(IDictionary<long, object> storage, out V userData)
+        internal bool GetUserData(IDictionary<long, object?> storage, [NotNullWhen(true)]out V userData)
         {
             if (storage.TryGetValue(id, out var value) && value is V typedValue)
             {
@@ -44,12 +47,12 @@ namespace DotNext
             }
             else
             {
-                userData = default;
+                userData = default!;
                 return false;
             }
         }
 
-        internal void SetUserData(IDictionary<long, object> storage, V userData)
+        internal void SetUserData(IDictionary<long, object?> storage, V userData)
         {
             if (id == 0)
                 throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot);
@@ -57,7 +60,7 @@ namespace DotNext
                 storage[id] = userData;
         }
 
-        internal bool RemoveUserData(IDictionary<long, object> storage)
+        internal bool RemoveUserData(IDictionary<long, object?> storage)
             => storage.Remove(id);
 
         /// <summary>
@@ -72,7 +75,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other data slot to check.</param>
         /// <returns><see langword="true"/> if both data slots identifies the same data key.</returns>
-        public override bool Equals(object other) => other is UserDataSlot<V> slot && Equals(slot);
+        public override bool Equals(object? other) => other is UserDataSlot<V> slot && Equals(slot);
 
         /// <summary>
         /// Computes hash code for this data slot.

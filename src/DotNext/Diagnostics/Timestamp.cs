@@ -58,7 +58,7 @@ namespace DotNext.Diagnostics
         /// </summary>
         /// <param name="other">The timestamp to compare.</param>
         /// <returns><see langword="true"/> if this timestamp is equal to <paramref name="other"/>; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object other) => other is Timestamp stamp && Equals(stamp);
+        public override bool Equals(object? other) => other is Timestamp stamp && Equals(stamp);
 
         /// <summary>
         /// Computes hash code for this timestamp.

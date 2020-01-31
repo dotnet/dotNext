@@ -9,7 +9,7 @@ namespace DotNext.Metaprogramming
         public TryBuilder Build(Action scope)
         {
             scope();
-            return new TryBuilder(Build(), Parent);
+            return new TryBuilder(Build(), Parent ?? throw new InvalidOperationException());
         }
     }
 }

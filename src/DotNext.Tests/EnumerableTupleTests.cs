@@ -6,7 +6,7 @@ using Xunit;
 namespace DotNext
 {
     [ExcludeFromCodeCoverage]
-    public sealed class EnumerableTupleTests : Assert
+    public sealed class EnumerableTupleTests : Test
     {
         [Fact]
         public static void DefaultEnumerableTuple()
@@ -154,6 +154,15 @@ namespace DotNext
             Contains(50M, array);
             Contains(60M, array);
             Contains(70M, array);
+        }
+
+        [Fact]
+        public static void CopyToMemory()
+        {
+            Span<decimal> values = new decimal[2];
+            Equal(2, (10M, 20M, 30M).AsEnumerable().CopyTo(values));
+            Equal(10M, values[0]);
+            Equal(20M, values[1]);
         }
     }
 }

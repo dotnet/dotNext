@@ -21,5 +21,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         internal static void UnhandledException(this ILogger logger, Exception e)
             => logger.LogError(e, Resources.GetString("UnhandledException"));
+
+        internal static void FailedToRouteMessage(this ILogger logger, string messageName, Exception e)
+            => logger.LogInformation(e, Resources.GetString("FailedToRouteMessage"), messageName);
     }
 }

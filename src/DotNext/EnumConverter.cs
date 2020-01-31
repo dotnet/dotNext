@@ -6,6 +6,7 @@ using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static System.Globalization.CultureInfo;
 using CallSiteDescr = InlineIL.StandAloneMethodSig;
+using M = InlineIL.MethodRef;
 
 namespace DotNext
 {
@@ -17,65 +18,44 @@ namespace DotNext
 
         static EnumConverter()
         {
-            string conversionMethod;
-            switch (Type.GetTypeCode(typeof(O)))
+            var conversionMethod = (Type.GetTypeCode(typeof(O))) switch
             {
-                default:
-                    conversionMethod = "<unknown>";
-                    break;
-                case TypeCode.Byte:
-                    conversionMethod = nameof(System.Convert.ToByte);
-                    break;
-                case TypeCode.SByte:
-                    conversionMethod = nameof(System.Convert.ToSByte);
-                    break;
-                case TypeCode.Int16:
-                    conversionMethod = nameof(System.Convert.ToInt16);
-                    break;
-                case TypeCode.UInt16:
-                    conversionMethod = nameof(System.Convert.ToUInt16);
-                    break;
-                case TypeCode.Int32:
-                    conversionMethod = nameof(System.Convert.ToInt32);
-                    break;
-                case TypeCode.UInt32:
-                    conversionMethod = nameof(System.Convert.ToUInt32);
-                    break;
-                case TypeCode.Int64:
-                    conversionMethod = nameof(System.Convert.ToInt64);
-                    break;
-                case TypeCode.UInt64:
-                    conversionMethod = nameof(System.Convert.ToUInt64);
-                    break;
-                case TypeCode.Boolean:
-                    conversionMethod = nameof(System.Convert.ToBoolean);
-                    break;
-                case TypeCode.Single:
-                    conversionMethod = nameof(System.Convert.ToSingle);
-                    break;
-                case TypeCode.Double:
-                    conversionMethod = nameof(System.Convert.ToDouble);
-                    break;
-                case TypeCode.Char:
-                    conversionMethod = nameof(System.Convert.ToChar);
-                    break;
-                case TypeCode.Decimal:
-                    conversionMethod = nameof(System.Convert.ToDecimal);
-                    break;
-                case TypeCode.DateTime:
-                    conversionMethod = nameof(System.Convert.ToDateTime);
-                    break;
-            }
+                TypeCode.Byte => nameof(System.Convert.ToByte),
+                TypeCode.SByte => nameof(System.Convert.ToSByte),
+                TypeCode.Int16 => nameof(System.Convert.ToInt16),
+                TypeCode.UInt16 => nameof(System.Convert.ToUInt16),
+                TypeCode.Int32 => nameof(System.Convert.ToInt32),
+                TypeCode.UInt32 => nameof(System.Convert.ToUInt32),
+                TypeCode.Int64 => nameof(System.Convert.ToInt64),
+                TypeCode.UInt64 => nameof(System.Convert.ToUInt64),
+                TypeCode.Boolean => nameof(System.Convert.ToBoolean),
+                TypeCode.Single => nameof(System.Convert.ToSingle),
+                TypeCode.Double => nameof(System.Convert.ToDouble),
+                TypeCode.Char => nameof(System.Convert.ToChar),
+                TypeCode.Decimal => nameof(System.Convert.ToDecimal),
+                TypeCode.DateTime => nameof(System.Convert.ToDateTime),
+                _ => "<unknown>",
+            };
             var type = typeof(I);
             if (type.IsEnum)
                 type = type.GetEnumUnderlyingType();
             //find conversion method using Reflection
-            var method = typeof(Convert).GetMethod(conversionMethod, new[] { type }) ?? new Func<I, O>(ConvertSlow).Method;
+            var method = typeof(Convert).GetMethod(conversionMethod, new[] { type }) ?? MethodBase.GetMethodFromHandle(ConvertSlowMethodHandle);
             Debug.Assert(method.IsStatic & method.IsPublic);
             converter = method.MethodHandle.GetFunctionPointer();
         }
 
         private static O ConvertSlow(I value) => (O)value.ToType(typeof(O), CurrentCulture);
+
+        private static RuntimeMethodHandle ConvertSlowMethodHandle
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                Ldtoken(new M(typeof(EnumConverter<I, O>), nameof(ConvertSlow), typeof(I)));
+                return Return<RuntimeMethodHandle>();
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static O Convert(I value)

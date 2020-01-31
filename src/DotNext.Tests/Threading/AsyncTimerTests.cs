@@ -9,7 +9,7 @@ namespace DotNext.Threading
     using TrueTask = Tasks.CompletedTask<bool, Generic.BooleanConst.True>;
 
     [ExcludeFromCodeCoverage]
-    public sealed class AsyncTimerTests : Assert
+    public sealed class AsyncTimerTests : Test
     {
         private sealed class Counter : EventWaitHandle
         {
@@ -31,20 +31,18 @@ namespace DotNext.Threading
         [Fact]
         public static async Task StartStopAsync()
         {
-            using (var counter = new Counter())
-            using (var timer = new AsyncTimer(counter.Run))
-            {
-                True(timer.Start(TimeSpan.FromMilliseconds(10)));
-                counter.WaitOne(10_000);
-                True(timer.IsRunning);
-                False(await timer.StopAsync());
-                False(timer.IsRunning);
-                var currentValue = counter.Value;
-                True(currentValue > 0);
-                //ensure that timer is no more executing
-                await Task.Delay(100);
-                Equal(currentValue, counter.Value);
-            }
+            using var counter = new Counter();
+            using var timer = new AsyncTimer(counter.Run);
+            True(timer.Start(TimeSpan.FromMilliseconds(10)));
+            True(counter.WaitOne(DefaultTimeout));
+            True(timer.IsRunning);
+            False(await timer.StopAsync());
+            False(timer.IsRunning);
+            var currentValue = counter.Value;
+            True(currentValue > 0);
+            //ensure that timer is no more executing
+            await Task.Delay(100);
+            Equal(currentValue, counter.Value);
         }
     }
 }
