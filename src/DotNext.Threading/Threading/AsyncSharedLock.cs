@@ -171,7 +171,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <exception cref="SynchronizationLockException">The caller has not entered the lock.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void Downgrade()
         {
             ThrowIfDisposed();
