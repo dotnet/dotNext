@@ -72,6 +72,7 @@ namespace DotNext.Threading.Channels
             }
             using (var channel = new SerializationChannel<Guid>(options))
             {
+                Equal(2L, channel.RemainingCount);
                 Equal(g2, await channel.Reader.ReadAsync());
                 Equal(g3, await channel.Reader.ReadAsync());
             }
