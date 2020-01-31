@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 01-XX-2020
+# 01-31-2020
 Major release of version 2.0 is completely finished and contains polished existing and new API. All libraries in .NEXT family are upgraded. Migration guide for 1.x users is [here](https://sakno.github.io/dotNext/migration/1.html). Please consider that this version is not fully backward compatible with 1.x.
 
 Major version is here for the following reasons:
