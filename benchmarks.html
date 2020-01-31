@@ -8,7 +8,7 @@
     <title>Benchmarks | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Benchmarks | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="fav.ico">
     <link rel="stylesheet" href="styles/docfx.vendor.css">
@@ -74,11 +74,11 @@
 <tbody>
 <tr>
 <td>Host</td>
-<td>.NET Core 2.2.7 (CoreCLR 4.6.28008.02, CoreFX 4.6.28008.03), 64bit RyuJIT</td>
+<td>.NET Core 3.1.1 (CoreCLR 4.700.19.60701, CoreFX 4.700.19.60801), 64bit RyuJIT</td>
 </tr>
 <tr>
 <td>Job</td>
-<td>.NET Core 2.2.7 (CoreCLR 4.6.28008.02, CoreFX 4.6.28008.03), 64bit RyuJIT</td>
+<td>.NET Core 3.1.1 (CoreCLR 4.700.19.60701, CoreFX 4.700.19.60801), 64bit RyuJIT</td>
 </tr>
 <tr>
 <td>LaunchCount</td>
@@ -90,7 +90,7 @@
 </tr>
 <tr>
 <td>OS</td>
-<td>Ubuntu 18.04.2</td>
+<td>Ubuntu 18.04.3</td>
 </tr>
 <tr>
 <td>CPU</td>
@@ -114,8 +114,63 @@
 </tr>
 </tbody>
 </table>
+<p>You can run benchmarks using <code>Bench</code> build configuration as follows:</p>
+<pre><code class="lang-bash">cd &lt;dotnext-clone-path&gt;/DotNext.Benchmarks
+dotnet run -c Bench
+</code></pre>
 <h1 id="bitwise-equality">Bitwise Equality</h1>
 <p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="api/DotNext.BitwiseComparer-1.html">BitwiseComparer&lt;T&gt;.Equals</a> with overloaded equality <code>==</code> operator. Testing data types: <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> and custom value type with multiple fields.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>BitwiseComparer&lt;Guid&gt;.Equals</code></td>
+<td>3.4263 ns</td>
+<td>0.0101 ns</td>
+<td>0.0089 ns</td>
+</tr>
+<tr>
+<td><code>Guid.Equals</code></td>
+<td>11.5436 ns</td>
+<td>0.0186 ns</td>
+<td>0.0165 ns</td>
+</tr>
+<tr>
+<td><code>ReadOnlySpan.SequenceEqual</code> for <code>Guid</code></td>
+<td>3.7136 ns</td>
+<td>0.0270 ns</td>
+<td>0.0240 ns</td>
+</tr>
+<tr>
+<td><code>BitwiseComparer&lt;LargeStruct&gt;.Equals</code></td>
+<td>14.4231 ns</td>
+<td>0.0389 ns</td>
+<td>0.0364 ns</td>
+</tr>
+<tr>
+<td><code>LargeStruct.Equals</code></td>
+<td>43.1880 ns</td>
+<td>0.1217 ns</td>
+<td>0.0950 ns</td>
+</tr>
+<tr>
+<td><code>ReadOnlySpan.SequenceEqual</code> for <code>LargeStruct</code></td>
+<td>23.9918 ns</td>
+<td>0.0375 ns</td>
+<td>0.0313 ns</td>
+</tr>
+</tbody>
+</table>
+<p>Bitwise equality method has the better performance than field-by-field equality check because <code>BitwiseEquals</code> utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD. Additionally, it uses <a href="https://en.wikipedia.org/wiki/Data_structure_alignment">aligned memory access</a> in constrast to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal">SequenceEqual</a> method.</p>
+<h1 id="equality-of-arrays">Equality of Arrays</h1>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__">ReadOnlySpan.SequenceEqual</a>, <a href="api/DotNext.OneDimensionalArray.html">OneDimensionalArray.BitwiseEquals</a> and manual equality check between two arrays using <code>for</code> loop. The benchmark is applied to the array of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> elements.</p>
 <table>
 <thead>
 <tr>
@@ -128,98 +183,46 @@
 </thead>
 <tbody>
 <tr>
-<td><code>BitwiseComparer&lt;Guid&gt;.Equals</code></td>
-<td>8.327 ns</td>
-<td>0.0260 ns</td>
-<td>0.0243 ns</td>
-<td>8.326 ns</td>
-</tr>
-<tr>
-<td><code>Guid.Equals</code></td>
-<td>12.155 ns</td>
-<td>0.0492 ns</td>
-<td>0.0411 ns</td>
-<td>12.152 ns</td>
-</tr>
-<tr>
-<td><code>ReadOnlySpan.SequenceEqual</code> for <code>Guid</code></td>
-<td>12.680 ns</td>
-<td>0.1956 ns</td>
-<td>0.1830 ns</td>
-<td>12.625 ns</td>
-</tr>
-<tr>
-<td><code>BitwiseComparer&lt;LargeStruct&gt;.Equals</code></td>
-<td>14.243 ns</td>
-<td>0.3126 ns</td>
-<td>0.4582 ns</td>
-<td>14.000 ns</td>
-</tr>
-<tr>
-<td><code>LargeStruct.Equals</code></td>
-<td>50.952 ns</td>
-<td>0.3261 ns</td>
-<td>0.3050 ns</td>
-<td>50.936 ns</td>
-</tr>
-<tr>
-<td><code>ReadOnlySpan.SequenceEqual</code> for <code>LargeStruct</code></td>
-<td>35.171 ns</td>
-<td>0.2531 ns</td>
-<td>0.2244 ns</td>
-<td>35.110 ns</td>
-</tr>
-</tbody>
-</table>
-<p>Bitwise equality method has the better performance than field-by-field equality check because <code>BitwiseEquals</code> utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD. Additionally, it uses <a href="https://en.wikipedia.org/wiki/Data_structure_alignment">aligned memory access</a> in constrast to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal">SequenceEqual</a> method.</p>
-<h1 id="equality-of-arrays">Equality of Arrays</h1>
-<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs">This benchmark</a> compares performance of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__">ReadOnlySpan.SequenceEqual</a>, <a href="api/DotNext.OneDimensionalArray.html">OneDimensionalArray.BitwiseEquals</a> and manual equality check between two arrays using <code>for</code> loop. The benchmark is applied to the array of <a href="https://docs.microsoft.com/en-us/dotnet/api/system.guid">Guid</a> elements.</p>
-<p><code>SequenceEqual</code> requires that array element type should implement <a href="https://docs.microsoft.com/en-us/dotnet/api/system.iequatable-1">IEquatable&lt;T&gt;</a> interface and calls <code>Equals(T other)</code> for each element.</p>
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>Mean</th>
-<th>Error</th>
-<th>StdDev</th>
-</tr>
-</thead>
-<tbody>
-<tr>
 <td><code>Guid[].BitwiseEquals</code>, small arrays (~10 elements)</td>
-<td>10.66 ns</td>
-<td>0.2459 ns</td>
-<td>0.5397 ns</td>
+<td>9.598 ns</td>
+<td>0.0664 ns</td>
+<td>0.0588 ns</td>
+<td>9.583 ns</td>
 </tr>
 <tr>
 <td><code>ReadOnlySpan&lt;Guid&gt;.SequenceEqual</code>, small arrays (~10 elements)</td>
-<td>34.89 ns</td>
-<td>0.6313 ns</td>
-<td>0.5272 ns</td>
+<td>43.881 ns</td>
+<td>0.9075 ns</td>
+<td>1.0803 ns</td>
+<td>43.154 ns</td>
 </tr>
 <tr>
 <td><code>for</code> loop, small arrays (~10 elements)</td>
-<td>65.20 ns</td>
-<td>1.3086 ns</td>
-<td>1.2853 ns</td>
+<td>59.514 ns</td>
+<td>0.1883 ns</td>
+<td>0.1762 ns</td>
+<td>59.414 ns</td>
 </tr>
 <tr>
 <td><code>Guid[].BitwiseEquals</code>, large arrays (~100 elements)</td>
-<td>50.82 ns</td>
-<td>1.0471 ns</td>
-<td>1.9408 ns</td>
+<td>53.360 ns</td>
+<td>1.0054 ns</td>
+<td>0.8912 ns</td>
+<td>53.167 ns</td>
 </tr>
 <tr>
 <td><code>ReadOnlySpan&lt;Guid&gt;.SequenceEqual</code>, large arrays (~100 elements)</td>
-<td>339.25 ns</td>
-<td>6.6708 ns</td>
-<td>12.8525 ns</td>
+<td>422.073 ns</td>
+<td>8.3324 ns</td>
+<td>12.2135 ns</td>
+<td>418.354 ns</td>
 </tr>
 <tr>
 <td><code>for</code> loop, large arrays (~100 elements)</td>
-<td>584.56 ns</td>
-<td>4.2687 ns</td>
-<td>3.9930 ns</td>
+<td>627.617 ns</td>
+<td>17.9460 ns</td>
+<td>19.9470 ns</td>
+<td>622.371 ns</td>
 </tr>
 </tbody>
 </table>
@@ -233,41 +236,117 @@
 <th>Mean</th>
 <th>Error</th>
 <th>StdDev</th>
-<th>Median</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>Guid.GetHashCode</code></td>
-<td>2.637 ns</td>
-<td>0.0121 ns</td>
-<td>0.0101 ns</td>
-<td></td>
+<td>1.870 ns</td>
+<td>0.0812 ns</td>
+<td>0.1712 ns</td>
 </tr>
 <tr>
 <td><code>BitwiseComparer&lt;Guid&gt;.GetHashCode</code></td>
-<td>6.924 ns</td>
-<td>0.0240 ns</td>
-<td>0.0225 ns</td>
-<td></td>
+<td>5.138 ns</td>
+<td>0.0207 ns</td>
+<td>0.0183 ns</td>
 </tr>
 <tr>
 <td><code>BitwiseComparer&lt;LargeStructure&gt;.GetHashCode</code></td>
-<td>23.206 ns</td>
-<td>0.4926 ns</td>
-<td>0.6743 ns</td>
-<td></td>
+<td>40.846 ns</td>
+<td>0.6004 ns</td>
+<td>0.5323 ns</td>
 </tr>
 <tr>
 <td><code>LargeStructure.GetHashCode</code></td>
-<td>51.915 ns</td>
-<td>0.0751 ns</td>
-<td>0.0666 ns</td>
-<td></td>
+<td>25.804 ns</td>
+<td>0.5559 ns</td>
+<td>1.1480 ns</td>
 </tr>
 </tbody>
 </table>
-<p>Bitwise hash code algorithm is very efficient for hashing of large value types.</p>
+<p>Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET Core 3.1 but still convenient in complex cases.</p>
+<h1 id="bytes-to-hex">Bytes to Hex</h1>
+<p><a href="https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/HexConversionBenchmark.cs">This benchmark</a> demonstrates performance of <code>DotNext.Span.ToHex</code> extension method that allows to convert arbitrary set of bytes into hexadecimal form. It is compatible with<code>Span&lt;T&gt;</code> data type in constrast to <a href="https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring">BitConverter.ToString</a> method.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Num of Bytes</th>
+<th>Mean</th>
+<th>Error</th>
+<th>StdDev</th>
+<th>Median</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BitConverter.ToString</td>
+<td>16 bytes</td>
+<td>72.82 ns</td>
+<td>0.999 ns</td>
+<td>0.935 ns</td>
+<td>72.73 ns</td>
+</tr>
+<tr>
+<td>Span.ToHex</td>
+<td>16 bytes</td>
+<td>73.89 ns</td>
+<td>1.947 ns</td>
+<td>2.793 ns</td>
+<td>72.58 ns</td>
+</tr>
+<tr>
+<td>BitConverter.ToString</td>
+<td>64 bytes</td>
+<td>242.10 ns</td>
+<td>4.837 ns</td>
+<td>8.344 ns</td>
+<td>243.52 ns</td>
+</tr>
+<tr>
+<td>Span.ToHex</td>
+<td>64 bytes</td>
+<td>138.36 ns</td>
+<td>0.364 ns</td>
+<td>0.340 ns</td>
+<td>138.35 ns</td>
+</tr>
+<tr>
+<td>BitConverter.ToString</td>
+<td>128 bytes</td>
+<td>478.27 ns</td>
+<td>10.011 ns</td>
+<td>22.801 ns</td>
+<td>469.93 ns</td>
+</tr>
+<tr>
+<td>Span.ToHex</td>
+<td>128 bytes</td>
+<td>229.66 ns</td>
+<td>5.328 ns</td>
+<td>6.928 ns</td>
+<td>228.63 ns</td>
+</tr>
+<tr>
+<td>BitConverter.ToString</td>
+<td>256 bytes</td>
+<td>863.94 ns</td>
+<td>4.009 ns</td>
+<td>3.554 ns</td>
+<td>864.84 ns</td>
+</tr>
+<tr>
+<td>Span.ToHex</td>
+<td>256 bytes</td>
+<td>388.91 ns</td>
+<td>2.488 ns</td>
+<td>2.078 ns</td>
+<td>388.09 ns</td>
+</tr>
+</tbody>
+</table>
+<p><code>Span.ToHex</code> demonstrates the best performance especially for large arrays.</p>
 <h1 id="fast-reflection">Fast Reflection</h1>
 <p>The next series of benchmarks demonstrate performance of strongly typed reflection provided by DotNext Reflection library.</p>
 <h2 id="property-getter">Property Getter</h2>
@@ -521,17 +600,24 @@
 <tbody>
 <tr>
 <td>Atomic</td>
-<td>494.2 us</td>
-<td>8.263 us</td>
-<td>71.95 us</td>
-<td>482.1 us</td>
+<td>333.4 us</td>
+<td>8.04 us</td>
+<td>76.01 us</td>
+<td>324.5 us</td>
 </tr>
 <tr>
 <td>Synchronized</td>
-<td>938.1 us</td>
-<td>7.746 us</td>
-<td>72.56 us</td>
-<td>926.9 us</td>
+<td>892.3 us</td>
+<td>7.64 us</td>
+<td>71.24 us</td>
+<td>884.0 us</td>
+</tr>
+<tr>
+<td>SpinLock</td>
+<td>1,756.7 us</td>
+<td>61.96 us</td>
+<td>589.24 us</td>
+<td>1,637.0 us</td>
 </tr>
 </tbody>
 </table>
@@ -544,51 +630,44 @@
 <th>Mean</th>
 <th>Error</th>
 <th>StdDev</th>
-<th>Median</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Instance method, regular delegate, has implicit <strong>this</strong></td>
-<td>3.042 ns</td>
-<td>0.0969 ns</td>
-<td>0.2842 ns</td>
-<td>2.880 ns</td>
+<td>0.9273 ns</td>
+<td>0.0072 ns</td>
+<td>0.0060 ns</td>
 </tr>
 <tr>
 <td>Instance method, Value Delegate, has implicit <strong>this</strong></td>
-<td>4.209 ns</td>
-<td>0.1174 ns</td>
-<td>0.1793 ns</td>
-<td>4.243 ns</td>
+<td>1.8824 ns</td>
+<td>0.0495 ns</td>
+<td>0.0463 ns</td>
 </tr>
 <tr>
 <td>Static method, regular delegate, large size of param type, no implicitly captured object</td>
-<td>20.651 ns</td>
-<td>0.1441 ns</td>
-<td>0.1277 ns</td>
-<td>20.650 ns</td>
+<td>14.5560 ns</td>
+<td>0.0440 ns</td>
+<td>0.0367 ns</td>
 </tr>
 <tr>
 <td>Static method, Value Delegate, large size of param type, no implicitly captured object</td>
-<td>27.066 ns</td>
-<td>0.2038 ns</td>
-<td>0.1807 ns</td>
-<td>27.046 ns</td>
+<td>15.7549 ns</td>
+<td>0.0731 ns</td>
+<td>0.0684 ns</td>
 </tr>
 <tr>
 <td>Static method, regular delegate, small size of param type, no implicitly captured object</td>
-<td>78.562 ns</td>
-<td>0.4298 ns</td>
-<td>0.3810 ns</td>
-<td>78.526 ns</td>
+<td>23.2037 ns</td>
+<td>0.3844 ns</td>
+<td>0.3408 ns</td>
 </tr>
 <tr>
 <td>Static method, Value Delegate, small size of param type, no implicitly captured object</td>
-<td>68.681 ns</td>
-<td>1.0735 ns</td>
-<td>0.9517 ns</td>
-<td>68.466 ns</td>
+<td>21.8213 ns</td>
+<td>0.1073 ns</td>
+<td>0.0896 ns</td>
 </tr>
 </tbody>
 </table>
@@ -607,7 +686,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/benchmarks.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/benchmarks.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

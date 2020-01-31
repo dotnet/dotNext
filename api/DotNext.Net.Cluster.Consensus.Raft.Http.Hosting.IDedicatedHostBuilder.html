@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface IDedicatedHostBuilder
    | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -76,12 +76,18 @@
   <div class="markdown level0 summary"><p>Allows to configure separated web host for Raft.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.hosting.ihostingstartup.configure#Microsoft_AspNetCore_Hosting_IHostingStartup_Configure_Microsoft_AspNetCore_Hosting_IWebHostBuilder_">IHostingStartup.Configure(IWebHostBuilder)</a>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.html">DotNext.Net.Cluster.Consensus.Raft.Http.Hosting</a></h6>
   <h6><strong>Assembly</strong>: DotNext.AspNetCore.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_IDedicatedHostBuilder_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
-public interface IDedicatedHostBuilder</code></pre>
+public interface IDedicatedHostBuilder : IHostingStartup</code></pre>
   </div>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_IDedicatedHostBuilder_remarks"><strong>Remarks</strong></h5>
   <div class="markdown level0 remarks"><p>The service implementing this interface should be registered
@@ -91,10 +97,10 @@ as singleton service in DI container.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_IDedicatedHostBuilder_Configure_Microsoft_AspNetCore_Builder_IApplicationBuilder_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_IDedicatedHostBuilder_Configure_Microsoft_AspNetCore_Builder_IApplicationBuilder_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/Hosting/IDedicatedHostBuilder.cs/#L27">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/Hosting/IDedicatedHostBuilder.cs/#L21">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_IDedicatedHostBuilder_Configure_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder.Configure*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_IDedicatedHostBuilder_Configure_Microsoft_AspNetCore_Builder_IApplicationBuilder_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder.Configure(Microsoft.AspNetCore.Builder.IApplicationBuilder)">Configure(IApplicationBuilder)</h4>
@@ -119,40 +125,6 @@ as singleton service in DI container.</p>
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.builder.iapplicationbuilder">IApplicationBuilder</a></td>
         <td><span class="parametername">builder</span></td>
         <td><p>The application builder.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_IDedicatedHostBuilder_Configure_Microsoft_AspNetCore_Hosting_IWebHostBuilder_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder.Configure(Microsoft.AspNetCore.Hosting.IWebHostBuilder)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/Hosting/IDedicatedHostBuilder.cs/#L21">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_IDedicatedHostBuilder_Configure_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder.Configure*"></a>
-  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_IDedicatedHostBuilder_Configure_Microsoft_AspNetCore_Hosting_IWebHostBuilder_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder.Configure(Microsoft.AspNetCore.Hosting.IWebHostBuilder)">Configure(IWebHostBuilder)</h4>
-  <div class="markdown level1 summary"><p>Configures web host dedicated for Raft.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">void Configure(IWebHostBuilder builder)</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.aspnetcore.hosting.iwebhostbuilder">IWebHostBuilder</a></td>
-        <td><span class="parametername">builder</span></td>
-        <td><p>The host builder.</p>
 </td>
       </tr>
     </tbody>
@@ -232,10 +204,10 @@ as singleton service in DI container.</p>
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_IDedicatedHostBuilder.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_IDedicatedHostBuilder.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/Hosting/IDedicatedHostBuilder.cs/#L14" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/Hosting/IDedicatedHostBuilder.cs/#L14" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

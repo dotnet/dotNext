@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Raft | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Raft | .NEXT ">
+    <meta name="generator" content="docfx 2.48.1.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="raft">Raft</h1>
+
+<p>This article describes details of Raft implementation provided by .NEXT library.</p>
+<h1 id="consensus">Consensus</h1>
+<p>Correctness of consensus algorithm is tighly coupled with Write-Ahead Log defined via <code>AuditTrail</code> property of <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IRaftCluster</a> interface or via Dependency Injection. If your application requires only consensus without replication of real data then <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.html">ConsensusOnlyState</a> implementation is used. Note that this implementation is used by default as well. It is lighweight and fast. However it doesn't store state on disk. Consider to use <a href="wal.html">persistent WAL</a> as fully-featured persistent log for Raft.</p>
+<h1 id="state-recovery">State Recovery</h1>
+<p>The underlying state machine can be reconstruced at application startup using <code>InitializeAsync</code> method provided by implementation of <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> interface. Usually, this method is called by .NEXT infrastructure automatically.</p>
+<p><a href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> class exposes <code>ReplayAsync</code> method to do this manually. Read more about persistent Write-Ahead Log for Raft <a href="wal.html">here</a>.</p>
+<h1 id="client-interaction">Client Interaction</h1>
+<p><a href="https://github.com/ongardie/dissertation/tree/master/clients">Chapter 6</a> of Diego's dissertation about Raft contains recommendations about interaction between external client and cluster nodes. Raft implementation provided by .NEXT doesn't implement client session control as described in paper. However, it offers all necessary tools for that:</p>
+<ol>
+<li><code>IPersistentState.EnsureConsistencyAsync</code> waits until last committed entry is from leader's term</li>
+<li><code>RaftCluster.ForceReplicationAsync</code> initiates a new round of heartbeats and waits for reply from majority of nodes</li>
+</ol>
+<p>Elimination of duplicate commands received from clients should be implemented manually because basic framework is not aware about underlying network transport.</p>
+<h1 id="how-to-implement-database">How To Implement Database</h1>
+<p>This section contains recommendations about implementation of your own database based on .NEXT Cluster programming model. It can be K/V database or something else.</p>
+<ol>
+<li>Derive from <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> class to implement core logic related to manipulation with state machine
+<ol>
+<li>Override <code>ApplyAsync</code> method which contains interpretation of commands contained in log entries</li>
+<li>Override <code>CreateSnapshot</code> method which is responsible for log compaction</li>
+<li>Expose high-level data operations declared in the derived class in the form of interface. Let's assume that its name is <code>IDataEngine</code></li>
+<li>Optionally override <code>FlushAsync</code> to handle notification from persistent log about the moment when batch modification completed</li>
+</ol>
+</li>
+<li>Declare class that is responsible for communication with leader node using custom messages
+<ol>
+<li>This class aggregates reference to <code>IDataEngine</code></li>
+<li>This class encapsulates logic for messaging with leader node</li>
+<li>This class acting as controller for API exposed to external clients</li>
+<li>Utilize <code>PersistentState.EnsureConsistencyAsync</code> and <code>RaftCluster.ForceReplicationAsync</code> methods for read-only operations</li>
+<li>Utilize <code>PersistentState.WaitForCommitAsync</code> for write operations</li>
+</ol>
+</li>
+<li>Expose data manipulation methods from class described above to clients using selected network transport</li>
+<li>Implement duplicates elimination logic for write requests from clients</li>
+<li>Call <code>ReplayAsync</code> method which is inherited from <code>PersistentState</code> class at application startup. This step is not need if you're using Raft implementation for ASP.NET Core.</li>
+</ol>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/cluster/raft.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>

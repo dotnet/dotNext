@@ -8,7 +8,7 @@
     <title>Structured Memory Access | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Structured Memory Access | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -85,14 +85,12 @@ memory.Span[0] = 42L;
 <pre><code class="lang-csharp">using DotNext.Buffers;
 
 using var block = UnmanagedMemoryPool&lt;double&gt;.Allocate(10); //block.Length == 10L
-{
-    Span&lt;double&gt; array = block.Memory.Span;
-    array[0] = 10;
-    array[1] = 30;
-    block.Reallocate(20);  //causes re-allocation of the array
-    array = memory.Memory.Span;
-    var i = array[0] + array[1];    //i == 40
-}
+Span&lt;double&gt; array = block.Memory.Span;
+array[0] = 10;
+array[1] = 30;
+block.Reallocate(20);  //causes re-allocation of the array
+array = memory.Memory.Span;
+var i = array[0] + array[1];    //i == 40
 </code></pre>
 <p><code>Reallocate</code> method accepts the new length of the array, not size in bytes.</p>
 <p>Memory span and typed pointer are not valid after re-allocation. You must ensure that consumers obtain a fresh version of there structures every time when working with unmanaged memory.</p>
@@ -123,7 +121,6 @@ using var memory = UnmanagedMemoryPool&lt;Complex&gt;.Allocate(1);
 ref Complex ptr = ref memory.Pointer.Value;
 ptr.Image = 20;
 ptr.Real = 30;
-}
 </code></pre>
 <p>Direct memory manipulations available using typed pointer:</p>
 <pre><code class="lang-csharp">using DotNext.Buffers;
@@ -140,7 +137,6 @@ Pointer&lt;double&gt; pImage = c.Pointer.As&lt;double&gt;();
 Pointer&lt;double&gt; pReal = pImage + 1;
 pImage.Value = 1;
 pReal.Value = 2;
-}
 </code></pre>
 <p>Byte-level manipulations can be organized in two ways:</p>
 <ol>
@@ -166,7 +162,7 @@ Pointer&lt;byte&gt; ptr = memory.Pointer.As&lt;byte&gt;();
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/features/unsafe/struct.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/unsafe/struct.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

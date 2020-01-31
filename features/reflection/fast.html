@@ -8,7 +8,7 @@
     <title>Fast Reflection | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Fast Reflection | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -152,10 +152,10 @@ tryParse(args);
 decimal v = args.result;    //v == 42M
 </code></pre>
 <h1 id="field">Field</h1>
-<p>Managed pointer to the static or instance field can obtained from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo">FieldInfo</a> using <code>Unreflect</code> extension method declared in <a href="../../api/DotNext.Reflection.Reflector.html">Reflector</a> class. This feature gives the power to work with field values using Reflection without performance loss.</p>
+<p>Static or instance field can obtained from <a href="https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo">FieldInfo</a> using <code>Unreflect</code> extension method declared in <a href="../../api/DotNext.Reflection.Reflector.html">Reflector</a> class. This feature gives the power to work with field values using Reflection without performance loss.</p>
 <div class="IMPORTANT">
 <h5>Important</h5>
-<p>Managed pointer to the field is mutable even if field is <strong>readonly</strong>. As a result, you can modify value of such field. It is responsibility of the developer to control access to read-only fields.</p>
+<p>Managed pointer to the field value is mutable even if field is <strong>readonly</strong>. As a result, you can modify value of such field. It is responsibility of the developer to control access to read-only fields.</p>
 </div>
 <p>This is not the only way to obtain direct access to the field. <a href="../../api/DotNext.Reflection.Field-1.html">Field&lt;V&gt;</a> and <a href="../../api/DotNext.Reflection.Field-2.html">Field&lt;T,V&gt;</a> that can be returned by <a href="../../api/DotNext.Reflection.Type-1.Field-1.html">Type&lt;T&gt;.Field&lt;T&gt;</a> provide access to static and field value respectively.</p>
 <p>The following example demonstrates how to obtain managed pointer to the static and instance fields:</p>
@@ -172,12 +172,12 @@ class MyClass
 }
 
 //change value of static field
-ref long staticField = typeof(MyClass).GetField(&quot;StaticField&quot;, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly).Unreflect&lt;long&gt;();
+ref long staticField = ref typeof(MyClass).GetField(&quot;StaticField&quot;, BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.DeclaredOnly).Unreflect&lt;long&gt;().Value;
 staticField = 42L;
 
 //change value of instance field
 var obj = new MyClass();
-ref string instanceField = obj.GetClass().GetField(&quot;instanceField&quot;, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly).Unreflect&lt;string&gt;(obj);
+ref string instanceField = ref obj.GetClass().GetField(&quot;instanceField&quot;, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly).Unreflect&lt;string&gt;()[obj];
 instanceField = &quot;Hello, world&quot;;
 </code></pre>
 <h1 id="performance">Performance</h1>
@@ -217,7 +217,7 @@ instanceField = &quot;Hello, world&quot;;
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/features/reflection/fast.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/reflection/fast.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

@@ -1,0 +1,562 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class RentedMemoryStream
+   | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class RentedMemoryStream
+   | .NEXT ">
+    <meta name="generator" content="docfx 2.48.1.0">
+    
+    <link rel="shortcut icon" href="../fav.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="DotNext.IO.RentedMemoryStream">
+  
+  
+  <h1 id="DotNext_IO_RentedMemoryStream" data-uid="DotNext.IO.RentedMemoryStream" class="text-break">Class RentedMemoryStream
+  </h1>
+  <div class="markdown level0 summary"><p>Represents non-resizable memory stream
+which is backed by rented array of bytes.</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object">Object</a></div>
+    <div class="level1"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.marshalbyrefobject">MarshalByRefObject</a></div>
+    <div class="level2"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a></div>
+    <div class="level3"><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream">MemoryStream</a></div>
+    <div class="level4"><span class="xref">RentedMemoryStream</span></div>
+  </div>
+  <div classs="implements">
+    <h5>Implements</h5>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iasyncdisposable">IAsyncDisposable</a></div>
+    <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.beginread#System_IO_MemoryStream_BeginRead_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_">MemoryStream.BeginRead(Byte[], Int32, Int32, AsyncCallback, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.beginwrite#System_IO_MemoryStream_BeginWrite_System_Byte___System_Int32_System_Int32_System_AsyncCallback_System_Object_">MemoryStream.BeginWrite(Byte[], Int32, Int32, AsyncCallback, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.copyto#System_IO_MemoryStream_CopyTo_System_IO_Stream_System_Int32_">MemoryStream.CopyTo(Stream, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.copytoasync#System_IO_MemoryStream_CopyToAsync_System_IO_Stream_System_Int32_System_Threading_CancellationToken_">MemoryStream.CopyToAsync(Stream, Int32, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.endread#System_IO_MemoryStream_EndRead_System_IAsyncResult_">MemoryStream.EndRead(IAsyncResult)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.endwrite#System_IO_MemoryStream_EndWrite_System_IAsyncResult_">MemoryStream.EndWrite(IAsyncResult)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.flush#System_IO_MemoryStream_Flush">MemoryStream.Flush()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.flushasync#System_IO_MemoryStream_FlushAsync_System_Threading_CancellationToken_">MemoryStream.FlushAsync(CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.getbuffer#System_IO_MemoryStream_GetBuffer">MemoryStream.GetBuffer()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.read#System_IO_MemoryStream_Read_System_Byte___System_Int32_System_Int32_">MemoryStream.Read(Byte[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.read#System_IO_MemoryStream_Read_System_Span_System_Byte__">MemoryStream.Read(Span&lt;Byte&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.readasync#System_IO_MemoryStream_ReadAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_">MemoryStream.ReadAsync(Byte[], Int32, Int32, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.readasync#System_IO_MemoryStream_ReadAsync_System_Memory_System_Byte__System_Threading_CancellationToken_">MemoryStream.ReadAsync(Memory&lt;Byte&gt;, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.readbyte#System_IO_MemoryStream_ReadByte">MemoryStream.ReadByte()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.seek#System_IO_MemoryStream_Seek_System_Int64_System_IO_SeekOrigin_">MemoryStream.Seek(Int64, SeekOrigin)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.setlength#System_IO_MemoryStream_SetLength_System_Int64_">MemoryStream.SetLength(Int64)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.toarray#System_IO_MemoryStream_ToArray">MemoryStream.ToArray()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.trygetbuffer#System_IO_MemoryStream_TryGetBuffer_System_ArraySegment_System_Byte___">MemoryStream.TryGetBuffer(ArraySegment&lt;Byte&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.write#System_IO_MemoryStream_Write_System_Byte___System_Int32_System_Int32_">MemoryStream.Write(Byte[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.write#System_IO_MemoryStream_Write_System_ReadOnlySpan_System_Byte__">MemoryStream.Write(ReadOnlySpan&lt;Byte&gt;)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.writeasync#System_IO_MemoryStream_WriteAsync_System_Byte___System_Int32_System_Int32_System_Threading_CancellationToken_">MemoryStream.WriteAsync(Byte[], Int32, Int32, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.writeasync#System_IO_MemoryStream_WriteAsync_System_ReadOnlyMemory_System_Byte__System_Threading_CancellationToken_">MemoryStream.WriteAsync(ReadOnlyMemory&lt;Byte&gt;, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.writebyte#System_IO_MemoryStream_WriteByte_System_Byte_">MemoryStream.WriteByte(Byte)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.writeto#System_IO_MemoryStream_WriteTo_System_IO_Stream_">MemoryStream.WriteTo(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.canread#System_IO_MemoryStream_CanRead">MemoryStream.CanRead</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.canseek#System_IO_MemoryStream_CanSeek">MemoryStream.CanSeek</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.canwrite#System_IO_MemoryStream_CanWrite">MemoryStream.CanWrite</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.capacity#System_IO_MemoryStream_Capacity">MemoryStream.Capacity</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.length#System_IO_MemoryStream_Length">MemoryStream.Length</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.position#System_IO_MemoryStream_Position">MemoryStream.Position</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.null">Stream.Null</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.close#System_IO_Stream_Close">Stream.Close()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.copyto#System_IO_Stream_CopyTo_System_IO_Stream_">Stream.CopyTo(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.copytoasync#System_IO_Stream_CopyToAsync_System_IO_Stream_">Stream.CopyToAsync(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.copytoasync#System_IO_Stream_CopyToAsync_System_IO_Stream_System_Int32_">Stream.CopyToAsync(Stream, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.copytoasync#System_IO_Stream_CopyToAsync_System_IO_Stream_System_Threading_CancellationToken_">Stream.CopyToAsync(Stream, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.createwaithandle#System_IO_Stream_CreateWaitHandle">Stream.CreateWaitHandle()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.dispose#System_IO_Stream_Dispose">Stream.Dispose()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.disposeasync#System_IO_Stream_DisposeAsync">Stream.DisposeAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.flushasync#System_IO_Stream_FlushAsync">Stream.FlushAsync()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.objectinvariant#System_IO_Stream_ObjectInvariant">Stream.ObjectInvariant()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.readasync#System_IO_Stream_ReadAsync_System_Byte___System_Int32_System_Int32_">Stream.ReadAsync(Byte[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.synchronized#System_IO_Stream_Synchronized_System_IO_Stream_">Stream.Synchronized(Stream)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.writeasync#System_IO_Stream_WriteAsync_System_Byte___System_Int32_System_Int32_">Stream.WriteAsync(Byte[], Int32, Int32)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.cantimeout#System_IO_Stream_CanTimeout">Stream.CanTimeout</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.readtimeout#System_IO_Stream_ReadTimeout">Stream.ReadTimeout</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream.writetimeout#System_IO_Stream_WriteTimeout">Stream.WriteTimeout</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.marshalbyrefobject.getlifetimeservice#System_MarshalByRefObject_GetLifetimeService">MarshalByRefObject.GetLifetimeService()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.marshalbyrefobject.initializelifetimeservice#System_MarshalByRefObject_InitializeLifetimeService">MarshalByRefObject.InitializeLifetimeService()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.marshalbyrefobject.memberwiseclone#System_MarshalByRefObject_MemberwiseClone_System_Boolean_">MarshalByRefObject.MemberwiseClone(Boolean)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_">Object.Equals(Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.equals#System_Object_Equals_System_Object_System_Object_">Object.Equals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gethashcode#System_Object_GetHashCode">Object.GetHashCode()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.gettype#System_Object_GetType">Object.GetType()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.memberwiseclone#System_Object_MemberwiseClone">Object.MemberwiseClone()</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.referenceequals#System_Object_ReferenceEquals_System_Object_System_Object_">Object.ReferenceEquals(Object, Object)</a>
+    </div>
+    <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.object.tostring#System_Object_ToString">Object.ToString()</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.IO.html">DotNext.IO</a></h6>
+  <h6><strong>Assembly</strong>: DotNext.IO.dll</h6>
+  <h5 id="DotNext_IO_RentedMemoryStream_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public sealed class RentedMemoryStream : MemoryStream, IAsyncDisposable, IDisposable</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_RentedMemoryStream__ctor_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.IO.RentedMemoryStream.%23ctor(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.IO/IO/RentedMemoryStream.cs/#L30">View Source</a>
+  </span>
+  <a id="DotNext_IO_RentedMemoryStream__ctor_" data-uid="DotNext.IO.RentedMemoryStream.#ctor*"></a>
+  <h4 id="DotNext_IO_RentedMemoryStream__ctor_System_Int32_" data-uid="DotNext.IO.RentedMemoryStream.#ctor(System.Int32)">RentedMemoryStream(Int32)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new non-resizable memory stream of rented memory from shared array pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RentedMemoryStream(int capacity)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">capacity</span></td>
+        <td><p>The recommended capacity of the memory stream.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_RentedMemoryStream__ctor_System_Int32_System_Buffers_ArrayPool_System_Byte__.md&amp;value=---%0Auid%3A%20DotNext.IO.RentedMemoryStream.%23ctor(System.Int32%2CSystem.Buffers.ArrayPool%7BSystem.Byte%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.IO/IO/RentedMemoryStream.cs/#L19">View Source</a>
+  </span>
+  <a id="DotNext_IO_RentedMemoryStream__ctor_" data-uid="DotNext.IO.RentedMemoryStream.#ctor*"></a>
+  <h4 id="DotNext_IO_RentedMemoryStream__ctor_System_Int32_System_Buffers_ArrayPool_System_Byte__" data-uid="DotNext.IO.RentedMemoryStream.#ctor(System.Int32,System.Buffers.ArrayPool{System.Byte})">RentedMemoryStream(Int32, ArrayPool&lt;Byte&gt;)</h4>
+  <div class="markdown level1 summary"><p>Initializes a new non-resizable memory stream of rented memory from shared array pool.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public RentedMemoryStream(int capacity, ArrayPool&lt;byte&gt; pool)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">capacity</span></td>
+        <td><p>The recommended capacity of the memory stream.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.arraypool-1">ArrayPool</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.byte">Byte</a>&gt;</td>
+        <td><span class="parametername">pool</span></td>
+        <td><p>The array pool used to rent the underlying buffer.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_RentedMemoryStream_Dispose_System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.IO.RentedMemoryStream.Dispose(System.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.IO/IO/RentedMemoryStream.cs/#L39">View Source</a>
+  </span>
+  <a id="DotNext_IO_RentedMemoryStream_Dispose_" data-uid="DotNext.IO.RentedMemoryStream.Dispose*"></a>
+  <h4 id="DotNext_IO_RentedMemoryStream_Dispose_System_Boolean_" data-uid="DotNext.IO.RentedMemoryStream.Dispose(System.Boolean)">Dispose(Boolean)</h4>
+  <div class="markdown level1 summary"><p>Releases all resources used by this stream.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">protected override void Dispose(bool disposing)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><span class="parametername">disposing</span></td>
+        <td><p><span class="xref">true</span> to release both managed and unmanaged resources; <span class="xref">false</span> to release only unmanaged resources.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="overrides">Overrides</h5>
+  <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorystream.dispose#System_IO_MemoryStream_Dispose_System_Boolean_">MemoryStream.Dispose(Boolean)</a></div>
+  <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iasyncdisposable">System.IAsyncDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
+  </div>
+  <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__DotNext_Text_EncodingContext__System_Span_System_Byte__System_Nullable_DotNext_IO_StringLengthEncoding__">StreamExtensions.WriteString(Stream, ReadOnlySpan&lt;Char&gt;, EncodingContext, Span&lt;Byte&gt;, Nullable&lt;StringLengthEncoding&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteString_System_IO_Stream_System_ReadOnlySpan_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_StringLengthEncoding__">StreamExtensions.WriteString(Stream, ReadOnlySpan&lt;Char&gt;, Encoding, Nullable&lt;StringLengthEncoding&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__DotNext_Text_EncodingContext_System_Memory_System_Byte__System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken_">StreamExtensions.WriteStringAsync(Stream, ReadOnlyMemory&lt;Char&gt;, EncodingContext, Memory&lt;Byte&gt;, Nullable&lt;StringLengthEncoding&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteStringAsync_System_IO_Stream_System_ReadOnlyMemory_System_Char__System_Text_Encoding_System_Nullable_DotNext_IO_StringLengthEncoding__System_Threading_CancellationToken_">StreamExtensions.WriteStringAsync(Stream, ReadOnlyMemory&lt;Char&gt;, Encoding, Nullable&lt;StringLengthEncoding&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext__System_Span_System_Byte__">StreamExtensions.ReadString(Stream, Int32, DecodingContext, Span&lt;Byte&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext__System_Span_System_Byte__">StreamExtensions.ReadString(Stream, StringLengthEncoding, DecodingContext, Span&lt;Byte&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_System_Int32_System_Text_Encoding_">StreamExtensions.ReadString(Stream, Int32, Encoding)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadString_System_IO_Stream_DotNext_IO_StringLengthEncoding_System_Text_Encoding_">StreamExtensions.ReadString(Stream, StringLengthEncoding, Encoding)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, Int32, DecodingContext, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_DotNext_Text_DecodingContext_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, StringLengthEncoding, DecodingContext, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_System_Int32_System_Text_Encoding_System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, Int32, Encoding, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadStringAsync_System_IO_Stream_DotNext_IO_StringLengthEncoding_System_Text_Encoding_System_Threading_CancellationToken_">StreamExtensions.ReadStringAsync(Stream, StringLengthEncoding, Encoding, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Read__1_System_IO_Stream_">StreamExtensions.Read&lt;T&gt;(Stream)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;T&gt;(Stream, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_ReadAsync__1_System_IO_Stream_System_Threading_CancellationToken_">StreamExtensions.ReadAsync&lt;T&gt;(Stream, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_Write__1_System_IO_Stream___0__">StreamExtensions.Write&lt;T&gt;(Stream, T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.WriteAsync&lt;T&gt;(Stream, T, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_WriteAsync__1_System_IO_Stream___0_System_Threading_CancellationToken_">StreamExtensions.WriteAsync&lt;T&gt;(Stream, T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyToAsync_System_IO_Stream_System_IO_Stream_System_Memory_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyToAsync(Stream, Stream, Memory&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IO.StreamExtensions.html#DotNext_IO_StreamExtensions_CopyTo_System_IO_Stream_System_IO_Stream_System_Span_System_Byte__System_Threading_CancellationToken_">StreamExtensions.CopyTo(Stream, Stream, Span&lt;Byte&gt;, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireWriteLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireWriteLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_TimeSpan_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.AsyncLockAcquisition.html#DotNext_Threading_AsyncLockAcquisition_AcquireUpgradeableReadLockAsync__1___0_System_Threading_CancellationToken_">AsyncLockAcquisition.AcquireUpgradeableReadLockAsync&lt;T&gt;(T, CancellationToken)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_GetUserData__1___0_">ObjectExtensions.GetUserData&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ObjectExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_IsOneOf__1___0___0___">ObjectExtensions.IsOneOf&lt;T&gt;(T, T[])</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2_____1____2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;, out R1, out R2)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_System_Func___0___1__System_Func___0___2__">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, Func&lt;T, R1&gt;, Func&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.ObjectExtensions.html#DotNext_ObjectExtensions_Decompose__3___0_DotNext_ValueFunc___0___1___DotNext_ValueFunc___0___2___">ObjectExtensions.Decompose&lt;T, R1, R2&gt;(T, ValueFunc&lt;T, R1&gt;, ValueFunc&lt;T, R2&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_">LockAcquisition.AcquireReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireWriteLock__1___0_System_TimeSpan_">LockAcquisition.AcquireWriteLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Threading.LockAcquisition.html#DotNext_Threading_LockAcquisition_AcquireUpgradeableReadLock__1___0_System_TimeSpan_">LockAcquisition.AcquireUpgradeableReadLock&lt;T&gt;(T, TimeSpan)</a>
+  </div>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_RentedMemoryStream.md&amp;value=---%0Auid%3A%20DotNext.IO.RentedMemoryStream%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.IO/IO/RentedMemoryStream.cs/#L10" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>

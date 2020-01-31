@@ -8,7 +8,7 @@
     <title>Persistent Channel | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Persistent Channel | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -81,13 +81,13 @@ using System.Threading.Tasks;
 private static async Task Produce(ChannelWriter&lt;decimal&gt; writer)
 {
   for (decimal i = 0M; i &lt; 500M; i++)
-    await writer.WriteAsync(i).ConfigureAwait(false);
+    await writer.WriteAsync(i);
 }
 
 private static async Task Consume(ChannelReader&lt;decimal&gt; reader)
 {
   for (decimal i = 0M; i &lt; 500M; i++)
-    Equal(i, await reader.ReadAsync().ConfigureAwait(false));
+    Assert.Equal(i, await reader.ReadAsync());
 }
 
 public static async Task ProduceConsumeConcurrently()
@@ -96,7 +96,7 @@ public static async Task ProduceConsumeConcurrently()
   {
     var consumer = Consume(channel.Reader);
     var producer = Produce(channel.Writer);
-    await Task.WhenAll(consumer, producer).ConfigureAwait(false);
+    await Task.WhenAll(consumer, producer);
   }
 }
 
@@ -185,7 +185,7 @@ The example shown previously demonstrates basic implementation of serialization 
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/features/threading/channel.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/threading/channel.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

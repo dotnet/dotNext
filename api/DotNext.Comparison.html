@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Class Comparison
    | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -73,7 +73,7 @@
   
   <h1 id="DotNext_Comparison" data-uid="DotNext.Comparison" class="text-break">Class Comparison
   </h1>
-  <div class="markdown level0 summary"><p>Provides extensions for delegate <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.comparison-1">Comparison&lt;T&gt;</a>.</p>
+  <div class="markdown level0 summary"><p>Provides generic methods to work with comparable values.</p>
 </div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
@@ -115,10 +115,10 @@
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Comparison_AsValueFunc__1_System_Comparison___0__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Comparison.AsValueFunc%60%601(System.Comparison%7B%60%600%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Comparison_AsValueFunc__1_System_Comparison___0__System_Boolean_.md&amp;value=---%0Auid%3A%20DotNext.Comparison.AsValueFunc%60%601(System.Comparison%7B%60%600%7D%2CSystem.Boolean)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Comparison.cs/#L18">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Comparison.cs/#L18">View Source</a>
   </span>
   <a id="DotNext_Comparison_AsValueFunc_" data-uid="DotNext.Comparison.AsValueFunc*"></a>
   <h4 id="DotNext_Comparison_AsValueFunc__1_System_Comparison___0__System_Boolean_" data-uid="DotNext.Comparison.AsValueFunc``1(System.Comparison{``0},System.Boolean)">AsValueFunc&lt;T&gt;(Comparison&lt;T&gt;, Boolean)</h4>
@@ -185,6 +185,171 @@
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Comparison_Between__1___0___0___0_DotNext_BoundType_.md&amp;value=---%0Auid%3A%20DotNext.Comparison.Between%60%601(%60%600%2C%60%600%2C%60%600%2CDotNext.BoundType)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Comparison.cs/#L48">View Source</a>
+  </span>
+  <a id="DotNext_Comparison_Between_" data-uid="DotNext.Comparison.Between*"></a>
+  <h4 id="DotNext_Comparison_Between__1___0___0___0_DotNext_BoundType_" data-uid="DotNext.Comparison.Between``1(``0,``0,``0,DotNext.BoundType)">Between&lt;T&gt;(T, T, T, BoundType)</h4>
+  <div class="markdown level1 summary"><p>Checks whether specified value is in range.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static bool Between&lt;T&gt;(this T value, T left, T right, BoundType boundType = BoundType.Open)
+
+    where T : IComparable&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Value to check.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">left</span></td>
+        <td><p>Range left bound.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">right</span></td>
+        <td><p>Range right bound.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="DotNext.BoundType.html">BoundType</a></td>
+        <td><span class="parametername">boundType</span></td>
+        <td><p>Range endpoints bound type.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.boolean">Boolean</a></td>
+        <td><p><span class="xref">true</span>, if <code data-dev-comment-type="paramref" class="paramref">value</code> is in its bounds.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Type of value to check.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Comparison_Clamp__1___0___0___0_.md&amp;value=---%0Auid%3A%20DotNext.Comparison.Clamp%60%601(%60%600%2C%60%600%2C%60%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Comparison.cs/#L28">View Source</a>
+  </span>
+  <a id="DotNext_Comparison_Clamp_" data-uid="DotNext.Comparison.Clamp*"></a>
+  <h4 id="DotNext_Comparison_Clamp__1___0___0___0_" data-uid="DotNext.Comparison.Clamp``1(``0,``0,``0)">Clamp&lt;T&gt;(T, T, T)</h4>
+  <div class="markdown level1 summary"><p>Restricts a <code data-dev-comment-type="paramref" class="paramref">value</code> in specific range.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static T Clamp&lt;T&gt;(this T value, T min, T max)
+
+    where T : IComparable&lt;T&gt;</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">value</span></td>
+        <td><p>Value to be restricted.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">min</span></td>
+        <td><p>Minimal range value.</p>
+</td>
+      </tr>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td><span class="parametername">max</span></td>
+        <td><p>Maximum range value.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">T</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="typeParameters">Type Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="parametername">T</span></td>
+        <td><p>Type of the values.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
 </article>
           </div>
           
@@ -193,10 +358,10 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Comparison.md&amp;value=---%0Auid%3A%20DotNext.Comparison%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Comparison.md&amp;value=---%0Auid%3A%20DotNext.Comparison%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/DotNext/Comparison.cs/#L9" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext/Comparison.cs/#L9" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

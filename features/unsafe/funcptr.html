@@ -8,7 +8,7 @@
     <title>Calling Function by Pointer | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Calling Function by Pointer | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -80,30 +80,6 @@
 <li><em>Stdcall</em> is widely adopted by Windows OS</li>
 </ul>
 <p>The name of the static methods reflects the calling convention to be applied to the target function.</p>
-<p>Additionally, these classes are very helpful when you need to write COM component in C# with callback capabilities.</p>
-<pre><code class="lang-csharp">using DotNext.Runtime.InteropServices;
-using System.Runtime.InteropServices;
-using PCallback = System.IntPtr;
-
-[Guid(&quot;EAA4976A-45C3-4BC5-BC0B-E474F4C3C83F&quot;)]
-[InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-public interface IComComponent
-{
-	void DoCallback(PCallback pFunc);	//C equivalent is void(__stdcall *pFunc)(int, int)
-}
-
-[Guid(&quot;0D53A3E8-E51A-49C7-944E-E72A2064F938&quot;)]
-[ClassInterface(ClassInterfaceType.None)]
-public sealed class ComComponent : IComComponent
-{
-	private int x, y;	
-
-	public DoCallback(PCallback pFunc)
-	{
-		UnmanagedFunction.StdCall(pFunc, x, y);
-	}
-}
-</code></pre>
 </article>
           </div>
           
@@ -112,7 +88,7 @@ public sealed class ComComponent : IComComponent
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/features/unsafe/funcptr.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/unsafe/funcptr.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Namespace DotNext.IO
    | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -80,8 +80,15 @@
       <h4><a class="xref" href="DotNext.IO.BinaryTransferObject.html">BinaryTransferObject</a></h4>
       <section><p>Represents binary object.</p>
 </section>
+      <h4><a class="xref" href="DotNext.IO.BinaryTransferObject-1.html">BinaryTransferObject&lt;T&gt;</a></h4>
+      <section><p>Represents transfer object for value of blittable type.</p>
+</section>
       <h4><a class="xref" href="DotNext.IO.DataTransferObject.html">DataTransferObject</a></h4>
       <section><p>Various extension methods for <a class="xref" href="DotNext.IO.IDataTransferObject.html">IDataTransferObject</a>.</p>
+</section>
+      <h4><a class="xref" href="DotNext.IO.RentedMemoryStream.html">RentedMemoryStream</a></h4>
+      <section><p>Represents non-resizable memory stream
+which is backed by rented array of bytes.</p>
 </section>
       <h4><a class="xref" href="DotNext.IO.StreamExtensions.html">StreamExtensions</a></h4>
       <section><p>Represents high-level read/write methods for the stream.</p>
@@ -92,10 +99,25 @@
       <h4><a class="xref" href="DotNext.IO.StreamTransferObject.html">StreamTransferObject</a></h4>
       <section><p>Represents object which content is represented by <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.stream">Stream</a>.</p>
 </section>
+    <h3 id="structs">Structs
+  </h3>
+      <h4><a class="xref" href="DotNext.IO.SequenceBinaryReader.html">SequenceBinaryReader</a></h4>
+      <section><p>Represents binary reader for the sequence of bytes.</p>
+</section>
     <h3 id="interfaces">Interfaces
   </h3>
+      <h4><a class="xref" href="DotNext.IO.IAsyncBinaryReader.html">IAsyncBinaryReader</a></h4>
+      <section><p>Providers a uniform way to decode the data
+from various sources such as streams, pipes, unmanaged memory etc.</p>
+</section>
+      <h4><a class="xref" href="DotNext.IO.IAsyncBinaryWriter.html">IAsyncBinaryWriter</a></h4>
+      <section><p>Providers a uniform way to encode the data.</p>
+</section>
       <h4><a class="xref" href="DotNext.IO.IDataTransferObject.html">IDataTransferObject</a></h4>
-      <section><p>Represents data unit that can be transferred over wire.</p>
+      <section><p>Represents structured data unit that can be transferred over wire.</p>
+</section>
+      <h4><a class="xref" href="DotNext.IO.IDataTransferObject.IDecoder-1.html">IDataTransferObject.IDecoder&lt;TResult&gt;</a></h4>
+      <section><p>Represents DTO transformation.</p>
 </section>
     <h3 id="enums">Enums
   </h3>

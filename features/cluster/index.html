@@ -8,7 +8,7 @@
     <title>Cluster and Distributed Consensus | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Cluster and Distributed Consensus | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -114,17 +114,11 @@
 <li><a href="https://raft.github.io/">The Raft Consensus Algorithm</a></li>
 <li><a href="http://thesecretlivesofdata.com/">The Secret Lives of Data</a></li>
 <li><a href="https://raft.github.io/raft.pdf">In Search of an Understandable Consensus Algorithm</a></li>
+<li><a href="https://github.com/ongardie/dissertation">Dissertation</a></li>
 </ul>
 <h1 id="replication">Replication</h1>
-<p>Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of <a href="../../api/DotNext.IO.Log.IAuditTrail-1.html">IAuditTrail</a> interface.</p>
-<p><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster</a> contains special method <code>WriteAsync</code> that allows clustered application to submit changes and wait unit they are replicated and committed. The behavior of this method depends on the passed <a href="../../api/DotNext.Net.Cluster.Replication.WriteConcern.html">WriteConcern</a> value. It regulates when to return control back to the client:</p>
-<ul>
-<li><em>None</em> indicates that control should be returned immediately after recording of changeset to the log. This mode doesn't provide any guarantees about consistency of the subsequent reads.</li>
-<li><em>LeaderOnly</em> indicates that control should be returned after commit by leader node. It means that leader has replicated the changes across cluster and mark its local changes as committed. In case of Raft this mode means that changes are replicated to the majority of nodes but committed only by leader.</li>
-<li><em>Majority</em> indicates that control should be returned to the caller when majority of nodes commit the changes.</li>
-<li><em>All</em> indicates that control should be returned to the caller when all clusted nodes commit the changes.</li>
-</ul>
-<p>The current Raft implementation supports <em>None</em> and <em>LeaderOnly</em> write concerns only.</p>
+<p>Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of <a href="../../api/DotNext.IO.Log.IAuditTrail-1.html">IAuditTrail</a> interface or use <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> class.</p>
+<p><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster</a> interface</p>
 <h1 id="implementations">Implementations</h1>
 <p>.NEXT offers extensions for ASP.NET Core which allow to build clustered microservices with the following features:</p>
 <ol>
@@ -141,7 +135,7 @@
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/features/cluster/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/cluster/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

@@ -8,7 +8,7 @@
     <title>Base Class Library Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Base Class Library Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -158,7 +158,7 @@ predicate = predicate.Or(str =&gt; str.Length % 2 == 0);
 predicate = predicate.Xor(Predicate.IsNull&lt;string&gt;());
 </code></pre>
 <h1 id="comparable-data-types">Comparable data types</h1>
-<p>Related class: <a href="../../api/DotNext.Comparable.html">Comparable</a></p>
+<p>Related class: <a href="../../api/DotNext.Comparison.html">Comparison</a></p>
 <h2 id="range-check">Range check</h2>
 <p>Checks whether the given value is in specific range.</p>
 <pre><code class="lang-csharp">using DotNext;
@@ -254,6 +254,19 @@ Result&lt;dynamic&gt; result = t.GetResult(CancellationToken.None);
 //obtain result asynchronously
 dynamic result = await t.AsDynamic();
 </code></pre>
+<h1 id="hex-converter">Hex Converter</h1>
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring">BitConverter.ToString</a> method from .NET standard library allow to convert array of bytes to its hexadecimal representation. However, it doesn't support <code>Span&lt;byte&gt;</code> data type and therefore cannot be used in situations when bytes come from different source such as stack-allocated memory or segment of another array. Moreover, the method cannot place its result to variable of <code>Span&lt;char&gt;</code> type and allocates new string every time. It may be unacceptable in low-latency scenario when number of memory allocations should be reduced.</p>
+<p><a href="../../api/DotNext.Span.html">Span</a> static class exposes two static methods for fast hexadecimal conversion:</p>
+<ul>
+<li><code>ToHex</code> allows to convert <code>ReadOnlySpan&lt;byte&gt;</code> to hexadecimal representation and places result to <code>Span&lt;char&gt;</code></li>
+<li><code>FromHex</code> allows to convert hexadecimal string in the from of <code>ReadOnlySpan&lt;char&gt;</code> to bytes and places result to <code>Span&lt;byte&gt;</code></li>
+</ul>
+<pre><code class="lang-csharp">using DotNext;
+
+ReadOnlySpan&lt;byte&gt; bytes = stackalloc byte[] {8, 16, 24};
+Span&lt;char&gt; hex = new stackalloc[bytes.Length * 2];
+Span.ToHex(bytes, hex); //now hex == 081018
+</code></pre>
 </article>
           </div>
           
@@ -262,7 +275,7 @@ dynamic result = await t.AsDynamic();
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/features/core/index.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/core/index.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

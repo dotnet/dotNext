@@ -8,7 +8,7 @@
     <title>Persistent Write Ahead Log | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Persistent Write Ahead Log | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -89,7 +89,7 @@
 <p>.NEXT library doesn't provide default implementation of the database or persistent data storage based on Raft replication</p>
 </div>
 <p>Internally, persistent WAL uses files to store the state of cluster member and log entries. The journal with log entries is not continuous. Each file represents the partition of the entire journal. Each partition is a chunk of sequential log entries. The maximum number of log entries per partition depends on the settings.</p>
-<p><code>PersistentState</code> has a rich set of tunable configuration parameters to achieve the best performance according with application needs:</p>
+<p><code>PersistentState</code> has a rich set of tunable configuration parameters and overridable methods to achieve the best performance according with application needs:</p>
 <ul>
 <li><code>recordsPerPartition</code> allows to define maximum number of log entries that can be stored continuously in the single partition. Log compaction algorithm depends on this value directly. When all records from the partition are committed and applied to the underlying state machine the infrastructure calls the snapshot builder and squashed all the entries in such partition. After that, write ahead log records the snapshot into the separated file and removes the partition file from the file system. The log compaction is expensive operation. So if you want to reduce the number of compactions then you need to increase the maximum number of log entries per partition. However, the partition file will take more disk space.</li>
 <li><code>BufferSize</code> is the numbers of bytes that is allocated by persistent WAL in the memory to perform I/O operations. Set it to the maximum expected log entry size to achieve the best performance.</li>
@@ -97,6 +97,7 @@
 <li><code>UseCaching</code> is <code>bool</code> flag that allows to enable or disable in-memory caching of log entries metadata. <code>true</code> value allows to improve the performance or read/write operations by the cost of additional heap memory. <code>false</code> reduces the memory footprint by the cost of the read/write performance</li>
 <li><code>CreateMemoryPool</code> generic method used for renting memory and can be overridden</li>
 <li><code>MaxConcurrentReads</code> is a number of concurrent asynchronous operations which can perform reads in parallel. Write operations are always sequential. Ideally, the value should be equal to the number of nodes. However, the larger value consumes more system resources (e.g. file handles) and heap memory.</li>
+<li><code>ReplayOnInitialize</code> is a flag indicating that state of underlying database engine should be reconstructed when <code>InitializeAsync</code> is called by infrastructure. It can be done manually using <code>ReplayAsync</code> method.</li>
 </ul>
 <p>Choose <code>recordsPerPartition</code> value with care because it cannot be changed for the existing persistent WAL.</p>
 <p>Let's write a simple custom audit trail based on the <code>PersistentState</code> to demonstrate basics of Write Ahead Log. Our state machine stores only the single <strong>long</strong> value as the only possible persistent state.</p>
@@ -154,10 +155,12 @@ sealed class SimpleAuditTrail : PersistentState
 <li><code>AppendAsync</code> adds a series of log entries to the log. All appended entries are in uncommitted state. Additionally, it can be used to replace entries with another entries</li>
 <li><code>DropAsync</code> removes the uncommitted entries from the log</li>
 <li><code>CommitAsync</code> marks appended entries as committed. Optionally, it can force log compaction</li>
-<li><code>EnsureConsistencyAsync</code> applies the committed entries to the underlying state machine or database engine. Usually, <code>CommitAsync</code> doing this automatically. This method can be called once at application startup to ensure that the database is up to date with latest committed changes</li>
-<li><code>WaitForCommitAsync</code> waits for the specific commit</li>
+<li><code>EnsureConsistencyAsync</code> suspends the caller and waits until the last committed entry is from leader's term</li>
+<li><code>WaitForCommitAsync</code> waits for the specific or any commit</li>
 </ul>
 <p><code>ReadAsync</code> method can be used to obtain committed or uncommitted entries in stream-like manner.</p>
+<h1 id="state-reconstruction">State Reconstruction</h1>
+<p><code>PersistentState</code> is designed with assumption that underlying state machine can be reconstructed through sequential interpretation of each committed log entry stored in the log. When persistent WAL used in combination with other Raft infrastructure such as extensions for ASP.NET Core provided by <strong>DotNext.AspNetCore.Cluster</strong> library then this action performed automatically in host initialization code. However, if WAL used separately then reconstruction process should be initiated manually. To do that you need to call <code>ReplayAsync</code> method which reads all committed log entry and pass each entry to <code>ApplyAsync</code> protected method. Usually, <code>ApplyAsync</code> method implementation implements data state machine logic so sequential processing of all committed entries can restore its state correctly.</p>
 </article>
           </div>
           
@@ -166,7 +169,7 @@ sealed class SimpleAuditTrail : PersistentState
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/features/cluster/wal.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/cluster/wal.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>

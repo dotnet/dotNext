@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Interface ISubscriber
    | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -82,6 +82,9 @@
       <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_Endpoint">IClusterMember.Endpoint</a>
     </div>
     <div>
+      <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_Id">IClusterMember.Id</a>
+    </div>
+    <div>
       <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_IsLeader">IClusterMember.IsLeader</a>
     </div>
     <div>
@@ -94,131 +97,36 @@
       <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_Status">IClusterMember.Status</a>
     </div>
     <div>
-      <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_GetMetadata_System_Boolean_System_Threading_CancellationToken_">IClusterMember.GetMetadata(Boolean, CancellationToken)</a>
+      <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_GetMetadataAsync_System_Boolean_System_Threading_CancellationToken_">IClusterMember.GetMetadataAsync(Boolean, CancellationToken)</a>
     </div>
     <div>
       <a class="xref" href="DotNext.Net.Cluster.IClusterMember.html#DotNext_Net_Cluster_IClusterMember_ResignAsync_System_Threading_CancellationToken_">IClusterMember.ResignAsync(CancellationToken)</a>
     </div>
     <div>
-      <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1.equals#System_IEquatable_1_Equals__0_">IEquatable&lt;IClusterMember&gt;.Equals(IClusterMember)</a>
+      <a class="xref" href="DotNext.Net.Cluster.Messaging.IOutputChannel.html#DotNext_Net_Cluster_Messaging_IOutputChannel_SendMessageAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__System_Threading_CancellationToken_">IOutputChannel.SendMessageAsync&lt;TResponse&gt;(IMessage, MessageReader&lt;TResponse&gt;, CancellationToken)</a>
+    </div>
+    <div>
+      <a class="xref" href="DotNext.Net.Cluster.Messaging.IOutputChannel.html#DotNext_Net_Cluster_Messaging_IOutputChannel_SendSignalAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken_">IOutputChannel.SendSignalAsync(IMessage, CancellationToken)</a>
     </div>
   </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="DotNext.Net.Cluster.Messaging.html">DotNext.Net.Cluster.Messaging</a></h6>
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Messaging_ISubscriber_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface ISubscriber : IClusterMember, IEquatable&lt;IClusterMember&gt;</code></pre>
+    <pre><code class="lang-csharp hljs">public interface ISubscriber : IClusterMember, IOutputChannel</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_ISubscriber_SendMessageAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.ISubscriber.SendMessageAsync%60%601(DotNext.Net.Cluster.Messaging.IMessage%2CDotNext.Net.Cluster.Messaging.MessageReader%7B%60%600%7D%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_ISubscriber_SendSignalAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.ISubscriber.SendSignalAsync(DotNext.Net.Cluster.Messaging.IMessage%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/ISubscriber.cs/#L25">View Source</a>
-  </span>
-  <a id="DotNext_Net_Cluster_Messaging_ISubscriber_SendMessageAsync_" data-uid="DotNext.Net.Cluster.Messaging.ISubscriber.SendMessageAsync*"></a>
-  <h4 id="DotNext_Net_Cluster_Messaging_ISubscriber_SendMessageAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.ISubscriber.SendMessageAsync``1(DotNext.Net.Cluster.Messaging.IMessage,DotNext.Net.Cluster.Messaging.MessageReader{``0},System.Threading.CancellationToken)">SendMessageAsync&lt;TResponse&gt;(IMessage, MessageReader&lt;TResponse&gt;, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Sends a message to the cluster member.</p>
-</div>
-  <div class="markdown level1 conceptual"></div>
-  <h5 class="decalaration">Declaration</h5>
-  <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">Task&lt;TResponse&gt; SendMessageAsync&lt;TResponse&gt;(IMessage message, MessageReader&lt;TResponse&gt; responseReader, CancellationToken token = default(CancellationToken))</code></pre>
-  </div>
-  <h5 class="parameters">Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a></td>
-        <td><span class="parametername">message</span></td>
-        <td><p>The message to be sent.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.MessageReader-1.html">MessageReader</a>&lt;TResponse&gt;</td>
-        <td><span class="parametername">responseReader</span></td>
-        <td><p>The response reader.</p>
-</td>
-      </tr>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
-        <td><span class="parametername">token</span></td>
-        <td><p>The token that can be used to cancel asynchronous operation.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="returns">Returns</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task-1">Task</a>&lt;TResponse&gt;</td>
-        <td><p>The message representing response; or <span class="xref">null</span> if request message in one-way.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 class="typeParameters">Type Parameters</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><span class="parametername">TResponse</span></td>
-        <td><p>The type of the parsed response message.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <h5 id="DotNext_Net_Cluster_Messaging_ISubscriber_SendMessageAsync__1_DotNext_Net_Cluster_Messaging_IMessage_DotNext_Net_Cluster_Messaging_MessageReader___0__System_Threading_CancellationToken__remarks">Remarks</h5>
-  <div class="markdown level1 remarks"><p>The message content may be available inside of <code data-dev-comment-type="paramref" class="paramref">responseReader</code> only.
-Do not try to return <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a> itself from the delegate.</p>
-</div>
-  <h5 class="exceptions">Exceptions</h5>
-  <table class="table table-bordered table-striped table-condensed">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Condition</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
-        <td><p>Attempts to send message to local or unavailable member.</p>
-</td>
-      </tr>
-    </tbody>
-  </table>
-  <span class="small pull-right mobile-hide">
-    <span class="divider">|</span>
-    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_ISubscriber_SendSignalAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Boolean_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.ISubscriber.SendSignalAsync(DotNext.Net.Cluster.Messaging.IMessage%2CSystem.Boolean%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
-  </span>
-  <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/ISubscriber.cs/#L35">View Source</a>
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/ISubscriber.cs/#L20">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Messaging_ISubscriber_SendSignalAsync_" data-uid="DotNext.Net.Cluster.Messaging.ISubscriber.SendSignalAsync*"></a>
   <h4 id="DotNext_Net_Cluster_Messaging_ISubscriber_SendSignalAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Boolean_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.ISubscriber.SendSignalAsync(DotNext.Net.Cluster.Messaging.IMessage,System.Boolean,System.Threading.CancellationToken)">SendSignalAsync(IMessage, Boolean, CancellationToken)</h4>
-  <div class="markdown level1 summary"><p>Sends one-way message to the cluster member.</p>
+  <div class="markdown level1 summary"><p>Sends one-way message to this cluster member.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -284,6 +192,60 @@ Do not try to return <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessag
         <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.invalidoperationexception">InvalidOperationException</a></td>
         <td><p>Attempts to send message to local or unavailable member.</p>
 </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_ISubscriber_DotNext_Net_Cluster_Messaging_IOutputChannel_SendSignalAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.ISubscriber.DotNext%23Net%23Cluster%23Messaging%23IOutputChannel%23SendSignalAsync(DotNext.Net.Cluster.Messaging.IMessage%2CSystem.Threading.CancellationToken)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/ISubscriber.cs/#L22">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Messaging_ISubscriber_DotNext_Net_Cluster_Messaging_IOutputChannel_SendSignalAsync_" data-uid="DotNext.Net.Cluster.Messaging.ISubscriber.DotNext#Net#Cluster#Messaging#IOutputChannel#SendSignalAsync*"></a>
+  <h4 id="DotNext_Net_Cluster_Messaging_ISubscriber_DotNext_Net_Cluster_Messaging_IOutputChannel_SendSignalAsync_DotNext_Net_Cluster_Messaging_IMessage_System_Threading_CancellationToken_" data-uid="DotNext.Net.Cluster.Messaging.ISubscriber.DotNext#Net#Cluster#Messaging#IOutputChannel#SendSignalAsync(DotNext.Net.Cluster.Messaging.IMessage,System.Threading.CancellationToken)">IOutputChannel.SendSignalAsync(IMessage, CancellationToken)</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Task IOutputChannel.SendSignalAsync(IMessage message, CancellationToken token)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.Net.Cluster.Messaging.IMessage.html">IMessage</a></td>
+        <td><span class="parametername">message</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.cancellationtoken">CancellationToken</a></td>
+        <td><span class="parametername">token</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a></td>
+        <td></td>
       </tr>
     </tbody>
   </table>
@@ -368,10 +330,10 @@ Do not try to return <a class="xref" href="DotNext.Net.Cluster.Messaging.IMessag
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/new/gh-pages-2.x/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_ISubscriber.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.ISubscriber%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Messaging_ISubscriber.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Messaging.ISubscriber%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/ISubscriber.cs/#L10" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/cluster/DotNext.Net.Cluster/Net/Cluster/Messaging/ISubscriber.cs/#L10" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

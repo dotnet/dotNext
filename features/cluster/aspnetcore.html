@@ -8,7 +8,7 @@
     <title>Clustered ASP.NET Core Microservices | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Clustered ASP.NET Core Microservices | .NEXT ">
-    <meta name="generator" content="docfx 2.48.0.0">
+    <meta name="generator" content="docfx 2.48.1.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -398,16 +398,12 @@ public void Configure(IApplicationBuilder app)
 }
 </code></pre>
 <h1 id="messaging">Messaging</h1>
-<p>.NEXT extension for ASP.NET Core supports messaging beween nodes through HTTP out-of-the-box. However, the infrastructure don't know how to handle custom messages. Therefore, if you want to utilize this functionality then you need to implement <a href="../../api/DotNext.Net.Cluster.Messaging.IMessageHandler.html">IMessageHandler</a> interface.</p>
-<p>Messaging inside of cluster supports redirection to the leader as well as for external client. But this mechanism implemented differently and represented by the following methods declared in <a href="../../api/DotNext.Net.Cluster.Messaging.IMessageBus.html">IMessageBus</a> interface:</p>
-<ul>
-<li><code>SendMessageToLeaderAsync</code> to send <em>Request-Reply</em> message to the leader</li>
-<li><code>SendSignalToLeaderAsync</code> to send <em>One Way</em> message to the leader</li>
-</ul>
+<p>.NEXT extension for ASP.NET Core supports messaging beween nodes through HTTP out-of-the-box. However, the infrastructure don't know how to handle custom messages. Therefore, if you want to utilize this functionality then you need to implement <a href="../../api/DotNext.Net.Cluster.Messaging.IInputChannel.html">IInputChannel</a> interface.</p>
+<p>Messaging inside of cluster supports redirection to the leader as well as for external client. But this mechanism implemented differently and exposed as <code>IInputChannel</code> interface via <a href="../../api/DotNext.Net.Cluster.Messaging.IMessageBus.html">IMessageBus.LeaderRouter</a> property.</p>
 <h1 id="replication">Replication</h1>
 <p>Raft algorithm requires additional persistent state in order to basic audit trail. This state is represented by <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> interface. By default, it is implemented as <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.InMemoryAuditTrail.html">in-memory storage</a> which is suitable only for applications that doesn't have replicated state. If your application has it then use <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> class or implement this interface manually and use reliable storage such as disk. The implementation can be injected explicitly via <code>AuditTrail</code> property of <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IRaftCluster.html">IRaftCluster</a> interface or implicitly via Dependency Injection. The explicit should be done inside of the user-defined implementation of <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IClusterMemberLifetime.html">IClusterMemberLifetime</a> interface registered as a singleton service in ASP.NET Core application. The implicit injection requires registration of singleton service which implements <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IPersistentState</a> interface.</p>
 <h2 id="reliable-state">Reliable State</h2>
-<p>Information about reliable persistent state which uses disk for storing write ahead log located in the separated <a href="wal.html">article</a>.</p>
+<p>Information about reliable persistent state which uses disk for storing write ahead log located in the separated <a href="wal.html">article</a>. However, its usage turns your microservice into stateful service because its state persisted on disk. Consider this fact if you are using containerization technologies such as Docker or LXC.</p>
 <h1 id="metrics">Metrics</h1>
 <p>It is possible to measure runtime metrics of Raft node internals using <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.Http.HttpMetricsCollector.html">HttpMetricsCollector</a> class. The reporting mechanism is agnostic  to the underlying metrics delivery library such as <a href="https://github.com/AppMetrics/AppMetrics">AppMetrics</a>.</p>
 <p>The class contains methods that are called automatically. You can override them and implement necessary reporting logic. By default, these methods do nothing.</p>
@@ -462,7 +458,7 @@ dotnet run -- 3263
 dotnet run -- 3264
 </code></pre>
 <p>Every instance should be launched in separated Terminal session. After that, you will see diagnostics messages in <code>stdout</code> about election process. Press <em>Ctrl+C</em> in the window related to the leader node and ensure that new leader will be elected.</p>
-<p>Optionally, you can test replication powered by persistent WAL and <a href="../../api/DotNext.Net.Cluster.Replication.WriteConcern.html">WriteConcern</a>. To do that, you need to specify the name of folder which is used to store Write Ahead Log files</p>
+<p>Optionally, you can test replication powered by persistent WAL. To do that, you need to specify the name of folder which is used to store Write Ahead Log files</p>
 <pre><code class="lang-bash">cd &lt;dotnext&gt;/src/examples/RaftNode
 dotnet run -- 3262 node1
 dotnet run -- 3263 node2
@@ -477,7 +473,7 @@ dotnet run -- 3264 node3
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages-2.x/docs/features/cluster/aspnetcore.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/cluster/aspnetcore.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
