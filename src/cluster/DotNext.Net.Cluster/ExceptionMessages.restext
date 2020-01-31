@@ -13,4 +13,3 @@ LockNameIsEmpty=Lock name is empty string
 LockConflict=The lock conflict detected
 InvalidLockToken=Write lock token is invalid
 UnsupportedAddressFamily=Unsupported endpoint address family
-UnresolvedLocalMember=Local member is unresolved
