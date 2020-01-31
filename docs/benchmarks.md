@@ -19,7 +19,7 @@ The configuration of all benchmarks:
 
 You can run benchmarks using `Bench` build configuration as follows:
 ```bash
-cd <dotnext-clone-path>/DotNext.Benchmarks
+cd <dotnext-clone-path>/src/DotNext.Benchmarks
 dotnet run -c Bench
 ```
 
