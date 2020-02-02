@@ -82,3 +82,5 @@ However, the configuration depends on use cases.
 
 # Diagnostics
 _Throughput_ property of `PersistentChannel` class allows to measure ratio between consumed and produced messages. The value is always in range [0, 1). The value `1` means that consumer is reading messages with the same speed as producer writing new messages. If throughput is less than `1` then disk space utilized for messages may grow.
+
+_RemainintCount_ property provides the number of unread messages in the channel.
