@@ -12,14 +12,14 @@ var resetEvent = new AsyncManualResetEvent(false);
 Task.Factory.StartNew(async () =>
 {
     Console.WriteLine("Waiting for parent task");
-    await resetEvent.Wait();
+    await resetEvent.WaitAsync();
     Console.WriteLine("Task #1 finished");
 });
 
 Task.Factory.StartNew(async () =>
 {
     Console.WriteLine("Waiting for parent task");
-    await resetEvent.Wait();
+    await resetEvent.WaitAsync();
     Console.WriteLine("Task #2 finished");
 });
 
