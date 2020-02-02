@@ -12,7 +12,7 @@ using DotNext.Threading;
 
 var rwlock = new AsyncReaderWriterLock();
 
-await rwlock.EnterReadLock(CancellationToken.None);
+await rwlock.EnterReadLockAsync(CancellationToken.None);
 try
 {
     //reader stuff here
@@ -22,7 +22,7 @@ finally
     rwlock.ExitReadLock();
 }
 
-await rwlock.EnterWriteLock(TimeSpan.FromSecond(2));
+await rwlock.EnterWriteLockAsync(TimeSpan.FromSecond(2));
 try
 {
     //writer stuff here
@@ -32,11 +32,11 @@ finally
     rwlock.ExitWriteLock();
 }
 
-await rwlock.EnterUpgradeableReadLock(TimeSpan.FromSecond(2), CancellationToken.None);
+await rwlock.EnterUpgradeableReadLockAsync(TimeSpan.FromSecond(2), CancellationToken.None);
 try
 {
     //reader stuff here
-    await rwlock.EnterWriteLock(CancellationToken.None);
+    await rwlock.EnterWriteLockAsync(CancellationToken.None);
     //writer stuff here
     rwlock.ExitWriteLock();
 }
@@ -46,12 +46,12 @@ finally
 }
 
 //or with 'using statement'
-using(await rwlock.AcquireReadLock(CancellationToken.None))
+using(await rwlock.AcquireReadLockAsync(CancellationToken.None))
 {
     //reader stuff here
 }
 
-using(await rwlock.AcquireWriteLock(TimeSpan.FromSecond(2)))
+using(await rwlock.AcquireWriteLockAsync(TimeSpan.FromSecond(2)))
 {
     //writer stuff here
 }
