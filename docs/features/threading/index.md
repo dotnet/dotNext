@@ -34,7 +34,7 @@ using(syncLock.Acquire())
 }
 
 //thread #2
-using(await asyncLock.Acquire(CancellationToken.None))
+using(await asyncLock.AcquireAsync(CancellationToken.None))
 {
 
 }
