@@ -8,7 +8,7 @@ using System.Threading;
 
 var @lock = new AsyncExclusiveLock();
 
-await @lock.Acquire(CancellationToken.None);
+await @lock.AcquireAsync(CancellationToken.None);
 try
 {
     //synchronized access to the resource
@@ -19,7 +19,7 @@ finally
 }
 
 //or with 'using' statement:
-using(await @lock.AcquireLock(CancellationToken.None))
+using(await @lock.AcquireLockAsync(CancellationToken.None))
 {
     //synchronized access to the resource
 }
