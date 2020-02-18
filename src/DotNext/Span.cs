@@ -389,11 +389,11 @@ namespace DotNext
             ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
             ref char charPtr = ref MemoryMarshal.GetReference(output);
             ref char hexTable = ref lowercased ? ref LowerCasedHexTable[0] : ref UpperCasedHexTable[0];
-            for (var i = 0; i < bytesCount; i++, charPtr = ref Intrinsics.Advance(ref charPtr))
+            for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
             {
                 var value = Add(ref firstByte, i);
                 charPtr = Add(ref hexTable, value >> 4);
-                charPtr = ref Intrinsics.Advance(ref charPtr);
+                charPtr = ref Add(ref charPtr, 1);
                 charPtr = Add(ref hexTable, value & 0B1111);
             }
             return bytesCount * 2;
@@ -432,7 +432,7 @@ namespace DotNext
             charCount -= charCount % 2;
             ref (char, char) pair = ref As<char, (char, char)>(ref MemoryMarshal.GetReference(chars));
             ref byte bytePtr = ref MemoryMarshal.GetReference(output);
-            for (var i = 0; i < charCount; i += 2, bytePtr = ref Intrinsics.Advance(ref bytePtr), pair = ref Intrinsics.Advance(ref pair))
+            for (var i = 0; i < charCount; i += 2, bytePtr = ref Add(ref bytePtr, 1), pair = ref Add(ref pair, 1))
                 bytePtr = byte.Parse(pair.AsSpan(), NumberStyles.AllowHexSpecifier, InvariantCulture);
             return charCount / 2;
         }
