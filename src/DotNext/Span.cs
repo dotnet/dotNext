@@ -43,14 +43,13 @@ namespace DotNext
             public static implicit operator ReadOnlySpan<char>(in HexByte hex) => MemoryMarshal.CreateReadOnlySpan(ref AsRef(in hex.High), 2);
         }
 
-        private static readonly ReadOnlyMemory<HexByte> HexLookupTable;
+        private static readonly HexByte[] HexLookupTable;
 
         static Span()
         {
-            var lookup = new HexByte[byte.MaxValue + 1];
+            HexLookupTable = new HexByte[byte.MaxValue + 1];
             for (var i = 0; i <= byte.MaxValue; i++)
-                lookup[i] = new HexByte((byte)i);
-            HexLookupTable = lookup;
+                HexLookupTable[i] = new HexByte((byte)i);
         }
 
         /// <summary>
@@ -425,10 +424,10 @@ namespace DotNext
             var bytesCount = Math.Min(bytes.Length, output.Length / 2);
             ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
             ref char charPtr = ref MemoryMarshal.GetReference(output);
-            ref HexByte firstHex = ref MemoryMarshal.GetReference(HexLookupTable.Span);
+            ref HexByte firstHex = ref HexLookupTable[0];
             for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
             {
-                var hexInfo = Add(ref firstHex, Add(ref firstByte, i));
+                ref var hexInfo = ref Add(ref firstHex, Add(ref firstByte, i));
                 charPtr = hexInfo.High;
                 charPtr = ref Add(ref charPtr, 1);
                 charPtr = hexInfo.Low;
