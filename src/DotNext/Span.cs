@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
-using Debug = System.Diagnostics.Debug;
 using NumberStyles = System.Globalization.NumberStyles;
 
 namespace DotNext
@@ -25,22 +24,6 @@ namespace DotNext
             internal ValueComparer(IComparer<T> comparer) => this.comparer = comparer;
 
             int ISupplier<T, T, int>.Invoke(T arg1, T arg2) => comparer.Compare(arg1, arg2);
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private readonly struct HexByte
-        {
-            internal readonly char High, Low;
-
-            internal HexByte(byte value)
-            {
-                var str = value.ToString("X2", InvariantCulture);
-                Debug.Assert(str.Length == 2);
-                High = str[0];
-                Low = str[1];
-            }
-
-            public static implicit operator ReadOnlySpan<char>(in HexByte hex) => MemoryMarshal.CreateReadOnlySpan(ref AsRef(in hex.High), 2);
         }
 
         private static readonly char[] LowerCasedHexTable = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
@@ -432,6 +415,9 @@ namespace DotNext
             return new string(buffer.Span.Slice(0, count));
         }
 
+        private static ReadOnlySpan<T> AsSpan<T>(this ref (T, T) pair)
+            => MemoryMarshal.CreateReadOnlySpan(ref As<(T, T), T>(ref pair), 2);
+
         /// <summary>
         /// Decodes hexadecimal representation of bytes.
         /// </summary>
@@ -444,10 +430,10 @@ namespace DotNext
                 return 0;
             var charCount = Math.Min(chars.Length, output.Length * 2);
             charCount -= charCount % 2;
-            ref HexByte pair = ref As<char, HexByte>(ref MemoryMarshal.GetReference(chars));
+            ref (char, char) pair = ref As<char, (char, char)>(ref MemoryMarshal.GetReference(chars));
             ref byte bytePtr = ref MemoryMarshal.GetReference(output);
             for (var i = 0; i < charCount; i += 2, bytePtr = ref Intrinsics.Advance(ref bytePtr), pair = ref Intrinsics.Advance(ref pair))
-                bytePtr = byte.Parse(pair, NumberStyles.AllowHexSpecifier, InvariantCulture);
+                bytePtr = byte.Parse(pair.AsSpan(), NumberStyles.AllowHexSpecifier, InvariantCulture);
             return charCount / 2;
         }
 
