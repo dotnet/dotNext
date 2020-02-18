@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static System.Globalization.CultureInfo;
 using static System.Runtime.CompilerServices.Unsafe;
+using Debug = System.Diagnostics.Debug;
 using NumberStyles = System.Globalization.NumberStyles;
 
 namespace DotNext
@@ -26,8 +27,26 @@ namespace DotNext
             int ISupplier<T, T, int>.Invoke(T arg1, T arg2) => comparer.Compare(arg1, arg2);
         }
 
-        private static readonly char[] LowerCasedHexTable = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-        private static readonly char[] UpperCasedHexTable = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+        private unsafe struct HexTable
+        {
+            private const int Size = 16;
+            private fixed char chars[Size];
+
+            internal HexTable(params char[] values)
+            {
+                Debug.Assert(values.LongLength == Size);
+                Intrinsics.Copy(in values[0], ref chars[0], Size);
+            }
+
+            internal ref char this[int index]
+            {
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                get => ref chars[index];
+            }
+        }
+
+        private static HexTable LowerCasedHexTable = new HexTable('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
+        private static HexTable UpperCasedHexTable = new HexTable('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span.
