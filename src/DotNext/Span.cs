@@ -43,14 +43,8 @@ namespace DotNext
             public static implicit operator ReadOnlySpan<char>(in HexByte hex) => MemoryMarshal.CreateReadOnlySpan(ref AsRef(in hex.High), 2);
         }
 
-        private static readonly HexByte[] HexLookupTable;
-
-        static Span()
-        {
-            HexLookupTable = new HexByte[byte.MaxValue + 1];
-            for (var i = 0; i <= byte.MaxValue; i++)
-                HexLookupTable[i] = new HexByte((byte)i);
-        }
+        private static readonly char[] LowerCasedHexTable = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
+        private static readonly char[] UpperCasedHexTable = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span.
@@ -397,19 +391,6 @@ namespace DotNext
         /// <param name="action">The action to be applied for each element of the span.</param>
         public static void ForEach<T>(this Span<T> span, RefAction<T, int> action) => ForEach(span, new ValueRefAction<T, int>(action, true));
 
-        private static void ToLowerFast(Span<char> output)
-        {
-            //standard C# operators are replaced with Add and Subtract intrisics here
-            //because I don't need redundant conv.u instruction when converting back from int32 to char
-            //conv.u instruction adds overhead for each hex character
-            foreach(ref var charPtr in output)
-            {
-                char ch = charPtr;
-                if(ch >= 'A' && ch <= 'F')
-                    charPtr = 'a'.Add(ch.Subtract('A'));
-            }
-        }
-
         /// <summary>
         /// Converts set of bytes into hexadecimal representation.
         /// </summary>
@@ -424,16 +405,14 @@ namespace DotNext
             var bytesCount = Math.Min(bytes.Length, output.Length / 2);
             ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
             ref char charPtr = ref MemoryMarshal.GetReference(output);
-            ref HexByte firstHex = ref HexLookupTable[0];
-            for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
+            ref char hexTable = ref lowercased ? ref LowerCasedHexTable[0] : ref UpperCasedHexTable[0];
+            for (var i = 0; i < bytesCount; i++, charPtr = ref Intrinsics.Advance(ref charPtr))
             {
-                ref var hexInfo = ref Add(ref firstHex, Add(ref firstByte, i));
-                charPtr = hexInfo.High;
-                charPtr = ref Add(ref charPtr, 1);
-                charPtr = hexInfo.Low;
+                var value = Add(ref firstByte, i);
+                charPtr = Add(ref hexTable, value >> 4);
+                charPtr = ref Intrinsics.Advance(ref charPtr);
+                charPtr = Add(ref hexTable, value & 0B1111);
             }
-            if(lowercased)
-                ToLowerFast(output);
             return bytesCount * 2;
         }
 
@@ -467,7 +446,7 @@ namespace DotNext
             charCount -= charCount % 2;
             ref HexByte pair = ref As<char, HexByte>(ref MemoryMarshal.GetReference(chars));
             ref byte bytePtr = ref MemoryMarshal.GetReference(output);
-            for (var i = 0; i < charCount; i += 2, bytePtr = ref Add(ref bytePtr, 1), pair = ref Add(ref pair, 1))
+            for (var i = 0; i < charCount; i += 2, bytePtr = ref Intrinsics.Advance(ref bytePtr), pair = ref Intrinsics.Advance(ref pair))
                 bytePtr = byte.Parse(pair, NumberStyles.AllowHexSpecifier, InvariantCulture);
             return charCount / 2;
         }
