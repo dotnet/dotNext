@@ -40,6 +40,33 @@ namespace DotNext
         }
 
         [Fact]
+        public static void ShareDataStorage()
+        {
+            var slot = UserDataSlot<long>.Allocate();
+            var str1 = new string('a', 3);
+            var str2 = new string('b', 3);
+            NotSame(str1, str2);
+            str1.GetUserData().ShareWith(str2);
+            str2.GetUserData().Set(slot, 42L);
+            Equal(42L, str1.GetUserData().Get(slot));
+        }
+
+        [Fact]
+        public static void CopyDataStorage()
+        {
+            var slot = UserDataSlot<long>.Allocate();
+            var str1 = new string('a', 3);
+            var str2 = new string('b', 3);
+            NotSame(str1, str2);
+            str1.GetUserData().Set(slot, 42L);
+            str1.GetUserData().CopyTo(str2);
+            Equal(42L, str2.GetUserData().Get(slot));
+            str2.GetUserData().Set(slot, 50L);
+            Equal(50L, str2.GetUserData().Get(slot));
+            Equal(42L, str1.GetUserData().Get(slot));
+        }
+
+        [Fact]
         public static void UserDataStorageGetOrSet()
         {
             string ToStr(int value) => value.ToString();
