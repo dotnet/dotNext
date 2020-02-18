@@ -63,6 +63,20 @@ namespace DotNext
             {
             }
 
+            private BackingStorage(IDictionary<long, object?> source)
+                : base(source)
+            {
+            }
+
+            internal BackingStorage Copy()
+            {
+                BackingStorage copy;
+                lockState.EnterReadLock();
+                copy = new BackingStorage(this);
+                lockState.ExitReadLock();
+                return copy;
+            }
+
             [return: NotNullIfNotNull("defaultValue")]
             [return: MaybeNull]
             internal V Get<V>(UserDataSlot<V> slot, [AllowNull]V defaultValue)
@@ -348,6 +362,19 @@ namespace DotNext
             else
                 return storage.Remove(slot, out userData);
         }
+
+        /// <summary>
+        /// Replaces user data of the object with the current one.
+        /// </summary>
+        /// <param name="obj">The object which user data has to be replaced with the current one.</param>
+        /// <seealso cref="CopyTo(object)"/>
+        public void ShareWith(object obj) => UserData.AddOrUpdate(obj, GetOrCreateStorage());
+
+        /// <summary>
+        /// Replaces user data of the object with the copy of the current one.
+        /// </summary>
+        /// <param name="obj">The object which user data has to be replaced with the copy of the current one.</param>
+        public void CopyTo(object obj) => UserData.AddOrUpdate(obj, GetOrCreateStorage().Copy());
 
         /// <summary>
         /// Computes identity hash code for this storage.
