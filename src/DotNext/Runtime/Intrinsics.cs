@@ -381,17 +381,17 @@ namespace DotNext.Runtime
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
-                for (; length >= sizeof(Vector<byte>); first = ref Advance(ref first), second = ref Advance(ref second))
+                for (; length >= sizeof(Vector<byte>); first = ref first.Advance<Vector<byte>>(), second = ref second.Advance<Vector<byte>>())
                     if (first.Read<Vector<byte>>() == second.Read<Vector<byte>>())
                         length -= Vector<byte>.Count;
                     else
                         goto exit;
-            for (; length >= sizeof(UIntPtr); first = ref Advance(ref first), second = ref Advance(ref second))
+            for (; length >= sizeof(UIntPtr); first = ref first.Advance<UIntPtr>(), second = ref second.Advance<UIntPtr>())
                 if (first.Read<UIntPtr>() == second.Read<UIntPtr>())
                     length -= sizeof(UIntPtr);
                 else
                     goto exit;
-            for (; length > 0; first = ref Advance(ref first), second = ref Advance(ref second))
+            for (; length > 0; first = ref first.Advance<byte>(), second = ref second.Advance<byte>())
                 if (first == second)
                     length -= sizeof(byte);
                 else
@@ -584,14 +584,14 @@ namespace DotNext.Runtime
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static ref T Advance<T>(ref T ptr)
+        private static ref byte Advance<T>(this ref byte ptr)
             where T : unmanaged
         {
             Push(ref ptr);
             Sizeof(typeof(T));
             Conv_I();
             Emit.Add();
-            return ref ReturnRef<T>();
+            return ref ReturnRef<byte>();
         }
 
         private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out]long* length)
@@ -605,7 +605,7 @@ namespace DotNext.Runtime
             Sub();
             Stind_I8();
 
-            return ref Advance(ref address);
+            return ref address.Advance<T>();
         }
 
         private static unsafe bool IsZero([In] ref byte address, long length)
