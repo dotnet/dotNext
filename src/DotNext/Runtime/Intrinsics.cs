@@ -346,18 +346,6 @@ namespace DotNext.Runtime
             return ref ReturnRef<T>();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ref byte AddOffset<T>(this ref byte address, int count = 1)
-        {
-            Push(ref address);
-            Push(count);
-            Sizeof(typeof(T));
-            Conv_I();
-            Mul_Ovf();
-            Add_Ovf();
-            return ref ReturnRef<byte>();
-        }
-
         internal static int Compare(ref byte first, ref byte second, long length)
         {
             var comparison = 0;
@@ -393,17 +381,17 @@ namespace DotNext.Runtime
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
-                for (; length >= sizeof(Vector<byte>); first = ref first.AddOffset<Vector<byte>>(), second = ref second.AddOffset<Vector<byte>>())
+                for (; length >= sizeof(Vector<byte>); first = ref Advance(ref first), second = ref Advance(ref second))
                     if (first.Read<Vector<byte>>() == second.Read<Vector<byte>>())
                         length -= Vector<byte>.Count;
                     else
                         goto exit;
-            for (; length >= sizeof(UIntPtr); first = ref first.AddOffset<UIntPtr>(), second = ref second.AddOffset<UIntPtr>())
+            for (; length >= sizeof(UIntPtr); first = ref Advance(ref first), second = ref Advance(ref second))
                 if (first.Read<UIntPtr>() == second.Read<UIntPtr>())
                     length -= sizeof(UIntPtr);
                 else
                     goto exit;
-            for (; length > 0; first = ref AddOffset<byte>(ref first), second = ref AddOffset<byte>(ref second))
+            for (; length > 0; first = ref Advance(ref first), second = ref Advance(ref second))
                 if (first == second)
                     length -= sizeof(byte);
                 else
@@ -595,6 +583,17 @@ namespace DotNext.Runtime
             return Return<bool>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static ref T Advance<T>(ref T ptr)
+            where T : unmanaged
+        {
+            Push(ref ptr);
+            Sizeof(typeof(T));
+            Conv_I();
+            Emit.Add();
+            return ref ReturnRef<T>();
+        }
+
         private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out]long* length)
             where T : unmanaged
         {
@@ -606,7 +605,7 @@ namespace DotNext.Runtime
             Sub();
             Stind_I8();
 
-            return ref address.AddOffset<T>();
+            return ref Advance(ref address);
         }
 
         private static unsafe bool IsZero([In] ref byte address, long length)
