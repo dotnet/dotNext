@@ -374,7 +374,13 @@ namespace DotNext
         /// Replaces user data of the object with the copy of the current one.
         /// </summary>
         /// <param name="obj">The object which user data has to be replaced with the copy of the current one.</param>
-        public void CopyTo(object obj) => UserData.AddOrUpdate(obj, GetOrCreateStorage().Copy());
+        /// <seealso cref="ShareWith(object)"/>
+        public void CopyTo(object obj)
+        {
+            var storage = GetStorage()?.Copy();
+            if(storage != null)
+                UserData.Add(obj, storage);
+        }
 
         /// <summary>
         /// Computes identity hash code for this storage.
