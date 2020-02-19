@@ -7,6 +7,17 @@ namespace DotNext
     [ExcludeFromCodeCoverage]
     public sealed class ObjectExtensionsTests : Test
     {
+        private sealed class UserDataSupport : UserDataStorage.ISourceProvider
+        {
+            private readonly object source;
+
+            internal UserDataSupport() => source = DotNext.UserDataStorage.ISourceProvider.CreateStorage();
+
+            internal UserDataSupport(object source) => this.source = source;
+
+            object UserDataStorage.ISourceProvider.Source => source;
+        }
+
         [Fact]
         public static void OneOfCheck()
         {
@@ -52,6 +63,21 @@ namespace DotNext
         }
 
         [Fact]
+        public static void ShareDataStorage2()
+        {
+            var slot = UserDataSlot<long>.Allocate();
+            var owner = new object();
+            var obj1 = new UserDataSupport(owner);
+            var obj2 = new UserDataSupport(owner);
+            NotSame(obj1, obj2);
+            obj1.GetUserData().ShareWith(obj2);
+            obj2.GetUserData().Set(slot, 42L);
+            Equal(42L, obj1.GetUserData().Get(slot));
+            owner = new UserDataSupport();
+            Throws<ArgumentException>(() => obj1.GetUserData().ShareWith(owner));
+        }
+
+        [Fact]
         public static void CopyDataStorage()
         {
             var slot = UserDataSlot<long>.Allocate();
@@ -64,6 +90,21 @@ namespace DotNext
             str2.GetUserData().Set(slot, 50L);
             Equal(50L, str2.GetUserData().Get(slot));
             Equal(42L, str1.GetUserData().Get(slot));
+        }
+
+        [Fact]
+        public static void CopyDataStorage2()
+        {
+            var slot = UserDataSlot<long>.Allocate();
+            var obj1 = new UserDataSupport();
+            var obj2 = new UserDataSupport();
+            NotSame(obj1, obj2);
+            obj1.GetUserData().Set(slot, 42L);
+            obj1.GetUserData().CopyTo(obj2);
+            Equal(42L, obj2.GetUserData().Get(slot));
+            obj2.GetUserData().Set(slot, 50L);
+            Equal(50L, obj2.GetUserData().Get(slot));
+            Equal(42L, obj1.GetUserData().Get(slot));
         }
 
         [Fact]

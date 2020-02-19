@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace DotNext
 {
+    using static Collections.Generic.Collection;
     using ReaderWriterSpinLock = Threading.ReaderWriterSpinLock;
 
     /// <summary>
@@ -17,6 +18,38 @@ namespace DotNext
     [SuppressMessage("Design", "CA1066", Justification = "By-ref value type cannot implements interfaces")]
     public readonly ref struct UserDataStorage
     {
+        /// <summary>
+        /// Implementation of this interface allows to customize behavior of
+        /// <see cref="ObjectExtensions.GetUserData{T}(T)"/> method.
+        /// </summary>
+        /// <remarks>
+        /// If runtime type of object passed to <see cref="ObjectExtensions.GetUserData{T}(T)"/> method
+        /// provides implementation of this interface then actual <see cref="UserDataStorage"/>
+        /// depends on the <see cref="Source"/> implementation.
+        /// It is recommended to implement this interface explicitly.
+        /// </remarks>
+        public interface ISourceProvider
+        {
+            /// <summary>
+            /// Gets the actual source of user data for this object.
+            /// </summary>
+            /// <remarks>
+            /// If this property returns <c>this</c> object then user data has to be attached to the object itself;
+            /// otherwise, use the data attached to the returned object.
+            /// Additionally, you can store user data explicitly in the backing field which is initialized
+            /// with real user data storage using <see cref="CreateStorage"/> method.
+            /// </remarks>
+            /// <value>The source of user data for this object.</value>
+            object Source { get; }
+
+            /// <summary>
+            /// Creates a storage of user data that can be saved into field
+            /// and returned via <see cref="Source"/> property.
+            /// </summary>
+            /// <returns>The object representing storage for user data.</returns>
+            protected static object CreateStorage() => new BackingStorage();
+        }
+
         private readonly struct Supplier<T, V> : ISupplier<V>
         {
             private readonly T arg;
@@ -75,6 +108,16 @@ namespace DotNext
                 copy = new BackingStorage(this);
                 lockState.ExitReadLock();
                 return copy;
+            }
+
+            internal void CopyTo(BackingStorage dest)
+            {
+                lockState.EnterReadLock();
+                dest.lockState.EnterWriteLock();
+                dest.Clear();
+                dest.AddAll(this);
+                dest.lockState.ExitWriteLock();
+                lockState.ExitReadLock();
             }
 
             [return: NotNullIfNotNull("defaultValue")]
@@ -155,16 +198,32 @@ namespace DotNext
 
         private static readonly ConditionalWeakTable<object, BackingStorage> UserData = new ConditionalWeakTable<object, BackingStorage>();
 
-        private readonly object owner;
+        private readonly object source;
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal UserDataStorage(object owner)
-            => this.owner = owner ?? throw new ArgumentNullException(nameof(owner));
+        internal UserDataStorage(object source)
+        {
+            switch(source)
+            {
+                case null:
+                    throw new ArgumentNullException(nameof(UserDataStorage.source));
+                case ISourceProvider support:
+                    this.source = support.Source;
+                    break;
+                default:
+                    this.source = source;
+                    break;
+            }
+        }
 
         private BackingStorage? GetStorage()
-            => UserData.TryGetValue(owner, out var storage) ? storage : null;
+        {
+            if(source is BackingStorage storage)
+                return storage;
+            return UserData.TryGetValue(source, out storage) ? storage : null;   
+        }
 
-        private BackingStorage GetOrCreateStorage() => UserData.GetOrCreateValue(owner);
+        private BackingStorage GetOrCreateStorage() 
+            => source is BackingStorage storage ? storage : UserData.GetOrCreateValue(source);
 
         /// <summary>
 		/// Gets user data.
@@ -366,9 +425,22 @@ namespace DotNext
         /// <summary>
         /// Replaces user data of the object with the current one.
         /// </summary>
+        /// <remarks>
+        /// It is not possible to share user data with <paramref name="obj"/> if it is
+        /// implement <see cref="ISourceProvider"/> and <see cref="ISourceProvider.Source"/> return
+        /// object created by <see cref="ISourceProvider.CreateStorage"/> method.
+        /// </remarks>
         /// <param name="obj">The object which user data has to be replaced with the current one.</param>
+        /// <exception cref="ArgumentException"><paramref name="obj"/> was created using <see cref="ISourceProvider.CreateStorage"/> method.</exception>
         /// <seealso cref="CopyTo(object)"/>
-        public void ShareWith(object obj) => UserData.AddOrUpdate(obj, GetOrCreateStorage());
+        public void ShareWith(object obj)
+        {
+            if(obj is ISourceProvider support)
+                obj = support.Source;
+            if(obj is BackingStorage storage)
+                throw new ArgumentException(ExceptionMessages.CannotShareUserData, nameof(obj));
+            UserData.AddOrUpdate(obj, GetOrCreateStorage());
+        }
 
         /// <summary>
         /// Replaces user data of the object with the copy of the current one.
@@ -377,16 +449,21 @@ namespace DotNext
         /// <seealso cref="ShareWith(object)"/>
         public void CopyTo(object obj)
         {
-            var storage = GetStorage()?.Copy();
-            if(storage != null)
-                UserData.Add(obj, storage);
+            if(obj is ISourceProvider support)
+                obj = support.Source;
+            var source = GetStorage();
+            if(source != null)
+                if(obj is BackingStorage destination)
+                    source.CopyTo(destination);
+                else
+                    UserData.Add(obj, source.Copy());
         }
 
         /// <summary>
         /// Computes identity hash code for this storage.
         /// </summary>
         /// <returns>The identity hash code for this storage.</returns>
-        public override int GetHashCode() => RuntimeHelpers.GetHashCode(owner);
+        public override int GetHashCode() => RuntimeHelpers.GetHashCode(source);
 
         /// <summary>
         /// Determines whether this storage is attached to
@@ -394,13 +471,13 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other object to check.</param>
         /// <returns><see langword="true"/>, if this storage is attached to <paramref name="other"/> object; otherwise, <see langword="false"/>.</returns>
-        public override bool Equals(object? other) => ReferenceEquals(owner, other);
+        public override bool Equals(object? other) => ReferenceEquals(source, other);
 
         /// <summary>
         /// Returns textual representation of this storage.
         /// </summary>
         /// <returns>The textual representation of this storage.</returns>
-        public override string ToString() => owner.ToString();
+        public override string ToString() => source.ToString();
 
         /// <summary>
         /// Determines whether two stores are for the same object.
@@ -409,7 +486,7 @@ namespace DotNext
         /// <param name="second">The second storage to compare.</param>
         /// <returns><see langword="true"/>, if two stores are for the same object; otherwise, <see langword="false"/>.</returns>
         public static bool operator ==(UserDataStorage first, UserDataStorage second)
-            => ReferenceEquals(first.owner, second.owner);
+            => ReferenceEquals(first.source, second.source);
 
         /// <summary>
         /// Determines whether two stores are not for the same object.
@@ -418,6 +495,6 @@ namespace DotNext
         /// <param name="second">The second storage to compare.</param>
         /// <returns><see langword="true"/>, if two stores are not for the same object; otherwise, <see langword="false"/>.</returns>
         public static bool operator !=(UserDataStorage first, UserDataStorage second)
-            => !ReferenceEquals(first.owner, second.owner);
+            => !ReferenceEquals(first.source, second.source);
     }
 }
