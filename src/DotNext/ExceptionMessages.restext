@@ -11,4 +11,3 @@ ConcreteDelegateExpected=Concrete delegate type expected
 InvalidExpressionTree=Expression tree is not supported
 UnknownHashAlgorithm=Unknown name of hash algorithm
 NotEnoughMemory=Memory block is not enough to place data
-CannotShareUserData=Attempt to the share the data with the object that was created using UserDataStorage.Create() method.

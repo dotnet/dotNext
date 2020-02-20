@@ -54,27 +54,12 @@ namespace DotNext
         public static void ShareDataStorage()
         {
             var slot = UserDataSlot<long>.Allocate();
-            var str1 = new string('a', 3);
-            var str2 = new string('b', 3);
-            NotSame(str1, str2);
-            str1.GetUserData().ShareWith(str2);
-            str2.GetUserData().Set(slot, 42L);
-            Equal(42L, str1.GetUserData().Get(slot));
-        }
-
-        [Fact]
-        public static void ShareDataStorage2()
-        {
-            var slot = UserDataSlot<long>.Allocate();
             var owner = new object();
             var obj1 = new UserDataSupport(owner);
             var obj2 = new UserDataSupport(owner);
             NotSame(obj1, obj2);
-            obj1.GetUserData().ShareWith(obj2);
             obj2.GetUserData().Set(slot, 42L);
             Equal(42L, obj1.GetUserData().Get(slot));
-            owner = new UserDataSupport();
-            Throws<ArgumentException>(() => obj1.GetUserData().ShareWith(owner));
         }
 
         [Fact]

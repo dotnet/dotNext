@@ -34,7 +34,5 @@ namespace DotNext
         internal static string UnknownHashAlgorithm => Resources.GetString("UnknownHashAlgorithm");
 
         internal static string NotEnoughMemory => Resources.GetString("NotEnoughMemory");
-
-        internal static string CannotShareUserData => Resources.GetString("CannotShareUserData");
     }
 }
