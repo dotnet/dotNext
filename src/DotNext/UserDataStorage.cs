@@ -200,20 +200,12 @@ namespace DotNext
 
         private readonly object source;
 
-        internal UserDataStorage(object source)
+        internal UserDataStorage(object source) => this.source = source switch
         {
-            switch(source)
-            {
-                case null:
-                    throw new ArgumentNullException(nameof(UserDataStorage.source));
-                case ISourceProvider support:
-                    this.source = support.Source;
-                    break;
-                default:
-                    this.source = source;
-                    break;
-            }
-        }
+            null => throw new ArgumentNullException(nameof(UserDataStorage.source)),
+            ISourceProvider support => support.Source,
+            _ => source,
+        };
 
         private BackingStorage? GetStorage()
         {
@@ -423,30 +415,9 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Replaces user data of the object with the current one.
-        /// </summary>
-        /// <remarks>
-        /// It is not possible to share user data with <paramref name="obj"/> if it is
-        /// implement <see cref="ISourceProvider"/> and <see cref="ISourceProvider.Source"/> return
-        /// object created by <see cref="ISourceProvider.CreateStorage"/> method.
-        /// </remarks>
-        /// <param name="obj">The object which user data has to be replaced with the current one.</param>
-        /// <exception cref="ArgumentException"><paramref name="obj"/> was created using <see cref="ISourceProvider.CreateStorage"/> method.</exception>
-        /// <seealso cref="CopyTo(object)"/>
-        public void ShareWith(object obj)
-        {
-            if(obj is ISourceProvider support)
-                obj = support.Source;
-            if(obj is BackingStorage storage)
-                throw new ArgumentException(ExceptionMessages.CannotShareUserData, nameof(obj));
-            UserData.AddOrUpdate(obj, GetOrCreateStorage());
-        }
-
-        /// <summary>
         /// Replaces user data of the object with the copy of the current one.
         /// </summary>
         /// <param name="obj">The object which user data has to be replaced with the copy of the current one.</param>
-        /// <seealso cref="ShareWith(object)"/>
         public void CopyTo(object obj)
         {
             if(obj is ISourceProvider support)
