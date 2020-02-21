@@ -7,15 +7,15 @@ namespace DotNext
     [ExcludeFromCodeCoverage]
     public sealed class ObjectExtensionsTests : Test
     {
-        private sealed class UserDataSupport : UserDataStorage.ISourceProvider
+        private sealed class UserDataSupport : UserDataStorage.IContainer
         {
             private readonly object source;
 
-            internal UserDataSupport() => source = DotNext.UserDataStorage.ISourceProvider.CreateStorage();
+            internal UserDataSupport() => source = DotNext.UserDataStorage.IContainer.CreateStorage();
 
             internal UserDataSupport(object source) => this.source = source;
 
-            object UserDataStorage.ISourceProvider.Source => source;
+            object UserDataStorage.IContainer.Source => source;
         }
 
         [Fact]
