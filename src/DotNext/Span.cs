@@ -27,26 +27,7 @@ namespace DotNext
             int ISupplier<T, T, int>.Invoke(T arg1, T arg2) => comparer.Compare(arg1, arg2);
         }
 
-        private unsafe struct HexTable
-        {
-            private const int Size = 16;
-            private fixed char chars[Size];
-
-            internal HexTable(params char[] values)
-            {
-                Debug.Assert(values.LongLength == Size);
-                Intrinsics.Copy(in values[0], ref chars[0], Size);
-            }
-
-            internal ref char this[int index]
-            {
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                get => ref chars[index];
-            }
-        }
-
-        private static HexTable LowerCasedHexTable = new HexTable('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f');
-        private static HexTable UpperCasedHexTable = new HexTable('0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F');
+        private static readonly char[] HexTable = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
         /// <summary>
         /// Computes bitwise hash code for the memory identified by the given span.
@@ -407,7 +388,7 @@ namespace DotNext
             var bytesCount = Math.Min(bytes.Length, output.Length / 2);
             ref byte firstByte = ref MemoryMarshal.GetReference(bytes);
             ref char charPtr = ref MemoryMarshal.GetReference(output);
-            ref char hexTable = ref lowercased ? ref LowerCasedHexTable[0] : ref UpperCasedHexTable[0];
+            ref char hexTable = ref HexTable[lowercased ? 0 : 16];
             for (var i = 0; i < bytesCount; i++, charPtr = ref Add(ref charPtr, 1))
             {
                 var value = Add(ref firstByte, i);
