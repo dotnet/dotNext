@@ -140,6 +140,14 @@ namespace DotNext.Runtime
         }
 
         [Fact]
+        public static void ReadonlyRef2()
+        {
+            var array = new[] { "a", "b", "c" };
+            ref readonly var element = ref array.GetReadonlyRef<string, ICloneable>(2);
+            Equal("c", element.Clone());
+        }
+
+        [Fact]
         public static void IsNullable()
         {
             True(Intrinsics.IsNullable<string>());
