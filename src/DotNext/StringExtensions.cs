@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
-using M = InlineIL.MethodRef;
 using Var = InlineIL.LocalVar;
 
 namespace DotNext
@@ -91,7 +90,7 @@ namespace DotNext
             Conv_U();
             Dup();
             Brfalse(methodExit);
-            Call(M.PropertyGet(typeof(RuntimeHelpers), nameof(RuntimeHelpers.OffsetToStringData)));
+            Push(RuntimeHelpers.OffsetToStringData);
             Conv_U();
             Add();
             MarkLabel(methodExit);
