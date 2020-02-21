@@ -434,7 +434,7 @@ namespace DotNext.Runtime
         public static ref readonly T GetReadonlyRef<T>(this T[] array, long index) => ref array[index];
 
         /// <summary>
-        /// Allows to reinterpret type of managed pointer referencing array element.
+        /// Allows to reinterpret managed pointer to array element.
         /// </summary>
         /// <typeparam name="I">The type of array elements.</typeparam>
         /// <typeparam name="O">The requested</typeparam>
