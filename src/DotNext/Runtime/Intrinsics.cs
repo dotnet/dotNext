@@ -428,15 +428,29 @@ namespace DotNext.Runtime
         /// <param name="array">The array object.</param>
         /// <param name="index">The index of the array element.</param>
         /// <returns>The reference to the array element with restricted mutability.</returns>
+        /// <seealso cref="GetReadonlyRef{I, O}(I[], long)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref readonly T GetReadonlyRef<T>(this T[] array, long index)
+        [Obsolete("Use overloaded method that allows to specify return type explicitly")]
+        public static ref readonly T GetReadonlyRef<T>(this T[] array, long index) => ref array[index];
+
+        /// <summary>
+        /// Allows to reinterpret type of managed pointer referencing array element.
+        /// </summary>
+        /// <typeparam name="I">The type of array elements.</typeparam>
+        /// <typeparam name="O">The requested</typeparam>
+        /// <param name="array">The array object.</param>
+        /// <param name="index">The index of the array element.</param>
+        /// <returns>The reference to the array element with restricted mutability.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref readonly O GetReadonlyRef<I, O>(this I[] array, long index)
+            where I : class, O
         {
             Push(array);
             Push(index);
             Conv_Ovf_I();
             Readonly();
-            Ldelema(typeof(T));
-            return ref ReturnRef<T>();
+            Ldelema(typeof(O));
+            return ref ReturnRef<O>();
         }
 
         /// <summary>
