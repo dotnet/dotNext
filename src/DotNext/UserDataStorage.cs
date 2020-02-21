@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext
 {
@@ -28,7 +29,7 @@ namespace DotNext
         /// depends on the <see cref="Source"/> implementation.
         /// It is recommended to implement this interface explicitly.
         /// </remarks>
-        public interface ISourceProvider
+        public interface IContainer
         {
             /// <summary>
             /// Gets the actual source of user data for this object.
@@ -50,6 +51,7 @@ namespace DotNext
             protected static object CreateStorage() => new BackingStorage();
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct Supplier<T, V> : ISupplier<V>
         {
             private readonly T arg;
@@ -64,6 +66,7 @@ namespace DotNext
             V ISupplier<V>.Invoke() => factory.Invoke(arg);
         }
 
+        [StructLayout(LayoutKind.Auto)]
         private readonly struct Supplier<T1, T2, V> : ISupplier<V>
         {
             private readonly T1 arg1;
@@ -203,7 +206,7 @@ namespace DotNext
         internal UserDataStorage(object source) => this.source = source switch
         {
             null => throw new ArgumentNullException(nameof(UserDataStorage.source)),
-            ISourceProvider support => support.Source,
+            IContainer support => support.Source,
             _ => source,
         };
 
@@ -420,7 +423,7 @@ namespace DotNext
         /// <param name="obj">The object which user data has to be replaced with the copy of the current one.</param>
         public void CopyTo(object obj)
         {
-            if(obj is ISourceProvider support)
+            if(obj is IContainer support)
                 obj = support.Source;
             var source = GetStorage();
             if(source != null)
