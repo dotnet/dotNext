@@ -552,7 +552,7 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type of the element.</typeparam>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Copy<T>(in T source, ref T destination, long count)
+        public static unsafe void Copy<T>(in T source, ref T destination, long count)   //TODO: destination should be out parameter
             where T : unmanaged
             => Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(source)), ref Unsafe.As<T, byte>(ref destination), checked(count * sizeof(T)));
 
