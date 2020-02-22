@@ -402,7 +402,7 @@ namespace DotNext
             return Closure<T1>.Create(action, obj);
         }
 
-        private static U UnsafeUnbind<U>(this Delegate del, Type targetType)
+        private static U Unbind<U>(this Delegate del, Type targetType)
             where U : MulticastDelegate
         {
             var target = del.Target;
@@ -424,7 +424,7 @@ namespace DotNext
         /// <param name="action">The delegate to unbind.</param>
         /// <returns>Unbound version of the delegate.</returns>
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="T"/>.</exception>
-        public static Action<T> Unbind<T>(this Action action) where T : class => action.UnsafeUnbind<Action<T>>(typeof(T));
+        public static Action<T> Unbind<T>(this Action action) where T : class => action.Unbind<Action<T>>(typeof(T));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -434,7 +434,7 @@ namespace DotNext
         /// <param name="func">The delegate to unbind.</param>
         /// <returns>Unbound version of the delegate.</returns>
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="T"/>.</exception>
-        public static Func<T, R> Unbind<T, R>(this Func<R> func) where T : class => func.UnsafeUnbind<Func<T, R>>(typeof(T));
+        public static Func<T, R> Unbind<T, R>(this Func<R> func) where T : class => func.Unbind<Func<T, R>>(typeof(T));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -447,7 +447,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Func<G, T, R> Unbind<G, T, R>(this Func<T, R> func)
             where G : class
-            => func.UnsafeUnbind<Func<G, T, R>>(typeof(G));
+            => func.Unbind<Func<G, T, R>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -459,7 +459,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Action<G, T> Unbind<G, T>(this Action<T> action)
             where G : class
-            => action.UnsafeUnbind<Action<G, T>>(typeof(G));
+            => action.Unbind<Action<G, T>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -473,7 +473,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Func<G, T1, T2, R> Unbind<G, T1, T2, R>(this Func<T1, T2, R> func)
             where G : class
-            => func.UnsafeUnbind<Func<G, T1, T2, R>>(typeof(G));
+            => func.Unbind<Func<G, T1, T2, R>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -486,7 +486,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Action<G, T1, T2> Unbind<G, T1, T2>(this Action<T1, T2> action)
             where G : class
-            => action.UnsafeUnbind<Action<G, T1, T2>>(typeof(G));
+            => action.Unbind<Action<G, T1, T2>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -501,7 +501,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Func<G, T1, T2, T3, R> Unbind<G, T1, T2, T3, R>(this Func<T1, T2, T3, R> func)
             where G : class
-            => func.UnsafeUnbind<Func<G, T1, T2, T3, R>>(typeof(G));
+            => func.Unbind<Func<G, T1, T2, T3, R>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -515,7 +515,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Action<G, T1, T2, T3> Unbind<G, T1, T2, T3>(this Action<T1, T2, T3> action)
             where G : class
-            => action.UnsafeUnbind<Action<G, T1, T2, T3>>(typeof(G));
+            => action.Unbind<Action<G, T1, T2, T3>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -531,7 +531,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Func<G, T1, T2, T3, T4, R> Unbind<G, T1, T2, T3, T4, R>(this Func<T1, T2, T3, T4, R> func)
             where G : class
-            => func.UnsafeUnbind<Func<G, T1, T2, T3, T4, R>>(typeof(G));
+            => func.Unbind<Func<G, T1, T2, T3, T4, R>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -546,7 +546,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Action<G, T1, T2, T3, T4> Unbind<G, T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action)
             where G : class
-            => action.UnsafeUnbind<Action<G, T1, T2, T3, T4>>(typeof(G));
+            => action.Unbind<Action<G, T1, T2, T3, T4>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -563,7 +563,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Func<G, T1, T2, T3, T4, T5, R> Unbind<G, T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> func)
             where G : class
-            => func.UnsafeUnbind<Func<G, T1, T2, T3, T4, T5, R>>(typeof(G));
+            => func.Unbind<Func<G, T1, T2, T3, T4, T5, R>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -579,7 +579,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Action<G, T1, T2, T3, T4, T5> Unbind<G, T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action)
             where G : class
-            => action.UnsafeUnbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
+            => action.Unbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
 
         internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(Unsafe.As<SendOrPostCallback>(ActionInvoker), action);
 
