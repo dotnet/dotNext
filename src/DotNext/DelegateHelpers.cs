@@ -14,7 +14,7 @@ namespace DotNext
     {
         private interface ITargetRewriter
         {
-            object Rewrite(Delegate d);
+            object? Rewrite(Delegate d);
         }
 
         private abstract class Closure
@@ -93,13 +93,13 @@ namespace DotNext
 
             internal TargetRewriter(object newTarget) => this.target = newTarget;
 
-            object ITargetRewriter.Rewrite(Delegate d) => this.target;
+            object? ITargetRewriter.Rewrite(Delegate d) => this.target;
         }
 
         [StructLayout(LayoutKind.Auto)]
         private readonly struct EmptyTargetRewriter : ITargetRewriter
         {
-            object ITargetRewriter.Rewrite(Delegate d) => d.Target;
+            object? ITargetRewriter.Rewrite(Delegate d) => d.Target;
         }
 
         private static MethodInfo GetMethod<D>(Expression<D> expression)
