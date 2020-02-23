@@ -30678,6 +30678,15 @@ references:
   fullName.vb: DotNext.Runtime.Intrinsics.GetReadonlyRef(Of T)(T(), System.Int64)
   nameWithType: Intrinsics.GetReadonlyRef<T>(T[], Int64)
   nameWithType.vb: Intrinsics.GetReadonlyRef(Of T)(T(), Int64)
+- uid: DotNext.Runtime.Intrinsics.GetReadonlyRef``2(``0[],System.Int64)
+  name: GetReadonlyRef<I, O>(I[], Int64)
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_GetReadonlyRef__2___0___System_Int64_
+  commentId: M:DotNext.Runtime.Intrinsics.GetReadonlyRef``2(``0[],System.Int64)
+  name.vb: GetReadonlyRef(Of I, O)(I(), Int64)
+  fullName: DotNext.Runtime.Intrinsics.GetReadonlyRef<I, O>(I[], System.Int64)
+  fullName.vb: DotNext.Runtime.Intrinsics.GetReadonlyRef(Of I, O)(I(), System.Int64)
+  nameWithType: Intrinsics.GetReadonlyRef<I, O>(I[], Int64)
+  nameWithType.vb: Intrinsics.GetReadonlyRef(Of I, O)(I(), Int64)
 - uid: DotNext.Runtime.Intrinsics.HasFlag*
   name: HasFlag
   href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_HasFlag_
@@ -40562,6 +40571,19 @@ references:
   commentId: T:DotNext.UserDataStorage
   fullName: DotNext.UserDataStorage
   nameWithType: UserDataStorage
+- uid: DotNext.UserDataStorage.CopyTo(System.Object)
+  name: CopyTo(Object)
+  href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_CopyTo_System_Object_
+  commentId: M:DotNext.UserDataStorage.CopyTo(System.Object)
+  fullName: DotNext.UserDataStorage.CopyTo(System.Object)
+  nameWithType: UserDataStorage.CopyTo(Object)
+- uid: DotNext.UserDataStorage.CopyTo*
+  name: CopyTo
+  href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_CopyTo_
+  commentId: Overload:DotNext.UserDataStorage.CopyTo
+  isSpec: "True"
+  fullName: DotNext.UserDataStorage.CopyTo
+  nameWithType: UserDataStorage.CopyTo
 - uid: DotNext.UserDataStorage.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_Equals_System_Object_
@@ -40692,6 +40714,38 @@ references:
   fullName.vb: DotNext.UserDataStorage.GetOrSet(Of T1, T2, V)(DotNext.UserDataSlot(Of V), T1, T2, System.Func(Of T1, T2, V))
   nameWithType: UserDataStorage.GetOrSet<T1, T2, V>(UserDataSlot<V>, T1, T2, Func<T1, T2, V>)
   nameWithType.vb: UserDataStorage.GetOrSet(Of T1, T2, V)(UserDataSlot(Of V), T1, T2, Func(Of T1, T2, V))
+- uid: DotNext.UserDataStorage.IContainer
+  name: UserDataStorage.IContainer
+  href: api/DotNext.UserDataStorage.IContainer.html
+  commentId: T:DotNext.UserDataStorage.IContainer
+  fullName: DotNext.UserDataStorage.IContainer
+  nameWithType: UserDataStorage.IContainer
+- uid: DotNext.UserDataStorage.IContainer.CreateStorage
+  name: CreateStorage()
+  href: api/DotNext.UserDataStorage.IContainer.html#DotNext_UserDataStorage_IContainer_CreateStorage
+  commentId: M:DotNext.UserDataStorage.IContainer.CreateStorage
+  fullName: DotNext.UserDataStorage.IContainer.CreateStorage()
+  nameWithType: UserDataStorage.IContainer.CreateStorage()
+- uid: DotNext.UserDataStorage.IContainer.CreateStorage*
+  name: CreateStorage
+  href: api/DotNext.UserDataStorage.IContainer.html#DotNext_UserDataStorage_IContainer_CreateStorage_
+  commentId: Overload:DotNext.UserDataStorage.IContainer.CreateStorage
+  isSpec: "True"
+  fullName: DotNext.UserDataStorage.IContainer.CreateStorage
+  nameWithType: UserDataStorage.IContainer.CreateStorage
+- uid: DotNext.UserDataStorage.IContainer.Source
+  name: Source
+  href: api/DotNext.UserDataStorage.IContainer.html#DotNext_UserDataStorage_IContainer_Source
+  commentId: P:DotNext.UserDataStorage.IContainer.Source
+  fullName: DotNext.UserDataStorage.IContainer.Source
+  nameWithType: UserDataStorage.IContainer.Source
+- uid: DotNext.UserDataStorage.IContainer.Source*
+  name: Source
+  href: api/DotNext.UserDataStorage.IContainer.html#DotNext_UserDataStorage_IContainer_Source_
+  commentId: Overload:DotNext.UserDataStorage.IContainer.Source
+  isSpec: "True"
+  fullName: DotNext.UserDataStorage.IContainer.Source
+  nameWithType: UserDataStorage.IContainer.Source
 - uid: DotNext.UserDataStorage.op_Equality(DotNext.UserDataStorage,DotNext.UserDataStorage)
   name: Equality(UserDataStorage, UserDataStorage)
   href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_op_Equality_DotNext_UserDataStorage_DotNext_UserDataStorage_

@@ -8,7 +8,7 @@
     <title>Enum Enhancements | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Enum Enhancements | .NEXT ">
-    <meta name="generator" content="docfx 2.48.1.0">
+    <meta name="generator" content="docfx 2.49.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -114,7 +114,7 @@ white == Color.White;   //true
 <p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.enum">System.Enum</a> class has public instance method <code>HasFlag</code> that allows to check whether the one or more bits are set in the enumeration. However, it causes boxing of the argument. There is no generic version of this method in standard library to avoid boxing.</p>
 <p>.NEXT library offers generic and fast version of <code>HasFlag</code> method that prevents boxing:</p>
 <ul>
-<li>Instance method <code>HasFlag</code> of <a href="https://sakno.github.io/dotNext/api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> class</li>
+<li>Instance method <code>IsFlag</code> of <a href="https://sakno.github.io/dotNext/api/DotNext.Enum-1.html">Enum&lt;T&gt;</a> class</li>
 <li>Static method <code>HasFlag</code> of <a href="https://sakno.github.io/dotNext/api/DotNext.Runtime.Intrinsics.html">Intrinsics</a> class</li>
 </ul>
 </article>
@@ -125,7 +125,7 @@ white == Color.White;   //true
               <div class="contribution">
                 <ul class="nav">
                   <li>
-                    <a href="https://github.com/sakno/DotNext/blob/gh-pages/docs/features/core/enum.md/#L1" class="contribution-link">Improve this Doc</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/features/core/enum.md/#L1" class="contribution-link">Improve this Doc</a>
                   </li>
                 </ul>
               </div>
