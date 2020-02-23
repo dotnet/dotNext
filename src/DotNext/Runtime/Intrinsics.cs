@@ -346,18 +346,6 @@ namespace DotNext.Runtime
             return ref ReturnRef<T>();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static ref byte AddOffset<T>(this ref byte address, int count = 1)
-        {
-            Push(ref address);
-            Push(count);
-            Sizeof(typeof(T));
-            Conv_I();
-            Mul_Ovf();
-            Add_Ovf();
-            return ref ReturnRef<byte>();
-        }
-
         internal static int Compare(ref byte first, ref byte second, long length)
         {
             var comparison = 0;
@@ -393,17 +381,17 @@ namespace DotNext.Runtime
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
-                for (; length >= sizeof(Vector<byte>); first = ref first.AddOffset<Vector<byte>>(), second = ref second.AddOffset<Vector<byte>>())
+                for (; length >= sizeof(Vector<byte>); first = ref first.Advance<Vector<byte>>(), second = ref second.Advance<Vector<byte>>())
                     if (first.Read<Vector<byte>>() == second.Read<Vector<byte>>())
                         length -= Vector<byte>.Count;
                     else
                         goto exit;
-            for (; length >= sizeof(UIntPtr); first = ref first.AddOffset<UIntPtr>(), second = ref second.AddOffset<UIntPtr>())
+            for (; length >= sizeof(UIntPtr); first = ref first.Advance<UIntPtr>(), second = ref second.Advance<UIntPtr>())
                 if (first.Read<UIntPtr>() == second.Read<UIntPtr>())
                     length -= sizeof(UIntPtr);
                 else
                     goto exit;
-            for (; length > 0; first = ref AddOffset<byte>(ref first), second = ref AddOffset<byte>(ref second))
+            for (; length > 0; first = ref first.Advance<byte>(), second = ref second.Advance<byte>())
                 if (first == second)
                     length -= sizeof(byte);
                 else
@@ -440,15 +428,29 @@ namespace DotNext.Runtime
         /// <param name="array">The array object.</param>
         /// <param name="index">The index of the array element.</param>
         /// <returns>The reference to the array element with restricted mutability.</returns>
+        /// <seealso cref="GetReadonlyRef{I, O}(I[], long)"/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref readonly T GetReadonlyRef<T>(this T[] array, long index)
+        [Obsolete("Use overloaded method that allows to specify return type explicitly")]
+        public static ref readonly T GetReadonlyRef<T>(this T[] array, long index) => ref array[index];
+
+        /// <summary>
+        /// Allows to reinterpret managed pointer to array element.
+        /// </summary>
+        /// <typeparam name="I">The type of array elements.</typeparam>
+        /// <typeparam name="O">The requested</typeparam>
+        /// <param name="array">The array object.</param>
+        /// <param name="index">The index of the array element.</param>
+        /// <returns>The reference to the array element with restricted mutability.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ref readonly O GetReadonlyRef<I, O>(this I[] array, long index)
+            where I : class, O
         {
             Push(array);
             Push(index);
             Conv_Ovf_I();
             Readonly();
-            Ldelema(typeof(T));
-            return ref ReturnRef<T>();
+            Ldelema(typeof(O));
+            return ref ReturnRef<O>();
         }
 
         /// <summary>
@@ -550,7 +552,7 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type of the element.</typeparam>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Copy<T>(in T source, ref T destination, long count)
+        public static unsafe void Copy<T>(in T source, ref T destination, long count)   //TODO: destination should be out parameter
             where T : unmanaged
             => Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(source)), ref Unsafe.As<T, byte>(ref destination), checked(count * sizeof(T)));
 
@@ -595,6 +597,17 @@ namespace DotNext.Runtime
             return Return<bool>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static ref byte Advance<T>(this ref byte ptr)
+            where T : unmanaged
+        {
+            Push(ref ptr);
+            Sizeof(typeof(T));
+            Conv_I();
+            Emit.Add();
+            return ref ReturnRef<byte>();
+        }
+
         private static unsafe ref byte Advance<T>([In] this ref byte address, [In, Out]long* length)
             where T : unmanaged
         {
@@ -606,7 +619,7 @@ namespace DotNext.Runtime
             Sub();
             Stind_I8();
 
-            return ref address.AddOffset<T>();
+            return ref address.Advance<T>();
         }
 
         private static unsafe bool IsZero([In] ref byte address, long length)

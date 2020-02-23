@@ -133,6 +133,6 @@ namespace DotNext
             return tuple;
         }
 
-        internal static bool IsContravariant(object obj, Type type) => obj != null && obj.GetType().IsAssignableFrom(type);
+        internal static bool IsContravariant(object? obj, Type type) => obj?.GetType().IsAssignableFrom(type) ?? false;
     }
 }
