@@ -43,12 +43,13 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 02-XX-2020
+Release Date: 02-23-2020
 
 <a href="https://www.nuget.org/packages/dotnext/2.1.0">DotNext 2.1.0</a>
 * Reduced memory footprint of `DotNext.Span` static constructor
 * `DotNext.UserDataStorage` behavior is now customizable via `UserDataStorage.IContainer` interface
 * Introduced `Intrinsics.GetReadonlyRef` method allows to reinterpret managed pointer to array element
+* `DelegateHelpers.Bind` now supports both closed and open delegates
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
