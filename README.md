@@ -49,6 +49,7 @@ Release Date: 02-23-2020
 * Reduced memory footprint of `DotNext.Span` static constructor
 * `DotNext.UserDataStorage` behavior is now customizable via `UserDataStorage.IContainer` interface
 * Introduced `Intrinsics.GetReadonlyRef` method allows to reinterpret managed pointer to array element
+* `DelegateHelpers.Bind` now supports both closed and open delegates
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
