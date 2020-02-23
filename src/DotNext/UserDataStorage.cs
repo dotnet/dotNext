@@ -83,7 +83,6 @@ namespace DotNext
             V ISupplier<V>.Invoke() => factory.Invoke(arg1, arg2);
         }
 
-        [SuppressMessage("Performance", "CA1812", Justification = "It is instantiated by method GetOrCreateValue")]
         private sealed class BackingStorage : Dictionary<long, object?>
         {
 
