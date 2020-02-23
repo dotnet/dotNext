@@ -6,6 +6,7 @@ Release Notes
 * Reduced memory footprint of `DotNext.Span` static constructor
 * `DotNext.UserDataStorage` behavior is now customizable via `UserDataStorage.IContainer` interface
 * Introduced `Intrinsics.GetReadonlyRef` method allows to reinterpret managed pointer to array element
+* `DelegateHelpers.Bind` now supports both closed and open delegates
 
 # 01-31-2020
 Major release of version 2.0 is completely finished and contains polished existing and new API. All libraries in .NEXT family are upgraded. Migration guide for 1.x users is [here](https://sakno.github.io/dotNext/migration/1.html). Please consider that this version is not fully backward compatible with 1.x.
