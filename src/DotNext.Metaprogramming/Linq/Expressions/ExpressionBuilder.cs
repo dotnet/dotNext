@@ -837,6 +837,17 @@ namespace DotNext.Linq.Expressions
         /// <returns>Array element access expression.</returns>
         public static IndexExpression ElementAt(this Expression array, params Expression[] indexes)
             => Expression.ArrayAccess(array, indexes);
+        
+        /// <summary>
+        /// Constructs collection or array element access expression.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="index">The index of the collection or array element.</param>
+        /// <returns>The collection access expression.</returns>
+        /// <exception cref="ArgumentException"><paramref name="collection"/> doesn't provide implicit support of Index expression.</exception>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">Ranges and Indicies</seealso>
+        public static CollectionAccessExpression ElementAt(this Expression collection, ItemIndexExpression index)
+            => new CollectionAccessExpression(collection, index);
 
         /// <summary>
         /// Constructs array length expression.

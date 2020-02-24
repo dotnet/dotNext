@@ -364,5 +364,20 @@ namespace DotNext.Linq.Expressions
             Equal(typeof(Range), range.Type);
             Equal(ExpressionType.New, range.Reduce().NodeType);
         }
+
+        [Fact]
+        public static void CollectionAccess()
+        {
+            var parameter = Expression.Parameter(typeof(long[]));
+            var lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
+            Equal(42L, lambda(new []{42L, 43L}));
+
+            lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
+            Equal(44L, lambda(new []{42L, 43L, 44L}));
+
+            parameter = Expression.Parameter(typeof(IList<long>));
+            lambda = Expression.Lambda<Func<IList<long>, long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
+            Equal(42L, lambda(new []{42L, 43L}));
+        }
     }
 }
