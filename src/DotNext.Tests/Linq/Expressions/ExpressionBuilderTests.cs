@@ -395,6 +395,9 @@ namespace DotNext.Linq.Expressions
             parameter = Expression.Parameter(typeof(IListOfInt64));
             lambda = Expression.Lambda<Func<IListOfInt64, long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
             Equal(42L, lambda.DynamicInvoke(new ListOfInt64{42L, 43L}));
+
+            lambda = Expression.Lambda<Func<IListOfInt64, long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
+            Equal(43L, lambda.DynamicInvoke(new ListOfInt64{42L, 43L}));
         }
     }
 }
