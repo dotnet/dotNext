@@ -26,7 +26,7 @@ namespace DotNext.Linq.Expressions
             if (test is null)
                 throw new ArgumentNullException(nameof(test));
             else if (test.Type != typeof(bool))
-                throw new ArgumentException(ExceptionMessages.BoolExpressionExpected, nameof(test));
+                throw new ArgumentException(ExceptionMessages.TypeExpected<bool>(), nameof(test));
             Test = test;
             conditionFirst = checkConditionFirst;
 

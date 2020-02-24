@@ -329,5 +329,23 @@ namespace DotNext.Linq.Expressions
             Equal(ExpressionType.Extension, expr.NodeType);
             Equal(typeof(void), expr.Type);
         }
+
+        [Fact]
+        public static void ItemIndex()
+        {
+            const short IndexValue = 10;
+            var index = new ItemIndexExpression(IndexValue.Const());
+            False(index.IsFromEnd);
+            Equal(ExpressionType.New, index.Reduce().NodeType);
+            Equal(typeof(Index), index.Type);
+
+            index = new ItemIndexExpression(42.Const());
+            Equal(ExpressionType.New, index.Reduce().NodeType);
+            Equal(typeof(Index), index.Type);
+
+            var i = ^20;
+            index = i.ToExpression();
+            True(index.IsFromEnd);
+        }
     }
 }
