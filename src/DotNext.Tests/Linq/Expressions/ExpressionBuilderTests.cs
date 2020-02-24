@@ -365,19 +365,36 @@ namespace DotNext.Linq.Expressions
             Equal(ExpressionType.New, range.Reduce().NodeType);
         }
 
+        private interface IListOfInt64 : IList<long>
+        {
+
+        }
+
+        private sealed class ListOfInt64 : List<long>, IListOfInt64
+        {
+
+        }
+
         [Fact]
         public static void CollectionAccess()
         {
             var parameter = Expression.Parameter(typeof(long[]));
-            var lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
-            Equal(42L, lambda(new []{42L, 43L}));
+            Delegate lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
+            Equal(42L, lambda.DynamicInvoke(new []{42L, 43L}));
 
             lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
-            Equal(44L, lambda(new []{42L, 43L, 44L}));
+            Equal(44L, lambda.DynamicInvoke(new []{42L, 43L, 44L}));
 
             parameter = Expression.Parameter(typeof(IList<long>));
             lambda = Expression.Lambda<Func<IList<long>, long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
-            Equal(42L, lambda(new []{42L, 43L}));
+            Equal(42L, lambda.DynamicInvoke(new []{42L, 43L}));
+
+            lambda = Expression.Lambda<Func<IList<long>, long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
+            Equal(43L, lambda.DynamicInvoke(new []{42L, 43L}));
+
+            parameter = Expression.Parameter(typeof(IListOfInt64));
+            lambda = Expression.Lambda<Func<IListOfInt64, long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
+            Equal(42L, lambda.DynamicInvoke(new ListOfInt64{42L, 43L}));
         }
     }
 }

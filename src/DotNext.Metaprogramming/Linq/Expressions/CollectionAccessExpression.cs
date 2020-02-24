@@ -1,16 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
 namespace DotNext.Linq.Expressions
 {
+    using static Reflection.TypeExtensions;
+
     /// <summary>
     /// Represents access to the collection element using <see cref="ItemIndexExpression"/>.
     /// </summary>
     public sealed class CollectionAccessExpression : Expression
     {
-        private const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance;
+        private const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
         private readonly PropertyInfo? indexer; //if null then collection is array
         private readonly PropertyInfo? count;   //if null then indexer != null because it has explicit Index parameter type
@@ -62,21 +65,30 @@ namespace DotNext.Linq.Expressions
 
         internal static PropertyInfo? GetCountProperty(Type collection)
         {
-            PropertyInfo? property = collection.GetProperty("Length", PublicInstance | BindingFlags.FlattenHierarchy);
             var intType = typeof(int);
-            if(property?.PropertyType == intType)
-                return property;
-            property = collection.GetProperty("Count", PublicInstance | BindingFlags.FlattenHierarchy);
-            return property?.PropertyType == intType ? property : null;
+            foreach(var lookup in collection.GetBaseTypes(includeTopLevel: true, includeInterfaces: true))
+            {
+                PropertyInfo? property = lookup.GetProperty("Length", PublicInstance);
+                if(property?.PropertyType == intType)
+                    return property;
+                property = lookup.GetProperty("Count", PublicInstance);
+                if(property?.PropertyType == intType)
+                    return property;
+            }
+            return null;
         }
 
         private static IEnumerable<PropertyInfo> GetIndexers(Type collection)
         {
-            DefaultMemberAttribute? defaultMember = collection.GetCustomAttribute<DefaultMemberAttribute>(true);
-            if(defaultMember != null)
-                foreach(var member in collection.FindMembers(MemberTypes.Property, PublicInstance, Type.FilterName, defaultMember.MemberName))
-                    if(member is PropertyInfo property)
-                        yield return property;
+            foreach(var lookup in collection.GetBaseTypes(includeTopLevel: true, includeInterfaces: true))
+            {
+                DefaultMemberAttribute? defaultMember = lookup.GetCustomAttribute<DefaultMemberAttribute>(true);
+                if(defaultMember is null)
+                    continue;
+                PropertyInfo? property = lookup.GetProperty(defaultMember.MemberName, PublicInstance);
+                if(!(property is null))
+                    yield return property;
+            }
         }
 
         /// <summary>
