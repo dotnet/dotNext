@@ -68,12 +68,9 @@ namespace DotNext.Linq.Expressions
         /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
-            static ItemIndexExpression ToIndex(Expression value)
-                => value is ItemIndexExpression index ? index : new ItemIndexExpression(value);
-
-            var start = visitor.Visit(Start);
-            var end = visitor.Visit(End);
-            return ReferenceEquals(start, Start) && ReferenceEquals(end, End) ? this : new RangeExpression(ToIndex(start), ToIndex(end));
+            var start = Start.Visit(visitor);
+            var end = End.Visit(visitor);
+            return ReferenceEquals(start, Start) && ReferenceEquals(end, End) ? this : new RangeExpression(start, end);
         }
     }
 }

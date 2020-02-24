@@ -105,5 +105,11 @@ namespace DotNext.Linq.Expressions
             var expression = visitor.Visit(Value);
             return ReferenceEquals(expression, Value) ? this : new ItemIndexExpression(expression, IsFromEnd);
         }
+        
+        internal ItemIndexExpression Visit(ExpressionVisitor visitor)
+        {
+            var expression = visitor.Visit(this);
+            return expression is ItemIndexExpression index ? index : new ItemIndexExpression(expression);
+        }
     }
 }
