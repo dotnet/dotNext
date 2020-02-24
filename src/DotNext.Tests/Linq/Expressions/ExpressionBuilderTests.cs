@@ -339,13 +339,30 @@ namespace DotNext.Linq.Expressions
             Equal(ExpressionType.New, index.Reduce().NodeType);
             Equal(typeof(Index), index.Type);
 
-            index = new ItemIndexExpression(42.Const());
+            index = 42.Index(false);
+            False(index.IsFromEnd);
             Equal(ExpressionType.New, index.Reduce().NodeType);
             Equal(typeof(Index), index.Type);
 
             var i = ^20;
-            index = i.ToExpression();
+            index = i.Quote();
             True(index.IsFromEnd);
+        }
+
+        [Fact]
+        public static void RangeOfIndicies()
+        {
+            var range = 20.Index(false).To(21);
+            Equal(typeof(Range), range.Type);
+            Equal(ExpressionType.New, range.Reduce().NodeType);
+
+            range = new RangeExpression();
+            Same(ItemIndexExpression.First, range.Start);
+            Same(ItemIndexExpression.Last, range.End);
+
+            range = (..^1).Quote();
+            Equal(typeof(Range), range.Type);
+            Equal(ExpressionType.New, range.Reduce().NodeType);
         }
     }
 }

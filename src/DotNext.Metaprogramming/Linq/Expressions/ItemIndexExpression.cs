@@ -10,6 +10,23 @@ namespace DotNext.Linq.Expressions
     /// </summary>
     public sealed class ItemIndexExpression : Expression
     {
+        /// <summary>
+        /// The index of the first item in the collection.
+        /// </summary>
+        public static readonly ItemIndexExpression First;
+
+        /// <summary>
+        /// The index of the last item in the collection.
+        /// </summary>
+        public static readonly ItemIndexExpression Last;
+
+        static ItemIndexExpression()
+        {
+            var zero = Constant(0);
+            First = new ItemIndexExpression(zero);
+            Last = new ItemIndexExpression(zero, true);
+        }
+
         private readonly bool conversionRequired;
 
         /// <summary>

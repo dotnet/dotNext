@@ -1242,11 +1242,37 @@ namespace DotNext.Linq.Expressions
             => Index(Const(value), fromEnd);
         
         /// <summary>
-        /// Constructs expression of type <see cref="System.Index"/>.
+        /// Converts index to equivalent expression.
         /// </summary>
         /// <param name="index">The index value.</param>
         /// <returns>Index expression.</returns>
-        public static ItemIndexExpression ToExpression(this in Index index)
+        public static ItemIndexExpression Quote(this in Index index)
             => Index(index.Value, index.IsFromEnd);
+        
+        /// <summary>
+        /// Constructs range.
+        /// </summary>
+        /// <param name="start">The inclusive start index of the range.</param>
+        /// <param name="end">The exclusive end index of the range.</param>
+        /// <returns>The range expression.</returns>
+        public static RangeExpression To(this ItemIndexExpression start, ItemIndexExpression end)
+            => new RangeExpression(start, end);
+
+        /// <summary>
+        /// Constructs range.
+        /// </summary>
+        /// <param name="start">The inclusive start index of the range.</param>
+        /// <param name="end">The exclusive end index of the range.</param>
+        /// <returns>The range expression.</returns>        
+        public static RangeExpression To(this ItemIndexExpression start, Index end)
+            => start.To(end.Quote());
+        
+        /// <summary>
+        /// Converts range to equivalent expression.
+        /// </summary>
+        /// <param name="range">The range to convert.</param>
+        /// <returns>The expression representing given range.</returns>
+        public static RangeExpression Quote(this in Range range)
+            => range.Start.Quote().To(range.End.Quote());
     }
 }
