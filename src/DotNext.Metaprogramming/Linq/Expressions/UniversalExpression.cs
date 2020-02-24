@@ -772,7 +772,8 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="fromEnd">A boolean indicating if the index is from the start (<see langword="false"/>) or from the end (<see langword="true"/>) of a collection.</param>
         /// <returns>The index expression.</returns>
-        public ItemIndexExpression Index(bool fromEnd) => (expression ?? Expression.Empty()).Index(fromEnd);
+        public UniversalExpression Index(bool fromEnd) 
+            => new UniversalExpression((expression ?? Expression.Empty()).Index(fromEnd));
 
         /// <summary>
         /// Computes the hash code for the underlying expression.
