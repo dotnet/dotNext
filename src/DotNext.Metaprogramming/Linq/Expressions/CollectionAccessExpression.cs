@@ -140,5 +140,17 @@ namespace DotNext.Linq.Expressions
             
             return Expression.MakeIndex(Collection, indexer, new [] { indexValue });
         }
+
+        /// <summary>
+        /// Visit children expressions.
+        /// </summary>
+        /// <param name="visitor">Expression visitor.</param>
+        /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
+        protected override Expression VisitChildren(ExpressionVisitor visitor)
+        {
+            var index = Index.Visit(visitor);
+            var collection = visitor.Visit(Collection);
+            return ReferenceEquals(index, Index) && ReferenceEquals(collection, Collection) ? this : new CollectionAccessExpression(collection, index);
+        }
     }
 }
