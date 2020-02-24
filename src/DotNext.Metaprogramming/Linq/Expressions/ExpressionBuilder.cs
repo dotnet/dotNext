@@ -1188,7 +1188,7 @@ namespace DotNext.Linq.Expressions
             if (test is null)
                 throw new ArgumentNullException(nameof(test));
             else if (test.Type != typeof(bool))
-                throw new ArgumentException(ExceptionMessages.BoolExpressionExpected, nameof(test));
+                throw new ArgumentException(ExceptionMessages.TypeExpected<bool>(), nameof(test));
             else if (string.IsNullOrEmpty(message))
                 return CallStatic(typeof(Debug), nameof(Debug.Assert), test);
             else
@@ -1221,5 +1221,32 @@ namespace DotNext.Linq.Expressions
         /// <returns>The expression representing statically typed referenced.</returns>
         public static RefAnyValExpression RefAnyVal<T>(this ParameterExpression typedRef)
             => RefAnyVal(typedRef, typeof(T));
+        
+        /// <summary>
+        /// Constructs expression of type <see cref="System.Index"/>.
+        /// </summary>
+        /// <param name="value">The expression representing index value.</param>
+        /// <param name="fromEnd">A boolean indicating if the index is from the start (<see langword="false"/>) or from the end (<see langword="true"/>) of a collection.</param>
+        /// <returns>Index expression.</returns>
+        /// <exception cref="ArgumentException">Type of <paramref name="value"/> should be <see cref="int"/>, <see cref="short"/>, <see cref="byte"/> or <see cref="sbyte"/>.</exception>
+        public static ItemIndexExpression Index(this Expression value, bool fromEnd)
+            => new ItemIndexExpression(value, fromEnd);
+        
+        /// <summary>
+        /// Constructs expression of type <see cref="System.Index"/>.
+        /// </summary>
+        /// <param name="value">The expression representing index value.</param>
+        /// <param name="fromEnd">A boolean indicating if the index is from the start (<see langword="false"/>) or from the end (<see langword="true"/>) of a collection.</param>
+        /// <returns>Index expression.</returns>
+        public static ItemIndexExpression Index(this int value, bool fromEnd)
+            => Index(Const(value), fromEnd);
+        
+        /// <summary>
+        /// Constructs expression of type <see cref="System.Index"/>.
+        /// </summary>
+        /// <param name="index">The index value.</param>
+        /// <returns>Index expression.</returns>
+        public static ItemIndexExpression ToExpression(this in Index index)
+            => Index(index.Value, index.IsFromEnd);
     }
 }
