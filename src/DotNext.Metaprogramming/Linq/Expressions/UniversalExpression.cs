@@ -768,6 +768,13 @@ namespace DotNext.Linq.Expressions
         public UnaryExpression Throw() => (expression ?? Expression.Empty()).Throw();
 
         /// <summary>
+        /// Constructs <see cref="Index"/> expression.
+        /// </summary>
+        /// <param name="fromEnd">A boolean indicating if the index is from the start (<see langword="false"/>) or from the end (<see langword="true"/>) of a collection.</param>
+        /// <returns>The index expression.</returns>
+        public ItemIndexExpression Index(bool fromEnd) => (expression ?? Expression.Empty()).Index(fromEnd);
+
+        /// <summary>
         /// Computes the hash code for the underlying expression.
         /// </summary>
         /// <returns>The hash code of the underlying expression.</returns>
