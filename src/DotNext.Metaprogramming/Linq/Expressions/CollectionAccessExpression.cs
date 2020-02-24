@@ -65,7 +65,7 @@ namespace DotNext.Linq.Expressions
         internal static PropertyInfo? GetCountProperty(Type collection)
         {
             var intType = typeof(int);
-            foreach(var lookup in collection.GetBaseTypes(includeTopLevel: true, includeInterfaces: true))
+            foreach(var lookup in collection.GetBaseTypes(includeTopLevel: true, includeInterfaces: collection.IsInterface))
             {
                 PropertyInfo? property = lookup.GetProperty("Length", PublicInstance);
                 if(property?.PropertyType == intType)
@@ -79,7 +79,7 @@ namespace DotNext.Linq.Expressions
 
         private static IEnumerable<PropertyInfo> GetIndexers(Type collection)
         {
-            foreach(var lookup in collection.GetBaseTypes(includeTopLevel: true, includeInterfaces: true))
+            foreach(var lookup in collection.GetBaseTypes(includeTopLevel: true, includeInterfaces: collection.IsInterface))
             {
                 DefaultMemberAttribute? defaultMember = lookup.GetCustomAttribute<DefaultMemberAttribute>(true);
                 if(defaultMember is null)
