@@ -133,12 +133,12 @@ namespace DotNext.Linq.Expressions
             if(indexer is null)
                 return ArrayAccess(Collection, Index);
             if(count is null)
-                return Expression.MakeIndex(Collection, indexer, new []{ Index });
+                return MakeIndex(Collection, indexer, new []{ Index });
             var indexValue = Index.IsFromEnd ?
                 Call(Index, nameof(System.Index.GetOffset), null, Property(Collection, count)) :
                 Index.Value;
             
-            return Expression.MakeIndex(Collection, indexer, new [] { indexValue });
+            return MakeIndex(Collection, indexer, new [] { indexValue });
         }
 
         /// <summary>
