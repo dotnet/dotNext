@@ -37,8 +37,6 @@ namespace DotNext
         {
             int[] array = { 1, 2, 3 };
             Equal(new[] { 1, 4, 2, 3 }, array.Insert(4, 1));
-            Equal(new[] { 1, 4, 2, 3 }, array.Insert(4, new Index(1)));
-            Equal(new[] { 1, 4, 2, 3 }, array.Insert(4, ^2));
             Equal(new[] { 0, 1, 2, 3 }, array.Insert(0, 0));
             Equal(new[] { 1, 2, 3, 4 }, array.Insert(4, 3));
         }
@@ -126,7 +124,6 @@ namespace DotNext
         {
             long[] array = { 1, 3, 10 };
             Equal(new[] { 1L, 3L }, array.RemoveAt(2));
-            Equal(new[] { 1L, 3L, }, array.RemoveAt(^1));
             Equal(new[] { 1L }, array.RemoveLast(2));
             Equal(new[] { 10L }, array.RemoveFirst(2));
             Equal(Array.Empty<long>(), array.RemoveFirst(3));
