@@ -850,6 +850,16 @@ namespace DotNext.Linq.Expressions
             => new CollectionAccessExpression(collection, index);
 
         /// <summary>
+        /// Constructs slice of collection or array.
+        /// </summary>
+        /// <param name="collection">The collection or array.</param>
+        /// <param name="start">The first index of slice, inclusive.</param>
+        /// <param name="end">The last index of slice, exclusive.</param>
+        /// <returns>The slice of collection or array.</returns>
+        public static SliceExpression Slice(this Expression collection, ItemIndexExpression? start = null, ItemIndexExpression? end = null)
+            => new SliceExpression(collection, new RangeExpression(start, end));
+
+        /// <summary>
         /// Constructs array length expression.
         /// </summary>
         /// <remarks>

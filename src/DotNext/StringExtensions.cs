@@ -96,5 +96,16 @@ namespace DotNext
             MarkLabel(methodExit);
             return ref ReturnRef<char>();
         }
+
+        /// <summary>
+        /// Extracts substring from the given string.
+        /// </summary>
+        /// <remarks>
+        /// This method if useful for .NET languages without syntactic support of ranges.
+        /// </remarks>
+        /// <param name="str">The instance of string.</param>
+        /// <param name="range">The range of substring.</param>
+        /// <returns>The part of <paramref name="str"/> extracted according with supplied range.</returns>
+        public static string Substring(this string str, Range range) => str[range];
     }
 }
