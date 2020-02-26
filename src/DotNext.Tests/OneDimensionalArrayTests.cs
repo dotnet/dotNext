@@ -36,9 +36,11 @@ namespace DotNext
         public static void Insert()
         {
             int[] array = { 1, 2, 3 };
-            True(new[] { 1, 4, 2, 3 }.SequenceEqual(array.Insert(4, 1)));
-            True(new[] { 0, 1, 2, 3 }.SequenceEqual(array.Insert(0, 0)));
-            True(new[] { 1, 2, 3, 4 }.SequenceEqual(array.Insert(4, 3)));
+            Equal(new[] { 1, 4, 2, 3 }, array.Insert(4, 1));
+            Equal(new[] { 1, 4, 2, 3 }, array.Insert(4, new Index(1)));
+            Equal(new[] { 1, 4, 2, 3 }, array.Insert(4, ^2));
+            Equal(new[] { 0, 1, 2, 3 }, array.Insert(0, 0));
+            Equal(new[] { 1, 2, 3, 4 }, array.Insert(4, 3));
         }
 
         [Fact]
@@ -88,6 +90,26 @@ namespace DotNext
         }
 
         [Fact]
+        public static void View()
+        {
+            var array = new[] { 1, 2, 3, 4 };
+            var view = array.Slice(1..3);
+            Equal(2, view.Count);
+            Equal(2, view[0]);
+            Equal(3, view[1]);
+
+            view = array.Slice(0..2);
+            Equal(2, view.Count);
+            Equal(1, view[0]);
+            Equal(2, view[1]);
+
+            view = array.Slice(2..);
+            Equal(2, view.Count);
+            Equal(3, view[0]);
+            Equal(4, view[1]);
+        }
+
+        [Fact]
         public static void Concatenation()
         {
             int[] array1 = { 1, 3, 5 };
@@ -98,5 +120,19 @@ namespace DotNext
             Equal(Array.Empty<int>(), array1.Concat(Array.Empty<int>(), 0));
             Equal(array2, Array.Empty<int>().Concat(array2, 0));
         }
+
+        [Fact]
+        public static void RemoveElement()
+        {
+            long[] array = { 1, 3, 10 };
+            Equal(new[] { 1L, 3L }, array.RemoveAt(2));
+            Equal(new[] { 1L, 3L, }, array.RemoveAt(^1));
+            Equal(new[] { 1L }, array.RemoveLast(2));
+            Equal(new[] { 10L }, array.RemoveFirst(2));
+            Equal(Array.Empty<long>(), array.RemoveFirst(3));
+            Equal(Array.Empty<long>(), array.RemoveLast(3));
+        }
+
+
     }
 }

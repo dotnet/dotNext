@@ -372,7 +372,12 @@ namespace DotNext.Linq.Expressions
 
         private sealed class ListOfInt64 : List<long>, IListOfInt64
         {
-
+            public long[] Slice(int start, int length)
+            {
+                var result = new long[length];
+                CopyTo(start, result, 0, length);
+                return result;
+            }
         }
 
         [Fact]
@@ -398,6 +403,34 @@ namespace DotNext.Linq.Expressions
 
             lambda = Expression.Lambda<Func<IListOfInt64, long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
             Equal(43L, lambda.DynamicInvoke(new ListOfInt64{42L, 43L}));
+
+            parameter = Expression.Parameter(typeof(string));
+            lambda = Expression.Lambda<Func<string, char>>(parameter.ElementAt(1.Index(false)), parameter).Compile();
+            Equal('b', lambda.DynamicInvoke("abc"));
+        }
+
+        [Fact]
+        public static void ArraySlice()
+        {
+            var parameter = Expression.Parameter(typeof(long[]));
+            var lambda = Expression.Lambda<Func<long[], long[]>>(parameter.Slice(1.Index(false), 0.Index(true)), parameter).Compile();
+            Equal(new[] { 1L, 2L, 4L }[1..^0], lambda(new[] { 1L, 2L, 4L }));
+        }
+
+        [Fact]
+        public static void StringSlice()
+        {
+            var parameter = Expression.Parameter(typeof(string));
+            var lambda = Expression.Lambda<Func<string, string>>(parameter.Slice(1.Index(false), 1.Index(true)), parameter).Compile();
+            Equal("abcd"[1..^1], lambda("abcd"));
+        }
+
+        [Fact]
+        public static void ListSlice()
+        {
+            var parameter = Expression.Parameter(typeof(ListOfInt64));
+            var lambda = Expression.Lambda<Func<ListOfInt64, long[]>>(parameter.Slice(1.Index(false), 1.Index(true)), parameter).Compile();
+            Equal(new[] { 3L, 5L }, lambda(new ListOfInt64 { 1L, 3L, 5L, 7L }));
         }
     }
 }

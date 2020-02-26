@@ -192,5 +192,13 @@ namespace DotNext.Reflection
                 return obj;
             throw new InvalidCastException();
         }
+
+        /// <summary>
+        /// Determines whether the type is single-dimensional array.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
+        /// <returns><see langword="true"/> if <paramref name="type"/> is single-dimensional array; otherwise <see langword="false"/>.</returns>
+        public static bool IsSingleDimensionalArray(this Type type)
+            => type.IsArray && type.GetArrayRank() == 1;
     }
 }

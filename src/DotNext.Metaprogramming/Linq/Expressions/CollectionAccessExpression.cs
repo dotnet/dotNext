@@ -31,7 +31,7 @@ namespace DotNext.Linq.Expressions
             if(index is null)
                 throw new ArgumentNullException(nameof(index));
             var resolved = false;
-            if(collection.Type.IsArray)
+            if(collection.Type.IsSingleDimensionalArray())
             {
                 indexer = count = null;
                 resolved = true;
@@ -118,10 +118,15 @@ namespace DotNext.Linq.Expressions
         /// <see cref="ExpressionType.Extension"/>
         public override ExpressionType NodeType => ExpressionType.Extension;
 
-        private static BinaryExpression ArrayAccess(Expression array, ItemIndexExpression index)
+        private static Expression ArrayAccess(Expression array, ItemIndexExpression index)
             => ArrayIndex(array, index.IsFromEnd ?
-                Call(index, nameof(System.Index.GetOffset), null, ArrayLength(array)) :
+                Call(index.Reduce(), nameof(System.Index.GetOffset), null, ArrayLength(array)) :
                 index.Value);
+
+        internal static Expression MakeIndex(Expression collection, PropertyInfo count, ItemIndexExpression index)
+            => index.IsFromEnd ?
+                Call(index.Reduce(), nameof(System.Index.GetOffset), null, Property(collection, count)) :
+                index.Value;
 
         /// <summary>
         /// Translates this expression into predefined set of expressions
@@ -130,15 +135,16 @@ namespace DotNext.Linq.Expressions
         /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
-            if(indexer is null)
-                return ArrayAccess(Collection, Index);
-            if(count is null)
-                return MakeIndex(Collection, indexer, new []{ Index });
-            var indexValue = Index.IsFromEnd ?
-                Call(Index, nameof(System.Index.GetOffset), null, Property(Collection, count)) :
-                Index.Value;
-            
-            return MakeIndex(Collection, indexer, new [] { indexValue });
+            ParameterExpression? temp = Collection is ParameterExpression ? null : Variable(Collection.Type);
+            Expression result;
+            if (indexer is null)
+                result = ArrayAccess(temp ?? Collection, Index);
+            else if (count is null)
+                result = MakeIndex(temp ?? Collection, indexer, new[] { Index.Reduce() });
+            else
+                result = MakeIndex(temp ?? Collection, indexer, new[] { MakeIndex(temp ?? Collection, count, Index) });
+
+            return temp is null ? result : Block(Type, new[] { temp }, Assign(temp, Collection), result);
         }
 
         /// <summary>

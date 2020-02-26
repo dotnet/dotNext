@@ -81,8 +81,8 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="T">Type of array elements.</typeparam>
         /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
-        /// <param name="element">The zero-based index at which item should be inserted.</param>
-        /// <param name="index">The object to insert. The value can be null for reference types.</param>
+        /// <param name="element">The object to insert.</param>
+        /// <param name="index">The zero-based index at which item should be inserted.</param>
         /// <returns>A modified array with inserted element.</returns>
         public static T[] Insert<T>(this T[] array, T element, long index)
         {
@@ -99,6 +99,17 @@ namespace DotNext
                 return result;
             }
         }
+
+        /// <summary>
+        /// Insert a new element into array and return modified array.
+        /// </summary>
+        /// <typeparam name="T">Type of array elements.</typeparam>
+        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+        /// <param name="element">The object to insert.</param>
+        /// <param name="index">Insertion index.</param>
+        /// <returns>A modified array with inserted element.</returns>
+        public static T[] Insert<T>(this T[] array, T element, in Index index)
+            => Insert(array, element, index.GetOffset(array.Length));
 
         /// <summary>
         /// Removes the element at the specified in the array and returns modified array.
@@ -122,6 +133,17 @@ namespace DotNext
                 return newStore;
             }
         }
+
+        /// <summary>
+        /// Removes the element at the specified in the array and returns modified array.
+        /// </summary>
+        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
+        /// <param name="index">The index of the element to remove.</param>
+        /// <typeparam name="T">Type of array elements.</typeparam>
+        /// <returns>A modified array with removed element.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is incorrect.</exception>
+        public static T[] RemoveAt<T>(this T[] array, in Index index)
+            => RemoveAt(array, index.GetOffset(array.Length));
 
         private static T[] RemoveAll<T, C>(T[] array, in ValueFunc<T, bool> match, ref C callback)
             where C : struct, IConsumer<T>
@@ -230,6 +252,20 @@ namespace DotNext
             var result = new T[length];
             Array.Copy(input, startIndex, result, 0, length);
             return result;
+        }
+
+        /// <summary>
+        /// Computes view over the specified array.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="input">The array instance.</param>
+        /// <param name="range">The range in the array to return.</param>
+        /// <returns>The range in <paramref name="input"/>.</returns>
+        public static ArraySegment<T> Slice<T>(this T[] input, in Range range)
+        {
+            var start = range.Start.GetOffset(input.Length);
+            var length = (range.End.IsFromEnd ? (input.Length - range.End.Value) : range.End.Value) - start;
+            return new ArraySegment<T>(input, start, length);
         }
 
         /// <summary>
