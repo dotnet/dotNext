@@ -108,11 +108,10 @@ namespace DotNext.Linq.Expressions
             return Call(subArray, array, range.Reduce());
         }
 
-        private static MethodCallExpression SubCollection(Expression collection, MethodInfo slice, PropertyInfo count, RangeExpression range)
+        private static BlockExpression SubCollection(Expression collection, MethodInfo slice, PropertyInfo count, RangeExpression range)
         {
-            var start = CollectionAccessExpression.MakeIndex(collection, count, range.Start);
-            var length = Subtract(range.End.IsFromEnd ? Subtract(Property(collection, count), range.End.Value) : range.End.Value, start);
-            return Call(collection, slice, start, length);
+            var offsetAndLengthCall = range.GetOffsetAndLength(Property(collection, count), out var offsetAndLength, out var offsetField, out var lengthField);
+            return Block(new[] { offsetAndLength }, Assign(offsetAndLength, offsetAndLengthCall), Call(collection, slice, offsetField, lengthField));
         }
 
         /// <summary>
