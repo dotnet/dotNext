@@ -49,6 +49,18 @@ namespace DotNext.Linq.Expressions
         /// <see cref="ExpressionType.Extension"/>
         public override ExpressionType NodeType => ExpressionType.Extension;
 
+        internal Expression GetOffsetAndLength(Expression length)
+            => Call(Reduce(), nameof(Range.GetOffsetAndLength), null, length);
+
+        internal Expression GetOffsetAndLength(Expression length, out ParameterExpression offsetAndLength, out MemberExpression offsetField, out MemberExpression lengthField)
+        {
+            var result = GetOffsetAndLength(length);
+            offsetAndLength = Variable(result.Type);
+            offsetField = Field(offsetAndLength, nameof(ValueTuple<int, int>.Item1));
+            lengthField = Field(offsetAndLength, nameof(ValueTuple<int, int>.Item2));
+            return result;
+        }
+
         /// <summary>
         /// Translates this expression into predefined set of expressions
         /// using Lowering technique.
@@ -58,7 +70,7 @@ namespace DotNext.Linq.Expressions
         {
             ConstructorInfo? ctor = typeof(Range).GetConstructor(new []{ typeof(Index), typeof(Index) });
             Debug.Assert(!(ctor is null));
-            return New(ctor, Start, End);
+            return New(ctor, Start.Reduce(), End.Reduce());
         }
 
         /// <summary>

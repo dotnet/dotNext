@@ -119,14 +119,10 @@ namespace DotNext.Linq.Expressions
         public override ExpressionType NodeType => ExpressionType.Extension;
 
         private static Expression ArrayAccess(Expression array, ItemIndexExpression index)
-            => ArrayIndex(array, index.IsFromEnd ?
-                Call(index.Reduce(), nameof(System.Index.GetOffset), null, ArrayLength(array)) :
-                index.Value);
+            => ArrayIndex(array, index.GetOffset(ArrayLength(array)));
 
-        internal static Expression MakeIndex(Expression collection, PropertyInfo count, ItemIndexExpression index)
-            => index.IsFromEnd ?
-                Call(index.Reduce(), nameof(System.Index.GetOffset), null, Property(collection, count)) :
-                index.Value;
+        private static Expression MakeIndex(Expression collection, PropertyInfo count, ItemIndexExpression index)
+            => index.GetOffset(Property(collection, count));
 
         /// <summary>
         /// Translates this expression into predefined set of expressions

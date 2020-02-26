@@ -83,6 +83,10 @@ namespace DotNext.Linq.Expressions
         /// <see cref="ExpressionType.Extension"/>
         public override ExpressionType NodeType => ExpressionType.Extension;
 
+        internal Expression GetOffset(Expression count) => IsFromEnd ?
+            Call(Reduce(), nameof(Index.GetOffset), null, count) :
+            Value;
+
         /// <summary>
         /// Translates this expression into predefined set of expressions
         /// using Lowering technique.
