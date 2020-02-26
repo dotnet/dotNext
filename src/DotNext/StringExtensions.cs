@@ -106,6 +106,10 @@ namespace DotNext
         /// <param name="str">The instance of string.</param>
         /// <param name="range">The range of substring.</param>
         /// <returns>The part of <paramref name="str"/> extracted according with supplied range.</returns>
-        public static string Substring(this string str, Range range) => str[range];
+        public static string Substring(this string str, Range range)
+        {
+            var (start, length) = range.GetOffsetAndLength(str.Length);
+            return str.Substring(start, length);
+        }
     }
 }

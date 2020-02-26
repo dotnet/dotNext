@@ -241,8 +241,7 @@ namespace DotNext
         /// <returns>The range in <paramref name="input"/>.</returns>
         public static ArraySegment<T> Slice<T>(this T[] input, in Range range)
         {
-            var start = range.Start.GetOffset(input.Length);
-            var length = (range.End.IsFromEnd ? (input.Length - range.End.Value) : range.End.Value) - start;
+            var (start, length) = range.GetOffsetAndLength(input.Length);
             return new ArraySegment<T>(input, start, length);
         }
 
