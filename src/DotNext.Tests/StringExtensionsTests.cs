@@ -58,5 +58,11 @@ namespace DotNext
             True("Abc".IsEqualIgnoreCase("abc"));
             False("abc".IsEqualIgnoreCase("CBA"));
         }
+
+        [Fact]
+        public static void Substring()
+        {
+            Equal("abcd"[1..2], "abcd".Substring(1..2));
+        }
     }
 }
