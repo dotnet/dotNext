@@ -101,17 +101,6 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Insert a new element into array and return modified array.
-        /// </summary>
-        /// <typeparam name="T">Type of array elements.</typeparam>
-        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
-        /// <param name="element">The object to insert.</param>
-        /// <param name="index">Insertion index.</param>
-        /// <returns>A modified array with inserted element.</returns>
-        public static T[] Insert<T>(this T[] array, T element, in Index index)
-            => Insert(array, element, index.GetOffset(array.Length));
-
-        /// <summary>
         /// Removes the element at the specified in the array and returns modified array.
         /// </summary>
         /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
@@ -133,17 +122,6 @@ namespace DotNext
                 return newStore;
             }
         }
-
-        /// <summary>
-        /// Removes the element at the specified in the array and returns modified array.
-        /// </summary>
-        /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
-        /// <param name="index">The index of the element to remove.</param>
-        /// <typeparam name="T">Type of array elements.</typeparam>
-        /// <returns>A modified array with removed element.</returns>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is incorrect.</exception>
-        public static T[] RemoveAt<T>(this T[] array, in Index index)
-            => RemoveAt(array, index.GetOffset(array.Length));
 
         private static T[] RemoveAll<T, C>(T[] array, in ValueFunc<T, bool> match, ref C callback)
             where C : struct, IConsumer<T>
