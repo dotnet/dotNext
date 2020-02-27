@@ -387,6 +387,9 @@ namespace DotNext.Linq.Expressions
             Delegate lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
             Equal(42L, lambda.DynamicInvoke(new []{42L, 43L}));
 
+            lambda = Expression.Lambda<Func<long[], long>>(new CollectionAccessExpression(parameter, typeof(Index).Default()), parameter).Compile();
+            Equal(42L, lambda.DynamicInvoke(new[] { 42L, 43L }));
+
             lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
             Equal(44L, lambda.DynamicInvoke(new []{42L, 43L, 44L}));
 
@@ -422,6 +425,9 @@ namespace DotNext.Linq.Expressions
         {
             var parameter = Expression.Parameter(typeof(string));
             var lambda = Expression.Lambda<Func<string, string>>(parameter.Slice(1.Index(false), 1.Index(true)), parameter).Compile();
+            Equal("abcd"[1..^1], lambda("abcd"));
+  
+            lambda = Expression.Lambda<Func<string, string>>(new SliceExpression(parameter, typeof(Range).New(1.Index(false), 1.Index(true))), parameter).Compile();
             Equal("abcd"[1..^1], lambda("abcd"));
         }
 
