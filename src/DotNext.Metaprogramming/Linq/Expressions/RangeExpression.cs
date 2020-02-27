@@ -49,12 +49,12 @@ namespace DotNext.Linq.Expressions
         /// <see cref="ExpressionType.Extension"/>
         public override ExpressionType NodeType => ExpressionType.Extension;
 
-        internal Expression GetOffsetAndLength(Expression length)
-            => Call(Reduce(), nameof(Range.GetOffsetAndLength), null, length);
+        private static Expression GetOffsetAndLength(Expression range, Expression length)
+            => Call(range, nameof(Range.GetOffsetAndLength), null, length);
 
-        internal Expression GetOffsetAndLength(Expression length, out ParameterExpression offsetAndLength, out MemberExpression offsetField, out MemberExpression lengthField)
+        internal static Expression GetOffsetAndLength(Expression range, Expression length, out ParameterExpression offsetAndLength, out MemberExpression offsetField, out MemberExpression lengthField)
         {
-            var result = GetOffsetAndLength(length);
+            var result = GetOffsetAndLength(range, length);
             offsetAndLength = Variable(result.Type);
             offsetField = Field(offsetAndLength, nameof(ValueTuple<int, int>.Item1));
             lengthField = Field(offsetAndLength, nameof(ValueTuple<int, int>.Item2));
