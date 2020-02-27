@@ -21,14 +21,16 @@ namespace DotNext.Linq.Expressions
         /// Initializes a new slice of collection or array.
         /// </summary>
         /// <param name="collection">The collection or array.</param>
-        /// <param name="range">The requested range of collection or array.</param>
-        /// <exception cref="ArgumentException"><paramref name="collection"/> doesn't implement <c>Slice</c> method, <c>Length</c> or <c>Count</c> property.</exception>
-        public SliceExpression(Expression collection, RangeExpression range)
+        /// <param name="range">The requested range of collection or array. Should of type <see cref="Range"/>.</param>
+        /// <exception cref="ArgumentException"><paramref name="collection"/> doesn't implement <c>Slice</c> method, <c>Length</c> or <c>Count</c> property; or <paramref name="range"/> is not of type <see cref="Range"/>.</exception>
+        public SliceExpression(Expression collection, Expression range)
         {
             if (collection is null)
                 throw new ArgumentNullException(nameof(collection));
             if (range is null)
                 throw new ArgumentNullException(nameof(range));
+            if (range.Type != typeof(Range))
+                throw new ArgumentException(ExceptionMessages.TypeExpected<Range>(), nameof(range));
             var resolved = false;
             if (collection.Type.IsSingleDimensionalArray())
             {
@@ -98,9 +100,9 @@ namespace DotNext.Linq.Expressions
         /// <summary>
         /// Gets slice range.
         /// </summary>
-        public RangeExpression Range { get; }
+        public Expression Range { get; }
 
-        private static MethodCallExpression SubArray(Expression array, RangeExpression range)
+        private static MethodCallExpression SubArray(Expression array, Expression range)
         {
             MethodInfo? subArray = typeof(RuntimeHelpers).GetMethod(nameof(RuntimeHelpers.GetSubArray), 1, new[] { Type.MakeGenericMethodParameter(0).MakeArrayType(), typeof(Range) });
             Debug.Assert(!(subArray is null));
@@ -108,9 +110,9 @@ namespace DotNext.Linq.Expressions
             return Call(subArray, array, range.Reduce());
         }
 
-        private static BlockExpression SubCollection(Expression collection, MethodInfo slice, PropertyInfo count, RangeExpression range)
+        private static BlockExpression SubCollection(Expression collection, MethodInfo slice, PropertyInfo count, Expression range)
         {
-            var offsetAndLengthCall = range.GetOffsetAndLength(Property(collection, count), out var offsetAndLength, out var offsetField, out var lengthField);
+            var offsetAndLengthCall = RangeExpression.GetOffsetAndLength(range, Property(collection, count), out var offsetAndLength, out var offsetField, out var lengthField);
             return Block(new[] { offsetAndLength }, Assign(offsetAndLength, offsetAndLengthCall), Call(collection, slice, offsetField, lengthField));
         }
 
@@ -140,7 +142,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
-            var range = (RangeExpression)visitor.Visit(Range);
+            var range = visitor.Visit(Range);
             var collection = visitor.Visit(Collection);
 
             return ReferenceEquals(range, Range) && ReferenceEquals(collection, Collection) ? this : new SliceExpression(collection, range);

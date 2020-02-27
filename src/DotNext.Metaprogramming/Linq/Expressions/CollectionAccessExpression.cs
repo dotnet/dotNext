@@ -21,15 +21,17 @@ namespace DotNext.Linq.Expressions
         /// Initializes a new collection access expression.
         /// </summary>
         /// <param name="collection">The expression representing collection.</param>
-        /// <param name="index">The index of the element.</param>
+        /// <param name="index">The index of the element. Should be of type <see cref="System.Index"/>.</param>
         /// <exception cref="ArgumentException"><paramref name="collection"/> doesn't provide implicit support of Index expression.</exception>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">Ranges and Indicies</seealso>
-        public CollectionAccessExpression(Expression collection, ItemIndexExpression index)
+        public CollectionAccessExpression(Expression collection, Expression index)
         {
             if(collection is null)
                 throw new ArgumentNullException(nameof(collection));
             if(index is null)
                 throw new ArgumentNullException(nameof(index));
+            if (index.Type != typeof(Index))
+                throw new ArgumentException(ExceptionMessages.TypeExpected<Index>(), nameof(index));
             var resolved = false;
             if(collection.Type.IsSingleDimensionalArray())
             {
@@ -94,7 +96,7 @@ namespace DotNext.Linq.Expressions
         /// Gets the index of the collection element.
         /// </summary>
         /// <value>The index of the item.</value>
-        public ItemIndexExpression Index { get; }
+        public Expression Index { get; }
 
         /// <summary>
         /// Gets the collection.
@@ -118,11 +120,11 @@ namespace DotNext.Linq.Expressions
         /// <see cref="ExpressionType.Extension"/>
         public override ExpressionType NodeType => ExpressionType.Extension;
 
-        private static Expression ArrayAccess(Expression array, ItemIndexExpression index)
-            => ArrayIndex(array, index.GetOffset(ArrayLength(array)));
+        private static Expression ArrayAccess(Expression array, Expression index)
+            => ArrayIndex(array, ItemIndexExpression.GetOffset(index, ArrayLength(array)));
 
-        private static Expression MakeIndex(Expression collection, PropertyInfo count, ItemIndexExpression index)
-            => index.GetOffset(Property(collection, count));
+        private static Expression MakeIndex(Expression collection, PropertyInfo count, Expression index)
+            => ItemIndexExpression.GetOffset(index, Property(collection, count));
 
         /// <summary>
         /// Translates this expression into predefined set of expressions
@@ -150,7 +152,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Potentially modified expression if one of children expressions is modified during visit.</returns>
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
-            var index = Index.Visit(visitor);
+            var index = visitor.Visit(Index);
             var collection = visitor.Visit(Collection);
             return ReferenceEquals(index, Index) && ReferenceEquals(collection, Collection) ? this : new CollectionAccessExpression(collection, index);
         }
