@@ -427,7 +427,11 @@ namespace DotNext.Linq.Expressions
             var lambda = Expression.Lambda<Func<string, string>>(parameter.Slice(1.Index(false), 1.Index(true)), parameter).Compile();
             Equal("abcd"[1..^1], lambda("abcd"));
   
-            lambda = Expression.Lambda<Func<string, string>>(new SliceExpression(parameter, typeof(Range).New(1.Index(false), 1.Index(true))), parameter).Compile();
+            lambda = Expression.Lambda<Func<string, string>>(parameter.Slice(typeof(Range).New(1.Index(false), 1.Index(true))), parameter).Compile();
+            Equal("abcd"[1..^1], lambda("abcd"));
+
+            var uParam = (UniversalExpression)parameter;
+            lambda = Expression.Lambda<Func<string, string>>(uParam.Slice(typeof(Range).New(1.Index(false), 1.Index(true))), parameter).Compile();
             Equal("abcd"[1..^1], lambda("abcd"));
         }
 

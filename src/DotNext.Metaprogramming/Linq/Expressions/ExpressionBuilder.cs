@@ -857,7 +857,16 @@ namespace DotNext.Linq.Expressions
         /// <param name="end">The last index of slice, exclusive.</param>
         /// <returns>The slice of collection or array.</returns>
         public static SliceExpression Slice(this Expression collection, ItemIndexExpression? start = null, ItemIndexExpression? end = null)
-            => new SliceExpression(collection, new RangeExpression(start, end));
+            => collection.Slice(new RangeExpression(start, end));
+
+        /// <summary>
+        /// Constructs slice of collection or array.
+        /// </summary>
+        /// <param name="collection">The collection or array.</param>
+        /// <param name="range">The range of collection or array.</param>
+        /// <returns>The slice of collection or array.</returns>
+        public static SliceExpression Slice(this Expression collection, Expression range)
+            => new SliceExpression(collection, range);
 
         /// <summary>
         /// Constructs array length expression.

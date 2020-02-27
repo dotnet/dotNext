@@ -776,6 +776,14 @@ namespace DotNext.Linq.Expressions
             => new UniversalExpression((expression ?? Expression.Empty()).Index(fromEnd));
 
         /// <summary>
+        /// Constructs slice of collection or array.
+        /// </summary>
+        /// <param name="range">The range of collection or array.</param>
+        /// <returns>The slice of collection or array.</returns>
+        public UniversalExpression Slice(Expression range)
+            => new UniversalExpression(new SliceExpression(expression ?? Expression.Empty(), range));
+
+        /// <summary>
         /// Computes the hash code for the underlying expression.
         /// </summary>
         /// <returns>The hash code of the underlying expression.</returns>
