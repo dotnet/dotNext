@@ -17,7 +17,7 @@ namespace DotNext
         /// <returns>The value delegate represeting comparison method.</returns>
         public static ValueFunc<T, T, int> AsValueFunc<T>(this Comparison<T> comparison, bool wrap = false)
             => new ValueFunc<T, T, int>(Unsafe.As<Func<T, T, int>>(comparison), wrap);
-        
+
         /// <summary>
         /// Restricts a <paramref name="value" /> in specific range.
         /// </summary>
@@ -29,9 +29,9 @@ namespace DotNext
         public static T Clamp<T>(this T value, T min, T max)
             where T : notnull, IComparable<T>
         {
-            if(value.CompareTo(min) < 0)
+            if (value.CompareTo(min) < 0)
                 return min;
-            if(value.CompareTo(max) > 0)
+            if (value.CompareTo(max) > 0)
                 return max;
             return value;
         }

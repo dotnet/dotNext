@@ -16,6 +16,6 @@ namespace DotNext
         public RepeatAttribute(int count) => this.count = count;
 
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
-            => from i in Enumerable.Range(0, count) select new object[] {i};
+            => from i in Enumerable.Range(0, count) select new object[] { i };
     }
 }

@@ -385,27 +385,27 @@ namespace DotNext.Linq.Expressions
         {
             var parameter = Expression.Parameter(typeof(long[]));
             Delegate lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
-            Equal(42L, lambda.DynamicInvoke(new []{42L, 43L}));
+            Equal(42L, lambda.DynamicInvoke(new[] { 42L, 43L }));
 
             lambda = Expression.Lambda<Func<long[], long>>(new CollectionAccessExpression(parameter, typeof(Index).Default()), parameter).Compile();
             Equal(42L, lambda.DynamicInvoke(new[] { 42L, 43L }));
 
             lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
-            Equal(44L, lambda.DynamicInvoke(new []{42L, 43L, 44L}));
+            Equal(44L, lambda.DynamicInvoke(new[] { 42L, 43L, 44L }));
 
             parameter = Expression.Parameter(typeof(IList<long>));
             lambda = Expression.Lambda<Func<IList<long>, long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
-            Equal(42L, lambda.DynamicInvoke(new []{42L, 43L}));
+            Equal(42L, lambda.DynamicInvoke(new[] { 42L, 43L }));
 
             lambda = Expression.Lambda<Func<IList<long>, long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
-            Equal(43L, lambda.DynamicInvoke(new []{42L, 43L}));
+            Equal(43L, lambda.DynamicInvoke(new[] { 42L, 43L }));
 
             parameter = Expression.Parameter(typeof(IListOfInt64));
             lambda = Expression.Lambda<Func<IListOfInt64, long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
-            Equal(42L, lambda.DynamicInvoke(new ListOfInt64{42L, 43L}));
+            Equal(42L, lambda.DynamicInvoke(new ListOfInt64 { 42L, 43L }));
 
             lambda = Expression.Lambda<Func<IListOfInt64, long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
-            Equal(43L, lambda.DynamicInvoke(new ListOfInt64{42L, 43L}));
+            Equal(43L, lambda.DynamicInvoke(new ListOfInt64 { 42L, 43L }));
 
             parameter = Expression.Parameter(typeof(string));
             lambda = Expression.Lambda<Func<string, char>>(parameter.ElementAt(1.Index(false)), parameter).Compile();
@@ -426,7 +426,7 @@ namespace DotNext.Linq.Expressions
             var parameter = Expression.Parameter(typeof(string));
             var lambda = Expression.Lambda<Func<string, string>>(parameter.Slice(1.Index(false), 1.Index(true)), parameter).Compile();
             Equal("abcd"[1..^1], lambda("abcd"));
-  
+
             lambda = Expression.Lambda<Func<string, string>>(parameter.Slice(typeof(Range).New(1.Index(false), 1.Index(true))), parameter).Compile();
             Equal("abcd"[1..^1], lambda("abcd"));
 

@@ -837,7 +837,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Array element access expression.</returns>
         public static IndexExpression ElementAt(this Expression array, params Expression[] indexes)
             => Expression.ArrayAccess(array, indexes);
-        
+
         /// <summary>
         /// Constructs collection or array element access expression.
         /// </summary>
@@ -1251,7 +1251,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>The expression representing statically typed referenced.</returns>
         public static RefAnyValExpression RefAnyVal<T>(this ParameterExpression typedRef)
             => RefAnyVal(typedRef, typeof(T));
-        
+
         /// <summary>
         /// Constructs expression of type <see cref="System.Index"/>.
         /// </summary>
@@ -1261,7 +1261,7 @@ namespace DotNext.Linq.Expressions
         /// <exception cref="ArgumentException">Type of <paramref name="value"/> should be <see cref="int"/>, <see cref="short"/>, <see cref="byte"/> or <see cref="sbyte"/>.</exception>
         public static ItemIndexExpression Index(this Expression value, bool fromEnd)
             => new ItemIndexExpression(value, fromEnd);
-        
+
         /// <summary>
         /// Constructs expression of type <see cref="System.Index"/>.
         /// </summary>
@@ -1270,7 +1270,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Index expression.</returns>
         public static ItemIndexExpression Index(this int value, bool fromEnd)
             => Index(Const(value), fromEnd);
-        
+
         /// <summary>
         /// Converts index to equivalent expression.
         /// </summary>
@@ -1278,7 +1278,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Index expression.</returns>
         public static ItemIndexExpression Quote(this in Index index)
             => Index(index.Value, index.IsFromEnd);
-        
+
         /// <summary>
         /// Constructs range.
         /// </summary>
@@ -1296,7 +1296,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>The range expression.</returns>        
         public static RangeExpression To(this ItemIndexExpression start, Index end)
             => start.To(end.Quote());
-        
+
         /// <summary>
         /// Converts range to equivalent expression.
         /// </summary>

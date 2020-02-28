@@ -60,7 +60,7 @@ namespace DotNext
         internal static string VoidLambda => Resources.GetString("VoidLambda");
 
         internal static string MissingIndexerProperty(Type type) => string.Format(Resources.GetString("MissingIndexerProperty"), type);
-    
+
         internal static string CollectionExpected(Type type) => string.Format(Resources.GetString("CollectionExpected"), type);
     }
 }
