@@ -37,7 +37,7 @@ namespace DotNext.Linq.Expressions
         /// <exception cref="ArgumentException">Type of <paramref name="value"/> should be <see cref="int"/>, <see cref="short"/>, <see cref="byte"/> or <see cref="sbyte"/>.</exception>
         public ItemIndexExpression(Expression value, bool fromEnd = false)
         {
-            switch(Type.GetTypeCode(value.Type))
+            switch (Type.GetTypeCode(value.Type))
             {
                 case TypeCode.Byte:
                 case TypeCode.SByte:
@@ -93,7 +93,7 @@ namespace DotNext.Linq.Expressions
         /// <returns>Translated expression.</returns>
         public override Expression Reduce()
         {
-            ConstructorInfo? ctor = typeof(Index).GetConstructor(new []{ typeof(int), typeof(bool) });
+            ConstructorInfo? ctor = typeof(Index).GetConstructor(new[] { typeof(int), typeof(bool) });
             Debug.Assert(!(ctor is null));
             return New(ctor, conversionRequired ? Convert(Value, typeof(int)) : Value, Constant(IsFromEnd));
         }
@@ -108,7 +108,7 @@ namespace DotNext.Linq.Expressions
             var expression = visitor.Visit(Value);
             return ReferenceEquals(expression, Value) ? this : new ItemIndexExpression(expression, IsFromEnd);
         }
-        
+
         internal ItemIndexExpression Visit(ExpressionVisitor visitor)
         {
             var expression = visitor.Visit(this);

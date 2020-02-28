@@ -38,7 +38,7 @@ namespace DotNext.Linq.Expressions
                 count = null;
                 resolved = true;
             }
-            else if(collection.Type == typeof(string))
+            else if (collection.Type == typeof(string))
             {
                 slice = new Func<string, Range, string>(StringExtensions.Substring).Method;
                 count = null;

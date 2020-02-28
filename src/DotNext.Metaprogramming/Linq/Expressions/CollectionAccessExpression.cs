@@ -26,33 +26,33 @@ namespace DotNext.Linq.Expressions
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">Ranges and Indicies</seealso>
         public CollectionAccessExpression(Expression collection, Expression index)
         {
-            if(collection is null)
+            if (collection is null)
                 throw new ArgumentNullException(nameof(collection));
-            if(index is null)
+            if (index is null)
                 throw new ArgumentNullException(nameof(index));
             if (index.Type != typeof(Index))
                 throw new ArgumentException(ExceptionMessages.TypeExpected<Index>(), nameof(index));
             var resolved = false;
-            if(collection.Type.IsSingleDimensionalArray())
+            if (collection.Type.IsSingleDimensionalArray())
             {
                 indexer = count = null;
                 resolved = true;
             }
             else
-                foreach(var indexer in GetIndexers(collection.Type))
+                foreach (var indexer in GetIndexers(collection.Type))
                 {
                     var parameters = indexer.GetIndexParameters();
-                    if(parameters.LongLength != 1L)
+                    if (parameters.LongLength != 1L)
                         continue;
                     var firstParam = parameters[0].ParameterType;
-                    if(firstParam == typeof(Index))
+                    if (firstParam == typeof(Index))
                     {
                         count = null;
                         this.indexer = indexer;
                         resolved = true;
                         break;
                     }
-                    if(firstParam == typeof(int))
+                    if (firstParam == typeof(int))
                     {
                         count = GetCountProperty(collection.Type) ?? throw new ArgumentException(ExceptionMessages.CollectionExpected(collection.Type), nameof(collection));
                         this.indexer = indexer;
@@ -67,13 +67,13 @@ namespace DotNext.Linq.Expressions
         internal static PropertyInfo? GetCountProperty(Type collection)
         {
             var intType = typeof(int);
-            foreach(var lookup in collection.GetBaseTypes(includeTopLevel: true, includeInterfaces: collection.IsInterface))
+            foreach (var lookup in collection.GetBaseTypes(includeTopLevel: true, includeInterfaces: collection.IsInterface))
             {
                 PropertyInfo? property = lookup.GetProperty("Length", PublicInstance);
-                if(property?.PropertyType == intType)
+                if (property?.PropertyType == intType)
                     return property;
                 property = lookup.GetProperty("Count", PublicInstance);
-                if(property?.PropertyType == intType)
+                if (property?.PropertyType == intType)
                     return property;
             }
             return null;
@@ -81,13 +81,13 @@ namespace DotNext.Linq.Expressions
 
         private static IEnumerable<PropertyInfo> GetIndexers(Type collection)
         {
-            foreach(var lookup in collection.GetBaseTypes(includeTopLevel: true, includeInterfaces: collection.IsInterface))
+            foreach (var lookup in collection.GetBaseTypes(includeTopLevel: true, includeInterfaces: collection.IsInterface))
             {
                 DefaultMemberAttribute? defaultMember = lookup.GetCustomAttribute<DefaultMemberAttribute>(true);
-                if(defaultMember is null)
+                if (defaultMember is null)
                     continue;
                 PropertyInfo? property = lookup.GetProperty(defaultMember.MemberName, PublicInstance);
-                if(!(property is null))
+                if (!(property is null))
                     yield return property;
             }
         }

@@ -122,7 +122,7 @@ namespace DotNext
 
         private Func<T, T, bool> BuildEquals()
         {
-            if(!RuntimeFeature.IsDynamicCodeSupported)
+            if (!RuntimeFeature.IsDynamicCodeSupported)
                 throw new PlatformNotSupportedException();
             var x = Expression.Parameter(typeof(T));
             if (x.Type.IsPrimitive)
@@ -158,7 +158,7 @@ namespace DotNext
 
         private Func<T, int> BuildGetHashCode()
         {
-            if(!RuntimeFeature.IsDynamicCodeSupported)
+            if (!RuntimeFeature.IsDynamicCodeSupported)
                 throw new PlatformNotSupportedException();
             Expression expr;
             var inputParam = Expression.Parameter(typeof(T));

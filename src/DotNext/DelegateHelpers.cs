@@ -30,7 +30,7 @@ namespace DotNext
             where T : class
         {
             private readonly T target;
-            
+
             private Closure(T target, MulticastDelegate action) : base(action) => this.target = target;
 
             internal override object Target => target;
@@ -46,31 +46,31 @@ namespace DotNext
             private void InvokeAction<T2>(T2 arg2) => Unsafe.As<Action<T, T2>>(Delegate).Invoke(target, arg2);
 
             internal static Action<T2> Create<T2>(Action<T, T2> action, T arg1) => new Closure<T>(arg1, action).InvokeAction<T2>;
-        
+
             private R InvokeFunc<T2, R>(T2 arg2) => Unsafe.As<Func<T, T2, R>>(Delegate).Invoke(target, arg2);
 
             internal static Func<T2, R> Create<T2, R>(Func<T, T2, R> func, T arg) => new Closure<T>(arg, func).InvokeFunc<T2, R>;
-        
+
             private void InvokeAction<T2, T3>(T2 arg2, T3 arg3) => Unsafe.As<Action<T, T2, T3>>(Delegate).Invoke(target, arg2, arg3);
 
             internal static Action<T2, T3> Create<T2, T3>(Action<T, T2, T3> action, T arg1) => new Closure<T>(arg1, action).InvokeAction<T2, T3>;
-        
+
             private R InvokeFunc<T2, T3, R>(T2 arg2, T3 arg3) => Unsafe.As<Func<T, T2, T3, R>>(Delegate).Invoke(target, arg2, arg3);
 
             internal static Func<T2, T3, R> Create<T2, T3, R>(Func<T, T2, T3, R> func, T arg) => new Closure<T>(arg, func).InvokeFunc<T2, T3, R>;
-        
+
             private void InvokeAction<T2, T3, T4>(T2 arg2, T3 arg3, T4 arg4) => Unsafe.As<Action<T, T2, T3, T4>>(Delegate).Invoke(target, arg2, arg3, arg4);
 
             internal static Action<T2, T3, T4> Create<T2, T3, T4>(Action<T, T2, T3, T4> action, T arg1) => new Closure<T>(arg1, action).InvokeAction<T2, T3, T4>;
-        
+
             private R InvokeFunc<T2, T3, T4, R>(T2 arg2, T3 arg3, T4 arg4) => Unsafe.As<Func<T, T2, T3, T4, R>>(Delegate).Invoke(target, arg2, arg3, arg4);
 
             internal static Func<T2, T3, T4, R> Create<T2, T3, T4, R>(Func<T, T2, T3, T4, R> func, T arg) => new Closure<T>(arg, func).InvokeFunc<T2, T3, T4, R>;
-        
+
             private void InvokeAction<T2, T3, T4, T5>(T2 arg2, T3 arg3, T4 arg4, T5 arg5) => Unsafe.As<Action<T, T2, T3, T4, T5>>(Delegate).Invoke(target, arg2, arg3, arg4, arg5);
 
             internal static Action<T2, T3, T4, T5> Create<T2, T3, T4, T5>(Action<T, T2, T3, T4, T5> action, T arg1) => new Closure<T>(arg1, action).InvokeAction<T2, T3, T4, T5>;
-        
+
             private R InvokeFunc<T2, T3, T4, T5, R>(T2 arg2, T3 arg3, T4 arg4, T5 arg5) => Unsafe.As<Func<T, T2, T3, T4, T5, R>>(Delegate).Invoke(target, arg2, arg3, arg4, arg5);
 
             internal static Func<T2, T3, T4, T5, R> Create<T2, T3, T4, T5, R>(Func<T, T2, T3, T4, T5, R> func, T arg) => new Closure<T>(arg, func).InvokeFunc<T2, T3, T4, T5, R>;
@@ -210,7 +210,7 @@ namespace DotNext
             //TODO: Should be generalized using function pointer in C# 9
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if(action.Target is null)
+            if (action.Target is null)
                 return ChangeType<Action, TargetRewriter>(action, new TargetRewriter(obj));
             return Closure<T>.Create(action, obj);
         }
@@ -229,7 +229,7 @@ namespace DotNext
         {
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if(func.Target is null)
+            if (func.Target is null)
                 return ChangeType<Func<R>, TargetRewriter>(func, new TargetRewriter(obj));
             return Closure<T>.Create(func, obj);
         }
@@ -249,7 +249,7 @@ namespace DotNext
         {
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if(func.Target is null)
+            if (func.Target is null)
                 return ChangeType<Func<T2, R>, TargetRewriter>(func, new TargetRewriter(obj));
             return Closure<T1>.Create(func, obj);
         }
@@ -268,7 +268,7 @@ namespace DotNext
         {
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if(action.Target is null)
+            if (action.Target is null)
                 return ChangeType<Action<T2>, TargetRewriter>(action, new TargetRewriter(obj));
             return Closure<T1>.Create(action, obj);
         }
@@ -289,7 +289,7 @@ namespace DotNext
         {
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if(func.Target is null)
+            if (func.Target is null)
                 return ChangeType<Func<T2, T3, R>, TargetRewriter>(func, new TargetRewriter(obj));
             return Closure<T1>.Create(func, obj);
         }
@@ -309,7 +309,7 @@ namespace DotNext
         {
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if(action.Target is null)
+            if (action.Target is null)
                 return ChangeType<Action<T2, T3>, TargetRewriter>(action, new TargetRewriter(obj));
             return Closure<T1>.Create(action, obj);
         }
@@ -331,7 +331,7 @@ namespace DotNext
         {
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if(func.Target is null)
+            if (func.Target is null)
                 return ChangeType<Func<T2, T3, T4, R>, TargetRewriter>(func, new TargetRewriter(obj));
             return Closure<T1>.Create(func, obj);
         }
@@ -352,7 +352,7 @@ namespace DotNext
         {
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if(action.Target is null)
+            if (action.Target is null)
                 return ChangeType<Action<T2, T3, T4>, TargetRewriter>(action, new TargetRewriter(obj));
             return Closure<T1>.Create(action, obj);
         }
@@ -375,7 +375,7 @@ namespace DotNext
         {
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if(func.Target is null)
+            if (func.Target is null)
                 return ChangeType<Func<T2, T3, T4, T5, R>, TargetRewriter>(func, new TargetRewriter(obj));
             return Closure<T1>.Create(func, obj);
         }
@@ -397,7 +397,7 @@ namespace DotNext
         {
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            if(action.Target is null)
+            if (action.Target is null)
                 return ChangeType<Action<T2, T3, T4, T5>, TargetRewriter>(action, new TargetRewriter(obj));
             return Closure<T1>.Create(action, obj);
         }
@@ -406,12 +406,12 @@ namespace DotNext
             where U : MulticastDelegate
         {
             var target = del.Target;
-            if(target is Closure closure)
-                if(ObjectExtensions.IsContravariant(closure.Target, targetType)) 
+            if (target is Closure closure)
+                if (ObjectExtensions.IsContravariant(closure.Target, targetType))
                     return ChangeType<U, EmptyTargetRewriter>(closure.Delegate, default);
                 else
                     goto invalid_op;
-            if(ObjectExtensions.IsContravariant(target, targetType))
+            if (ObjectExtensions.IsContravariant(target, targetType))
                 return ChangeType<U, TargetRewriter>(del, default);
             invalid_op:
             throw new InvalidOperationException();

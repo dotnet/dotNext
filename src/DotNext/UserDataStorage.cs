@@ -211,12 +211,12 @@ namespace DotNext
 
         private BackingStorage? GetStorage()
         {
-            if(source is BackingStorage storage)
+            if (source is BackingStorage storage)
                 return storage;
-            return UserData.TryGetValue(source, out storage) ? storage : null;   
+            return UserData.TryGetValue(source, out storage) ? storage : null;
         }
 
-        private BackingStorage GetOrCreateStorage() 
+        private BackingStorage GetOrCreateStorage()
             => source is BackingStorage storage ? storage : UserData.GetOrCreateValue(source);
 
         /// <summary>
@@ -422,11 +422,11 @@ namespace DotNext
         /// <param name="obj">The object which user data has to be replaced with the copy of the current one.</param>
         public void CopyTo(object obj)
         {
-            if(obj is IContainer support)
+            if (obj is IContainer support)
                 obj = support.Source;
             var source = GetStorage();
-            if(source != null)
-                if(obj is BackingStorage destination)
+            if (source != null)
+                if (obj is BackingStorage destination)
                     source.CopyTo(destination);
                 else
                     UserData.Add(obj, source.Copy());
