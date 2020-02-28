@@ -127,7 +127,7 @@ namespace DotNext
             var x = Expression.Parameter(typeof(T));
             if (x.Type.IsPrimitive)
                 return EqualityComparer<T>.Default.Equals;
-            else if (x.Type.IsArray && x.Type.GetArrayRank() == 1)
+            else if (x.Type.IsSZArray)
                 return EqualsMethodForArrayElementType(x.Type.GetElementType()).CreateDelegate<Func<T, T, bool>>();
             else
             {
@@ -144,7 +144,7 @@ namespace DotNext
                             condition = Expression.Equal(fieldX, fieldY);
                         else if (field.FieldType.IsValueType)
                             condition = EqualsMethodForValueType(fieldX, fieldY);
-                        else if (field.FieldType.IsArray && field.FieldType.GetArrayRank() == 1)
+                        else if (field.FieldType.IsSZArray)
                             condition = EqualsMethodForArrayElementType(fieldX, fieldY);
                         else
                             condition = Expression.Call(new Func<object, object, bool>(Equals).Method, fieldX, fieldY);
@@ -164,7 +164,7 @@ namespace DotNext
             var inputParam = Expression.Parameter(typeof(T));
             if (inputParam.Type.IsPrimitive)
                 return EqualityComparer<T>.Default.GetHashCode;
-            else if (inputParam.Type.IsArray && inputParam.Type.GetArrayRank() == 1)
+            else if (inputParam.Type.IsSZArray)
             {
                 expr = HashCodeMethodForArrayElementType(inputParam, Expression.Constant(salted));
                 return Expression.Lambda<Func<T, int>>(expr, true, inputParam).Compile();
@@ -184,7 +184,7 @@ namespace DotNext
                             expr = Expression.Call(expr, nameof(GetHashCode), Array.Empty<Type>());
                         else if (field.FieldType.IsValueType)
                             expr = HashCodeMethodForValueType(expr, Expression.Constant(salted));
-                        else if (field.FieldType.IsArray && field.FieldType.GetArrayRank() == 1)
+                        else if (field.FieldType.IsSZArray)
                             expr = HashCodeMethodForArrayElementType(expr, Expression.Constant(salted));
                         else
                         {
