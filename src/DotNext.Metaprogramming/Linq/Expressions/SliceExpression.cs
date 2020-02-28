@@ -32,7 +32,7 @@ namespace DotNext.Linq.Expressions
             if (range.Type != typeof(Range))
                 throw new ArgumentException(ExceptionMessages.TypeExpected<Range>(), nameof(range));
             var resolved = false;
-            if (collection.Type.IsSingleDimensionalArray())
+            if (collection.Type.IsSZArray)
             {
                 slice = null;
                 count = null;

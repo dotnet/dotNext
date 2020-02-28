@@ -33,7 +33,7 @@ namespace DotNext.Linq.Expressions
             if (index.Type != typeof(Index))
                 throw new ArgumentException(ExceptionMessages.TypeExpected<Index>(), nameof(index));
             var resolved = false;
-            if (collection.Type.IsSingleDimensionalArray())
+            if (collection.Type.IsSZArray)
             {
                 indexer = count = null;
                 resolved = true;
