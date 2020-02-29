@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace DotNext
 {
@@ -11,6 +12,36 @@ namespace DotNext
     /// </summary>
     public static class Sequence
     {
+        [StructLayout(LayoutKind.Auto)]
+        public struct LimitedEnumerator<T> : IEnumerator<T>
+        {
+            private readonly IEnumerator<T> enumerator;
+            private readonly bool disposeEnumerator;
+            private int count;
+
+            internal LimitedEnumerator(IEnumerator<T> enumerator, int limit, bool leaveOpen)
+            {
+                this.enumerator = enumerator;
+                disposeEnumerator = !leaveOpen;
+                count = limit;
+            }
+
+            public bool MoveNext() => count-- > 0 && enumerator.MoveNext();
+
+            public readonly T Current => enumerator.Current;
+
+            readonly object? IEnumerator.Current => Current;
+
+            public readonly void Reset() => enumerator?.Reset();
+
+            public void Dispose()
+            {
+                if (disposeEnumerator)
+                    enumerator?.Dispose();
+                this = default;
+            }
+        }
+
         private sealed class NotNullEnumerable<T> : IEnumerable<T>
             where T : class
         {
@@ -153,11 +184,30 @@ namespace DotNext
         /// <summary>
         /// Bypasses a specified number of elements in a sequence.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
         /// <param name="enumerator">Enumerator to modify. Cannot be <see langword="null"/>.</param>
         /// <param name="count">The number of elements to skip.</param>
         /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
         public static bool Skip<T>(this IEnumerator<T> enumerator, int count)
+        {
+            while (count > 0)
+                if (enumerator.MoveNext())
+                    count--;
+                else
+                    return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Bypasses a specified number of elements in a sequence.
+        /// </summary>
+        /// <typeparam name="TEnumerator">The type of the sequence.</typeparam>
+        /// <typeparam name="T">The type of the elements in the sequence.</typeparam>
+        /// <param name="enumerator">Enumerator to modify.</param>
+        /// <param name="count">The number of elements to skip.</param>
+        /// <returns><see langword="true"/>, if current element is available; otherwise, <see langword="false"/>.</returns>
+        public static bool Skip<TEnumerator, T>(this ref TEnumerator enumerator, int count)
+            where TEnumerator : struct, IEnumerator<T>
         {
             while (count > 0)
                 if (enumerator.MoveNext())
@@ -282,5 +332,16 @@ namespace DotNext
         /// <returns>The concatenated collection.</returns>
         public static IEnumerable<T> Append<T>(this IEnumerable<T> collection, params T[] items)
             => collection.Concat(items);
+
+        /// <summary>
+        /// Limits the number of the elements in the sequence.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the sequence.</typeparam>
+        /// <param name="enumerator">The sequence of the elements.</param>
+        /// <param name="count">The maximum number of the elements in the returned sequence.</param>
+        /// <param name="leaveOpen"><see langword="false"/> to dispose <paramref name="enumerator"/>; otherwise, <see langword="true"/>.</param>
+        /// <returns>The enumerator which is limited by count.</returns>
+        public static LimitedEnumerator<T> Limit<T>(this IEnumerator<T> enumerator, int count, bool leaveOpen = false)
+            => new LimitedEnumerator<T>(enumerator, count, leaveOpen);
     }
 }
