@@ -202,5 +202,28 @@ namespace DotNext.Collections.Generic
         /// <param name="comparer">The comparer function.</param>
         /// <returns>The actual index of the inserted item.</returns>
         public static int InsertOrdered<T>(this IList<T> list, T item, Comparison<T> comparer) => InsertOrdered(list, item, comparer.AsValueFunc());
+
+        /// <summary>
+        /// Removes a range of elements from list.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the list.</typeparam>
+        /// <param name="list">The list to modify.</param>
+        /// <param name="range">The range of elements to be removed.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="range"/> is invalid.</exception>
+        public static void RemoveRange<T>(this List<T> list, Range range)
+        {
+            var (start, length) = range.GetOffsetAndLength(list.Count);
+            list.RemoveRange(start, length);
+        }
+
+        /// <summary>
+        /// Returns slice of the list.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the list.</typeparam>
+        /// <param name="list">The list of elements.</param>
+        /// <param name="range">The range of elements in the list.</param>
+        /// <returns>The view </returns>
+        public static ListSegment<T> Slice<T>(this IList<T> list, Range range)
+            => new ListSegment<T>(list, range);
     }
 }

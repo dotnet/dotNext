@@ -69,5 +69,53 @@ namespace DotNext.Collections.Generic
             array.IndexerSetter().Invoke(0, 6L);
             Equal(6L, array.IndexerGetter().Invoke(0));
         }
+
+        [Fact]
+        public static void RemoveRange()
+        {
+            var list = new List<long> { 10L, 20L, 30L };
+            list.RemoveRange(1..);
+            NotEmpty(list);
+            Equal(10L, list[0]);
+        }
+
+        private static void SliceTest(IList<long> list)
+        {
+            var slice = list.Slice(1..^1);
+            NotEmpty(slice);
+            Equal(2, slice.Count);
+            Equal(20L, slice[0]);
+            Equal(30L, slice[1]);
+            Throws<ArgumentOutOfRangeException>(() => slice[2]);
+            slice[0] = 50L;
+            Equal(50L, list[1]);
+
+            var index = 0;
+            foreach (var item in slice)
+                switch (index++)
+                {
+                    case 0:
+                        Equal(50L, item);
+                        continue;
+                    case 1:
+                        Equal(30L, item);
+                        continue;
+                    default:
+                        throw new Xunit.Sdk.XunitException();
+                }
+
+            var array = new long[2];
+            slice.CopyTo(array, 0);
+            Equal(50L, array[0]);
+            Equal(30L, array[1]);
+        }
+
+        [Fact]
+        public static void SliceList()
+        {
+            SliceTest(new List<long> { 10L, 20L, 30L, 40L });
+            SliceTest(new[] { 10L, 20L, 30L, 40L });
+            SliceTest(new ArraySegment<long>(new[] { 10L, 20L, 30L, 40L }, 0, 4));
+        }
     }
 }
