@@ -86,6 +86,8 @@ namespace DotNext.Collections.Generic
             Equal(2, slice.Count);
             Equal(20L, slice[0]);
             Equal(30L, slice[1]);
+            Contains(30L, slice);
+            Equal(1, slice.IndexOf(30L));
             Throws<ArgumentOutOfRangeException>(() => slice[2]);
             slice[0] = 50L;
             Equal(50L, list[1]);
