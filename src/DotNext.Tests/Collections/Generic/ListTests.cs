@@ -119,5 +119,14 @@ namespace DotNext.Collections.Generic
             SliceTest(new[] { 10L, 20L, 30L, 40L });
             SliceTest(new ArraySegment<long>(new[] { 10L, 20L, 30L, 40L }, 0, 4));
         }
+
+        [Fact]
+        public static void InsertItem()
+        {
+            var list = new List<long> { 10L, 20L };
+            list.Insert(^0, 30L);
+            Equal(3, list.Count);
+            Equal(30L, list[2]);
+        }
     }
 }

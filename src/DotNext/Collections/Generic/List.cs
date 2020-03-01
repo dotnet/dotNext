@@ -217,12 +217,24 @@ namespace DotNext.Collections.Generic
         }
 
         /// <summary>
+        /// Inserts an item to the list at the specified index.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the list.</typeparam>
+        /// <param name="list">The list to modify.</param>
+        /// <param name="index">The zero-based index at which item should be inserted.</param>
+        /// <param name="item">The object to insert into the list.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in <paramref name="list"/>.</exception>
+        /// <exception cref="NotSupportedException"><paramref name="list"/> is read-only.</exception>
+        public static void Insert<T>(this IList<T> list, Index index, T item)
+            => list.Insert(index.GetOffset(list.Count), item);
+
+        /// <summary>
         /// Returns slice of the list.
         /// </summary>
         /// <typeparam name="T">The type of elements in the list.</typeparam>
         /// <param name="list">The list of elements.</param>
         /// <param name="range">The range of elements in the list.</param>
-        /// <returns>The view </returns>
+        /// <returns>The section of the list.</returns>
         public static ListSegment<T> Slice<T>(this IList<T> list, Range range)
             => new ListSegment<T>(list, range);
     }
