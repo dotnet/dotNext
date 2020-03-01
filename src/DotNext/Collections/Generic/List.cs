@@ -229,6 +229,17 @@ namespace DotNext.Collections.Generic
             => list.Insert(index.GetOffset(list.Count), item);
 
         /// <summary>
+        /// Removes the item at the specifie index.
+        /// </summary>
+        /// <typeparam name="T">The type of elements in the list.</typeparam>
+        /// <param name="list">The list to modify.</param>
+        /// <param name="index">The zero-based index of the item to remove.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is not a valid index in <paramref name="list"/>.</exception>
+        /// <exception cref="NotSupportedException"><paramref name="list"/> is read-only.</exception>
+        public static void RemoveAt<T>(this IList<T> list, Index index)
+            => list.RemoveAt(index.GetOffset(list.Count));
+
+        /// <summary>
         /// Returns slice of the list.
         /// </summary>
         /// <typeparam name="T">The type of elements in the list.</typeparam>
