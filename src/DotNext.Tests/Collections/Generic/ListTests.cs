@@ -121,12 +121,14 @@ namespace DotNext.Collections.Generic
         }
 
         [Fact]
-        public static void InsertItem()
+        public static void InsertRemove()
         {
             var list = new List<long> { 10L, 20L };
             list.Insert(^0, 30L);
             Equal(3, list.Count);
             Equal(30L, list[2]);
+            list.RemoveAt(^1);
+            Equal(2, list.Count);
         }
     }
 }
