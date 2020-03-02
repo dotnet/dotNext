@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -198,6 +199,9 @@ namespace DotNext.Runtime.InteropServices
             get => *value;
             set => *this.value = (T)value;
         }
+
+        internal unsafe MemoryHandle GetHandle(int elementIndex)
+            => new MemoryHandle(value + elementIndex);
 
         /// <summary>
         /// Fill memory with zero bytes.

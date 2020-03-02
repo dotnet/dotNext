@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace DotNext.Runtime.InteropServices
         /// Sets all bits of allocated memory to zero.
         /// </summary>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-        void Clear();
+        void Clear() => Pointer.Clear(Size);
 
         /// <summary>
         /// Gets a pointer to the allocated unmanaged memory.
@@ -103,5 +104,15 @@ namespace DotNext.Runtime.InteropServices
         /// <returns>Comparison result which has the semantics as return type of <see cref="IComparable.CompareTo(object)"/>.</returns>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         int BitwiseCompare(IUnmanagedMemory other) => Size == other.Size ? Pointer.BitwiseCompare(other.Pointer, Size) : Size.CompareTo(other.Size);
+    }
+
+    /// <summary>
+    /// Represents unmanaged memory owner.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in the unmanaged memory.</typeparam>
+    public interface IUnmanagedMemory<T> : IUnmanagedMemory, IMemoryOwner<T>
+        where T : unmanaged
+    {
+
     }
 }
