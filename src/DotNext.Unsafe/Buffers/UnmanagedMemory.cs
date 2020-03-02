@@ -10,7 +10,7 @@ namespace DotNext.Buffers
     internal class UnmanagedMemory<T> : MemoryManager<T>
         where T : unmanaged
     {
-        private protected IntPtr address;
+        private IntPtr address;
         private readonly bool owner;
 
         internal UnmanagedMemory(IntPtr address, int length)
@@ -32,6 +32,17 @@ namespace DotNext.Buffers
                 Intrinsics.ClearBits(address.ToPointer(), size);
             owner = true;
         }
+
+        private protected IntPtr Address
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get
+            {
+                var result = address;
+                return result == default ? throw new ObjectDisposedException(GetType().Name) : result;
+            }
+        }
+
         public long Size => SizeOf(Length);
 
         public int Length { get; private set; }
@@ -51,14 +62,10 @@ namespace DotNext.Buffers
                 GC.RemoveMemoryPressure(Math.Abs(diff));
         }
 
-        public sealed override unsafe Span<T> GetSpan() => new Span<T>(address.ToPointer(), Length);
+        public sealed override unsafe Span<T> GetSpan() => new Span<T>(Address.ToPointer(), Length);
 
         public sealed override unsafe MemoryHandle Pin(int elementIndex = 0)
-        {
-            if (address == default)
-                throw new ObjectDisposedException(GetType().Name);
-            return new MemoryHandle((T*)address.ToPointer() + elementIndex);
-        }
+            => new MemoryHandle((T*)Address.ToPointer() + elementIndex);
 
         public sealed override void Unpin()
         {

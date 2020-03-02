@@ -37,5 +37,7 @@ namespace DotNext
         internal static string StreamNotWritable => Resources.GetString("StreamNotWritable");
 
         internal static string ArrayTooLong => Resources.GetString("ArrayTooLong");
+
+        internal static string SegmentVeryLarge => Resources.GetString("SegmentVeryLarge");
     }
 }
