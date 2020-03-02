@@ -44,8 +44,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8" Condition="'$(Configuration)'=='Debug'" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-    <PackageReference Include="Fody" Version="6.0.8" PrivateAssets="all" />
-    <PackageReference Include="InlineIL.Fody" Version="1.3.4" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.1.1" PrivateAssets="all" />
+    <PackageReference Include="InlineIL.Fody" Version="1.3.5" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)'!='Release'">
