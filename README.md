@@ -43,13 +43,32 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 02-23-2020
+Release Date: 03-XX-2020
 
-<a href="https://www.nuget.org/packages/dotnext/2.1.0">DotNext 2.1.0</a>
-* Reduced memory footprint of `DotNext.Span` static constructor
-* `DotNext.UserDataStorage` behavior is now customizable via `UserDataStorage.IContainer` interface
-* Introduced `Intrinsics.GetReadonlyRef` method allows to reinterpret managed pointer to array element
-* `DelegateHelpers.Bind` now supports both closed and open delegates
+<a href="https://www.nuget.org/packages/dotnext/2.2.0">DotNext 2.2.0</a>
+* Ability to slice lists using range syntax and new `ListSegment` data type
+* Various extension methods for broader adoption of range/index feature from C# 8
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.2.0">DotNext.Metaprogramming 2.2.0</a>
+* Support of range and index expressions from C# 8
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.2.0">DotNext.Unsafe 2.2.0</a>
+* Access to memory-mapped file via `System.Memory<T>` data type
+
+<a href="https://www.nuget.org/packages/dotnext.io/2.2.0">DotNext.IO 2.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/2.2.0">DotNext.Threading 2.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.2.0">DotNext.Reflection 2.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.2.0">DotNext.Net.Cluster 2.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.2.0">DotNext.AspNetCore.Cluster 2.2.0</a>
+* Upgrade to latest ASP.NET Core
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
