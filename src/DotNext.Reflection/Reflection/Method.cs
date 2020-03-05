@@ -339,12 +339,12 @@ namespace DotNext.Reflection
             return targetMethod is null ? null : new Method<D>(targetMethod, arglist, new[] { input });
         }
 
-        private static Type NonRefType(Type type) => type.IsByRef ? type.GetElementType() : type;
+        
 
         private static Method<D>? ReflectInstance(Type thisParam, Type[] parameters, Type returnType, string methodName, bool nonPublic)
         {
             //lookup in declaring type
-            MethodInfo? targetMethod = NonRefType(thisParam).GetMethod(methodName,
+            MethodInfo? targetMethod = thisParam.NonRefType().GetMethod(methodName,
                 nonPublic ? InstanceNonPublicFlags : InstancePublicFlags,
                 Type.DefaultBinder,
                 parameters,
@@ -356,7 +356,7 @@ namespace DotNext.Reflection
             //first parameter should be passed by REF for structure types
             if (targetMethod is null)
                 return null;
-            else if (thisParam.IsByRef ^ NonRefType(thisParam).IsValueType)
+            else if (thisParam.IsByRef ^ thisParam.NonRefType().IsValueType)
             {
                 ParameterExpression[] parametersDeclaration;
                 if (targetMethod.IsStatic)
