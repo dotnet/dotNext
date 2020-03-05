@@ -62,7 +62,7 @@ Release Date: 03-XX-2020
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/2.2.0">DotNext.Reflection 2.2.0</a>
-* Updated dependencies
+* Lighweight API for fast reflection is added. See overloaded `Unreflect` methods in `Reflector` class.
 
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/2.2.0">DotNext.Net.Cluster 2.2.0</a>
 * Updated dependencies
