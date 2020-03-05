@@ -33,7 +33,9 @@ namespace DotNext.Reflection
 
         internal static (Type[] Parameters, Expression[] ArgList, ParameterExpression ArgListParameter) Reflect(Type argumentsType)
         {
-            var argListParameter = Expression.Parameter(argumentsType.NonRefType(), "arguments");
+            var argListParameter = argumentsType.IsByRef ?
+               Expression.Parameter(argumentsType, "arguments") :
+               Expression.Parameter(argumentsType.MakeByRefType(), "arguments");
             Reflect(argListParameter, out var parameters, out var arglist);
 
             return (Parameters: parameters, ArgList: arglist, ArgListParameter: argListParameter);
