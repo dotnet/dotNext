@@ -8,7 +8,9 @@ Invocation of reflected members in .NET is slow. This happens because late-bindi
 * [Procedure&lt;A&gt;](../../api/DotNext.Procedure-1.yml) for static methods without return type
 * [Procedure&lt;T, A&gt;](../../api/DotNext.Procedure-2.yml) for instance methods without return type
 
-These delegates can describe signature of arbitrary methods or constructors with a little performance cost: all arguments will passed through stack. As a result, they can be used if developer don't want to introduce a new delegate type for some untypical signatures (with **ref** or **out** parameters). 
+These delegates can describe signature of arbitrary methods or constructors with a little performance cost: all arguments will passed through stack. As a result, they can be used if developer don't want to introduce a new delegate type for some untypical signatures (with **ref** or **out** parameters).
+
+Combination of various delegate signatures and `Reflector` class provide configurable approach to fast reflection and allows to choose between convenience and performance. Moreover, it requires compile-time some knowledge about underlying types of parameters and declaring type. To reduce this complexity, .NEXT Reflection library offers lightweight fast reflection API represented by non-generic overloaded version of `Unreflect` extension method. Lightweight implementation is a dynamic compilation of member access code and exposes unified API surface for all supported member types in the form of single [DynamicInvoker](../../api/DotNext.Reflection.DynamicInvoker.yml) delegate type. Invocation API is very similar to reflection provided by .NET out-of-the-box, but much more faster. 
 
 # Constructor
 Constructor can be reflected as delegate instance.
@@ -33,10 +35,7 @@ Function<(byte[] buffer, bool writable), MemoryStream> ctor = typeof(MemoryStrea
 var args = ctor.ArgList();
 args.buffer = new byte[] { 1, 10, 5 };
 args.writable = false;
-using(var stream = ctor(args))
-{
-
-}
+using var stream = ctor(args);
 ```
 
 Moreover, it is possible to use custom delegate type for reflection:
@@ -47,10 +46,16 @@ using System.IO;
 internal delegate MemoryStream MemoryStreamConstructor(byte[] buffer, bool writable);
 
 MemoryStreamConstructor ctor = typeof(MemoryStream).GetConstructor(new[] { typeof(byte[]), typeof(bool) }).Unreflect<MemoryStreamConstructor>();
-using(var stream = ctor(new byte[] { 1, 10, 5 }, false))
-{
+using var stream = ctor(new byte[] { 1, 10, 5 }, false);
+```
 
-}
+Lightweight object construction can be achieved using overloaded non-generic `Unreflect` method:
+```csharp
+using DotNext.Reflection;
+using System.IO;
+
+var ctor = typeof(MemoryStream).GetConstructor(new[] { typeof(byte[]), typeof(bool) }).Unreflect();
+using var stream = (MemoryStream)ctor(null, new byte[] { 1, 10, 5}, false);
 ```
 
 # Method
@@ -94,6 +99,16 @@ tryParse(args);
 decimal v = args.result;    //v == 42M
 ```
 
+Lightweight method invocation can be achieved using overloaded non-generic `Unreflect` method:
+```csharp
+using DotNext.Reflection;
+
+var tryParse = typeof(decimal).GetMethod(nameof(decimal.TryParse), new[]{typeof(string), typeof(decimal).MakeByRefType()}).Unreflect();
+object[] args = {"42", decimal.Zero};
+tryParse(null, args);
+decimal v = (decimal)args[1];
+```
+
 # Field
 Static or instance field can obtained from [FieldInfo](https://docs.microsoft.com/en-us/dotnet/api/system.reflection.fieldinfo) using `Unreflect` extension method declared in [Reflector](../../api/DotNext.Reflection.Reflector.yml) class. This feature gives the power to work with field values using Reflection without performance loss.
 
@@ -126,6 +141,35 @@ ref string instanceField = ref obj.GetClass().GetField("instanceField", BindingF
 instanceField = "Hello, world";
 ```
 
+Lightweight field access can be achieved using overloaded non-generic `Unreflect` method which supports various optimization:
+* Obtain field getter only
+* Obtain field setter only
+* Obtain field setter and getter combined into single instance of [DynamicInvoker](../../api/DotNext.Reflection.DynamicInvoker.yml)
+
+Third option is slower in comparison with others. Therefore if you expect one-directional access to the field then use proper optimization.
+
+The following example demonstrates all possible optimization modes when generating field accessor:
+```csharp
+using DotNext.Reflection;
+using System;
+using System.Reflection;
+
+var obj = new MyClass("Hello, world!");
+//generate read-only accessor
+var field = obj.GetClass().GetField("instanceField", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+DynamicInvoker invoker = field.Unreflect(BindingFlags.GetField);	
+Console.WriteLine(invoker(obj));	//prints Hello, world!
+
+//generate write-only accessor
+invoker = field.Unreflect(BindingFlags.SetField);
+invoker(obj, "New field value");	//obj.instanceField = "New field value"
+
+//generate read-write accessor
+invoker = field.Unreflect();
+invoker(obj, "Hello, world!");
+Console.WriteLine(invoker(obj));	//prints Hello, world!
+```
+
 # Performance
 Invocation of members through special delegates is not a free lunch: you pay for passing arguments through the stack. But it still much faster than classic .NET Reflection. The following list describes performance impact using different approaches to reflection (from fast to slow).
 
@@ -134,6 +178,6 @@ Invocation of members through special delegates is not a free lunch: you pay for
 | Custom delegate type or predefined delegate type which exactly describes the signature of expected method | the same or comparable to direct call (with nanoseconds overhead) |
 | Special delegate types | x1,4 slower than direct call |
 | Special delegate types with one or more unknown parameter types (when **object** used instead of actual type) | x2/x3 slower than direct call |
+| Dynamically compiled _DynamicInvoker_ | x2/x3 slower than direct call and causes heap allocation |
 | Classic .NET Reflection | x10/x50 slower than direct call |
-
 Read more about performance in [Benchmarks](../../benchmarks.md) article.
