@@ -13,24 +13,37 @@ namespace DotNext.Reflection
     /// </summary>
     public static class Reflector
     {
+        private static MemberInfo? MemberOf(LambdaExpression exprTree) => exprTree.Body switch
+        {
+            MemberExpression expr => expr.Member,
+            MethodCallExpression expr => expr.Method,
+            NewExpression expr => expr.Constructor,
+            BinaryExpression expr => expr.Method,
+            UnaryExpression expr => expr.Method,
+            IndexExpression expr => expr.Indexer,
+            _ => null,
+        };
+
         /// <summary>
         /// Extracts member metadata from expression tree.
         /// </summary>
         /// <param name="exprTree">Expression tree.</param>
-        /// <typeparam name="M">Type of member to reflect.</typeparam>
-        /// <returns>Reflected member; or null, if lambda expression doesn't reference a member.</returns>
-        public static M? MemberOf<M>(Expression<Action> exprTree)
-            where M : MemberInfo
-            => exprTree.Body switch
-            {
-                MemberExpression expr => expr.Member as M,
-                MethodCallExpression expr => expr.Method as M,
-                NewExpression expr => expr.Constructor as M,
-                BinaryExpression expr => expr.Method as M,
-                UnaryExpression expr => expr.Method as M,
-                IndexExpression expr => expr.Indexer as M,
-                _ => null,
-            };
+        /// <typeparam name="TMember">Type of member to reflect.</typeparam>
+        /// <returns>Reflected member; or <see langword="null"/>, if lambda expression doesn't reference a member.</returns>
+        [Obsolete("Use overloaded generic method that allows to specify delegate type explicitly")]
+        public static TMember? MemberOf<TMember>(Expression<Action> exprTree) where TMember : MemberInfo => MemberOf<TMember, Action>(exprTree);
+
+        /// <summary>
+        /// Extracts member metadata from expression tree.
+        /// </summary>
+        /// <param name="exprTree">Expression tree.</param>
+        /// <typeparam name="TMember">Type of member to reflect.</typeparam>
+        /// <typeparam name="TDelegate">The type of lambda expression.</typeparam>
+        /// <returns>Reflected member; or <see langword="null"/>, if lambda expression doesn't reference a member.</returns>
+        public static TMember? MemberOf<TMember, TDelegate>(Expression<TDelegate> exprTree)
+            where TMember : MemberInfo
+            where TDelegate : Delegate
+            => MemberOf(exprTree) as TMember;
 
         /// <summary>
         /// Unreflects constructor to its typed and callable representation.
