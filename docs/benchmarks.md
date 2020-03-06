@@ -66,16 +66,16 @@ Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET 
 # Bytes to Hex
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/HexConversionBenchmark.cs) demonstrates performance of `DotNext.Span.ToHex` extension method that allows to convert arbitrary set of bytes into hexadecimal form. It is compatible with`Span<T>` data type in constrast to [BitConverter.ToString](https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring) method.
 
-| Method | Num of Bytes | Mean | Error | StdDev | Median |
-| ---- | ---- | ---- | ---- | ---- | ----|
-| `BitConverter.ToString` | 16 bytes |  73.60 ns | 0.320 ns | 0.283 ns | 73.66 ns |
-| `Span.ToHex` | 16 bytes | 71.77 ns | 1.139 ns | 1.065 ns |  72.52 ns |
-| `BitConverter.ToString` |  64 bytes | 242.58 ns | 1.276 ns | 1.131 ns | 242.59 ns |
-| `Span.ToHex` | 64 bytes | 161.44 ns | 3.260 ns | 9.509 ns | 157.28 ns |
-| `BitConverter.ToString` | 128 bytes | 442.26 ns | 1.203 ns | 1.126 ns | 442.49 ns |
-| `Span.ToHex` | 128 bytes | 254.78 ns | 1.286 ns | 1.140 ns | 254.23 ns |
-| `BitConverter.ToString` | 256 bytes | 862.10 ns | 2.439 ns | 2.162 ns | 861.33 ns |
-| `Span.ToHex` | 256 bytes | 456.76 ns | 1.361 ns | 1.136 ns | 456.56 ns |
+| Method | Num of Bytes | Mean | Error | StdDev |
+| ---- | ---- | ---- | ---- | ---- |
+| `BitConverter.ToString` | 16 bytes | 89.92 ns | 0.282 ns | 0.235 ns |
+| `Span.ToHex` | 16 bytes | 72.85 ns | 0.211 ns | 0.187 ns |
+| `BitConverter.ToString` | 64 bytes | 300.71 ns | 1.094 ns | 0.969 ns |
+| `Span.ToHex` | 64 bytes | 152.93 ns | 1.062 ns | 0.993 ns |
+| `BitConverter.ToString` | 128 bytes | 590.02 ns | 3.828 ns | 3.581 ns |
+| `Span.ToHex` | 128 bytes | 248.56 ns | 1.541 ns | 1.441 ns |
+| `BitConverter.ToString` | 256 bytes | 1,217.48 ns | 3.768 ns | 3.525 ns |
+| `Span.ToHex` | 256 bytes | 477.23 ns | 1.990 ns | 1.862 ns |
 
 `Span.ToHex` demonstrates the best performance especially for large arrays.
 
