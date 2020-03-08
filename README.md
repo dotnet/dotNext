@@ -43,7 +43,7 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 03-XX-2020
+Release Date: 03-08-2020
 
 <a href="https://www.nuget.org/packages/dotnext/2.2.0">DotNext 2.2.0</a>
 * Ability to slice lists using range syntax and new `ListSegment` data type

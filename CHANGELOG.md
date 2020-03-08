@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 03-XX-2020
+# 03-08-2020
 <a href="https://www.nuget.org/packages/dotnext/2.2.0">DotNext 2.2.0</a>
 * Ability to slice lists using range syntax and new `ListSegment` data type
 * Various extension methods for broader adoption of range/index feature from C# 8
