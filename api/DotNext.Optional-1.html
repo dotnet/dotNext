@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Struct Optional&lt;T&gt;
    | .NEXT ">
-    <meta name="generator" content="docfx 2.48.1.0">
+    <meta name="generator" content="docfx 2.50.0.0">
     
     <link rel="shortcut icon" href="../fav.ico">
     <link rel="stylesheet" href="../styles/docfx.vendor.css">
@@ -1167,7 +1167,6 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T OrThrow&lt;E&gt;()
-
     where E : Exception, new()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -1217,7 +1216,6 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T OrThrow&lt;E&gt;(in ValueFunc&lt;E&gt; exceptionFactory)
-
     where E : Exception</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1284,7 +1282,6 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T OrThrow&lt;E&gt;(Func&lt;E&gt; exceptionFactory)
-
     where E : Exception</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
