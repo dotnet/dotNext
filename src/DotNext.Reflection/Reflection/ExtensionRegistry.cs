@@ -32,7 +32,7 @@ namespace DotNext.Reflection
         }
 
         private static IEnumerable<MethodInfo> GetStaticMethods(Type target)
-            => GetMethods(Sequence.Singleton(target.IsByRef ? target.GetElementType() : target), StaticMethods);
+            => GetMethods(Sequence.Singleton(target.NonRefType()), StaticMethods);
 
         private static IEnumerable<MethodInfo> GetInstanceMethods(Type target)
         {
@@ -93,9 +93,7 @@ namespace DotNext.Reflection
             var thisParam = method.GetParameterTypes().FirstOrDefault();
             if (!method.IsStatic || thisParam is null)
                 throw new ArgumentException(ExceptionMessages.ExtensionMethodExpected(method), nameof(method));
-            if (thisParam.IsByRef)
-                thisParam = thisParam.GetElementType();
-            GetOrCreateRegistry(thisParam, MethodLookup.Instance).Add(method);
+            GetOrCreateRegistry(thisParam.NonRefType(), MethodLookup.Instance).Add(method);
         }
 
         /// <summary>

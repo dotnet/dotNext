@@ -6,8 +6,8 @@ The configuration of all benchmarks:
 
 | Parameter | Configuration |
 | ---- | ---- |
-| Host | .NET Core 3.1.1 (CoreCLR 4.700.19.60701, CoreFX 4.700.19.60801), 64bit RyuJIT |
-| Job | .NET Core 3.1.1 (CoreCLR 4.700.19.60701, CoreFX 4.700.19.60801), 64bit RyuJIT |
+| Host | .NET Core 3.1.2 (CoreCLR 4.700.20.6602, CoreFX 4.700.20.6702), X64 RyuJIT |
+| Job | .NET Core 3.1.2 (CoreCLR 4.700.20.6602, CoreFX 4.700.20.6702), X64 RyuJIT |
 | LaunchCount | 1 |
 | RunStrategy | Throughput |
 | OS | Ubuntu 18.04.3 |
@@ -26,28 +26,28 @@ dotnet run -c Bench
 # Bitwise Equality
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/BitwiseEqualityBenchmark.cs) compares performance of [BitwiseComparer&lt;T&gt;.Equals](./api/DotNext.BitwiseComparer-1.yml) with overloaded equality `==` operator. Testing data types: [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) and custom value type with multiple fields.
 
-| Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- |
-| `BitwiseComparer<Guid>.Equals` | 3.4263 ns | 0.0101 ns | 0.0089 ns |
-| `Guid.Equals` | 11.5436 ns | 0.0186 ns | 0.0165 ns |
-| `ReadOnlySpan.SequenceEqual` for `Guid` | 3.7136 ns | 0.0270 ns | 0.0240 ns |
-| `BitwiseComparer<LargeStruct>.Equals` | 14.4231 ns | 0.0389 ns | 0.0364 ns |
-| `LargeStruct.Equals` | 43.1880 ns | 0.1217 ns | 0.0950 ns |
-| `ReadOnlySpan.SequenceEqual` for `LargeStruct` | 23.9918 ns | 0.0375 ns | 0.0313 ns |
+| Method | Mean | Error | StdDev | Median |
+| ---- | ---- | ---- | ---- | --- |
+| `BitwiseComparer<Guid>.Equals` |  3.3381 ns | 0.0323 ns | 0.0287 ns |  3.3455 ns |
+| `Guid.Equals` |  2.1275 ns | 0.0126 ns | 0.0112 ns |  2.1278 ns |
+| `ReadOnlySpan.SequenceEqual` for `Guid` |  3.5733 ns | 0.0127 ns | 0.0113 ns |  3.5709 ns |
+| `BitwiseComparer<LargeStruct>.Equals` | 26.6955 ns | 1.1038 ns | 3.0215 ns | 27.4533 ns |
+| `LargeStruct.Equals` | 44.2505 ns | 0.5936 ns | 0.5262 ns | 44.2287 ns |
+| `ReadOnlySpan.SequenceEqual` for `LargeStruct` | 28.6420 ns | 0.6151 ns | 1.5988 ns | 28.6027 ns |
 
-Bitwise equality method has the better performance than field-by-field equality check because `BitwiseEquals` utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD. Additionally, it uses [aligned memory access](https://en.wikipedia.org/wiki/Data_structure_alignment) in constrast to [SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal) method.
+Bitwise equality method has the better performance than field-by-field equality check especially for large value types because `BitwiseEquals` utilizes low-level optimizations performed by .NET Core according with underlying hardware such as SIMD. Additionally, it uses [aligned memory access](https://en.wikipedia.org/wiki/Data_structure_alignment) in constrast to [SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal) method.
 
 # Equality of Arrays
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/ArrayEqualityBenchmark.cs) compares performance of [ReadOnlySpan.SequenceEqual](https://docs.microsoft.com/en-us/dotnet/api/system.memoryextensions.sequenceequal#System_MemoryExtensions_SequenceEqual__1_System_ReadOnlySpan___0__System_ReadOnlySpan___0__), [OneDimensionalArray.BitwiseEquals](./api/DotNext.OneDimensionalArray.yml) and manual equality check between two arrays using `for` loop. The benchmark is applied to the array of [Guid](https://docs.microsoft.com/en-us/dotnet/api/system.guid) elements.
 
 | Method | Mean | Error | StdDev | Median  |
 | ---- | ---- | ---- | ---- | ---- |
-| `Guid[].BitwiseEquals`, small arrays (~10 elements) | 9.598 ns |  0.0664 ns |  0.0588 ns |   9.583 ns |
-| `ReadOnlySpan<Guid>.SequenceEqual`, small arrays (~10 elements) | 43.881 ns |  0.9075 ns |  1.0803 ns |  43.154 ns |
-| `for` loop, small arrays (~10 elements) | 59.514 ns |  0.1883 ns |  0.1762 ns |  59.414 ns |
-| `Guid[].BitwiseEquals`, large arrays (~100 elements) | 53.360 ns |  1.0054 ns |  0.8912 ns |  53.167 ns |
-| `ReadOnlySpan<Guid>.SequenceEqual`, large arrays (~100 elements) | 422.073 ns |  8.3324 ns | 12.2135 ns | 418.354 ns |
-| `for` loop, large arrays (~100 elements) | 627.617 ns | 17.9460 ns | 19.9470 ns | 622.371 ns |
+| `Guid[].BitwiseEquals`, small arrays (~10 elements) | 8.706 ns | 0.0319 ns | 0.0283 ns |   8.710 ns |
+| `ReadOnlySpan<Guid>.SequenceEqual`, small arrays (~10 elements) | 44.331 ns | 0.1909 ns | 0.1693 ns |  44.344 ns |
+| `for` loop, small arrays (~10 elements) | 61.776 ns | 1.1145 ns | 0.8701 ns |  62.019 ns |
+| `Guid[].BitwiseEquals`, large arrays (~100 elements) | 47.300 ns | 0.9715 ns | 1.5961 ns |  48.246 ns |
+| `ReadOnlySpan<Guid>.SequenceEqual`, large arrays (~100 elements) | 423.927 ns | 7.4146 ns | 6.9356 ns | 426.833 ns |
+| `for` loop, large arrays (~100 elements) | 593.511 ns | 1.1789 ns | 0.9844 ns | 593.353 ns |
 
 Bitwise equality is an absolute winner for equality check between arrays of any size.
 
@@ -66,16 +66,16 @@ Bitwise hash code algorithm is slower than JIT optimizations introduced by .NET 
 # Bytes to Hex
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/HexConversionBenchmark.cs) demonstrates performance of `DotNext.Span.ToHex` extension method that allows to convert arbitrary set of bytes into hexadecimal form. It is compatible with`Span<T>` data type in constrast to [BitConverter.ToString](https://docs.microsoft.com/en-us/dotnet/api/system.bitconverter.tostring) method.
 
-| Method | Num of Bytes | Mean | Error | StdDev | Median |
-| ---- | ---- | ---- | ---- | ---- | ----|
-| `BitConverter.ToString` | 16 bytes |  72.82 ns |  0.999 ns |  0.935 ns |  72.73 ns |
-| `Span.ToHex` | 16 bytes |  73.89 ns |  1.947 ns |  2.793 ns |  72.58 ns |
-| `BitConverter.ToString` |  64 bytes | 242.10 ns |  4.837 ns |  8.344 ns | 243.52 ns |
-| `Span.ToHex` | 64 bytes | 138.36 ns |  0.364 ns |  0.340 ns | 138.35 ns |
-| `BitConverter.ToString` | 128 bytes | 478.27 ns | 10.011 ns | 22.801 ns | 469.93 ns |
-| `Span.ToHex` | 128 bytes | 229.66 ns |  5.328 ns |  6.928 ns | 228.63 ns |
-| `BitConverter.ToString` | 256 bytes | 863.94 ns |  4.009 ns |  3.554 ns | 864.84 ns |
-| `Span.ToHex` | 256 bytes | 388.91 ns |  2.488 ns |  2.078 ns | 388.09 ns |
+| Method | Num of Bytes | Mean | Error | StdDev |
+| ---- | ---- | ---- | ---- | ---- |
+| `BitConverter.ToString` | 16 bytes | 89.92 ns | 0.282 ns | 0.235 ns |
+| `Span.ToHex` | 16 bytes | 72.85 ns | 0.211 ns | 0.187 ns |
+| `BitConverter.ToString` | 64 bytes | 300.71 ns | 1.094 ns | 0.969 ns |
+| `Span.ToHex` | 64 bytes | 152.93 ns | 1.062 ns | 0.993 ns |
+| `BitConverter.ToString` | 128 bytes | 590.02 ns | 3.828 ns | 3.581 ns |
+| `Span.ToHex` | 128 bytes | 248.56 ns | 1.541 ns | 1.441 ns |
+| `BitConverter.ToString` | 256 bytes | 1,217.48 ns | 3.768 ns | 3.525 ns |
+| `Span.ToHex` | 256 bytes | 477.23 ns | 1.990 ns | 1.862 ns |
 
 `Span.ToHex` demonstrates the best performance especially for large arrays.
 
@@ -91,11 +91,12 @@ The next series of benchmarks demonstrate performance of strongly typed reflecti
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
-| Direct call | 11.52 ns | 0.2284 ns | 0.5109 ns |
-| Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` | 11.58 ns | 0.2291 ns | 0.3136 ns |
-| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 19.12 ns | 0.3870 ns | 0.9919 ns |
-| `ObjectAccess` class from _FastMember_ library |  50.25 ns | 0.3870 ns | 0.8247 ns |
-| .NET reflection | 157.71 ns | 3.1092 ns | 4.5574 ns |
+| Direct call | 13.00 ns | 0.256 ns | 0.350 ns |
+| Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` | 16.26 ns | 0.048 ns | 0.045 ns |
+| Reflection with DotNext using `DynamicInvoker` | 20.32 ns | 0.053 ns | 0.042 ns |
+| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 20.89 ns | 0.054 ns | 0.048 ns |
+| `ObjectAccess` class from _FastMember_ library | 51.88 ns | 0.123 ns | 0.109 ns |
+| .NET reflection | 156.52 ns | 0.389 ns | 0.345 ns |
 
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
 

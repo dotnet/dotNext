@@ -15,6 +15,8 @@ Metaprogramming library extends LINQ Expression with the following features:
     * [for loop](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/for)
 * [With..End statement](https://docs.microsoft.com/en-us/dotnet/visual-basic/language-reference/statements/with-end-with-statement)
 * Full support of custom [async](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/async) lambda functions and [await](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await) expressions
+* [Ranges and Indicies](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges)
+* Pattern matching
 * Extension methods for easy construction of compound expressions and statements
 * Universal expression which allows to use standard operators provided by programming language
 
@@ -23,7 +25,7 @@ All these extensions are compatible with [Expression](https://docs.microsoft.com
 Additionally, .NEXT Metaprogramming library replaces limit of [C# Expression Trees](https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/concepts/expression-trees/) where only single-line lambda expression is allowed.
 
 > [!IMPORTANT]
-> In spite of rich set of Metaprogramming API, a few limits still exist. These restrictions dictated by internal design of LINQ Expression. The first, overloaded operators with [in parameter modifier](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/in-parameter-modifier) cannot be resolved. The second, [ref return](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref#reference-return-values) and [ref locals](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref#ref-locals) are not supported.
+> Despite of rich set of Metaprogramming API, a few limits still exist. These restrictions dictated by internal design of LINQ Expression. The first, overloaded operators with [in parameter modifier](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/in-parameter-modifier) cannot be resolved. The second, [ref return](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref#reference-return-values) and [ref locals](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/ref#ref-locals) are not supported.
 
 # Concept
 The code construction based on the following concepts:
@@ -39,6 +41,8 @@ The code construction based on the following concepts:
     * [for-in Expression](../../api/DotNext.Linq.Expressions.ForEachExpression.yml) represents `foreach` loop from C#
     * [while Expression](../../api/DotNext.Linq.Expressions.WhileExpression.yml) represents `while` and `do-while` loops from C#
     * [for Expression](../../api/DotNext.Linq.Expressions.ForExpression.yml) represents `for` loop from C#
+    * [Element Access Expression](../../api/DotNext.Linq.Expressions.CollectionAccessExpression.yml) represents [index](https://docs.microsoft.com/en-us/dotnet/api/system.index)-based access to individual elements of the collection or string
+    * [Slice Expression](../../api/DotNext.Linq.Expressions.SliceExpression.yml) represents [range](https://docs.microsoft.com/en-us/dotnet/api/system.range) of elements in arbitrary collection or string
 
 The lexical scope is enclosed by multi-line lambda function. The body of such function contains the code for generation of expressions and statements.
 

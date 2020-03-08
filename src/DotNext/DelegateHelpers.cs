@@ -14,7 +14,66 @@ namespace DotNext
     {
         private interface ITargetRewriter
         {
-            object Rewrite(Delegate d);
+            object? Rewrite(Delegate d);
+        }
+
+        private abstract class Closure
+        {
+            internal readonly MulticastDelegate Delegate;
+
+            private protected Closure(MulticastDelegate action) => Delegate = action;
+
+            internal abstract object Target { get; }
+        }
+
+        private sealed class Closure<T> : Closure
+            where T : class
+        {
+            private readonly T target;
+
+            private Closure(T target, MulticastDelegate action) : base(action) => this.target = target;
+
+            internal override object Target => target;
+
+            private void InvokeAction() => Unsafe.As<Action<T>>(Delegate).Invoke(target);
+
+            internal static Action Create(Action<T> action, T arg) => new Closure<T>(arg, action).InvokeAction;
+
+            private R InvokeFunc<R>() => Unsafe.As<Func<T, R>>(Delegate).Invoke(target);
+
+            internal static Func<R> Create<R>(Func<T, R> func, T arg) => new Closure<T>(arg, func).InvokeFunc<R>;
+
+            private void InvokeAction<T2>(T2 arg2) => Unsafe.As<Action<T, T2>>(Delegate).Invoke(target, arg2);
+
+            internal static Action<T2> Create<T2>(Action<T, T2> action, T arg1) => new Closure<T>(arg1, action).InvokeAction<T2>;
+
+            private R InvokeFunc<T2, R>(T2 arg2) => Unsafe.As<Func<T, T2, R>>(Delegate).Invoke(target, arg2);
+
+            internal static Func<T2, R> Create<T2, R>(Func<T, T2, R> func, T arg) => new Closure<T>(arg, func).InvokeFunc<T2, R>;
+
+            private void InvokeAction<T2, T3>(T2 arg2, T3 arg3) => Unsafe.As<Action<T, T2, T3>>(Delegate).Invoke(target, arg2, arg3);
+
+            internal static Action<T2, T3> Create<T2, T3>(Action<T, T2, T3> action, T arg1) => new Closure<T>(arg1, action).InvokeAction<T2, T3>;
+
+            private R InvokeFunc<T2, T3, R>(T2 arg2, T3 arg3) => Unsafe.As<Func<T, T2, T3, R>>(Delegate).Invoke(target, arg2, arg3);
+
+            internal static Func<T2, T3, R> Create<T2, T3, R>(Func<T, T2, T3, R> func, T arg) => new Closure<T>(arg, func).InvokeFunc<T2, T3, R>;
+
+            private void InvokeAction<T2, T3, T4>(T2 arg2, T3 arg3, T4 arg4) => Unsafe.As<Action<T, T2, T3, T4>>(Delegate).Invoke(target, arg2, arg3, arg4);
+
+            internal static Action<T2, T3, T4> Create<T2, T3, T4>(Action<T, T2, T3, T4> action, T arg1) => new Closure<T>(arg1, action).InvokeAction<T2, T3, T4>;
+
+            private R InvokeFunc<T2, T3, T4, R>(T2 arg2, T3 arg3, T4 arg4) => Unsafe.As<Func<T, T2, T3, T4, R>>(Delegate).Invoke(target, arg2, arg3, arg4);
+
+            internal static Func<T2, T3, T4, R> Create<T2, T3, T4, R>(Func<T, T2, T3, T4, R> func, T arg) => new Closure<T>(arg, func).InvokeFunc<T2, T3, T4, R>;
+
+            private void InvokeAction<T2, T3, T4, T5>(T2 arg2, T3 arg3, T4 arg4, T5 arg5) => Unsafe.As<Action<T, T2, T3, T4, T5>>(Delegate).Invoke(target, arg2, arg3, arg4, arg5);
+
+            internal static Action<T2, T3, T4, T5> Create<T2, T3, T4, T5>(Action<T, T2, T3, T4, T5> action, T arg1) => new Closure<T>(arg1, action).InvokeAction<T2, T3, T4, T5>;
+
+            private R InvokeFunc<T2, T3, T4, T5, R>(T2 arg2, T3 arg3, T4 arg4, T5 arg5) => Unsafe.As<Func<T, T2, T3, T4, T5, R>>(Delegate).Invoke(target, arg2, arg3, arg4, arg5);
+
+            internal static Func<T2, T3, T4, T5, R> Create<T2, T3, T4, T5, R>(Func<T, T2, T3, T4, T5, R> func, T arg) => new Closure<T>(arg, func).InvokeFunc<T2, T3, T4, T5, R>;
         }
 
         private static readonly Predicate<Assembly>? IsCollectible;
@@ -34,13 +93,13 @@ namespace DotNext
 
             internal TargetRewriter(object newTarget) => this.target = newTarget;
 
-            object ITargetRewriter.Rewrite(Delegate d) => this.target;
+            object? ITargetRewriter.Rewrite(Delegate d) => this.target;
         }
 
         [StructLayout(LayoutKind.Auto)]
         private readonly struct EmptyTargetRewriter : ITargetRewriter
         {
-            object ITargetRewriter.Rewrite(Delegate d) => d.Target;
+            object? ITargetRewriter.Rewrite(Delegate d) => d.Target;
         }
 
         private static MethodInfo GetMethod<D>(Expression<D> expression)
@@ -137,41 +196,43 @@ namespace DotNext
             where D : Delegate
             => d is D ? Unsafe.As<D>(d) : ChangeType<D, EmptyTargetRewriter>(d, new EmptyTargetRewriter());
 
-        private static D UnsafeBind<T, D>(this Delegate del, T obj)
+        /// <summary>
+        /// Produces delegate which first parameter is implicitly bound to the given object.
+        /// </summary>
+        /// <typeparam name="T">The type of the first parameter to bind.</typeparam>
+        /// <param name="action">The action to bind.</param>
+        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
+        /// <returns>The delegate targeting the specified object.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+        public static Action Bind<T>(this Action<T> action, T obj)
             where T : class
-            where D : Delegate
         {
+            //TODO: Should be generalized using function pointer in C# 9
             if (obj is null)
                 throw new ArgumentNullException(nameof(obj));
-            return del.Target is null ? ChangeType<D, TargetRewriter>(del, new TargetRewriter(obj)) : throw new InvalidOperationException();
+            if (action.Target is null)
+                return ChangeType<Action, TargetRewriter>(action, new TargetRewriter(obj));
+            return Closure<T>.Create(action, obj);
         }
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
         /// </summary>
         /// <typeparam name="T">The type of the first parameter to bind.</typeparam>
-        /// <param name="action">The action to bind.</param>
-        /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
-        /// <returns>The delegate targeting the specified object.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
-        public static Action Bind<T>(this Action<T> action, T obj)
-            where T : class
-            => action.UnsafeBind<T, Action>(obj);
-
-        /// <summary>
-        /// Produces delegate which first parameter is implicitly bound to the given object.
-        /// </summary>
-        /// <typeparam name="T">The type of the first parameter to bind.</typeparam>
         /// <typeparam name="R">The type of the return value of the method that the delegate encapsulates.</typeparam>
         /// <param name="func">The action to bind.</param>
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
         public static Func<R> Bind<T, R>(this Func<T, R> func, T obj)
             where T : class
-            => func.UnsafeBind<T, Func<R>>(obj);
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if (func.Target is null)
+                return ChangeType<Func<R>, TargetRewriter>(func, new TargetRewriter(obj));
+            return Closure<T>.Create(func, obj);
+        }
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -183,10 +244,15 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
         public static Func<T2, R> Bind<T1, T2, R>(this Func<T1, T2, R> func, T1 obj)
             where T1 : class
-            => func.UnsafeBind<T1, Func<T2, R>>(obj);
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if (func.Target is null)
+                return ChangeType<Func<T2, R>, TargetRewriter>(func, new TargetRewriter(obj));
+            return Closure<T1>.Create(func, obj);
+        }
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -197,10 +263,15 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
         public static Action<T2> Bind<T1, T2>(this Action<T1, T2> action, T1 obj)
             where T1 : class
-            => action.UnsafeBind<T1, Action<T2>>(obj);
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if (action.Target is null)
+                return ChangeType<Action<T2>, TargetRewriter>(action, new TargetRewriter(obj));
+            return Closure<T1>.Create(action, obj);
+        }
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -213,10 +284,15 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
         public static Func<T2, T3, R> Bind<T1, T2, T3, R>(this Func<T1, T2, T3, R> func, T1 obj)
             where T1 : class
-            => func.UnsafeBind<T1, Func<T2, T3, R>>(obj);
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if (func.Target is null)
+                return ChangeType<Func<T2, T3, R>, TargetRewriter>(func, new TargetRewriter(obj));
+            return Closure<T1>.Create(func, obj);
+        }
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -228,10 +304,15 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
         public static Action<T2, T3> Bind<T1, T2, T3>(this Action<T1, T2, T3> action, T1 obj)
             where T1 : class
-            => action.UnsafeBind<T1, Action<T2, T3>>(obj);
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if (action.Target is null)
+                return ChangeType<Action<T2, T3>, TargetRewriter>(action, new TargetRewriter(obj));
+            return Closure<T1>.Create(action, obj);
+        }
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -245,10 +326,15 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
         public static Func<T2, T3, T4, R> Bind<T1, T2, T3, T4, R>(this Func<T1, T2, T3, T4, R> func, T1 obj)
             where T1 : class
-            => func.UnsafeBind<T1, Func<T2, T3, T4, R>>(obj);
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if (func.Target is null)
+                return ChangeType<Func<T2, T3, T4, R>, TargetRewriter>(func, new TargetRewriter(obj));
+            return Closure<T1>.Create(func, obj);
+        }
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -261,10 +347,15 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
         public static Action<T2, T3, T4> Bind<T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action, T1 obj)
             where T1 : class
-            => action.UnsafeBind<T1, Action<T2, T3, T4>>(obj);
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if (action.Target is null)
+                return ChangeType<Action<T2, T3, T4>, TargetRewriter>(action, new TargetRewriter(obj));
+            return Closure<T1>.Create(action, obj);
+        }
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -279,10 +370,15 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not <see langword="null"/>.</exception>
         public static Func<T2, T3, T4, T5, R> Bind<T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> func, T1 obj)
             where T1 : class
-            => func.UnsafeBind<T1, Func<T2, T3, T4, T5, R>>(obj);
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if (func.Target is null)
+                return ChangeType<Func<T2, T3, T4, T5, R>, TargetRewriter>(func, new TargetRewriter(obj));
+            return Closure<T1>.Create(func, obj);
+        }
 
         /// <summary>
         /// Produces delegate which first parameter is implicitly bound to the given object.
@@ -296,14 +392,30 @@ namespace DotNext
         /// <param name="obj">The object to be passed implicitly as the first argument into the method represented by this pointer. Cannot be <see langword="null"/>.</param>
         /// <returns>The delegate targeting the specified object.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
-        /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not <see langword="null"/>.</exception>
         public static Action<T2, T3, T4, T5> Bind<T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action, T1 obj)
             where T1 : class
-            => action.UnsafeBind<T1, Action<T2, T3, T4, T5>>(obj);
+        {
+            if (obj is null)
+                throw new ArgumentNullException(nameof(obj));
+            if (action.Target is null)
+                return ChangeType<Action<T2, T3, T4, T5>, TargetRewriter>(action, new TargetRewriter(obj));
+            return Closure<T1>.Create(action, obj);
+        }
 
-        private static U UnsafeUnbind<U>(this Delegate del, Type targetType)
+        private static U Unbind<U>(this Delegate del, Type targetType)
             where U : MulticastDelegate
-            => ObjectExtensions.IsContravariant(del.Target, targetType) ? ChangeType<U, TargetRewriter>(del, default) : throw new InvalidOperationException();
+        {
+            var target = del.Target;
+            if (target is Closure closure)
+                if (ObjectExtensions.IsContravariant(closure.Target, targetType))
+                    return ChangeType<U, EmptyTargetRewriter>(closure.Delegate, default);
+                else
+                    goto invalid_op;
+            if (ObjectExtensions.IsContravariant(target, targetType))
+                return ChangeType<U, TargetRewriter>(del, default);
+            invalid_op:
+            throw new InvalidOperationException();
+        }
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -312,7 +424,7 @@ namespace DotNext
         /// <param name="action">The delegate to unbind.</param>
         /// <returns>Unbound version of the delegate.</returns>
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="T"/>.</exception>
-        public static Action<T> Unbind<T>(this Action action) where T : class => action.UnsafeUnbind<Action<T>>(typeof(T));
+        public static Action<T> Unbind<T>(this Action action) where T : class => action.Unbind<Action<T>>(typeof(T));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -322,7 +434,7 @@ namespace DotNext
         /// <param name="func">The delegate to unbind.</param>
         /// <returns>Unbound version of the delegate.</returns>
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="T"/>.</exception>
-        public static Func<T, R> Unbind<T, R>(this Func<R> func) where T : class => func.UnsafeUnbind<Func<T, R>>(typeof(T));
+        public static Func<T, R> Unbind<T, R>(this Func<R> func) where T : class => func.Unbind<Func<T, R>>(typeof(T));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -335,7 +447,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Func<G, T, R> Unbind<G, T, R>(this Func<T, R> func)
             where G : class
-            => func.UnsafeUnbind<Func<G, T, R>>(typeof(G));
+            => func.Unbind<Func<G, T, R>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -347,7 +459,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Action<G, T> Unbind<G, T>(this Action<T> action)
             where G : class
-            => action.UnsafeUnbind<Action<G, T>>(typeof(G));
+            => action.Unbind<Action<G, T>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -361,7 +473,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Func<G, T1, T2, R> Unbind<G, T1, T2, R>(this Func<T1, T2, R> func)
             where G : class
-            => func.UnsafeUnbind<Func<G, T1, T2, R>>(typeof(G));
+            => func.Unbind<Func<G, T1, T2, R>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -374,7 +486,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Action<G, T1, T2> Unbind<G, T1, T2>(this Action<T1, T2> action)
             where G : class
-            => action.UnsafeUnbind<Action<G, T1, T2>>(typeof(G));
+            => action.Unbind<Action<G, T1, T2>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -389,7 +501,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Func<G, T1, T2, T3, R> Unbind<G, T1, T2, T3, R>(this Func<T1, T2, T3, R> func)
             where G : class
-            => func.UnsafeUnbind<Func<G, T1, T2, T3, R>>(typeof(G));
+            => func.Unbind<Func<G, T1, T2, T3, R>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -403,7 +515,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Action<G, T1, T2, T3> Unbind<G, T1, T2, T3>(this Action<T1, T2, T3> action)
             where G : class
-            => action.UnsafeUnbind<Action<G, T1, T2, T3>>(typeof(G));
+            => action.Unbind<Action<G, T1, T2, T3>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -419,7 +531,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Func<G, T1, T2, T3, T4, R> Unbind<G, T1, T2, T3, T4, R>(this Func<T1, T2, T3, T4, R> func)
             where G : class
-            => func.UnsafeUnbind<Func<G, T1, T2, T3, T4, R>>(typeof(G));
+            => func.Unbind<Func<G, T1, T2, T3, T4, R>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -434,7 +546,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Action<G, T1, T2, T3, T4> Unbind<G, T1, T2, T3, T4>(this Action<T1, T2, T3, T4> action)
             where G : class
-            => action.UnsafeUnbind<Action<G, T1, T2, T3, T4>>(typeof(G));
+            => action.Unbind<Action<G, T1, T2, T3, T4>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -451,7 +563,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="func"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Func<G, T1, T2, T3, T4, T5, R> Unbind<G, T1, T2, T3, T4, T5, R>(this Func<T1, T2, T3, T4, T5, R> func)
             where G : class
-            => func.UnsafeUnbind<Func<G, T1, T2, T3, T4, T5, R>>(typeof(G));
+            => func.Unbind<Func<G, T1, T2, T3, T4, T5, R>>(typeof(G));
 
         /// <summary>
         /// Converts implicitly bound delegate into its unbound version.
@@ -467,7 +579,7 @@ namespace DotNext
         /// <exception cref="InvalidOperationException"><see cref="Delegate.Target"/> of <paramref name="action"/> is not contravarient to type <typeparamref name="G"/>.</exception>
         public static Action<G, T1, T2, T3, T4, T5> Unbind<G, T1, T2, T3, T4, T5>(this Action<T1, T2, T3, T4, T5> action)
             where G : class
-            => action.UnsafeUnbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
+            => action.Unbind<Action<G, T1, T2, T3, T4, T5>>(typeof(G));
 
         internal static void InvokeInContext(this Action action, SynchronizationContext context) => context.Post(Unsafe.As<SendOrPostCallback>(ActionInvoker), action);
 

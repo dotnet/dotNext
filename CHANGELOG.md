@@ -1,6 +1,42 @@
 Release Notes
 ====
 
+# 03-08-2020
+<a href="https://www.nuget.org/packages/dotnext/2.2.0">DotNext 2.2.0</a>
+* Ability to slice lists using range syntax and new `ListSegment` data type
+* Various extension methods for broader adoption of range/index feature from C# 8
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.2.0">DotNext.Metaprogramming 2.2.0</a>
+* Support of range and index expressions from C# 8
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.2.0">DotNext.Unsafe 2.2.0</a>
+* Access to memory-mapped file via `System.Memory<T>` data type
+
+<a href="https://www.nuget.org/packages/dotnext.io/2.2.0">DotNext.IO 2.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.threading/2.2.0">DotNext.Threading 2.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.2.0">DotNext.Reflection 2.2.0</a>
+* Lighweight API for fast reflection is added. See overloaded `Unreflect` methods in `Reflector` class.
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.2.0">DotNext.Net.Cluster 2.2.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.2.0">DotNext.AspNetCore.Cluster 2.2.0</a>
+* Upgrade to latest ASP.NET Core
+
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/2.0.1">DotNext.Augmentation.Fody 2.0.1</a>
+* Removed obsolete calls
+
+# 02-23-2020
+<a href="https://www.nuget.org/packages/dotnext/2.1.0">DotNext 2.1.0</a>
+* Reduced memory footprint of `DotNext.Span` static constructor
+* `DotNext.UserDataStorage` behavior is now customizable via `UserDataStorage.IContainer` interface
+* Introduced `Intrinsics.GetReadonlyRef` method allows to reinterpret managed pointer to array element
+* `DelegateHelpers.Bind` now supports both closed and open delegates
+
 # 01-31-2020
 Major release of version 2.0 is completely finished and contains polished existing and new API. All libraries in .NEXT family are upgraded. Migration guide for 1.x users is [here](https://sakno.github.io/dotNext/migration/1.html). Please consider that this version is not fully backward compatible with 1.x.
 

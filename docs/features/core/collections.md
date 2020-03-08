@@ -87,3 +87,17 @@ using DotNext;
 IEnumerable<string> list = new[] { "a", "b", "c" };
 list.ForEach(item => Console.WriteLine(item));
 ```
+
+# List segments
+Generic [list](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1) from .NET standard library doesn't support [range](https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges) operator. Only one-dimensional arrays support ranges. To bridge this gap, .NEXT library contains [ListSegment](../../api/DotNext.Collections.Generic.ListSegment-1.yml) data type which has the same meaning as [ArraySegment](https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1) but for lists. This type allows to delimit section of a list. The section can be produced using Range syntax in C#:
+
+```csharp
+using DotNext.Collections.Generic;
+using System.Collections.Generic;
+
+var list = new List<string> { "One", "Two", "Three" };
+ListSegment<string> slice = list.Slice(1..);
+slice[0] = string.Empty;
+```
+
+The delimited section allows to modify individual elements but doesn't support adding or removing elements.

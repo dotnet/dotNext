@@ -129,6 +129,7 @@ to the current and given values, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T AccumulateAndGet&lt;T&gt;(ref T value, T x, in ValueFunc&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -212,6 +213,7 @@ to the current and given values, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T AccumulateAndGet&lt;T&gt;(ref T value, T x, Func&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -295,6 +297,7 @@ to the array element and given values, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T AccumulateAndGet&lt;T&gt;(this T[] array, long index, T x, in ValueFunc&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -383,6 +386,7 @@ to the array element and given values, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T AccumulateAndGet&lt;T&gt;(this T[] array, long index, T x, Func&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -471,6 +475,7 @@ replaces the stored value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool CompareAndSet&lt;T&gt;(ref T value, T expected, T update)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -550,6 +555,7 @@ replaces the stored value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool CompareAndSet&lt;T&gt;(this T[] array, long index, T expected, T update)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -634,6 +640,7 @@ replaces the stored value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T CompareExchange&lt;T&gt;(this T[] array, long index, T update, T comparand)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -719,6 +726,7 @@ to the current and given values, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndAccumulate&lt;T&gt;(ref T value, T x, in ValueFunc&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -802,6 +810,7 @@ to the current and given values, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndAccumulate&lt;T&gt;(ref T value, T x, Func&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -885,6 +894,7 @@ to the array element and given values, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndAccumulate&lt;T&gt;(this T[] array, long index, T x, in ValueFunc&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -973,6 +983,7 @@ to the array element and given values, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndAccumulate&lt;T&gt;(this T[] array, long index, T x, Func&lt;T, T, T&gt; accumulator)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1060,6 +1071,7 @@ to the array element and given values, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndSet&lt;T&gt;(this T[] array, long index, T update)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1139,6 +1151,7 @@ of applying the given function, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndUpdate&lt;T&gt;(ref T value, in ValueFunc&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1213,6 +1226,7 @@ of applying the given function, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndUpdate&lt;T&gt;(ref T value, Func&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1287,6 +1301,7 @@ of applying the given function, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndUpdate&lt;T&gt;(this T[] array, long index, in ValueFunc&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1366,6 +1381,7 @@ of applying the given function, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T GetAndUpdate&lt;T&gt;(this T[] array, long index, Func&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1444,6 +1460,7 @@ of applying the given function, returning the original value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T SetAndGet&lt;T&gt;(this T[] array, long index, T update)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1523,6 +1540,7 @@ of applying the given function, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T UpdateAndGet&lt;T&gt;(ref T value, in ValueFunc&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1597,6 +1615,7 @@ of applying the given function, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T UpdateAndGet&lt;T&gt;(ref T value, Func&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1671,6 +1690,7 @@ of applying the given function, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T UpdateAndGet&lt;T&gt;(this T[] array, long index, in ValueFunc&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1750,6 +1770,7 @@ of applying the given function, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T UpdateAndGet&lt;T&gt;(this T[] array, long index, Func&lt;T, T&gt; updater)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1828,6 +1849,7 @@ of applying the given function, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T VolatileRead&lt;T&gt;(this T[] array, long index)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1900,6 +1922,7 @@ of applying the given function, returning the updated value.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void VolatileWrite&lt;T&gt;(this T[] array, long index, T element)
+
     where T : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

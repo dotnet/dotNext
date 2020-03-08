@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -79,6 +80,11 @@ namespace DotNext
             var func = new Func<string, int>(GetLength).Bind("abc");
             Equal(3, func());
             Equal(4, func.Unbind<string, int>().Invoke("abcd"));
+
+            var func2 = new Func<string, bool>("abc".Contains).Bind("a");
+            True(func2());
+            True(func2.Unbind<string, bool>().Invoke("c"));
+            Throws<InvalidOperationException>(() => func2.Unbind<object, bool>());
         }
 
         [Fact]
@@ -87,6 +93,11 @@ namespace DotNext
             var func = new Func<string, string, string>(string.Concat).Bind("abc");
             Equal("abcde", func("de"));
             Equal("abcde", func.Unbind<string, string, string>().Invoke("ab", "cde"));
+
+            var func2 = new Func<string, string, string>("abc".Replace).Bind("a");
+            Equal("1bc", func2("1"));
+            Equal("2bc", func2.Unbind<string, string, string>().Invoke("a", "2"));
+            Throws<InvalidOperationException>(() => func2.Unbind<object, string, string>());
         }
 
         [Fact]
@@ -95,6 +106,10 @@ namespace DotNext
             var func = new Func<string, string, string, string>(string.Concat).Bind("abc");
             Equal("abcde", func("d", "e"));
             Equal("abcde", func.Unbind<string, string, string, string>().Invoke("ab", "cd", "e"));
+
+            var func2 = new Func<string, string, StringComparison, string>("abc".Replace).Bind("a");
+            Equal("1bc", func2("1", StringComparison.Ordinal));
+            Equal("2bc", func2.Unbind<string, string, StringComparison, string>().Invoke("a", "2", StringComparison.Ordinal));
         }
 
         [Fact]
@@ -103,6 +118,10 @@ namespace DotNext
             var func = new Func<string, string, string, string, string>(string.Concat).Bind("abc");
             Equal("abcdef", func("d", "e", "f"));
             Equal("abcdef", func.Unbind<string, string, string, string, string>().Invoke("ab", "cd", "e", "f"));
+
+            var func2 = new Func<string, string, bool, CultureInfo, string>("abc".Replace).Bind("a");
+            Equal("1bc", func2("1", false, CultureInfo.InvariantCulture));
+            Equal("2bc", func2.Unbind<string, string, bool, CultureInfo, string>().Invoke("a", "2", false, CultureInfo.InvariantCulture));
         }
 
         [Fact]

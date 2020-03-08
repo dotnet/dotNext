@@ -78,6 +78,8 @@
       href: metaprogramming/loop.md
     - name: lock Statement
       href: metaprogramming/lock.md
+    - name: Ranges and Indicies
+      href: metaprogramming/range.md
     - name: String Interpolation
       href: metaprogramming/interp.md
     - name: Pattern Matching

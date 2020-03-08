@@ -329,5 +329,118 @@ namespace DotNext.Linq.Expressions
             Equal(ExpressionType.Extension, expr.NodeType);
             Equal(typeof(void), expr.Type);
         }
+
+        [Fact]
+        public static void ItemIndex()
+        {
+            const short IndexValue = 10;
+            var index = new ItemIndexExpression(IndexValue.Const());
+            False(index.IsFromEnd);
+            Equal(ExpressionType.New, index.Reduce().NodeType);
+            Equal(typeof(Index), index.Type);
+
+            index = 42.Index(false);
+            False(index.IsFromEnd);
+            Equal(ExpressionType.New, index.Reduce().NodeType);
+            Equal(typeof(Index), index.Type);
+
+            var i = ^20;
+            index = i.Quote();
+            True(index.IsFromEnd);
+        }
+
+        [Fact]
+        public static void RangeOfIndicies()
+        {
+            var range = 20.Index(false).To(21);
+            Equal(typeof(Range), range.Type);
+            Equal(ExpressionType.New, range.Reduce().NodeType);
+
+            range = new RangeExpression();
+            Same(ItemIndexExpression.First, range.Start);
+            Same(ItemIndexExpression.Last, range.End);
+
+            range = (..^1).Quote();
+            Equal(typeof(Range), range.Type);
+            Equal(ExpressionType.New, range.Reduce().NodeType);
+        }
+
+        private interface IListOfInt64 : IList<long>
+        {
+
+        }
+
+        private sealed class ListOfInt64 : List<long>, IListOfInt64
+        {
+            public long[] Slice(int start, int length)
+            {
+                var result = new long[length];
+                CopyTo(start, result, 0, length);
+                return result;
+            }
+        }
+
+        [Fact]
+        public static void CollectionAccess()
+        {
+            var parameter = Expression.Parameter(typeof(long[]));
+            Delegate lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
+            Equal(42L, lambda.DynamicInvoke(new[] { 42L, 43L }));
+
+            lambda = Expression.Lambda<Func<long[], long>>(new CollectionAccessExpression(parameter, typeof(Index).Default()), parameter).Compile();
+            Equal(42L, lambda.DynamicInvoke(new[] { 42L, 43L }));
+
+            lambda = Expression.Lambda<Func<long[], long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
+            Equal(44L, lambda.DynamicInvoke(new[] { 42L, 43L, 44L }));
+
+            parameter = Expression.Parameter(typeof(IList<long>));
+            lambda = Expression.Lambda<Func<IList<long>, long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
+            Equal(42L, lambda.DynamicInvoke(new[] { 42L, 43L }));
+
+            lambda = Expression.Lambda<Func<IList<long>, long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
+            Equal(43L, lambda.DynamicInvoke(new[] { 42L, 43L }));
+
+            parameter = Expression.Parameter(typeof(IListOfInt64));
+            lambda = Expression.Lambda<Func<IListOfInt64, long>>(parameter.ElementAt(0.Index(false)), parameter).Compile();
+            Equal(42L, lambda.DynamicInvoke(new ListOfInt64 { 42L, 43L }));
+
+            lambda = Expression.Lambda<Func<IListOfInt64, long>>(parameter.ElementAt(1.Index(true)), parameter).Compile();
+            Equal(43L, lambda.DynamicInvoke(new ListOfInt64 { 42L, 43L }));
+
+            parameter = Expression.Parameter(typeof(string));
+            lambda = Expression.Lambda<Func<string, char>>(parameter.ElementAt(1.Index(false)), parameter).Compile();
+            Equal('b', lambda.DynamicInvoke("abc"));
+        }
+
+        [Fact]
+        public static void ArraySlice()
+        {
+            var parameter = Expression.Parameter(typeof(long[]));
+            var lambda = Expression.Lambda<Func<long[], long[]>>(parameter.Slice(1.Index(false), 0.Index(true)), parameter).Compile();
+            Equal(new[] { 1L, 2L, 4L }[1..^0], lambda(new[] { 1L, 2L, 4L }));
+        }
+
+        [Fact]
+        public static void StringSlice()
+        {
+            var parameter = Expression.Parameter(typeof(string));
+            var lambda = Expression.Lambda<Func<string, string>>(parameter.Slice(1.Index(false), 1.Index(true)), parameter).Compile();
+            Equal("abcd"[1..^1], lambda("abcd"));
+
+            lambda = Expression.Lambda<Func<string, string>>(parameter.Slice(typeof(Range).New(1.Index(false), 1.Index(true))), parameter).Compile();
+            Equal("abcd"[1..^1], lambda("abcd"));
+
+            var uParam = (UniversalExpression)parameter;
+            lambda = Expression.Lambda<Func<string, string>>(uParam.Slice(typeof(Range).New(1.Index(false), 1.Index(true))), parameter).Compile();
+            Equal("abcd"[1..^1], lambda("abcd"));
+        }
+
+        [Fact]
+        public static void ListSlice()
+        {
+            var parameter = Expression.Parameter(typeof(ListOfInt64));
+            var lambda = Expression.Lambda<Func<ListOfInt64, long[]>>(parameter.Slice(1.Index(false), 1.Index(true)), parameter).Compile();
+            Equal(new[] { 3L, 5L }, lambda(new ListOfInt64 { 1L, 3L, 5L, 7L }));
+        }
     }
 }

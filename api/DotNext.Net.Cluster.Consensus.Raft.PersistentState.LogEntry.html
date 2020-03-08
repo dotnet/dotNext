@@ -79,7 +79,7 @@
   <div classs="implements">
     <h5>Implements</h5>
     <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a></div>
-    <div><span class="xref">IO.Log.ILogEntry</span></div>
+    <div><a class="xref" href="DotNext.IO.Log.ILogEntry.html">ILogEntry</a></div>
     <div><span class="xref">IAsyncBinaryReader</span></div>
   </div>
   <div class="inheritedMembers">
@@ -107,7 +107,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_LogEntry_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected struct LogEntry : IRaftLogEntry, IO.Log.ILogEntry, IAsyncBinaryReader</code></pre>
+    <pre><code class="lang-csharp hljs">protected struct LogEntry : IRaftLogEntry, Log.ILogEntry, IAsyncBinaryReader</code></pre>
   </div>
   <h3 id="properties">Properties
   </h3>
@@ -474,6 +474,7 @@ and advances position in the underlying stream.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;T&gt; ReadAsync&lt;T&gt;(CancellationToken token = default(CancellationToken))
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -718,7 +719,7 @@ and advances position in the underlying stream.</p>
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a>
   </div>
   <div>
-      <span class="xref">IO.Log.ILogEntry</span>
+      <a class="xref" href="DotNext.IO.Log.ILogEntry.html">ILogEntry</a>
   </div>
   <div>
       <span class="xref">IAsyncBinaryReader</span>
@@ -726,6 +727,9 @@ and advances position in the underlying stream.</p>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>
       <a class="xref" href="DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Const__1___0_">ExpressionBuilder.Const&lt;T&gt;(T)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
   </div>
 </article>
           </div>

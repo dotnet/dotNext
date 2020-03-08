@@ -81,8 +81,8 @@ namespace DotNext
         /// </summary>
         /// <typeparam name="T">Type of array elements.</typeparam>
         /// <param name="array">Source array. Cannot be <see langword="null"/>.</param>
-        /// <param name="element">The zero-based index at which item should be inserted.</param>
-        /// <param name="index">The object to insert. The value can be null for reference types.</param>
+        /// <param name="element">The object to insert.</param>
+        /// <param name="index">The zero-based index at which item should be inserted.</param>
         /// <returns>A modified array with inserted element.</returns>
         public static T[] Insert<T>(this T[] array, T element, long index)
         {
@@ -230,6 +230,19 @@ namespace DotNext
             var result = new T[length];
             Array.Copy(input, startIndex, result, 0, length);
             return result;
+        }
+
+        /// <summary>
+        /// Computes view over the specified array.
+        /// </summary>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <param name="input">The array instance.</param>
+        /// <param name="range">The range in the array to return.</param>
+        /// <returns>The range in <paramref name="input"/>.</returns>
+        public static ArraySegment<T> Slice<T>(this T[] input, in Range range)
+        {
+            var (start, length) = range.GetOffsetAndLength(input.Length);
+            return new ArraySegment<T>(input, start, length);
         }
 
         /// <summary>

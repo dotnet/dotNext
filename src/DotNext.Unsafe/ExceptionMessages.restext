@@ -11,3 +11,4 @@ ExpectedType=Value must be of type {0}
 StreamNotReadable=Stream is not readable
 StreamNotWritable=Stream is not writable
 ArrayTooLong=Unmanaged array is too long to be converted into Span
+SegmentVeryLarge=Memory-mapped file segment is greater than 2 Gb

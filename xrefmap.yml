@@ -1414,6 +1414,22 @@ references:
   fullName.vb: DotNext.Collections.Generic.List.IndexerSetter(Of T)(System.Collections.Generic.IList(Of T))
   nameWithType: List.IndexerSetter<T>(IList<T>)
   nameWithType.vb: List.IndexerSetter(Of T)(IList(Of T))
+- uid: DotNext.Collections.Generic.List.Insert*
+  name: Insert
+  href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Insert_
+  commentId: Overload:DotNext.Collections.Generic.List.Insert
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.List.Insert
+  nameWithType: List.Insert
+- uid: DotNext.Collections.Generic.List.Insert``1(System.Collections.Generic.IList{``0},System.Index,``0)
+  name: Insert<T>(IList<T>, Index, T)
+  href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Insert__1_System_Collections_Generic_IList___0__System_Index___0_
+  commentId: M:DotNext.Collections.Generic.List.Insert``1(System.Collections.Generic.IList{``0},System.Index,``0)
+  name.vb: Insert(Of T)(IList(Of T), Index, T)
+  fullName: DotNext.Collections.Generic.List.Insert<T>(System.Collections.Generic.IList<T>, System.Index, T)
+  fullName.vb: DotNext.Collections.Generic.List.Insert(Of T)(System.Collections.Generic.IList(Of T), System.Index, T)
+  nameWithType: List.Insert<T>(IList<T>, Index, T)
+  nameWithType.vb: List.Insert(Of T)(IList(Of T), Index, T)
 - uid: DotNext.Collections.Generic.List.InsertOrdered*
   name: InsertOrdered
   href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_InsertOrdered_
@@ -1439,6 +1455,38 @@ references:
   fullName.vb: DotNext.Collections.Generic.List.InsertOrdered(Of T)(System.Collections.Generic.IList(Of T), T, System.Comparison(Of T))
   nameWithType: List.InsertOrdered<T>(IList<T>, T, Comparison<T>)
   nameWithType.vb: List.InsertOrdered(Of T)(IList(Of T), T, Comparison(Of T))
+- uid: DotNext.Collections.Generic.List.RemoveAt*
+  name: RemoveAt
+  href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_RemoveAt_
+  commentId: Overload:DotNext.Collections.Generic.List.RemoveAt
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.List.RemoveAt
+  nameWithType: List.RemoveAt
+- uid: DotNext.Collections.Generic.List.RemoveAt``1(System.Collections.Generic.IList{``0},System.Index)
+  name: RemoveAt<T>(IList<T>, Index)
+  href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_RemoveAt__1_System_Collections_Generic_IList___0__System_Index_
+  commentId: M:DotNext.Collections.Generic.List.RemoveAt``1(System.Collections.Generic.IList{``0},System.Index)
+  name.vb: RemoveAt(Of T)(IList(Of T), Index)
+  fullName: DotNext.Collections.Generic.List.RemoveAt<T>(System.Collections.Generic.IList<T>, System.Index)
+  fullName.vb: DotNext.Collections.Generic.List.RemoveAt(Of T)(System.Collections.Generic.IList(Of T), System.Index)
+  nameWithType: List.RemoveAt<T>(IList<T>, Index)
+  nameWithType.vb: List.RemoveAt(Of T)(IList(Of T), Index)
+- uid: DotNext.Collections.Generic.List.RemoveRange*
+  name: RemoveRange
+  href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_RemoveRange_
+  commentId: Overload:DotNext.Collections.Generic.List.RemoveRange
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.List.RemoveRange
+  nameWithType: List.RemoveRange
+- uid: DotNext.Collections.Generic.List.RemoveRange``1(System.Collections.Generic.List{``0},System.Range)
+  name: RemoveRange<T>(List<T>, Range)
+  href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_RemoveRange__1_System_Collections_Generic_List___0__System_Range_
+  commentId: M:DotNext.Collections.Generic.List.RemoveRange``1(System.Collections.Generic.List{``0},System.Range)
+  name.vb: RemoveRange(Of T)(List(Of T), Range)
+  fullName: DotNext.Collections.Generic.List.RemoveRange<T>(System.Collections.Generic.List<T>, System.Range)
+  fullName.vb: DotNext.Collections.Generic.List.RemoveRange(Of T)(System.Collections.Generic.List(Of T), System.Range)
+  nameWithType: List.RemoveRange<T>(List<T>, Range)
+  nameWithType.vb: List.RemoveRange(Of T)(List(Of T), Range)
 - uid: DotNext.Collections.Generic.List.Singleton*
   name: Singleton
   href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Singleton_
@@ -1455,6 +1503,22 @@ references:
   fullName.vb: DotNext.Collections.Generic.List.Singleton(Of T)(T)
   nameWithType: List.Singleton<T>(T)
   nameWithType.vb: List.Singleton(Of T)(T)
+- uid: DotNext.Collections.Generic.List.Slice*
+  name: Slice
+  href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Slice_
+  commentId: Overload:DotNext.Collections.Generic.List.Slice
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.List.Slice
+  nameWithType: List.Slice
+- uid: DotNext.Collections.Generic.List.Slice``1(System.Collections.Generic.IList{``0},System.Range)
+  name: Slice<T>(IList<T>, Range)
+  href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_Slice__1_System_Collections_Generic_IList___0__System_Range_
+  commentId: M:DotNext.Collections.Generic.List.Slice``1(System.Collections.Generic.IList{``0},System.Range)
+  name.vb: Slice(Of T)(IList(Of T), Range)
+  fullName: DotNext.Collections.Generic.List.Slice<T>(System.Collections.Generic.IList<T>, System.Range)
+  fullName.vb: DotNext.Collections.Generic.List.Slice(Of T)(System.Collections.Generic.IList(Of T), System.Range)
+  nameWithType: List.Slice<T>(IList<T>, Range)
+  nameWithType.vb: List.Slice(Of T)(IList(Of T), Range)
 - uid: DotNext.Collections.Generic.List.ToArray*
   name: ToArray
   href: api/DotNext.Collections.Generic.List.html#DotNext_Collections_Generic_List_ToArray_
@@ -1498,6 +1562,270 @@ references:
   fullName.vb: DotNext.Collections.Generic.List.ToArray(Of I, O)(System.Collections.Generic.IList(Of I), System.Func(Of System.Int32, I, O))
   nameWithType: List.ToArray<I, O>(IList<I>, Func<Int32, I, O>)
   nameWithType.vb: List.ToArray(Of I, O)(IList(Of I), Func(Of Int32, I, O))
+- uid: DotNext.Collections.Generic.ListSegment`1
+  name: ListSegment<T>
+  href: api/DotNext.Collections.Generic.ListSegment-1.html
+  commentId: T:DotNext.Collections.Generic.ListSegment`1
+  name.vb: ListSegment(Of T)
+  fullName: DotNext.Collections.Generic.ListSegment<T>
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T)
+  nameWithType: ListSegment<T>
+  nameWithType.vb: ListSegment(Of T)
+- uid: DotNext.Collections.Generic.ListSegment`1.#ctor(System.Collections.Generic.IList{`0},System.Range)
+  name: ListSegment(IList<T>, Range)
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1__ctor_System_Collections_Generic_IList__0__System_Range_
+  commentId: M:DotNext.Collections.Generic.ListSegment`1.#ctor(System.Collections.Generic.IList{`0},System.Range)
+  name.vb: ListSegment(IList(Of T), Range)
+  fullName: DotNext.Collections.Generic.ListSegment<T>.ListSegment(System.Collections.Generic.IList<T>, System.Range)
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).ListSegment(System.Collections.Generic.IList(Of T), System.Range)
+  nameWithType: ListSegment<T>.ListSegment(IList<T>, Range)
+  nameWithType.vb: ListSegment(Of T).ListSegment(IList(Of T), Range)
+- uid: DotNext.Collections.Generic.ListSegment`1.#ctor*
+  name: ListSegment
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1__ctor_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.#ctor
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.ListSegment<T>.ListSegment
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).ListSegment
+  nameWithType: ListSegment<T>.ListSegment
+  nameWithType.vb: ListSegment(Of T).ListSegment
+- uid: DotNext.Collections.Generic.ListSegment`1.Contains(`0)
+  name: Contains(T)
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_Contains__0_
+  commentId: M:DotNext.Collections.Generic.ListSegment`1.Contains(`0)
+  fullName: DotNext.Collections.Generic.ListSegment<T>.Contains(T)
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).Contains(T)
+  nameWithType: ListSegment<T>.Contains(T)
+  nameWithType.vb: ListSegment(Of T).Contains(T)
+- uid: DotNext.Collections.Generic.ListSegment`1.Contains*
+  name: Contains
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_Contains_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.Contains
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.ListSegment<T>.Contains
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).Contains
+  nameWithType: ListSegment<T>.Contains
+  nameWithType.vb: ListSegment(Of T).Contains
+- uid: DotNext.Collections.Generic.ListSegment`1.CopyTo(`0[],System.Int32)
+  name: CopyTo(T[], Int32)
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_CopyTo__0___System_Int32_
+  commentId: M:DotNext.Collections.Generic.ListSegment`1.CopyTo(`0[],System.Int32)
+  name.vb: CopyTo(T(), Int32)
+  fullName: DotNext.Collections.Generic.ListSegment<T>.CopyTo(T[], System.Int32)
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).CopyTo(T(), System.Int32)
+  nameWithType: ListSegment<T>.CopyTo(T[], Int32)
+  nameWithType.vb: ListSegment(Of T).CopyTo(T(), Int32)
+- uid: DotNext.Collections.Generic.ListSegment`1.CopyTo*
+  name: CopyTo
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_CopyTo_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.CopyTo
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.ListSegment<T>.CopyTo
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).CopyTo
+  nameWithType: ListSegment<T>.CopyTo
+  nameWithType.vb: ListSegment(Of T).CopyTo
+- uid: DotNext.Collections.Generic.ListSegment`1.Count
+  name: Count
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_Count
+  commentId: P:DotNext.Collections.Generic.ListSegment`1.Count
+  fullName: DotNext.Collections.Generic.ListSegment<T>.Count
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).Count
+  nameWithType: ListSegment<T>.Count
+  nameWithType.vb: ListSegment(Of T).Count
+- uid: DotNext.Collections.Generic.ListSegment`1.Count*
+  name: Count
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_Count_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.Count
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.ListSegment<T>.Count
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).Count
+  nameWithType: ListSegment<T>.Count
+  nameWithType.vb: ListSegment(Of T).Count
+- uid: DotNext.Collections.Generic.ListSegment`1.GetEnumerator
+  name: GetEnumerator()
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_GetEnumerator
+  commentId: M:DotNext.Collections.Generic.ListSegment`1.GetEnumerator
+  fullName: DotNext.Collections.Generic.ListSegment<T>.GetEnumerator()
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).GetEnumerator()
+  nameWithType: ListSegment<T>.GetEnumerator()
+  nameWithType.vb: ListSegment(Of T).GetEnumerator()
+- uid: DotNext.Collections.Generic.ListSegment`1.GetEnumerator*
+  name: GetEnumerator
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_GetEnumerator_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.GetEnumerator
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.ListSegment<T>.GetEnumerator
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).GetEnumerator
+  nameWithType: ListSegment<T>.GetEnumerator
+  nameWithType.vb: ListSegment(Of T).GetEnumerator
+- uid: DotNext.Collections.Generic.ListSegment`1.IndexOf(`0)
+  name: IndexOf(T)
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_IndexOf__0_
+  commentId: M:DotNext.Collections.Generic.ListSegment`1.IndexOf(`0)
+  fullName: DotNext.Collections.Generic.ListSegment<T>.IndexOf(T)
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).IndexOf(T)
+  nameWithType: ListSegment<T>.IndexOf(T)
+  nameWithType.vb: ListSegment(Of T).IndexOf(T)
+- uid: DotNext.Collections.Generic.ListSegment`1.IndexOf*
+  name: IndexOf
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_IndexOf_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.IndexOf
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.ListSegment<T>.IndexOf
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).IndexOf
+  nameWithType: ListSegment<T>.IndexOf
+  nameWithType.vb: ListSegment(Of T).IndexOf
+- uid: DotNext.Collections.Generic.ListSegment`1.Item(System.Int32)
+  name: Item[Int32]
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_Item_System_Int32_
+  commentId: P:DotNext.Collections.Generic.ListSegment`1.Item(System.Int32)
+  name.vb: Item(Int32)
+  fullName: DotNext.Collections.Generic.ListSegment<T>.Item[System.Int32]
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).Item(System.Int32)
+  nameWithType: ListSegment<T>.Item[Int32]
+  nameWithType.vb: ListSegment(Of T).Item(Int32)
+- uid: DotNext.Collections.Generic.ListSegment`1.Item*
+  name: Item
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_Item_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.Item
+  isSpec: "True"
+  fullName: DotNext.Collections.Generic.ListSegment<T>.Item
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).Item
+  nameWithType: ListSegment<T>.Item
+  nameWithType.vb: ListSegment(Of T).Item
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Add(`0)
+  name: ICollection<T>.Add(T)
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_ICollection_T__Add__0_
+  commentId: M:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Add(`0)
+  name.vb: System.Collections.Generic.ICollection<T>.Add(T)
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.ICollection<T>.Add(T)
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.ICollection<T>.Add(T)
+  nameWithType: ListSegment<T>.ICollection<T>.Add(T)
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.ICollection<T>.Add(T)
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Add*
+  name: ICollection<T>.Add
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_ICollection_T__Add_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Add
+  isSpec: "True"
+  name.vb: System.Collections.Generic.ICollection<T>.Add
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.ICollection<T>.Add
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.ICollection<T>.Add
+  nameWithType: ListSegment<T>.ICollection<T>.Add
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.ICollection<T>.Add
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Clear
+  name: ICollection<T>.Clear()
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_ICollection_T__Clear
+  commentId: M:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Clear
+  name.vb: System.Collections.Generic.ICollection<T>.Clear()
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.ICollection<T>.Clear()
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.ICollection<T>.Clear()
+  nameWithType: ListSegment<T>.ICollection<T>.Clear()
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.ICollection<T>.Clear()
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Clear*
+  name: ICollection<T>.Clear
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_ICollection_T__Clear_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Clear
+  isSpec: "True"
+  name.vb: System.Collections.Generic.ICollection<T>.Clear
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.ICollection<T>.Clear
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.ICollection<T>.Clear
+  nameWithType: ListSegment<T>.ICollection<T>.Clear
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.ICollection<T>.Clear
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  name: ICollection<T>.IsReadOnly
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_ICollection_T__IsReadOnly
+  commentId: P:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  name.vb: System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+  nameWithType: ListSegment<T>.ICollection<T>.IsReadOnly
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#IsReadOnly*
+  name: ICollection<T>.IsReadOnly
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_ICollection_T__IsReadOnly_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#IsReadOnly
+  isSpec: "True"
+  name.vb: System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.ICollection<T>.IsReadOnly
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+  nameWithType: ListSegment<T>.ICollection<T>.IsReadOnly
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.ICollection<T>.IsReadOnly
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Remove(`0)
+  name: ICollection<T>.Remove(T)
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_ICollection_T__Remove__0_
+  commentId: M:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Remove(`0)
+  name.vb: System.Collections.Generic.ICollection<T>.Remove(T)
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.ICollection<T>.Remove(T)
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.ICollection<T>.Remove(T)
+  nameWithType: ListSegment<T>.ICollection<T>.Remove(T)
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.ICollection<T>.Remove(T)
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Remove*
+  name: ICollection<T>.Remove
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_ICollection_T__Remove_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#ICollection{T}#Remove
+  isSpec: "True"
+  name.vb: System.Collections.Generic.ICollection<T>.Remove
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.ICollection<T>.Remove
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.ICollection<T>.Remove
+  nameWithType: ListSegment<T>.ICollection<T>.Remove
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.ICollection<T>.Remove
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#IList{T}#Insert(System.Int32,`0)
+  name: IList<T>.Insert(Int32, T)
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_IList_T__Insert_System_Int32__0_
+  commentId: M:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#IList{T}#Insert(System.Int32,`0)
+  name.vb: System.Collections.Generic.IList<T>.Insert(Int32, T)
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.IList<T>.Insert(System.Int32, T)
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.IList<T>.Insert(System.Int32, T)
+  nameWithType: ListSegment<T>.IList<T>.Insert(Int32, T)
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.IList<T>.Insert(Int32, T)
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#IList{T}#Insert*
+  name: IList<T>.Insert
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_IList_T__Insert_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#IList{T}#Insert
+  isSpec: "True"
+  name.vb: System.Collections.Generic.IList<T>.Insert
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.IList<T>.Insert
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.IList<T>.Insert
+  nameWithType: ListSegment<T>.IList<T>.Insert
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.IList<T>.Insert
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#IList{T}#RemoveAt(System.Int32)
+  name: IList<T>.RemoveAt(Int32)
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_IList_T__RemoveAt_System_Int32_
+  commentId: M:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#IList{T}#RemoveAt(System.Int32)
+  name.vb: System.Collections.Generic.IList<T>.RemoveAt(Int32)
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.IList<T>.RemoveAt(System.Int32)
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.IList<T>.RemoveAt(System.Int32)
+  nameWithType: ListSegment<T>.IList<T>.RemoveAt(Int32)
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.IList<T>.RemoveAt(Int32)
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#IList{T}#RemoveAt*
+  name: IList<T>.RemoveAt
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_Generic_IList_T__RemoveAt_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.System#Collections#Generic#IList{T}#RemoveAt
+  isSpec: "True"
+  name.vb: System.Collections.Generic.IList<T>.RemoveAt
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.Generic.IList<T>.RemoveAt
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.Generic.IList<T>.RemoveAt
+  nameWithType: ListSegment<T>.IList<T>.RemoveAt
+  nameWithType.vb: ListSegment(Of T).System.Collections.Generic.IList<T>.RemoveAt
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#IEnumerable#GetEnumerator
+  name: IEnumerable.GetEnumerator()
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_IEnumerable_GetEnumerator
+  commentId: M:DotNext.Collections.Generic.ListSegment`1.System#Collections#IEnumerable#GetEnumerator
+  name.vb: System.Collections.IEnumerable.GetEnumerator()
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.IEnumerable.GetEnumerator()
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.IEnumerable.GetEnumerator()
+  nameWithType: ListSegment<T>.IEnumerable.GetEnumerator()
+  nameWithType.vb: ListSegment(Of T).System.Collections.IEnumerable.GetEnumerator()
+- uid: DotNext.Collections.Generic.ListSegment`1.System#Collections#IEnumerable#GetEnumerator*
+  name: IEnumerable.GetEnumerator
+  href: api/DotNext.Collections.Generic.ListSegment-1.html#DotNext_Collections_Generic_ListSegment_1_System_Collections_IEnumerable_GetEnumerator_
+  commentId: Overload:DotNext.Collections.Generic.ListSegment`1.System#Collections#IEnumerable#GetEnumerator
+  isSpec: "True"
+  name.vb: System.Collections.IEnumerable.GetEnumerator
+  fullName: DotNext.Collections.Generic.ListSegment<T>.System.Collections.IEnumerable.GetEnumerator
+  fullName.vb: DotNext.Collections.Generic.ListSegment(Of T).System.Collections.IEnumerable.GetEnumerator
+  nameWithType: ListSegment<T>.IEnumerable.GetEnumerator
+  nameWithType.vb: ListSegment(Of T).System.Collections.IEnumerable.GetEnumerator
 - uid: DotNext.Collections.Generic.ReadOnlyCollectionView`2
   name: ReadOnlyCollectionView<I, O>
   href: api/DotNext.Collections.Generic.ReadOnlyCollectionView-2.html
@@ -5658,6 +5986,38 @@ references:
   fullName.vb: DotNext.IO.IDataTransferObject.WriteToAsync(Of TWriter)(TWriter, System.Threading.CancellationToken)
   nameWithType: IDataTransferObject.WriteToAsync<TWriter>(TWriter, CancellationToken)
   nameWithType.vb: IDataTransferObject.WriteToAsync(Of TWriter)(TWriter, CancellationToken)
+- uid: DotNext.IO.IFlushable
+  name: IFlushable
+  href: api/DotNext.IO.IFlushable.html
+  commentId: T:DotNext.IO.IFlushable
+  fullName: DotNext.IO.IFlushable
+  nameWithType: IFlushable
+- uid: DotNext.IO.IFlushable.Flush
+  name: Flush()
+  href: api/DotNext.IO.IFlushable.html#DotNext_IO_IFlushable_Flush
+  commentId: M:DotNext.IO.IFlushable.Flush
+  fullName: DotNext.IO.IFlushable.Flush()
+  nameWithType: IFlushable.Flush()
+- uid: DotNext.IO.IFlushable.Flush*
+  name: Flush
+  href: api/DotNext.IO.IFlushable.html#DotNext_IO_IFlushable_Flush_
+  commentId: Overload:DotNext.IO.IFlushable.Flush
+  isSpec: "True"
+  fullName: DotNext.IO.IFlushable.Flush
+  nameWithType: IFlushable.Flush
+- uid: DotNext.IO.IFlushable.FlushAsync(System.Threading.CancellationToken)
+  name: FlushAsync(CancellationToken)
+  href: api/DotNext.IO.IFlushable.html#DotNext_IO_IFlushable_FlushAsync_System_Threading_CancellationToken_
+  commentId: M:DotNext.IO.IFlushable.FlushAsync(System.Threading.CancellationToken)
+  fullName: DotNext.IO.IFlushable.FlushAsync(System.Threading.CancellationToken)
+  nameWithType: IFlushable.FlushAsync(CancellationToken)
+- uid: DotNext.IO.IFlushable.FlushAsync*
+  name: FlushAsync
+  href: api/DotNext.IO.IFlushable.html#DotNext_IO_IFlushable_FlushAsync_
+  commentId: Overload:DotNext.IO.IFlushable.FlushAsync
+  isSpec: "True"
+  fullName: DotNext.IO.IFlushable.FlushAsync
+  nameWithType: IFlushable.FlushAsync
 - uid: DotNext.IO.Log
   name: DotNext.IO.Log
   href: api/DotNext.IO.Log.html
@@ -6160,6 +6520,12 @@ references:
   commentId: N:DotNext.IO.MemoryMappedFiles
   fullName: DotNext.IO.MemoryMappedFiles
   nameWithType: DotNext.IO.MemoryMappedFiles
+- uid: DotNext.IO.MemoryMappedFiles.IMappedMemoryOwner
+  name: IMappedMemoryOwner
+  href: api/DotNext.IO.MemoryMappedFiles.IMappedMemoryOwner.html
+  commentId: T:DotNext.IO.MemoryMappedFiles.IMappedMemoryOwner
+  fullName: DotNext.IO.MemoryMappedFiles.IMappedMemoryOwner
+  nameWithType: IMappedMemoryOwner
 - uid: DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor
   name: MemoryMappedDirectAccessor
   href: api/DotNext.IO.MemoryMappedFiles.MemoryMappedDirectAccessor.html
@@ -6302,6 +6668,19 @@ references:
   isSpec: "True"
   fullName: DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateDirectAccessor
   nameWithType: MemoryMappedFileExtensions.CreateDirectAccessor
+- uid: DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateMemoryAccessor(System.IO.MemoryMappedFiles.MemoryMappedFile,System.Int64,System.Int32,System.IO.MemoryMappedFiles.MemoryMappedFileAccess)
+  name: CreateMemoryAccessor(MemoryMappedFile, Int64, Int32, MemoryMappedFileAccess)
+  href: api/DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.html#DotNext_IO_MemoryMappedFiles_MemoryMappedFileExtensions_CreateMemoryAccessor_System_IO_MemoryMappedFiles_MemoryMappedFile_System_Int64_System_Int32_System_IO_MemoryMappedFiles_MemoryMappedFileAccess_
+  commentId: M:DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateMemoryAccessor(System.IO.MemoryMappedFiles.MemoryMappedFile,System.Int64,System.Int32,System.IO.MemoryMappedFiles.MemoryMappedFileAccess)
+  fullName: DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateMemoryAccessor(System.IO.MemoryMappedFiles.MemoryMappedFile, System.Int64, System.Int32, System.IO.MemoryMappedFiles.MemoryMappedFileAccess)
+  nameWithType: MemoryMappedFileExtensions.CreateMemoryAccessor(MemoryMappedFile, Int64, Int32, MemoryMappedFileAccess)
+- uid: DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateMemoryAccessor*
+  name: CreateMemoryAccessor
+  href: api/DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.html#DotNext_IO_MemoryMappedFiles_MemoryMappedFileExtensions_CreateMemoryAccessor_
+  commentId: Overload:DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateMemoryAccessor
+  isSpec: "True"
+  fullName: DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateMemoryAccessor
+  nameWithType: MemoryMappedFileExtensions.CreateMemoryAccessor
 - uid: DotNext.IO.Pipelines
   name: DotNext.IO.Pipelines
   href: api/DotNext.IO.Pipelines.html
@@ -7550,6 +7929,116 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.AwaitExpression.VisitChildren
   nameWithType: AwaitExpression.VisitChildren
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression
+  name: CollectionAccessExpression
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html
+  commentId: T:DotNext.Linq.Expressions.CollectionAccessExpression
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression
+  nameWithType: CollectionAccessExpression
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.#ctor(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
+  name: CollectionAccessExpression(Expression, Expression)
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression__ctor_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.CollectionAccessExpression.#ctor(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.CollectionAccessExpression(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)
+  nameWithType: CollectionAccessExpression.CollectionAccessExpression(Expression, Expression)
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.#ctor*
+  name: CollectionAccessExpression
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression__ctor_
+  commentId: Overload:DotNext.Linq.Expressions.CollectionAccessExpression.#ctor
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.CollectionAccessExpression
+  nameWithType: CollectionAccessExpression.CollectionAccessExpression
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.CanReduce
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_CanReduce
+  commentId: P:DotNext.Linq.Expressions.CollectionAccessExpression.CanReduce
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.CanReduce
+  nameWithType: CollectionAccessExpression.CanReduce
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.CanReduce*
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_CanReduce_
+  commentId: Overload:DotNext.Linq.Expressions.CollectionAccessExpression.CanReduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.CanReduce
+  nameWithType: CollectionAccessExpression.CanReduce
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.Collection
+  name: Collection
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_Collection
+  commentId: P:DotNext.Linq.Expressions.CollectionAccessExpression.Collection
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.Collection
+  nameWithType: CollectionAccessExpression.Collection
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.Collection*
+  name: Collection
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_Collection_
+  commentId: Overload:DotNext.Linq.Expressions.CollectionAccessExpression.Collection
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.Collection
+  nameWithType: CollectionAccessExpression.Collection
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.Index
+  name: Index
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_Index
+  commentId: P:DotNext.Linq.Expressions.CollectionAccessExpression.Index
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.Index
+  nameWithType: CollectionAccessExpression.Index
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.Index*
+  name: Index
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_Index_
+  commentId: Overload:DotNext.Linq.Expressions.CollectionAccessExpression.Index
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.Index
+  nameWithType: CollectionAccessExpression.Index
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.NodeType
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_NodeType
+  commentId: P:DotNext.Linq.Expressions.CollectionAccessExpression.NodeType
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.NodeType
+  nameWithType: CollectionAccessExpression.NodeType
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.NodeType*
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_NodeType_
+  commentId: Overload:DotNext.Linq.Expressions.CollectionAccessExpression.NodeType
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.NodeType
+  nameWithType: CollectionAccessExpression.NodeType
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.Reduce
+  name: Reduce()
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_Reduce
+  commentId: M:DotNext.Linq.Expressions.CollectionAccessExpression.Reduce
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.Reduce()
+  nameWithType: CollectionAccessExpression.Reduce()
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.Reduce*
+  name: Reduce
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_Reduce_
+  commentId: Overload:DotNext.Linq.Expressions.CollectionAccessExpression.Reduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.Reduce
+  nameWithType: CollectionAccessExpression.Reduce
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.Type
+  name: Type
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_Type
+  commentId: P:DotNext.Linq.Expressions.CollectionAccessExpression.Type
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.Type
+  nameWithType: CollectionAccessExpression.Type
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.Type*
+  name: Type
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_Type_
+  commentId: Overload:DotNext.Linq.Expressions.CollectionAccessExpression.Type
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.Type
+  nameWithType: CollectionAccessExpression.Type
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  name: VisitChildren(ExpressionVisitor)
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_
+  commentId: M:DotNext.Linq.Expressions.CollectionAccessExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  nameWithType: CollectionAccessExpression.VisitChildren(ExpressionVisitor)
+- uid: DotNext.Linq.Expressions.CollectionAccessExpression.VisitChildren*
+  name: VisitChildren
+  href: api/DotNext.Linq.Expressions.CollectionAccessExpression.html#DotNext_Linq_Expressions_CollectionAccessExpression_VisitChildren_
+  commentId: Overload:DotNext.Linq.Expressions.CollectionAccessExpression.VisitChildren
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.CollectionAccessExpression.VisitChildren
+  nameWithType: CollectionAccessExpression.VisitChildren
 - uid: DotNext.Linq.Expressions.ExpressionBuilder
   name: ExpressionBuilder
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html
@@ -7881,6 +8370,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.Divide
   nameWithType: ExpressionBuilder.Divide
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.ElementAt(System.Linq.Expressions.Expression,DotNext.Linq.Expressions.ItemIndexExpression)
+  name: ElementAt(Expression, ItemIndexExpression)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_ElementAt_System_Linq_Expressions_Expression_DotNext_Linq_Expressions_ItemIndexExpression_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.ElementAt(System.Linq.Expressions.Expression,DotNext.Linq.Expressions.ItemIndexExpression)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.ElementAt(System.Linq.Expressions.Expression, DotNext.Linq.Expressions.ItemIndexExpression)
+  nameWithType: ExpressionBuilder.ElementAt(Expression, ItemIndexExpression)
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.ElementAt(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression[])
   name: ElementAt(Expression, Expression[])
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_ElementAt_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression___
@@ -8045,6 +8540,25 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.IfNotNull
   nameWithType: ExpressionBuilder.IfNotNull
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Index(System.Int32,System.Boolean)
+  name: Index(Int32, Boolean)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Index_System_Int32_System_Boolean_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Index(System.Int32,System.Boolean)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Index(System.Int32, System.Boolean)
+  nameWithType: ExpressionBuilder.Index(Int32, Boolean)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Index(System.Linq.Expressions.Expression,System.Boolean)
+  name: Index(Expression, Boolean)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Index_System_Linq_Expressions_Expression_System_Boolean_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Index(System.Linq.Expressions.Expression,System.Boolean)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Index(System.Linq.Expressions.Expression, System.Boolean)
+  nameWithType: ExpressionBuilder.Index(Expression, Boolean)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Index*
+  name: Index
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Index_
+  commentId: Overload:DotNext.Linq.Expressions.ExpressionBuilder.Index
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Index
+  nameWithType: ExpressionBuilder.Index
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.InstanceOf(System.Linq.Expressions.Expression,System.Type)
   name: InstanceOf(Expression, Type)
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_InstanceOf_System_Linq_Expressions_Expression_System_Type_
@@ -8481,6 +8995,31 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.Property
   nameWithType: ExpressionBuilder.Property
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Quote(System.Index@)
+  name: Quote(Index)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Quote_System_Index__
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Quote(System.Index@)
+  name.vb: Quote(ByRef Index)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Quote(System.Index)
+  fullName.vb: DotNext.Linq.Expressions.ExpressionBuilder.Quote(ByRef System.Index)
+  nameWithType: ExpressionBuilder.Quote(Index)
+  nameWithType.vb: ExpressionBuilder.Quote(ByRef Index)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Quote(System.Range@)
+  name: Quote(Range)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Quote_System_Range__
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Quote(System.Range@)
+  name.vb: Quote(ByRef Range)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Quote(System.Range)
+  fullName.vb: DotNext.Linq.Expressions.ExpressionBuilder.Quote(ByRef System.Range)
+  nameWithType: ExpressionBuilder.Quote(Range)
+  nameWithType.vb: ExpressionBuilder.Quote(ByRef Range)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Quote*
+  name: Quote
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Quote_
+  commentId: Overload:DotNext.Linq.Expressions.ExpressionBuilder.Quote
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Quote
+  nameWithType: ExpressionBuilder.Quote
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.RefAnyVal(System.Linq.Expressions.ParameterExpression,System.Type)
   name: RefAnyVal(ParameterExpression, Type)
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_RefAnyVal_System_Linq_Expressions_ParameterExpression_System_Type_
@@ -8535,6 +9074,25 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.RightShift
   nameWithType: ExpressionBuilder.RightShift
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Slice(System.Linq.Expressions.Expression,DotNext.Linq.Expressions.ItemIndexExpression,DotNext.Linq.Expressions.ItemIndexExpression)
+  name: Slice(Expression, ItemIndexExpression, ItemIndexExpression)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Slice_System_Linq_Expressions_Expression_DotNext_Linq_Expressions_ItemIndexExpression_DotNext_Linq_Expressions_ItemIndexExpression_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Slice(System.Linq.Expressions.Expression,DotNext.Linq.Expressions.ItemIndexExpression,DotNext.Linq.Expressions.ItemIndexExpression)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Slice(System.Linq.Expressions.Expression, DotNext.Linq.Expressions.ItemIndexExpression, DotNext.Linq.Expressions.ItemIndexExpression)
+  nameWithType: ExpressionBuilder.Slice(Expression, ItemIndexExpression, ItemIndexExpression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Slice(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
+  name: Slice(Expression, Expression)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Slice_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.Slice(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Slice(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)
+  nameWithType: ExpressionBuilder.Slice(Expression, Expression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.Slice*
+  name: Slice
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Slice_
+  commentId: Overload:DotNext.Linq.Expressions.ExpressionBuilder.Slice
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.Slice
+  nameWithType: ExpressionBuilder.Slice
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.Subtract(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
   name: Subtract(Expression, Expression)
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_Subtract_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_
@@ -8561,6 +9119,25 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.ExpressionBuilder.Throw
   nameWithType: ExpressionBuilder.Throw
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.To(DotNext.Linq.Expressions.ItemIndexExpression,DotNext.Linq.Expressions.ItemIndexExpression)
+  name: To(ItemIndexExpression, ItemIndexExpression)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_To_DotNext_Linq_Expressions_ItemIndexExpression_DotNext_Linq_Expressions_ItemIndexExpression_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.To(DotNext.Linq.Expressions.ItemIndexExpression,DotNext.Linq.Expressions.ItemIndexExpression)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.To(DotNext.Linq.Expressions.ItemIndexExpression, DotNext.Linq.Expressions.ItemIndexExpression)
+  nameWithType: ExpressionBuilder.To(ItemIndexExpression, ItemIndexExpression)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.To(DotNext.Linq.Expressions.ItemIndexExpression,System.Index)
+  name: To(ItemIndexExpression, Index)
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_To_DotNext_Linq_Expressions_ItemIndexExpression_System_Index_
+  commentId: M:DotNext.Linq.Expressions.ExpressionBuilder.To(DotNext.Linq.Expressions.ItemIndexExpression,System.Index)
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.To(DotNext.Linq.Expressions.ItemIndexExpression, System.Index)
+  nameWithType: ExpressionBuilder.To(ItemIndexExpression, Index)
+- uid: DotNext.Linq.Expressions.ExpressionBuilder.To*
+  name: To
+  href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_To_
+  commentId: Overload:DotNext.Linq.Expressions.ExpressionBuilder.To
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ExpressionBuilder.To
+  nameWithType: ExpressionBuilder.To
 - uid: DotNext.Linq.Expressions.ExpressionBuilder.TryConvert(System.Linq.Expressions.Expression,System.Type)
   name: TryConvert(Expression, Type)
   href: api/DotNext.Linq.Expressions.ExpressionBuilder.html#DotNext_Linq_Expressions_ExpressionBuilder_TryConvert_System_Linq_Expressions_Expression_System_Type_
@@ -9153,6 +9730,128 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.InterpolationExpression.Type
   nameWithType: InterpolationExpression.Type
+- uid: DotNext.Linq.Expressions.ItemIndexExpression
+  name: ItemIndexExpression
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html
+  commentId: T:DotNext.Linq.Expressions.ItemIndexExpression
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression
+  nameWithType: ItemIndexExpression
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.#ctor(System.Linq.Expressions.Expression,System.Boolean)
+  name: ItemIndexExpression(Expression, Boolean)
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression__ctor_System_Linq_Expressions_Expression_System_Boolean_
+  commentId: M:DotNext.Linq.Expressions.ItemIndexExpression.#ctor(System.Linq.Expressions.Expression,System.Boolean)
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.ItemIndexExpression(System.Linq.Expressions.Expression, System.Boolean)
+  nameWithType: ItemIndexExpression.ItemIndexExpression(Expression, Boolean)
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.#ctor*
+  name: ItemIndexExpression
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression__ctor_
+  commentId: Overload:DotNext.Linq.Expressions.ItemIndexExpression.#ctor
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.ItemIndexExpression
+  nameWithType: ItemIndexExpression.ItemIndexExpression
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.CanReduce
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_CanReduce
+  commentId: P:DotNext.Linq.Expressions.ItemIndexExpression.CanReduce
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.CanReduce
+  nameWithType: ItemIndexExpression.CanReduce
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.CanReduce*
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_CanReduce_
+  commentId: Overload:DotNext.Linq.Expressions.ItemIndexExpression.CanReduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.CanReduce
+  nameWithType: ItemIndexExpression.CanReduce
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.First
+  name: First
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_First
+  commentId: F:DotNext.Linq.Expressions.ItemIndexExpression.First
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.First
+  nameWithType: ItemIndexExpression.First
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.IsFromEnd
+  name: IsFromEnd
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_IsFromEnd
+  commentId: P:DotNext.Linq.Expressions.ItemIndexExpression.IsFromEnd
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.IsFromEnd
+  nameWithType: ItemIndexExpression.IsFromEnd
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.IsFromEnd*
+  name: IsFromEnd
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_IsFromEnd_
+  commentId: Overload:DotNext.Linq.Expressions.ItemIndexExpression.IsFromEnd
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.IsFromEnd
+  nameWithType: ItemIndexExpression.IsFromEnd
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.Last
+  name: Last
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_Last
+  commentId: F:DotNext.Linq.Expressions.ItemIndexExpression.Last
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.Last
+  nameWithType: ItemIndexExpression.Last
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.NodeType
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_NodeType
+  commentId: P:DotNext.Linq.Expressions.ItemIndexExpression.NodeType
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.NodeType
+  nameWithType: ItemIndexExpression.NodeType
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.NodeType*
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_NodeType_
+  commentId: Overload:DotNext.Linq.Expressions.ItemIndexExpression.NodeType
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.NodeType
+  nameWithType: ItemIndexExpression.NodeType
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.Reduce
+  name: Reduce()
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_Reduce
+  commentId: M:DotNext.Linq.Expressions.ItemIndexExpression.Reduce
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.Reduce()
+  nameWithType: ItemIndexExpression.Reduce()
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.Reduce*
+  name: Reduce
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_Reduce_
+  commentId: Overload:DotNext.Linq.Expressions.ItemIndexExpression.Reduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.Reduce
+  nameWithType: ItemIndexExpression.Reduce
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.Type
+  name: Type
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_Type
+  commentId: P:DotNext.Linq.Expressions.ItemIndexExpression.Type
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.Type
+  nameWithType: ItemIndexExpression.Type
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.Type*
+  name: Type
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_Type_
+  commentId: Overload:DotNext.Linq.Expressions.ItemIndexExpression.Type
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.Type
+  nameWithType: ItemIndexExpression.Type
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.Value
+  name: Value
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_Value
+  commentId: P:DotNext.Linq.Expressions.ItemIndexExpression.Value
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.Value
+  nameWithType: ItemIndexExpression.Value
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.Value*
+  name: Value
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_Value_
+  commentId: Overload:DotNext.Linq.Expressions.ItemIndexExpression.Value
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.Value
+  nameWithType: ItemIndexExpression.Value
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  name: VisitChildren(ExpressionVisitor)
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_
+  commentId: M:DotNext.Linq.Expressions.ItemIndexExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  nameWithType: ItemIndexExpression.VisitChildren(ExpressionVisitor)
+- uid: DotNext.Linq.Expressions.ItemIndexExpression.VisitChildren*
+  name: VisitChildren
+  href: api/DotNext.Linq.Expressions.ItemIndexExpression.html#DotNext_Linq_Expressions_ItemIndexExpression_VisitChildren_
+  commentId: Overload:DotNext.Linq.Expressions.ItemIndexExpression.VisitChildren
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.ItemIndexExpression.VisitChildren
+  nameWithType: ItemIndexExpression.VisitChildren
 - uid: DotNext.Linq.Expressions.LockExpression
   name: LockExpression
   href: api/DotNext.Linq.Expressions.LockExpression.html
@@ -9388,6 +10087,116 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.NullSafetyExpression.Update
   nameWithType: NullSafetyExpression.Update
+- uid: DotNext.Linq.Expressions.RangeExpression
+  name: RangeExpression
+  href: api/DotNext.Linq.Expressions.RangeExpression.html
+  commentId: T:DotNext.Linq.Expressions.RangeExpression
+  fullName: DotNext.Linq.Expressions.RangeExpression
+  nameWithType: RangeExpression
+- uid: DotNext.Linq.Expressions.RangeExpression.#ctor(DotNext.Linq.Expressions.ItemIndexExpression,DotNext.Linq.Expressions.ItemIndexExpression)
+  name: RangeExpression(ItemIndexExpression, ItemIndexExpression)
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression__ctor_DotNext_Linq_Expressions_ItemIndexExpression_DotNext_Linq_Expressions_ItemIndexExpression_
+  commentId: M:DotNext.Linq.Expressions.RangeExpression.#ctor(DotNext.Linq.Expressions.ItemIndexExpression,DotNext.Linq.Expressions.ItemIndexExpression)
+  fullName: DotNext.Linq.Expressions.RangeExpression.RangeExpression(DotNext.Linq.Expressions.ItemIndexExpression, DotNext.Linq.Expressions.ItemIndexExpression)
+  nameWithType: RangeExpression.RangeExpression(ItemIndexExpression, ItemIndexExpression)
+- uid: DotNext.Linq.Expressions.RangeExpression.#ctor*
+  name: RangeExpression
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression__ctor_
+  commentId: Overload:DotNext.Linq.Expressions.RangeExpression.#ctor
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RangeExpression.RangeExpression
+  nameWithType: RangeExpression.RangeExpression
+- uid: DotNext.Linq.Expressions.RangeExpression.CanReduce
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_CanReduce
+  commentId: P:DotNext.Linq.Expressions.RangeExpression.CanReduce
+  fullName: DotNext.Linq.Expressions.RangeExpression.CanReduce
+  nameWithType: RangeExpression.CanReduce
+- uid: DotNext.Linq.Expressions.RangeExpression.CanReduce*
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_CanReduce_
+  commentId: Overload:DotNext.Linq.Expressions.RangeExpression.CanReduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RangeExpression.CanReduce
+  nameWithType: RangeExpression.CanReduce
+- uid: DotNext.Linq.Expressions.RangeExpression.End
+  name: End
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_End
+  commentId: P:DotNext.Linq.Expressions.RangeExpression.End
+  fullName: DotNext.Linq.Expressions.RangeExpression.End
+  nameWithType: RangeExpression.End
+- uid: DotNext.Linq.Expressions.RangeExpression.End*
+  name: End
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_End_
+  commentId: Overload:DotNext.Linq.Expressions.RangeExpression.End
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RangeExpression.End
+  nameWithType: RangeExpression.End
+- uid: DotNext.Linq.Expressions.RangeExpression.NodeType
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_NodeType
+  commentId: P:DotNext.Linq.Expressions.RangeExpression.NodeType
+  fullName: DotNext.Linq.Expressions.RangeExpression.NodeType
+  nameWithType: RangeExpression.NodeType
+- uid: DotNext.Linq.Expressions.RangeExpression.NodeType*
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_NodeType_
+  commentId: Overload:DotNext.Linq.Expressions.RangeExpression.NodeType
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RangeExpression.NodeType
+  nameWithType: RangeExpression.NodeType
+- uid: DotNext.Linq.Expressions.RangeExpression.Reduce
+  name: Reduce()
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_Reduce
+  commentId: M:DotNext.Linq.Expressions.RangeExpression.Reduce
+  fullName: DotNext.Linq.Expressions.RangeExpression.Reduce()
+  nameWithType: RangeExpression.Reduce()
+- uid: DotNext.Linq.Expressions.RangeExpression.Reduce*
+  name: Reduce
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_Reduce_
+  commentId: Overload:DotNext.Linq.Expressions.RangeExpression.Reduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RangeExpression.Reduce
+  nameWithType: RangeExpression.Reduce
+- uid: DotNext.Linq.Expressions.RangeExpression.Start
+  name: Start
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_Start
+  commentId: P:DotNext.Linq.Expressions.RangeExpression.Start
+  fullName: DotNext.Linq.Expressions.RangeExpression.Start
+  nameWithType: RangeExpression.Start
+- uid: DotNext.Linq.Expressions.RangeExpression.Start*
+  name: Start
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_Start_
+  commentId: Overload:DotNext.Linq.Expressions.RangeExpression.Start
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RangeExpression.Start
+  nameWithType: RangeExpression.Start
+- uid: DotNext.Linq.Expressions.RangeExpression.Type
+  name: Type
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_Type
+  commentId: P:DotNext.Linq.Expressions.RangeExpression.Type
+  fullName: DotNext.Linq.Expressions.RangeExpression.Type
+  nameWithType: RangeExpression.Type
+- uid: DotNext.Linq.Expressions.RangeExpression.Type*
+  name: Type
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_Type_
+  commentId: Overload:DotNext.Linq.Expressions.RangeExpression.Type
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RangeExpression.Type
+  nameWithType: RangeExpression.Type
+- uid: DotNext.Linq.Expressions.RangeExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  name: VisitChildren(ExpressionVisitor)
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_
+  commentId: M:DotNext.Linq.Expressions.RangeExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  fullName: DotNext.Linq.Expressions.RangeExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  nameWithType: RangeExpression.VisitChildren(ExpressionVisitor)
+- uid: DotNext.Linq.Expressions.RangeExpression.VisitChildren*
+  name: VisitChildren
+  href: api/DotNext.Linq.Expressions.RangeExpression.html#DotNext_Linq_Expressions_RangeExpression_VisitChildren_
+  commentId: Overload:DotNext.Linq.Expressions.RangeExpression.VisitChildren
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.RangeExpression.VisitChildren
+  nameWithType: RangeExpression.VisitChildren
 - uid: DotNext.Linq.Expressions.RefAnyValExpression
   name: RefAnyValExpression
   href: api/DotNext.Linq.Expressions.RefAnyValExpression.html
@@ -9485,6 +10294,116 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.RefAnyValExpression.TypedReferenceVar
   nameWithType: RefAnyValExpression.TypedReferenceVar
+- uid: DotNext.Linq.Expressions.SliceExpression
+  name: SliceExpression
+  href: api/DotNext.Linq.Expressions.SliceExpression.html
+  commentId: T:DotNext.Linq.Expressions.SliceExpression
+  fullName: DotNext.Linq.Expressions.SliceExpression
+  nameWithType: SliceExpression
+- uid: DotNext.Linq.Expressions.SliceExpression.#ctor(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
+  name: SliceExpression(Expression, Expression)
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression__ctor_System_Linq_Expressions_Expression_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.SliceExpression.#ctor(System.Linq.Expressions.Expression,System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.SliceExpression.SliceExpression(System.Linq.Expressions.Expression, System.Linq.Expressions.Expression)
+  nameWithType: SliceExpression.SliceExpression(Expression, Expression)
+- uid: DotNext.Linq.Expressions.SliceExpression.#ctor*
+  name: SliceExpression
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression__ctor_
+  commentId: Overload:DotNext.Linq.Expressions.SliceExpression.#ctor
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.SliceExpression.SliceExpression
+  nameWithType: SliceExpression.SliceExpression
+- uid: DotNext.Linq.Expressions.SliceExpression.CanReduce
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_CanReduce
+  commentId: P:DotNext.Linq.Expressions.SliceExpression.CanReduce
+  fullName: DotNext.Linq.Expressions.SliceExpression.CanReduce
+  nameWithType: SliceExpression.CanReduce
+- uid: DotNext.Linq.Expressions.SliceExpression.CanReduce*
+  name: CanReduce
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_CanReduce_
+  commentId: Overload:DotNext.Linq.Expressions.SliceExpression.CanReduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.SliceExpression.CanReduce
+  nameWithType: SliceExpression.CanReduce
+- uid: DotNext.Linq.Expressions.SliceExpression.Collection
+  name: Collection
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_Collection
+  commentId: P:DotNext.Linq.Expressions.SliceExpression.Collection
+  fullName: DotNext.Linq.Expressions.SliceExpression.Collection
+  nameWithType: SliceExpression.Collection
+- uid: DotNext.Linq.Expressions.SliceExpression.Collection*
+  name: Collection
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_Collection_
+  commentId: Overload:DotNext.Linq.Expressions.SliceExpression.Collection
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.SliceExpression.Collection
+  nameWithType: SliceExpression.Collection
+- uid: DotNext.Linq.Expressions.SliceExpression.NodeType
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_NodeType
+  commentId: P:DotNext.Linq.Expressions.SliceExpression.NodeType
+  fullName: DotNext.Linq.Expressions.SliceExpression.NodeType
+  nameWithType: SliceExpression.NodeType
+- uid: DotNext.Linq.Expressions.SliceExpression.NodeType*
+  name: NodeType
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_NodeType_
+  commentId: Overload:DotNext.Linq.Expressions.SliceExpression.NodeType
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.SliceExpression.NodeType
+  nameWithType: SliceExpression.NodeType
+- uid: DotNext.Linq.Expressions.SliceExpression.Range
+  name: Range
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_Range
+  commentId: P:DotNext.Linq.Expressions.SliceExpression.Range
+  fullName: DotNext.Linq.Expressions.SliceExpression.Range
+  nameWithType: SliceExpression.Range
+- uid: DotNext.Linq.Expressions.SliceExpression.Range*
+  name: Range
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_Range_
+  commentId: Overload:DotNext.Linq.Expressions.SliceExpression.Range
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.SliceExpression.Range
+  nameWithType: SliceExpression.Range
+- uid: DotNext.Linq.Expressions.SliceExpression.Reduce
+  name: Reduce()
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_Reduce
+  commentId: M:DotNext.Linq.Expressions.SliceExpression.Reduce
+  fullName: DotNext.Linq.Expressions.SliceExpression.Reduce()
+  nameWithType: SliceExpression.Reduce()
+- uid: DotNext.Linq.Expressions.SliceExpression.Reduce*
+  name: Reduce
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_Reduce_
+  commentId: Overload:DotNext.Linq.Expressions.SliceExpression.Reduce
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.SliceExpression.Reduce
+  nameWithType: SliceExpression.Reduce
+- uid: DotNext.Linq.Expressions.SliceExpression.Type
+  name: Type
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_Type
+  commentId: P:DotNext.Linq.Expressions.SliceExpression.Type
+  fullName: DotNext.Linq.Expressions.SliceExpression.Type
+  nameWithType: SliceExpression.Type
+- uid: DotNext.Linq.Expressions.SliceExpression.Type*
+  name: Type
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_Type_
+  commentId: Overload:DotNext.Linq.Expressions.SliceExpression.Type
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.SliceExpression.Type
+  nameWithType: SliceExpression.Type
+- uid: DotNext.Linq.Expressions.SliceExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  name: VisitChildren(ExpressionVisitor)
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_VisitChildren_System_Linq_Expressions_ExpressionVisitor_
+  commentId: M:DotNext.Linq.Expressions.SliceExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  fullName: DotNext.Linq.Expressions.SliceExpression.VisitChildren(System.Linq.Expressions.ExpressionVisitor)
+  nameWithType: SliceExpression.VisitChildren(ExpressionVisitor)
+- uid: DotNext.Linq.Expressions.SliceExpression.VisitChildren*
+  name: VisitChildren
+  href: api/DotNext.Linq.Expressions.SliceExpression.html#DotNext_Linq_Expressions_SliceExpression_VisitChildren_
+  commentId: Overload:DotNext.Linq.Expressions.SliceExpression.VisitChildren
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.SliceExpression.VisitChildren
+  nameWithType: SliceExpression.VisitChildren
 - uid: DotNext.Linq.Expressions.UniversalExpression
   name: UniversalExpression
   href: api/DotNext.Linq.Expressions.UniversalExpression.html
@@ -9697,6 +10616,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.UniversalExpression.GetHashCode
   nameWithType: UniversalExpression.GetHashCode
+- uid: DotNext.Linq.Expressions.UniversalExpression.Index(System.Boolean)
+  name: Index(Boolean)
+  href: api/DotNext.Linq.Expressions.UniversalExpression.html#DotNext_Linq_Expressions_UniversalExpression_Index_System_Boolean_
+  commentId: M:DotNext.Linq.Expressions.UniversalExpression.Index(System.Boolean)
+  fullName: DotNext.Linq.Expressions.UniversalExpression.Index(System.Boolean)
+  nameWithType: UniversalExpression.Index(Boolean)
+- uid: DotNext.Linq.Expressions.UniversalExpression.Index*
+  name: Index
+  href: api/DotNext.Linq.Expressions.UniversalExpression.html#DotNext_Linq_Expressions_UniversalExpression_Index_
+  commentId: Overload:DotNext.Linq.Expressions.UniversalExpression.Index
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.UniversalExpression.Index
+  nameWithType: UniversalExpression.Index
 - uid: DotNext.Linq.Expressions.UniversalExpression.InstanceOf(System.Type)
   name: InstanceOf(Type)
   href: api/DotNext.Linq.Expressions.UniversalExpression.html#DotNext_Linq_Expressions_UniversalExpression_InstanceOf_System_Type_
@@ -10386,6 +11318,19 @@ references:
   isSpec: "True"
   fullName: DotNext.Linq.Expressions.UniversalExpression.Property
   nameWithType: UniversalExpression.Property
+- uid: DotNext.Linq.Expressions.UniversalExpression.Slice(System.Linq.Expressions.Expression)
+  name: Slice(Expression)
+  href: api/DotNext.Linq.Expressions.UniversalExpression.html#DotNext_Linq_Expressions_UniversalExpression_Slice_System_Linq_Expressions_Expression_
+  commentId: M:DotNext.Linq.Expressions.UniversalExpression.Slice(System.Linq.Expressions.Expression)
+  fullName: DotNext.Linq.Expressions.UniversalExpression.Slice(System.Linq.Expressions.Expression)
+  nameWithType: UniversalExpression.Slice(Expression)
+- uid: DotNext.Linq.Expressions.UniversalExpression.Slice*
+  name: Slice
+  href: api/DotNext.Linq.Expressions.UniversalExpression.html#DotNext_Linq_Expressions_UniversalExpression_Slice_
+  commentId: Overload:DotNext.Linq.Expressions.UniversalExpression.Slice
+  isSpec: "True"
+  fullName: DotNext.Linq.Expressions.UniversalExpression.Slice
+  nameWithType: UniversalExpression.Slice
 - uid: DotNext.Linq.Expressions.UniversalExpression.System#Dynamic#IDynamicMetaObjectProvider#GetMetaObject(System.Linq.Expressions.Expression)
   name: IDynamicMetaObjectProvider.GetMetaObject(Expression)
   href: api/DotNext.Linq.Expressions.UniversalExpression.html#DotNext_Linq_Expressions_UniversalExpression_System_Dynamic_IDynamicMetaObjectProvider_GetMetaObject_System_Linq_Expressions_Expression_
@@ -16932,6 +17877,15 @@ references:
   fullName.vb: DotNext.OneDimensionalArray.Slice(Of T)(T(), System.Int64, System.Int64)
   nameWithType: OneDimensionalArray.Slice<T>(T[], Int64, Int64)
   nameWithType.vb: OneDimensionalArray.Slice(Of T)(T(), Int64, Int64)
+- uid: DotNext.OneDimensionalArray.Slice``1(``0[],System.Range@)
+  name: Slice<T>(T[], Range)
+  href: api/DotNext.OneDimensionalArray.html#DotNext_OneDimensionalArray_Slice__1___0___System_Range__
+  commentId: M:DotNext.OneDimensionalArray.Slice``1(``0[],System.Range@)
+  name.vb: Slice(Of T)(T(), ByRef Range)
+  fullName: DotNext.OneDimensionalArray.Slice<T>(T[], System.Range)
+  fullName.vb: DotNext.OneDimensionalArray.Slice(Of T)(T(), ByRef System.Range)
+  nameWithType: OneDimensionalArray.Slice<T>(T[], Range)
+  nameWithType.vb: OneDimensionalArray.Slice(Of T)(T(), ByRef Range)
 - uid: DotNext.Optional
   name: Optional
   href: api/DotNext.Optional.html
@@ -19136,6 +20090,12 @@ references:
   isSpec: "True"
   fullName: DotNext.Reflection.DisposableType.GetDisposeMethod
   nameWithType: DisposableType.GetDisposeMethod
+- uid: DotNext.Reflection.DynamicInvoker
+  name: DynamicInvoker
+  href: api/DotNext.Reflection.DynamicInvoker.html
+  commentId: T:DotNext.Reflection.DynamicInvoker
+  fullName: DotNext.Reflection.DynamicInvoker
+  nameWithType: DynamicInvoker
 - uid: DotNext.Reflection.Event`1
   name: Event<D>
   href: api/DotNext.Reflection.Event-1.html
@@ -24409,14 +25369,41 @@ references:
   fullName: DotNext.Reflection.Reflector.MemberOf
   nameWithType: Reflector.MemberOf
 - uid: DotNext.Reflection.Reflector.MemberOf``1(System.Linq.Expressions.Expression{System.Action})
-  name: MemberOf<M>(Expression<Action>)
+  name: MemberOf<TMember>(Expression<Action>)
   href: api/DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_MemberOf__1_System_Linq_Expressions_Expression_System_Action__
   commentId: M:DotNext.Reflection.Reflector.MemberOf``1(System.Linq.Expressions.Expression{System.Action})
-  name.vb: MemberOf(Of M)(Expression(Of Action))
-  fullName: DotNext.Reflection.Reflector.MemberOf<M>(System.Linq.Expressions.Expression<System.Action>)
-  fullName.vb: DotNext.Reflection.Reflector.MemberOf(Of M)(System.Linq.Expressions.Expression(Of System.Action))
-  nameWithType: Reflector.MemberOf<M>(Expression<Action>)
-  nameWithType.vb: Reflector.MemberOf(Of M)(Expression(Of Action))
+  name.vb: MemberOf(Of TMember)(Expression(Of Action))
+  fullName: DotNext.Reflection.Reflector.MemberOf<TMember>(System.Linq.Expressions.Expression<System.Action>)
+  fullName.vb: DotNext.Reflection.Reflector.MemberOf(Of TMember)(System.Linq.Expressions.Expression(Of System.Action))
+  nameWithType: Reflector.MemberOf<TMember>(Expression<Action>)
+  nameWithType.vb: Reflector.MemberOf(Of TMember)(Expression(Of Action))
+- uid: DotNext.Reflection.Reflector.MemberOf``2(System.Linq.Expressions.Expression{``1})
+  name: MemberOf<TMember, TDelegate>(Expression<TDelegate>)
+  href: api/DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_MemberOf__2_System_Linq_Expressions_Expression___1__
+  commentId: M:DotNext.Reflection.Reflector.MemberOf``2(System.Linq.Expressions.Expression{``1})
+  name.vb: MemberOf(Of TMember, TDelegate)(Expression(Of TDelegate))
+  fullName: DotNext.Reflection.Reflector.MemberOf<TMember, TDelegate>(System.Linq.Expressions.Expression<TDelegate>)
+  fullName.vb: DotNext.Reflection.Reflector.MemberOf(Of TMember, TDelegate)(System.Linq.Expressions.Expression(Of TDelegate))
+  nameWithType: Reflector.MemberOf<TMember, TDelegate>(Expression<TDelegate>)
+  nameWithType.vb: Reflector.MemberOf(Of TMember, TDelegate)(Expression(Of TDelegate))
+- uid: DotNext.Reflection.Reflector.Unreflect(System.Reflection.ConstructorInfo)
+  name: Unreflect(ConstructorInfo)
+  href: api/DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect_System_Reflection_ConstructorInfo_
+  commentId: M:DotNext.Reflection.Reflector.Unreflect(System.Reflection.ConstructorInfo)
+  fullName: DotNext.Reflection.Reflector.Unreflect(System.Reflection.ConstructorInfo)
+  nameWithType: Reflector.Unreflect(ConstructorInfo)
+- uid: DotNext.Reflection.Reflector.Unreflect(System.Reflection.FieldInfo,System.Reflection.BindingFlags)
+  name: Unreflect(FieldInfo, BindingFlags)
+  href: api/DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect_System_Reflection_FieldInfo_System_Reflection_BindingFlags_
+  commentId: M:DotNext.Reflection.Reflector.Unreflect(System.Reflection.FieldInfo,System.Reflection.BindingFlags)
+  fullName: DotNext.Reflection.Reflector.Unreflect(System.Reflection.FieldInfo, System.Reflection.BindingFlags)
+  nameWithType: Reflector.Unreflect(FieldInfo, BindingFlags)
+- uid: DotNext.Reflection.Reflector.Unreflect(System.Reflection.MethodInfo)
+  name: Unreflect(MethodInfo)
+  href: api/DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect_System_Reflection_MethodInfo_
+  commentId: M:DotNext.Reflection.Reflector.Unreflect(System.Reflection.MethodInfo)
+  fullName: DotNext.Reflection.Reflector.Unreflect(System.Reflection.MethodInfo)
+  nameWithType: Reflector.Unreflect(MethodInfo)
 - uid: DotNext.Reflection.Reflector.Unreflect*
   name: Unreflect
   href: api/DotNext.Reflection.Reflector.html#DotNext_Reflection_Reflector_Unreflect_
@@ -28958,6 +29945,15 @@ references:
   isSpec: "True"
   fullName: DotNext.Runtime.InteropServices.IUnmanagedMemory.WriteToAsync
   nameWithType: IUnmanagedMemory.WriteToAsync
+- uid: DotNext.Runtime.InteropServices.IUnmanagedMemory`1
+  name: IUnmanagedMemory<T>
+  href: api/DotNext.Runtime.InteropServices.IUnmanagedMemory-1.html
+  commentId: T:DotNext.Runtime.InteropServices.IUnmanagedMemory`1
+  name.vb: IUnmanagedMemory(Of T)
+  fullName: DotNext.Runtime.InteropServices.IUnmanagedMemory<T>
+  fullName.vb: DotNext.Runtime.InteropServices.IUnmanagedMemory(Of T)
+  nameWithType: IUnmanagedMemory<T>
+  nameWithType.vb: IUnmanagedMemory(Of T)
 - uid: DotNext.Runtime.InteropServices.NullPointerException
   name: NullPointerException
   href: api/DotNext.Runtime.InteropServices.NullPointerException.html
@@ -30678,6 +31674,15 @@ references:
   fullName.vb: DotNext.Runtime.Intrinsics.GetReadonlyRef(Of T)(T(), System.Int64)
   nameWithType: Intrinsics.GetReadonlyRef<T>(T[], Int64)
   nameWithType.vb: Intrinsics.GetReadonlyRef(Of T)(T(), Int64)
+- uid: DotNext.Runtime.Intrinsics.GetReadonlyRef``2(``0[],System.Int64)
+  name: GetReadonlyRef<I, O>(I[], Int64)
+  href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_GetReadonlyRef__2___0___System_Int64_
+  commentId: M:DotNext.Runtime.Intrinsics.GetReadonlyRef``2(``0[],System.Int64)
+  name.vb: GetReadonlyRef(Of I, O)(I(), Int64)
+  fullName: DotNext.Runtime.Intrinsics.GetReadonlyRef<I, O>(I[], System.Int64)
+  fullName.vb: DotNext.Runtime.Intrinsics.GetReadonlyRef(Of I, O)(I(), System.Int64)
+  nameWithType: Intrinsics.GetReadonlyRef<I, O>(I[], Int64)
+  nameWithType.vb: Intrinsics.GetReadonlyRef(Of I, O)(I(), Int64)
 - uid: DotNext.Runtime.Intrinsics.HasFlag*
   name: HasFlag
   href: api/DotNext.Runtime.Intrinsics.html#DotNext_Runtime_Intrinsics_HasFlag_
@@ -31196,6 +32201,118 @@ references:
   fullName.vb: DotNext.Sequence.ForEach(Of T)(System.Collections.Generic.IEnumerable(Of T), System.Action(Of T))
   nameWithType: Sequence.ForEach<T>(IEnumerable<T>, Action<T>)
   nameWithType.vb: Sequence.ForEach(Of T)(IEnumerable(Of T), Action(Of T))
+- uid: DotNext.Sequence.Limit*
+  name: Limit
+  href: api/DotNext.Sequence.html#DotNext_Sequence_Limit_
+  commentId: Overload:DotNext.Sequence.Limit
+  isSpec: "True"
+  fullName: DotNext.Sequence.Limit
+  nameWithType: Sequence.Limit
+- uid: DotNext.Sequence.Limit``1(System.Collections.Generic.IEnumerator{``0},System.Int32,System.Boolean)
+  name: Limit<T>(IEnumerator<T>, Int32, Boolean)
+  href: api/DotNext.Sequence.html#DotNext_Sequence_Limit__1_System_Collections_Generic_IEnumerator___0__System_Int32_System_Boolean_
+  commentId: M:DotNext.Sequence.Limit``1(System.Collections.Generic.IEnumerator{``0},System.Int32,System.Boolean)
+  name.vb: Limit(Of T)(IEnumerator(Of T), Int32, Boolean)
+  fullName: DotNext.Sequence.Limit<T>(System.Collections.Generic.IEnumerator<T>, System.Int32, System.Boolean)
+  fullName.vb: DotNext.Sequence.Limit(Of T)(System.Collections.Generic.IEnumerator(Of T), System.Int32, System.Boolean)
+  nameWithType: Sequence.Limit<T>(IEnumerator<T>, Int32, Boolean)
+  nameWithType.vb: Sequence.Limit(Of T)(IEnumerator(Of T), Int32, Boolean)
+- uid: DotNext.Sequence.LimitedEnumerator`1
+  name: Sequence.LimitedEnumerator<T>
+  href: api/DotNext.Sequence.LimitedEnumerator-1.html
+  commentId: T:DotNext.Sequence.LimitedEnumerator`1
+  name.vb: Sequence.LimitedEnumerator(Of T)
+  fullName: DotNext.Sequence.LimitedEnumerator<T>
+  fullName.vb: DotNext.Sequence.LimitedEnumerator(Of T)
+  nameWithType: Sequence.LimitedEnumerator<T>
+  nameWithType.vb: Sequence.LimitedEnumerator(Of T)
+- uid: DotNext.Sequence.LimitedEnumerator`1.Current
+  name: Current
+  href: api/DotNext.Sequence.LimitedEnumerator-1.html#DotNext_Sequence_LimitedEnumerator_1_Current
+  commentId: P:DotNext.Sequence.LimitedEnumerator`1.Current
+  fullName: DotNext.Sequence.LimitedEnumerator<T>.Current
+  fullName.vb: DotNext.Sequence.LimitedEnumerator(Of T).Current
+  nameWithType: Sequence.LimitedEnumerator<T>.Current
+  nameWithType.vb: Sequence.LimitedEnumerator(Of T).Current
+- uid: DotNext.Sequence.LimitedEnumerator`1.Current*
+  name: Current
+  href: api/DotNext.Sequence.LimitedEnumerator-1.html#DotNext_Sequence_LimitedEnumerator_1_Current_
+  commentId: Overload:DotNext.Sequence.LimitedEnumerator`1.Current
+  isSpec: "True"
+  fullName: DotNext.Sequence.LimitedEnumerator<T>.Current
+  fullName.vb: DotNext.Sequence.LimitedEnumerator(Of T).Current
+  nameWithType: Sequence.LimitedEnumerator<T>.Current
+  nameWithType.vb: Sequence.LimitedEnumerator(Of T).Current
+- uid: DotNext.Sequence.LimitedEnumerator`1.Dispose
+  name: Dispose()
+  href: api/DotNext.Sequence.LimitedEnumerator-1.html#DotNext_Sequence_LimitedEnumerator_1_Dispose
+  commentId: M:DotNext.Sequence.LimitedEnumerator`1.Dispose
+  fullName: DotNext.Sequence.LimitedEnumerator<T>.Dispose()
+  fullName.vb: DotNext.Sequence.LimitedEnumerator(Of T).Dispose()
+  nameWithType: Sequence.LimitedEnumerator<T>.Dispose()
+  nameWithType.vb: Sequence.LimitedEnumerator(Of T).Dispose()
+- uid: DotNext.Sequence.LimitedEnumerator`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Sequence.LimitedEnumerator-1.html#DotNext_Sequence_LimitedEnumerator_1_Dispose_
+  commentId: Overload:DotNext.Sequence.LimitedEnumerator`1.Dispose
+  isSpec: "True"
+  fullName: DotNext.Sequence.LimitedEnumerator<T>.Dispose
+  fullName.vb: DotNext.Sequence.LimitedEnumerator(Of T).Dispose
+  nameWithType: Sequence.LimitedEnumerator<T>.Dispose
+  nameWithType.vb: Sequence.LimitedEnumerator(Of T).Dispose
+- uid: DotNext.Sequence.LimitedEnumerator`1.MoveNext
+  name: MoveNext()
+  href: api/DotNext.Sequence.LimitedEnumerator-1.html#DotNext_Sequence_LimitedEnumerator_1_MoveNext
+  commentId: M:DotNext.Sequence.LimitedEnumerator`1.MoveNext
+  fullName: DotNext.Sequence.LimitedEnumerator<T>.MoveNext()
+  fullName.vb: DotNext.Sequence.LimitedEnumerator(Of T).MoveNext()
+  nameWithType: Sequence.LimitedEnumerator<T>.MoveNext()
+  nameWithType.vb: Sequence.LimitedEnumerator(Of T).MoveNext()
+- uid: DotNext.Sequence.LimitedEnumerator`1.MoveNext*
+  name: MoveNext
+  href: api/DotNext.Sequence.LimitedEnumerator-1.html#DotNext_Sequence_LimitedEnumerator_1_MoveNext_
+  commentId: Overload:DotNext.Sequence.LimitedEnumerator`1.MoveNext
+  isSpec: "True"
+  fullName: DotNext.Sequence.LimitedEnumerator<T>.MoveNext
+  fullName.vb: DotNext.Sequence.LimitedEnumerator(Of T).MoveNext
+  nameWithType: Sequence.LimitedEnumerator<T>.MoveNext
+  nameWithType.vb: Sequence.LimitedEnumerator(Of T).MoveNext
+- uid: DotNext.Sequence.LimitedEnumerator`1.Reset
+  name: Reset()
+  href: api/DotNext.Sequence.LimitedEnumerator-1.html#DotNext_Sequence_LimitedEnumerator_1_Reset
+  commentId: M:DotNext.Sequence.LimitedEnumerator`1.Reset
+  fullName: DotNext.Sequence.LimitedEnumerator<T>.Reset()
+  fullName.vb: DotNext.Sequence.LimitedEnumerator(Of T).Reset()
+  nameWithType: Sequence.LimitedEnumerator<T>.Reset()
+  nameWithType.vb: Sequence.LimitedEnumerator(Of T).Reset()
+- uid: DotNext.Sequence.LimitedEnumerator`1.Reset*
+  name: Reset
+  href: api/DotNext.Sequence.LimitedEnumerator-1.html#DotNext_Sequence_LimitedEnumerator_1_Reset_
+  commentId: Overload:DotNext.Sequence.LimitedEnumerator`1.Reset
+  isSpec: "True"
+  fullName: DotNext.Sequence.LimitedEnumerator<T>.Reset
+  fullName.vb: DotNext.Sequence.LimitedEnumerator(Of T).Reset
+  nameWithType: Sequence.LimitedEnumerator<T>.Reset
+  nameWithType.vb: Sequence.LimitedEnumerator(Of T).Reset
+- uid: DotNext.Sequence.LimitedEnumerator`1.System#Collections#IEnumerator#Current
+  name: IEnumerator.Current
+  href: api/DotNext.Sequence.LimitedEnumerator-1.html#DotNext_Sequence_LimitedEnumerator_1_System_Collections_IEnumerator_Current
+  commentId: P:DotNext.Sequence.LimitedEnumerator`1.System#Collections#IEnumerator#Current
+  name.vb: System.Collections.IEnumerator.Current
+  fullName: DotNext.Sequence.LimitedEnumerator<T>.System.Collections.IEnumerator.Current
+  fullName.vb: DotNext.Sequence.LimitedEnumerator(Of T).System.Collections.IEnumerator.Current
+  nameWithType: Sequence.LimitedEnumerator<T>.IEnumerator.Current
+  nameWithType.vb: Sequence.LimitedEnumerator(Of T).System.Collections.IEnumerator.Current
+- uid: DotNext.Sequence.LimitedEnumerator`1.System#Collections#IEnumerator#Current*
+  name: IEnumerator.Current
+  href: api/DotNext.Sequence.LimitedEnumerator-1.html#DotNext_Sequence_LimitedEnumerator_1_System_Collections_IEnumerator_Current_
+  commentId: Overload:DotNext.Sequence.LimitedEnumerator`1.System#Collections#IEnumerator#Current
+  isSpec: "True"
+  name.vb: System.Collections.IEnumerator.Current
+  fullName: DotNext.Sequence.LimitedEnumerator<T>.System.Collections.IEnumerator.Current
+  fullName.vb: DotNext.Sequence.LimitedEnumerator(Of T).System.Collections.IEnumerator.Current
+  nameWithType: Sequence.LimitedEnumerator<T>.IEnumerator.Current
+  nameWithType.vb: Sequence.LimitedEnumerator(Of T).System.Collections.IEnumerator.Current
 - uid: DotNext.Sequence.Prepend*
   name: Prepend
   href: api/DotNext.Sequence.html#DotNext_Sequence_Prepend_
@@ -31260,6 +32377,15 @@ references:
   fullName.vb: DotNext.Sequence.Skip(Of T)(System.Collections.Generic.IEnumerator(Of T), System.Int32)
   nameWithType: Sequence.Skip<T>(IEnumerator<T>, Int32)
   nameWithType.vb: Sequence.Skip(Of T)(IEnumerator(Of T), Int32)
+- uid: DotNext.Sequence.Skip``2(``0@,System.Int32)
+  name: Skip<TEnumerator, T>(ref TEnumerator, Int32)
+  href: api/DotNext.Sequence.html#DotNext_Sequence_Skip__2___0__System_Int32_
+  commentId: M:DotNext.Sequence.Skip``2(``0@,System.Int32)
+  name.vb: Skip(Of TEnumerator, T)(ByRef TEnumerator, Int32)
+  fullName: DotNext.Sequence.Skip<TEnumerator, T>(ref TEnumerator, System.Int32)
+  fullName.vb: DotNext.Sequence.Skip(Of TEnumerator, T)(ByRef TEnumerator, System.Int32)
+  nameWithType: Sequence.Skip<TEnumerator, T>(ref TEnumerator, Int32)
+  nameWithType.vb: Sequence.Skip(Of TEnumerator, T)(ByRef TEnumerator, Int32)
 - uid: DotNext.Sequence.SkipNulls*
   name: SkipNulls
   href: api/DotNext.Sequence.html#DotNext_Sequence_SkipNulls_
@@ -31757,6 +32883,19 @@ references:
   isSpec: "True"
   fullName: DotNext.StringExtensions.Split
   nameWithType: StringExtensions.Split
+- uid: DotNext.StringExtensions.Substring(System.String,System.Range)
+  name: Substring(String, Range)
+  href: api/DotNext.StringExtensions.html#DotNext_StringExtensions_Substring_System_String_System_Range_
+  commentId: M:DotNext.StringExtensions.Substring(System.String,System.Range)
+  fullName: DotNext.StringExtensions.Substring(System.String, System.Range)
+  nameWithType: StringExtensions.Substring(String, Range)
+- uid: DotNext.StringExtensions.Substring*
+  name: Substring
+  href: api/DotNext.StringExtensions.html#DotNext_StringExtensions_Substring_
+  commentId: Overload:DotNext.StringExtensions.Substring
+  isSpec: "True"
+  fullName: DotNext.StringExtensions.Substring
+  nameWithType: StringExtensions.Substring
 - uid: DotNext.StringExtensions.TrimLength(System.String,System.Int32)
   name: TrimLength(String, Int32)
   href: api/DotNext.StringExtensions.html#DotNext_StringExtensions_TrimLength_System_String_System_Int32_
@@ -40562,6 +41701,19 @@ references:
   commentId: T:DotNext.UserDataStorage
   fullName: DotNext.UserDataStorage
   nameWithType: UserDataStorage
+- uid: DotNext.UserDataStorage.CopyTo(System.Object)
+  name: CopyTo(Object)
+  href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_CopyTo_System_Object_
+  commentId: M:DotNext.UserDataStorage.CopyTo(System.Object)
+  fullName: DotNext.UserDataStorage.CopyTo(System.Object)
+  nameWithType: UserDataStorage.CopyTo(Object)
+- uid: DotNext.UserDataStorage.CopyTo*
+  name: CopyTo
+  href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_CopyTo_
+  commentId: Overload:DotNext.UserDataStorage.CopyTo
+  isSpec: "True"
+  fullName: DotNext.UserDataStorage.CopyTo
+  nameWithType: UserDataStorage.CopyTo
 - uid: DotNext.UserDataStorage.Equals(System.Object)
   name: Equals(Object)
   href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_Equals_System_Object_
@@ -40692,6 +41844,38 @@ references:
   fullName.vb: DotNext.UserDataStorage.GetOrSet(Of T1, T2, V)(DotNext.UserDataSlot(Of V), T1, T2, System.Func(Of T1, T2, V))
   nameWithType: UserDataStorage.GetOrSet<T1, T2, V>(UserDataSlot<V>, T1, T2, Func<T1, T2, V>)
   nameWithType.vb: UserDataStorage.GetOrSet(Of T1, T2, V)(UserDataSlot(Of V), T1, T2, Func(Of T1, T2, V))
+- uid: DotNext.UserDataStorage.IContainer
+  name: UserDataStorage.IContainer
+  href: api/DotNext.UserDataStorage.IContainer.html
+  commentId: T:DotNext.UserDataStorage.IContainer
+  fullName: DotNext.UserDataStorage.IContainer
+  nameWithType: UserDataStorage.IContainer
+- uid: DotNext.UserDataStorage.IContainer.CreateStorage
+  name: CreateStorage()
+  href: api/DotNext.UserDataStorage.IContainer.html#DotNext_UserDataStorage_IContainer_CreateStorage
+  commentId: M:DotNext.UserDataStorage.IContainer.CreateStorage
+  fullName: DotNext.UserDataStorage.IContainer.CreateStorage()
+  nameWithType: UserDataStorage.IContainer.CreateStorage()
+- uid: DotNext.UserDataStorage.IContainer.CreateStorage*
+  name: CreateStorage
+  href: api/DotNext.UserDataStorage.IContainer.html#DotNext_UserDataStorage_IContainer_CreateStorage_
+  commentId: Overload:DotNext.UserDataStorage.IContainer.CreateStorage
+  isSpec: "True"
+  fullName: DotNext.UserDataStorage.IContainer.CreateStorage
+  nameWithType: UserDataStorage.IContainer.CreateStorage
+- uid: DotNext.UserDataStorage.IContainer.Source
+  name: Source
+  href: api/DotNext.UserDataStorage.IContainer.html#DotNext_UserDataStorage_IContainer_Source
+  commentId: P:DotNext.UserDataStorage.IContainer.Source
+  fullName: DotNext.UserDataStorage.IContainer.Source
+  nameWithType: UserDataStorage.IContainer.Source
+- uid: DotNext.UserDataStorage.IContainer.Source*
+  name: Source
+  href: api/DotNext.UserDataStorage.IContainer.html#DotNext_UserDataStorage_IContainer_Source_
+  commentId: Overload:DotNext.UserDataStorage.IContainer.Source
+  isSpec: "True"
+  fullName: DotNext.UserDataStorage.IContainer.Source
+  nameWithType: UserDataStorage.IContainer.Source
 - uid: DotNext.UserDataStorage.op_Equality(DotNext.UserDataStorage,DotNext.UserDataStorage)
   name: Equality(UserDataStorage, UserDataStorage)
   href: api/DotNext.UserDataStorage.html#DotNext_UserDataStorage_op_Equality_DotNext_UserDataStorage_DotNext_UserDataStorage_

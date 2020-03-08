@@ -768,6 +768,22 @@ namespace DotNext.Linq.Expressions
         public UnaryExpression Throw() => (expression ?? Expression.Empty()).Throw();
 
         /// <summary>
+        /// Constructs <see cref="Index"/> expression.
+        /// </summary>
+        /// <param name="fromEnd">A boolean indicating if the index is from the start (<see langword="false"/>) or from the end (<see langword="true"/>) of a collection.</param>
+        /// <returns>The index expression.</returns>
+        public UniversalExpression Index(bool fromEnd)
+            => new UniversalExpression((expression ?? Expression.Empty()).Index(fromEnd));
+
+        /// <summary>
+        /// Constructs slice of collection or array.
+        /// </summary>
+        /// <param name="range">The range of collection or array.</param>
+        /// <returns>The slice of collection or array.</returns>
+        public UniversalExpression Slice(Expression range)
+            => new UniversalExpression(new SliceExpression(expression ?? Expression.Empty(), range));
+
+        /// <summary>
         /// Computes the hash code for the underlying expression.
         /// </summary>
         /// <returns>The hash code of the underlying expression.</returns>

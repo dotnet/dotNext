@@ -1167,6 +1167,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T OrThrow&lt;E&gt;()
+
     where E : Exception, new()</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -1216,6 +1217,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T OrThrow&lt;E&gt;(in ValueFunc&lt;E&gt; exceptionFactory)
+
     where E : Exception</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1282,6 +1284,7 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public T OrThrow&lt;E&gt;(Func&lt;E&gt; exceptionFactory)
+
     where E : Exception</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1919,6 +1922,9 @@ return an Optional describing the value, otherwise return an empty Optional.</p>
   </div>
   <div>
       <a class="xref" href="DotNext.Optional.html#DotNext_Optional_Coalesce__1_DotNext_Optional___0___DotNext_Optional___0___">Optional.Coalesce&lt;T&gt;(Optional&lt;T&gt;, Optional&lt;T&gt;)</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
   </div>
   <div>
       <a class="xref" href="DotNext.ValueTypeExtensions.html#DotNext_ValueTypeExtensions_IsOneOf__1___0_System_Collections_Generic_IEnumerable___0__">ValueTypeExtensions.IsOneOf&lt;T&gt;(T, IEnumerable&lt;T&gt;)</a>

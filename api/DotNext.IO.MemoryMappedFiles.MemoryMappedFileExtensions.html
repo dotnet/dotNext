@@ -122,7 +122,7 @@
   </span>
   <a id="DotNext_IO_MemoryMappedFiles_MemoryMappedFileExtensions_CreateDirectAccessor_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateDirectAccessor*"></a>
   <h4 id="DotNext_IO_MemoryMappedFiles_MemoryMappedFileExtensions_CreateDirectAccessor_System_IO_MemoryMappedFiles_MemoryMappedFile_System_Int64_System_Int64_System_IO_MemoryMappedFiles_MemoryMappedFileAccess_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateDirectAccessor(System.IO.MemoryMappedFiles.MemoryMappedFile,System.Int64,System.Int64,System.IO.MemoryMappedFiles.MemoryMappedFileAccess)">CreateDirectAccessor(MemoryMappedFile, Int64, Int64, MemoryMappedFileAccess)</h4>
-  <div class="markdown level1 summary"><p>Creates direct accessor the virtual memory associated with the memory-mapped file.</p>
+  <div class="markdown level1 summary"><p>Creates direct accessor to the virtual memory associated with the memory-mapped file.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
@@ -181,6 +181,77 @@
       </tr>
     </tbody>
   </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/DotNext/new/gh-pages/apiSpec/new?filename=DotNext_IO_MemoryMappedFiles_MemoryMappedFileExtensions_CreateMemoryAccessor_System_IO_MemoryMappedFiles_MemoryMappedFile_System_Int64_System_Int32_System_IO_MemoryMappedFiles_MemoryMappedFileAccess_.md&amp;value=---%0Auid%3A%20DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateMemoryAccessor(System.IO.MemoryMappedFiles.MemoryMappedFile%2CSystem.Int64%2CSystem.Int32%2CSystem.IO.MemoryMappedFiles.MemoryMappedFileAccess)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/DotNext/blob/gh-pages/src/DotNext.Unsafe/IO/MemoryMappedFiles/MemoryMappedFileExtensions.cs/#L32">View Source</a>
+  </span>
+  <a id="DotNext_IO_MemoryMappedFiles_MemoryMappedFileExtensions_CreateMemoryAccessor_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateMemoryAccessor*"></a>
+  <h4 id="DotNext_IO_MemoryMappedFiles_MemoryMappedFileExtensions_CreateMemoryAccessor_System_IO_MemoryMappedFiles_MemoryMappedFile_System_Int64_System_Int32_System_IO_MemoryMappedFiles_MemoryMappedFileAccess_" data-uid="DotNext.IO.MemoryMappedFiles.MemoryMappedFileExtensions.CreateMemoryAccessor(System.IO.MemoryMappedFiles.MemoryMappedFile,System.Int64,System.Int32,System.IO.MemoryMappedFiles.MemoryMappedFileAccess)">CreateMemoryAccessor(MemoryMappedFile, Int64, Int32, MemoryMappedFileAccess)</h4>
+  <div class="markdown level1 summary"><p>Creates memory accessor to the virtual memory associated with the memory-mapped file.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IMappedMemoryOwner CreateMemoryAccessor(this MemoryMappedFile file, long offset = 0L, int size = 0, MemoryMappedFileAccess access = MemoryMappedFileAccess.ReadWrite)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorymappedfiles.memorymappedfile">MemoryMappedFile</a></td>
+        <td><span class="parametername">file</span></td>
+        <td><p>The memory-mapped file.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int64">Int64</a></td>
+        <td><span class="parametername">offset</span></td>
+        <td><p>The byte at which to start the view.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td><span class="parametername">size</span></td>
+        <td><p>The size of the view. Specify 0 (zero) to create a view that starts at offset and ends approximately at the end of the memory-mapped file.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.io.memorymappedfiles.memorymappedfileaccess">MemoryMappedFileAccess</a></td>
+        <td><span class="parametername">access</span></td>
+        <td><p>the type of access allowed to the memory-mapped file.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="DotNext.IO.MemoryMappedFiles.IMappedMemoryOwner.html">IMappedMemoryOwner</a></td>
+        <td><p>The direct accessor.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_IO_MemoryMappedFiles_MemoryMappedFileExtensions_CreateMemoryAccessor_System_IO_MemoryMappedFiles_MemoryMappedFile_System_Int64_System_Int32_System_IO_MemoryMappedFiles_MemoryMappedFileAccess__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>This method is suitable if you need to represent memory-mapped file segment as <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory&lt;T&gt;</a>.</p>
+</div>
 </article>
           </div>
           

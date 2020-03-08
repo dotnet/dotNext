@@ -86,7 +86,7 @@
     <h5>Implements</h5>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
     <div><a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a></div>
-    <div><span class="xref">IO.Log.ILogEntry</span></div>
+    <div><a class="xref" href="DotNext.IO.Log.ILogEntry.html">ILogEntry</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -143,7 +143,7 @@
   <h6><strong>Assembly</strong>: DotNext.Net.Cluster.dll</h6>
   <h5 id="DotNext_Net_Cluster_Consensus_Raft_PersistentState_SnapshotBuilder_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">protected abstract class SnapshotBuilder : Disposable, IDisposable, IRaftLogEntry, IO.Log.ILogEntry</code></pre>
+    <pre><code class="lang-csharp hljs">protected abstract class SnapshotBuilder : Disposable, IDisposable, IRaftLogEntry, Log.ILogEntry</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
@@ -230,6 +230,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public abstract ValueTask WriteToAsync&lt;TWriter&gt;(TWriter writer, CancellationToken token)
+
     where TWriter : IAsyncBinaryWriter</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -328,7 +329,7 @@
       <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.IRaftLogEntry.html">IRaftLogEntry</a>
   </div>
   <div>
-      <span class="xref">IO.Log.ILogEntry</span>
+      <a class="xref" href="DotNext.IO.Log.ILogEntry.html">ILogEntry</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

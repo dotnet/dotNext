@@ -137,6 +137,16 @@ using DotNext;
 IEnumerable&lt;string&gt; list = new[] { &quot;a&quot;, &quot;b&quot;, &quot;c&quot; };
 list.ForEach(item =&gt; Console.WriteLine(item));
 </code></pre>
+<h1 id="list-segments">List segments</h1>
+<p>Generic <a href="https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.ilist-1">list</a> from .NET standard library doesn't support <a href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">range</a> operator. Only one-dimensional arrays support ranges. To bridge this gap, .NEXT library contains <a href="../../api/DotNext.Collections.Generic.ListSegment-1.html">ListSegment</a> data type which has the same meaning as <a href="https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1">ArraySegment</a> but for lists. This type allows to delimit section of a list. The section can be produced using Range syntax in C#:</p>
+<pre><code class="lang-csharp">using DotNext.Collections.Generic;
+using System.Collections.Generic;
+
+var list = new List&lt;string&gt; { &quot;One&quot;, &quot;Two&quot;, &quot;Three&quot; };
+ListSegment&lt;string&gt; slice = list.Slice(1..);
+slice[0] = string.Empty;
+</code></pre>
+<p>The delimited section allows to modify individual elements but doesn't support adding or removing elements.</p>
 </article>
           </div>
           
