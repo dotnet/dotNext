@@ -8,7 +8,7 @@
     <IsPackable>true</IsPackable>
     <PackageId>DotNext.Augmentation.Fody</PackageId>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <Version>2.0.0</Version>
+    <Version>2.0.1</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Makes .NEXT features available at compile time</Description>
