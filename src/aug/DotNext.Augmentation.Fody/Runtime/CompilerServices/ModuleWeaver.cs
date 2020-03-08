@@ -36,7 +36,7 @@ namespace DotNext.Runtime.CompilerServices
                 foreach (var method in type.Methods)
                 {
                     if (!method.IsInternalCall && method.Body != null)
-                        ValueDelegateWeaver.Process(method.Body, new Fody.TypeSystem(FindType, ModuleDefinition));
+                        ValueDelegateWeaver.Process(method.Body, new Fody.TypeSystem(FindTypeDefinition, ModuleDefinition));
                     foreach (var param in method.Parameters)
                         ProcessModifier(new ParameterModifierWeaver(param), param.CustomAttributes);
                     ProcessModifier(new ReturnTypeModifierWeaver(method.MethodReturnType), method.MethodReturnType.CustomAttributes);
