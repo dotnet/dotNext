@@ -25,21 +25,23 @@ namespace DotNext.Buffers
         unsafe object ICloneable.Clone()
         {
             var copy = new UnmanagedMemoryOwner<T>(Length, false, fromPool);
-            Buffer.MemoryCopy(address.ToPointer(), copy.address.ToPointer(), Size, Size);
+            Buffer.MemoryCopy(Address.ToPointer(), copy.Address.ToPointer(), Size, Size);
             return copy;
         }
 
-        Pointer<byte> IUnmanagedMemory.Pointer => new Pointer<byte>(address);
+        Pointer<byte> IUnmanagedMemory.Pointer => new Pointer<byte>(Address);
 
         /// <summary>
         /// Gets a span of bytes from the current instance.
         /// </summary>
-        public unsafe Span<byte> Bytes => address == default ? default : new Span<byte>(address.ToPointer(), checked((int)Size));
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public unsafe Span<byte> Bytes => new Span<byte>(Address.ToPointer(), checked((int)Size));
 
         /// <summary>
         /// Gets a pointer to the allocated unmanaged memory.
         /// </summary>
-        public Pointer<T> Pointer => new Pointer<T>(address);
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
+        public Pointer<T> Pointer => new Pointer<T>(Address);
 
         Span<T> IUnmanagedArray<T>.Span => GetSpan();
 
@@ -50,20 +52,10 @@ namespace DotNext.Buffers
         public unsafe Stream AsStream() => Pointer.AsStream(Size);
 
         /// <summary>
-        /// Sets all bits of allocated memory to zero.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
-        public unsafe void Clear()
-        {
-            if (address == default)
-                throw new ObjectDisposedException(GetType().Name);
-            Runtime.Intrinsics.ClearBits(address.ToPointer(), Size);
-        }
-
-        /// <summary>
         /// Gets enumerator over all elements located in the unmanaged memory.
         /// </summary>
         /// <returns>The enumerator over all elements in the unmanaged memory.</returns>
+        /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         public Pointer<T>.Enumerator GetEnumerator() => Pointer.GetEnumerator(Length);
 
         IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();

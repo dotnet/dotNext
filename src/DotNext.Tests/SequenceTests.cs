@@ -112,6 +112,31 @@ namespace DotNext
         }
 
         [Fact]
+        public static void SkipValueEnumerator()
+        {
+            var list = new List<long> { 10L, 20L, 30L };
+            var enumerator = list.GetEnumerator();
+            True(enumerator.Skip<List<long>.Enumerator, long>(2));
+            True(enumerator.MoveNext());
+            Equal(30L, enumerator.Current);
+            enumerator.Dispose();
+        }
+
+        [Fact]
+        public static void LimitedSequence()
+        {
+            var range = Enumerable.Range(0, 10);
+            using var enumerator = range.GetEnumerator().Limit(3);
+            True(enumerator.MoveNext());
+            Equal(0, enumerator.Current);
+            True(enumerator.MoveNext());
+            Equal(1, enumerator.Current);
+            True(enumerator.MoveNext());
+            Equal(2, enumerator.Current);
+            False(enumerator.MoveNext());
+        }
+
+        [Fact]
         public static void Iteration()
         {
             IEnumerable<int> collection = Array.Empty<int>();

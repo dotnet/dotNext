@@ -17,6 +17,8 @@ namespace DotNext.Reflection
 
         private static readonly Function<object, (object, object), object> IndexOfSpecialUntyped = IndexOfReflected.Unreflect<Function<object, (object, object), object>>();
 
+        private static readonly DynamicInvoker IndexOfDynamicInvoker = IndexOfReflected.Unreflect();
+
         [Params("", "abccdahehkgbe387jwgr", "wfjwkhwfhwjgfkwjggwhjvfkwhwkgwjgbwjbwjbvbwvjwbvwjbvw")]
         public string StringValue;
 
@@ -48,6 +50,12 @@ namespace DotNext.Reflection
         public void WithReflection()
         {
             IndexOfReflected.Invoke(StringValue, new object[] { '7', 0 });
+        }
+
+        [Benchmark]
+        public void WithDynamicInvoker()
+        {
+            IndexOfDynamicInvoker.Invoke(StringValue, '7', 0);
         }
     }
 }

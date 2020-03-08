@@ -25,7 +25,7 @@ namespace DotNext.Linq.Expressions
 
         internal UsingExpression(Expression resource)
         {
-            disposeMethod = resource.Type.GetDisposeMethod() ?? throw new ArgumentNullException(ExceptionMessages.DisposePatternExpected(resource.Type));
+            disposeMethod = resource.Type.GetDisposeMethod() ?? throw new ArgumentException(ExceptionMessages.DisposePatternExpected(resource.Type), nameof(resource));
             if (resource is ParameterExpression param)
             {
                 assignment = null;

@@ -34,6 +34,8 @@ namespace DotNext.Reflection
 
         private static readonly Function<object, ValueTuple, object> UntypedReflected = ReflectedGetter.Unreflect<Function<object, ValueTuple, object>>();
 
+        private static readonly DynamicInvoker DynamicAccessor = ReflectedGetter.Unreflect();
+
         private static void DummyReceiver(object first)
         {
         }
@@ -72,6 +74,12 @@ namespace DotNext.Reflection
         public void UseReflection()
         {
             DummyReceiver(ReflectedGetter.Invoke(IndexOfCalc, Array.Empty<object>()));
+        }
+
+        [Benchmark]
+        public void UseDynamicInvoker()
+        {
+            DummyReceiver(DynamicAccessor(IndexOfCalc, Array.Empty<object>()));
         }
     }
 }

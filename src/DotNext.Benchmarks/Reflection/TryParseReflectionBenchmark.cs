@@ -20,12 +20,20 @@ namespace DotNext.Reflection
 
         private static readonly Function<(object text, object result), object> UntypedSpecialUnreflected = ReflectedMethod.Unreflect<Function<(object, object), object>>();
 
+        private static readonly DynamicInvoker Invoker = ReflectedMethod.Unreflect();
+
         private const string StringValue = "748383565500";
 
         [Benchmark]
         public void NoReflection()
         {
             decimal.TryParse(StringValue, out var _);
+        }
+
+        [Benchmark]
+        public void UseDynamicInvoker()
+        {
+            Invoker.Invoke(null, StringValue, decimal.Zero);
         }
 
         [Benchmark]

@@ -6,14 +6,13 @@ using System.Runtime.InteropServices;
 namespace DotNext.IO.MemoryMappedFiles
 {
     using Runtime.InteropServices;
-    using Intrinsics = Runtime.Intrinsics;
 
     /// <summary>
     /// Provides direct access to the memory-mapped file content through pointer
     /// to its virtual memory.
     /// </summary>
     [StructLayout(LayoutKind.Auto)]
-    public readonly unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory
+    public readonly unsafe struct MemoryMappedDirectAccessor : IUnmanagedMemory, IFlushable
     {
         private readonly MemoryMappedViewAccessor accessor;
         private readonly byte* ptr;
@@ -32,19 +31,7 @@ namespace DotNext.IO.MemoryMappedFiles
         /// The caller is responsible for disposing of the returned stream.
         /// </remarks>
         /// <value>The stream representing virtual memory of the memory-mapped file.</value>
-        public Stream AsStream()
-        {
-            if (accessor is null)
-                return Stream.Null;
-            var access = (accessor.CanRead.ToInt32() + (accessor.CanWrite.ToInt32() << 1)) switch
-            {
-                1 => FileAccess.Read,
-                2 => FileAccess.Write,
-                3 => FileAccess.ReadWrite,
-                _ => default,
-            };
-            return Pointer.AsStream(Size, access);
-        }
+        public Stream AsStream() => accessor is null ? Stream.Null : Pointer.AsStream(Size, accessor.GetFileAccess());
 
         /// <summary>
         /// Gets a value indicating that this object doesn't represent the memory-mapped file segment.
@@ -63,7 +50,7 @@ namespace DotNext.IO.MemoryMappedFiles
         public Pointer<byte> Pointer => accessor is null ? default : new Pointer<byte>(ptr + accessor.PointerOffset);
 
         /// <summary>
-        /// Gets length of the mapped segment.
+        /// Gets length of the mapped segment, in bytes.
         /// </summary>
         public long Size => accessor?.Capacity ?? 0L;
 
@@ -81,7 +68,7 @@ namespace DotNext.IO.MemoryMappedFiles
         {
             if (ptr == default)
                 throw new ObjectDisposedException(GetType().Name);
-            Intrinsics.ClearBits(ptr, Size);
+            Pointer.Clear(Size);
         }
 
         /// <summary>

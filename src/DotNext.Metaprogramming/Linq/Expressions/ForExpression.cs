@@ -118,7 +118,7 @@ namespace DotNext.Linq.Expressions
             LoopVar = Variable(initialization.Type, "loop_var");
             Test = condition(LoopVar);
             if (Test.Type != typeof(bool))
-                throw new ArgumentException(ExceptionMessages.BoolExpressionExpected, nameof(condition));
+                throw new ArgumentException(ExceptionMessages.TypeExpected<bool>(), nameof(condition));
             ContinueLabel = continueLabel ?? Label(typeof(void), "continue");
             BreakLabel = breakLabel ?? Label(typeof(void), "break");
         }

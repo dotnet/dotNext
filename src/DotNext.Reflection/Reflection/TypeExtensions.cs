@@ -13,5 +13,7 @@ namespace DotNext.Reflection
         internal static string ToGetterName(this string propertyName) => string.Concat("get_", propertyName);
 
         internal static string ToSetterName(this string propertyName) => string.Concat("set_", propertyName);
+
+        internal static Type NonRefType(this Type type) => type.IsByRef ? type.GetElementType() : type;
     }
 }

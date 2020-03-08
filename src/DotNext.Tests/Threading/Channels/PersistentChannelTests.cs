@@ -163,7 +163,7 @@ namespace DotNext.Threading.Channels
             var producer = Produce(channel.Writer);
             await Task.WhenAll(consumer, producer);
         }
-        
+
         [Theory]
         [InlineData(0L, true)]
         [InlineData(102400L, true)]

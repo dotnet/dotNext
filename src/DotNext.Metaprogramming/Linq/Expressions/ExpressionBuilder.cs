@@ -839,6 +839,36 @@ namespace DotNext.Linq.Expressions
             => Expression.ArrayAccess(array, indexes);
 
         /// <summary>
+        /// Constructs collection or array element access expression.
+        /// </summary>
+        /// <param name="collection">The collection.</param>
+        /// <param name="index">The index of the collection or array element.</param>
+        /// <returns>The collection access expression.</returns>
+        /// <exception cref="ArgumentException"><paramref name="collection"/> doesn't provide implicit support of Index expression.</exception>
+        /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/proposals/csharp-8.0/ranges">Ranges and Indicies</seealso>
+        public static CollectionAccessExpression ElementAt(this Expression collection, ItemIndexExpression index)
+            => new CollectionAccessExpression(collection, index);
+
+        /// <summary>
+        /// Constructs slice of collection or array.
+        /// </summary>
+        /// <param name="collection">The collection or array.</param>
+        /// <param name="start">The first index of slice, inclusive.</param>
+        /// <param name="end">The last index of slice, exclusive.</param>
+        /// <returns>The slice of collection or array.</returns>
+        public static SliceExpression Slice(this Expression collection, ItemIndexExpression? start = null, ItemIndexExpression? end = null)
+            => collection.Slice(new RangeExpression(start, end));
+
+        /// <summary>
+        /// Constructs slice of collection or array.
+        /// </summary>
+        /// <param name="collection">The collection or array.</param>
+        /// <param name="range">The range of collection or array.</param>
+        /// <returns>The slice of collection or array.</returns>
+        public static SliceExpression Slice(this Expression collection, Expression range)
+            => new SliceExpression(collection, range);
+
+        /// <summary>
         /// Constructs array length expression.
         /// </summary>
         /// <remarks>
@@ -1188,7 +1218,7 @@ namespace DotNext.Linq.Expressions
             if (test is null)
                 throw new ArgumentNullException(nameof(test));
             else if (test.Type != typeof(bool))
-                throw new ArgumentException(ExceptionMessages.BoolExpressionExpected, nameof(test));
+                throw new ArgumentException(ExceptionMessages.TypeExpected<bool>(), nameof(test));
             else if (string.IsNullOrEmpty(message))
                 return CallStatic(typeof(Debug), nameof(Debug.Assert), test);
             else
@@ -1221,5 +1251,58 @@ namespace DotNext.Linq.Expressions
         /// <returns>The expression representing statically typed referenced.</returns>
         public static RefAnyValExpression RefAnyVal<T>(this ParameterExpression typedRef)
             => RefAnyVal(typedRef, typeof(T));
+
+        /// <summary>
+        /// Constructs expression of type <see cref="System.Index"/>.
+        /// </summary>
+        /// <param name="value">The expression representing index value.</param>
+        /// <param name="fromEnd">A boolean indicating if the index is from the start (<see langword="false"/>) or from the end (<see langword="true"/>) of a collection.</param>
+        /// <returns>Index expression.</returns>
+        /// <exception cref="ArgumentException">Type of <paramref name="value"/> should be <see cref="int"/>, <see cref="short"/>, <see cref="byte"/> or <see cref="sbyte"/>.</exception>
+        public static ItemIndexExpression Index(this Expression value, bool fromEnd)
+            => new ItemIndexExpression(value, fromEnd);
+
+        /// <summary>
+        /// Constructs expression of type <see cref="System.Index"/>.
+        /// </summary>
+        /// <param name="value">The expression representing index value.</param>
+        /// <param name="fromEnd">A boolean indicating if the index is from the start (<see langword="false"/>) or from the end (<see langword="true"/>) of a collection.</param>
+        /// <returns>Index expression.</returns>
+        public static ItemIndexExpression Index(this int value, bool fromEnd)
+            => Index(Const(value), fromEnd);
+
+        /// <summary>
+        /// Converts index to equivalent expression.
+        /// </summary>
+        /// <param name="index">The index value.</param>
+        /// <returns>Index expression.</returns>
+        public static ItemIndexExpression Quote(this in Index index)
+            => Index(index.Value, index.IsFromEnd);
+
+        /// <summary>
+        /// Constructs range.
+        /// </summary>
+        /// <param name="start">The inclusive start index of the range.</param>
+        /// <param name="end">The exclusive end index of the range.</param>
+        /// <returns>The range expression.</returns>
+        public static RangeExpression To(this ItemIndexExpression start, ItemIndexExpression end)
+            => new RangeExpression(start, end);
+
+        /// <summary>
+        /// Constructs range.
+        /// </summary>
+        /// <param name="start">The inclusive start index of the range.</param>
+        /// <param name="end">The exclusive end index of the range.</param>
+        /// <returns>The range expression.</returns>        
+        public static RangeExpression To(this ItemIndexExpression start, Index end)
+            => start.To(end.Quote());
+
+        /// <summary>
+        /// Converts range to equivalent expression.
+        /// </summary>
+        /// <param name="range">The range to convert.</param>
+        /// <returns>The expression representing given range.</returns>
+        public static RangeExpression Quote(this in Range range)
+            => range.Start.Quote().To(range.End.Quote());
     }
 }

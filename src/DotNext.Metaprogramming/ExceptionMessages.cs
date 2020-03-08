@@ -44,7 +44,8 @@ namespace DotNext
 
         internal static string InvalidRethrow => Resources.GetString("InvalidRethrow");
 
-        internal static string BoolExpressionExpected => Resources.GetString("BoolExpressionExpected");
+        internal static string TypeExpected<T>()
+            => string.Format(Resources.GetString("ExpressionTypeExpected"), typeof(T).FullName);
 
         internal static string InvalidFragmentRendering => Resources.GetString("InvalidFragmentRendering");
 
@@ -57,5 +58,9 @@ namespace DotNext
         internal static string UndeclaredVariable(string name) => string.Format(Resources.GetString("UndeclaredVariable"), name);
 
         internal static string VoidLambda => Resources.GetString("VoidLambda");
+
+        internal static string MissingIndexerProperty(Type type) => string.Format(Resources.GetString("MissingIndexerProperty"), type);
+
+        internal static string CollectionExpected(Type type) => string.Format(Resources.GetString("CollectionExpected"), type);
     }
 }

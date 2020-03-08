@@ -26,7 +26,7 @@ namespace DotNext
 
         private void WriteLine(string message)
         {
-            switch(output)
+            switch (output)
             {
                 case TraceOutput.Stdout:
                     Console.Out.WriteLine(message);
@@ -45,7 +45,7 @@ namespace DotNext
 
         public override void Before(MethodInfo methodUnderTest)
             => WriteLine($"Starting test {methodUnderTest.DeclaringType.Name}/{methodUnderTest.Name}");
-        
+
         public override void After(MethodInfo methodUnderTest)
             => WriteLine($"Test {methodUnderTest.DeclaringType.Name}/{methodUnderTest.Name} is finished");
     }
