@@ -19,6 +19,6 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing state of asynchronous execution.</returns>
-        Task FlushAsync(CancellationToken token = default) => Task.Factory.StartNew(Flush, token);
+        Task FlushAsync(CancellationToken token = default) => Task.Factory.StartNew(Flush, token, TaskCreationOptions.None, TaskScheduler.Current);
     }
 }
