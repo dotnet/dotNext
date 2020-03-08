@@ -27,6 +27,9 @@ Release Notes
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.2.0">DotNext.AspNetCore.Cluster 2.2.0</a>
 * Upgrade to latest ASP.NET Core
 
+<a href="https://www.nuget.org/packages/dotnext.augmentation.fody/2.0.1">DotNext.Augmentation.Fody 2.0.1</a>
+* Removed obsolete calls
+
 # 02-23-2020
 <a href="https://www.nuget.org/packages/dotnext/2.1.0">DotNext 2.1.0</a>
 * Reduced memory footprint of `DotNext.Span` static constructor
