@@ -156,7 +156,7 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 | SpinLock | 1,756.7 us | 61.96 us | 589.24 us | 1,637.0 us |
 
 # Value Delegate
-[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs) compares performance of [Atomic&lt;T&gt;](./api/DotNext.Threading.Atomic-1.yml) and Synchronized methods. The implementation of the benchmark contains concurrent read/write threads to ensure that lock contention is in place.
+[This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs) compares performance of indirect method call using classic delegates from .NET and [value delegates](./features/core/valued.md).
 
 | Method | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- |
