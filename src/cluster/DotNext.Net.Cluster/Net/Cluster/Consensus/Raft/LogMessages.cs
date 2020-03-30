@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Resources;
 using System.Threading.Tasks;
@@ -79,5 +80,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static Task PrintLockInfo(this TextWriter output, string lockName, string owner, in Guid version, DateTimeOffset creationTime, TimeSpan leaseTime)
             => output.WriteLineAsync(string.Format(Resources.GetString("LockInfo"), lockName, owner, version.ToString(), creationTime.ToString(InvariantCulture), leaseTime.ToString()));
+    
+        internal static void PacketDropped<T>(this ILogger logger, T packetId, EndPoint endPoint)
+            where T : struct
+            => logger.LogError(Resources.GetString("PacketDropped"), packetId.ToString(), endPoint);
+        
+        internal static void NotEnoughRequestHandlers(this ILogger logger)
+            => logger.LogError(Resources.GetString("NotEnoughRequestHandlers"));
+        
+        internal static void SockerErrorOccurred(this ILogger logger, SocketError error)
+            => logger.LogError(Resources.GetString("SockerErrorOccurred"), error);
     }
 }
