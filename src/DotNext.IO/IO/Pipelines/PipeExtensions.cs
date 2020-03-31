@@ -242,23 +242,24 @@ namespace DotNext.IO.Pipelines
         /// <returns>The result of operation.</returns>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="lengthFormat"/> is invalid.</exception>
+        /// <exception cref="EndOfStreamException">Pipe closed unexpectedly.</exception>
         public static async ValueTask WriteStringAsync(this PipeWriter writer, ReadOnlyMemory<char> value, EncodingContext context, int bufferSize = 0, StringLengthEncoding? lengthFormat = null, CancellationToken token = default)
         {
             var result = await writer.WriteLengthAsync(value, context.Encoding, lengthFormat, token).ConfigureAwait(false);
-            if (result.IsCompleted || value.Length == 0)
-                return;
             result.ThrowIfCancellationRequested(token);
+            if(value.Length == 0)
+                return;
             var encoder = context.GetEncoder();
             for (int charsLeft = value.Length, charsUsed, maxChars, bytesPerChar = context.Encoding.GetMaxByteCount(1); charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)
             {
+                if(result.IsCompleted)
+                    throw new EndOfStreamException();
                 var buffer = writer.GetMemory(bufferSize);
                 maxChars = buffer.Length / bytesPerChar;
                 charsUsed = Math.Min(maxChars, charsLeft);
                 encoder.Convert(value.Span.Slice(0, charsUsed), buffer.Span, charsUsed == charsLeft, out charsUsed, out var bytesUsed, out _);
                 writer.Advance(bytesUsed);
                 result = await writer.FlushAsync(token).ConfigureAwait(false);
-                if (result.IsCompleted)
-                    break;
                 result.ThrowIfCancellationRequested(token);
             }
         }
