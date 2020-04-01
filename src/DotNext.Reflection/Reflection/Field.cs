@@ -261,9 +261,9 @@ namespace DotNext.Reflection
         }
 
         [return: MaybeNull]
-        private static V GetValue(Provider provider, in T instance) => provider(instance);
+        private static V GetValue(Provider provider, [DisallowNull]in T instance) => provider(instance);
 
-        private static void SetValue(Provider provider, in T instance, V value) => provider(instance) = value;
+        private static void SetValue(Provider provider, [DisallowNull]in T instance, V value) => provider(instance) = value;
 
         /// <summary>
         /// Obtains field getter in the form of the delegate instance.

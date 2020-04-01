@@ -28,6 +28,7 @@ namespace DotNext
 	public static class Procedure
     {
         private sealed class Closure<T, A>
+            where T : notnull
             where A : struct
         {
             private readonly Procedure<T, A> procedure;
@@ -51,7 +52,8 @@ namespace DotNext
         /// <param name="procedure">The procedure to be converted.</param>
         /// <param name="this">The first argument to be captured.</param>
         /// <returns>The procedure instance.</returns>
-        public static Procedure<A> Capture<T, A>(this Procedure<T, A> procedure, [DisallowNull]T @this)
+        public static Procedure<A> Capture<T, A>(this Procedure<T, A> procedure, T @this)
+            where T : notnull
             where A : struct
             => new Closure<T, A>(procedure, @this).Invoke;
 
