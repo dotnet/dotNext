@@ -25,7 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             lastLogTerm = BinaryPrimitives.ReadInt64LittleEndian(payload);
         }
 
-        public override ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
+        public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
         {
             const int payloadSize = sizeof(long) + sizeof(long);
             
@@ -34,7 +34,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
             BinaryPrimitives.WriteInt64LittleEndian(payload.Span, LastLogTerm);
 
-            return new ValueTask<(PacketHeaders Headers, int BytesWritten, bool)>((new PacketHeaders(MessageType.Vote, FlowControl.None, CurrentTerm), payloadSize, true));
+            return new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Vote, FlowControl.None, CurrentTerm), payloadSize, true));
         }
     }
 }

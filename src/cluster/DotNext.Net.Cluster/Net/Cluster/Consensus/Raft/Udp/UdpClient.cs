@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
@@ -13,35 +12,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
     internal sealed class UdpClient : UdpSocket
     {
-        internal abstract class Exchange<T> : TaskCompletionSource<T>, IExchange
-        {
-            private protected readonly long CurrentTerm;
-
-            private protected Exchange(long term)
-                : base(TaskCreationOptions.RunContinuationsAsynchronously)
-                => CurrentTerm = term;
-
-            public abstract ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token);
-
-            public abstract ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token);
-
-            private protected virtual void OnException(Exception e) { }
-
-            void IExchange.OnException(Exception e)
-            {
-                if(e is OperationCanceledException cancellation ? TrySetCanceled(cancellation.CancellationToken) : TrySetException(e))
-                    OnException(e);
-            }
-
-            private protected virtual void OnCanceled(CancellationToken token) { }
-
-            void IExchange.OnCanceled(CancellationToken token)
-            {
-                if(TrySetCanceled(token))
-                    OnCanceled(token);
-            }
-        }
-
         [StructLayout(LayoutKind.Auto)]
         private readonly struct Channel : IChannel
         {
@@ -103,7 +73,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         internal void Stop() => Disconnect(false);
 
-        internal async void Enqueue<TResponse>(Exchange<TResponse> exchange, CancellationToken token)
+        internal async void Enqueue<TExchange>(TExchange exchange, CancellationToken token)
+            where TExchange : class, IExchange
         {
             var id = new CorrelationId(applicationId, streamNumber.IncrementAndGet());
             var channel = new Channel(exchange, cancellationHandler, id, token);

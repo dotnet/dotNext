@@ -6,7 +6,7 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
-    internal abstract class SimpleExchange : UdpClient.Exchange<Result<bool>>
+    internal abstract class SimpleExchange : ClientExchange<Result<bool>>
     {
         private protected SimpleExchange(long term)
             : base(term)

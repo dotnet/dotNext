@@ -12,59 +12,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
     public sealed class UdpSocketTests : Test
     {
-        private sealed class VoteResponse : Assert, IExchange
+        private sealed class SimpleServerExchangePool : Assert, IRaftRpcServer, IExchangePool
         {
-            private readonly Action<object> errorCallback;
-
-            internal VoteResponse(Action<object> errorCallback)
-                => this.errorCallback = errorCallback;
-
-            public ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endPoint, CancellationToken token)
+            Task<Result<bool>> IRaftRpcServer.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
-                Equal(MessageType.Vote, headers.Type);
-                Equal(FlowControl.None, headers.Control);
-                NotNull(endPoint);
                 True(token.CanBeCanceled);
-                Equal(42L, headers.Term);
-                VoteExchange.Parse(payload.Span, out var lastLogIndex, out var lastLogTerm);
+                Equal(42L, term);
                 Equal(1L, lastLogIndex);
                 Equal(56L, lastLogTerm);
-                return new ValueTask<bool>(true);
+                return Task.FromResult(new Result<bool>(43L, true));
             }
-
-            public ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> buffer, CancellationToken token)
-            {
-                True(token.CanBeCanceled);
-                buffer.Span[0] = 1;
-                return new ValueTask<(PacketHeaders Headers, int BytesWritten, bool)>((new PacketHeaders(MessageType.Vote, FlowControl.Ack, 43L), 1, false));
-            }
-    
-            public void OnException(Exception e) => errorCallback?.Invoke(e);
-
-            public void OnCanceled(CancellationToken token) => errorCallback?.Invoke(token);
-        }
-
-        private sealed class SimpleServerExchangePool : IExchangePool
-        {
-            private readonly Action<object> errorCallback;
-
-            internal SimpleServerExchangePool(Action<object> errorCallback)
-                => this.errorCallback = errorCallback;
 
             public bool TryRent(PacketHeaders headers, out IExchange exchange)
             {
-                switch(headers.Type)
-                {
-                    case MessageType.Vote:
-                        exchange = new VoteResponse(errorCallback);
-                        return true;
-                    default:
-                        exchange = default;
-                        return false;
-                }
+                exchange = new ServerExchange(this);
+                return true;
             }
 
-            void IExchangePool.Release(IExchange exchange) { }
+            void IExchangePool.Release(IExchange exchange)
+                => ((ServerExchange)exchange).Reset();
         }
 
         [Fact]
@@ -79,23 +45,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             client.Stop();
         }
 
-        private sealed class ServerCallback
-        {
-            internal object Error { get; private set; }
-
-            internal void SetError(object value) => Error = value;
-        }
-
         [Fact]
         public static async Task ClientServerMessaging()
         {
             var timeout = TimeSpan.FromSeconds(20);
-            var callback = new ServerCallback();
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
             using var server = new UdpServer(serverAddr, 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
             server.ReceiveTimeout = timeout;
-            server.Start(new SimpleServerExchangePool(callback.SetError));
+            server.Start(new SimpleServerExchangePool());
             //prepare client
             using var client = new UdpClient(serverAddr, 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
@@ -103,7 +61,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var exchange = new VoteExchange(42L, 1L, 56L);
             client.Enqueue(exchange, timeoutTokenSource.Token);
             var result = await exchange.Task;
-            Null(callback.Error);
             True(result.Value);
             Equal(43L, result.Term);
             client.Stop();
@@ -117,7 +74,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
             using var server = new UdpServer(serverAddr, 100, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
             server.ReceiveTimeout = timeout;
-            server.Start(new SimpleServerExchangePool(null));
+            server.Start(new SimpleServerExchangePool());
             //prepare client
             using var client = new UdpClient(serverAddr, 100, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
             client.Start();
