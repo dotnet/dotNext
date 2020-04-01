@@ -305,7 +305,7 @@ namespace DotNext.Runtime
 
             MarkLabel(notNull);
             Unbox_Any(typeof(T));
-            return Return<T>();
+            return Return<T>()!;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
