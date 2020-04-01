@@ -48,6 +48,58 @@ namespace DotNext.IO.Pipelines
         }
 
         [Fact]
+        public static async Task EndOfMemory()
+        {
+            static async void WriteValueAsync(Memory<byte> memory, PipeWriter writer)
+            {
+                await writer.WriteAsync(memory);
+                await writer.CompleteAsync();
+            }
+
+            var pipe = new Pipe();
+            WriteValueAsync(new byte[] { 1, 5, 8, 9, 10 }, pipe.Writer);
+            Memory<byte> result = new byte[124];
+            await ThrowsAsync<EndOfStreamException>(() => pipe.Reader.ReadAsync(result).AsTask());
+        }
+
+        [Fact]
+        public static async Task EncodeDecodeMemory2()
+        {
+            static async void WriteValueAsync(Memory<byte> memory, PipeWriter writer)
+            {
+                await writer.WriteAsync(memory);
+                await writer.CompleteAsync();
+            }
+
+            var pipe = new Pipe();
+            WriteValueAsync(new byte[] { 1, 5, 8, 9, 10 }, pipe.Writer);
+            var portion1 = new byte[3];
+            var portion2 = new byte[2];
+            Equal(3, await pipe.Reader.CopyToAsync(portion1));
+            Equal(2, await pipe.Reader.CopyToAsync(portion2));
+            Equal(1, portion1[0]);
+            Equal(5, portion1[1]);
+            Equal(8, portion1[2]);
+            Equal(9, portion2[0]);
+            Equal(10, portion2[1]);
+        }
+
+        [Fact]
+        public static async Task EndOfMemory2()
+        {
+            static async void WriteValueAsync(Memory<byte> memory, PipeWriter writer)
+            {
+                await writer.WriteAsync(memory);
+                await writer.CompleteAsync();
+            }
+
+            var pipe = new Pipe();
+            WriteValueAsync(new byte[] { 1, 5, 8, 9, 10 }, pipe.Writer);
+            Memory<byte> result = new byte[124];
+            Equal(5, await pipe.Reader.CopyToAsync(result));
+        }
+
+        [Fact]
         public static async Task EncodeDecodeValue2()
         {
             static async void WriteValueAsync(PipeWriter writer)
