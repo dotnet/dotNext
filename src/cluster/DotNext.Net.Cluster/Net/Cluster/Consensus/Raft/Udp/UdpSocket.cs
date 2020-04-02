@@ -142,11 +142,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private protected UdpSocket(IPEndPoint address, int backlog, int datagramSize, ArrayPool<byte> pool, ILoggerFactory loggerFactory)
             : base(address.AddressFamily, SocketType.Dgram, ProtocolType.Udp)
         {
+            ExclusiveAddressUse = true;
             Address = address;
             Blocking = false;
             senderPool = new SendTaskPool();
             logger = loggerFactory.CreateLogger(GetType());
-            this.bufferPool = pool;
+            bufferPool = pool;
             receiverPool = new SocketAsyncEventArgs?[backlog];
             dispatcher = BeginReceive;
             this.datagramSize = datagramSize.Between(MinDatagramSize, MaxDatagramSize, BoundType.Closed) ? 
@@ -172,8 +173,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private void BeginReceive(SocketAsyncEventArgs args)
         {
             args.RemoteEndPoint = RemoteEndPoint;
-            if(!ReceiveFromAsync(args)) //completed synchronously
-                EndReceive(this, args);
+            bool result;
+            try
+            {
+                result = ReceiveFromAsync(args);
+            }
+            catch(ObjectDisposedException)
+            {
+                args.SocketError = SocketError.Shutdown;
+                result = false;
+            }
+            if (!result) //completed synchronously
+                EndReceiveImpl(this, args);
         }
 
         private protected void Start(object? userToken = null)
@@ -189,6 +200,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
             senderPool.Populate(receiverPool.Length);
         }
+
+        internal void Stop() => Shutdown(SocketShutdown.Both);
 
         private protected void ProcessCancellation<TChannel, TContext>(RefAction<TChannel, TContext> action, ref TChannel channel, TContext context, SocketAsyncEventArgs args)
             where TChannel : struct, IChannel

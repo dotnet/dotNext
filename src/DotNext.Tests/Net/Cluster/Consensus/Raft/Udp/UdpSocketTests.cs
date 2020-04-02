@@ -88,6 +88,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var result = await exchange.Task;
             True(result.Value);
             Equal(43L, result.Term);
+            client.Stop();
+            server.Stop();
         }
 
         [Fact]
@@ -118,6 +120,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 True(task.Result.Value);
                 Equal(43L, task.Result.Term);
             }
+            client.Stop();
+            server.Stop();
         }
 
         [Fact]
@@ -138,6 +142,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var actual = new Dictionary<string, string>();
             await exchange.ReadAsync(actual, default);
             Equal(exchangePool.Metadata, actual);
+            client.Stop();
+            server.Stop();
         }
 
         [Fact]
@@ -155,6 +161,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var exchange = new ResignExchange();
             client.Enqueue(exchange, default);
             True(await exchange.Task);
+            client.Stop();
+            server.Stop();
         }
     }
 }
