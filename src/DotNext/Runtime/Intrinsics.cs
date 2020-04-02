@@ -302,46 +302,24 @@ namespace DotNext.Runtime
         /// <exception cref="InvalidCastException"><paramref name="obj"/> is <see langword="null"/> or not of type <typeparamref name="T"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
-        public static T Cast<T>(object? obj)
-        {
-            if(obj is null)
-                throw new InvalidCastException();
-            else
-                return (T)obj;
-            // const string notNull = "notNull";
-            // Push(obj);
-            // Isinst(typeof(T));
-            // Dup();
-            // Brtrue(notNull);
-            // Pop();
-            // Newobj(M.Constructor(typeof(InvalidCastException)));
-            // Throw();
-
-            // MarkLabel(notNull);
-            // Unbox_Any(typeof(T));
-            // return Return<T>()!;
-        }
+        public static T Cast<T>(object? obj) => obj is null ? throw new InvalidCastException() : (T)obj;
 
         [return: MaybeNull]
         internal static T NullAwareCast<T>(object? obj)
         {
-            if(obj is null)
-                return IsNullable<T>() ? default(T) : throw new InvalidCastException();
-            else
-                return (T)obj;
-            // const string notNull = "notNull";
-            // Push(obj);
-            // Call(new M(typeof(Intrinsics), nameof(IsNullable), 1).MakeGenericMethod(typeof(T)));
-            // Brtrue(notNull);
-            // Isinst(typeof(T));
-            // Dup();
-            // Brtrue(notNull);
-            // Pop();
-            // Newobj(M.Constructor(typeof(InvalidCastException)));
-            // Throw();
-            // MarkLabel(notNull);
-            // Unbox_Any(typeof(T));
-            // return Return<T>();
+            const string notNull = "notNull";
+            Push(obj);
+            Call(new M(typeof(Intrinsics), nameof(IsNullable), 1).MakeGenericMethod(typeof(T)));
+            Brtrue(notNull);
+            Isinst(typeof(T));
+            Dup();
+            Brtrue(notNull);
+            Pop();
+            Newobj(M.Constructor(typeof(InvalidCastException)));
+            Throw();
+            MarkLabel(notNull);
+            Unbox_Any(typeof(T));
+            return Return<T>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
