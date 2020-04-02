@@ -62,7 +62,7 @@ namespace DotNext.IO.Pipelines
             await ThrowsAsync<EndOfStreamException>(() => pipe.Reader.ReadAsync(result).AsTask());
         }
 
-        [Fact]
+        [Fact(Skip = "Attempt to find root cause of CLR internal error")]
         public static async Task EncodeDecodeMemory2()
         {
             static async void WriteValueAsync(Memory<byte> memory, PipeWriter writer)
@@ -84,7 +84,7 @@ namespace DotNext.IO.Pipelines
             Equal(10, portion2[1]);
         }
 
-        [Fact]
+        [Fact(Skip = "Attempt to find root cause of CLR internal error")]
         public static async Task EndOfMemory2()
         {
             static async void WriteValueAsync(Memory<byte> memory, PipeWriter writer)

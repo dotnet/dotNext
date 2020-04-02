@@ -7,7 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     [ExcludeFromCodeCoverage]
     public sealed class PacketTests : Test
     {
-        [Fact]
+        [Fact(Skip = "Attempt to find root cause of CLR internal error")]
         public static void Combination()
         {
             foreach(var type in Enum<MessageType>.Members)
@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 }
         }
 
-        [Fact]
+        [Fact(Skip = "Attempt to find root cause of CLR internal error")]
         public static void HeadersSerializationDeserialization()
         {
             Memory<byte> buffer = new byte[PacketHeaders.NaturalSize];

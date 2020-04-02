@@ -254,7 +254,7 @@ namespace DotNext.Runtime
             HasFlag(LongEnum.Two, LongEnum.Two, LongEnum.One);
         }
 
-        [Fact]
+        [Fact(Skip = "Attempt to find root cause of CLR internal error")]
         public static void CastObject()
         {
             Throws<InvalidCastException>(() => Intrinsics.Cast<string>(null));
@@ -263,7 +263,7 @@ namespace DotNext.Runtime
             Equal(42, Intrinsics.Cast<int?>(42));
         }
 
-        [Fact]
+        [Fact(Skip = "Attempt to find root cause of CLR internal error")]
         public static void NullUnsafeCast()
         {
             var castMethod = typeof(Intrinsics).GetMethod("NullAwareCast", BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.NonPublic);
