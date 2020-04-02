@@ -3,6 +3,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -11,6 +12,7 @@ using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
+    [ExcludeFromCodeCoverage]
     public sealed class UdpSocketTests : Test
     {
         private sealed class SimpleServerExchangePool : Assert, IRaftRpcServer, IExchangePool
@@ -24,6 +26,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     metadata.Add(string.Concat("key", i.ToString()), rnd.NextString(AllowedChars, 20));
                 Metadata = metadata.ToImmutableDictionary();
             }
+
+            Task<bool> IRaftRpcServer.ResignAsync(CancellationToken token) => Task.FromResult(true);
 
             Task<Result<bool>> IRaftRpcServer.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
@@ -59,7 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         [Fact]
-        public static async Task ClientServerMessaging()
+        public static async Task VoteRequestResponse()
         {
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
@@ -111,9 +115,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         [Fact]
-        public static async Task QueryMetadata()
+        public static async Task MetadataRequestResponse()
         {
-            var timeout = TimeSpan.FromMinutes(20);
+            var timeout = TimeSpan.FromSeconds(20);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
             using var server = new UdpServer(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
@@ -128,6 +132,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var actual = new Dictionary<string, string>();
             await exchange.ReadAsync(actual, default);
             Equal(exchangePool.Metadata, actual);
+            client.Stop();
+        }
+
+        [Fact]
+        public static async Task ResignRequestResponse()
+        {
+            var timeout = TimeSpan.FromSeconds(20);
+            //prepare server
+            var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
+            using var server = new UdpServer(serverAddr, 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            server.ReceiveTimeout = timeout;
+            server.Start(new SimpleServerExchangePool());
+            //prepare client
+            using var client = new UdpClient(serverAddr, 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            client.Start();
+            var exchange = new ResignExchange();
+            client.Enqueue(exchange, default);
+            True(await exchange.Task);
+            client.Stop();
         }
     }
 }

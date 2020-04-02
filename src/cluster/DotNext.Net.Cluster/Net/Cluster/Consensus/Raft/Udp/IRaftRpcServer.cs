@@ -9,5 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
         IReadOnlyDictionary<string, string> Metadata { get; }
+
+        Task<bool> ResignAsync(CancellationToken token);
     }
 }

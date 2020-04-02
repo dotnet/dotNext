@@ -8,6 +8,7 @@ using Debug = System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
     using static IO.Pipelines.PipeExtensions;
+    using static Runtime.Intrinsics;
 
     internal sealed class ServerExchange : PipeExchange
     {
@@ -16,7 +17,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             Ready = 0,
             VoteRequestReceived,
             MetadataRequestReceived,
-            SendingMetadata
+            SendingMetadata,
+            ResignRequestReceived,
         }
 
         private readonly IRaftRpcServer server;
@@ -26,6 +28,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         internal ServerExchange(IRaftRpcServer server, PipeOptions? options = null)
             : base(options)
             => this.server = server;
+        
+        private void BeginResign(CancellationToken token)
+            => task = server.ResignAsync(token);
         
         private void BeginVote(ReadOnlyMemory<byte> payload, CancellationToken token)
         {
@@ -55,6 +60,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     else 
                         state = State.SendingMetadata;
                     break;
+                case MessageType.Resign:
+                    state = State.ResignRequestReceived;
+                    BeginResign(token);
+                    break;
                 default:
                     return new ValueTask<bool>(false);
             }
@@ -64,7 +73,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private async ValueTask<(PacketHeaders, int, bool)> EndVote(Memory<byte> payload)
         {
             Debug.Assert(task is Task<Result<bool>>);
-            var result = await ((Task<Result<bool>>)task).ConfigureAwait(false);
+            var result = await Cast<Task<Result<bool>>>(task).ConfigureAwait(false);
             task = null;
             return (new PacketHeaders(MessageType.Vote, FlowControl.Ack), IExchange.WriteResult(result, payload.Span), false);
         }
@@ -87,12 +96,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             return (new PacketHeaders(MessageType.Metadata, control), bytesWritten, continueSending);
         }
 
+        private async ValueTask<(PacketHeaders, int, bool)> EndResign(Memory<byte> payload)
+        {
+            var result = await Cast<Task<bool>>(task).ConfigureAwait(false);
+            task = null;
+            payload.Span[0] = (byte)result.ToInt32();
+            return (new PacketHeaders(MessageType.Resign, FlowControl.Ack), 1, false);
+        }
+
         public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> output, CancellationToken token)
             => state switch
             {
                 State.VoteRequestReceived => EndVote(output),
                 State.MetadataRequestReceived => SendMetadataPortionAsync(true, output, token),
                 State.SendingMetadata => SendMetadataPortionAsync(false, output, token),
+                State.ResignRequestReceived => EndResign(output),
                 _ => default
             };
 
