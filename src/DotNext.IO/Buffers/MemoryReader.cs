@@ -5,7 +5,7 @@ using Missing = System.Reflection.Missing;
 namespace DotNext.Buffers
 {
     [StructLayout(LayoutKind.Auto)]
-    internal struct MemoryReader : IBufferReader<int>, IBufferReader<Missing>
+    internal struct MemoryReader : /*IBufferReader<int>,*/ IBufferReader<Missing>
     {
         private readonly Memory<byte> buffer;
         private int offset;
@@ -20,7 +20,7 @@ namespace DotNext.Buffers
 
         public int RemainingBytes => eosReached ? 0 : buffer.Length - offset;
 
-        int IBufferReader<int>.Complete() => offset;
+        //int IBufferReader<int>.Complete() => offset;
 
         Missing IBufferReader<Missing>.Complete() => Missing.Value;
 
@@ -35,6 +35,6 @@ namespace DotNext.Buffers
             offset += block.Length;
         }
 
-        void IBufferReader<int>.EndOfStream() => eosReached = true;
+        //void IBufferReader<int>.EndOfStream() => eosReached = true;
     }
 }

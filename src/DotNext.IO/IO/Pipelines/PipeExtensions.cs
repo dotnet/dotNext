@@ -187,7 +187,7 @@ namespace DotNext.IO.Pipelines
         /// <param name="token">The token that can be used to cancel operation.</param>
         /// <returns>The actual number of copied bytes.</returns>
         public static ValueTask<int> CopyToAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
-            => ReadAsync<int, MemoryReader>(reader, new MemoryReader(output), token);
+            => new ValueTask<int>(0); //ReadAsync<int, MemoryReader>(reader, new MemoryReader(output), token);
 
         /// <summary>
         /// Encodes value of blittable type.
