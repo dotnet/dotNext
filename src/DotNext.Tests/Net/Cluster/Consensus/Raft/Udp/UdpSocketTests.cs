@@ -64,7 +64,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     await ThrowsAsync<SocketException>(() => exchange.Task);
                     break;
                 case PlatformID.Win32NT:
-                    await ThrowsAsync<OperationCanceledException>(() => exchange.Task);
+                    await ThrowsAsync<TaskCanceledException>(() => exchange.Task);
                     break;
             }
             
