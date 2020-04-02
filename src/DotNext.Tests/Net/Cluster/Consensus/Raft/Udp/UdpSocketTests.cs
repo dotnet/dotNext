@@ -50,16 +50,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 => ((ServerExchange)exchange).Reset();
         }
 
-        [Fact]
+        [OSDependentFact(PlatformID.Unix)]
         public static async Task ConnectionError()
         {
-            using var client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 35666), 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            using var client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 35665), 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
             client.Start();
             var exchange = new VoteExchange(10L, 20L, 30L);
             client.Enqueue(exchange, CancellationToken.None);
             var error = await ThrowsAsync<SocketException>(() => exchange.Task);
             Equal(SocketError.ConnectionRefused, error.SocketErrorCode);
-            client.Stop();
         }
 
         [Fact]
@@ -80,7 +79,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var result = await exchange.Task;
             True(result.Value);
             Equal(43L, result.Term);
-            client.Stop();
         }
 
         [Fact]
@@ -111,7 +109,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 True(task.Result.Value);
                 Equal(43L, task.Result.Term);
             }
-            client.Stop();
         }
 
         [Fact]
@@ -132,7 +129,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var actual = new Dictionary<string, string>();
             await exchange.ReadAsync(actual, default);
             Equal(exchangePool.Metadata, actual);
-            client.Stop();
         }
 
         [Fact]
@@ -150,7 +146,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var exchange = new ResignExchange();
             client.Enqueue(exchange, default);
             True(await exchange.Task);
-            client.Stop();
         }
     }
 }

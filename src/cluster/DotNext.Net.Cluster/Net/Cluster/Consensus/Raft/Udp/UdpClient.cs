@@ -79,8 +79,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             base.Start();
         }
 
-        internal void Stop() => Disconnect(false);
-
         internal async void Enqueue<TExchange>(TExchange exchange, CancellationToken token)
             where TExchange : class, IExchange
         {
