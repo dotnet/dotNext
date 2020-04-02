@@ -75,30 +75,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var continueSending = true;
             FlowControl control;
             var bytesWritten = await Reader.CopyToAsync(output, token).ConfigureAwait(false);
-            if(bytesWritten == 0)
-            {
-                control = FlowControl.StreamEnd;
-                continueSending = false;
-            }
-            else if(Reader.TryRead(out var readResult))
-            {
-                if(readResult.IsCanceled)
-                {
-                    control = FlowControl.Cancel;
-                    continueSending = false;
-                }
-                else if(readResult.Buffer.Length == 0)
-                {
-                    control = FlowControl.StreamEnd;
-                    continueSending = false;
-                }
-                else
-                    control = FlowControl.Fragment;
-            }
-            else
+            if(bytesWritten == output.Length)    //final packet detected
             {
                 control = startStream ? FlowControl.StreamStart : FlowControl.Fragment;
                 continueSending = true;
+            }
+            else
+            {
+                control = FlowControl.StreamEnd;
+                continueSending = false;
             }
             return (new PacketHeaders(MessageType.Metadata, control, 0L), bytesWritten, continueSending);
         }

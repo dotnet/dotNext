@@ -116,12 +116,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var timeout = TimeSpan.FromMinutes(20);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = new UdpServer(serverAddr, 100, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            using var server = new UdpServer(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
             server.ReceiveTimeout = timeout;
             var exchangePool = new SimpleServerExchangePool();
             server.Start(exchangePool);
             //prepare client
-            using var client = new UdpClient(serverAddr, 100, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            using var client = new UdpClient(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
             client.Start();
             var exchange = new MetadataExchange(20L);
             client.Enqueue(exchange, default);

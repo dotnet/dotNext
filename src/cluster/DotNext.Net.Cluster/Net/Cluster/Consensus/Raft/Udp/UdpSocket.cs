@@ -129,7 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         internal const int MaxDatagramSize = 65507;
-        private const int MinDatagramSize = 300;
+        internal const int MinDatagramSize = 300;
 
         private readonly ArrayPool<byte> bufferPool;
         internal readonly IPEndPoint Address;
