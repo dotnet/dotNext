@@ -32,6 +32,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
             internal bool Represents(in Channel other) => ReferenceEquals(exchange, other.exchange);
 
+            internal static void Cancel(ref Channel channel, bool throwOnFirstException)
+                => channel.timeoutTokenSource.Cancel(throwOnFirstException);
+
             public void Dispose()
             {
                 cancellation.Dispose();
@@ -44,12 +47,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly ChannelPool<Channel> channels;
         private readonly Action<object> cancellationHandler;
         private TimeSpan receiveTimeout;
+        private readonly RefAction<Channel, bool> cancellationInvoker;
 
         internal UdpServer(IPEndPoint address, int backlog, int datagramSize, ArrayPool<byte> bufferPool, ILoggerFactory loggerFactory)
             : base(address, backlog, datagramSize, bufferPool, loggerFactory)
         {
             channels = new ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;
+            cancellationInvoker = Channel.Cancel;
         }
 
         private protected override EndPoint RemoteEndPoint => AnyRemoteEndpoint;
@@ -86,7 +91,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 logger.NotEnoughRequestHandlers();
                 return;
             }
-            ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
+            if(headers.Control == FlowControl.Cancel)
+                ProcessCancellation(cancellationInvoker, ref channel, false, args);   //channel will be removed from the dictionary automatically
+            else
+                ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
         }
 
         internal new TimeSpan ReceiveTimeout

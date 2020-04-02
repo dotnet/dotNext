@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.Sockets;
@@ -51,6 +52,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     {
                         channel.Dispose();
                     }
+            }
+
+            internal void CancellationRequested(ref TChannel channel, CorrelationId correlationId)
+            {
+                if(TryRemove(correlationId, out channel))
+                try
+                {
+                    channel.Exchange.OnException(new OperationCanceledException(ExceptionMessages.CanceledByRemoteHost));
+                }
+                finally
+                {
+                    channel.Dispose();
+                }
             }
 
             internal void ReportError(SocketError error)
@@ -175,6 +189,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 BeginReceive(args);
             }
             senderPool.Populate(receiverPool.Length);
+        }
+
+        private protected void ProcessCancellation<TChannel, TContext>(RefAction<TChannel, TContext> action, ref TChannel channel, TContext context, SocketAsyncEventArgs args)
+            where TChannel : struct, IChannel
+        {
+            try
+            {
+                action(ref channel, context);
+            }
+            catch(Exception e)
+            {
+                channel.Exchange.OnException(e);
+            }
+            finally
+            {
+                ThreadPool.QueueUserWorkItem(dispatcher, args, true);
+            }
         }
 
         private protected async void ProcessDatagram<TChannel>(ConcurrentDictionary<CorrelationId, TChannel> channels, TChannel channel, CorrelationId correlationId, PacketHeaders headers, ReadOnlyMemory<byte> datagram, SocketAsyncEventArgs args)

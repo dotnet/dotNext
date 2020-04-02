@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -14,6 +15,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     {
         private sealed class SimpleServerExchangePool : Assert, IRaftRpcServer, IExchangePool
         {
+            internal SimpleServerExchangePool()
+            {
+                var metadata = ImmutableDictionary.CreateBuilder<string, string>();
+                var rnd = new Random();
+                const string AllowedChars = "abcdefghijklmnopqrstuvwxyz1234567890";
+                for(var i = 0; i < 20; i++)
+                    metadata.Add(string.Concat("key", i.ToString()), rnd.NextString(AllowedChars, 20));
+                Metadata = metadata.ToImmutableDictionary();
+            }
+
             Task<Result<bool>> IRaftRpcServer.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
                 True(token.CanBeCanceled);
@@ -28,6 +39,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 exchange = new ServerExchange(this);
                 return true;
             }
+
+            public IReadOnlyDictionary<string, string> Metadata { get; }
 
             void IExchangePool.Release(IExchange exchange)
                 => ((ServerExchange)exchange).Reset();
@@ -95,6 +108,26 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 Equal(43L, task.Result.Term);
             }
             client.Stop();
+        }
+
+        [Fact]
+        public static async Task QueryMetadata()
+        {
+            var timeout = TimeSpan.FromMinutes(20);
+            //prepare server
+            var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
+            using var server = new UdpServer(serverAddr, 100, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            server.ReceiveTimeout = timeout;
+            var exchangePool = new SimpleServerExchangePool();
+            server.Start(exchangePool);
+            //prepare client
+            using var client = new UdpClient(serverAddr, 100, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            client.Start();
+            var exchange = new MetadataExchange(20L);
+            client.Enqueue(exchange, default);
+            var actual = new Dictionary<string, string>();
+            await exchange.ReadAsync(actual, default);
+            Equal(exchangePool.Metadata, actual);
         }
     }
 }

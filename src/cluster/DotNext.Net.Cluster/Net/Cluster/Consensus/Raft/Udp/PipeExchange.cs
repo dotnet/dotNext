@@ -3,6 +3,7 @@ using System.IO.Pipelines;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using IOException = System.IO.IOException;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
@@ -13,7 +14,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private protected PipeExchange(PipeOptions? options = null)
             => pipe = new Pipe(options ?? PipeOptions.Default);
         
-        private protected void ReusePipe() => pipe.Reset();
+        private protected void ReusePipe()
+        {
+            var e = new IOException(ExceptionMessages.ExchangeCompleted);
+            pipe.Writer.Complete(e);
+            pipe.Reader.Complete(e);
+            pipe.Reset();
+        }
         
         private protected PipeWriter Writer => pipe.Writer;
 

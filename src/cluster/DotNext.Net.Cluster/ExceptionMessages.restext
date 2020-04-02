@@ -16,3 +16,5 @@ UnsupportedAddressFamily=Unsupported endpoint address family
 NotEnoughSenders=Too many pallel requests
 DuplicateCorrelationId=Duplicate correlation ID. This is abnormal situation indicating that something wrong with implementation.
 UnexpectedUdpSenderBehavior=UDP sender must wait for response
+ExchangeCompleted=Network exchange is completed
+CanceledByRemoteHost=The operation has been canceled by remote host

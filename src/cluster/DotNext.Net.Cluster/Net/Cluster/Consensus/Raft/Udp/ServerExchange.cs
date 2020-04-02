@@ -7,12 +7,16 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
+    using static IO.Pipelines.PipeExtensions;
+
     internal sealed class ServerExchange : PipeExchange
     {
         private enum State : byte
         {
             Ready = 0,
-            VoteRequestProcessing
+            VoteRequestReceived,
+            MetadataRequestReceived,
+            SendingMetadata
         }
 
         private readonly IRaftRpcServer server;
@@ -28,18 +32,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             VoteExchange.Parse(payload.Span, out var lastLogIndex, out var lastLogTerm);
             task = server.VoteAsync(term, lastLogIndex, lastLogTerm, token);
         }
+
+        private void BeginSendMetadata(CancellationToken token)
+        {
+            task = MetadataExchange.WriteAsync(Writer, server.Metadata, token);
+        }
         
         public override ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
             switch(headers.Type)
             {
                 case MessageType.Vote:
-                    state = State.VoteRequestProcessing;
+                    state = State.VoteRequestReceived;
                     BeginVote(headers.Term, payload, token);
-                    return new ValueTask<bool>(true);
+                    break;
+                case MessageType.Metadata:
+                    if(headers.Control == FlowControl.None)
+                    {
+                        state = State.MetadataRequestReceived;
+                        BeginSendMetadata(token);
+                    }
+                    else 
+                        state = State.SendingMetadata;
+                    break;
                 default:
                     return new ValueTask<bool>(false);
             }
+            return new ValueTask<bool>(true);
         }
 
         private async ValueTask<(PacketHeaders, int, bool)> EndVote(Memory<byte> payload)
@@ -51,10 +70,45 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             return (new PacketHeaders(MessageType.Vote, FlowControl.Ack, result.Term), 1, false);
         }
 
-        public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
+        private async ValueTask<(PacketHeaders, int, bool)> SendMetadataPortionAsync(bool startStream, Memory<byte> output, CancellationToken token)
+        {
+            var continueSending = true;
+            FlowControl control;
+            var bytesWritten = await Reader.CopyToAsync(output, token).ConfigureAwait(false);
+            if(bytesWritten == 0)
+            {
+                control = FlowControl.StreamEnd;
+                continueSending = false;
+            }
+            else if(Reader.TryRead(out var readResult))
+            {
+                if(readResult.IsCanceled)
+                {
+                    control = FlowControl.Cancel;
+                    continueSending = false;
+                }
+                else if(readResult.Buffer.Length == 0)
+                {
+                    control = FlowControl.StreamEnd;
+                    continueSending = false;
+                }
+                else
+                    control = FlowControl.Fragment;
+            }
+            else
+            {
+                control = startStream ? FlowControl.StreamStart : FlowControl.Fragment;
+                continueSending = true;
+            }
+            return (new PacketHeaders(MessageType.Metadata, control, 0L), bytesWritten, continueSending);
+        }
+
+        public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> output, CancellationToken token)
             => state switch
             {
-                State.VoteRequestProcessing => EndVote(payload),
+                State.VoteRequestReceived => EndVote(output),
+                State.MetadataRequestReceived => SendMetadataPortionAsync(true, output, token),
+                State.SendingMetadata => SendMetadataPortionAsync(false, output, token),
                 _ => default
             };
 

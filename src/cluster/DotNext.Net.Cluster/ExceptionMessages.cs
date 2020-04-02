@@ -46,5 +46,9 @@ namespace DotNext
         internal static string DuplicateCorrelationId => Resources.GetString("DuplicateCorrelationId");
 
         internal static string UnexpectedUdpSenderBehavior => Resources.GetString("UnexpectedUdpSenderBehavior");
+
+        internal static string ExchangeCompleted => Resources.GetString("ExchangeCompleted");
+
+        internal static string CanceledByRemoteHost => Resources.GetString("CanceledByRemoteHost");
     }
 }

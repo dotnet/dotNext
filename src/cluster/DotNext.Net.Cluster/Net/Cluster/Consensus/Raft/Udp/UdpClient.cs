@@ -40,6 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly long applicationId;
         private long streamNumber;
         private readonly ChannelPool<Channel> channels;
+        private readonly RefAction<Channel, CorrelationId> cancellationInvoker;
 
         internal UdpClient(IPEndPoint address, int backlog, int datagramSize, ArrayPool<byte> bufferPool, ILoggerFactory loggerFactory)
             : base(address, backlog, datagramSize, bufferPool, loggerFactory)
@@ -49,6 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
            
             applicationId = new Random().Next<long>();
             streamNumber = long.MinValue;
+            cancellationInvoker = channels.CancellationRequested;
         }
 
         private protected override void ReportError(SocketError error)
@@ -60,7 +62,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             //dispatch datagram to appropriate exchange
             var correlationId = new CorrelationId(ref datagram);
             if(channels.TryGetValue(correlationId, out var channel))
-                ProcessDatagram(channels, channel, correlationId, new PacketHeaders(ref datagram), datagram, args);
+            {
+                var headers = new PacketHeaders(ref datagram);
+                if(headers.Control == FlowControl.Cancel)
+                    ProcessCancellation(cancellationInvoker, ref channel, correlationId, args);
+                else
+                    ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
+            }
             else
                 logger.PacketDropped(correlationId, args.RemoteEndPoint);
         }

@@ -18,14 +18,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     {
         private const StringLengthEncoding LengthEncoding = StringLengthEncoding.Compressed;
 
-        private enum State : byte
-        {
-            Initial = 0,
-            InputExpected,
-            Final
-        }
-
-        private State state;
+        private bool state;
 
         internal MetadataExchange(long term)
             : base(term)
@@ -73,26 +66,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         public override async ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
-            state = headers.Control == FlowControl.StreamEnd ? State.Final : State.InputExpected;
             var flushResult = await Writer.WriteAsync(payload, token).ConfigureAwait(false);
-            return !flushResult.IsCanceled && !flushResult.IsCompleted;
+            return !(flushResult.IsCanceled | flushResult.IsCompleted | headers.Control == FlowControl.StreamEnd);
         }
 
         public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
         {
-            (PacketHeaders Headers, int BytesWritten, bool WaitForInput) result = default;
-            switch(state)
-            {
-                case State.Initial:
-                    result.Headers = new PacketHeaders(MessageType.Metadata, FlowControl.None, CurrentTerm);
-                    result.WaitForInput = true;
-                    break;
-                default:
-                    result.Headers = new PacketHeaders(MessageType.Metadata, FlowControl.Ack, CurrentTerm);
-                    result.WaitForInput = state == State.InputExpected;
-                    break;
-            }
-            return new ValueTask<(PacketHeaders, int, bool)>(result);
+            FlowControl control;
+            if(state)
+                control = FlowControl.Ack;
+            else
+                {
+                    state = true;
+                    control = FlowControl.None;
+                }
+            return new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Metadata, control, CurrentTerm), 0, true));
         }
     }
 }
