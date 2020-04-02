@@ -50,7 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 => ((ServerExchange)exchange).Reset();
         }
 
-        [Fact]
+        [Fact(Skip = "Attempt to find root cause of CLR internal error")]
         public static async Task ConnectionError()
         {
             using var client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 35665), 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
@@ -70,7 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             
         }
 
-        [Fact]
+        [Fact(Skip = "Attempt to find root cause of CLR internal error")]
         public static async Task VoteRequestResponse()
         {
             var timeout = TimeSpan.FromSeconds(20);
@@ -92,7 +92,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             server.Stop();
         }
 
-        [Fact]
+        [Fact(Skip = "Attempt to find root cause of CLR internal error")]
         public static async Task StressTest()
         {
             var timeout = TimeSpan.FromSeconds(20);
@@ -124,7 +124,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             server.Stop();
         }
 
-        [Fact]
+        [Fact(Skip = "Attempt to find root cause of CLR internal error")]
         public static async Task MetadataRequestResponse()
         {
             var timeout = TimeSpan.FromSeconds(20);
@@ -146,7 +146,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             server.Stop();
         }
 
-        [Fact]
+        [Fact(Skip = "Attempt to find root cause of CLR internal error")]
         public static async Task ResignRequestResponse()
         {
             var timeout = TimeSpan.FromSeconds(20);
