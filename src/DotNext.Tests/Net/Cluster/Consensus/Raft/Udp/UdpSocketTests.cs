@@ -50,15 +50,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 => ((ServerExchange)exchange).Reset();
         }
 
-        [OSDependentFact(PlatformID.Unix)]
+        [Fact]
         public static async Task ConnectionError()
         {
             using var client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 35665), 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            using var timeoutTokenSource = new CancellationTokenSource(500);
             client.Start();
             var exchange = new VoteExchange(10L, 20L, 30L);
-            client.Enqueue(exchange, CancellationToken.None);
-            var error = await ThrowsAsync<SocketException>(() => exchange.Task);
-            Equal(SocketError.ConnectionRefused, error.SocketErrorCode);
+            client.Enqueue(exchange, timeoutTokenSource.Token);
+            switch(Environment.OSVersion.Platform)
+            {
+                case PlatformID.Unix:
+                    await ThrowsAsync<SocketException>(() => exchange.Task);
+                    break;
+                case PlatformID.Win32NT:
+                    await ThrowsAsync<OperationCanceledException>(() => exchange.Task);
+                    break;
+            }
+            
         }
 
         [Fact]
