@@ -27,9 +27,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             : base(options)
             => this.server = server;
         
-        private void BeginVote(long term, ReadOnlyMemory<byte> payload, CancellationToken token)
+        private void BeginVote(ReadOnlyMemory<byte> payload, CancellationToken token)
         {
-            VoteExchange.Parse(payload.Span, out var lastLogIndex, out var lastLogTerm);
+            VoteExchange.Parse(payload.Span, out var term, out var lastLogIndex, out var lastLogTerm);
             task = server.VoteAsync(term, lastLogIndex, lastLogTerm, token);
         }
 
@@ -44,7 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             {
                 case MessageType.Vote:
                     state = State.VoteRequestReceived;
-                    BeginVote(headers.Term, payload, token);
+                    BeginVote(payload, token);
                     break;
                 case MessageType.Metadata:
                     if(headers.Control == FlowControl.None)
@@ -66,8 +66,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             Debug.Assert(task is Task<Result<bool>>);
             var result = await ((Task<Result<bool>>)task).ConfigureAwait(false);
             task = null;
-            payload.Span[0] = (byte)result.Value.ToInt32();
-            return (new PacketHeaders(MessageType.Vote, FlowControl.Ack, result.Term), 1, false);
+            return (new PacketHeaders(MessageType.Vote, FlowControl.Ack), IExchange.WriteResult(result, payload.Span), false);
         }
 
         private async ValueTask<(PacketHeaders, int, bool)> SendMetadataPortionAsync(bool startStream, Memory<byte> output, CancellationToken token)
@@ -85,7 +84,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 control = FlowControl.StreamEnd;
                 continueSending = false;
             }
-            return (new PacketHeaders(MessageType.Metadata, control, 0L), bytesWritten, continueSending);
+            return (new PacketHeaders(MessageType.Metadata, control), bytesWritten, continueSending);
         }
 
         public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> output, CancellationToken token)

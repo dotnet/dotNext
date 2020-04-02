@@ -1,11 +1,11 @@
 using System;
-using System.Buffers.Binary;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
-    internal sealed class VoteExchange : SimpleExchange
+    internal sealed class VoteExchange : ClientExchange
     {
         internal readonly long LastLogIndex;
         internal readonly long LastLogTerm;
@@ -17,24 +17,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             LastLogTerm = lastLogTerm;
         } 
 
-        internal static void Parse(ReadOnlySpan<byte> payload, out long lastLogIndex, out long lastLogTerm)
+        internal static void Parse(ReadOnlySpan<byte> payload, out long term, out long lastLogIndex, out long lastLogTerm)
         {
-            lastLogIndex = BinaryPrimitives.ReadInt64LittleEndian(payload);
+            term = ReadInt64LittleEndian(payload);
             payload = payload.Slice(sizeof(long));
 
-            lastLogTerm = BinaryPrimitives.ReadInt64LittleEndian(payload);
+            lastLogIndex = ReadInt64LittleEndian(payload);
+            payload = payload.Slice(sizeof(long));
+
+            lastLogTerm = ReadInt64LittleEndian(payload);
         }
 
         public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
         {
-            const int payloadSize = sizeof(long) + sizeof(long);
+            const int payloadSize = sizeof(long) + sizeof(long) + sizeof(long);
+
+            WriteInt64LittleEndian(payload.Span, CurrentTerm);
+            payload = payload.Slice(sizeof(long));
             
-            BinaryPrimitives.WriteInt64LittleEndian(payload.Span, LastLogIndex);
+            WriteInt64LittleEndian(payload.Span, LastLogIndex);
             payload = payload.Slice(sizeof(long));
 
-            BinaryPrimitives.WriteInt64LittleEndian(payload.Span, LastLogTerm);
+            WriteInt64LittleEndian(payload.Span, LastLogTerm);
 
-            return new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Vote, FlowControl.None, CurrentTerm), payloadSize, true));
+            return new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Vote, FlowControl.None), payloadSize, true));
         }
     }
 }

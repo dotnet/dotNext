@@ -14,16 +14,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     using static IO.Pipelines.PipeExtensions;
     using static IO.Pipelines.ResultExtensions;
 
-    internal sealed class MetadataExchange : ClientExchange
+    internal sealed class MetadataExchange : PipeExchange
     {
         private const StringLengthEncoding LengthEncoding = StringLengthEncoding.Compressed;
 
         private bool state;
-
-        internal MetadataExchange(long term)
-            : base(term)
-        {
-        }
 
         private static Encoding Encoding => Encoding.UTF8;
 
@@ -80,7 +75,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     state = true;
                     control = FlowControl.None;
                 }
-            return new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Metadata, control, CurrentTerm), 0, true));
+            return new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Metadata, control), 0, true));
         }
     }
 }

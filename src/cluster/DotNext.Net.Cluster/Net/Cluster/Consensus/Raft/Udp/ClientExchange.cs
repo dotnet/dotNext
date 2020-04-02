@@ -1,27 +1,17 @@
 using System;
 using System.Net;
-using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
+using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
-    internal abstract class ClientExchange : PipeExchange
-    {
-        private protected readonly long CurrentTerm;
-
-        private protected ClientExchange(long term, PipeOptions? options = null)
-            : base(options)
-            => CurrentTerm = term;
-    }
-
     internal abstract class ClientExchange<T> : TaskCompletionSource<T>, IExchange
     {
-        private protected readonly long CurrentTerm;
-
-        private protected ClientExchange(long term)
+        private protected ClientExchange()
             : base(TaskCreationOptions.RunContinuationsAsynchronously)
-            => CurrentTerm = term;
+        {
+        }
 
         public abstract ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token);
 
@@ -41,6 +31,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         {
             if(TrySetCanceled(token))
                 OnCanceled(token);
+        }
+    }
+
+    internal abstract class ClientExchange : ClientExchange<Result<bool>>
+    {
+        private protected readonly long CurrentTerm;
+
+        private protected ClientExchange(long term) => CurrentTerm = term;
+
+        public sealed override ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint sender, CancellationToken token)
+        {
+            Debug.Assert(headers.Control == FlowControl.Ack);
+            TrySetResult(IExchange.ReadResult(payload.Span));
+            return new ValueTask<bool>(false);
         }
     }
 }

@@ -24,13 +24,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             foreach(var type in Enum<MessageType>.Members)
                 foreach(var control in Enum<FlowControl>.Members)
                 {
-                    var headers = new PacketHeaders(type.Value, control.Value, 42L);
+                    var headers = new PacketHeaders(type.Value, control.Value);
                     headers.WriteTo(buffer);
                     ReadOnlyMemory<byte> readOnlyView = buffer;
                     headers = new PacketHeaders(ref readOnlyView);
                     Equal(type.Value, headers.Type);
                     Equal(control.Value, headers.Control);
-                    Equal(42L, headers.Term);
                 }
         }
     }

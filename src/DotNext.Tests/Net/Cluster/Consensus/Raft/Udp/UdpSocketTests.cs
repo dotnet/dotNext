@@ -123,7 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             //prepare client
             using var client = new UdpClient(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
             client.Start();
-            var exchange = new MetadataExchange(20L);
+            var exchange = new MetadataExchange();
             client.Enqueue(exchange, default);
             var actual = new Dictionary<string, string>();
             await exchange.ReadAsync(actual, default);

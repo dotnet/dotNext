@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
@@ -18,5 +19,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         void OnException(Exception e);
 
         void OnCanceled(CancellationToken token);
+
+        internal static int WriteResult(Result<bool> result, Span<byte> output)
+        {
+            WriteInt64LittleEndian(output, result.Term);
+            output[sizeof(long)] = (byte)result.Value.ToInt32();
+            return sizeof(long) + 1;
+        }
+
+        internal static Result<bool> ReadResult(ReadOnlySpan<byte> input)
+            => new Result<bool>(ReadInt64LittleEndian(input), ValueTypeExtensions.ToBoolean(input[sizeof(long)]));
     }
 }
