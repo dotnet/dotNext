@@ -304,18 +304,22 @@ namespace DotNext.Runtime
         [return: NotNull]
         public static T Cast<T>(object? obj)
         {
-            const string notNull = "notNull";
-            Push(obj);
-            Isinst(typeof(T));
-            Dup();
-            Brtrue(notNull);
-            Pop();
-            Newobj(M.Constructor(typeof(InvalidCastException)));
-            Throw();
+            if(obj is null)
+                throw new InvalidCastException();
+            else
+                return (T)obj;
+            // const string notNull = "notNull";
+            // Push(obj);
+            // Isinst(typeof(T));
+            // Dup();
+            // Brtrue(notNull);
+            // Pop();
+            // Newobj(M.Constructor(typeof(InvalidCastException)));
+            // Throw();
 
-            MarkLabel(notNull);
-            Unbox_Any(typeof(T));
-            return Return<T>()!;
+            // MarkLabel(notNull);
+            // Unbox_Any(typeof(T));
+            // return Return<T>()!;
         }
 
         [return: MaybeNull]
