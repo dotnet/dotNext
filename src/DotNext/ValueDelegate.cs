@@ -542,7 +542,7 @@ namespace DotNext
             return Return<R>();
         }
 
-        object? ICallable.DynamicInvoke(params object?[] args) => Invoke(Intrinsics.Cast<T>(args[0]));
+        object? ICallable.DynamicInvoke(params object?[] args) => Invoke(Intrinsics.NullAwareCast<T>(args[0])!);
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T, TResult}"/>.
@@ -724,7 +724,7 @@ namespace DotNext
 
         object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke(Intrinsics.Cast<T>(args[0]));
+            Invoke(Intrinsics.NullAwareCast<T>(args[0])!);
             return null;
         }
 
@@ -905,7 +905,7 @@ namespace DotNext
         }
 
         object? ICallable.DynamicInvoke(params object?[] args)
-            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]));
+            => Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!);
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, TResult}"/>.
@@ -1083,7 +1083,7 @@ namespace DotNext
 
         object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]));
+            Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!);
             return null;
         }
 
@@ -1268,7 +1268,7 @@ namespace DotNext
         }
 
         object? ICallable.DynamicInvoke(params object?[] args)
-            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]));
+            => Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!);
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, TResult}"/>.
@@ -1450,7 +1450,7 @@ namespace DotNext
 
         object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]));
+            Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!);
             return null;
         }
 
@@ -1639,7 +1639,7 @@ namespace DotNext
         }
 
         object? ICallable.DynamicInvoke(params object?[] args)
-            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]));
+            => Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!, Intrinsics.NullAwareCast<T4>(args[3])!);
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, TResult}"/>.
@@ -1825,7 +1825,7 @@ namespace DotNext
 
         object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]));
+            Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!, Intrinsics.NullAwareCast<T4>(args[3])!);
             return null;
         }
 
@@ -2014,7 +2014,7 @@ namespace DotNext
         }
 
         object? ICallable.DynamicInvoke(params object?[] args)
-            => Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]), Intrinsics.Cast<T5>(args[4]));
+            => Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!, Intrinsics.NullAwareCast<T4>(args[3])!, Intrinsics.NullAwareCast<T5>(args[4])!);
 
         /// <summary>
         /// Converts this pointer into <see cref="Func{T1, T2, T3, T4, T5, TResult}"/>.
@@ -2200,7 +2200,7 @@ namespace DotNext
 
         object? ICallable.DynamicInvoke(params object?[] args)
         {
-            Invoke(Intrinsics.Cast<T1>(args[0]), Intrinsics.Cast<T2>(args[1]), Intrinsics.Cast<T3>(args[2]), Intrinsics.Cast<T4>(args[3]), Intrinsics.Cast<T5>(args[4]));
+            Invoke(Intrinsics.NullAwareCast<T1>(args[0])!, Intrinsics.NullAwareCast<T2>(args[1])!, Intrinsics.NullAwareCast<T3>(args[2])!, Intrinsics.NullAwareCast<T4>(args[3])!, Intrinsics.NullAwareCast<T5>(args[4])!);
             return null;
         }
 
@@ -2380,8 +2380,8 @@ namespace DotNext
 
         object? ICallable.DynamicInvoke(params object?[] args)
         {
-            var reference = Intrinsics.Cast<T>(args[0]);
-            Invoke(ref reference, Intrinsics.Cast<TArgs>(args[1]));
+            var reference = Intrinsics.NullAwareCast<T>(args[0]);
+            Invoke(ref reference!, Intrinsics.NullAwareCast<TArgs>(args[1])!);
             args[0] = reference;
             return null;
         }
@@ -2563,8 +2563,8 @@ namespace DotNext
 
         object? ICallable.DynamicInvoke(params object?[] args)
         {
-            var reference = Intrinsics.Cast<T>(args[0]);
-            var result = Invoke(ref reference, Intrinsics.Cast<TArgs>(args[1]));
+            var reference = Intrinsics.NullAwareCast<T>(args[0]);
+            var result = Invoke(ref reference!, Intrinsics.NullAwareCast<TArgs>(args[1])!);
             args[0] = reference;
             return result;
         }

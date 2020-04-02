@@ -253,5 +253,35 @@ namespace DotNext.Runtime
             HasFlag(ShortEnum.Two, ShortEnum.Two, ShortEnum.One);
             HasFlag(LongEnum.Two, LongEnum.Two, LongEnum.One);
         }
+
+        [Fact]
+        public static void CastObject()
+        {
+            Throws<InvalidCastException>(() => Intrinsics.Cast<string>(null));
+            Throws<InvalidCastException>(() => Intrinsics.Cast<string>(20));
+            Throws<InvalidCastException>(() => Intrinsics.Cast<int?>(null));
+            Equal(42, Intrinsics.Cast<int?>(42));
+        }
+
+        [Fact]
+        public static void NullUnsafeCast()
+        {
+            var castMethod = typeof(Intrinsics).GetMethod("NullAwareCast", BindingFlags.DeclaredOnly | BindingFlags.Static | BindingFlags.NonPublic);
+            var objToStr = castMethod.MakeGenericMethod(typeof(string)).CreateDelegate<Func<object, string>>();
+            Null(objToStr(null));
+            Equal(string.Empty, objToStr(""));
+            
+            var objToNullable = castMethod.MakeGenericMethod(typeof(int?)).CreateDelegate<Func<object, int?>>();
+            Null(objToNullable(null));
+            Equal(53, objToNullable(53));
+
+            var objToInt = castMethod.MakeGenericMethod(typeof(int)).CreateDelegate<Func<object, int>>();
+            Equal(53, objToInt(53));
+
+            Throws<InvalidCastException>(() => objToStr(54));
+            Throws<InvalidCastException>(() => objToNullable(string.Empty));
+            Throws<InvalidCastException>(() => objToInt(string.Empty));
+            Throws<InvalidCastException>(() => objToInt(null));
+        }
     }
 }

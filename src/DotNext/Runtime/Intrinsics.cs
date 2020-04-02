@@ -289,10 +289,20 @@ namespace DotNext.Runtime
             return Return<E>();
         }
 
-        //throw InvalidCastException for reference type as well as for value type
+        /// <summary>
+        /// Provides unified behavior of type cast for reference and value types.
+        /// </summary>
+        /// <remarks>
+        /// This method never returns <see langword="null"/> because it treats <see langword="null"/>
+        /// value passed to <paramref name="obj"/> as invalid object of type <typeparamref name="T"/>.
+        /// </remarks>
+        /// <param name="obj">The object to cast.</param>
+        /// <typeparam name="T">Conversion result.</typeparam>
+        /// <returns>The result of conversion.</returns>
+        /// <exception cref="InvalidCastException"><paramref name="obj"/> is <see langword="null"/> or not of type <typeparamref name="T"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: NotNull]
-        internal static T Cast<T>(object? obj)
+        public static T Cast<T>(object? obj)
         {
             const string notNull = "notNull";
             Push(obj);
@@ -306,6 +316,24 @@ namespace DotNext.Runtime
             MarkLabel(notNull);
             Unbox_Any(typeof(T));
             return Return<T>()!;
+        }
+
+        [return: MaybeNull]
+        internal static T NullAwareCast<T>(object? obj)
+        {
+            const string notNull = "notNull";
+            Push(obj);
+            Call(new M(typeof(Intrinsics), nameof(IsNullable), 1).MakeGenericMethod(typeof(T)));
+            Brtrue(notNull);
+            Isinst(typeof(T));
+            Dup();
+            Brtrue(notNull);
+            Pop();
+            Newobj(M.Constructor(typeof(InvalidCastException)));
+            Throw();
+            MarkLabel(notNull);
+            Unbox_Any(typeof(T));
+            return Return<T>();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
