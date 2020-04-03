@@ -309,7 +309,7 @@ namespace DotNext.Runtime
         {
             const string notNull = "notNull";
             Push(obj);
-            Call(new M(typeof(Intrinsics), nameof(IsNullable), 1).MakeGenericMethod(typeof(T)));
+            Push(IsNullable<T>());
             Brtrue(notNull);
             Isinst(typeof(T));
             Dup();
