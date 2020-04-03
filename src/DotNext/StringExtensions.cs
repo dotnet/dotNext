@@ -1,9 +1,5 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using Var = InlineIL.LocalVar;
 
 namespace DotNext
 {
@@ -79,22 +75,10 @@ namespace DotNext
         /// </summary>
         /// <param name="str">The string data.</param>
         /// <returns>The managed pointer to the first character in the string.</returns>
-        public static ref readonly char GetRawData(this string str)
+        public static unsafe ref readonly char GetRawData(this string str)
         {
-            const string pinnedString = "pinnedStr";
-            const string methodExit = "exit";
-            DeclareLocals(true, new Var(pinnedString, typeof(string)).Pinned());
-            Push(str);
-            Stloc(pinnedString);
-            Ldloc(pinnedString);
-            Conv_U();
-            Dup();
-            Brfalse(methodExit);
-            Push(RuntimeHelpers.OffsetToStringData);
-            Conv_U();
-            Add();
-            MarkLabel(methodExit);
-            return ref ReturnRef<char>();
+            fixed (char* ptr = str)
+                return ref ptr[0];
         }
 
         /// <summary>
