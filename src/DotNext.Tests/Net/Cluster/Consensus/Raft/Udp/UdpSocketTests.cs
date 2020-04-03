@@ -17,13 +17,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     {
         private sealed class SimpleServerExchangePool : Assert, ILocalMember, IExchangePool
         {
-            internal SimpleServerExchangePool()
+            internal SimpleServerExchangePool(bool smallAmountOfMetadata = false)
             {
                 var metadata = ImmutableDictionary.CreateBuilder<string, string>();
-                var rnd = new Random();
-                const string AllowedChars = "abcdefghijklmnopqrstuvwxyz1234567890";
-                for(var i = 0; i < 20; i++)
-                    metadata.Add(string.Concat("key", i.ToString()), rnd.NextString(AllowedChars, 20));
+                if(smallAmountOfMetadata)
+                    metadata.Add("a", "b");
+                else
+                {
+                    var rnd = new Random();
+                    const string AllowedChars = "abcdefghijklmnopqrstuvwxyz1234567890";
+                    for(var i = 0; i < 20; i++)
+                        metadata.Add(string.Concat("key", i.ToString()), rnd.NextString(AllowedChars, 20));
+                }
                 Metadata = metadata.ToImmutableDictionary();
             }
 
@@ -121,15 +126,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             client.Shutdown(SocketShutdown.Both);
         }
 
-        [Fact]
-        public static async Task MetadataRequestResponse()
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public static async Task MetadataRequestResponse(bool smallAmountOfMetadata)
         {
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
             using var server = new UdpServer(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
             server.ReceiveTimeout = timeout;
-            var exchangePool = new SimpleServerExchangePool();
+            var exchangePool = new SimpleServerExchangePool(smallAmountOfMetadata);
             server.Start(exchangePool);
             //prepare client
             using var client = new UdpClient(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
