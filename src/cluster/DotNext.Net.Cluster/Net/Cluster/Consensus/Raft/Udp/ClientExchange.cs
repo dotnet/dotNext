@@ -36,9 +36,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
     internal abstract class ClientExchange : ClientExchange<Result<bool>>
     {
-        private protected readonly long CurrentTerm;
+        private protected readonly long currentTerm;
 
-        private protected ClientExchange(long term) => CurrentTerm = term;
+        private protected ClientExchange(long term) => currentTerm = term;
 
         public sealed override ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint sender, CancellationToken token)
         {
