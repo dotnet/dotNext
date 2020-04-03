@@ -19,23 +19,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             MetadataRequestReceived,
             SendingMetadata,
             ResignRequestReceived,
+            HeartbeatRequestReceived,
         }
 
-        private readonly IRaftRpcServer server;
+        private readonly ILocalMember server;
         private Task? task;
         private State state;
 
-        internal ServerExchange(IRaftRpcServer server, PipeOptions? options = null)
+        internal ServerExchange(ILocalMember server, PipeOptions? options = null)
             : base(options)
             => this.server = server;
         
         private void BeginResign(CancellationToken token)
             => task = server.ResignAsync(token);
         
-        private void BeginVote(ReadOnlyMemory<byte> payload, CancellationToken token)
+        private void BeginVote(ReadOnlyMemory<byte> payload, EndPoint member, CancellationToken token)
         {
             VoteExchange.Parse(payload.Span, out var term, out var lastLogIndex, out var lastLogTerm);
-            task = server.VoteAsync(term, lastLogIndex, lastLogTerm, token);
+            task = server.ReceiveVoteAsync(term, lastLogIndex, lastLogTerm, member, token);
         }
 
         private void BeginSendMetadata(CancellationToken token)
@@ -49,7 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             {
                 case MessageType.Vote:
                     state = State.VoteRequestReceived;
-                    BeginVote(payload, token);
+                    BeginVote(payload, endpoint, token);
                     break;
                 case MessageType.Metadata:
                     if(headers.Control == FlowControl.None)
