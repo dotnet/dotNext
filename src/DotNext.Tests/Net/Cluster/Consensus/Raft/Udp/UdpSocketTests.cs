@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     [ExcludeFromCodeCoverage]
     public sealed class UdpSocketTests : Test
     {
-        private sealed class SimpleServerExchangePool : Assert, IRaftRpcServer, IExchangePool
+        private sealed class SimpleServerExchangePool : Assert, ILocalMember, IExchangePool
         {
             internal SimpleServerExchangePool()
             {
@@ -27,9 +27,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 Metadata = metadata.ToImmutableDictionary();
             }
 
-            Task<bool> IRaftRpcServer.ResignAsync(CancellationToken token) => Task.FromResult(true);
+            Task<bool> IRaftRpcHandler.ResignAsync(CancellationToken token) => Task.FromResult(true);
 
-            Task<Result<bool>> IRaftRpcServer.VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            Task<Result<bool>> IRaftRpcHandler.ReceiveVoteAsync(long term, long lastLogIndex, long lastLogTerm, EndPoint sender, CancellationToken token)
             {
                 True(token.CanBeCanceled);
                 Equal(42L, term);
