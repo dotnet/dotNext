@@ -35,13 +35,13 @@ namespace DotNext
     public static class Function
     {
         private sealed class Closure<T, A, R>
-            where T : notnull
             where A : struct
         {
             private readonly Function<T, A, R> function;
+            [NotNull]
             private readonly T target;
 
-            internal Closure(Function<T, A, R> function, T target)
+            internal Closure(Function<T, A, R> function, [DisallowNull]T target)
             {
                 this.function = function;
                 this.target = target;
@@ -61,8 +61,7 @@ namespace DotNext
         /// <param name="function">The function to be converted.</param>
         /// <param name="this">The first argument to be captured.</param>
         /// <returns>The function instance.</returns>
-        public static Function<A, R> Capture<T, A, R>(this Function<T, A, R> function, T @this)
-            where T : notnull
+        public static Function<A, R> Capture<T, A, R>(this Function<T, A, R> function, [DisallowNull]T @this)
             where A : struct
             => new Closure<T, A, R>(function, @this).Invoke;
 

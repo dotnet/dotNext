@@ -231,7 +231,7 @@ namespace DotNext.Reflection
     public sealed class Field<T, V> : FieldBase<V>, IField<T, V>
     {
         [return: MaybeNull]
-        private delegate ref V Provider([DisallowNull]in T instance);
+        private delegate ref V Provider(in T instance);
 
         private sealed class Cache : MemberCache<FieldInfo, Field<T, V>>
         {

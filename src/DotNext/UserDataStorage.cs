@@ -281,7 +281,6 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        [return: NotNull]
         public V GetOrSet<V>(UserDataSlot<V> slot, Func<V> valueFactory) => GetOrSet(slot, new ValueFunc<V>(valueFactory, true));
 
         /// <summary>
@@ -293,7 +292,6 @@ namespace DotNext
         /// <param name="arg">The argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        [return: NotNull]
         public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, Func<T, V> valueFactory)
             => GetOrSet(slot, arg, new ValueFunc<T, V>(valueFactory, true));
 
@@ -308,7 +306,6 @@ namespace DotNext
         /// <param name="arg2">The second argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        [return: NotNull]
         public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, Func<T1, T2, V> valueFactory)
             => GetOrSet(slot, arg1, arg2, new ValueFunc<T1, T2, V>(valueFactory, true));
 
@@ -319,7 +316,6 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        [return: NotNull]
         public V GetOrSet<V>(UserDataSlot<V> slot, in ValueFunc<V> valueFactory)
             => GetOrCreateStorage().GetOrSet(slot, ref Unsafe.AsRef(valueFactory));
 
@@ -332,7 +328,6 @@ namespace DotNext
         /// <param name="arg">The argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        [return: NotNull]
         public V GetOrSet<T, V>(UserDataSlot<V> slot, T arg, in ValueFunc<T, V> valueFactory)
         {
             var supplier = new Supplier<T, V>(arg, valueFactory);
@@ -350,7 +345,6 @@ namespace DotNext
         /// <param name="arg2">The second argument to be passed into factory.</param>
         /// <param name="valueFactory">The value supplier which is called when no user data exists.</param>
         /// <returns>The data associated with the slot.</returns>
-        [return: NotNull]
         public V GetOrSet<T1, T2, V>(UserDataSlot<V> slot, T1 arg1, T2 arg2, in ValueFunc<T1, T2, V> valueFactory)
         {
             var supplier = new Supplier<T1, T2, V>(arg1, arg2, valueFactory);
@@ -364,7 +358,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">User data.</param>
         /// <returns><see langword="true"/>, if user data slot exists in this collection.</returns>
-        public bool TryGet<V>(UserDataSlot<V> slot, [NotNullWhen(true)]out V userData)
+        public bool TryGet<V>(UserDataSlot<V> slot, [MaybeNullWhen(false)]out V userData)
         {
             var storage = GetStorage();
             if (storage is null)
@@ -404,7 +398,7 @@ namespace DotNext
         /// <param name="slot">The slot identifying user data.</param>
         /// <param name="userData">Remove user data.</param>
         /// <returns><see langword="true"/>, if data is removed from this collection.</returns>
-        public bool Remove<V>(UserDataSlot<V> slot, [NotNullWhen(true)]out V userData)
+        public bool Remove<V>(UserDataSlot<V> slot, [MaybeNullWhen(false)]out V userData)
         {
             var storage = GetStorage();
             if (storage is null)
