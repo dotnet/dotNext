@@ -216,7 +216,7 @@ namespace DotNext
         /// </summary>
         /// <param name="value">Extracted value.</param>
         /// <returns><see langword="true"/> if value is present; otherwise, <see langword="false"/>.</returns>
-        public bool TryGet([MaybeNullWhen(false)]out T value)
+        public bool TryGet([NotNullWhen(true)]out T value)
         {
             value = this.value;
             return HasValue;
