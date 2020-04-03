@@ -201,8 +201,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             senderPool.Populate(receiverPool.Length);
         }
 
-        internal void Stop() => Shutdown(SocketShutdown.Both);
-
         private protected void ProcessCancellation<TChannel, TContext>(RefAction<TChannel, TContext> action, ref TChannel channel, TContext context, SocketAsyncEventArgs args)
             where TChannel : struct, IChannel
         {
