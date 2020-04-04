@@ -12,6 +12,8 @@ using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
+    using IO.Log;
+
     [ExcludeFromCodeCoverage]
     public sealed class UdpSocketTests : Test
     {
@@ -34,7 +36,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
             Task<bool> IRaftRpcHandler.ResignAsync(CancellationToken token) => Task.FromResult(true);
 
-            Task<Result<bool>> IRaftRpcHandler.ReceiveVoteAsync(long term, long lastLogIndex, long lastLogTerm, EndPoint sender, CancellationToken token)
+            Task<Result<bool>> IRaftRpcHandler.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+            {
+                Equal(42L, senderTerm);
+                if(entries.RemainingCount > 0)
+                {
+
+                }
+                else
+                {
+                    Equal(1, prevLogIndex);
+                    Equal(56L, prevLogTerm);
+                    Equal(10, commitIndex);
+                }
+                return Task.FromResult(new Result<bool>(43L, true));
+            }
+
+            Task<Result<bool>> IRaftRpcHandler.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
                 True(token.CanBeCanceled);
                 Equal(42L, term);
@@ -75,7 +93,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         [Fact]
-        public static async Task VoteRequestResponse()
+        public static async Task RequestResponse()
         {
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
@@ -85,13 +103,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             server.Start(new SimpleServerExchangePool());
             //prepare client
             using var client = new UdpClient(serverAddr, 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
-            using var timeoutTokenSource = new CancellationTokenSource(timeout);
             client.Start();
-            var exchange = new VoteExchange(42L, 1L, 56L);
-            client.Enqueue(exchange, timeoutTokenSource.Token);
-            var result = await exchange.Task;
-            True(result.Value);
-            Equal(43L, result.Term);
+            //Vote request
+            CancellationTokenSource timeoutTokenSource;
+            Result<bool> result;
+            using(timeoutTokenSource = new CancellationTokenSource(timeout))
+            {
+                var exchange = new VoteExchange(42L, 1L, 56L);
+                client.Enqueue(exchange, timeoutTokenSource.Token);
+                result = await exchange.Task;
+                True(result.Value);
+                Equal(43L, result.Term);
+            }
+            //Resign request
+            using(timeoutTokenSource = new CancellationTokenSource(timeout))
+            {
+                var exchange = new ResignExchange();
+                client.Enqueue(exchange, timeoutTokenSource.Token);
+                True(await exchange.Task);
+            }
+            //Heartbeat request
+            using(timeoutTokenSource = new CancellationTokenSource(timeout))
+            {
+                var exchange = new HeartbeatExchange(42L, 1L, 56L, 10L);
+                client.Enqueue(exchange, timeoutTokenSource.Token);
+                result = await exchange.Task;
+                True(result.Value);
+                Equal(43L, result.Term);
+            }
             client.Shutdown(SocketShutdown.Both);
         }
 
@@ -146,24 +185,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var actual = new Dictionary<string, string>();
             await exchange.ReadAsync(actual, default);
             Equal(exchangePool.Metadata, actual);
-            client.Shutdown(SocketShutdown.Both);
-        }
-
-        [Fact]
-        public static async Task ResignRequestResponse()
-        {
-            var timeout = TimeSpan.FromSeconds(20);
-            //prepare server
-            var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = new UdpServer(serverAddr, 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
-            server.ReceiveTimeout = timeout;
-            server.Start(new SimpleServerExchangePool());
-            //prepare client
-            using var client = new UdpClient(serverAddr, 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
-            client.Start();
-            var exchange = new ResignExchange();
-            client.Enqueue(exchange, default);
-            True(await exchange.Task);
             client.Shutdown(SocketShutdown.Both);
         }
     }
