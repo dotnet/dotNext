@@ -5,7 +5,6 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
@@ -20,14 +19,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private bool state;
 
+        internal MetadataExchange(PipeOptions? options = null)
+            : base(options)
+        {
+        }
+
         private static Encoding Encoding => Encoding.UTF8;
 
         internal static async Task WriteAsync(PipeWriter writer, IReadOnlyDictionary<string, string> input, CancellationToken token)
         {
             //write length
-            var lengthBytes = new byte[sizeof(int)];
-            WriteInt32LittleEndian(lengthBytes, input.Count);
-            var flushResult = await writer.WriteAsync(lengthBytes, token).ConfigureAwait(false);
+            var flushResult = await writer.WriteInt32Async(input.Count, true, token).ConfigureAwait(false);
             if(flushResult.IsCompleted)
                 return;
             flushResult.ThrowIfCancellationRequested(token);
@@ -44,9 +46,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         internal async Task ReadAsync(IDictionary<string, string> output, CancellationToken token)
         {
             //read length
-            var lengthBytes = new byte[sizeof(int)];
-            await Reader.ReadAsync(lengthBytes, token).ConfigureAwait(false);
-            var length = ReadInt32LittleEndian(lengthBytes);
+            var length = await Reader.ReadInt32Async(true, token).ConfigureAwait(false);
             var context = new DecodingContext(Encoding, true);
             while(--length >= 0)
             {
