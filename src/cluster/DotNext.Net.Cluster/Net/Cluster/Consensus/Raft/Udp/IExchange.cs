@@ -20,7 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         void OnCanceled(CancellationToken token);
 
-        internal static int WriteResult(Result<bool> result, Span<byte> output)
+        internal static int WriteResult(in Result<bool> result, Span<byte> output)
         {
             WriteInt64LittleEndian(output, result.Term);
             output[sizeof(long)] = (byte)result.Value.ToInt32();

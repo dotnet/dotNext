@@ -8,6 +8,8 @@ using System.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
+    using static Runtime.Intrinsics;
+
     internal sealed class UdpServer : UdpSocket
     {
         [StructLayout(LayoutKind.Auto)]
@@ -61,7 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private protected override void EndReceive(object sender, SocketAsyncEventArgs args)
         {
-            var exchangePool = (IExchangePool)args.UserToken;
+            var exchangePool = Cast<IExchangePool>(args.UserToken);
             ReadOnlyMemory<byte> datagram = args.MemoryBuffer.Slice(0, args.BytesTransferred);
             //dispatch datagram to appropriate exchange
             var correlationId = new CorrelationId(ref datagram);

@@ -105,7 +105,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 taskSource.Reset();
             }
 
-            internal ValueTask Task => new ValueTask(this, taskSource.Version);
+            internal ValueTask GetTask(bool pending)
+            {
+                if(pending)
+                    return new ValueTask(this, taskSource.Version);
+                else
+                {
+                    var error = SocketError;
+                    backToPool(this);
+                    return error == SocketError.Success ? 
+                        new ValueTask() :
+                        new ValueTask(Task.FromException(new SocketException((int)error)));
+                }
+            }
 
             protected override void OnCompleted(SocketAsyncEventArgs e)
             {
@@ -264,12 +276,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             if(senderPool.TryTake(out var task))
             {
                 task.Initialize(datagram, endPoint);
-                if(SendToAsync(task))
-                    return task.Task;
-                else if(task.SocketError == SocketError.Success)
-                    return new ValueTask();
-                else
-                    return new ValueTask(Task.FromException(new SocketException((int)task.SocketError)));
+                return task.GetTask(SendToAsync(task));
             }
             else
                 return new ValueTask(Task.FromException(new InvalidOperationException(ExceptionMessages.NotEnoughSenders)));
