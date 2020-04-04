@@ -17,6 +17,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             this.commitIndex = commitIndex;
         }
 
+        internal static void Parse(ReadOnlySpan<byte> payload, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex)
+        {
+            term = ReadInt64LittleEndian(payload);
+            payload = payload.Slice(sizeof(long));
+
+            prevLogIndex = ReadInt64LittleEndian(payload);
+            payload = payload.Slice(sizeof(long));
+
+            prevLogTerm = ReadInt64LittleEndian(payload);
+            payload = payload.Slice(sizeof(long));
+
+            commitIndex = ReadInt64LittleEndian(payload);
+        }
+
         private void CreateOutboundMessage(Span<byte> payload)
         {
             WriteInt64LittleEndian(payload, currentTerm);
