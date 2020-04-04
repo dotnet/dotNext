@@ -23,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         internal static int WriteResult(in Result<bool> result, Span<byte> output)
         {
             WriteInt64LittleEndian(output, result.Term);
-            output[sizeof(long)] = (byte)result.Value.ToInt32();
+            output[sizeof(long)] = result.Value.ToByte();
             return sizeof(long) + 1;
         }
 

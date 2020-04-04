@@ -111,7 +111,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         {
             var result = await Cast<Task<bool>>(Interlocked.Exchange(ref task, null)).ConfigureAwait(false);
             task = null;
-            payload.Span[0] = (byte)result.ToInt32();
+            payload.Span[0] = result.ToByte();
             return (new PacketHeaders(MessageType.Resign, FlowControl.Ack), 1, false);
         }
 
