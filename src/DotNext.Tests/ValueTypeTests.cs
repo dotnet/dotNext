@@ -129,6 +129,13 @@ namespace DotNext
         }
 
         [Fact]
+        public static void BoolToByteConversion()
+        {
+            Equal(1, true.ToByte());
+            Equal(0, false.ToByte());
+        }
+
+        [Fact]
         public static void BitwiseEqualityCheck()
         {
             var value1 = Guid.NewGuid();
