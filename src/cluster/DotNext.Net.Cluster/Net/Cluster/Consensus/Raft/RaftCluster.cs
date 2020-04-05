@@ -412,15 +412,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
             try
             {
-                if (snapshot.IsSnapshot && senderTerm >= auditTrail.Term && snapshotIndex > auditTrail.GetLastIndex(true))
+                var currentTerm = auditTrail.Term;
+                if (snapshot.IsSnapshot && senderTerm >= currentTerm && snapshotIndex > auditTrail.GetLastIndex(true))
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
                     await auditTrail.AppendAsync(snapshot, snapshotIndex).ConfigureAwait(false);
-                    return new Result<bool>(auditTrail.Term, true);
+                    return new Result<bool>(currentTerm, true);
                 }
                 else
-                    return new Result<bool>(auditTrail.Term, false);
+                    return new Result<bool>(currentTerm, false);
             }
             finally
             {
@@ -461,7 +462,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 var result = false;
-                if (auditTrail.Term <= senderTerm)
+                var currentTerm = auditTrail.Term;
+                if (currentTerm <= senderTerm)
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
@@ -478,7 +480,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0;
                     }
                 }
-                return new Result<bool>(auditTrail.Term, result);
+                return new Result<bool>(currentTerm, result);
             }
             finally
             {
@@ -518,9 +520,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
             try
             {
-                if (auditTrail.Term > senderTerm) //currentTerm > term
+                var currentTerm = auditTrail.Term;
+                if (currentTerm > senderTerm) //currentTerm > term
                     goto reject;
-                if (auditTrail.Term < senderTerm)
+                if (currentTerm < senderTerm)
                 {
                     Leader = null;
                     await StepDown(senderTerm).ConfigureAwait(false);
@@ -532,10 +535,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
                 {
                     await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
-                    return new Result<bool>(auditTrail.Term, true);
+                    return new Result<bool>(currentTerm, true);
                 }
                 reject:
-                return new Result<bool>(auditTrail.Term, false);
+                return new Result<bool>(currentTerm, false);
             }
             finally
             {
@@ -633,11 +636,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             Logger.TransitionToLeaderStateStarted();
             using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
-            if (lockHolder && state is CandidateState candidateState && candidateState.Term == auditTrail.Term)
+            long currentTerm;
+            if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
             {
                 candidateState.Dispose();
                 Leader = newLeader as TMember;
-                state = new LeaderState(this, allowPartitioning, auditTrail.Term) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
+                state = new LeaderState(this, allowPartitioning, currentTerm) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
                     auditTrail);
                 await auditTrail.AppendNoOpEntry(Token);
                 Metrics?.MovedToLeaderState();
