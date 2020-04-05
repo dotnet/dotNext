@@ -10,6 +10,8 @@ namespace DotNext.Threading
     [ExcludeFromCodeCoverage]
     public sealed class AsyncEventSeriesTests : Test
     {
+        private static int Compare(int x, int y) => x.CompareTo(y);
+
         [Fact]
         public static void InstantReturn()
         {
@@ -45,7 +47,7 @@ namespace DotNext.Threading
         public static async Task WaitForEvent2()
         {
             var func = new ValueFunc<int, int>(Advance);
-            using var series = new AsyncEventSeries<int>(40, Comparer<int>.Default);
+            using var series = new AsyncEventSeries<int>(40, Compare);
             var eventTask = series.WaitAsync(TimeSpan.FromMinutes(1), CancellationToken.None);
             var valueTask = series.WaitAsync(42, TimeSpan.FromMinutes(1), CancellationToken.None);
             False(eventTask.IsCompleted);
