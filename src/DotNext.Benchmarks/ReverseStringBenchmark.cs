@@ -13,23 +13,15 @@ namespace DotNext
         [Params("", "abccdahehkgbe387jwgr", "wfjwkhwfhwjgfkwjggwhjvfkwhwkgwjgbwjbwjbvbwvjwbvwjbvw57383thgewjugteg")]
         public string StringValue;
 
-        private static void DevNull(string value)
-        {
-
-        }
+        [Benchmark]
+        public string OptimizedReverse() => StringValue.Reverse();
 
         [Benchmark]
-        public void OptimizedReverse()
-        {
-            DevNull(StringValue.Reverse());
-        }
-
-        [Benchmark]
-        public void ClassicReverse()
+        public string ClassicReverse()
         {
             var buffer = StringValue.ToCharArray();
             Array.Reverse(buffer);
-            DevNull(new string(buffer));
+            return new string(buffer);
         }
     }
 }
