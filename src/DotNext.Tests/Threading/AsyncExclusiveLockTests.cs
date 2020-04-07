@@ -49,5 +49,19 @@ namespace DotNext.Threading
             False(@lock.TryAcquire());
             @lock.Release();
         }
+
+        [Fact]
+        public static async Task CancelSuspendedCallers()
+        {
+            using var @lock = new AsyncExclusiveLock();
+            True(@lock.TryAcquire());
+            var waitNode = @lock.AcquireAsync(CancellationToken.None);
+            False(waitNode.IsCompleted);
+            Throws<ArgumentOutOfRangeException>(() => @lock.CancelSuspendedCallers(new CancellationToken(false)));
+            @lock.CancelSuspendedCallers(new CancellationToken(true));
+            True(waitNode.IsCompleted);
+            False(waitNode.IsCompletedSuccessfully);
+            True(waitNode.IsCanceled);
+        }
     }
 }

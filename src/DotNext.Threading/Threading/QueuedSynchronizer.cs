@@ -135,6 +135,24 @@ namespace DotNext.Threading
         }
 
         /// <summary>
+        /// Cancels all suspended callers.
+        /// </summary>
+        /// <param name="token">The canceled token.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="token"/> is not in canceled state.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void CancelSuspendedCallers(CancellationToken token)
+        {
+            if(!token.IsCancellationRequested)
+                throw new ArgumentOutOfRangeException(nameof(token));
+            for(WaitNode? current = head, next; !(current is null); current = next)
+            {
+                next = current.CleanupAndGotoNext();
+                current.TrySetCanceled(token);
+            }
+            head = tail = null;
+        }
+
+        /// <summary>
         /// Releases all resources associated with exclusive lock.
         /// </summary>
         /// <remarks>
