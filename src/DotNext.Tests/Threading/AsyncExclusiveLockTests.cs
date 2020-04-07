@@ -51,7 +51,7 @@ namespace DotNext.Threading
         }
 
         [Fact]
-        public static async Task CancelSuspendedCallers()
+        public static void CancelSuspendedCallers()
         {
             using var @lock = new AsyncExclusiveLock();
             True(@lock.TryAcquire());
