@@ -83,9 +83,11 @@ namespace DotNext.Threading
         /// Signals to all suspended callers about the new state.
         /// </summary>
         /// <param name="newState">The new state of the trigger.</param>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Signal(TState newState)
         {
+            ThrowIfDisposed();
             Unsafe.Unbox<State>(state).Value = newState;
             ResumePendingCallers(newState);
         }
@@ -94,12 +96,14 @@ namespace DotNext.Threading
         /// Signals to all suspended callers about the new state.
         /// </summary>
         /// <param name="transition">State transition function.</param>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Signal(in ValueFunc<TState, TState> transition)
         {
-            ref var stateHolder = ref Unsafe.Unbox<State>(state);
-            stateHolder.Value = transition.Invoke(stateHolder.Value);
-            ResumePendingCallers(stateHolder.Value);
+            ThrowIfDisposed();
+            ref var currentState = ref Unsafe.Unbox<State>(state).Value;
+            currentState = transition.Invoke(currentState);
+            ResumePendingCallers(currentState);
         }
         
         /// <summary>
@@ -108,20 +112,42 @@ namespace DotNext.Threading
         /// <typeparam name="TArgs">The type of the arguments of transition function.</typeparam>
         /// <param name="transition">State transition function.</param>
         /// <param name="args">The arguments to be passed to the function.</param>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void Signal<TArgs>(in ValueRefAction<TState, TArgs> transition, TArgs args)
         {
-            ref var stateHolder = ref Unsafe.Unbox<State>(state);
-            transition.Invoke(ref stateHolder.Value, args);
-            ResumePendingCallers(stateHolder.Value);
+            ThrowIfDisposed();
+            ref var currentState = ref Unsafe.Unbox<State>(state).Value;
+            transition.Invoke(ref currentState, args);
+            ResumePendingCallers(currentState);
+        }
+
+        /// <summary>
+        /// Signals to all suspended callers about the new state.
+        /// </summary>
+        /// <typeparam name="TArgs">The type of the arguments of state mutator.</typeparam>
+        /// <param name="mutator">State mutation.</param>
+        /// <param name="args">The arguments to be passed to the mutator.</param>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void Signal<TArgs>(in ValueAction<TState, TArgs> mutator, TArgs args)
+        {
+            ThrowIfDisposed();
+            var newState = Unsafe.Unbox<State>(state).Value;
+            mutator.Invoke(newState, args);
+            ResumePendingCallers(newState);
         }
 
         /// <summary>
         /// Signals to all suspended callers without changing state.
         /// </summary>
-        /// <returns></returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Signal() => ResumePendingCallers(Unsafe.Unbox<State>(state).Value);
+        public void Signal()
+        {
+            ThrowIfDisposed();
+            ResumePendingCallers(Unsafe.Unbox<State>(state).Value);
+        }
 
         bool IAsyncEvent.Signal()
         {
@@ -148,7 +174,7 @@ namespace DotNext.Threading
         /// This method always suspends the caller.
         /// </remarks>
         /// <param name="timeout">The time to wait for the signal.</param>
-        /// <param name="token">The token</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
@@ -161,7 +187,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="condition">The condition to wait for.</param>
         /// <param name="timeout">The time to wait for the signal.</param>
-        /// <param name="token">The token</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
@@ -176,11 +202,154 @@ namespace DotNext.Threading
         /// Suspends the caller and waits for the event that meets to the specified condition.
         /// </summary>
         /// <param name="condition">The condition to wait for.</param>
-        /// <param name="token">The token</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous execution of the operation.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task WaitAsync(Predicate<TState> condition, CancellationToken token = default)
             => WaitAsync(condition, InfiniteTimeSpan, token);
+        
+        /// <summary>
+        /// Signals to all suspended callers and waits for the event that meets to the specified condition
+        /// atomically.
+        /// </summary>
+        /// <param name="newState">The new state of the trigger.</param>
+        /// <param name="condition">The condition to wait for.</param>
+        /// <param name="timeout">The time to wait for the signal.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public Task<bool> SignalAndWaitAsync(TState newState, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
+        {
+            Unsafe.Unbox<State>(state).Value = newState;
+            ResumePendingCallers(newState);
+            var manager = new ConditionalLockManager(state, condition);
+            return WaitAsync(ref manager, timeout, token);
+        }
+
+        /// <summary>
+        /// Signals to all suspended callers and waits for the event that meets to the specified condition
+        /// atomically.
+        /// </summary>
+        /// <param name="newState">The new state of the trigger.</param>
+        /// <param name="condition">The condition to wait for.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of the operation.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task SignalAndWaitAsync(TState newState, Predicate<TState> condition, CancellationToken token = default)
+            => SignalAndWaitAsync(newState, condition, InfiniteTimeSpan, token);
+
+        /// <summary>
+        /// Signals to all suspended callers and waits for the event that meets to the specified condition
+        /// atomically.
+        /// </summary>
+        /// <param name="transition">State transition function.</param>
+        /// <param name="condition">The condition to wait for.</param>
+        /// <param name="timeout">The time to wait for the signal.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public Task<bool> SignalAndWaitAsync(in ValueFunc<TState, TState> transition, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
+        {
+            ref var currentState = ref Unsafe.Unbox<State>(state).Value;
+            currentState = transition.Invoke(currentState);
+            ResumePendingCallers(currentState);
+            var manager = new ConditionalLockManager(state, condition);
+            return WaitAsync(ref manager, timeout, token);
+        }
+
+        /// <summary>
+        /// Signals to all suspended callers and waits for the event that meets to the specified condition
+        /// atomically.
+        /// </summary>
+        /// <param name="transition">State transition function.</param>
+        /// <param name="condition">The condition to wait for.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The task representing asynchronous execution of the operation.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task SignalAndWaitAsync(in ValueFunc<TState, TState> transition, Predicate<TState> condition, CancellationToken token = default)
+            => SignalAndWaitAsync(in transition, condition, InfiniteTimeSpan, token);
+        
+        /// <summary>
+        /// Signals to all suspended callers and waits for the event that meets to the specified condition
+        /// atomically.
+        /// </summary>
+        /// <param name="transition">State transition function.</param>
+        /// <param name="args">The arguments to be passed to the function.</param>
+        /// <param name="condition">The condition to wait for.</param>
+        /// <param name="timeout">The time to wait for the signal.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArgs">The type of the arguments of transition function.</typeparam>
+        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public Task<bool> SignalAndWaitAsync<TArgs>(in ValueRefAction<TState, TArgs> transition, TArgs args, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
+        {
+            ref var stateHolder = ref Unsafe.Unbox<State>(state);
+            transition.Invoke(ref stateHolder.Value, args);
+            ResumePendingCallers(stateHolder.Value);
+            var manager = new ConditionalLockManager(state, condition);
+            return WaitAsync(ref manager, timeout, token);
+        }
+
+        /// <summary>
+        /// Signals to all suspended callers and waits for the event that meets to the specified condition
+        /// atomically.
+        /// </summary>
+        /// <param name="transition">State transition function.</param>
+        /// <param name="args">The arguments to be passed to the function.</param>
+        /// <param name="condition">The condition to wait for.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArgs">The type of the arguments of transition function.</typeparam>
+        /// <returns>The task representing asynchronous execution of the operation.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task SignalAndWaitAsync<TArgs>(in ValueRefAction<TState, TArgs> transition, TArgs args, Predicate<TState> condition, CancellationToken token = default)
+            => SignalAndWaitAsync(in transition, args, condition, InfiniteTimeSpan, token);
+
+        /// <summary>
+        /// Signals to all suspended callers and waits for the event that meets to the specified condition
+        /// atomically.
+        /// </summary>
+        /// <param name="transition">State transition action.</param>
+        /// <param name="args">The arguments to be passed to the action.</param>
+        /// <param name="condition">The condition to wait for.</param>
+        /// <param name="timeout">The time to wait for the signal.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArgs">The type of the arguments of transition action.</typeparam>
+        /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public Task<bool> SignalAndWaitAsync<TArgs>(in ValueAction<TState, TArgs> transition, TArgs args, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
+        {
+            var newState = Unsafe.Unbox<State>(state).Value;
+            transition.Invoke(newState, args);
+            ResumePendingCallers(newState);
+            var manager = new ConditionalLockManager(state, condition);
+            return WaitAsync(ref manager, timeout, token);
+        }
+
+        /// <summary>
+        /// Signals to all suspended callers and waits for the event that meets to the specified condition
+        /// atomically.
+        /// </summary>
+        /// <param name="transition">State transition action.</param>
+        /// <param name="args">The arguments to be passed to the action.</param>
+        /// <param name="condition">The condition to wait for.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <typeparam name="TArgs">The type of the arguments of transition action.</typeparam>
+        /// <returns>The task representing asynchronous execution of the operation.</returns>
+        /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task SignalAndWaitAsync<TArgs>(in ValueAction<TState, TArgs> transition, TArgs args, Predicate<TState> condition, CancellationToken token = default)
+            => SignalAndWaitAsync(in transition, args, condition, InfiniteTimeSpan, token);
     }
 }
