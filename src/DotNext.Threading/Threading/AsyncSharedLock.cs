@@ -156,7 +156,7 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task AcquireAsync(bool strongLock, CancellationToken token) => TryAcquireAsync(strongLock, InfiniteTimeSpan, token);
 
-        private void ReleasePendingWeakLocks()
+        private void ResumePendingCallers()
         {
             for (WaitNode? current = head, next; !(current is null || current is StrongLockNode) && state.RemainingLocks > 0L; state.RemainingLocks--, current = next)
             {
@@ -178,7 +178,7 @@ namespace DotNext.Threading
             if (state.IsEmpty)    //nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
             state.RemainingLocks = ConcurrencyLevel - 1;
-            ReleasePendingWeakLocks();
+            ResumePendingCallers();
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace DotNext.Threading
                 state.RemainingLocks = ExclusiveMode;
             }
             else
-                ReleasePendingWeakLocks();
+                ResumePendingCallers();
         }
     }
 }
