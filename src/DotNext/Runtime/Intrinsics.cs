@@ -53,6 +53,13 @@ namespace DotNext.Runtime
             return Return<bool>();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static ref TTo InToRef<TFrom, TTo>(in TFrom source)
+        {
+            Ldarg(nameof(source));
+            return ref ReturnRef<TTo>();
+        }
+
         /// <summary>
         /// Returns default value of the given type.
         /// </summary>
