@@ -48,10 +48,10 @@ namespace DotNext.Threading
             trigger.Signal();
             True(eventNode.IsCompletedSuccessfully);
             False(valueNode.IsCompleted);
-            trigger.Signal(state, new ValueAction<State, int>(ModifyState), 14);
+            trigger.Signal(state, ModifyState, 14);
             Equal(14, state.Value);
             False(valueNode.IsCompleted);
-            trigger.Signal(state, new ValueAction<State>(ModifyState));
+            trigger.Signal(state, ModifyState);
             True(valueNode.IsCompletedSuccessfully);
             Equal(42, state.Value);
         }

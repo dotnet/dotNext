@@ -119,11 +119,11 @@ namespace DotNext.Threading
         /// <param name="args">The arguments to be passed to the mutator.</param>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public void Signal<TState, TArgs>(TState state, in ValueAction<TState, TArgs> mutator, TArgs args)
+        public void Signal<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args)
             where TState : class
         {
             ThrowIfDisposed();
-            mutator.Invoke(state, args);
+            mutator(state, args);
             ResumePendingCallers(state);
         }
 
@@ -134,7 +134,7 @@ namespace DotNext.Threading
         /// <param name="mutator">State mutation.</param>
         /// <param name="state">The state to be modified.</param>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
-        public void Signal<TState>(TState state, in ValueAction<TState> mutator)
+        public void Signal<TState>(TState state, Action<TState> mutator)
             where TState : class
         {
             ThrowIfDisposed();
@@ -256,11 +256,11 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public Task<bool> SignalAndWaitAsync<TState, TArgs>(TState state, in ValueAction<TState, TArgs> mutator, TArgs args, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
+        public Task<bool> SignalAndWaitAsync<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
             where TState : class
         {
             ThrowIfDisposed();
-            mutator.Invoke(state, args);
+            mutator(state, args);
             ResumePendingCallers(state);
             var manager = new ConditionalLockManager<TState>(state, condition);
             return WaitAsync<ConditionalNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
@@ -280,9 +280,9 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-         public Task SignalAndWaitAsync<TState, TArgs>(TState state, in ValueAction<TState, TArgs> mutator, TArgs args, Predicate<TState> condition, CancellationToken token = default)
+         public Task SignalAndWaitAsync<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args, Predicate<TState> condition, CancellationToken token = default)
             where TState : class
-            => SignalAndWaitAsync(state, in mutator, args, condition, InfiniteTimeSpan, token);
+            => SignalAndWaitAsync(state, mutator, args, condition, InfiniteTimeSpan, token);
         
         /// <summary>
         /// Signals to all suspended callers and waits for the event that meets to the specified condition
@@ -298,11 +298,11 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public Task<bool> SignalAndWaitAsync<TState>(TState state, in ValueAction<TState> mutator, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
+        public Task<bool> SignalAndWaitAsync<TState>(TState state, Action<TState> mutator, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
             where TState : class
         {
             ThrowIfDisposed();
-            mutator.Invoke(state);
+            mutator(state);
             ResumePendingCallers(state);
             var manager = new ConditionalLockManager<TState>(state, condition);
             return WaitAsync<ConditionalNode<TState>, ConditionalLockManager<TState>>(ref manager, timeout, token);
@@ -320,8 +320,8 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task SignalAndWaitAsync<TState>(TState state, in ValueAction<TState> mutator, Predicate<TState> condition, CancellationToken token = default)
+        public Task SignalAndWaitAsync<TState>(TState state, Action<TState> mutator, Predicate<TState> condition, CancellationToken token = default)
             where TState : class
-            => SignalAndWaitAsync(state, in mutator, condition, InfiniteTimeSpan, token);
+            => SignalAndWaitAsync(state, mutator, condition, InfiniteTimeSpan, token);
     }
 }
