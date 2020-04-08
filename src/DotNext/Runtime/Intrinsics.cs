@@ -902,5 +902,14 @@ namespace DotNext.Runtime
         /// <typeparam name="T">Blittable type.</typeparam>
         /// <param name="value">The value which bytes should be reversed.</param>
         public static void Reverse<T>(ref T value) where T : unmanaged => Span.AsBytes(ref value).Reverse();
+
+        /// <summary>
+        /// Checks whether the specified object is exactly of the specified type.
+        /// </summary>
+        /// <param name="obj">The object to test.</param>
+        /// <typeparam name="T">The expected type of object.</typeparam>
+        /// <returns><see langword="true"/> if <paramref name="obj"/> is not <see langword="null"/> and of type <typeparamref name="T"/>; otherwise, <see langword="false"/>.</returns>
+        public static bool IsExactTypeOf<T>(object? obj)
+            => obj != null && obj.GetType().TypeHandle.Equals(TypeOf<T>());
     }
 }

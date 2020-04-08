@@ -283,5 +283,19 @@ namespace DotNext.Runtime
             Throws<InvalidCastException>(() => objToInt(string.Empty));
             Throws<InvalidCastException>(() => objToInt(null));
         }
+
+        [Fact]
+        public static void ExactTypeCheck()
+        {
+            object obj = 12;
+            True(Intrinsics.IsExactTypeOf<int>(obj));
+            False(Intrinsics.IsExactTypeOf<long>(obj));
+            obj = string.Empty;
+            True(Intrinsics.IsExactTypeOf<string>(obj));
+            False(Intrinsics.IsExactTypeOf<object>(obj));
+            obj = Array.Empty<string>();
+            True(Intrinsics.IsExactTypeOf<string[]>(obj));
+            False(Intrinsics.IsExactTypeOf<object[]>(obj));
+        }
     }
 }
