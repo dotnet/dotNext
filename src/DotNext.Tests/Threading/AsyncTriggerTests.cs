@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using Xunit;
 
 namespace DotNext.Threading
@@ -6,69 +7,67 @@ namespace DotNext.Threading
     [ExcludeFromCodeCoverage]
     public sealed class AsyncTriggerTests : Test
     {
+        private sealed class State : StrongBox<int>
+        {
+
+        }
+
         [Fact]
         public static void WaitForValue()
         {
-            using var trigger = new AsyncTrigger<int>(0);
+            var state = new State { Value = 0 };
+            using var trigger = new AsyncTrigger();
             var eventNode = trigger.WaitAsync();
             False(eventNode.IsCompleted);
-            var valueNode = trigger.WaitAsync(i => i == 42);
+            var valueNode = trigger.WaitAsync(state, i => i.Value == 42);
             False(valueNode.IsCompleted);
             trigger.Signal();
             True(eventNode.IsCompletedSuccessfully);
             False(valueNode.IsCompleted);
-            trigger.Signal(14);
+            state.Value = 14;
+            trigger.Signal(state);
             False(valueNode.IsCompleted);
-            trigger.Signal(42);
+            state.Value = 42;
+            trigger.Signal(state);
             True(valueNode.IsCompletedSuccessfully);
         }
 
-        private static void ModifyState(ref int state, int value) => state = value;
+        private static void ModifyState(State state, int value) => state.Value = value;
 
-        private static int ModifyState(int state) => 42;
+        private static void ModifyState(State state) => state.Value = 42;
 
         [Fact]
         public static void WaitForValue2()
         {
-            using var trigger = new AsyncTrigger<int>(0);
+            var state = new State { Value = 0 };
+            using var trigger = new AsyncTrigger();
             var eventNode = trigger.WaitAsync();
             False(eventNode.IsCompleted);
-            var valueNode = trigger.WaitAsync(i => i == 42);
+            var valueNode = trigger.WaitAsync(state, i => i.Value == 42);
             False(valueNode.IsCompleted);
             trigger.Signal();
             True(eventNode.IsCompletedSuccessfully);
             False(valueNode.IsCompleted);
-            trigger.Signal(new ValueRefAction<int, int>(ModifyState), 14);
+            trigger.Signal(state, new ValueAction<State, int>(ModifyState), 14);
+            Equal(14, state.Value);
             False(valueNode.IsCompleted);
-            trigger.Signal(new ValueRefAction<int, int>(ModifyState), 42);
+            trigger.Signal(state, new ValueAction<State>(ModifyState));
             True(valueNode.IsCompletedSuccessfully);
-        }
-
-        [Fact]
-        public static void WaitForValue3()
-        {
-            using var trigger = new AsyncTrigger<int>(0);
-            var eventNode = trigger.WaitAsync();
-            False(eventNode.IsCompleted);
-            var valueNode = trigger.WaitAsync(i => i == 42);
-            False(valueNode.IsCompleted);
-            trigger.Signal();
-            True(eventNode.IsCompletedSuccessfully);
-            False(valueNode.IsCompleted);
-            trigger.Signal(new ValueRefAction<int, int>(ModifyState), 42);
-            True(valueNode.IsCompletedSuccessfully);
+            Equal(42, state.Value);
         }
 
         [Fact]
         public static void SignalAndWait()
         {
-            using var trigger = new AsyncTrigger<int>(0);
-            var waitTask = trigger.SignalAndWaitAsync(10, i => i == 42);
+            var state = new State { Value = 10 };
+            using var trigger = new AsyncTrigger();
+            var waitTask = trigger.SignalAndWaitAsync(state, i => i.Value == 42);
             False(waitTask.IsCompleted);
-            Equal(10, trigger.CurrentState);
-            trigger.Signal(42);
+            Equal(10, state.Value);
+            state.Value = 42;
+            trigger.Signal(state);
             True(waitTask.IsCompletedSuccessfully);
-            Equal(42, trigger.CurrentState);
+            Equal(42, state.Value);
         }
     }
 }
