@@ -7,6 +7,8 @@ using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    using Runtime.CompilerServices;
+
     /// <summary>
     /// Represents asynchronous trigger which allows to resume suspended
     /// callers based on registered conditions.
@@ -40,29 +42,29 @@ namespace DotNext.Threading
         [StructLayout(LayoutKind.Auto)]
         private readonly struct ConditionalLockManager : ILockManager<ConditionalNode>
         {
-            private readonly object state;
+            private readonly Box<State> state;
             private readonly Predicate<TState> condition;
 
-            internal ConditionalLockManager(object state, Predicate<TState> condition)
+            internal ConditionalLockManager(Box<State> state, Predicate<TState> condition)
             {
                 this.state = state;
                 this.condition = condition;
             }
 
-            bool ILockManager<ConditionalNode>.TryAcquire() => condition(Unsafe.Unbox<State>(state).Value);
+            bool ILockManager<ConditionalNode>.TryAcquire() => condition(state.Value.Value);
 
             ConditionalNode ILockManager<ConditionalNode>.CreateNode(WaitNode? tail)
                 => tail is null ? new ConditionalNode(condition) : new ConditionalNode(condition, tail);
         }
 
-        private readonly object state;
+        private readonly Box<State> state;
 
         /// <summary>
         /// Initializes a new trigger.
         /// </summary>
         /// <param name="initial">The initial state of the trigger.</param>
         public AsyncTrigger(TState initial)
-            => state = new State(initial);
+            => state = new Box<State>(new State(initial));
         
         bool IAsyncEvent.Reset() => false;
 
@@ -88,7 +90,7 @@ namespace DotNext.Threading
         public void Signal(TState newState)
         {
             ThrowIfDisposed();
-            Unsafe.Unbox<State>(state).Value = newState;
+            state.Value.Value = newState;
             ResumePendingCallers(newState);
         }
 
@@ -101,7 +103,7 @@ namespace DotNext.Threading
         public void Signal(in ValueFunc<TState, TState> transition)
         {
             ThrowIfDisposed();
-            ref var currentState = ref Unsafe.Unbox<State>(state).Value;
+            ref var currentState = ref state.Value.Value;
             currentState = transition.Invoke(currentState);
             ResumePendingCallers(currentState);
         }
@@ -117,7 +119,7 @@ namespace DotNext.Threading
         public void Signal<TArgs>(in ValueRefAction<TState, TArgs> transition, TArgs args)
         {
             ThrowIfDisposed();
-            ref var currentState = ref Unsafe.Unbox<State>(state).Value;
+            ref var currentState = ref state.Value.Value;
             transition.Invoke(ref currentState, args);
             ResumePendingCallers(currentState);
         }
@@ -133,9 +135,9 @@ namespace DotNext.Threading
         public void Signal<TArgs>(in ValueAction<TState, TArgs> mutator, TArgs args)
         {
             ThrowIfDisposed();
-            var newState = Unsafe.Unbox<State>(state).Value;
-            mutator.Invoke(newState, args);
-            ResumePendingCallers(newState);
+            var currentState = state.Value.Value;
+            mutator.Invoke(currentState, args);
+            ResumePendingCallers(currentState);
         }
 
         /// <summary>
@@ -146,7 +148,7 @@ namespace DotNext.Threading
         public void Signal()
         {
             ThrowIfDisposed();
-            ResumePendingCallers(Unsafe.Unbox<State>(state).Value);
+            ResumePendingCallers(state.Value.Value);
         }
 
         bool IAsyncEvent.Signal()
@@ -164,7 +166,7 @@ namespace DotNext.Threading
         public TState CurrentState
         {
             [MethodImpl(MethodImplOptions.Synchronized)]
-            get => Unsafe.Unbox<State>(state).Value;
+            get => state.Value.Value;
         }
 
         /// <summary>
@@ -178,9 +180,8 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-            => WaitAsync(ref Unsafe.Unbox<State>(state), timeout, token);
+            => WaitAsync(ref state.Value, timeout, token);
 
         /// <summary>
         /// Suspends the caller and waits for the event that meets to the specified condition.
@@ -191,7 +192,6 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> WaitAsync(Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
         {
             var manager = new ConditionalLockManager(state, condition);
@@ -223,7 +223,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> SignalAndWaitAsync(TState newState, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
         {
-            Unsafe.Unbox<State>(state).Value = newState;
+            state.Value.Value = newState;
             ResumePendingCallers(newState);
             var manager = new ConditionalLockManager(state, condition);
             return WaitAsync(ref manager, timeout, token);
@@ -256,7 +256,7 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> SignalAndWaitAsync(in ValueFunc<TState, TState> transition, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
         {
-            ref var currentState = ref Unsafe.Unbox<State>(state).Value;
+            ref var currentState = ref state.Value.Value;
             currentState = transition.Invoke(currentState);
             ResumePendingCallers(currentState);
             var manager = new ConditionalLockManager(state, condition);
@@ -292,9 +292,9 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> SignalAndWaitAsync<TArgs>(in ValueRefAction<TState, TArgs> transition, TArgs args, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
         {
-            ref var stateHolder = ref Unsafe.Unbox<State>(state);
-            transition.Invoke(ref stateHolder.Value, args);
-            ResumePendingCallers(stateHolder.Value);
+            ref var currentState = ref state.Value.Value;
+            transition.Invoke(ref currentState, args);
+            ResumePendingCallers(currentState);
             var manager = new ConditionalLockManager(state, condition);
             return WaitAsync(ref manager, timeout, token);
         }
@@ -330,9 +330,9 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public Task<bool> SignalAndWaitAsync<TArgs>(in ValueAction<TState, TArgs> transition, TArgs args, Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
         {
-            var newState = Unsafe.Unbox<State>(state).Value;
-            transition.Invoke(newState, args);
-            ResumePendingCallers(newState);
+            var currentState = state.Value.Value;
+            transition.Invoke(currentState, args);
+            ResumePendingCallers(currentState);
             var manager = new ConditionalLockManager(state, condition);
             return WaitAsync(ref manager, timeout, token);
         }
