@@ -113,8 +113,9 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private protected Task<bool> WaitAsync<M>(ref M manager, TimeSpan timeout, CancellationToken token)
-            where M : struct, ILockManager<WaitNode>
+        private protected Task<bool> WaitAsync<TNode, TManager>(ref TManager manager, TimeSpan timeout, CancellationToken token)
+            where TNode : WaitNode
+            where TManager : struct, ILockManager<TNode>
         {
             ThrowIfDisposed();
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
@@ -133,6 +134,16 @@ namespace DotNext.Threading
                 token.CanBeCanceled ? WaitAsync(tail, token) : tail.Task
                 : WaitAsync(tail, timeout, token);
         }
+
+        private protected Task<bool> WaitAsync<TManager>(ref TManager manager, TimeSpan timeout, CancellationToken token)
+            where TManager : struct, ILockManager<WaitNode>
+            => WaitAsync<WaitNode, TManager>(ref manager, timeout, token);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private protected static bool TryAcquire<TNode, TManager>(ref TManager manager)
+            where TNode : WaitNode
+            where TManager : struct, ILockManager<TNode>
+            => manager.TryAcquire();
 
         /// <summary>
         /// Cancels all suspended callers.
