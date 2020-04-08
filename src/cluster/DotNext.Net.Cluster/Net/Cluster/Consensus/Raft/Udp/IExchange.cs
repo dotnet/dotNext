@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     {
         //false to complete exchange
         //true to call CreateOutboundMessageAsync
-        ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endPoint, CancellationToken token);
+        ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endPoint, CancellationToken token);
 
         //false to complete exchange
         //true to wait for incoming messages

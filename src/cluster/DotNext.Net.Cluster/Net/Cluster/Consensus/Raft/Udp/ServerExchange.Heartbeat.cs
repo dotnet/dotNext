@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
     internal partial class ServerExchange
     {
-        private static readonly ILogEntryProducer<EmptyEntry> EmptyProducer = new LogEntryProducer<EmptyEntry>();
+        private static readonly ILogEntryProducer<ReceivedLogEntry> EmptyProducer = new LogEntryProducer<ReceivedLogEntry>();
 
         private void BeginProcessHeartbeat(ReadOnlyMemory<byte> payload, EndPoint member, CancellationToken token)
         {

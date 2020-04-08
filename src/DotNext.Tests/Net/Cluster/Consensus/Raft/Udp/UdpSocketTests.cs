@@ -12,13 +12,35 @@ using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
+    using IO;
     using IO.Log;
 
     [ExcludeFromCodeCoverage]
     public sealed class UdpSocketTests : Test
     {
+        private sealed class BufferedEntry : BinaryTransferObject, IRaftLogEntry
+        {
+            internal BufferedEntry(long term, DateTimeOffset timestamp, bool isSnapshot, byte[] content)
+                : base(content)
+            {
+                Term = term;
+                Timestamp = timestamp;
+                IsSnapshot = isSnapshot;
+            }
+
+            public long Term { get; }
+
+
+            public DateTimeOffset Timestamp { get; }
+
+            public bool IsSnapshot { get; }
+
+        }
+
         private sealed class SimpleServerExchangePool : Assert, ILocalMember, IExchangePool
         {
+            internal readonly IList<BufferedEntry> ReceivedEntries = new List<BufferedEntry>();
+
             internal SimpleServerExchangePool(bool smallAmountOfMetadata = false)
             {
                 var metadata = ImmutableDictionary.CreateBuilder<string, string>();
@@ -36,20 +58,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
             Task<bool> IRaftRpcHandler.ResignAsync(CancellationToken token) => Task.FromResult(true);
 
-            Task<Result<bool>> IRaftRpcHandler.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+            async Task<Result<bool>> IRaftRpcHandler.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             {
                 Equal(42L, senderTerm);
-                if(entries.RemainingCount > 0)
+                Equal(1, prevLogIndex);
+                Equal(56L, prevLogTerm);
+                Equal(10, commitIndex);
+                while(await entries.MoveNextAsync())
                 {
-
+                    True(entries.Current.Length.HasValue);
+                    var buffer = await entries.Current.ToByteArrayAsync(token);
+                    ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
                 }
-                else
-                {
-                    Equal(1, prevLogIndex);
-                    Equal(56L, prevLogTerm);
-                    Equal(10, commitIndex);
-                }
-                return Task.FromResult(new Result<bool>(43L, true));
+                return new Result<bool>(43L, true);
             }
 
             Task<Result<bool>> IRaftRpcHandler.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
@@ -186,6 +207,48 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             await exchange.ReadAsync(actual, default);
             Equal(exchangePool.Metadata, actual);
             client.Shutdown(SocketShutdown.Both);
+        }
+
+        private static void Equal(in BufferedEntry x, in BufferedEntry y)
+        {
+            Equal(x.Term, y.Term);
+            Equal(x.Timestamp, y.Timestamp);
+            Equal(x.IsSnapshot, y.IsSnapshot);
+            True(x.Content.IsSingleSegment);
+            True(y.Content.IsSingleSegment);
+            True(x.Content.FirstSpan.SequenceEqual(y.Content.FirstSpan));
+        }
+
+        [Fact]
+        public static async Task SendingLogEntries()
+        {
+            var timeout = TimeSpan.FromMinutes(20);
+            using var timeoutTokenSource = new CancellationTokenSource(timeout);
+            //prepare server
+            var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
+            using var server = new UdpServer(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            server.ReceiveTimeout = timeout;
+            var exchangePool = new SimpleServerExchangePool(false);
+            server.Start(exchangePool);
+            //prepare client
+            using var client = new UdpClient(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            client.Start();
+            var buffer = new byte[533];
+            var rnd = new Random();
+            rnd.NextBytes(buffer);
+            var entry1 = new BufferedEntry(10L, DateTimeOffset.Now, false, buffer);
+            buffer = new byte[512];
+            rnd.NextBytes(buffer);
+            var entry2 = new BufferedEntry(11L, DateTimeOffset.Now, true, buffer);
+
+            var exchange = new EntriesExchange<BufferedEntry, BufferedEntry[]>(42L, new[]{ entry1, entry2 }, 1, 56, 10);
+            client.Enqueue(exchange, timeoutTokenSource.Token);
+            var result = await exchange.Task;
+            Equal(43L, result.Term);
+            True(result.Value);
+            Equal(2, exchangePool.ReceivedEntries.Count);
+            Equal(entry1, exchangePool.ReceivedEntries[0]);
+            Equal(entry2, exchangePool.ReceivedEntries[1]);
         }
     }
 }

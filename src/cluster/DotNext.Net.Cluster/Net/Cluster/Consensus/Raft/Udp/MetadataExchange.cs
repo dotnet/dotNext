@@ -59,7 +59,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
         }
 
-        public override async ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
+        public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
             var flushResult = await Writer.WriteAsync(payload, token).ConfigureAwait(false);
             return !(flushResult.IsCanceled | flushResult.IsCompleted | headers.Control == FlowControl.StreamEnd);

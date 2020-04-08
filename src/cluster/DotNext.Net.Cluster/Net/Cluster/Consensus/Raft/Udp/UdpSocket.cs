@@ -239,7 +239,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             //handle received packet
             try
             {
-                stateFlag = await channel.Exchange.ProcessInbountMessageAsync(headers, datagram, ep, channel.Token).ConfigureAwait(false);
+                stateFlag = await channel.Exchange.ProcessInboundMessageAsync(headers, datagram, ep, channel.Token).ConfigureAwait(false);
             }
             catch(Exception e)
             {

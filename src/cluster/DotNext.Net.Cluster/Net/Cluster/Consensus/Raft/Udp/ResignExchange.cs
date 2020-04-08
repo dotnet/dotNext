@@ -8,7 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
     internal sealed class ResignExchange : ClientExchange<bool>
     {
-        public override ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
+        public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
             Debug.Assert(headers.Control == FlowControl.Ack);
             TrySetResult(ValueTypeExtensions.ToBoolean(payload.Span[0]));

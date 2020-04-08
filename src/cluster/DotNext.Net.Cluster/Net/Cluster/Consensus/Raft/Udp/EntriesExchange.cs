@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using IOException = System.IO.IOException;
 using static System.Buffers.Binary.BinaryPrimitives;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
@@ -21,16 +22,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             1.RES(Ack) Wait for command: NextEntry to start sending content, None to abort transmission
 
             2.REQ(StreamStart) with information about content-type and length of the record
-            2.REP(Ack) Wait for command: NextEntry to start sending content, Continue to send next chunk, None to abort transmission
+            2.REP(Ack) Wait for command: NextEntry to start sending content, Continue to send next chunk, None to finalize transmission
         
             3.REQ(Fragment) with the chunk of record data
-            3.REP(Ack) Wait for command: NextEntry to start sending content, Continue to send next chunk, None to abort transmission
+            3.REP(Ack) Wait for command: NextEntry to start sending content, Continue to send next chunk, None to finalize transmission
 
             4.REQ(StreamEnd) with the final chunk of record data
-            4.REP(Ack) Wait for command: NextEntry to start sending content, None to abort transmission
+            4.REP(Ack) Wait for command: NextEntry to start sending content, None to finalize transmission
         */
 
-        internal enum TransferControl : byte
+        private protected enum TransferControl : byte
         {
             None = 0,       //should contain Result<bool>
             NextEntry = 1,  //ask for the next record with the specified index
@@ -48,6 +49,45 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             this.prevLogIndex = prevLogIndex;
             this.prevLogTerm = prevLogTerm;
             this.commitIndex = commitIndex;
+        }
+
+        internal static int CreateResponse(in Result<bool> result, Span<byte> output)
+        {
+            output[0] = (byte)TransferControl.None;
+            output = output.Slice(sizeof(TransferControl));
+            return IExchange.WriteResult(in result, output) + sizeof(TransferControl);
+        }
+
+        internal static int CreateNextEntryResponse(Span<byte> output, int logEntryIndex)
+        {
+            output[0] = (byte)TransferControl.NextEntry;
+            output = output.Slice(sizeof(TransferControl));
+
+            WriteInt32LittleEndian(output, logEntryIndex);
+
+            return sizeof(TransferControl) + sizeof(int);
+        }
+
+        internal static int CreateContinueResponse(Span<byte> output)
+        {
+            output[0] = (byte)TransferControl.Continue;
+
+            return sizeof(TransferControl);
+        }
+
+        internal static int ParseLogEntryPrologue(ReadOnlySpan<byte> input, out long length, out long term, out DateTimeOffset timeStamp, out bool isSnapshot)
+        {
+            length = ReadInt64LittleEndian(input);
+            input = input.Slice(sizeof(long));
+            
+            term = ReadInt64LittleEndian(input);
+            input = input.Slice(sizeof(long));
+
+            timeStamp = Span.Read<DateTimeOffset>(ref input);
+
+            isSnapshot = ValueTypeExtensions.ToBoolean(input[0]);
+
+            return sizeof(long) + sizeof(long) + Unsafe.SizeOf<DateTimeOffset>() + sizeof(byte);
         }
 
         internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex, out int entriesCount)
@@ -140,7 +180,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     control = streamStart ? FlowControl.StreamStart : FlowControl.Fragment;
                 else
                     control = FlowControl.StreamEnd;
-                return default;
             }
             else    //send announcement
             {
@@ -193,13 +232,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             {
                 var flushResult = await serializer(writer, ref entry, token).ConfigureAwait(false);
                 if(flushResult.IsCompleted)
-                    break;
+                    return;
                 if(flushResult.IsCanceled)
-                {
-                    await writer.CompleteAsync().ConfigureAwait(false);
                     break;
-                }
             }
+            await writer.CompleteAsync().ConfigureAwait(false);
         }
         
         private async Task NextEntryAsync(ReadOnlyMemory<byte> input, CancellationToken token)
@@ -209,15 +246,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             {
                 AbortIO();
                 await writeSession.ConfigureAwait(false);
+                await pipe.Reader.CompleteAsync();
                 pipe.Reset();
             }
             this.writeSession = WriteEntryAsync(token);
         }
 
-        public override async ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
+        public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
-            //read transfer control
-            switch((TransferControl)payload.Span[0])
+            var control = (TransferControl)payload.Span[0];
+            payload = payload.Slice(sizeof(TransferControl));
+            switch(control)
             {
                 default:
                     return false;

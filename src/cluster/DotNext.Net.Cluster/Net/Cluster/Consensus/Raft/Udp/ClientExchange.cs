@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         {
         }
 
-        public abstract ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token);
+        public abstract ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token);
 
         public abstract ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token);
 
@@ -40,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private protected ClientExchange(long term) => currentTerm = term;
 
-        public sealed override ValueTask<bool> ProcessInbountMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint sender, CancellationToken token)
+        public sealed override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint sender, CancellationToken token)
         {
             Debug.Assert(headers.Control == FlowControl.Ack);
             TrySetResult(IExchange.ReadResult(payload.Span));
