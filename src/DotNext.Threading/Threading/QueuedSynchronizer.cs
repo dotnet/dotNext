@@ -54,7 +54,7 @@ namespace DotNext.Threading
             internal bool IsRoot => previous is null && next is null;
         }
 
-        private protected interface ILockManager<out N>
+        private protected interface ILockManager<N>
             where N : WaitNode
         {
             bool TryAcquire();  //if true then Wait method can be completed synchronously; otherwise, false.
@@ -134,10 +134,6 @@ namespace DotNext.Threading
                 token.CanBeCanceled ? WaitAsync(tail, token) : tail.Task
                 : WaitAsync(tail, timeout, token);
         }
-
-        private protected Task<bool> WaitAsync<TManager>(ref TManager manager, TimeSpan timeout, CancellationToken token)
-            where TManager : struct, ILockManager<WaitNode>
-            => WaitAsync<WaitNode, TManager>(ref manager, timeout, token);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private protected static bool TryAcquire<TNode, TManager>(ref TManager manager)

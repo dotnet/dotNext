@@ -87,6 +87,6 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token) => WaitAsync(ref manager, timeout, token);
+        public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token) => WaitAsync<WaitNode, LockManager>(ref manager, timeout, token);
     }
 }

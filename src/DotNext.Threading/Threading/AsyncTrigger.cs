@@ -181,7 +181,7 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token = default)
-            => WaitAsync(ref state.Value, timeout, token);
+            => WaitAsync<WaitNode, State>(ref state.Value, timeout, token);
 
         /// <summary>
         /// Suspends the caller and waits for the event that meets to the specified condition.
@@ -195,7 +195,7 @@ namespace DotNext.Threading
         public Task<bool> WaitAsync(Predicate<TState> condition, TimeSpan timeout, CancellationToken token = default)
         {
             var manager = new ConditionalLockManager(state, condition);
-            return WaitAsync(ref manager, timeout, token);
+            return WaitAsync<ConditionalNode, ConditionalLockManager>(ref manager, timeout, token);
         }
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace DotNext.Threading
             state.Value.Value = newState;
             ResumePendingCallers(newState);
             var manager = new ConditionalLockManager(state, condition);
-            return WaitAsync(ref manager, timeout, token);
+            return WaitAsync<ConditionalNode, ConditionalLockManager>(ref manager, timeout, token);
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace DotNext.Threading
             currentState = transition.Invoke(currentState);
             ResumePendingCallers(currentState);
             var manager = new ConditionalLockManager(state, condition);
-            return WaitAsync(ref manager, timeout, token);
+            return WaitAsync<ConditionalNode, ConditionalLockManager>(ref manager, timeout, token);
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace DotNext.Threading
             transition.Invoke(ref currentState, args);
             ResumePendingCallers(currentState);
             var manager = new ConditionalLockManager(state, condition);
-            return WaitAsync(ref manager, timeout, token);
+            return WaitAsync<ConditionalNode, ConditionalLockManager>(ref manager, timeout, token);
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace DotNext.Threading
             transition.Invoke(currentState, args);
             ResumePendingCallers(currentState);
             var manager = new ConditionalLockManager(state, condition);
-            return WaitAsync(ref manager, timeout, token);
+            return WaitAsync<ConditionalNode, ConditionalLockManager>(ref manager, timeout, token);
         }
 
         /// <summary>
