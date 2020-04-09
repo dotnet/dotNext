@@ -12,7 +12,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     using IO;
     using IO.Log;
     using Threading;
-    using static IO.Pipelines.ResultExtensions;
     using static Runtime.Intrinsics;
 
     [StructLayout(LayoutKind.Auto)]
