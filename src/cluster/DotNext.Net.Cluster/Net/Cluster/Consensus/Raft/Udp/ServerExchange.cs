@@ -32,9 +32,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             : base(options)
         {
             this.server = server;
-            isReadyToReadEntryPredicate = new Func<bool>(IsReadyToReadEntry).Method.CreateDelegate<Predicate<ServerExchange>>();
+            isReadyToReadEntry = new Func<bool>(IsReadyToReadEntry).Method.CreateDelegate<Predicate<ServerExchange>>();
             setStateAction = new Action<State>(SetState).Method.CreateDelegate<Action<ServerExchange, State>>();
-            isValidStateForResponsePredicate = new Func<bool>(IsValidStateForResponse).Method.CreateDelegate<Predicate<ServerExchange>>();
+            isValidStateForResponse = new Func<bool>(IsValidStateForResponse).Method.CreateDelegate<Predicate<ServerExchange>>();
+            isValidForTransition = new Func<bool>(IsValidForTransition).Method.CreateDelegate<Predicate<ServerExchange>>();
         }
 
         private ref State GetState() => ref state;
@@ -73,7 +74,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                             BeginReceiveEntries(endpoint, payload.Span, token);
                             break;
                         case State.ReadyToReceiveEntry:
-                            BeginReceiveEntry(payload.Span);
+                            BeginReceiveEntry(payload);
                             break;
                         case State.ReadyToReadEntry:
                             return ReceivingEntry(payload, headers.Control == FlowControl.StreamEnd, token);

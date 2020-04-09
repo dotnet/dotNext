@@ -14,11 +14,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private protected PipeExchange(PipeOptions? options = null)
             => pipe = new Pipe(options ?? PipeOptions.Default);
         
-        private protected void ReusePipe()
+        private protected void ReusePipe(bool complete = true)
         {
-            var e = new IOException(ExceptionMessages.ExchangeCompleted);
-            pipe.Writer.Complete(e);
-            pipe.Reader.Complete(e);
+            if(complete)
+            {
+                var e = new IOException(ExceptionMessages.ExchangeCompleted);
+                pipe.Reader.Complete(e);
+                pipe.Writer.Complete(e);
+            }
             pipe.Reset();
         }
         

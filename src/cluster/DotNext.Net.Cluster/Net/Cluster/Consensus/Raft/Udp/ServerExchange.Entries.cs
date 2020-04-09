@@ -23,9 +23,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly DateTimeOffset timeStamp;
         private readonly bool isSnapshot;
 
-        public ReceivedLogEntry(ref ReadOnlySpan<byte> prologue, PipeReader reader)
+        internal ReceivedLogEntry(ref ReadOnlyMemory<byte> prologue, PipeReader reader)
         {
-            var count = EntriesExchange.ParseLogEntryPrologue(prologue, out length, out term, out timeStamp, out isSnapshot);
+            var count = EntriesExchange.ParseLogEntryPrologue(prologue.Span, out length, out term, out timeStamp, out isSnapshot);
             prologue = prologue.Slice(count);
             this.reader = reader;
         }
@@ -49,8 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
     {
         private readonly Action<ServerExchange, State> setStateAction;
-        private readonly Predicate<ServerExchange> isReadyToReadEntryPredicate;
-        private readonly Predicate<ServerExchange> isValidStateForResponsePredicate;
+        private readonly Predicate<ServerExchange> isReadyToReadEntry, isValidStateForResponse, isValidForTransition;
 
         private int remainingCount, lookupIndex;
         private ReceivedLogEntry currentEntry;
@@ -67,28 +66,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private bool IsValidStateForResponse()
             => state.IsOneOf(State.ReceivingEntriesFinished, State.ReadyToReceiveEntry, State.ReadyToReadEntry);
 
-        ValueTask<bool> IAsyncEnumerator<ReceivedLogEntry>.MoveNextAsync()
+        private bool IsValidForTransition() => state == State.AppendEntriesReceived;
+
+        async ValueTask<bool> IAsyncEnumerator<ReceivedLogEntry>.MoveNextAsync()
         {
             //at the moment of this method call entire exchange can be in the following states:
             //log entry headers are obtained and entire log entry ready to read
             //log entry content is completely obtained
             //iteration was not started
             //no more entries to enumerate
-            ValueTask<bool> result;
             if(remainingCount <= 0) //no more entries to enumerate
             {
                 //resume wait thread to finalize response
                 transmissionStateTrigger.Signal(this, setStateAction, State.ReceivingEntriesFinished);
-                result = new ValueTask<bool>(false);
+                return false;
             }
-            else
+            if(lookupIndex >= 0)
             {
-                lookupIndex += 1;
-                remainingCount -= 1;
-                //inform that we ready to receive entry and wait when it become available
-                result = new ValueTask<bool>(transmissionStateTrigger.SignalAndWaitAsync(this, setStateAction, State.ReadyToReceiveEntry, isReadyToReadEntryPredicate, InfiniteTimeSpan));
+                await Reader.CompleteAsync().ConfigureAwait(false);
+                await transmissionStateTrigger.WaitAsync(this, isValidForTransition).ConfigureAwait(false);
+                ReusePipe(false);
             }
-            return result;
+            lookupIndex += 1;
+            remainingCount -= 1;
+            
+            return await transmissionStateTrigger.SignalAndWaitAsync(this, setStateAction, State.ReadyToReceiveEntry, isReadyToReadEntry, InfiniteTimeSpan).ConfigureAwait(false);
         }
 
         private void BeginReceiveEntries(EndPoint sender, ReadOnlySpan<byte> announcement, CancellationToken token)
@@ -99,15 +101,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             task = server.ReceiveEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
-        private void BeginReceiveEntry(ReadOnlySpan<byte> prologue)
+        private void BeginReceiveEntry(ReadOnlyMemory<byte> prologue)
         {
             currentEntry = new ReceivedLogEntry(ref prologue, Reader);
-            if(!prologue.IsEmpty)
-            {
-                var memory = Writer.GetSpan(prologue.Length);
-                prologue.CopyTo(memory);
-                Writer.Advance(prologue.Length);
-            }
+            var memory = Writer.GetMemory(prologue.Length);
+            prologue.CopyTo(memory);
+            Writer.Advance(prologue.Length);
             transmissionStateTrigger.Signal(this, setStateAction, State.ReadyToReadEntry);
         }
 
@@ -118,13 +117,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             else
             {
                 var result = await Writer.WriteAsync(content, token).ConfigureAwait(false);
-                result.ThrowIfCancellationRequested(token);
                 completed |= result.IsCompleted;
             }
             if(completed)
             {
-                transmissionStateTrigger.Signal(this, setStateAction, State.AppendEntriesReceived);
                 await Writer.CompleteAsync().ConfigureAwait(false);
+                transmissionStateTrigger.Signal(this, setStateAction, State.AppendEntriesReceived);
             }
             return true;
         }
@@ -134,7 +132,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             int count;
             bool isContinueReceiving;
             var resultTask = Cast<Task<Result<bool>>>(task);
-            var stateTask = transmissionStateTrigger.WaitAsync(this, isValidStateForResponsePredicate, token);
+            var stateTask = transmissionStateTrigger.WaitAsync(this, isValidStateForResponse, token);
             //wait for result or state transition
             if(ReferenceEquals(resultTask, await Task.WhenAny(resultTask, stateTask).ConfigureAwait(false)))
             {
@@ -153,7 +151,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                         isContinueReceiving = false;
                         break;
                     case State.ReadyToReceiveEntry:
-                        ReusePipe();
                         count = EntriesExchange.CreateNextEntryResponse(output.Span, lookupIndex);
                         isContinueReceiving = true;
                         break;

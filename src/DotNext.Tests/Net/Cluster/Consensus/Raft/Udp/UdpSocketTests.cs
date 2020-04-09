@@ -37,9 +37,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         }
 
+        public enum ReceiveEntriesBehavior
+        {
+            ReceiveAll = 0,
+            ReceiveFirst,
+            DropAll,
+            DropFirst
+        }
+
         private sealed class SimpleServerExchangePool : Assert, ILocalMember, IExchangePool
         {
             internal readonly IList<BufferedEntry> ReceivedEntries = new List<BufferedEntry>();
+            internal ReceiveEntriesBehavior Behavior;
 
             internal SimpleServerExchangePool(bool smallAmountOfMetadata = false)
             {
@@ -64,12 +73,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 Equal(1, prevLogIndex);
                 Equal(56L, prevLogTerm);
                 Equal(10, commitIndex);
-                while(await entries.MoveNextAsync())
+                byte[] buffer;
+                switch(Behavior)
                 {
-                    True(entries.Current.Length.HasValue);
-                    var buffer = await entries.Current.ToByteArrayAsync(token);
-                    ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
+                    case ReceiveEntriesBehavior.ReceiveAll:
+                        while(await entries.MoveNextAsync())
+                        {
+                            True(entries.Current.Length.HasValue);
+                            buffer = await entries.Current.ToByteArrayAsync(token);
+                            ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
+                        }
+                        break;
+                    case ReceiveEntriesBehavior.DropAll:
+                        break;
+                    case ReceiveEntriesBehavior.ReceiveFirst:
+                        True(await entries.MoveNextAsync());
+                        buffer = await entries.Current.ToByteArrayAsync(token);
+                        ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
+                        break;
+                    case ReceiveEntriesBehavior.DropFirst:
+                        True(await entries.MoveNextAsync());
+                        True(await entries.MoveNextAsync());
+                        buffer = await entries.Current.ToByteArrayAsync(token);
+                        ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
+                        break;
                 }
+                
                 return new Result<bool>(43L, true);
             }
 
@@ -219,8 +248,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             True(x.Content.FirstSpan.SequenceEqual(y.Content.FirstSpan));
         }
 
-        [Fact]
-        public static async Task SendingLogEntries()
+        [Theory]
+        [InlineData(ReceiveEntriesBehavior.ReceiveAll)]
+        [InlineData(ReceiveEntriesBehavior.ReceiveFirst)]
+        [InlineData(ReceiveEntriesBehavior.DropAll)]
+        [InlineData(ReceiveEntriesBehavior.DropFirst)]
+        public static async Task SendingLogEntries(ReceiveEntriesBehavior behavior)
         {
             var timeout = TimeSpan.FromMinutes(20);
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
@@ -228,7 +261,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
             using var server = new UdpServer(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
             server.ReceiveTimeout = timeout;
-            var exchangePool = new SimpleServerExchangePool(false);
+            var exchangePool = new SimpleServerExchangePool(false) { Behavior = behavior };
             server.Start(exchangePool);
             //prepare client
             using var client = new UdpClient(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
@@ -246,9 +279,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var result = await exchange.Task;
             Equal(43L, result.Term);
             True(result.Value);
-            Equal(2, exchangePool.ReceivedEntries.Count);
-            Equal(entry1, exchangePool.ReceivedEntries[0]);
-            Equal(entry2, exchangePool.ReceivedEntries[1]);
+            switch(behavior)
+            {
+                case ReceiveEntriesBehavior.ReceiveAll:
+                    Equal(2, exchangePool.ReceivedEntries.Count);
+                    Equal(entry1, exchangePool.ReceivedEntries[0]);
+                    Equal(entry2, exchangePool.ReceivedEntries[1]);
+                    break;
+                case ReceiveEntriesBehavior.ReceiveFirst:
+                    Equal(1, exchangePool.ReceivedEntries.Count);
+                    Equal(entry1, exchangePool.ReceivedEntries[0]);
+                    break;
+                case ReceiveEntriesBehavior.DropFirst:
+                    Equal(1, exchangePool.ReceivedEntries.Count);
+                    Equal(entry2, exchangePool.ReceivedEntries[0]);
+                    break;
+                case ReceiveEntriesBehavior.DropAll:
+                    Empty(exchangePool.ReceivedEntries);
+                    break;
+            }
         }
     }
 }
