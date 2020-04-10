@@ -319,7 +319,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [InlineData(50)]
         public static async Task SendingSnapshot(int payloadSize)
         {
-            var timeout = TimeSpan.FromMinutes(20);
+            var timeout = TimeSpan.FromSeconds(20);
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);

@@ -143,6 +143,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private async ValueTask<(PacketHeaders, int, bool)> TransmissionControl(Memory<byte> output, CancellationToken token)
         {
+            MessageType responseType;
             int count;
             bool isContinueReceiving;
             var resultTask = Cast<Task<Result<bool>>>(task);
@@ -154,28 +155,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 task = null;
                 state = State.ReceivingEntriesFinished;
                 remainingCount = 0;
-                count = EntriesExchange.CreateResponse(resultTask.Result, output.Span);
+                count = IExchange.WriteResult(resultTask.Result, output.Span);
                 isContinueReceiving = false;
+                responseType = MessageType.None;
             }
             else
                 switch(state)   //should be in sync with IsValidStateForResponse
                 {
                     case State.ReceivingEntriesFinished:
-                        count = EntriesExchange.CreateResponse(await resultTask.ConfigureAwait(false), output.Span);
+                        count = IExchange.WriteResult(await resultTask.ConfigureAwait(false), output.Span);
                         isContinueReceiving = false;
+                        responseType = MessageType.None;
                         break;
                     case State.ReadyToReceiveEntry:
                         count = EntriesExchange.CreateNextEntryResponse(output.Span, lookupIndex);
                         isContinueReceiving = true;
+                        responseType = MessageType.NextEntry;
                         break;
                     case State.ReadyToReadEntry:
-                        count = EntriesExchange.CreateContinueResponse(output.Span);
+                        count = 0;
                         isContinueReceiving = true;
+                        responseType = MessageType.Continue;
                         break;
                     default:
                         throw new InvalidOperationException();
                 }
-            return (new PacketHeaders(MessageType.AppendEntries, FlowControl.Ack), count, isContinueReceiving);
+            return (new PacketHeaders(responseType, FlowControl.Ack), count, isContinueReceiving);
         }
 
         ValueTask IAsyncDisposable.DisposeAsync()

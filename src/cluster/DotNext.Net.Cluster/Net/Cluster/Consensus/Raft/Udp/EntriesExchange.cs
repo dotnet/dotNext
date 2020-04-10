@@ -30,14 +30,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             4.REP(Ack) Wait for command: NextEntry to start sending content, None to finalize transmission
         */
 
-        private protected enum TransferControl : byte
-        {
-            None = 0,       //should contain Result<bool>
-            NextEntry = 1,  //ask for the next record with the specified index
-            Continue = 2,    //ask for the next data chunk of the record
-            Abort = 3   //remote peer disposes async enumerator
-        }
-
         private protected readonly Pipe pipe;
         private readonly long term, prevLogIndex, prevLogTerm, commitIndex;
 
@@ -50,28 +42,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             this.commitIndex = commitIndex;
         }
 
-        internal static int CreateResponse(in Result<bool> result, Span<byte> output)
-        {
-            output[0] = (byte)TransferControl.None;
-            output = output.Slice(sizeof(TransferControl));
-            return IExchange.WriteResult(in result, output) + sizeof(TransferControl);
-        }
-
         internal static int CreateNextEntryResponse(Span<byte> output, int logEntryIndex)
         {
-            output[0] = (byte)TransferControl.NextEntry;
-            output = output.Slice(sizeof(TransferControl));
-
             WriteInt32LittleEndian(output, logEntryIndex);
-
-            return sizeof(TransferControl) + sizeof(int);
-        }
-
-        internal static int CreateContinueResponse(Span<byte> output)
-        {
-            output[0] = (byte)TransferControl.Continue;
-
-            return sizeof(TransferControl);
+            return sizeof(int);
         }
 
         internal static int ParseLogEntryPrologue(ReadOnlySpan<byte> input, out long length, out long term, out DateTimeOffset timeStamp, out bool isSnapshot)
@@ -266,23 +240,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
-            var control = (TransferControl)payload.Span[0];
-            payload = payload.Slice(sizeof(TransferControl));
-            switch(control)
+            switch(headers.Type)
             {
                 default:
                     return false;
-                case TransferControl.None:
+                case MessageType.None:
                     FinalizeTransmission(payload.Span);
                     return false;
-                case TransferControl.NextEntry:
+                case MessageType.NextEntry:
                     streamStart = true;
                     await NextEntryAsync(payload, token).ConfigureAwait(false);
                     return true;
-                case TransferControl.Continue:
+                case MessageType.Continue:
                     streamStart = false;
                     return true;
-                case TransferControl.Abort:
+                case MessageType.Abort:
                     TrySetException(new IOException(ExceptionMessages.AbortedByRemoteHost));
                     return false;
             }
