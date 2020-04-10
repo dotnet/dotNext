@@ -96,10 +96,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
-            var chunkExpected = ValueTypeExtensions.ToBoolean(payload.Span[0]);
-            payload = payload.Slice(sizeof(byte));
             bool result;
-            if(chunkExpected)
+            if(headers.Type == MessageType.Continue)
             {
                 transmitting = result = true;
             }

@@ -117,7 +117,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 case State.ReceivingEntriesFinished:
                     return TransmissionControl(output, token);
                 case State.SnapshotReceived:
-                    return RequestSnapshotChunk(output.Span);
+                    return RequestSnapshotChunk();
                 case State.ReceivingSnapshotFinished:
                     return EndReceiveSnapshot(output);
             }

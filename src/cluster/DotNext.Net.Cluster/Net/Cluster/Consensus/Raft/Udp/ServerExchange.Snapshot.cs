@@ -32,18 +32,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             return true;
         }
 
-        private ValueTask<(PacketHeaders, int, bool)> RequestSnapshotChunk(Span<byte> output)
-        {
-            output[0] = (byte)1;
-            return new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.InstallSnapshot, FlowControl.Ack), 1, true));
-        }
+        private ValueTask<(PacketHeaders, int, bool)> RequestSnapshotChunk()
+            => new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Continue, FlowControl.Ack), 0, true));
 
         private async ValueTask<(PacketHeaders, int, bool)> EndReceiveSnapshot(Memory<byte> output)
         {
-            output.Span[0] = (byte)0;
-            output = output.Slice(sizeof(byte));
             var result = await Cast<Task<Result<bool>>>(Interlocked.Exchange(ref task, null)).ConfigureAwait(false);
-            return (new PacketHeaders(MessageType.InstallSnapshot, FlowControl.Ack), IExchange.WriteResult(result, output.Span) + sizeof(byte), false);
+            return (new PacketHeaders(MessageType.None, FlowControl.Ack), IExchange.WriteResult(result, output.Span) + sizeof(byte), false);
         }
     }
 }
