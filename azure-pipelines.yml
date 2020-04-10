@@ -11,6 +11,13 @@ jobs:
         vmImage: windows-2019
       steps:
         - task: DotNetCoreCLI@2
+          inputs:
+            command: 'restore'
+            projects: '$(Solution)'
+            feedsToUse: 'config'
+            nugetConfigPath: 'NuGet.config'
+            arguments: --configuration Debug
+        - task: DotNetCoreCLI@2
           displayName: Test Debug
           inputs:
             command: test
@@ -24,6 +31,13 @@ jobs:
       pool:
         vmImage: ubuntu-18.04
       steps:
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: 'restore'
+            projects: '$(Solution)'
+            feedsToUse: 'config'
+            nugetConfigPath: 'NuGet.config'
+            arguments: --configuration Debug
         - task: DotNetCoreCLI@2
           displayName: Test Debug
           inputs:
