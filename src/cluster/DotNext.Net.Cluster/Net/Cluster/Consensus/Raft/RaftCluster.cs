@@ -406,7 +406,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
         /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
-        protected async Task<Result<bool>> ReceiveSnapshotAsync(TMember sender, long senderTerm, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
+        protected async Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            where TSnapshot : IRaftLogEntry
         {
             var tokenSource = token.LinkTo(Token);
             var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);

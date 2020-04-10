@@ -15,6 +15,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<Result<bool>> ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
         Task<bool> ResignAsync(CancellationToken token);
+
+        Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            where TSnapshot : IRaftLogEntry;
     }
 
     internal interface ILocalMember : IRaftRpcHandler

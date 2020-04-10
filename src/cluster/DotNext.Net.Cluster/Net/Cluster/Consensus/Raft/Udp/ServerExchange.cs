@@ -20,7 +20,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
             ReadyToReceiveEntry,    //ready to receive next entry
             ReadyToReadEntry,   //log entry header is obtained, content is available
-            ReceivingEntriesFinished
+            ReceivingEntriesFinished,
+            SnapshotReceived,
+            ReceivingSnapshotFinished
         }
         
 
@@ -29,14 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private State state;
 
         internal ServerExchange(ILocalMember server, PipeOptions? options = null)
-            : base(options)
-        {
-            this.server = server;
-            isReadyToReadEntry = new Func<bool>(IsReadyToReadEntry).Method.CreateDelegate<Predicate<ServerExchange>>();
-            setStateAction = new Action<State>(SetState).Method.CreateDelegate<Action<ServerExchange, State>>();
-            isValidStateForResponse = new Func<bool>(IsValidStateForResponse).Method.CreateDelegate<Predicate<ServerExchange>>();
-            isValidForTransition = new Func<bool>(IsValidForTransition).Method.CreateDelegate<Predicate<ServerExchange>>();
-        }
+            : base(options) => this.server = server;
 
         private ref State GetState() => ref state;
         
@@ -78,7 +73,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                             break;
                         case State.ReadyToReadEntry:
                             return ReceivingEntry(payload, headers.Control == FlowControl.StreamEnd, token);
+                        default:
+                            return default;
                     }
+                    break;
+                case MessageType.InstallSnapshot:
+                    switch(state)
+                    {
+                        case State.Ready:
+                            state = State.SnapshotReceived;
+                            BeginReceiveSnapshot(payload.Span, endpoint, token);
+                            break;
+                        case State.SnapshotReceived:
+                            return ReceivingSnapshot(payload, headers.Control == FlowControl.StreamEnd, token);
+                        default:
+                            return default;
+                    }
+                    
                     break;
             }
             return new ValueTask<bool>(true);
@@ -105,6 +116,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 case State.ReadyToReadEntry:
                 case State.ReceivingEntriesFinished:
                     return TransmissionControl(output, token);
+                case State.SnapshotReceived:
+                    return RequestSnapshotChunk(output.Span);
+                case State.ReceivingSnapshotFinished:
+                    return EndReceiveSnapshot(output);
             }
         }
 

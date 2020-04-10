@@ -19,13 +19,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     {
         private readonly PipeReader reader;
         private readonly long term, length;
-        private readonly DateTimeOffset timeStamp;
+        private readonly DateTimeOffset timestamp;
         private readonly bool isSnapshot;
 
         internal ReceivedLogEntry(ref ReadOnlyMemory<byte> prologue, PipeReader reader)
         {
-            var count = EntriesExchange.ParseLogEntryPrologue(prologue.Span, out length, out term, out timeStamp, out isSnapshot);
+            var count = EntriesExchange.ParseLogEntryPrologue(prologue.Span, out length, out term, out timestamp, out isSnapshot);
             prologue = prologue.Slice(count);
+            this.reader = reader;
+        }
+
+        internal ReceivedLogEntry(ReadOnlySpan<byte> announcement, PipeReader reader, out long term, out long snapshotIndex)
+        {
+            SnapshotExchange.ParseAnnouncement(announcement, out term, out snapshotIndex, out length, out this.term, out timestamp);
+            isSnapshot = true;
             this.reader = reader;
         }
 
@@ -33,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         long IRaftLogEntry.Term => term;
 
-        DateTimeOffset ILogEntry.Timestamp => timeStamp;
+        DateTimeOffset ILogEntry.Timestamp => timestamp;
 
         bool ILogEntry.IsSnapshot => isSnapshot;
 
@@ -47,8 +54,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
     internal partial class ServerExchange : ILogEntryProducer<ReceivedLogEntry>
     {
-        private readonly Action<ServerExchange, State> setStateAction;
-        private readonly Predicate<ServerExchange> isReadyToReadEntry, isValidStateForResponse, isValidForTransition;
+        private static readonly Action<ServerExchange, State> setStateAction;
+        private static readonly Predicate<ServerExchange> isReadyToReadEntry, isValidStateForResponse, isValidForTransition;
+
+        static ServerExchange()
+        {
+            isReadyToReadEntry = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsReadyToReadEntry());
+            isValidStateForResponse = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsValidStateForResponse());
+            isValidForTransition = DelegateHelpers.CreateOpenDelegate<Predicate<ServerExchange>>(server => server.IsValidForTransition());
+            setStateAction = DelegateHelpers.CreateOpenDelegate<Action<ServerExchange, State>>((server, state) => server.SetState(state));
+        }
 
         private int remainingCount, lookupIndex;
         private ReceivedLogEntry currentEntry;

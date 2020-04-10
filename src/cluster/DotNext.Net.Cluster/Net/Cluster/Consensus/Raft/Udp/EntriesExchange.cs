@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Net;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using IOException = System.IO.IOException;
@@ -14,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     using static IO.Pipelines.PipeExtensions;
     using static IO.DataTransferObject;
 
-    internal abstract class EntriesExchange : ClientExchange<Result<bool>>
+    internal abstract class EntriesExchange : ClientExchange<Result<bool>>, IAsyncDisposable
     {
         /*
             Message flow:
@@ -126,8 +125,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             return sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(int);
         }
 
-        private protected static Encoding Encoding => Encoding.UTF8;
-
         private protected sealed override void OnException(Exception e) => pipe.Writer.Complete(e);
 
         private protected sealed override void OnCanceled(CancellationToken token) => OnException(new OperationCanceledException(token));
@@ -137,14 +134,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             pipe.Writer.CancelPendingFlush();
             pipe.Reader.CancelPendingRead();
         }
+
+        async ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            var e = new ObjectDisposedException(GetType().Name);
+            await pipe.Writer.CompleteAsync(e).ConfigureAwait(false);
+            await pipe.Reader.CompleteAsync(e).ConfigureAwait(false);
+        }
     }
 
-    internal sealed class EntriesExchange<TEntry, TList> : EntriesExchange
+    internal abstract class EntriesExchange<TEntry> : EntriesExchange
         where TEntry : IRaftLogEntry
-        where TList : IReadOnlyList<TEntry>
     {
         private delegate ValueTask<FlushResult> LogEntryFragmentWriter(PipeWriter writer, ref TEntry entry, CancellationToken token);
-
+    
         private static readonly LogEntryFragmentWriter[] fragmentWriters = 
         {
             WriteLogEntryLength,
@@ -154,45 +157,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             WriteLogEntryContent
         };
 
-        
-        private TList entries;
-        
-        private Task? writeSession;
-        private int currentIndex;
-        private bool streamStart;
-        
-        internal EntriesExchange(long term, in TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, PipeOptions? options = null)
+        private protected EntriesExchange(long term, long prevLogIndex, long prevLogTerm, long commitIndex, PipeOptions? options = null)
             : base(term, prevLogIndex, prevLogTerm, commitIndex, options)
         {
-            this.entries = entries;
-            currentIndex = -1;
-        }
-
-
-        public override async ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
-        {
-            int count;
-            FlowControl control;
-            if(currentIndex >= 0)   //write portion of log entry
-            {
-                count = await pipe.Reader.CopyToAsync(payload, token).ConfigureAwait(false);
-                if(count == payload.Length)
-                    control = streamStart ? FlowControl.StreamStart : FlowControl.Fragment;
-                else
-                    control = FlowControl.StreamEnd;
-            }
-            else    //send announcement
-            {
-                count = WriteAnnouncement(payload.Span, entries.Count);
-                control = FlowControl.None;
-            }
-            return (new PacketHeaders(MessageType.AppendEntries, control), count, true);
-        }
-
-        private void FinalizeTransmission(ReadOnlySpan<byte> input)
-        {
-            TrySetResult(IExchange.ReadResult(input));
-            writeSession = null;
         }
 
         private static ValueTask<FlushResult> WriteLogEntryLength(PipeWriter writer, ref TEntry entry, CancellationToken token)
@@ -223,11 +190,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private static ValueTask<FlushResult> WriteLogEntryContent(PipeWriter writer, ref TEntry entry, CancellationToken token)
             => WriteLogEntryContent(writer, entry, token);
-
-        private async Task WriteEntryAsync(CancellationToken token)
+        
+        internal static async Task WriteEntryAsync(PipeWriter writer, TEntry entry, CancellationToken token)
         {
-            var writer = pipe.Writer;
-            var entry = entries[currentIndex];
             foreach(var serializer in fragmentWriters)
             {
                 var flushResult = await serializer(writer, ref entry, token).ConfigureAwait(false);
@@ -238,6 +203,53 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
             await writer.CompleteAsync().ConfigureAwait(false);
         }
+    }
+
+    internal sealed class EntriesExchange<TEntry, TList> : EntriesExchange<TEntry>
+        where TEntry : IRaftLogEntry
+        where TList : IReadOnlyList<TEntry>
+    {
+        private TList entries;
+        
+        private Task? writeSession;
+        private int currentIndex;
+        private bool streamStart;
+        
+        internal EntriesExchange(long term, in TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, PipeOptions? options = null)
+            : base(term, prevLogIndex, prevLogTerm, commitIndex, options)
+        {
+            this.entries = entries;
+            currentIndex = -1;
+        }
+
+        public override async ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
+        {
+            int count;
+            FlowControl control;
+            if(currentIndex >= 0)   //write portion of log entry
+            {
+                count = await pipe.Reader.CopyToAsync(payload, token).ConfigureAwait(false);
+                if(count == payload.Length)
+                    control = streamStart ? FlowControl.StreamStart : FlowControl.Fragment;
+                else
+                    control = FlowControl.StreamEnd;
+            }
+            else    //send announcement
+            {
+                count = WriteAnnouncement(payload.Span, entries.Count);
+                control = FlowControl.None;
+            }
+            return (new PacketHeaders(MessageType.AppendEntries, control), count, true);
+        }
+
+        private void FinalizeTransmission(ReadOnlySpan<byte> input)
+        {
+            TrySetResult(IExchange.ReadResult(input));
+            writeSession = null;
+        }
+
+        private Task WriteEntryAsync(CancellationToken token) 
+            => WriteEntryAsync(pipe.Writer, entries[currentIndex], token);
         
         private async Task NextEntryAsync(ReadOnlyMemory<byte> input, CancellationToken token)
         {

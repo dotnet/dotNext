@@ -102,6 +102,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 return new Result<bool>(43L, true);
             }
 
+            async Task<Result<bool>> IRaftRpcHandler.ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            {
+                Equal(42L, senderTerm);
+                Equal(10, snapshotIndex);
+                True(snapshot.IsSnapshot);
+                var buffer = await snapshot.ToByteArrayAsync(token);
+                ReceivedEntries.Add(new BufferedEntry(snapshot.Term, snapshot.Timestamp, snapshot.IsSnapshot, buffer));
+                return new Result<bool>(43L, true);
+            }
+
             Task<Result<bool>> IRaftRpcHandler.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
                 True(token.CanBeCanceled);
@@ -249,13 +259,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         [Theory]
-        [InlineData(ReceiveEntriesBehavior.ReceiveAll)]
-        [InlineData(ReceiveEntriesBehavior.ReceiveFirst)]
-        [InlineData(ReceiveEntriesBehavior.DropAll)]
-        [InlineData(ReceiveEntriesBehavior.DropFirst)]
-        public static async Task SendingLogEntries(ReceiveEntriesBehavior behavior)
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveAll)]
+        [InlineData(512, ReceiveEntriesBehavior.ReceiveFirst)]
+        [InlineData(512, ReceiveEntriesBehavior.DropAll)]
+        [InlineData(512, ReceiveEntriesBehavior.DropFirst)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveAll)]
+        [InlineData(50, ReceiveEntriesBehavior.ReceiveFirst)]
+        [InlineData(50, ReceiveEntriesBehavior.DropAll)]
+        [InlineData(50, ReceiveEntriesBehavior.DropFirst)]
+        public static async Task SendingLogEntries(int payloadSize, ReceiveEntriesBehavior behavior)
         {
-            var timeout = TimeSpan.FromMinutes(20);
+            var timeout = TimeSpan.FromSeconds(20);
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
@@ -270,11 +284,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var rnd = new Random();
             rnd.NextBytes(buffer);
             var entry1 = new BufferedEntry(10L, DateTimeOffset.Now, false, buffer);
-            buffer = new byte[512];
+            buffer = new byte[payloadSize];
             rnd.NextBytes(buffer);
             var entry2 = new BufferedEntry(11L, DateTimeOffset.Now, true, buffer);
 
-            var exchange = new EntriesExchange<BufferedEntry, BufferedEntry[]>(42L, new[]{ entry1, entry2 }, 1, 56, 10);
+            await using var exchange = new EntriesExchange<BufferedEntry, BufferedEntry[]>(42L, new[]{ entry1, entry2 }, 1, 56, 10);
             client.Enqueue(exchange, timeoutTokenSource.Token);
             var result = await exchange.Task;
             Equal(43L, result.Term);
@@ -298,6 +312,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     Empty(exchangePool.ReceivedEntries);
                     break;
             }
+        }
+
+        [Theory]
+        [InlineData(512)]
+        [InlineData(50)]
+        public static async Task SendingSnapshot(int payloadSize)
+        {
+            var timeout = TimeSpan.FromMinutes(20);
+            using var timeoutTokenSource = new CancellationTokenSource(timeout);
+            //prepare server
+            var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
+            using var server = new UdpServer(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            server.ReceiveTimeout = timeout;
+            var exchangePool = new SimpleServerExchangePool(false);
+            server.Start(exchangePool);
+            //prepare client
+            using var client = new UdpClient(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            client.Start();
+            var buffer = new byte[payloadSize];
+            new Random().NextBytes(buffer);
+            var snapshot = new BufferedEntry(10L, DateTimeOffset.Now, true, buffer);
+            await using var exchange = new SnapshotExchange(42L, snapshot, 10L);
+            client.Enqueue(exchange, timeoutTokenSource.Token);
+            var result = await exchange.Task;
+            Equal(43L, result.Term);
+            True(result.Value);
+            NotEmpty(exchangePool.ReceivedEntries);
+            Equal(snapshot, exchangePool.ReceivedEntries[0]);
         }
     }
 }
