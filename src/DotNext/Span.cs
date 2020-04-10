@@ -468,6 +468,20 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Copies the value of blittable type to the specified block of memory.
+        /// </summary>
+        /// <param name="output">The block of memory.</param>
+        /// <param name="value">The value to copy to the destination memory block.</param>
+        /// <typeparam name="T">The blittable type.</typeparam>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="output"/> is smaller than <typeparamref name="T"/>.</exception>
+        public static unsafe void Write<T>(in T value, ref Span<byte> output)
+            where T : unmanaged
+        {
+            AsReadOnlyBytes(value).CopyTo(output);
+            output = output.Slice(sizeof(T));
+        }
+
+        /// <summary>
         /// Converts contiguous memory identified by the specified pointer
         /// into <see cref="Span{T}"/>.
         /// </summary>
