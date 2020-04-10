@@ -50,7 +50,5 @@ namespace DotNext
         internal static string ExchangeCompleted => Resources.GetString("ExchangeCompleted");
 
         internal static string CanceledByRemoteHost => Resources.GetString("CanceledByRemoteHost");
-
-        internal static string AbortedByRemoteHost => Resources.GetString("AbortedByRemoteHost");
     }
 }

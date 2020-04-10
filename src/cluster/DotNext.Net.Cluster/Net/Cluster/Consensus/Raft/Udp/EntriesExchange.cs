@@ -254,9 +254,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 case MessageType.Continue:
                     streamStart = false;
                     return true;
-                case MessageType.Abort:
-                    TrySetException(new IOException(ExceptionMessages.AbortedByRemoteHost));
-                    return false;
             }
         }
     }

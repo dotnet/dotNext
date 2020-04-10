@@ -18,4 +18,3 @@ DuplicateCorrelationId=Duplicate correlation ID. This is abnormal situation indi
 UnexpectedUdpSenderBehavior=UDP sender must wait for response
 ExchangeCompleted=Network exchange is completed
 CanceledByRemoteHost=The operation has been canceled by remote host
-AbortedByRemoteHost=The operation has been aborted by remote host
