@@ -39,6 +39,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </remarks>
     public partial class PersistentState : Disposable, IPersistentState, IAsyncDisposable
     {
+        private static readonly Predicate<PersistentState> IsConsistentPredicate;
+
+        static PersistentState()
+        {
+            IsConsistentPredicate = DelegateHelpers.CreateOpenDelegate<Predicate<PersistentState>>(state => state.IsConsistent);
+        }
+
         private Snapshot snapshot;
         private readonly DirectoryInfo location;
         private readonly AsyncManualResetEvent commitEvent;
@@ -533,6 +540,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
         public Task<bool> WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitAsync(timeout, token);
+        
+        Task<bool> IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
+            => commitEvent.WaitForCommitAsync(NodeState.IsCommittedPredicate, state, index, timeout, token);
 
         private async ValueTask ForceCompaction(SnapshotBuilder builder, CancellationToken token)
         {
@@ -722,10 +732,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return ReplayAsync(token);
             return Task.CompletedTask;
         }
+        
+        private bool IsConsistent
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => state.Term <= lastTerm.VolatileRead();
+        }
 
         private async Task EnsureConsistencyImpl(TimeSpan timeout, CancellationToken token)
         {
-            for (var timeoutTracker = new Timeout(timeout); state.Term > lastTerm.VolatileRead(); await commitEvent.WaitAsync(timeout, token).ConfigureAwait(false))
+            for (var timeoutTracker = new Timeout(timeout); !IsConsistent; await commitEvent.WaitAsync(IsConsistentPredicate, this, timeout, token).ConfigureAwait(false))
                 timeoutTracker.ThrowIfExpired(out timeout);
         }
 
@@ -739,7 +755,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="TimeoutException">Timeout occurred.</exception>
         public Task EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token)
-            => state.Term <= lastTerm.VolatileRead() ? Task.CompletedTask : EnsureConsistencyImpl(timeout, token);
+            => IsConsistent ? Task.CompletedTask : EnsureConsistencyImpl(timeout, token);
 
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref initialEntry;
 
