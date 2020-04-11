@@ -2,6 +2,7 @@ variables:
     Solution: src/DotNext.sln
     TestFolder: src/DotNext.Tests
     TestProject: $(TestFolder)/DotNext.Tests.csproj
+    InternetAccess: false
 trigger:
     - master
     - develop

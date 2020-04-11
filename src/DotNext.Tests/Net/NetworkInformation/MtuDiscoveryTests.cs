@@ -7,7 +7,7 @@ namespace DotNext.Net.NetworkInformation
     [ExcludeFromCodeCoverage]
     public sealed class MtuDiscoveryTests : Test
     {
-        [Fact]
+        [EnvarDependentFact("InternetAccess", "true", "true")]
         public static void PingToCloudflare()
         {
             using var discovery = new MtuDiscovery();
