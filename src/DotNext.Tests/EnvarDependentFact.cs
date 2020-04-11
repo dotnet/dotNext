@@ -7,7 +7,7 @@ namespace DotNext
     [ExcludeFromCodeCoverage]
     public sealed class EnvarDependentFact : FactAttribute
     {
-        public EnvarDependentFact(string variableName, string expectedValue, string? defaultValue = null)
+        public EnvarDependentFact(string variableName, string expectedValue, string defaultValue = null)
         {
             var value = Environment.GetEnvironmentVariable(variableName);
             if(string.IsNullOrEmpty(value))
