@@ -40,13 +40,19 @@ namespace DotNext.Net.NetworkInformation
                 currentMtu = (mtuLowerBound + mtuUpperBound) / 2;
                 var buffer = new byte[currentMtu];
                 var reply = ping.Send(address, timeout, buffer, options);
-                if(reply.Status == IPStatus.Success)
+                switch(reply.Status)
                 {
-                    bestMtu = currentMtu + IcmpEchoHeaderSize;
-                    mtuLowerBound = currentMtu + 1;
+                    default:
+                        return null;
+                    case IPStatus.Success:
+                        bestMtu = currentMtu + IcmpEchoHeaderSize;
+                        mtuLowerBound = currentMtu + 1;
+                        continue;
+                    case IPStatus.PacketTooBig:
+                    case IPStatus.TimedOut:
+                        mtuUpperBound = currentMtu - 1;
+                        continue;
                 }
-                else
-                    mtuUpperBound = currentMtu - 1;
             }
             return bestMtu;
         }
@@ -75,13 +81,19 @@ namespace DotNext.Net.NetworkInformation
                 currentMtu = (mtuLowerBound + mtuUpperBound) / 2;
                 var buffer = new byte[currentMtu];
                 var reply = await ping.SendPingAsync(address, timeout, buffer, options).ConfigureAwait(false);
-                if(reply.Status == IPStatus.Success)
+                switch(reply.Status)
                 {
-                    bestMtu = currentMtu + IcmpEchoHeaderSize;
-                    mtuLowerBound = currentMtu + 1;
+                    default:
+                        return null;
+                    case IPStatus.Success:
+                        bestMtu = currentMtu + IcmpEchoHeaderSize;
+                        mtuLowerBound = currentMtu + 1;
+                        continue;
+                    case IPStatus.PacketTooBig:
+                    case IPStatus.TimedOut:
+                        mtuUpperBound = currentMtu - 1;
+                        continue;
                 }
-                else
-                    mtuUpperBound = currentMtu - 1;
             }
             return bestMtu;
         }
