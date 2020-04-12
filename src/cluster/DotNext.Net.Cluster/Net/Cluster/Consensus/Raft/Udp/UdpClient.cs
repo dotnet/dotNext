@@ -43,8 +43,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly ChannelPool<Channel> channels;
         private readonly RefAction<Channel, CorrelationId> cancellationInvoker;
 
-        internal UdpClient(IPEndPoint address, int backlog, int datagramSize, ArrayPool<byte> bufferPool, ILoggerFactory loggerFactory)
-            : base(address, backlog, datagramSize, bufferPool, loggerFactory)
+        internal UdpClient(IPEndPoint address, int backlog, ArrayPool<byte> bufferPool, ILoggerFactory loggerFactory)
+            : base(address, backlog, bufferPool, loggerFactory)
         {
             channels = new ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;

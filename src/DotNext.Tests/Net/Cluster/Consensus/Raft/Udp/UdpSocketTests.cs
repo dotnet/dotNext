@@ -14,6 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
     using IO;
     using IO.Log;
+    using TransportServices;
 
     [ExcludeFromCodeCoverage]
     public sealed class UdpSocketTests : Test
@@ -136,7 +137,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [Fact]
         public static async Task ConnectionError()
         {
-            using var client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 35665), 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            using var client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 35665), 2, ArrayPool<byte>.Shared, NullLoggerFactory.Instance) 
+            { 
+                DatagramSize = UdpSocket.MaxDatagramSize,
+                DontFragment = false
+            };
             using var timeoutTokenSource = new CancellationTokenSource(500);
             client.Start();
             var exchange = new VoteExchange(10L, 20L, 30L);
@@ -158,11 +163,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = new UdpServer(serverAddr, 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
-            server.ReceiveTimeout = timeout;
+            using var server = new UdpServer(serverAddr, 2, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            {
+                ReceiveTimeout = timeout,
+                DatagramSize = UdpSocket.MaxDatagramSize,
+                DontFragment = false
+            };
             server.Start(new SimpleServerExchangePool());
             //prepare client
-            using var client = new UdpClient(serverAddr, 2, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            using var client = new UdpClient(serverAddr, 2, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            {
+                DatagramSize = UdpSocket.MaxDatagramSize,
+                DontFragment = false
+            };
             client.Start();
             //Vote request
             CancellationTokenSource timeoutTokenSource;
@@ -200,11 +213,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = new UdpServer(serverAddr, 100, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
-            server.ReceiveTimeout = timeout;
+            using var server = new UdpServer(serverAddr, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            {
+                ReceiveTimeout = timeout,
+                DatagramSize =  UdpSocket.MaxDatagramSize,
+                DontFragment = false
+            };
             server.Start(new SimpleServerExchangePool());
             //prepare client
-            using var client = new UdpClient(serverAddr, 100, UdpSocket.MaxDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            using var client = new UdpClient(serverAddr, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            {
+                DatagramSize = UdpSocket.MaxDatagramSize,
+                DontFragment = false
+            };
             client.Start();
             ICollection<Task<Result<bool>>> tasks = new LinkedList<Task<Result<bool>>>();
             using(var timeoutTokenSource = new CancellationTokenSource(timeout))
@@ -233,12 +254,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = new UdpServer(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
-            server.ReceiveTimeout = timeout;
+            using var server = new UdpServer(serverAddr, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            {
+                ReceiveTimeout = timeout,
+                DatagramSize = UdpSocket.MinDatagramSize,
+                DontFragment = true
+            };
             var exchangePool = new SimpleServerExchangePool(smallAmountOfMetadata);
             server.Start(exchangePool);
             //prepare client
-            using var client = new UdpClient(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            using var client = new UdpClient(serverAddr, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            {
+                DatagramSize = UdpSocket.MinDatagramSize,
+                DontFragment = true
+            };
             client.Start();
             var exchange = new MetadataExchange();
             client.Enqueue(exchange, default);
@@ -273,12 +302,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = new UdpServer(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
-            server.ReceiveTimeout = timeout;
+            using var server = new UdpServer(serverAddr, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            {
+                DatagramSize = UdpSocket.MinDatagramSize,
+                ReceiveTimeout = timeout,
+                DontFragment = true
+            };
             var exchangePool = new SimpleServerExchangePool(false) { Behavior = behavior };
             server.Start(exchangePool);
             //prepare client
-            using var client = new UdpClient(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            using var client = new UdpClient(serverAddr, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            {
+                DatagramSize = UdpSocket.MinDatagramSize,
+                DontFragment = true
+            };
             client.Start();
             var buffer = new byte[533];
             var rnd = new Random();
@@ -323,12 +360,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = new UdpServer(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
-            server.ReceiveTimeout = timeout;
+            using var server = new UdpServer(serverAddr, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            {
+                DatagramSize =  UdpSocket.MinDatagramSize,
+                ReceiveTimeout = timeout,
+                DontFragment = true
+            };
             var exchangePool = new SimpleServerExchangePool(false);
             server.Start(exchangePool);
             //prepare client
-            using var client = new UdpClient(serverAddr, 100, UdpSocket.MinDatagramSize, ArrayPool<byte>.Shared, NullLoggerFactory.Instance);
+            using var client = new UdpClient(serverAddr, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            {
+                DatagramSize = UdpSocket.MinDatagramSize,
+                DontFragment = true
+            };
             client.Start();
             var buffer = new byte[payloadSize];
             new Random().NextBytes(buffer);

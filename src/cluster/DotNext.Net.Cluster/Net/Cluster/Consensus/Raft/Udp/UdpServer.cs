@@ -52,8 +52,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private TimeSpan receiveTimeout;
         private readonly RefAction<Channel, bool> cancellationInvoker;
 
-        internal UdpServer(IPEndPoint address, int backlog, int datagramSize, ArrayPool<byte> bufferPool, ILoggerFactory loggerFactory)
-            : base(address, backlog, datagramSize, bufferPool, loggerFactory)
+        internal UdpServer(IPEndPoint address, int backlog, ArrayPool<byte> bufferPool, ILoggerFactory loggerFactory)
+            : base(address, backlog, bufferPool, loggerFactory)
         {
             channels = new ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;

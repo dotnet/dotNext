@@ -144,9 +144,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly SocketAsyncEventArgs?[] receiverPool;
         private readonly SendTaskPool senderPool;
         private readonly Action<SocketAsyncEventArgs> dispatcher;
-        private readonly int datagramSize;
+        private int datagramSize;
 
-        private protected UdpSocket(IPEndPoint address, int backlog, int datagramSize, ArrayPool<byte> pool, ILoggerFactory loggerFactory)
+        private protected UdpSocket(IPEndPoint address, int backlog, ArrayPool<byte> pool, ILoggerFactory loggerFactory)
             : base(address.AddressFamily, SocketType.Dgram, ProtocolType.Udp)
         {
             ExclusiveAddressUse = true;
@@ -157,9 +157,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             bufferPool = pool;
             receiverPool = new SocketAsyncEventArgs?[backlog];
             dispatcher = BeginReceive;
-            this.datagramSize = datagramSize.Between(MinDatagramSize, MaxDatagramSize, BoundType.Closed) ? 
-                datagramSize 
-                : throw new ArgumentOutOfRangeException(nameof(datagramSize));
+            datagramSize = MinDatagramSize;
+        }
+
+        internal static int ValidateDatagramSize(int value)
+            => value.Between(MinDatagramSize, MaxDatagramSize, BoundType.Closed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+
+        internal int DatagramSize
+        {
+            get => datagramSize;
+            set => datagramSize = ValidateDatagramSize(value);
         }
 
         IPEndPoint INetworkTransport.Address => Address;
