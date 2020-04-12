@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using static System.Buffers.Binary.BinaryPrimitives;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Udp
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using static IO.DataTransferObject;
     using static IO.Pipelines.PipeExtensions;

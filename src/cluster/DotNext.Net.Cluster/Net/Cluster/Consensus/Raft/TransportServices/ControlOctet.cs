@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Udp
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     [StructLayout(LayoutKind.Auto)]
     internal readonly struct ControlOctet

@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Buffers.Binary.BinaryPrimitives;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Udp
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     /// <summary>
     /// Represents network exchange between local and remote peer.

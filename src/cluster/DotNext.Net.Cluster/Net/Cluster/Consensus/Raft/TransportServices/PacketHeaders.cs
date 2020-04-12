@@ -1,7 +1,7 @@
 using System;
 using System.Buffers.Binary;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Udp
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     internal readonly struct PacketHeaders
     {

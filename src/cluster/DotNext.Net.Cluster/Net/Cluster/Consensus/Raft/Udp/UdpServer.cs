@@ -8,12 +8,13 @@ using System.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
+    using TransportServices;
     using static Runtime.Intrinsics;
 
-    internal sealed class UdpServer : UdpSocket
+    internal sealed class UdpServer : UdpSocket, IServer
     {
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Channel : IChannel
+        private readonly struct Channel : INetworkTransport.IChannel
         {
             private readonly IExchangePool exchangeOwner;
             private readonly IExchange exchange;
@@ -28,7 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 exchangeOwner = exchanges;
             }
 
-            IExchange IChannel.Exchange => exchange;
+            IExchange INetworkTransport.IChannel.Exchange => exchange;
 
             public CancellationToken Token => timeoutTokenSource.Token;
 
@@ -99,7 +100,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
         }
 
-        internal new TimeSpan ReceiveTimeout
+        public new TimeSpan ReceiveTimeout
         {
             get => receiveTimeout;
             set
@@ -109,7 +110,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
         }
 
-        internal void Start(IExchangePool exchanges)
+        public void Start(IExchangePool exchanges)
         {
             Bind(Address);
             base.Start(exchanges);

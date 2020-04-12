@@ -2,7 +2,7 @@ using System;
 using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Udp
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     [StructLayout(LayoutKind.Sequential)]
     internal readonly struct CorrelationId : IEquatable<CorrelationId>

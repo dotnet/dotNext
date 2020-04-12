@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Buffers.Binary.BinaryPrimitives;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Udp
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     internal sealed class VoteExchange : ClientExchange
     {

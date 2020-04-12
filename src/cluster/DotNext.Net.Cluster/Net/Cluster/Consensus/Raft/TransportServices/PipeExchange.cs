@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using IOException = System.IO.IOException;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Udp
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     internal abstract class PipeExchange : IExchange
     {

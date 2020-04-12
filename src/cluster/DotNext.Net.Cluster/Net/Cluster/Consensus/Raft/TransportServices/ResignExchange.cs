@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Debug = System.Diagnostics.Debug;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Udp
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     internal sealed class ResignExchange : ClientExchange<bool>
     {

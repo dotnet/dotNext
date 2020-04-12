@@ -8,12 +8,13 @@ using System.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
+    using TransportServices;
     using static Threading.AtomicInt64;
 
-    internal sealed class UdpClient : UdpSocket
+    internal sealed class UdpClient : UdpSocket, IClient
     {
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Channel : IChannel
+        private readonly struct Channel : INetworkTransport.IChannel
         {
             private readonly IExchange exchange;
             internal readonly CancellationToken Token;
@@ -26,8 +27,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 cancellation = token.CanBeCanceled ? token.Register(cancellationCallback, id) : default;
             }
 
-            CancellationToken IChannel.Token => Token;
-            IExchange IChannel.Exchange => exchange;
+            CancellationToken INetworkTransport.IChannel.Token => Token;
+            IExchange INetworkTransport.IChannel.Exchange => exchange;
 
             internal void Complete(Exception e) => exchange.OnException(e);
 
@@ -73,13 +74,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 logger.PacketDropped(correlationId, args.RemoteEndPoint);
         }
 
-        internal void Start()
+        public void Start()
         {
             Connect(Address);
             base.Start();
         }
 
-        internal async void Enqueue<TExchange>(TExchange exchange, CancellationToken token)
+        public async void Enqueue<TExchange>(TExchange exchange, CancellationToken token)
             where TExchange : class, IExchange
         {
             var id = new CorrelationId(applicationId, streamNumber.IncrementAndGet());

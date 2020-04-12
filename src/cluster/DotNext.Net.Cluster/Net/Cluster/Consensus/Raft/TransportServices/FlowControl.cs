@@ -1,4 +1,4 @@
-namespace DotNext.Net.Cluster.Consensus.Raft.Udp
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     internal enum FlowControl : byte
     {

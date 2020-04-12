@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.Udp
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using IO;
     using IO.Log;

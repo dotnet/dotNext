@@ -13,18 +13,13 @@ using static System.Collections.Immutable.ImmutableHashSet;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
+    using TransportServices;
     using ByteBuffer = Buffers.ArrayRental<byte>;
 
-    internal abstract class UdpSocket : Socket
+    internal abstract class UdpSocket : Socket, INetworkTransport
     {
-        private protected interface IChannel : IDisposable
-        {
-            IExchange Exchange { get; }
-            CancellationToken Token { get; }
-        }
-
         private protected sealed class ChannelPool<TChannel> : ConcurrentDictionary<CorrelationId, TChannel>
-            where TChannel : struct, IChannel
+            where TChannel : struct, INetworkTransport.IChannel
         {
             internal ChannelPool(int backlog)
                 : base(backlog, backlog)
@@ -167,6 +162,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 : throw new ArgumentOutOfRangeException(nameof(datagramSize));
         }
 
+        IPEndPoint INetworkTransport.Address => Address;
+
         private protected abstract void EndReceive(object sender, SocketAsyncEventArgs args);
 
         private void EndReceiveImpl(object sender, SocketAsyncEventArgs args)
@@ -214,7 +211,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         private protected void ProcessCancellation<TChannel, TContext>(RefAction<TChannel, TContext> action, ref TChannel channel, TContext context, SocketAsyncEventArgs args)
-            where TChannel : struct, IChannel
+            where TChannel : struct, INetworkTransport.IChannel
         {
             try
             {
@@ -231,7 +228,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         private protected async void ProcessDatagram<TChannel>(ConcurrentDictionary<CorrelationId, TChannel> channels, TChannel channel, CorrelationId correlationId, PacketHeaders headers, ReadOnlyMemory<byte> datagram, SocketAsyncEventArgs args)
-            where TChannel : struct, IChannel
+            where TChannel : struct, INetworkTransport.IChannel
         {
             bool stateFlag;
             var error = default(Exception);
@@ -283,7 +280,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         private protected async Task<bool> SendAsync<TChannel>(CorrelationId id, TChannel channel, EndPoint endpoint)
-            where TChannel : struct, IChannel
+            where TChannel : struct, INetworkTransport.IChannel
         {
             bool waitForInput;
             var bufferHolder = AllocDatagramBuffer();

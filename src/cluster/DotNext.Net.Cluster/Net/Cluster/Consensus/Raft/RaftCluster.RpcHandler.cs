@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
+    using IRaftRpcHandler = TransportServices.IRaftRpcHandler;
 
     public abstract partial class RaftCluster<TMember> : IRaftRpcHandler
     {
