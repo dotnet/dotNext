@@ -34,13 +34,12 @@ namespace DotNext.Net.NetworkInformation
         {
             int mtuLowerBound = options.MinMtuSize, mtuUpperBound = options.MaxMtuSize;
             int? bestMtu = default;
-            using var ping = new Ping();
             for(int currentMtu; mtuLowerBound <= mtuUpperBound; token.ThrowIfCancellationRequested())
             {
                 currentMtu = (mtuLowerBound + mtuUpperBound) / 2;
                 //TODO: Should be optimized. See https://github.com/dotnet/runtime/issues/34856
                 var buffer = new byte[currentMtu];
-                var reply = ping.Send(address, timeout, buffer, options);
+                var reply = Send(address, timeout, buffer, options);
                 switch(reply.Status)
                 {
                     default:
@@ -81,13 +80,12 @@ namespace DotNext.Net.NetworkInformation
         {
             int mtuLowerBound = options.MinMtuSize, mtuUpperBound = options.MaxMtuSize;
             int? bestMtu = default;
-            using var ping = new Ping();
             for(int currentMtu; mtuLowerBound <= mtuUpperBound; token.ThrowIfCancellationRequested())
             {
                 currentMtu = (mtuLowerBound + mtuUpperBound) / 2;
                 //TODO: Should be optimized. See https://github.com/dotnet/runtime/issues/34856
                 var buffer = new byte[currentMtu];
-                var reply = await ping.SendPingAsync(address, timeout, buffer, options).ConfigureAwait(false);
+                var reply = await SendPingAsync(address, timeout, buffer, options).ConfigureAwait(false);
                 switch(reply.Status)
                 {
                     default:
