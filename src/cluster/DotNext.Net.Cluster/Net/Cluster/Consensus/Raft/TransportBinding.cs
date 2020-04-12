@@ -4,8 +4,9 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
 
-namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
+namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using TransportServices;
     using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory;
 
     /// <summary>
