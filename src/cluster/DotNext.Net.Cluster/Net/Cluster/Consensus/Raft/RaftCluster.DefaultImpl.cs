@@ -20,6 +20,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </summary>
     public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember, IExchangePool
     {
+        private static readonly Func<RaftClusterMember, EndPoint, bool> MatchByEndPoint = IsMatchedByEndPoint;
         private readonly ConcurrentBag<ServerExchange> exchangePool;
         private readonly ImmutableDictionary<string, string> metadata;
         private readonly IPEndPoint hostEndPoint, publicEndPoint;
@@ -27,7 +28,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly Func<IServer> serverFactory;
         private IServer server;
         private readonly PipeOptions pipeConfig;
-        private readonly int exchangePoolSize;
         private bool clientsInitialized;
 
         /// <summary>
@@ -70,6 +70,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        private static bool IsMatchedByEndPoint(RaftClusterMember member, EndPoint endPoint)
+            => member.Endpoint.Equals(endPoint);
+
         /// <summary>
         /// Starts serving local member.
         /// </summary>
@@ -77,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public override Task StartAsync(CancellationToken token)
         {
-            if(FindMember(publicEndPoint.Represents) is null)
+            if(FindMember(MatchByEndPoint, publicEndPoint) is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             //if this instance is reused multiple times and StopAsync was called previously
             //then don't need to start clients again. However, server was disposed
@@ -122,7 +125,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="address">The address of the cluster member.</param>
         /// <returns>A new client for communication with cluster member.</returns>
         protected RaftClusterMember CreateClient(IPEndPoint address)
-            => CreateClient(address, true);
+        {
+            exchangePool.Add(new ServerExchange(this, pipeConfig));
+            return CreateClient(address, true);
+        }
+
+        /// <summary>
+        /// Called automatically when member is removed from the collection of members.
+        /// </summary>
+        /// <param name="member">The removed member.</param>
+        protected sealed override void OnRemoved(RaftClusterMember member)
+        {
+            if(exchangePool.TryTake(out var exchange))
+                exchange.Dispose();
+        }
 
         bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
@@ -135,19 +151,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         
         Task<Result<bool>> ILocalMember.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
-            var member = FindMember(sender.Represents);
+            var member = FindMember(MatchByEndPoint, sender);
             return member is null ? Task.FromResult(new Result<bool>(Term, false)) : ReceiveEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
         }
         
         Task<Result<bool>> ILocalMember.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
-            var member = FindMember(sender.Represents);
+            var member = FindMember(MatchByEndPoint, sender);
             return member is null ? Task.FromResult(new Result<bool>(Term, false)) : ReceiveVoteAsync(member, term, lastLogIndex, lastLogTerm, token);
         }
 
         Task<Result<bool>> ILocalMember.ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         {
-            var member = FindMember(sender.Represents);
+            var member = FindMember(MatchByEndPoint, sender);
             return member is null ? Task.FromResult(new Result<bool>(Term, false)) : ReceiveSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token);
         }
 
