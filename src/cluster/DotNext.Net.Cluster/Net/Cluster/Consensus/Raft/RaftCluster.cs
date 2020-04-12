@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -27,28 +28,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal interface IMemberCollection : ICollection<TMember>, IReadOnlyCollection<TMember>
         {
-
         }
 
-        private sealed class EmptyMemberCollection : IMemberCollection
+        private sealed class EmptyMemberCollection : ReadOnlyCollection<TMember>, IMemberCollection
         {
-            public int Count => 0;
-
-            void ICollection<TMember>.Add(TMember member) => throw new NotSupportedException();
-
-            void ICollection<TMember>.Clear() { }
-
-            bool ICollection<TMember>.Contains(TMember member) => false;
-
-            bool ICollection<TMember>.Remove(TMember member) => false;
-
-            bool ICollection<TMember>.IsReadOnly => true;
-
-            void ICollection<TMember>.CopyTo(TMember[] array, int arrayIndex) { }
-
-            public IEnumerator<TMember> GetEnumerator() => Enumerable.Empty<TMember>().GetEnumerator();
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+            internal EmptyMemberCollection()
+                : base(Array.Empty<TMember>())
+            {
+            }
         }
 
         private sealed class MemberCollection : LinkedList<TMember>, IMemberCollection
