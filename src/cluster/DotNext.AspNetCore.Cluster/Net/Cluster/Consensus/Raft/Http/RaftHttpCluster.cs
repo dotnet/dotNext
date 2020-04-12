@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
+    using IClientMetricsCollector = Metrics.IClientMetricsCollector;
     using Messaging;
 
     internal abstract partial class RaftHttpCluster : RaftCluster<RaftClusterMember>, IHostedService, IHostingContext, IExpandableCluster, IMessageBus
@@ -20,9 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private readonly IClusterMemberLifetime? configurator;
         private readonly IDisposable configurationTracker;
 
-
-        [SuppressMessage("Usage", "CA2213", Justification = "This object is disposed via RaftCluster.members collection")]
-        private RaftClusterMember? localMember;
+        private IPEndPoint? localMember;
         private readonly IHttpMessageHandlerFactory? httpHandlerFactory;
         private readonly TimeSpan requestTimeout;
         private readonly bool openConnectionForEachRequest;
@@ -65,7 +64,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             member.Timeout = requestTimeout;
             member.DefaultRequestHeaders.ConnectionClose = openConnectionForEachRequest;
-            member.Metrics = Metrics as IHttpClientMetrics;
+            member.Metrics = Metrics as IClientMetricsCollector;
             member.ProtocolVersion = protocolVersion;
         }
 
@@ -114,7 +113,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         bool IHostingContext.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
-        IPEndPoint IHostingContext.LocalEndpoint => localMember?.Endpoint ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+        IPEndPoint IHostingContext.LocalEndpoint => localMember ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
 
         HttpMessageHandler IHostingContext.CreateHttpHandler()
             => httpHandlerFactory?.CreateHandler(clientHandlerName) ?? new HttpClientHandler();
@@ -127,7 +126,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         public override Task StartAsync(CancellationToken token)
         {
             //detect local member
-            var localMember = this.localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+            var localMember = FindMember(LocalMemberFinder) ?? throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
+            this.localMember = localMember.Endpoint;
             configurator?.Initialize(this, metadata);
             return base.StartAsync(token);
         }

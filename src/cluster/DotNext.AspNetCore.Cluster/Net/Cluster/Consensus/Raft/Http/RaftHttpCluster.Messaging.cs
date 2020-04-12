@@ -75,7 +75,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             Assert(localMember != null);
             //keep the same message between retries for correct identification of duplicate messages
-            var signal = new CustomMessage(localMember.Endpoint, message, true) { RespectLeadership = true };
+            var signal = new CustomMessage(localMember, message, true) { RespectLeadership = true };
             var tokenSource = token.LinkTo(Token);
             try
             {

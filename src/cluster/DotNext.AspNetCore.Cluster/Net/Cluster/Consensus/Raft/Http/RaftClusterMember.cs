@@ -12,6 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     using Messaging;
     using Threading;
     using Timestamp = Diagnostics.Timestamp;
+    using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
     internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, ISubscriber
     {
@@ -25,7 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         private volatile MemberMetadata? metadata;
         private ClusterMemberStatusChanged? memberStatusChanged;
         private long nextIndex;
-        internal IHttpClientMetrics? Metrics;
+        internal IClientMetricsCollector? Metrics;
         internal HttpVersion ProtocolVersion;
 
         internal RaftClusterMember(IHostingContext context, Uri remoteMember, Uri resourcePath)
@@ -46,11 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         private void ChangeStatus(ClusterMemberStatus newState)
-        {
-            var previousState = status.GetAndSet(newState);
-            if (previousState != newState)
-                memberStatusChanged?.Invoke(this, previousState, newState);
-        }
+            => IClusterMember.OnMemberStatusChanged(this, ref status, newState, memberStatusChanged);
 
         internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
 
@@ -121,7 +118,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         }
 
         Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
-            => SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalEndpoint, term, snapshotIndex, snapshot), token);
+        {
+            if(Endpoint.Equals(context.LocalEndpoint))
+                return Task.FromResult(new Result<bool>(term, true));
+            return SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalEndpoint, term, snapshotIndex, snapshot), token);
+        }
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh,
             CancellationToken token)
