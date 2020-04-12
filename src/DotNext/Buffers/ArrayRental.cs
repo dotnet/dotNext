@@ -10,7 +10,7 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">Type of array elements.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ArrayRental<T> : IDisposable
+    public readonly struct ArrayRental<T> : IMemoryOwner<T>
     {
         private readonly ArrayPool<T>? pool;
         private readonly T[] array;
