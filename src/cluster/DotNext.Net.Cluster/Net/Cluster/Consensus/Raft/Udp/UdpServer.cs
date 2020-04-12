@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         private static readonly IPEndPoint AnyRemoteEndpoint = new IPEndPoint(IPAddress.Any, 0);
-        private readonly ChannelPool<Channel> channels;
+        private readonly INetworkTransport.ChannelPool<Channel> channels;
         private readonly Action<object> cancellationHandler;
         private TimeSpan receiveTimeout;
         private readonly RefAction<Channel, bool> cancellationInvoker;
@@ -55,7 +55,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         internal UdpServer(IPEndPoint address, int backlog, ArrayPool<byte> bufferPool, ILoggerFactory loggerFactory)
             : base(address, backlog, bufferPool, loggerFactory)
         {
-            channels = new ChannelPool<Channel>(backlog);
+            channels = new INetworkTransport.ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;
             cancellationInvoker = Channel.Cancel;
         }

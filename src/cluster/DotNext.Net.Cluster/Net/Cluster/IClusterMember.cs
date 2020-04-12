@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster
 {
+    using Threading;
+
     /// <summary>
     /// Represents cluster member.
     /// </summary>
@@ -59,5 +61,19 @@ namespace DotNext.Net.Cluster
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="MemberUnavailableException">This member is not reachable through the network.</exception>
         Task<bool> ResignAsync(CancellationToken token);
+
+        /// <summary>
+        /// Helper method for raising <see cref="MemberStatusChanged"/> event.
+        /// </summary>
+        /// <param name="member">The current member.</param>
+        /// <param name="status">The member status holder.</param>
+        /// <param name="newState">A new state of the member.</param>
+        /// <param name="memberStatusChanged">A collection of event handlers.</param>
+        protected static void OnMemberStatusChanged(IClusterMember member, ref AtomicEnum<ClusterMemberStatus> status, ClusterMemberStatus newState, ClusterMemberStatusChanged? memberStatusChanged)
+        {
+            var previousState = status.GetAndSet(newState);
+            if (previousState != newState)
+                memberStatusChanged?.Invoke(member, previousState, newState);
+        }
     }
 }

@@ -185,7 +185,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private volatile RaftState? state;
         private volatile TMember? leader;
         private readonly bool allowPartitioning;
-        private readonly ElectionTimeout electionTimeoutProvider;
+        private protected readonly ElectionTimeout electionTimeoutProvider;
         private volatile int electionTimeout;
         private readonly CancellationTokenSource transitionCancellation;
         private IPersistentState auditTrail;

@@ -6,7 +6,12 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
-    internal abstract class ClientExchange<T> : TaskCompletionSource<T>, IExchange
+    internal interface IClientExchange<T> : IExchange
+    {
+        Task<T> Task { get; }
+    }
+
+    internal abstract class ClientExchange<T> : TaskCompletionSource<T>, IClientExchange<T>
     {
         private protected ClientExchange()
             : base(TaskCreationOptions.RunContinuationsAsynchronously)

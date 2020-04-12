@@ -66,9 +66,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 Metadata = metadata.ToImmutableDictionary();
             }
 
-            Task<bool> IRaftRpcHandler.ResignAsync(CancellationToken token) => Task.FromResult(true);
+            IPEndPoint ILocalMember.Address => throw new NotImplementedException();
 
-            async Task<Result<bool>> IRaftRpcHandler.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+            bool ILocalMember.IsLeader(IRaftClusterMember member) => throw new NotImplementedException();
+
+            Task<bool> ILocalMember.ResignAsync(CancellationToken token) => Task.FromResult(true);
+
+            async Task<Result<bool>> ILocalMember.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             {
                 Equal(42L, senderTerm);
                 Equal(1, prevLogIndex);
@@ -103,7 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 return new Result<bool>(43L, true);
             }
 
-            async Task<Result<bool>> IRaftRpcHandler.ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            async Task<Result<bool>> ILocalMember.ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             {
                 Equal(42L, senderTerm);
                 Equal(10, snapshotIndex);
@@ -113,7 +117,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 return new Result<bool>(43L, true);
             }
 
-            Task<Result<bool>> IRaftRpcHandler.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
+            Task<Result<bool>> ILocalMember.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             {
                 True(token.CanBeCanceled);
                 Equal(42L, term);
@@ -269,10 +273,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DontFragment = true
             };
             client.Start();
-            var exchange = new MetadataExchange();
+            var exchange = new MetadataExchange(CancellationToken.None);
             client.Enqueue(exchange, default);
             var actual = new Dictionary<string, string>();
-            await exchange.ReadAsync(actual, default);
+            await exchange.Task;
             Equal(exchangePool.Metadata, actual);
             client.Shutdown(SocketShutdown.Both);
         }

@@ -33,10 +33,6 @@ namespace DotNext
 
         internal static string NoAvailableReadSessions => Resources.GetString("NoAvailableReadSessions");
 
-        internal static string LockConflict => Resources.GetString("LockConflict");
-
-        internal static string LockNameIsEmpty => Resources.GetString("LockNameIsEmpty");
-
         internal static string InvalidLockToken => Resources.GetString("InvalidLockToken");
 
         internal static string UnsupportedAddressFamily => Resources.GetString("UnsupportedAddressFamily");
@@ -50,5 +46,9 @@ namespace DotNext
         internal static string ExchangeCompleted => Resources.GetString("ExchangeCompleted");
 
         internal static string CanceledByRemoteHost => Resources.GetString("CanceledByRemoteHost");
+
+        internal static string UnavailableMember => Resources.GetString("UnavailableMember");
+
+        internal static string UnresolvedLocalMember => Resources.GetString("UnresolvedLocalMember");
     }
 }

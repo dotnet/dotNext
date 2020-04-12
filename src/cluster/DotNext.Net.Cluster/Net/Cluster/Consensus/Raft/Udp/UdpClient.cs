@@ -40,19 +40,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         //I/O management
         private readonly long applicationId;
         private long streamNumber;
-        private readonly ChannelPool<Channel> channels;
+        private readonly INetworkTransport.ChannelPool<Channel> channels;
         private readonly RefAction<Channel, CorrelationId> cancellationInvoker;
 
         internal UdpClient(IPEndPoint address, int backlog, ArrayPool<byte> bufferPool, ILoggerFactory loggerFactory)
             : base(address, backlog, bufferPool, loggerFactory)
         {
-            channels = new ChannelPool<Channel>(backlog);
+            channels = new INetworkTransport.ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;
            
             applicationId = new Random().Next<long>();
             streamNumber = long.MinValue;
             cancellationInvoker = channels.CancellationRequested;
         }
+
+        void IClient.CancelPendingRequests() => channels.ClearAndDestroyChannels();
 
         private protected override void ReportError(SocketError error)
             => channels.ReportError(error);

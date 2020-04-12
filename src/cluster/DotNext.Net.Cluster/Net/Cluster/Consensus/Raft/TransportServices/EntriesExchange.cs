@@ -4,7 +4,6 @@ using System.IO.Pipelines;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using IOException = System.IO.IOException;
 using static System.Buffers.Binary.BinaryPrimitives;
 using Unsafe = System.Runtime.CompilerServices.Unsafe;
 

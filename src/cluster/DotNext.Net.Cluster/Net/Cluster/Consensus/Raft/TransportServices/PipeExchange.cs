@@ -29,6 +29,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private protected PipeReader Reader => pipe.Reader;
 
+        private protected async ValueTask DisposePipeAsync()
+        {
+            var e = new ObjectDisposedException(GetType().Name);
+            await pipe.Writer.CompleteAsync(e).ConfigureAwait(false);
+            await pipe.Reader.CompleteAsync(e).ConfigureAwait(false);
+        }
+
         public abstract ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token);
 
         public abstract ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token);

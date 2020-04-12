@@ -13,16 +13,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     using static IO.Pipelines.PipeExtensions;
     using static IO.Pipelines.ResultExtensions;
 
-    internal sealed class MetadataExchange : PipeExchange
+    internal sealed class MetadataExchange : PipeExchange, IClientExchange<IReadOnlyDictionary<string, string>>
     {
         private const StringLengthEncoding LengthEncoding = StringLengthEncoding.Compressed;
 
         private bool state;
+        private readonly CancellationToken readToken;
 
-        internal MetadataExchange(PipeOptions? options = null)
-            : base(options)
-        {
-        }
+        internal MetadataExchange(CancellationToken token, PipeOptions? options = null)
+            : base(options) => readToken = token;
 
         private static Encoding Encoding => Encoding.UTF8;
 
@@ -43,21 +42,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             await writer.CompleteAsync();
         }
 
-        internal async Task ReadAsync(IDictionary<string, string> output, CancellationToken token)
+        private static async Task<IReadOnlyDictionary<string, string>> ReadAsync(PipeReader reader, CancellationToken token)
         {
             //read length
-            var length = await Reader.ReadInt32Async(true, token).ConfigureAwait(false);
+            var length = await reader.ReadInt32Async(true, token).ConfigureAwait(false);
+            var output = new Dictionary<string, string>(length, StringComparer.Ordinal);
             var context = new DecodingContext(Encoding, true);
             while(--length >= 0)
             {
                 //read key
-                var key = await Reader.ReadStringAsync(LengthEncoding, context, token).ConfigureAwait(false);
+                var key = await reader.ReadStringAsync(LengthEncoding, context, token).ConfigureAwait(false);
                 //read value
-                var value = await Reader.ReadStringAsync(LengthEncoding, context, token).ConfigureAwait(false);
+                var value = await reader.ReadStringAsync(LengthEncoding, context, token).ConfigureAwait(false);
                 //write pair to the dictionary
                 output.Add(key, value);
             }
+            return output;
         }
+
+        public Task<IReadOnlyDictionary<string, string>> Task => ReadAsync(Reader, readToken);
 
         public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {

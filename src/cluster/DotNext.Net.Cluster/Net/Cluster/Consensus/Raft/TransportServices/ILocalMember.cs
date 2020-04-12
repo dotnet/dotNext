@@ -7,8 +7,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using IO.Log;
 
-    internal interface IRaftRpcHandler
+    internal interface ILocalMember
     {
+        IReadOnlyDictionary<string, string> Metadata { get; }
+
+        IPEndPoint Address { get; }
+
+        bool IsLeader(IRaftClusterMember member);
+
         Task<Result<bool>> ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             where TEntry : IRaftLogEntry;
 
@@ -18,10 +24,5 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             where TSnapshot : IRaftLogEntry;
-    }
-
-    internal interface ILocalMember : IRaftRpcHandler
-    {
-        IReadOnlyDictionary<string, string> Metadata { get; }
     }
 }
