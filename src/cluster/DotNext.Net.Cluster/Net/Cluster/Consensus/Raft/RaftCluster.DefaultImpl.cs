@@ -24,9 +24,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly ImmutableDictionary<string, string> metadata;
         private readonly IPEndPoint hostEndPoint, publicEndPoint;
         private readonly Func<IPEndPoint, IClient> clientFactory;
-        private readonly IServer server;
+        private readonly Func<IServer> serverFactory;
+        private IServer server;
         private readonly PipeOptions pipeConfig;
         private readonly int exchangePoolSize;
+        private bool clientsInitialized;
 
         /// <summary>
         /// Initializes a new default implementation of Raft-based cluster.
@@ -35,10 +37,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public RaftCluster(Configuration configuration)
             : base(configuration, out var members)
         {
+            clientsInitialized = false;
             hostEndPoint = configuration.HostEndPoint;
             publicEndPoint = configuration.PublicEndPoint;
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
             clientFactory = configuration.CreateClient;
+            serverFactory = configuration.CreateServer;
             pipeConfig = configuration.PipeConfig;
             server = configuration.CreateServer();
             exchangePool = new ConcurrentBag<ServerExchange>();
@@ -66,14 +70,39 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        /// <summary>
+        /// Starts serving local member.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel initialization process.</param>
+        /// <returns>The task representing asynchronous execution of the method.</returns>
         public override Task StartAsync(CancellationToken token)
         {
             if(FindMember(publicEndPoint.Represents) is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            //start each client
-            foreach(var member in Members)
-                member.Start();
+            //if this instance is reused multiple times and StopAsync was called previously
+            //then don't need to start clients again. However, server was disposed
+            if(clientsInitialized)
+            {
+                server = serverFactory();
+            }
+            else
+            {
+                foreach(var member in Members)
+                    member.Start();
+            }
+            server.Start(this);
             return base.StartAsync(token);
+        }
+
+        /// <summary>
+        /// Stops serving local member.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel shutdown process.</param>
+        /// <returns>The task representing asynchronous execution of the method.</returns>
+        public override Task StopAsync(CancellationToken token)
+        {
+            server.Dispose();
+            return base.StopAsync(token);
         }
 
         private RaftClusterMember CreateClient(IPEndPoint address, bool startClient)
@@ -120,6 +149,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             var member = FindMember(sender.Represents);
             return member is null ? Task.FromResult(new Result<bool>(Term, false)) : ReceiveSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token);
+        }
+
+        /// <summary>
+        /// Releases managed and unmanaged resources associated with this object.
+        /// </summary>
+        /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if(disposing)
+            {
+                server.Dispose();
+                //dispose all exchanges
+                while(exchangePool.TryTake(out var exchange))
+                    exchange.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
