@@ -58,8 +58,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected ref struct MemberHolder
         {
             private readonly LinkedListNode<TMember> node;
+            private readonly Action<TMember>? removalCallback;
 
-            internal MemberHolder(LinkedListNode<TMember> node) => this.node = node;
+            internal MemberHolder(LinkedListNode<TMember> node, Action<TMember>? removalCallback)
+            {
+                this.node = node;
+                this.removalCallback = removalCallback;
+            }
 
             /// <summary>
             /// Gets actual cluster member.
@@ -84,6 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     node.List.Remove(node);
                     var member = node.Value;
                     node.Value = null!;
+                    removalCallback?.Invoke(member);
                     return member;
                 }
                 throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
@@ -109,12 +115,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public ref struct Enumerator
             {
                 private LinkedListNode<TMember> current;
+                private readonly Action<TMember>? removalCallback;
                 private bool started;
 
-                internal Enumerator(LinkedList<TMember> members)
+                internal Enumerator(LinkedList<TMember> members, Action<TMember>? removalCallback)
                 {
                     current = members.First;
                     started = false;
+                    this.removalCallback = removalCallback;
                 }
 
                 /// <summary>
@@ -133,15 +141,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 /// <summary>
                 /// Gets holder of the member holder at the current position of enumerator.
                 /// </summary>
-                public MemberHolder Current => new MemberHolder(current);
+                public MemberHolder Current => new MemberHolder(current, removalCallback);
             }
 
             private readonly MemberCollection members;
+            private readonly Action<TMember>? removalCallback;
 
-            internal MemberCollectionBuilder(IEnumerable<TMember> members) => this.members = new MemberCollection(members);
+            internal MemberCollectionBuilder(IEnumerable<TMember> members, Action<TMember> removalCallback)
+            {
+                this.members = new MemberCollection(members);
+                this.removalCallback = removalCallback;
+            }
 
             internal MemberCollectionBuilder(out IMemberCollection members)
-                => members = this.members = new MemberCollection();
+            {
+                members = this.members = new MemberCollection();
+                this.removalCallback = null;
+            }
 
             /// <summary>
             /// Adds new cluster member.
@@ -153,7 +169,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Returns enumerator over cluster members.
             /// </summary>
             /// <returns>The enumerator over cluster members.</returns>
-            public Enumerator GetEnumerator() => new Enumerator(members);
+            public Enumerator GetEnumerator() => new Enumerator(members, removalCallback);
 
             internal IMemberCollection Build() => members;
         }
@@ -228,9 +244,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         protected CancellationToken Token => transitionCancellation.Token;
 
+        /// <summary>
+        /// Called automatically if the member is removed from the collection of members.
+        /// </summary>
+        /// <param name="member">The removed member.</param>
+        protected virtual void OnRemoved(TMember member) { }
+
         private void ChangeMembers(MemberCollectionMutator mutator)
         {
-            var members = new MemberCollectionBuilder(this.members);
+            var members = new MemberCollectionBuilder(this.members, OnRemoved);
             mutator(members);
             this.members = members.Build();
         }
@@ -379,10 +401,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Finds cluster member using predicate.
         /// </summary>
-        /// <param name="matcher">The predicate used to find appropriate member.</param>
+        /// <param name="criteria">The predicate used to find appropriate member.</param>
+        /// <returns>The cluster member; or <see langword="null"/> if there is not member matching to the specified criteria.</returns>
+        protected TMember? FindMember(Predicate<TMember> criteria)
+            => members.FirstOrDefault(criteria.AsFunc());
+        
+        /// <summary>
+        /// Finds cluster member using predicate.
+        /// </summary>
+        /// <param name="criteria">The predicate used to find appropriate member.</param>
+        /// <param name="arg">The argument to be passed to the matching function.</param>
         /// <returns>The cluster member; </returns>
-        protected TMember? FindMember(Predicate<TMember> matcher)
-            => members.FirstOrDefault(matcher.AsFunc());
+        protected TMember? FindMember<TArg>(Func<TMember, TArg, bool> criteria, TArg arg)
+        {
+            foreach(var member in members)
+                if(criteria(member, arg))
+                    return member;
+            return null;
+        }
         
         /// <summary>
         /// Handles InstallSnapshot message received from remote cluster member.
