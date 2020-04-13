@@ -99,7 +99,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 client.Enqueue(exchange, token);
                 return await exchange.Task.ConfigureAwait(false);
             }
-            catch(Exception e)
+            catch (Exception e) when (!(e is OperationCanceledException cancellation) || cancellation.CancellationToken == timeoutSource.Token)
             {
                 localMember.Logger.MemberUnavailable(Endpoint, e);
                 ChangeStatus(ClusterMemberStatus.Unavailable);
@@ -110,7 +110,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 metrics?.ReportResponseTime(timeStamp.Elapsed);
                 linkedSource?.Dispose();
                 timeoutSource.Dispose();
-                if(exchange is IAsyncDisposable disposable)
+                if (exchange is IAsyncDisposable disposable)
                     await disposable.DisposeAsync();
             }
         }
