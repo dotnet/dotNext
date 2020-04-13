@@ -40,7 +40,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         public abstract ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token);
     
-        void IExchange.OnException(Exception e) => pipe.Writer.Complete(e);
+        void IExchange.OnException(Exception e)
+        {
+            pipe.Writer.Complete(e);
+        }
 
         void IExchange.OnCanceled(CancellationToken token) => pipe.Writer.Complete(new OperationCanceledException(token));
     }
