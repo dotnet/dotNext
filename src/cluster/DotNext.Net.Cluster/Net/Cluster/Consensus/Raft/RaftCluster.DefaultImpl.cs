@@ -30,6 +30,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private IServer server;
         private readonly PipeOptions pipeConfig;
         private bool reused;
+        private readonly TimeSpan requestTimeout;
 
         /// <summary>
         /// Initializes a new default implementation of Raft-based cluster.
@@ -38,12 +39,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public RaftCluster(Configuration configuration)
             : base(configuration, out var members)
         {
+            requestTimeout = TimeSpan.FromMilliseconds(configuration.LowerElectionTimeout);
             publicEndPoint = configuration.PublicEndPoint;
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
             clientFactory = configuration.CreateClient;
             serverFactory = configuration.CreateServer;
             pipeConfig = configuration.PipeConfig;
             server = configuration.CreateServer();
+            server.ReceiveTimeout = requestTimeout;
             exchangePool = new ConcurrentBag<ServerExchange>();
             //populate pool
             for(var i = 0; i <= configuration.ServerBacklog; i++)
@@ -82,7 +85,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if(FindMember(MatchByEndPoint, publicEndPoint) is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             if (reused)
+            {
                 server = serverFactory();
+                server.ReceiveTimeout = requestTimeout;
+            }
             else
                 reused = true;
             server.Start(this);
@@ -102,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private RaftClusterMember CreateClient(IPEndPoint address, bool extendPool)
         {
-            var result = new RaftClusterMember(this, address, clientFactory, TimeSpan.FromMilliseconds(electionTimeoutProvider.LowerValue), pipeConfig, Metrics as IClientMetricsCollector);
+            var result = new RaftClusterMember(this, address, clientFactory, requestTimeout, pipeConfig, Metrics as IClientMetricsCollector);
             if(extendPool)
                 exchangePool.Add(new ServerExchange(this, pipeConfig));
             return result;
