@@ -6,7 +6,8 @@ using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using Debug = System.Diagnostics.Debug;
-using M = InlineIL.MethodRef;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 using Var = InlineIL.LocalVar;
 
 namespace DotNext.Runtime
@@ -47,7 +48,7 @@ namespace DotNext.Runtime
             const string DefaultVar = "default";
             DeclareLocals(true, new Var(DefaultVar, typeof(T)));
             Ldloc(DefaultVar);
-            Box(typeof(T));
+            Box<T>();
             Ldnull();
             Ceq();
             return Return<bool>();
@@ -102,21 +103,21 @@ namespace DotNext.Runtime
             //has unspecified behavior if src is not assignable to dst, ECMA-335 III.4.4
             const string slowPath = "slow";
             PushOutRef(out output);
-            Sizeof(typeof(T));
-            Sizeof(typeof(TResult));
+            Sizeof<T>();
+            Sizeof<TResult>();
             Blt_Un(slowPath);
             //copy from input into output as-is
             PushInRef(in input);
-            Ldobj(typeof(TResult));
-            Stobj(typeof(TResult));
+            Ldobj<TResult>();
+            Stobj<TResult>();
             Ret();
 
             MarkLabel(slowPath);
             Dup();
-            Initobj(typeof(TResult));
+            Initobj<TResult>();
             PushInRef(in input);
-            Ldobj(typeof(T));
-            Stobj(typeof(T));
+            Ldobj<T>();
+            Stobj<T>();
             Ret();
             throw Unreachable();    //output must be defined within scope
         }
@@ -128,51 +129,21 @@ namespace DotNext.Runtime
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefault<T>(in T value)
         {
-            Sizeof(typeof(T));
-            Pop(out uint size);
-            switch (size)
+            switch(Unsafe.SizeOf<T>())
             {
                 default:
-                    Ldarg(nameof(value));
-                    Push(size);
-                    Conv_I8();
-                    Call(new M(typeof(Intrinsics), nameof(IsZero)));
-                    break;
-                case 0U:
-                    Ldc_I4_1();
-                    break;
+                    return IsZero(ref InToRef<T, byte>(in value), Unsafe.SizeOf<T>());
+                case 0:
+                    return true;
                 case sizeof(byte):
-                    Ldarg(nameof(value));
-                    Ldind_I1();
-                    Ldc_I4_0();
-                    Ceq();
-                    break;
+                    return InToRef<T, byte>(value) == 0;
                 case sizeof(ushort):
-                    Ldarg(nameof(value));
-                    Ldind_I2();
-                    Ldc_I4_0();
-                    Ceq();
-                    break;
-                case 3:
-                    goto default;
+                    return InToRef<T, ushort>(value) == 0;
                 case sizeof(uint):
-                    Ldarg(nameof(value));
-                    Ldind_I4();
-                    Ldc_I4_0();
-                    Ceq();
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
+                    return InToRef<T, uint>(value) == 0;
                 case sizeof(ulong):
-                    Ldarg(nameof(value));
-                    Ldind_I8();
-                    Ldc_I8(0L);
-                    Ceq();
-                    break;
+                    return InToRef<T, ulong>(value) == 0UL;
             }
-            return Return<bool>();
         }
 
         /// <summary>
@@ -191,7 +162,7 @@ namespace DotNext.Runtime
         {
             Debug.Assert(disposable is IDisposable);
             Push(disposable);
-            Callvirt(new M(typeof(IDisposable), nameof(IDisposable.Dispose)));
+            Callvirt(Method(Type<IDisposable>(), nameof(IDisposable.Dispose)));
             Ret();
         }
 
@@ -199,7 +170,7 @@ namespace DotNext.Runtime
         {
             Debug.Assert(action is Action);
             Push(action);
-            Callvirt(new M(typeof(Action), nameof(Action.Invoke)));
+            Callvirt(Method(Type<Action>(), nameof(Action.Invoke)));
             Ret();
         }
 
@@ -212,73 +183,21 @@ namespace DotNext.Runtime
         public static bool HasFlag<T>(T value, T flag)
             where T : struct, Enum
         {
-            const string size8Bytes = "8bytes";
-            const string size4Bytes = "4bytes";
-            const string size2Bytes = "2bytes";
-            const string size1Byte = "1byte";
-            const string fallback = "fallback";
-            Sizeof(typeof(T));
-            Switch(
-                fallback,   //0 bytes
-                size1Byte,  //1 byte
-                size2Bytes, //2 bytes
-                fallback,   //3 bytes
-                size4Bytes, //4 bytes
-                fallback,   //5 bytes
-                fallback,   //6 bytes
-                fallback,   //7 bytes
-                size8Bytes //8 bytes
-                );
-
-            MarkLabel(fallback);
-            Push(ref value);
-            Push(flag);
-            Box(typeof(T));
-            Constrained(typeof(T));
-            Callvirt(new M(typeof(Enum), nameof(Enum.HasFlag), typeof(Enum)));
-            Ret();
-
-            MarkLabel(size1Byte);
-            Push(ref value);
-            Ldind_U1();
-            Push(ref flag);
-            Ldind_U1();
-            And();
-            Ldc_I4_0();
-            Cgt_Un();
-            Ret();
-
-            MarkLabel(size2Bytes);
-            Push(ref value);
-            Ldind_U2();
-            Push(ref flag);
-            Ldind_U2();
-            And();
-            Ldc_I4_0();
-            Cgt_Un();
-            Ret();
-
-            MarkLabel(size4Bytes);
-            Push(ref value);
-            Ldind_U4();
-            Push(ref flag);
-            Ldind_U4();
-            And();
-            Ldc_I4_0();
-            Cgt_Un();
-            Ret();
-
-            MarkLabel(size8Bytes);
-            Push(ref value);
-            Ldind_I8();
-            Push(ref flag);
-            Ldind_I8();
-            And();
-            Conv_U8();
-            Ldc_I4_0();
-            Conv_U8();
-            Cgt_Un();
-            return Return<bool>();
+            switch(Unsafe.SizeOf<T>())
+            {
+                default:
+                    return value.HasFlag(flag);
+                case 0:
+                    return true;
+                case sizeof(byte):
+                    return (InToRef<T, byte>(value) & InToRef<T, byte>(flag)) != 0;
+                case sizeof(ushort):
+                    return (InToRef<T, ushort>(value) & InToRef<T, ushort>(flag)) != 0;
+                case sizeof(uint):
+                    return (InToRef<T, uint>(value) & InToRef<T, uint>(flag)) != 0;
+                case sizeof(ulong):
+                    return (InToRef<T, ulong>(value) & InToRef<T, ulong>(flag)) != 0UL;
+            }
         }
 
         internal static E GetTupleItem<T, E>(ref T tuple, int index)
@@ -287,12 +206,12 @@ namespace DotNext.Runtime
             if (index < 0 || index >= tuple.Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
             Push(ref tuple);
-            Sizeof(typeof(E));
+            Sizeof<E>();
             Push(index);
             Conv_U4();
             Mul_Ovf_Un();
             Add();
-            Ldobj(typeof(E));
+            Ldobj<E>();
             return Return<E>();
         }
 
@@ -318,14 +237,14 @@ namespace DotNext.Runtime
             Push(obj);
             Push(IsNullable<T>());
             Brtrue(notNull);
-            Isinst(typeof(T));
+            Isinst<T>();
             Dup();
             Brtrue(notNull);
             Pop();
-            Newobj(M.Constructor(typeof(InvalidCastException)));
+            Newobj(Constructor(Type<InvalidCastException>()));
             Throw();
             MarkLabel(notNull);
-            Unbox_Any(typeof(T));
+            Unbox_Any<T>();
             return Return<T>();
         }
 
@@ -333,7 +252,7 @@ namespace DotNext.Runtime
         internal static unsafe int PointerHashCode(void* pointer)
         {
             Ldarga(nameof(pointer));
-            Call(new M(typeof(UIntPtr), nameof(UIntPtr.GetHashCode)));
+            Call(Method(Type<UIntPtr>(), nameof(UIntPtr.GetHashCode)));
             return Return<int>();
         }
 
@@ -363,7 +282,7 @@ namespace DotNext.Runtime
         public static ref T AsRef<T>(this TypedReference reference)
         {
             Ldarg(nameof(reference));
-            Refanyval(typeof(T));
+            Refanyval<T>();
             return ref ReturnRef<T>();
         }
 
@@ -383,7 +302,7 @@ namespace DotNext.Runtime
             where T : unmanaged
         {
             Push(ref address);
-            Ldobj(typeof(T));
+            Ldobj<T>();
             return Return<T>();
         }
 
@@ -470,7 +389,7 @@ namespace DotNext.Runtime
             Push(index);
             Conv_Ovf_I();
             Readonly();
-            Ldelema(typeof(O));
+            Ldelema<O>();
             return ref ReturnRef<O>();
         }
 
@@ -500,7 +419,7 @@ namespace DotNext.Runtime
         public static void ThrowIfNull<T>(in T value)
         {
             PushInRef(value);
-            Ldobj(typeof(T));
+            Ldobj<T>();
             Pop();
             Ret();
         }
@@ -517,7 +436,7 @@ namespace DotNext.Runtime
         {
             PushOutRef(out output);
             PushInRef(in input);
-            Cpobj(typeof(T));
+            Cpobj<T>();
             Ret();
             throw Unreachable();    //need here because output var should be assigned
         }
@@ -535,8 +454,8 @@ namespace DotNext.Runtime
         {
             Push(output);
             Push(input);
-            Unaligned(1); Ldobj(typeof(T));
-            Unaligned(1); Stobj(typeof(T));
+            Unaligned(1); Ldobj<T>();
+            Unaligned(1); Stobj<T>();
         }
 
         /// <summary>
@@ -623,7 +542,7 @@ namespace DotNext.Runtime
             where T : unmanaged
         {
             Push(ref ptr);
-            Sizeof(typeof(T));
+            Sizeof<T>();
             Conv_I();
             Add();
             return ref ReturnRef<byte>();
@@ -635,7 +554,7 @@ namespace DotNext.Runtime
             Push(length);
             Dup();
             Ldind_I8();
-            Sizeof(typeof(T));
+            Sizeof<T>();
             Conv_I8();
             Sub();
             Stind_I8();

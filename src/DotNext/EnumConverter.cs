@@ -6,8 +6,9 @@ using System.Runtime.CompilerServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static System.Globalization.CultureInfo;
-using CallSiteDescr = InlineIL.StandAloneMethodSig;
-using M = InlineIL.MethodRef;
+using static InlineIL.StandAloneMethodSig;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext
 {
@@ -19,7 +20,7 @@ namespace DotNext
 
         static EnumConverter()
         {
-            var conversionMethod = (Type.GetTypeCode(typeof(O))) switch
+            var conversionMethod = (System.Type.GetTypeCode(typeof(O))) switch
             {
                 TypeCode.Byte => nameof(System.Convert.ToByte),
                 TypeCode.SByte => nameof(System.Convert.ToSByte),
@@ -53,7 +54,7 @@ namespace DotNext
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                Ldtoken(new M(typeof(EnumConverter<I, O>), nameof(ConvertSlow), typeof(I)));
+                Ldtoken(Method(typeof(EnumConverter<I, O>), nameof(ConvertSlow), Type<I>()));
                 return Return<RuntimeMethodHandle>();
             }
         }
@@ -73,7 +74,7 @@ namespace DotNext
             MarkLabel(slowPath);
             Push(value);
             Push(converter);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(O), typeof(I)));
+            Calli(ManagedMethod(CallingConventions.Standard, Type<O>(), Type<I>()));
             return Return<O>();
         }
     }

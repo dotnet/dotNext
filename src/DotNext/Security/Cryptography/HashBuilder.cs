@@ -6,7 +6,8 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
-using MR = InlineIL.MethodRef;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext.Security.Cryptography
 {
@@ -25,11 +26,11 @@ namespace DotNext.Security.Cryptography
 
         static HashBuilder()
         {
-            Ldtoken(new MR(typeof(HashAlgorithm), nameof(HashCore), typeof(ReadOnlySpan<byte>)));
+            Ldtoken(Method(Type<HashAlgorithm>(), nameof(HashCore), typeof(ReadOnlySpan<byte>)));
             Pop(out RuntimeMethodHandle handle);
             HashCore = Unsafe.As<MethodInfo>(MethodBase.GetMethodFromHandle(handle)).CreateDelegate<HashMethod>();
 
-            Ldtoken(new MR(typeof(HashAlgorithm), nameof(TryHashFinal), typeof(Span<byte>), typeof(int).MakeByRefType()));
+            Ldtoken(Method(Type<HashAlgorithm>(), nameof(TryHashFinal), typeof(Span<byte>), Type<int>().MakeByRefType()));
             Pop(out handle);
             TryHashFinal = Unsafe.As<MethodInfo>(MethodBase.GetMethodFromHandle(handle)).CreateDelegate<TryHashFinalMethod>();
         }
