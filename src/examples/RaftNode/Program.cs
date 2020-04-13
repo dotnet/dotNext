@@ -65,8 +65,8 @@ namespace RaftNode
         {
             var configuration = new RaftCluster.UdpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
             {
-                LowerElectionTimeout = 150,
-                UpperElectionTimeout = 300
+                LowerElectionTimeout = 1000,
+                UpperElectionTimeout = 2000
             };
             configuration.Members.Add(new IPEndPoint(IPAddress.Loopback, 3262));
             configuration.Members.Add(new IPEndPoint(IPAddress.Loopback, 3263));
@@ -74,7 +74,7 @@ namespace RaftNode
             var loggerFactory = new LoggerFactory();
             var loggerOptions = new ConsoleLoggerOptions
             {
-                LogToStandardErrorThreshold = LogLevel.Error
+                LogToStandardErrorThreshold = LogLevel.Warning
             };
             loggerFactory.AddProvider(new ConsoleLoggerProvider(new FakeOptionsMonitor<ConsoleLoggerOptions>(loggerOptions)));
             configuration.LoggerFactory = loggerFactory;
