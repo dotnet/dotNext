@@ -332,12 +332,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private protected void InitMembers(Action<TMember> initializer)
-        {
-            foreach (var member in members)
-                initializer(member);
-        }
-
         /// <summary>
         /// Starts serving local member.
         /// </summary>

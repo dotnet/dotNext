@@ -7,8 +7,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     /// </summary>
     internal interface IClient : INetworkTransport
     {
-        void Start();
-
         void Enqueue<TExchange>(TExchange exchange, CancellationToken token)
             where TExchange : class, IExchange;
         

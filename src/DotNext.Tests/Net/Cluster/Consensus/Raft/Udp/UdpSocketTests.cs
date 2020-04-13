@@ -24,7 +24,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DontFragment = false
             };
             using var timeoutTokenSource = new CancellationTokenSource(500);
-            client.Start();
             var exchange = new VoteExchange(10L, 20L, 30L);
             client.Enqueue(exchange, timeoutTokenSource.Token);
             switch(Environment.OSVersion.Platform)

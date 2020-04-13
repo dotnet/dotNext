@@ -21,7 +21,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember, IExchangePool
     {
         private static readonly Func<RaftClusterMember, EndPoint, bool> MatchByEndPoint = IsMatchedByEndPoint;
-        private static readonly Action<RaftClusterMember> MemberStart = DelegateHelpers.CreateOpenDelegate<Action<RaftClusterMember>>(member => member.Start());
         
         private readonly ConcurrentBag<ServerExchange> exchangePool;
         private readonly ImmutableDictionary<string, string> metadata;
@@ -30,7 +29,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly Func<IServer> serverFactory;
         private IServer server;
         private readonly PipeOptions pipeConfig;
-        private bool clientsInitialized;
 
         /// <summary>
         /// Initializes a new default implementation of Raft-based cluster.
@@ -39,7 +37,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public RaftCluster(Configuration configuration)
             : base(configuration, out var members)
         {
-            clientsInitialized = false;
             publicEndPoint = configuration.PublicEndPoint;
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
             clientFactory = configuration.CreateClient;
@@ -83,15 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if(FindMember(MatchByEndPoint, publicEndPoint) is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            //if this instance is reused multiple times and StopAsync was called previously
-            //then don't need to start clients again. However, server was disposed
-            if (clientsInitialized)
-                server = serverFactory();
-            else
-            {
-                InitMembers(MemberStart);
-                clientsInitialized = true;
-            }
+            server = serverFactory();
             server.Start(this);
             return base.StartAsync(token);
         }
@@ -107,11 +96,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return base.StopAsync(token);
         }
 
-        private RaftClusterMember CreateClient(IPEndPoint address, bool startClient)
+        private RaftClusterMember CreateClient(IPEndPoint address, bool extendPool)
         {
             var result = new RaftClusterMember(this, address, clientFactory, TimeSpan.FromMilliseconds(electionTimeoutProvider.UpperValue), pipeConfig, Metrics as IClientMetricsCollector);
-            if(startClient)
-                result.Start();
+            if(extendPool)
+                exchangePool.Add(new ServerExchange(this, pipeConfig));
             return result;
         }
 
@@ -123,11 +112,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </remarks>
         /// <param name="address">The address of the cluster member.</param>
         /// <returns>A new client for communication with cluster member.</returns>
-        protected RaftClusterMember CreateClient(IPEndPoint address)
-        {
-            exchangePool.Add(new ServerExchange(this, pipeConfig));
-            return CreateClient(address, true);
-        }
+        protected RaftClusterMember CreateClient(IPEndPoint address) => CreateClient(address, true);
 
         /// <summary>
         /// Called automatically when member is removed from the collection of members.

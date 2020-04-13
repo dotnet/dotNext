@@ -3,6 +3,7 @@ using System;
 using System.Buffers;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -76,15 +77,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 logger.PacketDropped(correlationId, args.RemoteEndPoint);
         }
 
-        public void Start()
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        private void Start()
         {
-            Connect(Address);
-            base.Start();
+            if(!Connected)
+            {
+                Connect(Address);
+                base.Start();
+            }
         }
 
         public async void Enqueue<TExchange>(TExchange exchange, CancellationToken token)
             where TExchange : class, IExchange
         {
+            if(!Connected)
+                Start();
             var id = new CorrelationId(applicationId, streamNumber.IncrementAndGet());
             var channel = new Channel(exchange, cancellationHandler, id, token);
             if(channels.TryAdd(id, channel))

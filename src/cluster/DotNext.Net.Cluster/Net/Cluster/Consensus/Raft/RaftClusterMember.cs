@@ -46,8 +46,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.pipeConfig = pipeConfig;
         }
 
-        internal void Start() => client.Start();
-
         /// <summary>
         /// Gets request timeout used for communication with this member.
         /// </summary>

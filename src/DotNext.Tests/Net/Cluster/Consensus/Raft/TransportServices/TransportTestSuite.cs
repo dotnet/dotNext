@@ -1,5 +1,4 @@
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
@@ -147,7 +146,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             server.Start(new SimpleServerExchangePool());
             //prepare client
             using var client = clientFactory(serverAddr);
-            client.Start();
             //Vote request
             CancellationTokenSource timeoutTokenSource;
             Result<bool> result;
@@ -186,7 +184,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             server.Start(new SimpleServerExchangePool());
             //prepare client
             using var client = clientFactory(serverAddr);
-            client.Start();
             ICollection<Task<Result<bool>>> tasks = new LinkedList<Task<Result<bool>>>();
             using(var timeoutTokenSource = new CancellationTokenSource(timeout))
             {
@@ -215,7 +212,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             server.Start(exchangePool);
             //prepare client
             using var client = clientFactory(serverAddr);
-            client.Start();
             var exchange = new MetadataExchange(CancellationToken.None);
             client.Enqueue(exchange, default);
             Equal(exchangePool.Metadata, await exchange.Task);
@@ -242,7 +238,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             server.Start(exchangePool);
             //prepare client
             using var client = clientFactory(serverAddr);
-            client.Start();
             var buffer = new byte[533];
             var rnd = new Random();
             rnd.NextBytes(buffer);
@@ -288,7 +283,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             server.Start(exchangePool);
             //prepare client
             using var client = clientFactory(serverAddr);
-            client.Start();
             var buffer = new byte[payloadSize];
             new Random().NextBytes(buffer);
             var snapshot = new BufferedEntry(10L, DateTimeOffset.Now, true, buffer);
