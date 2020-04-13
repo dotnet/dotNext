@@ -76,20 +76,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private void Start()
+        private bool Start(IExchange exchange)
         {
-            if(!Connected)
-            {
-                Connect(Address);
-                base.Start();
-            }
+            bool result;
+            if(Connected)
+                result = true;
+            else
+                try
+                {
+                    Connect(Address);
+                    base.Start();
+                    result = true;
+                }
+                catch(Exception e)
+                {
+                    exchange.OnException(e);
+                    result = false;
+                }
+            return result;
         }
 
         public async void Enqueue<TExchange>(TExchange exchange, CancellationToken token)
             where TExchange : class, IExchange
         {
-            if(!Connected)
-                Start();
+            if(!Connected && !Start(exchange))
+                return;
             var id = new CorrelationId(applicationId, streamNumber.IncrementAndGet());
             var channel = new Channel(exchange, cancellationHandler, id, token);
             if(channels.TryAdd(id, channel))
