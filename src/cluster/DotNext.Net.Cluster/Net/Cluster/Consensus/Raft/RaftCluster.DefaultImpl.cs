@@ -21,9 +21,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember, IExchangePool
     {
         private static readonly Func<RaftClusterMember, EndPoint, bool> MatchByEndPoint = IsMatchedByEndPoint;
+        private static readonly Action<RaftClusterMember> MemberStart = DelegateHelpers.CreateOpenDelegate<Action<RaftClusterMember>>(member => member.Start());
+        
         private readonly ConcurrentBag<ServerExchange> exchangePool;
         private readonly ImmutableDictionary<string, string> metadata;
-        private readonly IPEndPoint hostEndPoint, publicEndPoint;
+        private readonly IPEndPoint publicEndPoint;
         private readonly Func<IPEndPoint, IClient> clientFactory;
         private readonly Func<IServer> serverFactory;
         private IServer server;
@@ -38,7 +40,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             : base(configuration, out var members)
         {
             clientsInitialized = false;
-            hostEndPoint = configuration.HostEndPoint;
             publicEndPoint = configuration.PublicEndPoint;
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
             clientFactory = configuration.CreateClient;
@@ -84,14 +85,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             //if this instance is reused multiple times and StopAsync was called previously
             //then don't need to start clients again. However, server was disposed
-            if(clientsInitialized)
-            {
+            if (clientsInitialized)
                 server = serverFactory();
-            }
             else
             {
-                foreach(var member in Members)
-                    member.Start();
+                InitMembers(MemberStart);
+                clientsInitialized = true;
             }
             server.Start(this);
             return base.StartAsync(token);
