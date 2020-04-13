@@ -118,10 +118,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private void EndReceiveImpl(object sender, SocketAsyncEventArgs args)
         {
-            if(args.SocketError == SocketError.Success)
-                EndReceive(sender, args);
-            else
-                ReportError(args.SocketError);
+            switch(args.SocketError)
+            {
+                default:
+                    ReportError(args.SocketError);
+                    break;
+                case SocketError.OperationAborted:
+                    break;
+                case SocketError.Success:
+                    EndReceive(sender, args);
+                    break;
+            }
         }
 
         private protected virtual void ReportError(SocketError error)
