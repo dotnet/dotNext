@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using DecodingContext = Text.DecodingContext;
     using static Buffers.BufferReader;
+    using DecodingContext = Text.DecodingContext;
 
     /// <summary>
     /// Providers a uniform way to decode the data
@@ -61,7 +61,7 @@ namespace DotNext.IO
             result.ReverseIfNeeded(littleEndian);
             return result;
         }
-        
+
         /// <summary>
         /// Decodes 16-bit signed integer using the specified endianness.
         /// </summary>

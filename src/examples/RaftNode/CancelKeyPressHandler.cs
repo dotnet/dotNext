@@ -1,5 +1,5 @@
-using System;
 using DotNext.Threading;
+using System;
 
 namespace RaftNode
 {

@@ -74,7 +74,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         ReceivedLogEntry IAsyncEnumerator<ReceivedLogEntry>.Current => currentEntry;
 
         private void SetState(State newState) => state = newState;
-        
+
         private bool IsReadyToReadEntry() => state == State.ReadyToReadEntry;
 
         private bool IsValidStateForResponse()
@@ -89,13 +89,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             //log entry content is completely obtained
             //iteration was not started
             //no more entries to enumerate
-            if(remainingCount <= 0) //no more entries to enumerate
+            if (remainingCount <= 0) //no more entries to enumerate
             {
                 //resume wait thread to finalize response
                 transmissionStateTrigger.Signal(this, setStateAction, State.ReceivingEntriesFinished);
                 return false;
             }
-            if(lookupIndex >= 0)
+            if (lookupIndex >= 0)
             {
                 await Reader.CompleteAsync().ConfigureAwait(false);
                 await transmissionStateTrigger.WaitAsync(this, isValidForTransition).ConfigureAwait(false);
@@ -103,7 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             }
             lookupIndex += 1;
             remainingCount -= 1;
-            
+
             return await transmissionStateTrigger.SignalAndWaitAsync(this, setStateAction, State.ReadyToReceiveEntry, isReadyToReadEntry, InfiniteTimeSpan).ConfigureAwait(false);
         }
 
@@ -127,14 +127,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private async ValueTask<bool> ReceivingEntry(ReadOnlyMemory<byte> content, bool completed, CancellationToken token)
         {
-            if(content.IsEmpty)
+            if (content.IsEmpty)
                 completed = true;
             else
             {
                 var result = await Writer.WriteAsync(content, token).ConfigureAwait(false);
                 completed |= result.IsCompleted;
             }
-            if(completed)
+            if (completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
                 transmissionStateTrigger.Signal(this, setStateAction, State.AppendEntriesReceived);
@@ -150,7 +150,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var resultTask = Cast<Task<Result<bool>>>(task);
             var stateTask = transmissionStateTrigger.WaitAsync(this, isValidStateForResponse, token);
             //wait for result or state transition
-            if(ReferenceEquals(resultTask, await Task.WhenAny(resultTask, stateTask).ConfigureAwait(false)))
+            if (ReferenceEquals(resultTask, await Task.WhenAny(resultTask, stateTask).ConfigureAwait(false)))
             {
                 //result obtained, finalize transmission
                 task = null;
@@ -161,7 +161,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 responseType = MessageType.None;
             }
             else
-                switch(state)   //should be in sync with IsValidStateForResponse
+                switch (state)   //should be in sync with IsValidStateForResponse
                 {
                     case State.ReceivingEntriesFinished:
                         count = IExchange.WriteResult(await resultTask.ConfigureAwait(false), output.Span);
@@ -188,6 +188,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             remainingCount = -1;
             return new ValueTask();
-        }   
+        }
     }
 }

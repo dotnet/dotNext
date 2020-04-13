@@ -270,7 +270,7 @@ namespace DotNext.Runtime
             var objToStr = castMethod.MakeGenericMethod(typeof(string)).CreateDelegate<Func<object, string>>();
             Null(objToStr(null));
             Equal(string.Empty, objToStr(""));
-            
+
             var objToNullable = castMethod.MakeGenericMethod(typeof(int?)).CreateDelegate<Func<object, int?>>();
             Null(objToNullable(null));
             Equal(53, objToNullable(53));

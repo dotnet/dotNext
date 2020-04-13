@@ -67,7 +67,7 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             return node is null || condition(arg) ? CompletedTask<bool, BooleanConst.True>.Task : node.Task.WaitAsync(timeout, token);
         }
-        
+
         /// <summary>
         /// Suspends the caller until this event is set.
         /// </summary>
@@ -82,7 +82,7 @@ namespace DotNext.Threading
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public Task WaitAsync<T>(Predicate<T> condition, T arg, CancellationToken token = default)
             => WaitAsync(condition, arg, InfiniteTimeSpan, token);
-        
+
         /// <summary>
         /// Suspends the caller until this event is set.
         /// </summary>

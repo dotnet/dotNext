@@ -41,9 +41,9 @@ namespace DotNext
         public static bool Equals<G>(in T first, in G second)
             where G : struct
         {
-            if(SizeOf<T>() != SizeOf<G>())
+            if (SizeOf<T>() != SizeOf<G>())
                 return false;
-            switch(SizeOf<T>())
+            switch (SizeOf<T>())
             {
                 default:
                     return EqualsAligned(ref InToRef<T, byte>(first), ref InToRef<G, byte>(second), SizeOf<T>());
@@ -70,9 +70,9 @@ namespace DotNext
         public static int Compare<G>(in T first, in G second)
             where G : struct
         {
-            if(SizeOf<T>() != SizeOf<G>())
+            if (SizeOf<T>() != SizeOf<G>())
                 return SizeOf<T>() - SizeOf<G>();
-            switch(SizeOf<G>())
+            switch (SizeOf<G>())
             {
                 default:
                     return Runtime.Intrinsics.Compare(ref InToRef<T, byte>(first), ref InToRef<G, byte>(second), SizeOf<T>());
@@ -80,9 +80,9 @@ namespace DotNext
                     return 0;
                 case sizeof(byte):
                     return InToRef<T, byte>(first).CompareTo(InToRef<G, byte>(second));
-                case sizeof(ushort): 
+                case sizeof(ushort):
                     return InToRef<T, ushort>(first).CompareTo(InToRef<G, ushort>(second));
-                case sizeof(uint): 
+                case sizeof(uint):
                     return InToRef<T, uint>(first).CompareTo(InToRef<G, uint>(second));
                 case sizeof(ulong):
                     return InToRef<T, ulong>(first).CompareTo(InToRef<G, ulong>(second));
@@ -98,7 +98,7 @@ namespace DotNext
         public static int GetHashCode(in T value, bool salted = true)
         {
             int hash;
-            switch(SizeOf<T>())
+            switch (SizeOf<T>())
             {
                 default:
                     return GetHashCode32(ref InToRef<T, byte>(value), SizeOf<T>(), salted);
@@ -118,7 +118,7 @@ namespace DotNext
                     hash = InToRef<T, ulong>(value).GetHashCode();
                     break;
             }
-            if(salted)
+            if (salted)
                 hash ^= RandomExtensions.BitwiseHashSalt;
             return hash;
         }

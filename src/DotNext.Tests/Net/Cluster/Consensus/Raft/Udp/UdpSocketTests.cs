@@ -18,15 +18,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [Fact]
         public static async Task ConnectionError()
         {
-            using var client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 35665), 2, ArrayPool<byte>.Shared, NullLoggerFactory.Instance) 
-            { 
+            using var client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 35665), 2, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            {
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
             using var timeoutTokenSource = new CancellationTokenSource(500);
             var exchange = new VoteExchange(10L, 20L, 30L);
             client.Enqueue(exchange, timeoutTokenSource.Token);
-            switch(Environment.OSVersion.Platform)
+            switch (Environment.OSVersion.Platform)
             {
                 case PlatformID.Unix:
                     await ThrowsAsync<SocketException>(() => exchange.Task);
@@ -60,7 +60,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             ServerFactory server = (address, timeout) => new UdpServer(address, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
-                DatagramSize =  UdpSocket.MaxDatagramSize,
+                DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
             ClientFactory client = address => new UdpClient(address, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
@@ -122,7 +122,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         {
             ServerFactory server = (address, timeout) => new UdpServer(address, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
             {
-                DatagramSize =  UdpSocket.MinDatagramSize,
+                DatagramSize = UdpSocket.MinDatagramSize,
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };

@@ -16,7 +16,7 @@ namespace DotNext.Net.NetworkInformation
         {
             var address = IPAddress.Parse("1.1.1.1");
             using var discovery = new MtuDiscovery();
-            if(discovery.Send(address, PingTimeout).Status == IPStatus.Success)
+            if (discovery.Send(address, PingTimeout).Status == IPStatus.Success)
             {
                 var result = discovery.Discover(address, PingTimeout, new MtuDiscoveryOptions());
                 NotNull(result);
@@ -28,7 +28,7 @@ namespace DotNext.Net.NetworkInformation
         {
             var address = IPAddress.Parse("208.67.222.222");
             using var discovery = new MtuDiscovery();
-            if(discovery.Send(address, PingTimeout).Status == IPStatus.Success)
+            if (discovery.Send(address, PingTimeout).Status == IPStatus.Success)
             {
                 var result = await discovery.DiscoverAsync(address, PingTimeout, new MtuDiscoveryOptions());
                 NotNull(result);

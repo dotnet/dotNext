@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     using Text;
-    using StringLengthEncoding = IO.StringLengthEncoding;
     using static IO.Pipelines.PipeExtensions;
     using static IO.Pipelines.ResultExtensions;
+    using StringLengthEncoding = IO.StringLengthEncoding;
 
     internal sealed class MetadataExchange : PipeExchange, IClientExchange<IReadOnlyDictionary<string, string>>
     {
@@ -34,15 +34,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             //write length
             var flushResult = await writer.WriteInt32Async(input.Count, true, token).ConfigureAwait(false);
-            if(flushResult.IsCompleted)
+            if (flushResult.IsCompleted)
                 return;
             flushResult.ThrowIfCancellationRequested(token);
             //write pairs
             var context = new EncodingContext(Encoding, true);
-            foreach(var (key, value) in input)
+            foreach (var (key, value) in input)
             {
-                await writer.WriteStringAsync(key.AsMemory(), context, lengthFormat : LengthEncoding, token: token).ConfigureAwait(false);
-                await writer.WriteStringAsync(value.AsMemory(), context, lengthFormat : LengthEncoding, token: token).ConfigureAwait(false);
+                await writer.WriteStringAsync(key.AsMemory(), context, lengthFormat: LengthEncoding, token: token).ConfigureAwait(false);
+                await writer.WriteStringAsync(value.AsMemory(), context, lengthFormat: LengthEncoding, token: token).ConfigureAwait(false);
             }
             await writer.CompleteAsync();
         }
@@ -53,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var length = await reader.ReadInt32Async(true, token).ConfigureAwait(false);
             var output = new Dictionary<string, string>(length, StringComparer.Ordinal);
             var context = new DecodingContext(Encoding, true);
-            while(--length >= 0)
+            while (--length >= 0)
             {
                 //read key
                 var key = await reader.ReadStringAsync(LengthEncoding, context, token).ConfigureAwait(false);
@@ -76,13 +76,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
         {
             FlowControl control;
-            if(state)
+            if (state)
                 control = FlowControl.Ack;
             else
-                {
-                    state = true;
-                    control = FlowControl.None;
-                }
+            {
+                state = true;
+                control = FlowControl.None;
+            }
             return new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Metadata, control), 0, true));
         }
     }

@@ -1,5 +1,4 @@
 using System;
-using System.Buffers.Binary;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
@@ -8,7 +7,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         /// <summary>
         /// Represents natural size without padding.
         /// </summary>
-        internal const int NaturalSize = sizeof(byte);   
+        internal const int NaturalSize = sizeof(byte);
 
         private readonly ControlOctet control;
 

@@ -75,8 +75,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// node election timeout X threshold. The default is 0.5
             /// </remarks>
             /// <exception cref="ArgumentOutOfRangeException">Attempts to set invalid value.</exception>
-            public double HeartbeatThreshold 
-            { 
+            public double HeartbeatThreshold
+            {
                 get => heartbeatThreshold;
                 set => heartbeatThreshold = value.Between(double.Epsilon, 1D, BoundType.Closed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
@@ -216,7 +216,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal override IClient CreateClient(IPEndPoint address)
                 => new UdpClient(address, ClientBacklog, BufferPool, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
-        
+
             internal override IServer CreateServer()
                 => new UdpServer(HostEndPoint, ServerBacklog, BufferPool, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
         }

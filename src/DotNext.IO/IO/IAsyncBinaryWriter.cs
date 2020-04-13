@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
-    using EncodingContext = Text.EncodingContext;
     using static Buffers.BufferReader;
+    using EncodingContext = Text.EncodingContext;
 
     /// <summary>
     /// Providers a uniform way to encode the data.
@@ -39,7 +39,7 @@ namespace DotNext.IO
             value.ReverseIfNeeded(littleEndian);
             return WriteAsync(value, token);
         }
-        
+
         /// <summary>
         /// Encodes 32-bit signed integer asynchronously.
         /// </summary>
@@ -53,7 +53,7 @@ namespace DotNext.IO
             value.ReverseIfNeeded(littleEndian);
             return WriteAsync(value, token);
         }
-        
+
         /// <summary>
         /// Encodes 16-bit signed integer asynchronously.
         /// </summary>

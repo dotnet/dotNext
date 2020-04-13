@@ -33,7 +33,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
             public void Dispose() => cancellation.Dispose();
         }
-        
+
         private readonly Action<object> cancellationHandler;
 
         //I/O management
@@ -47,7 +47,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         {
             channels = new INetworkTransport.ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;
-           
+
             applicationId = new Random().Next<long>();
             streamNumber = long.MinValue;
             cancellationInvoker = channels.CancellationRequested;
@@ -63,10 +63,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             ReadOnlyMemory<byte> datagram = args.MemoryBuffer.Slice(0, args.BytesTransferred);
             //dispatch datagram to appropriate exchange
             var correlationId = new CorrelationId(ref datagram);
-            if(channels.TryGetValue(correlationId, out var channel))
+            if (channels.TryGetValue(correlationId, out var channel))
             {
                 var headers = new PacketHeaders(ref datagram);
-                if(headers.Control == FlowControl.Cancel)
+                if (headers.Control == FlowControl.Cancel)
                     ProcessCancellation(cancellationInvoker, ref channel, correlationId, args);
                 else
                     ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
@@ -79,7 +79,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private bool Start(IExchange exchange)
         {
             bool result;
-            if(Connected)
+            if (Connected)
                 result = true;
             else
                 try
@@ -88,7 +88,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     Start();
                     result = true;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     exchange.OnException(e);
                     result = false;
@@ -99,32 +99,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         public async void Enqueue<TExchange>(TExchange exchange, CancellationToken token)
             where TExchange : class, IExchange
         {
-            if(!Connected && !Start(exchange))
+            if (!Connected && !Start(exchange))
                 return;
             var id = new CorrelationId(applicationId, streamNumber.IncrementAndGet());
             var channel = new Channel(exchange, cancellationHandler, id, token);
-            if(channels.TryAdd(id, channel))
+            if (channels.TryAdd(id, channel))
                 try
                 {
-                    if(token.IsCancellationRequested)
+                    if (token.IsCancellationRequested)
                         throw new OperationCanceledException(token);
-                    if(!await SendAsync(id, channel, RemoteEndPoint).ConfigureAwait(false))
+                    if (!await SendAsync(id, channel, RemoteEndPoint).ConfigureAwait(false))
                         throw new NotSupportedException(ExceptionMessages.UnexpectedUdpSenderBehavior);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    if(channels.TryRemove(id, out channel))
-                        using(channel)
+                    if (channels.TryRemove(id, out channel))
+                        using (channel)
                             channel.Complete(e);
                 }
-            else 
-                using(channel)
+            else
+                using (channel)
                     channel.Complete(new InvalidOperationException(ExceptionMessages.DuplicateCorrelationId));
         }
 
         private void Cleanup(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 channels.ClearAndDestroyChannels();
             }

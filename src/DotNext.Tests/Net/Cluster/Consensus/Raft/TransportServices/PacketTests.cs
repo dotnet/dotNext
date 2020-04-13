@@ -10,8 +10,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         [Fact]
         public static void Combination()
         {
-            foreach(var type in Enum<MessageType>.Members)
-                foreach(var control in Enum<FlowControl>.Members)
+            foreach (var type in Enum<MessageType>.Members)
+                foreach (var control in Enum<FlowControl>.Members)
                 {
                     var octet = new ControlOctet(type.Value, control.Value);
                     Equal(type.Value, octet.Type);
@@ -23,8 +23,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         public static void HeadersSerializationDeserialization()
         {
             Memory<byte> buffer = new byte[PacketHeaders.NaturalSize];
-            foreach(var type in Enum<MessageType>.Members)
-                foreach(var control in Enum<FlowControl>.Members)
+            foreach (var type in Enum<MessageType>.Members)
+                foreach (var control in Enum<FlowControl>.Members)
                 {
                     var headers = new PacketHeaders(type.Value, control.Value);
                     headers.WriteTo(buffer);

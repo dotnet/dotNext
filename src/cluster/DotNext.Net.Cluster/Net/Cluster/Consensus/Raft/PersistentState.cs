@@ -540,7 +540,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
         public Task<bool> WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitAsync(timeout, token);
-        
+
         Task<bool> IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitForCommitAsync(NodeState.IsCommittedPredicate, state, index, timeout, token);
 
@@ -732,7 +732,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return ReplayAsync(token);
             return Task.CompletedTask;
         }
-        
+
         private bool IsConsistent
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]

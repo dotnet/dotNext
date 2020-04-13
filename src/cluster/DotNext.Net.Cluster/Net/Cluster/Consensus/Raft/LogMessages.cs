@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static void MemberUnavailable(this ILogger logger, IPEndPoint member)
             => logger.LogDebug(Resources.GetString("MemberUnavailable"), member);
-        
+
         internal static void MemberUnavailable(this ILogger logger, IPEndPoint member, Exception e)
             => logger.LogWarning(Resources.GetString("MemberUnavailable"), member, e);
 
@@ -83,14 +83,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static Task PrintLockInfo(this TextWriter output, string lockName, string owner, in Guid version, DateTimeOffset creationTime, TimeSpan leaseTime)
             => output.WriteLineAsync(string.Format(Resources.GetString("LockInfo"), lockName, owner, version.ToString(), creationTime.ToString(InvariantCulture), leaseTime.ToString()));
-    
+
         internal static void PacketDropped<T>(this ILogger logger, T packetId, EndPoint endPoint)
             where T : struct
             => logger.LogError(Resources.GetString("PacketDropped"), packetId.ToString(), endPoint);
-        
+
         internal static void NotEnoughRequestHandlers(this ILogger logger)
             => logger.LogError(Resources.GetString("NotEnoughRequestHandlers"));
-        
+
         internal static void SockerErrorOccurred(this ILogger logger, SocketError error)
             => logger.LogError(Resources.GetString("SockerErrorOccurred"), error);
     }

@@ -16,7 +16,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         /// The identifier generated randomly at client startup.
         /// </summary>
         internal readonly long ApplicationId;
-        
+
         /// <summary>
         /// The identifier of the stream.
         /// </summary>
@@ -31,7 +31,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         internal CorrelationId(ref ReadOnlyMemory<byte> bytes)
         {
             ApplicationId = BinaryPrimitives.ReadInt64LittleEndian(bytes.Span);
-            
+
             bytes = bytes.Slice(sizeof(long));
             StreamId = BinaryPrimitives.ReadInt64LittleEndian(bytes.Span);
 
@@ -46,9 +46,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             BinaryPrimitives.WriteInt64LittleEndian(output.Span, StreamId);
         }
 
-        public bool Equals(CorrelationId other) 
+        public bool Equals(CorrelationId other)
             => ApplicationId == other.ApplicationId && StreamId == other.StreamId;
-        
+
         public override bool Equals(object other) => other is CorrelationId id && Equals(id);
 
         public override int GetHashCode() => HashCode.Combine(ApplicationId, StreamId);
@@ -57,7 +57,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         public static bool operator ==(in CorrelationId x, in CorrelationId y)
             => x.ApplicationId == y.ApplicationId && x.StreamId == y.StreamId;
-        
+
         public static bool operator !=(in CorrelationId x, in CorrelationId y)
             => x.ApplicationId != y.ApplicationId || x.StreamId != y.StreamId;
     }

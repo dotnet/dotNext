@@ -5,9 +5,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
-using Debug = System.Diagnostics.Debug;
 using static InlineIL.MethodRef;
 using static InlineIL.TypeRef;
+using Debug = System.Diagnostics.Debug;
 using Var = InlineIL.LocalVar;
 
 namespace DotNext.Runtime
@@ -129,7 +129,7 @@ namespace DotNext.Runtime
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefault<T>(in T value)
         {
-            switch(Unsafe.SizeOf<T>())
+            switch (Unsafe.SizeOf<T>())
             {
                 default:
                     return IsZero(ref InToRef<T, byte>(in value), Unsafe.SizeOf<T>());
@@ -183,7 +183,7 @@ namespace DotNext.Runtime
         public static bool HasFlag<T>(T value, T flag)
             where T : struct, Enum
         {
-            switch(Unsafe.SizeOf<T>())
+            switch (Unsafe.SizeOf<T>())
             {
                 default:
                     return value.HasFlag(flag);

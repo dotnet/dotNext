@@ -26,7 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             where TSnapshot : IRaftLogEntry;
-        
+
         ILogger Logger => NullLogger.Instance;
     }
 }

@@ -5,8 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
-using static InlineIL.StandAloneMethodSig;
 using static InlineIL.MethodRef;
+using static InlineIL.StandAloneMethodSig;
 using static InlineIL.TypeRef;
 
 namespace DotNext

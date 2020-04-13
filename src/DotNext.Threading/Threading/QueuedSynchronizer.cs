@@ -149,9 +149,9 @@ namespace DotNext.Threading
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void CancelSuspendedCallers(CancellationToken token)
         {
-            if(!token.IsCancellationRequested)
+            if (!token.IsCancellationRequested)
                 throw new ArgumentOutOfRangeException(nameof(token));
-            for(WaitNode? current = head, next; !(current is null); current = next)
+            for (WaitNode? current = head, next; !(current is null); current = next)
             {
                 next = current.CleanupAndGotoNext();
                 current.TrySetCanceled(token);

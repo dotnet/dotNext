@@ -3,9 +3,9 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
+using static InlineIL.FieldRef;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
-using static InlineIL.FieldRef;
 using static InlineIL.TypeRef;
 
 namespace DotNext.Threading

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -405,7 +404,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The cluster member; or <see langword="null"/> if there is not member matching to the specified criteria.</returns>
         protected TMember? FindMember(Predicate<TMember> criteria)
             => members.FirstOrDefault(criteria.AsFunc());
-        
+
         /// <summary>
         /// Finds cluster member using predicate.
         /// </summary>
@@ -414,12 +413,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The cluster member; </returns>
         protected TMember? FindMember<TArg>(Func<TMember, TArg, bool> criteria, TArg arg)
         {
-            foreach(var member in members)
-                if(criteria(member, arg))
+            foreach (var member in members)
+                if (criteria(member, arg))
                     return member;
             return null;
         }
-        
+
         /// <summary>
         /// Handles InstallSnapshot message received from remote cluster member.
         /// </summary>

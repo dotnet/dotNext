@@ -41,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             WriteInt64LittleEndian(payload, currentTerm);
             payload = payload.Slice(sizeof(long));
-            
+
             WriteInt64LittleEndian(payload, prevLogIndex);
             payload = payload.Slice(sizeof(long));
 

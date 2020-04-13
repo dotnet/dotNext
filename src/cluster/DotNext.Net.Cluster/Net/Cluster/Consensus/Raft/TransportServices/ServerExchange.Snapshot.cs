@@ -18,14 +18,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private async ValueTask<bool> ReceivingSnapshot(ReadOnlyMemory<byte> content, bool completed, CancellationToken token)
         {
-            if(content.IsEmpty)
+            if (content.IsEmpty)
                 completed = true;
             else
             {
                 var result = await Writer.WriteAsync(content, token).ConfigureAwait(false);
                 completed |= result.IsCompleted;
             }
-            if(completed)
+            if (completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
                 state = State.ReceivingSnapshotFinished;

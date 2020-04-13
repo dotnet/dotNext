@@ -9,8 +9,8 @@ using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
-    using static IO.Pipelines.PipeExtensions;
     using static IO.DataTransferObject;
+    using static IO.Pipelines.PipeExtensions;
 
     internal abstract class EntriesExchange : ClientExchange<Result<bool>>, IAsyncDisposable
     {
@@ -51,7 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             length = ReadInt64LittleEndian(input);
             input = input.Slice(sizeof(long));
-            
+
             term = ReadInt64LittleEndian(input);
             input = input.Slice(sizeof(long));
 
@@ -107,7 +107,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private protected sealed override void OnException(Exception e) => pipe.Writer.Complete(e);
 
         private protected sealed override void OnCanceled(CancellationToken token) => OnException(new OperationCanceledException(token));
-    
+
         internal void AbortIO()
         {
             pipe.Writer.CancelPendingFlush();
@@ -126,12 +126,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         where TEntry : IRaftLogEntry
     {
         private delegate ValueTask<FlushResult> LogEntryFragmentWriter(PipeWriter writer, ref TEntry entry, CancellationToken token);
-    
-        private static readonly LogEntryFragmentWriter[] fragmentWriters = 
+
+        private static readonly LogEntryFragmentWriter[] fragmentWriters =
         {
             WriteLogEntryLength,
             WriteLogEntryTerm,
-            WriteLogEntryTimestamp, 
+            WriteLogEntryTimestamp,
             WriteLogEntrySnapshotMarker,
             WriteLogEntryContent
         };
@@ -143,16 +143,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private static ValueTask<FlushResult> WriteLogEntryLength(PipeWriter writer, ref TEntry entry, CancellationToken token)
             => writer.WriteInt64Async(entry.Length.GetValueOrDefault(-1L), true, token);
-        
+
         private static ValueTask<FlushResult> WriteLogEntryTerm(PipeWriter writer, ref TEntry entry, CancellationToken token)
             => writer.WriteInt64Async(entry.Term, true, token);
-        
+
         private static ValueTask<FlushResult> WriteLogEntryTimestamp(PipeWriter writer, ref TEntry entry, CancellationToken token)
             => writer.WriteAsync(entry.Timestamp, token);
-        
+
         private static ValueTask<FlushResult> WriteLogEntrySnapshotMarker(PipeWriter writer, ref TEntry entry, CancellationToken token)
             => writer.WriteAsync(entry.IsSnapshot.ToByte(), token);
-        
+
         private static async ValueTask<FlushResult> WriteLogEntryContent(PipeWriter writer, TEntry entry, CancellationToken token)
         {
             var canceled = false;
@@ -160,7 +160,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             {
                 await entry.WriteToAsync(writer, token).ConfigureAwait(false);
             }
-            catch(OperationCanceledException)
+            catch (OperationCanceledException)
             {
                 canceled = true;
             }
@@ -169,15 +169,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private static ValueTask<FlushResult> WriteLogEntryContent(PipeWriter writer, ref TEntry entry, CancellationToken token)
             => WriteLogEntryContent(writer, entry, token);
-        
+
         internal static async Task WriteEntryAsync(PipeWriter writer, TEntry entry, CancellationToken token)
         {
-            foreach(var serializer in fragmentWriters)
+            foreach (var serializer in fragmentWriters)
             {
                 var flushResult = await serializer(writer, ref entry, token).ConfigureAwait(false);
-                if(flushResult.IsCompleted)
+                if (flushResult.IsCompleted)
                     return;
-                if(flushResult.IsCanceled)
+                if (flushResult.IsCanceled)
                     break;
             }
             await writer.CompleteAsync().ConfigureAwait(false);
@@ -189,11 +189,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         where TList : IReadOnlyList<TEntry>
     {
         private TList entries;
-        
+
         private Task? writeSession;
         private int currentIndex;
         private bool streamStart;
-        
+
         internal EntriesExchange(long term, in TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, PipeOptions? options = null)
             : base(term, prevLogIndex, prevLogTerm, commitIndex, options)
         {
@@ -205,10 +205,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             int count;
             FlowControl control;
-            if(currentIndex >= 0)   //write portion of log entry
+            if (currentIndex >= 0)   //write portion of log entry
             {
                 count = await pipe.Reader.CopyToAsync(payload, token).ConfigureAwait(false);
-                if(count == payload.Length)
+                if (count == payload.Length)
                     control = streamStart ? FlowControl.StreamStart : FlowControl.Fragment;
                 else
                     control = FlowControl.StreamEnd;
@@ -227,13 +227,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             writeSession = null;
         }
 
-        private Task WriteEntryAsync(CancellationToken token) 
+        private Task WriteEntryAsync(CancellationToken token)
             => WriteEntryAsync(pipe.Writer, entries[currentIndex], token);
-        
+
         private async Task NextEntryAsync(ReadOnlyMemory<byte> input, CancellationToken token)
         {
             currentIndex = ReadInt32LittleEndian(input.Span);
-            if(writeSession != null)
+            if (writeSession != null)
             {
                 AbortIO();
                 await writeSession.ConfigureAwait(false);
@@ -245,7 +245,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         public override async ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
-            switch(headers.Type)
+            switch (headers.Type)
             {
                 default:
                     return false;

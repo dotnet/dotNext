@@ -1,7 +1,6 @@
 using System;
 using System.IO.Pipelines;
 using System.Net;
-using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             SnapshotReceived,
             ReceivingSnapshotFinished
         }
-        
+
 
         private readonly ILocalMember server;
         private Task? task;
@@ -36,7 +35,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private static void ChangePort(ref EndPoint endPoint, ushort port)
         {
-            switch(endPoint)
+            switch (endPoint)
             {
                 case IPEndPoint ip:
                     endPoint = ip.Port == port ? ip : new IPEndPoint(ip.Address, port);
@@ -46,10 +45,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     break;
             }
         }
-        
+
         public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
-            switch(headers.Type)
+            switch (headers.Type)
             {
                 default:
                     return new ValueTask<bool>(false);
@@ -58,12 +57,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     BeginVote(payload, endpoint, token);
                     break;
                 case MessageType.Metadata:
-                    if(headers.Control == FlowControl.None)
+                    if (headers.Control == FlowControl.None)
                     {
                         state = State.MetadataRequestReceived;
                         BeginSendMetadata(token);
                     }
-                    else 
+                    else
                         state = State.SendingMetadata;
                     break;
                 case MessageType.Resign:
@@ -75,7 +74,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     BeginProcessHeartbeat(payload, endpoint, token);
                     break;
                 case MessageType.AppendEntries:
-                    switch(state)
+                    switch (state)
                     {
                         case State.Ready:
                             BeginReceiveEntries(endpoint, payload.Span, token);
@@ -90,7 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     }
                     break;
                 case MessageType.InstallSnapshot:
-                    switch(state)
+                    switch (state)
                     {
                         case State.Ready:
                             state = State.SnapshotReceived;
@@ -101,7 +100,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                         default:
                             return default;
                     }
-                    
+
                     break;
             }
             return new ValueTask<bool>(true);
@@ -109,17 +108,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> output, CancellationToken token)
         {
-            switch(state)
+            switch (state)
             {
                 default:
                     return default;
-                case State.VoteRequestReceived: 
+                case State.VoteRequestReceived:
                     return EndVote(output);
-                case State.MetadataRequestReceived: 
+                case State.MetadataRequestReceived:
                     return SendMetadataPortionAsync(true, output, token);
-                case State.SendingMetadata: 
+                case State.SendingMetadata:
                     return SendMetadataPortionAsync(false, output, token);
-                case State.ResignRequestReceived: 
+                case State.ResignRequestReceived:
                     return EndResign(output);
                 case State.HeartbeatRequestReceived:
                     return EndProcessHearbeat(output);
@@ -145,7 +144,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 transmissionStateTrigger.Dispose();
             }

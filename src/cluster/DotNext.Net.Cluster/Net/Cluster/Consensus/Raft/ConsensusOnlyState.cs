@@ -264,7 +264,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         Task<bool> IAuditTrail.WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitAsync(timeout, token);
-        
+
         Task<bool> IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitForCommitAsync(IsCommittedPredicate, this, index, timeout, token);
 

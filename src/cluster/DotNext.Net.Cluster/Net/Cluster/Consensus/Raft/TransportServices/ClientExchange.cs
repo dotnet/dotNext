@@ -41,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         void IExchange.OnException(Exception e)
         {
-            if(e is OperationCanceledException cancellation ? TrySetCanceled(cancellation.CancellationToken) : TrySetException(e))
+            if (e is OperationCanceledException cancellation ? TrySetCanceled(cancellation.CancellationToken) : TrySetException(e))
                 OnException(e);
         }
 
@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         void IExchange.OnCanceled(CancellationToken token)
         {
-            if(TrySetCanceled(token))
+            if (TrySetCanceled(token))
                 OnCanceled(token);
         }
     }

@@ -11,8 +11,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
     using Threading;
-    using Timestamp = Diagnostics.Timestamp;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
+    using Timestamp = Diagnostics.Timestamp;
 
     internal sealed class RaftClusterMember : HttpClient, IRaftClusterMember, ISubscriber
     {
@@ -119,7 +119,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
         Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
         {
-            if(Endpoint.Equals(context.LocalEndpoint))
+            if (Endpoint.Equals(context.LocalEndpoint))
                 return Task.FromResult(new Result<bool>(term, true));
             return SendAsync<Result<bool>, InstallSnapshotMessage>(new InstallSnapshotMessage(context.LocalEndpoint, term, snapshotIndex, snapshot), token);
         }

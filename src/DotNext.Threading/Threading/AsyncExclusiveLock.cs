@@ -51,7 +51,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered exclusive mode; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
-        public Task<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token) 
+        public Task<bool> TryAcquireAsync(TimeSpan timeout, CancellationToken token)
             => WaitAsync<WaitNode, LockManager>(ref manager, timeout, token);
 
         /// <summary>

@@ -2,8 +2,8 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
-using Var = InlineIL.LocalVar;
 using RuntimeHelpers = System.Runtime.CompilerServices.RuntimeHelpers;
+using Var = InlineIL.LocalVar;
 
 namespace DotNext
 {
@@ -96,7 +96,7 @@ namespace DotNext
             Conv_U();
             Add();
             MarkLabel(methodExit);
-            Stloc(charRef); 
+            Stloc(charRef);
             Ldloc(charRef);
             return ref ReturnRef<char>();
         }

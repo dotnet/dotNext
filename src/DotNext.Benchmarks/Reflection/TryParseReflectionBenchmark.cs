@@ -37,7 +37,7 @@ namespace DotNext.Reflection
         public bool UseStronglyTypedReflection() => StronglyTyped(StringValue, out var result);
 
         [Benchmark]
-        public bool UseStronglyTypedSpecialReflection() =>  StronglyTypedSpecial((StringValue, decimal.Zero));
+        public bool UseStronglyTypedSpecialReflection() => StronglyTypedSpecial((StringValue, decimal.Zero));
 
         [Benchmark]
         public bool UseStronglyTypedSpecialUnreflected() => StronglyTypedSpecialUnreflected((StringValue, decimal.Zero));

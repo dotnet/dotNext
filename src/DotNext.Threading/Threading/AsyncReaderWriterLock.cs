@@ -73,7 +73,7 @@ namespace DotNext.Threading
             internal void IncrementVersion() => version.IncrementAndGet();
 
             //write lock management
-            
+
             WriteLockNode ILockManager<WriteLockNode>.CreateNode(WaitNode? node) => node is null ? new WriteLockNode() : new WriteLockNode(node);
 
             bool ILockManager<WriteLockNode>.TryAcquire()

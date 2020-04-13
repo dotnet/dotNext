@@ -10,8 +10,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         private void BeginResign(CancellationToken token)
             => task = server.ResignAsync(token);
-        
-        
+
+
         private async ValueTask<(PacketHeaders, int, bool)> EndResign(Memory<byte> payload)
         {
             var result = await Cast<Task<bool>>(Interlocked.Exchange(ref task, null)).ConfigureAwait(false);

@@ -13,10 +13,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private protected PipeExchange(PipeOptions? options = null)
             => pipe = new Pipe(options ?? PipeOptions.Default);
-        
+
         private protected void ReusePipe(bool complete = true)
         {
-            if(complete)
+            if (complete)
             {
                 var e = new IOException(ExceptionMessages.ExchangeCompleted);
                 pipe.Reader.Complete(e);
@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             }
             pipe.Reset();
         }
-        
+
         private protected PipeWriter Writer => pipe.Writer;
 
         private protected PipeReader Reader => pipe.Reader;
@@ -39,7 +39,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         public abstract ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token);
 
         public abstract ValueTask<(PacketHeaders Headers, int BytesWritten, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token);
-    
+
         void IExchange.OnException(Exception e)
         {
             pipe.Writer.Complete(e);

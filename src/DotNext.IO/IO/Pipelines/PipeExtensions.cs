@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Missing = System.Reflection.Missing;
-using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.IO.Pipelines
 {
@@ -168,7 +167,7 @@ namespace DotNext.IO.Pipelines
         public static ValueTask<T> ReadAsync<T>(this PipeReader reader, CancellationToken token = default)
             where T : unmanaged
             => ReadAsync<T, ValueReader<T>>(reader, new ValueReader<T>(), token);
-        
+
         /// <summary>
         /// Decodes 64-bit signed integer using the specified endianness.
         /// </summary>
@@ -227,7 +226,7 @@ namespace DotNext.IO.Pipelines
         /// <exception cref="EndOfStreamException">Reader doesn't have enough data.</exception>
         public static async ValueTask ReadAsync(this PipeReader reader, Memory<byte> output, CancellationToken token = default)
             => await ReadAsync<Missing, MemoryReader>(reader, new MemoryReader(output), token).ConfigureAwait(false);
-        
+
         /// <summary>
         /// Reads the block of memory.
         /// </summary>
@@ -352,12 +351,12 @@ namespace DotNext.IO.Pipelines
         {
             var result = await writer.WriteLengthAsync(value, context.Encoding, lengthFormat, token).ConfigureAwait(false);
             result.ThrowIfCancellationRequested(token);
-            if(value.Length == 0)
+            if (value.Length == 0)
                 return;
             var encoder = context.GetEncoder();
             for (int charsLeft = value.Length, charsUsed, maxChars, bytesPerChar = context.Encoding.GetMaxByteCount(1); charsLeft > 0; value = value.Slice(charsUsed), charsLeft -= charsUsed)
             {
-                if(result.IsCompleted)
+                if (result.IsCompleted)
                     throw new EndOfStreamException();
                 var buffer = writer.GetMemory(bufferSize);
                 maxChars = buffer.Length / bytesPerChar;

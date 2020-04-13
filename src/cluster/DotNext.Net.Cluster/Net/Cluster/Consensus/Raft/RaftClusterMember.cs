@@ -11,7 +11,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     using TransportServices;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
     using Timestamp = Diagnostics.Timestamp;
-    
+
     /// <summary>
     /// Represents Raft cluster member that is accessible through the network.
     /// </summary>
@@ -120,17 +120,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             => Endpoint.Equals(localMember.Address) ?
                 Task.FromResult(new Result<bool>(term, true)) :
                 SendAsync<Result<bool>, VoteExchange>(new VoteExchange(term, lastLogIndex, lastLogTerm), token);
-        
+
         Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
-            if(Endpoint.Equals(localMember.Address))
+            if (Endpoint.Equals(localMember.Address))
                 return Task.FromResult(new Result<bool>(term, true));
             return SendAsync<Result<bool>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, pipeConfig), token);
         }
 
         Task<Result<bool>> IRaftClusterMember.InstallSnapshotAsync(long term, IRaftLogEntry snapshot, long snapshotIndex, CancellationToken token)
         {
-            if(Endpoint.Equals(localMember.Address))
+            if (Endpoint.Equals(localMember.Address))
                 return Task.FromResult(new Result<bool>(term, true));
             return SendAsync<Result<bool>, SnapshotExchange>(new SnapshotExchange(term, snapshot, snapshotIndex, pipeConfig), token);
         }
@@ -140,9 +140,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         async ValueTask<IReadOnlyDictionary<string, string>> IClusterMember.GetMetadataAsync(bool refresh, CancellationToken token)
         {
-            if(Endpoint.Equals(localMember.Address))
+            if (Endpoint.Equals(localMember.Address))
                 return localMember.Metadata;
-            if(metadataCache is null || refresh)
+            if (metadataCache is null || refresh)
                 metadataCache = await SendAsync<IReadOnlyDictionary<string, string>, MetadataExchange>(new MetadataExchange(token, pipeConfig), token).ConfigureAwait(false);
             return metadataCache;
         }
@@ -153,7 +153,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 client.Dispose();
             }

@@ -79,9 +79,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             int count;
             FlowControl control;
-            if(transmitting)    //send chunk of snapshot 
+            if (transmitting)    //send chunk of snapshot 
             {
-                if(transmission is null)
+                if (transmission is null)
                 {
                     control = FlowControl.StreamStart;
                     transmission = WriteSnapshotAsync(token);
@@ -89,10 +89,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 else
                     control = FlowControl.Fragment;
                 count = await pipe.Reader.CopyToAsync(payload, token).ConfigureAwait(false);
-                if(count < payload.Length)
+                if (count < payload.Length)
                     control = FlowControl.StreamEnd;
             }
-            else    
+            else
             {
                 count = WriteAnnouncement(payload.Span);
                 control = FlowControl.None;
@@ -103,7 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
             bool result;
-            if(headers.Type == MessageType.Continue)
+            if (headers.Type == MessageType.Continue)
             {
                 transmitting = result = true;
             }

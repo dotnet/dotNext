@@ -30,7 +30,7 @@ namespace DotNext.Buffers
 
         public void Append(ReadOnlySpan<byte> block, ref int consumedBytes)
         {
-            
+
             block.CopyTo(buffer.Span.Slice(offset));
             offset += block.Length;
         }

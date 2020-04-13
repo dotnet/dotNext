@@ -90,7 +90,7 @@ namespace RaftNode
 
         private static Task StartNode(int port, string? persistentStorage, string protocol)
         {
-            switch(protocol)
+            switch (protocol)
             {
                 case HttpProtocolOption:
                     return UseAspNetCoreHost(port, persistentStorage);

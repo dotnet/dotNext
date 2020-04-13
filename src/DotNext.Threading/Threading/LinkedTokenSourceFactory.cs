@@ -16,13 +16,13 @@ namespace DotNext.Threading
         public static CancellationTokenSource? LinkTo(this ref CancellationToken first, CancellationToken second)
         {
             var result = default(CancellationTokenSource);
-            if(first == second) 
-            { 
+            if (first == second)
+            {
                 //nothing to do, just return from this method
             }
-            else if(!first.CanBeCanceled)
+            else if (!first.CanBeCanceled)
                 first = second;
-            else if(second.CanBeCanceled)
+            else if (second.CanBeCanceled)
             {
                 result = CancellationTokenSource.CreateLinkedTokenSource(first, second);
                 first = result.Token;

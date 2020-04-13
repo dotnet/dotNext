@@ -9,7 +9,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         void Enqueue<TExchange>(TExchange exchange, CancellationToken token)
             where TExchange : class, IExchange;
-        
+
         void CancelPendingRequests();
     }
 }

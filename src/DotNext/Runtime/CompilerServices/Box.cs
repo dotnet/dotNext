@@ -1,6 +1,6 @@
 using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace DotNext.Runtime.CompilerServices
 {
@@ -54,7 +54,7 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="other">The other container to compare.</param>
         /// <returns><see langword="true"/> his container holds the same reference as the specified container; otherwise, <see langword="false"/>.</returns>
-        
+
         public bool Equals(Box<T> other) => ReferenceEquals(value, other.value);
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace DotNext.Runtime.CompilerServices
         /// Converts stored reference to the string. 
         /// </summary>
         /// <returns>The textual representation of the stored reference.</returns>
-        public override string ToString() => value?.ToString() ?? string.Empty; 
+        public override string ToString() => value?.ToString() ?? string.Empty;
 
         /// <summary>
         /// Determines whether the two containers store the references to the same boxed value.

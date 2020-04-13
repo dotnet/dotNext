@@ -12,7 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         internal ControlOctet(MessageType type, FlowControl control)
             => value = (byte)((int)type | (int)control);
-        
+
         internal ControlOctet(ref ReadOnlyMemory<byte> input)
         {
             value = input.Span[0];
@@ -24,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             output.Span[0] = value;
             output = output.Slice(sizeof(byte));
         }
-        
+
         internal MessageType Type => (MessageType)(value & MessageTypeMask);
 
         internal FlowControl Control => (FlowControl)(value & FlowControlMask);

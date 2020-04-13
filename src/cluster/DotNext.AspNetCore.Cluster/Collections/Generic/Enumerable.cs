@@ -4,8 +4,6 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic
 {
-    using static Runtime.Intrinsics;
-
     [StructLayout(LayoutKind.Auto)]
     internal struct Enumerable<T, TList> : IEnumerable<T>
         where TList : IReadOnlyList<T>

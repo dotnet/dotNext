@@ -59,10 +59,10 @@ namespace DotNext.Threading
         private void ResumePendingCallers()
         {
             //triggers only stateless nodes
-            for(WaitNode? current = head, next; !(current is null); current = next)
+            for (WaitNode? current = head, next; !(current is null); current = next)
             {
                 next = current.Next;
-                if(IsExactTypeOf<WaitNode>(current))
+                if (IsExactTypeOf<WaitNode>(current))
                 {
                     current.Complete();
                     RemoveNode(current);
@@ -73,10 +73,10 @@ namespace DotNext.Threading
         private void ResumePendingCallers<TState>(TState state)
             where TState : class
         {
-            for(WaitNode? current = head, next; !(current is null); current = next)
+            for (WaitNode? current = head, next; !(current is null); current = next)
             {
                 next = current.Next;
-                if(!(current is ConditionalNode<TState> conditional) || conditional.Condition(state))
+                if (!(current is ConditionalNode<TState> conditional) || conditional.Condition(state))
                 {
                     current.Complete();
                     RemoveNode(current);
@@ -199,10 +199,10 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-         public Task WaitAsync<TState>(TState state, Predicate<TState> condition, CancellationToken token = default)
-            where TState : class
-            => WaitAsync(state, condition, InfiniteTimeSpan, token);
-        
+        public Task WaitAsync<TState>(TState state, Predicate<TState> condition, CancellationToken token = default)
+           where TState : class
+           => WaitAsync(state, condition, InfiniteTimeSpan, token);
+
         /// <summary>
         /// Signals to all suspended callers and waits for the event that meets to the specified condition
         /// atomically.
@@ -239,7 +239,7 @@ namespace DotNext.Threading
         public Task SignalAndWaitAsync<TState>(TState state, Predicate<TState> condition, CancellationToken token = default)
             where TState : class
             => SignalAndWaitAsync(state, condition, InfiniteTimeSpan, token);
-        
+
         /// <summary>
         /// Signals to all suspended callers and waits for the event that meets to the specified condition
         /// atomically.
@@ -280,10 +280,10 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if event is triggered in timely manner; <see langword="false"/> if timeout occurred.</returns>
         /// <exception cref="ObjectDisposedException">This trigger has been disposed.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
-         public Task SignalAndWaitAsync<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args, Predicate<TState> condition, CancellationToken token = default)
-            where TState : class
-            => SignalAndWaitAsync(state, mutator, args, condition, InfiniteTimeSpan, token);
-        
+        public Task SignalAndWaitAsync<TState, TArgs>(TState state, Action<TState, TArgs> mutator, TArgs args, Predicate<TState> condition, CancellationToken token = default)
+           where TState : class
+           => SignalAndWaitAsync(state, mutator, args, condition, InfiniteTimeSpan, token);
+
         /// <summary>
         /// Signals to all suspended callers and waits for the event that meets to the specified condition
         /// atomically.

@@ -50,13 +50,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             internal SimpleServerExchangePool(bool smallAmountOfMetadata = false)
             {
                 var metadata = ImmutableDictionary.CreateBuilder<string, string>();
-                if(smallAmountOfMetadata)
+                if (smallAmountOfMetadata)
                     metadata.Add("a", "b");
                 else
                 {
                     var rnd = new Random();
                     const string AllowedChars = "abcdefghijklmnopqrstuvwxyz1234567890";
-                    for(var i = 0; i < 20; i++)
+                    for (var i = 0; i < 20; i++)
                         metadata.Add(string.Concat("key", i.ToString()), rnd.NextString(AllowedChars, 20));
                 }
                 Metadata = metadata.ToImmutableDictionary();
@@ -75,10 +75,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 Equal(56L, prevLogTerm);
                 Equal(10, commitIndex);
                 byte[] buffer;
-                switch(Behavior)
+                switch (Behavior)
                 {
                     case ReceiveEntriesBehavior.ReceiveAll:
-                        while(await entries.MoveNextAsync())
+                        while (await entries.MoveNextAsync())
                         {
                             True(entries.Current.Length.HasValue);
                             buffer = await entries.Current.ToByteArrayAsync(token);
@@ -99,7 +99,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                         ReceivedEntries.Add(new BufferedEntry(entries.Current.Term, entries.Current.Timestamp, entries.Current.IsSnapshot, buffer));
                         break;
                 }
-                
+
                 return new Result<bool>(43L, true);
             }
 
@@ -149,7 +149,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             //Vote request
             CancellationTokenSource timeoutTokenSource;
             Result<bool> result;
-            using(timeoutTokenSource = new CancellationTokenSource(timeout))
+            using (timeoutTokenSource = new CancellationTokenSource(timeout))
             {
                 var exchange = new VoteExchange(42L, 1L, 56L);
                 client.Enqueue(exchange, timeoutTokenSource.Token);
@@ -158,14 +158,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 Equal(43L, result.Term);
             }
             //Resign request
-            using(timeoutTokenSource = new CancellationTokenSource(timeout))
+            using (timeoutTokenSource = new CancellationTokenSource(timeout))
             {
                 var exchange = new ResignExchange();
                 client.Enqueue(exchange, timeoutTokenSource.Token);
                 True(await exchange.Task);
             }
             //Heartbeat request
-            using(timeoutTokenSource = new CancellationTokenSource(timeout))
+            using (timeoutTokenSource = new CancellationTokenSource(timeout))
             {
                 var exchange = new HeartbeatExchange(42L, 1L, 56L, 10L);
                 client.Enqueue(exchange, timeoutTokenSource.Token);
@@ -185,9 +185,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             //prepare client
             using var client = clientFactory(serverAddr);
             ICollection<Task<Result<bool>>> tasks = new LinkedList<Task<Result<bool>>>();
-            using(var timeoutTokenSource = new CancellationTokenSource(timeout))
+            using (var timeoutTokenSource = new CancellationTokenSource(timeout))
             {
-                for(var i = 0; i < 100; i++)
+                for (var i = 0; i < 100; i++)
                 {
                     var exchange = new VoteExchange(42L, 1L, 56L);
                     client.Enqueue(exchange, timeoutTokenSource.Token);
@@ -195,7 +195,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 }
                 await Task.WhenAll(tasks);
             }
-            foreach(var task in tasks)
+            foreach (var task in tasks)
             {
                 True(task.Result.Value);
                 Equal(43L, task.Result.Term);
@@ -246,12 +246,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             rnd.NextBytes(buffer);
             var entry2 = new BufferedEntry(11L, DateTimeOffset.Now, true, buffer);
 
-            await using var exchange = new EntriesExchange<BufferedEntry, BufferedEntry[]>(42L, new[]{ entry1, entry2 }, 1, 56, 10);
+            await using var exchange = new EntriesExchange<BufferedEntry, BufferedEntry[]>(42L, new[] { entry1, entry2 }, 1, 56, 10);
             client.Enqueue(exchange, timeoutTokenSource.Token);
             var result = await exchange.Task;
             Equal(43L, result.Term);
             True(result.Value);
-            switch(behavior)
+            switch (behavior)
             {
                 case ReceiveEntriesBehavior.ReceiveAll:
                     Equal(2, exchangePool.ReceivedEntries.Count);

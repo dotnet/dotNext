@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             this.lastLogIndex = lastLogIndex;
             this.lastLogTerm = lastLogTerm;
-        } 
+        }
 
         internal static void Parse(ReadOnlySpan<byte> payload, out ushort remotePort, out long term, out long lastLogIndex, out long lastLogTerm)
         {
@@ -37,7 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             WriteInt64LittleEndian(payload, currentTerm);
             payload = payload.Slice(sizeof(long));
-            
+
             WriteInt64LittleEndian(payload, lastLogIndex);
             payload = payload.Slice(sizeof(long));
 

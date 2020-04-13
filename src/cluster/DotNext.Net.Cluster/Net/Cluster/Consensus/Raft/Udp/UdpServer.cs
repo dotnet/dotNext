@@ -71,20 +71,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             var headers = new PacketHeaders(ref datagram);
             //try rent new exchange
             var exchangeRented = exchangePool.TryRent(headers, out var exchange);
-            if(channels.TryGetValue(correlationId, out var channel))
+            if (channels.TryGetValue(correlationId, out var channel))
             {
                 //return exchange back to the pool
-                if(exchangeRented)
+                if (exchangeRented)
                     exchangePool.Release(exchange);
             }
-            else if(exchangeRented) //channel doesn't exist in the list of active channel but rented successfully
+            else if (exchangeRented) //channel doesn't exist in the list of active channel but rented successfully
             {
                 var newChannel = new Channel(exchange, exchangePool, receiveTimeout, cancellationHandler, correlationId);
                 channel = channels.GetOrAdd(correlationId, newChannel);
                 //returned channel is not associated with rented exchange
                 //so return exchange back to the pool
-                if(!channel.Represents(in newChannel))
-                    using(newChannel)
+                if (!channel.Represents(in newChannel))
+                    using (newChannel)
                     {
                         exchangePool.Release(exchange);
                     }
@@ -94,7 +94,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 logger.NotEnoughRequestHandlers();
                 return;
             }
-            if(headers.Control == FlowControl.Cancel)
+            if (headers.Control == FlowControl.Cancel)
                 ProcessCancellation(cancellationInvoker, ref channel, false, args);   //channel will be removed from the dictionary automatically
             else
                 ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
@@ -118,7 +118,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private void Cleanup(bool disposing)
         {
-            if(disposing)
+            if (disposing)
                 channels.ClearAndDestroyChannels();
         }
 

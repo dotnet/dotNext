@@ -34,13 +34,13 @@ namespace DotNext.Net.NetworkInformation
         {
             int mtuLowerBound = options.MinMtuSize, mtuUpperBound = options.MaxMtuSize;
             int? bestMtu = default;
-            for(int currentMtu; mtuLowerBound <= mtuUpperBound; token.ThrowIfCancellationRequested())
+            for (int currentMtu; mtuLowerBound <= mtuUpperBound; token.ThrowIfCancellationRequested())
             {
                 currentMtu = (mtuLowerBound + mtuUpperBound) / 2;
                 //TODO: Should be optimized. See https://github.com/dotnet/runtime/issues/34856
                 var buffer = new byte[currentMtu];
                 var reply = Send(address, timeout, buffer, options);
-                switch(reply.Status)
+                switch (reply.Status)
                 {
                     default:
                         return null;
@@ -50,7 +50,7 @@ namespace DotNext.Net.NetworkInformation
                         continue;
                     case IPStatus.TimedOut:
                         //TODO: This is required due to https://github.com/dotnet/runtime/issues/34855
-                        if(Environment.OSVersion.Platform == PlatformID.Unix)
+                        if (Environment.OSVersion.Platform == PlatformID.Unix)
                             goto case IPStatus.PacketTooBig;
                         else
                             goto case default;
@@ -80,13 +80,13 @@ namespace DotNext.Net.NetworkInformation
         {
             int mtuLowerBound = options.MinMtuSize, mtuUpperBound = options.MaxMtuSize;
             int? bestMtu = default;
-            for(int currentMtu; mtuLowerBound <= mtuUpperBound; token.ThrowIfCancellationRequested())
+            for (int currentMtu; mtuLowerBound <= mtuUpperBound; token.ThrowIfCancellationRequested())
             {
                 currentMtu = (mtuLowerBound + mtuUpperBound) / 2;
                 //TODO: Should be optimized. See https://github.com/dotnet/runtime/issues/34856
                 var buffer = new byte[currentMtu];
                 var reply = await SendPingAsync(address, timeout, buffer, options).ConfigureAwait(false);
-                switch(reply.Status)
+                switch (reply.Status)
                 {
                     default:
                         return null;

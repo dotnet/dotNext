@@ -12,8 +12,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using TransportServices;
-    using ILocalMember = TransportServices.ILocalMember;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
+    using ILocalMember = TransportServices.ILocalMember;
 
     /// <summary>
     /// Represents default implementation of Raft-based cluster.
@@ -21,7 +21,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember, IExchangePool
     {
         private static readonly Func<RaftClusterMember, EndPoint, bool> MatchByEndPoint = IsMatchedByEndPoint;
-        
+
         private readonly ConcurrentBag<ServerExchange> exchangePool;
         private readonly ImmutableDictionary<string, string> metadata;
         private readonly IPEndPoint publicEndPoint;
@@ -49,10 +49,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             server.ReceiveTimeout = requestTimeout;
             exchangePool = new ConcurrentBag<ServerExchange>();
             //populate pool
-            for(var i = 0; i <= configuration.ServerBacklog; i++)
+            for (var i = 0; i <= configuration.ServerBacklog; i++)
                 exchangePool.Add(new ServerExchange(this, configuration.PipeConfig));
             //create members without starting clients
-            foreach(var member in configuration.Members)
+            foreach (var member in configuration.Members)
                 members.Add(CreateClient(member, false));
         }
 
@@ -65,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         void IExchangePool.Release(IExchange exchange)
         {
-            if(exchange is ServerExchange serverExchange)
+            if (exchange is ServerExchange serverExchange)
             {
                 serverExchange.Reset();
                 exchangePool.Add(serverExchange);
@@ -82,7 +82,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public override Task StartAsync(CancellationToken token)
         {
-            if(FindMember(MatchByEndPoint, publicEndPoint) is null)
+            if (FindMember(MatchByEndPoint, publicEndPoint) is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             if (reused)
             {
@@ -109,7 +109,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private RaftClusterMember CreateClient(IPEndPoint address, bool extendPool)
         {
             var result = new RaftClusterMember(this, address, clientFactory, requestTimeout, pipeConfig, Metrics as IClientMetricsCollector);
-            if(extendPool)
+            if (extendPool)
                 exchangePool.Add(new ServerExchange(this, pipeConfig));
             return result;
         }
@@ -130,7 +130,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="member">The removed member.</param>
         protected sealed override void OnRemoved(RaftClusterMember member)
         {
-            if(exchangePool.TryTake(out var exchange))
+            if (exchangePool.TryTake(out var exchange))
                 exchange.Dispose();
         }
 
@@ -142,13 +142,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         Task<bool> ILocalMember.ResignAsync(CancellationToken token)
             => ReceiveResignAsync(token);
-        
+
         Task<Result<bool>> ILocalMember.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
             return member is null ? Task.FromResult(new Result<bool>(Term, false)) : ReceiveEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
         }
-        
+
         Task<Result<bool>> ILocalMember.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
@@ -167,11 +167,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="disposing"><see langword="true"/> if called from <see cref="Disposable.Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Disposable.Finalize()"/>.</param>
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 server.Dispose();
                 //dispose all exchanges
-                while(exchangePool.TryTake(out var exchange))
+                while (exchangePool.TryTake(out var exchange))
                     exchange.Dispose();
             }
             base.Dispose(disposing);

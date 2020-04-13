@@ -29,10 +29,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
             void IValueTaskSource.GetResult(short token)
                 => taskSource.GetResult(token);
-            
+
             ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
                 => taskSource.GetStatus(token);
-            
+
             void IValueTaskSource.OnCompleted(Action<object> continuation, object state, short token, ValueTaskSourceOnCompletedFlags flags)
                 => taskSource.OnCompleted(continuation, state, token, flags);
 
@@ -45,13 +45,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
             internal ValueTask GetTask(bool pending)
             {
-                if(pending)
+                if (pending)
                     return new ValueTask(this, taskSource.Version);
                 else
                 {
                     var error = SocketError;
                     backToPool(this);
-                    return error == SocketError.Success ? 
+                    return error == SocketError.Success ?
                         new ValueTask() :
                         new ValueTask(Task.FromException(new SocketException((int)error)));
                 }
@@ -59,7 +59,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
             protected override void OnCompleted(SocketAsyncEventArgs e)
             {
-                if(e.SocketError == SocketError.Success)
+                if (e.SocketError == SocketError.Success)
                     taskSource.SetResult(true);
                 else
                     taskSource.SetException(new SocketException((int)e.SocketError));
@@ -72,7 +72,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             internal void Populate(int count)
             {
                 Action<SendTask> backToPool = Add;
-                for(var i = 0; i < count; i++)
+                for (var i = 0; i < count; i++)
                     Add(new SendTask(backToPool));
             }
         }
@@ -118,7 +118,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private void EndReceiveImpl(object sender, SocketAsyncEventArgs args)
         {
-            switch(args.SocketError)
+            switch (args.SocketError)
             {
                 default:
                     ReportError(args.SocketError);
@@ -134,7 +134,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private protected virtual void ReportError(SocketError error)
             => logger.SockerErrorOccurred(error);
 
-        private protected virtual new EndPoint RemoteEndPoint => Address;
+        private protected new virtual EndPoint RemoteEndPoint => Address;
 
         private void BeginReceive(SocketAsyncEventArgs args)
         {
@@ -144,7 +144,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             {
                 result = ReceiveFromAsync(args);
             }
-            catch(ObjectDisposedException)
+            catch (ObjectDisposedException)
             {
                 args.SocketError = SocketError.Shutdown;
                 result = false;
@@ -156,9 +156,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private protected void Start(object? userToken = null)
         {
             EventHandler<SocketAsyncEventArgs> completedHandler = EndReceiveImpl;
-            for(var i = 0; i < receiverPool.Length; i++)
+            for (var i = 0; i < receiverPool.Length; i++)
             {
-                var args = new SocketAsyncEventArgs { UserToken = userToken};
+                var args = new SocketAsyncEventArgs { UserToken = userToken };
                 args.SetBuffer(new byte[datagramSize]);
                 args.Completed += completedHandler;
                 receiverPool[i] = args;
@@ -174,7 +174,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             {
                 action(ref channel, context);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 channel.Exchange.OnException(e);
             }
@@ -195,7 +195,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             {
                 stateFlag = await channel.Exchange.ProcessInboundMessageAsync(headers, datagram, ep, channel.Token).ConfigureAwait(false);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 stateFlag = false;
                 error = e;
@@ -206,20 +206,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 ThreadPool.QueueUserWorkItem(dispatcher, args, true);
             }
             //send one more datagram if exchange requires this
-            if(stateFlag)
+            if (stateFlag)
                 try
                 {
                     stateFlag = await SendAsync(correlationId, channel, ep).ConfigureAwait(false);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     stateFlag = false;
                     error = e;
                 }
             //remove exchange if it is in final state
-            if(!stateFlag && channels.TryRemove(correlationId, out channel))
-                using(channel)
-                    if(!(error is null))
+            if (!stateFlag && channels.TryRemove(correlationId, out channel))
+                using (channel)
+                    if (!(error is null))
                         channel.Exchange.OnException(error);
         }
 
@@ -227,7 +227,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private ValueTask SendToAsync(Memory<byte> datagram, EndPoint endPoint)
         {
             //obtain sender task from the pool
-            if(senderPool.TryTake(out var task))
+            if (senderPool.TryTake(out var task))
             {
                 task.Initialize(datagram, endPoint);
                 return task.GetTask(SendToAsync(task));
@@ -264,20 +264,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private protected static Memory<byte> AdjustToPayload(Memory<byte> datagram)
             => datagram.Slice(PacketHeaders.NaturalSize + CorrelationId.NaturalSize);
-        
+
         private protected static Memory<byte> AdjustDatagram(Memory<byte> datagram, int payloadSize)
             => datagram.Slice(0, PacketHeaders.NaturalSize + CorrelationId.NaturalSize + payloadSize);
 
         private void Cleanup(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
-                foreach(ref var args in receiverPool.AsSpan())
+                foreach (ref var args in receiverPool.AsSpan())
                 {
                     args?.Dispose();
                     args = null;
                 }
-                foreach(var task in senderPool)
+                foreach (var task in senderPool)
                     task.Dispose();
                 senderPool.Clear();
             }
