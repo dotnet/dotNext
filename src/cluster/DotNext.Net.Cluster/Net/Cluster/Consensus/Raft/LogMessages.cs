@@ -49,6 +49,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static void MemberUnavailable(this ILogger logger, IPEndPoint member)
             => logger.LogDebug(Resources.GetString("MemberUnavailable"), member);
+        
+        internal static void MemberUnavailable(this ILogger logger, IPEndPoint member, Exception e)
+            => logger.LogWarning(Resources.GetString("MemberUnavailable"), member, e);
 
         internal static void TimeoutReset(this ILogger logger)
             => logger.LogDebug(Resources.GetString("TimeoutReset"));

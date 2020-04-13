@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
+using NullLogger = Microsoft.Extensions.Logging.Abstractions.NullLogger;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
@@ -24,5 +26,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
             where TSnapshot : IRaftLogEntry;
+        
+        ILogger Logger => NullLogger.Instance;
     }
 }

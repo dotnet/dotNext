@@ -103,6 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             catch(Exception e)
             {
+                localMember.Logger.MemberUnavailable(Endpoint, e);
                 ChangeStatus(ClusterMemberStatus.Unavailable);
                 throw new MemberUnavailableException(this, ExceptionMessages.UnavailableMember, e);
             }
