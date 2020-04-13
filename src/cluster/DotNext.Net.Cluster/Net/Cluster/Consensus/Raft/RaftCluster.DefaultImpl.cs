@@ -29,6 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly Func<IServer> serverFactory;
         private IServer server;
         private readonly PipeOptions pipeConfig;
+        private bool reused;
 
         /// <summary>
         /// Initializes a new default implementation of Raft-based cluster.
@@ -80,7 +81,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if(FindMember(MatchByEndPoint, publicEndPoint) is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            server = serverFactory();
+            if (reused)
+                server = serverFactory();
+            else
+                reused = true;
             server.Start(this);
             return base.StartAsync(token);
         }
