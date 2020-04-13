@@ -5,9 +5,9 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
-using CallSiteDescr = InlineIL.StandAloneMethodSig;
-using M = InlineIL.MethodRef;
-using TR = InlineIL.TypeRef;
+using static InlineIL.StandAloneMethodSig;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext
 {
@@ -114,7 +114,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Action), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Action>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -132,13 +132,13 @@ namespace DotNext
             Dup();
             Brfalse(callDelegate);
 
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void)));
+            Calli(ManagedMethod(CallingConventions.Standard, typeof(void)));
             Ret();
 
             MarkLabel(callDelegate);
             Pop();
             Push(action);
-            Callvirt(new M(typeof(Action), nameof(Invoke)));
+            Callvirt(Method(Type<Action>(), nameof(Invoke)));
             Ret();
         }
 
@@ -282,8 +282,8 @@ namespace DotNext
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                Ldftn(new M(typeof(Activator), nameof(System.Activator.CreateInstance), Array.Empty<TR>()).MakeGenericMethod(typeof(R)));
-                Newobj(M.Constructor(typeof(ValueFunc<R>), new TR(typeof(IntPtr)).WithRequiredModifier(typeof(ManagedMethodPointer))));
+                Ldftn(Method(typeof(Activator), nameof(System.Activator.CreateInstance), 1).MakeGenericMethod(Type<R>()));
+                Newobj(Constructor(Type<ValueFunc<R>>(), Type<IntPtr>().WithRequiredModifier(Type<ManagedMethodPointer>())));
                 return Return<ValueFunc<R>>();
             }
         }
@@ -298,8 +298,8 @@ namespace DotNext
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                Ldftn(new M(typeof(Intrinsics), nameof(Intrinsics.DefaultOf)).MakeGenericMethod(typeof(R)));
-                Newobj(M.Constructor(typeof(ValueFunc<R>), new TR(typeof(IntPtr)).WithRequiredModifier(typeof(ManagedMethodPointer))));
+                Ldftn(Method(typeof(Intrinsics), nameof(Intrinsics.DefaultOf)).MakeGenericMethod(Type<R>()));
+                Newobj(Constructor(Type<ValueFunc<R>>(), Type<IntPtr>().WithRequiredModifier(Type<ManagedMethodPointer>())));
                 return Return<ValueFunc<R>>();
             }
         }
@@ -321,7 +321,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Func<R>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Func<R>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -340,13 +340,13 @@ namespace DotNext
             Dup();
             Brfalse(callDelegate);
 
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R)));
+            Calli(ManagedMethod(CallingConventions.Standard, Type<R>()));
             Ret();
 
             MarkLabel(callDelegate);
             Pop();
             Push(func);
-            Callvirt(new M(typeof(Func<R>), nameof(Invoke)));
+            Callvirt(Method(Type<Func<R>>(), nameof(Invoke)));
             return Return<R>();
         }
 
@@ -484,7 +484,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Converter<T, R>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Converter<T, R>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -511,7 +511,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Func<T, R>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Func<T, R>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -532,13 +532,13 @@ namespace DotNext
 
             Push(arg);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T)));
+            Calli(ManagedMethod(CallingConventions.Standard, Type<R>(), Type<T>()));
             Ret();
 
             MarkLabel(callDelegate);
             Push(func);
             Push(arg);
-            Callvirt(new M(typeof(Func<T, R>), nameof(Invoke)));
+            Callvirt(Method(Type<Func<T, R>>(), nameof(Invoke)));
             return Return<R>();
         }
 
@@ -692,7 +692,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Action<T>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Action<T>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -712,13 +712,13 @@ namespace DotNext
 
             Push(arg);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T)));
+            Calli(ManagedMethod(CallingConventions.Standard, typeof(void), Type<T>()));
             Ret();
 
             MarkLabel(callDelegate);
             Push(action);
             Push(arg);
-            Callvirt(new M(typeof(Action<T>), nameof(Invoke)));
+            Callvirt(Method(Type<Action<T>>(), nameof(Invoke)));
             Ret();
         }
 
@@ -870,7 +870,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Func<T1, T2, R>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Func<T1, T2, R>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -893,14 +893,14 @@ namespace DotNext
             Push(arg1);
             Push(arg2);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2)));
+            Calli(ManagedMethod(CallingConventions.Standard, Type<R>(), Type<T1>(), Type<T2>()));
             Ret();
 
             MarkLabel(callDelegate);
             Push(func);
             Push(arg1);
             Push(arg2);
-            Callvirt(new M(typeof(Func<T1, T2, R>), nameof(Invoke)));
+            Callvirt(Method(Type<Func<T1, T2, R>>(), nameof(Invoke)));
             return Return<R>();
         }
 
@@ -1048,7 +1048,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Action<T1, T2>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Action<T1, T2>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -1070,14 +1070,14 @@ namespace DotNext
             Push(arg1);
             Push(arg2);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2)));
+            Calli(ManagedMethod(CallingConventions.Standard, typeof(void), Type<T1>(), Type<T2>()));
             Ret();
 
             MarkLabel(callDelegate);
             Push(action);
             Push(arg1);
             Push(arg2);
-            Callvirt(new M(typeof(Action<T1, T2>), nameof(Invoke)));
+            Callvirt(Method(Type<Action<T1, T2>>(), nameof(Invoke)));
             Ret();
         }
 
@@ -1230,7 +1230,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Func<T1, T2, T3, R>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Func<T1, T2, T3, R>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -1255,7 +1255,7 @@ namespace DotNext
             Push(arg2);
             Push(arg3);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3)));
+            Calli(ManagedMethod(CallingConventions.Standard, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>()));
             Ret();
 
             MarkLabel(callDelegate);
@@ -1263,7 +1263,7 @@ namespace DotNext
             Push(arg1);
             Push(arg2);
             Push(arg3);
-            Callvirt(new M(typeof(Func<T1, T2, T3, R>), nameof(Invoke)));
+            Callvirt(Method(Type<Func<T1, T2, T3, R>>(), nameof(Invoke)));
             return Return<R>();
         }
 
@@ -1412,7 +1412,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Action<T1, T2, T3>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Action<T1, T2, T3>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -1436,7 +1436,7 @@ namespace DotNext
             Push(arg2);
             Push(arg3);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3)));
+            Calli(ManagedMethod(CallingConventions.Standard, typeof(void), Type<T1>(), Type<T2>(), Type<T3>()));
             Ret();
 
             MarkLabel(callDelegate);
@@ -1444,7 +1444,7 @@ namespace DotNext
             Push(arg1);
             Push(arg2);
             Push(arg3);
-            Callvirt(new M(typeof(Action<T1, T2, T3>), nameof(Invoke)));
+            Callvirt(Method(Type<Action<T1, T2, T3>>(), nameof(Invoke)));
             Ret();
         }
 
@@ -1598,7 +1598,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Func<T1, T2, T3, T4, R>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Func<T1, T2, T3, T4, R>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -1625,7 +1625,7 @@ namespace DotNext
             Push(arg3);
             Push(arg4);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
+            Calli(ManagedMethod(CallingConventions.Standard, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>()));
             Ret();
 
             MarkLabel(callDelegate);
@@ -1634,7 +1634,7 @@ namespace DotNext
             Push(arg2);
             Push(arg3);
             Push(arg4);
-            Callvirt(new M(typeof(Func<T1, T2, T3, T4, R>), nameof(Invoke)));
+            Callvirt(Method(Type<Func<T1, T2, T3, T4, R>>(), nameof(Invoke)));
             return Return<R>();
         }
 
@@ -1784,7 +1784,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Action<T1, T2, T3, T4>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Action<T1, T2, T3, T4>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -1810,7 +1810,7 @@ namespace DotNext
             Push(arg3);
             Push(arg4);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
+            Calli(ManagedMethod(CallingConventions.Standard, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>()));
             Ret();
 
             MarkLabel(callDelegate);
@@ -1819,7 +1819,7 @@ namespace DotNext
             Push(arg2);
             Push(arg3);
             Push(arg4);
-            Callvirt(new M(typeof(Action<T1, T2, T3, T4>), nameof(Invoke)));
+            Callvirt(Method(Type<Action<T1, T2, T3, T4>>(), nameof(Invoke)));
             Ret();
         }
 
@@ -1970,7 +1970,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Func<T1, T2, T3, T4, T5, R>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Func<T1, T2, T3, T4, T5, R>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -1999,7 +1999,7 @@ namespace DotNext
             Push(arg4);
             Push(arg5);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
+            Calli(ManagedMethod(CallingConventions.Standard, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>()));
             Ret();
 
             MarkLabel(callDelegate);
@@ -2009,7 +2009,7 @@ namespace DotNext
             Push(arg3);
             Push(arg4);
             Push(arg5);
-            Callvirt(new M(typeof(Func<T1, T2, T3, T4, T5, R>), nameof(Invoke)));
+            Callvirt(Method(Type<Func<T1, T2, T3, T4, T5, R>>(), nameof(Invoke)));
             return Return<R>();
         }
 
@@ -2156,7 +2156,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(Action<T1, T2, T3, T4, T5>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<Action<T1, T2, T3, T4, T5>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -2184,7 +2184,7 @@ namespace DotNext
             Push(arg4);
             Push(arg5);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
+            Calli(ManagedMethod(CallingConventions.Standard, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>()));
             Ret();
 
             MarkLabel(callDelegate);
@@ -2194,7 +2194,7 @@ namespace DotNext
             Push(arg3);
             Push(arg4);
             Push(arg5);
-            Callvirt(new M(typeof(Action<T1, T2, T3, T4, T5>), nameof(Invoke)));
+            Callvirt(Method(Type<Action<T1, T2, T3, T4, T5>>(), nameof(Invoke)));
             Ret();
         }
 
@@ -2345,7 +2345,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(RefAction<T, TArgs>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<RefAction<T, TArgs>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -2367,14 +2367,14 @@ namespace DotNext
             Push(ref reference);
             Push(args);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(void), new TR(typeof(T)).MakeByRefType(), typeof(TArgs)));
+            Calli(ManagedMethod(CallingConventions.Standard, typeof(void), Type<T>().MakeByRefType(), Type<TArgs>()));
             Ret();
 
             MarkLabel(callDelegate);
             Push(action);
             Push(ref reference);
             Push(args);
-            Callvirt(new M(typeof(RefAction<T, TArgs>), nameof(Invoke)));
+            Callvirt(Method(Type<RefAction<T, TArgs>>(), nameof(Invoke)));
             Ret();
         }
 
@@ -2528,7 +2528,7 @@ namespace DotNext
 
             Ldnull();
             Push(methodPtr);
-            Newobj(M.Constructor(typeof(RefFunc<T, TArgs, TResult>), typeof(object), typeof(IntPtr)));
+            Newobj(Constructor(Type<RefFunc<T, TArgs, TResult>>(), Type<object>(), Type<IntPtr>()));
             Ret();
 
             MarkLabel(returnDelegate);
@@ -2550,14 +2550,14 @@ namespace DotNext
             Push(ref reference);
             Push(args);
             Push(methodPtr);
-            Calli(new CallSiteDescr(CallingConventions.Standard, typeof(TResult), new TR(typeof(T)).MakeByRefType(), typeof(TArgs)));
+            Calli(ManagedMethod(CallingConventions.Standard, Type<TResult>(), Type<T>().MakeByRefType(), Type<TArgs>()));
             Ret();
 
             MarkLabel(callDelegate);
             Push(func);
             Push(ref reference);
             Push(args);
-            Callvirt(new M(typeof(RefFunc<T, TArgs, TResult>), nameof(Invoke)));
+            Callvirt(Method(Type<RefFunc<T, TArgs, TResult>>(), nameof(Invoke)));
             return Return<TResult>();
         }
 
