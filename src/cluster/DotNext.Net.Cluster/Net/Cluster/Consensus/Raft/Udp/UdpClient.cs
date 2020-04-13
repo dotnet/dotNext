@@ -18,17 +18,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly struct Channel : INetworkTransport.IChannel
         {
             private readonly IExchange exchange;
-            internal readonly CancellationToken Token;
             private readonly CancellationTokenRegistration cancellation;
 
             internal Channel(IExchange exchange, Action<object> cancellationCallback, CorrelationId id, CancellationToken token)
             {
                 this.exchange = exchange;
-                this.Token = token;
                 cancellation = token.CanBeCanceled ? token.Register(cancellationCallback, id) : default;
             }
 
-            CancellationToken INetworkTransport.IChannel.Token => Token;
+            CancellationToken INetworkTransport.IChannel.Token => cancellation.Token;
             IExchange INetworkTransport.IChannel.Exchange => exchange;
 
             internal void Complete(Exception e) => exchange.OnException(e);
@@ -97,6 +95,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             if(channels.TryAdd(id, channel))
                 try
                 {
+                    if(token.IsCancellationRequested)
+                        throw new OperationCanceledException(token);
                     if(!await SendAsync(id, channel, RemoteEndPoint).ConfigureAwait(false))
                         throw new NotSupportedException(ExceptionMessages.UnexpectedUdpSenderBehavior);
                 }
