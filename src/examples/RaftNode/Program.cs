@@ -1,18 +1,27 @@
-﻿using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
+﻿using DotNext.Net.Cluster.Consensus.Raft;
+using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Threading.Tasks;
+using static DotNext.Threading.AsyncEvent;
 
 namespace RaftNode
 {
     public static class Program
     {
+        private const string HttpProtocolOption = "http";
+        private const string UdpProtocolOption = "udp";
+
         private static X509Certificate2 LoadCertificate()
         {
             using var rawCertificate = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(Program), "node.pfx");
@@ -22,7 +31,7 @@ namespace RaftNode
             return new X509Certificate2(ms.ToArray(), "1234");
         }
 
-        private static void StartNode(int port, string? persistentStorage = null)
+        private static Task UseAspNetCoreHost(int port, string? persistentStorage = null)
         {
             var configuration = new Dictionary<string, string>
             {
@@ -37,7 +46,7 @@ namespace RaftNode
             };
             if (!string.IsNullOrEmpty(persistentStorage))
                 configuration[SimplePersistentState.LogLocation] = persistentStorage;
-            new HostBuilder().ConfigureWebHost(webHost =>
+            return new HostBuilder().ConfigureWebHost(webHost =>
             {
                 webHost.UseKestrel(options =>
                 {
@@ -49,10 +58,52 @@ namespace RaftNode
             .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(configuration))
             .JoinCluster()
             .Build()
-            .Run();
+            .RunAsync();
         }
 
-        private static void Main(string[] args)
+        private static async Task UseUdpTransport(int port, string? persistentStorage = null)
+        {
+            var configuration = new RaftCluster.UdpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
+            {
+                LowerElectionTimeout = 150,
+                UpperElectionTimeout = 300
+            };
+            configuration.Members.Add(new IPEndPoint(IPAddress.Loopback, 3262));
+            configuration.Members.Add(new IPEndPoint(IPAddress.Loopback, 3263));
+            configuration.Members.Add(new IPEndPoint(IPAddress.Loopback, 3264));
+            var loggerFactory = new LoggerFactory();
+            var loggerOptions = new ConsoleLoggerOptions
+            {
+                LogToStandardErrorThreshold = LogLevel.Error
+            };
+            loggerFactory.AddProvider(new ConsoleLoggerProvider(new FakeOptionsMonitor<ConsoleLoggerOptions>(loggerOptions)));
+            configuration.LoggerFactory = loggerFactory;
+
+            using var cluster = new RaftCluster(configuration);
+            cluster.LeaderChanged += ClusterConfigurator.LeaderChanged;
+            await cluster.StartAsync(CancellationToken.None);
+            using var handler = new CancelKeyPressHandler();
+            Console.CancelKeyPress += handler.Handler;
+            await handler.WaitAsync();
+            Console.CancelKeyPress -= handler.Handler;
+        }
+
+        private static Task StartNode(int port, string? persistentStorage, string protocol)
+        {
+            switch(protocol)
+            {
+                case HttpProtocolOption:
+                    return UseAspNetCoreHost(port, persistentStorage);
+                case UdpProtocolOption:
+                    return UseUdpTransport(port, persistentStorage);
+                default:
+                    Console.Error.WriteLine("Unsupported protocol type");
+                    Environment.ExitCode = 1;
+                    return Task.CompletedTask;
+            }
+        }
+
+        private static async Task Main(string[] args)
         {
             switch (args.LongLength)
             {
@@ -60,10 +111,13 @@ namespace RaftNode
                     Console.WriteLine("Port number is not specified");
                     break;
                 case 1:
-                    StartNode(int.Parse(args[0]));
+                    await StartNode(int.Parse(args[0]), null, HttpProtocolOption);
                     break;
                 case 2:
-                    StartNode(int.Parse(args[0]), args[1]);
+                    await StartNode(int.Parse(args[0]), args[1], HttpProtocolOption);
+                    break;
+                case 3:
+                    await StartNode(int.Parse(args[0]), args[1], args[2]);
                     break;
             }
         }
