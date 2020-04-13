@@ -9,10 +9,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
     internal partial class ServerExchange
     {
-        private void BeginVote(ReadOnlyMemory<byte> payload, EndPoint member, CancellationToken token)
+        private void BeginVote(ReadOnlyMemory<byte> payload, EndPoint sender, CancellationToken token)
         {
-            VoteExchange.Parse(payload.Span, out var term, out var lastLogIndex, out var lastLogTerm);
-            task = server.ReceiveVoteAsync(member, term, lastLogIndex, lastLogTerm, token);
+            VoteExchange.Parse(payload.Span, out var remotePort, out var term, out var lastLogIndex, out var lastLogTerm);
+            ChangePort(ref sender, remotePort);
+            task = server.ReceiveVoteAsync(sender, term, lastLogIndex, lastLogTerm, token);
         }
 
         private async ValueTask<(PacketHeaders, int, bool)> EndVote(Memory<byte> payload)

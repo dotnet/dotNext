@@ -62,8 +62,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return sizeof(long) + sizeof(long) + Unsafe.SizeOf<DateTimeOffset>() + sizeof(byte);
         }
 
-        internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex, out int entriesCount)
+        internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out ushort remotePort, out long term, out long prevLogIndex, out long prevLogTerm, out long commitIndex, out int entriesCount)
         {
+            remotePort = ReadUInt16LittleEndian(input);
+            input = input.Slice(sizeof(ushort));
+
             term = ReadInt64LittleEndian(input);
             input = input.Slice(sizeof(long));
 
@@ -81,6 +84,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private protected int WriteAnnouncement(Span<byte> output, int entriesCount)
         {
+            WriteUInt16LittleEndian(output, myPort);
+            output = output.Slice(sizeof(ushort));
+
             WriteInt64LittleEndian(output, term);
             output = output.Slice(sizeof(long));
 
@@ -95,7 +101,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             WriteInt32LittleEndian(output, entriesCount);
 
-            return sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(int);
+            return sizeof(ushort) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(int);
         }
 
         private protected sealed override void OnException(Exception e) => pipe.Writer.Complete(e);

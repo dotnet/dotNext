@@ -6,16 +6,31 @@ using Debug = System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
-    internal interface IClientExchange<T> : IExchange
+    internal interface IClientExchange : IExchange
     {
-        Task<T> Task { get; }
+        Task Task { get; }
+        ushort MyPort { set; }
+    }
+
+    internal interface IClientExchange<T> : IClientExchange
+    {
+        new Task<T> Task { get; }
+
+        Task IClientExchange.Task => Task;
     }
 
     internal abstract class ClientExchange<T> : TaskCompletionSource<T>, IClientExchange<T>
     {
+        private protected ushort myPort;
+
         private protected ClientExchange()
             : base(TaskCreationOptions.RunContinuationsAsynchronously)
         {
+        }
+
+        ushort IClientExchange.MyPort
+        {
+            set => myPort = value;
         }
 
         public abstract ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token);

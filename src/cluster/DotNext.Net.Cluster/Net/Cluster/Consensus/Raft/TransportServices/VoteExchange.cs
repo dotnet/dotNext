@@ -16,8 +16,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             this.lastLogTerm = lastLogTerm;
         } 
 
-        internal static void Parse(ReadOnlySpan<byte> payload, out long term, out long lastLogIndex, out long lastLogTerm)
+        internal static void Parse(ReadOnlySpan<byte> payload, out ushort remotePort, out long term, out long lastLogIndex, out long lastLogTerm)
         {
+            remotePort = ReadUInt16LittleEndian(payload);
+            payload = payload.Slice(sizeof(ushort));
+
             term = ReadInt64LittleEndian(payload);
             payload = payload.Slice(sizeof(long));
 
@@ -27,8 +30,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             lastLogTerm = ReadInt64LittleEndian(payload);
         }
 
-        private void CreateOutboundMessage(Span<byte> payload)
+        private int CreateOutboundMessage(Span<byte> payload)
         {
+            WriteUInt16LittleEndian(payload, myPort);
+            payload = payload.Slice(sizeof(ushort));
+
             WriteInt64LittleEndian(payload, currentTerm);
             payload = payload.Slice(sizeof(long));
             
@@ -36,15 +42,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             payload = payload.Slice(sizeof(long));
 
             WriteInt64LittleEndian(payload, lastLogTerm);
+
+            return sizeof(ushort) + sizeof(long) + sizeof(long) + sizeof(long);
         }
 
         public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
-        {
-            const int payloadSize = sizeof(long) + sizeof(long) + sizeof(long);
-
-            CreateOutboundMessage(payload.Span);
-
-            return new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Vote, FlowControl.None), payloadSize, true));
-        }
+            => new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Vote, FlowControl.None), CreateOutboundMessage(payload.Span), true));
     }
 }

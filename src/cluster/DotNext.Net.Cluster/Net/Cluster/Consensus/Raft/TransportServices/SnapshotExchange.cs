@@ -27,8 +27,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             pipe = new Pipe(options ?? PipeOptions.Default);
         }
 
-        internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out long term, out long snapshotIndex, out long length, out long snapshotTerm, out DateTimeOffset timestamp)
+        internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out ushort remotePort, out long term, out long snapshotIndex, out long length, out long snapshotTerm, out DateTimeOffset timestamp)
         {
+            remotePort = ReadUInt16LittleEndian(input);
+            input = input.Slice(sizeof(ushort));
+
             term = ReadInt64LittleEndian(input);
             input = input.Slice(sizeof(long));
 
@@ -46,6 +49,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private int WriteAnnouncement(Span<byte> output)
         {
+            WriteUInt16LittleEndian(output, myPort);
+            output = output.Slice(sizeof(ushort));
+
             WriteInt64LittleEndian(output, term);
             output = output.Slice(sizeof(long));
 
@@ -60,7 +66,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             Span.Write(snapshot.Timestamp, ref output);
 
-            return sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + Unsafe.SizeOf<DateTimeOffset>();
+            return sizeof(ushort) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + Unsafe.SizeOf<DateTimeOffset>();
         }
 
         private async Task WriteSnapshotAsync(CancellationToken token)

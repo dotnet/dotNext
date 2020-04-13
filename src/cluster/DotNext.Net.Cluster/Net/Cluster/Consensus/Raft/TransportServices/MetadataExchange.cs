@@ -25,6 +25,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private static Encoding Encoding => Encoding.UTF8;
 
+        ushort IClientExchange.MyPort   //port announcement is not used for this request
+        {
+            set { }
+        }
+
         internal static async Task WriteAsync(PipeWriter writer, IReadOnlyDictionary<string, string> input, CancellationToken token)
         {
             //write length

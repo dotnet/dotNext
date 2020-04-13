@@ -85,7 +85,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 try
                 {
                     Connect(Address);
-                    base.Start();
+                    Start();
                     result = true;
                 }
                 catch(Exception e)

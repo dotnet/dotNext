@@ -12,10 +12,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         private static readonly ILogEntryProducer<ReceivedLogEntry> EmptyProducer = new LogEntryProducer<ReceivedLogEntry>();
 
-        private void BeginProcessHeartbeat(ReadOnlyMemory<byte> payload, EndPoint member, CancellationToken token)
+        private void BeginProcessHeartbeat(ReadOnlyMemory<byte> payload, EndPoint sender, CancellationToken token)
         {
-            HeartbeatExchange.Parse(payload.Span, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex);
-            task = server.ReceiveEntriesAsync(member, term, EmptyProducer, prevLogIndex, prevLogTerm, commitIndex, token);
+            HeartbeatExchange.Parse(payload.Span, out var remotePort, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex);
+            ChangePort(ref sender, remotePort);
+            task = server.ReceiveEntriesAsync(sender, term, EmptyProducer, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
         private async ValueTask<(PacketHeaders, int, bool)> EndProcessHearbeat(Memory<byte> output)

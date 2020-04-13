@@ -91,6 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TExchange : class, IClientExchange<TResult>
         {
             ThrowIfDisposed();
+            exchange.MyPort = (ushort)localMember.Address.Port;
             var timeoutSource = new CancellationTokenSource(RequestTimeout);
             var linkedSource = token.LinkTo(timeoutSource.Token);
             var timeStamp = Timestamp.Current;
@@ -99,7 +100,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 client.Enqueue(exchange, token);
                 return await exchange.Task.ConfigureAwait(false);
             }
-            catch (Exception e) when (!(e is OperationCanceledException cancellation) || cancellation.CancellationToken == timeoutSource.Token)
+            catch (Exception e) when (!(e is OperationCanceledException cancellation) || timeoutSource.IsCancellationRequested)
             {
                 localMember.Logger.MemberUnavailable(Endpoint, e);
                 ChangeStatus(ClusterMemberStatus.Unavailable);

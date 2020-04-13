@@ -11,7 +11,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         private void BeginReceiveSnapshot(ReadOnlySpan<byte> input, EndPoint endPoint, CancellationToken token)
         {
-            var snapshot = new ReceivedLogEntry(input, Reader, out var senderTerm, out var snapshotIndex);
+            var snapshot = new ReceivedLogEntry(input, Reader, out var remotePort, out var senderTerm, out var snapshotIndex);
+            ChangePort(ref endPoint, remotePort);
             task = server.ReceiveSnapshotAsync(endPoint, senderTerm, snapshot, snapshotIndex, token);
         }
 

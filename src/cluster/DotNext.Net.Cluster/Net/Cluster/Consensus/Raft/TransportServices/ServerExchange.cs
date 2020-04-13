@@ -1,6 +1,7 @@
 using System;
 using System.IO.Pipelines;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,7 +34,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         internal ServerExchange(ILocalMember server, PipeOptions? options = null)
             : base(options) => this.server = server;
 
-        private ref State GetState() => ref state;
+        private static void ChangePort(ref EndPoint endPoint, ushort port)
+        {
+            switch(endPoint)
+            {
+                case IPEndPoint ip:
+                    endPoint = ip.Port == port ? ip : new IPEndPoint(ip.Address, port);
+                    break;
+                case DnsEndPoint dns:
+                    endPoint = dns.Port == port ? dns : new DnsEndPoint(dns.Host, port, dns.AddressFamily);
+                    break;
+            }
+        }
         
         public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {

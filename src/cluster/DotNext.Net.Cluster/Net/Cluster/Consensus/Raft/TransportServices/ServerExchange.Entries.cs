@@ -29,9 +29,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             this.reader = reader;
         }
 
-        internal ReceivedLogEntry(ReadOnlySpan<byte> announcement, PipeReader reader, out long term, out long snapshotIndex)
+        internal ReceivedLogEntry(ReadOnlySpan<byte> announcement, PipeReader reader, out ushort remotePort, out long term, out long snapshotIndex)
         {
-            SnapshotExchange.ParseAnnouncement(announcement, out term, out snapshotIndex, out length, out this.term, out timestamp);
+            SnapshotExchange.ParseAnnouncement(announcement, out remotePort, out term, out snapshotIndex, out length, out this.term, out timestamp);
             isSnapshot = true;
             this.reader = reader;
         }
@@ -111,7 +111,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             lookupIndex = -1;
             state = State.AppendEntriesReceived;
-            EntriesExchange.ParseAnnouncement(announcement, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount);
+            EntriesExchange.ParseAnnouncement(announcement, out var remotePort, out var term, out var prevLogIndex, out var prevLogTerm, out var commitIndex, out remainingCount);
+            ChangePort(ref sender, remotePort);
             task = server.ReceiveEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
