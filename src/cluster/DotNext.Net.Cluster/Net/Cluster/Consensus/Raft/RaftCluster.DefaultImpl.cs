@@ -102,7 +102,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private RaftClusterMember CreateClient(IPEndPoint address, bool extendPool)
         {
-            var result = new RaftClusterMember(this, address, clientFactory, TimeSpan.FromMilliseconds(electionTimeoutProvider.UpperValue), pipeConfig, Metrics as IClientMetricsCollector);
+            var result = new RaftClusterMember(this, address, clientFactory, TimeSpan.FromMilliseconds(electionTimeoutProvider.LowerValue), pipeConfig, Metrics as IClientMetricsCollector);
             if(extendPool)
                 exchangePool.Add(new ServerExchange(this, pipeConfig));
             return result;
