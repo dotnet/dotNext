@@ -275,9 +275,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             client.Start();
             var exchange = new MetadataExchange(CancellationToken.None);
             client.Enqueue(exchange, default);
-            var actual = new Dictionary<string, string>();
-            await exchange.Task;
-            Equal(exchangePool.Metadata, actual);
+            Equal(exchangePool.Metadata, await exchange.Task);
             client.Shutdown(SocketShutdown.Both);
         }
 
