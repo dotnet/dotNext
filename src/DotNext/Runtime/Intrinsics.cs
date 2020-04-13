@@ -56,7 +56,7 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static ref TTo InToRef<TFrom, TTo>(in TFrom source)
         {
-            Ldarg(nameof(source));
+            PushInRef(in source);
             return ref ReturnRef<TTo>();
         }
 
@@ -101,12 +101,12 @@ namespace DotNext.Runtime
             //ldobj/stobj pair is used instead of cpobj because this instruction
             //has unspecified behavior if src is not assignable to dst, ECMA-335 III.4.4
             const string slowPath = "slow";
-            Ldarg(nameof(output));
+            PushOutRef(out output);
             Sizeof(typeof(T));
             Sizeof(typeof(TResult));
             Blt_Un(slowPath);
             //copy from input into output as-is
-            Ldarg(nameof(input));
+            PushInRef(in input);
             Ldobj(typeof(TResult));
             Stobj(typeof(TResult));
             Ret();
@@ -114,7 +114,7 @@ namespace DotNext.Runtime
             MarkLabel(slowPath);
             Dup();
             Initobj(typeof(TResult));
-            Ldarg(nameof(input));
+            PushInRef(in input);
             Ldobj(typeof(T));
             Stobj(typeof(T));
             Ret();
@@ -346,7 +346,7 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr AddressOf<T>(in T value)
         {
-            Ldarg(nameof(value));
+            PushInRef(in value);
             Conv_I();
             return Return<IntPtr>();
         }
@@ -483,7 +483,7 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsNull<T>(in T value)
         {
-            Ldarg(nameof(value));
+            PushInRef(in value);
             Ldnull();
             Conv_I();
             Ceq();
@@ -499,7 +499,7 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void ThrowIfNull<T>(in T value)
         {
-            Ldarg(nameof(value));
+            PushInRef(value);
             Ldobj(typeof(T));
             Pop();
             Ret();
@@ -515,8 +515,8 @@ namespace DotNext.Runtime
         public static void Copy<T>(in T input, out T output)
             where T : struct
         {
-            Ldarg(nameof(output));
-            Ldarg(nameof(input));
+            PushOutRef(out output);
+            PushInRef(in input);
             Cpobj(typeof(T));
             Ret();
             throw Unreachable();    //need here because output var should be assigned
@@ -612,8 +612,8 @@ namespace DotNext.Runtime
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool AreSame<T>(in T first, in T second)
         {
-            Ldarg(nameof(first));
-            Ldarg(nameof(second));
+            PushInRef(in first);
+            PushInRef(in second);
             Ceq();
             return Return<bool>();
         }
@@ -625,7 +625,7 @@ namespace DotNext.Runtime
             Push(ref ptr);
             Sizeof(typeof(T));
             Conv_I();
-            Emit.Add();
+            Add();
             return ref ReturnRef<byte>();
         }
 
