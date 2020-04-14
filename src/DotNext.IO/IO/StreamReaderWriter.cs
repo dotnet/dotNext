@@ -28,13 +28,8 @@ namespace DotNext.IO
             where T : unmanaged
             => StreamExtensions.ReadAsync<T>(input, buffer, token);
 
-        private static async ValueTask ReadAsync(Stream input, Memory<byte> output, CancellationToken token)
-        {
-            if ((await input.ReadAsync(output, token).ConfigureAwait(false)) != output.Length)
-                throw new EndOfStreamException();
-        }
-
-        public ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default) => ReadAsync(input, output, token);
+        public ValueTask ReadAsync(Memory<byte> output, CancellationToken token = default)
+            => StreamExtensions.ReadBytesAsync(input, output, token);
 
         public ValueTask<string> ReadStringAsync(int length, DecodingContext context, CancellationToken token = default)
             => StreamExtensions.ReadStringAsync(input, length, context, buffer, token);
