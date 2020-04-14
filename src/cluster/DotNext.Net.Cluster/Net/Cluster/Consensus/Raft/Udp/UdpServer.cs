@@ -46,7 +46,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
         }
 
-        private static readonly IPEndPoint AnyRemoteEndpoint = new IPEndPoint(IPAddress.Any, 0);
         private readonly INetworkTransport.ChannelPool<Channel> channels;
         private readonly Action<object> cancellationHandler;
         private TimeSpan receiveTimeout;
@@ -60,7 +59,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             cancellationInvoker = Channel.Cancel;
         }
 
-        private protected override EndPoint RemoteEndPoint => AnyRemoteEndpoint;
+        private protected override bool AllowReceiveFromAnyHost => true;
 
         private protected override void EndReceive(object sender, SocketAsyncEventArgs args)
         {

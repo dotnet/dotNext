@@ -7,7 +7,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Threading.Tasks.Sources;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
@@ -16,71 +15,56 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
     internal abstract class UdpSocket : Socket, INetworkTransport
     {
-        private sealed class SendTask : SocketAsyncEventArgs, IValueTaskSource
+        private protected static readonly IPEndPoint AnyRemoteEndpoint = new IPEndPoint(IPAddress.Any, 0);
+
+        private sealed class SendEventArgs : SocketAsyncEventSource
         {
-            private ManualResetValueTaskSourceCore<bool> taskSource;
-            private readonly Action<SendTask> backToPool;
+            private readonly Action<SendEventArgs> backToPool;
 
-            internal SendTask(Action<SendTask> backToPool)
-            {
-                taskSource = new ManualResetValueTaskSourceCore<bool> { RunContinuationsAsynchronously = true };
-                this.backToPool = backToPool;
-            }
-
-            void IValueTaskSource.GetResult(short token)
-                => taskSource.GetResult(token);
-
-            ValueTaskSourceStatus IValueTaskSource.GetStatus(short token)
-                => taskSource.GetStatus(token);
-
-            void IValueTaskSource.OnCompleted(Action<object> continuation, object state, short token, ValueTaskSourceOnCompletedFlags flags)
-                => taskSource.OnCompleted(continuation, state, token, flags);
+            internal SendEventArgs(Action<SendEventArgs> backToPool)
+                : base(true) => this.backToPool = backToPool;
 
             internal void Initialize(Memory<byte> buffer, EndPoint endPoint)
             {
                 RemoteEndPoint = endPoint;
                 SetBuffer(buffer);
-                taskSource.Reset();
+                Reset();
             }
 
             internal ValueTask GetTask(bool pending)
             {
                 if (pending)
-                    return new ValueTask(this, taskSource.Version);
+                    return Task;
                 else
                 {
                     var error = SocketError;
-                    backToPool(this);
+                    backToPool?.Invoke(this);
                     return error == SocketError.Success ?
                         new ValueTask() :
-                        new ValueTask(Task.FromException(new SocketException((int)error)));
+                        new ValueTask(System.Threading.Tasks.Task.FromException(new SocketException((int)error)));
                 }
             }
 
             protected override void OnCompleted(SocketAsyncEventArgs e)
             {
-                if (e.SocketError == SocketError.Success)
-                    taskSource.SetResult(true);
-                else
-                    taskSource.SetException(new SocketException((int)e.SocketError));
+                base.OnCompleted(e);
                 backToPool(this);
             }
         }
 
-        private sealed class SendTaskPool : ConcurrentBag<SendTask>
+        private sealed class SendTaskPool : ConcurrentBag<SendEventArgs>
         {
             internal void Populate(int count)
             {
-                Action<SendTask> backToPool = Add;
+                Action<SendEventArgs> backToPool = Add;
                 for (var i = 0; i < count; i++)
-                    Add(new SendTask(backToPool));
+                    Add(new SendEventArgs(backToPool));
             }
         }
 
         internal const int MaxDatagramSize = 65507;
         internal const int MinDatagramSize = 300;
-
-        private readonly ArrayPool<byte> bufferPool;
+        private protected readonly ArrayPool<byte> bufferPool;
         internal readonly IPEndPoint Address;
         private protected readonly ILogger logger;
         //I/O management
@@ -93,15 +77,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             : base(address.AddressFamily, SocketType.Dgram, ProtocolType.Udp)
         {
             ExclusiveAddressUse = true;
-            Address = address;
             Blocking = false;
-            senderPool = new SendTaskPool();
+            Address = address;
             logger = loggerFactory.CreateLogger(GetType());
             bufferPool = pool;
+            senderPool = new SendTaskPool();
             receiverPool = new SocketAsyncEventArgs?[backlog];
             dispatcher = BeginReceive;
             datagramSize = MinDatagramSize;
         }
+
+        IPEndPoint INetworkTransport.Address => Address;
 
         internal static int ValidateDatagramSize(int value)
             => value.Between(MinDatagramSize, MaxDatagramSize, BoundType.Closed) ? value : throw new ArgumentOutOfRangeException(nameof(value));
@@ -111,8 +97,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             get => datagramSize;
             set => datagramSize = ValidateDatagramSize(value);
         }
-
-        IPEndPoint INetworkTransport.Address => Address;
 
         private protected abstract void EndReceive(object sender, SocketAsyncEventArgs args);
 
@@ -124,6 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                     ReportError(args.SocketError);
                     break;
                 case SocketError.OperationAborted:
+                case SocketError.ConnectionAborted:
                     break;
                 case SocketError.Success:
                     EndReceive(sender, args);
@@ -131,14 +116,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
         }
 
+        private protected void ProcessCancellation<TChannel, TContext>(RefAction<TChannel, TContext> action, ref TChannel channel, TContext context, SocketAsyncEventArgs args)
+            where TChannel : struct, INetworkTransport.IChannel
+        {
+            try
+            {
+                action(ref channel, context);
+            }
+            catch (Exception e)
+            {
+                channel.Exchange.OnException(e);
+            }
+            finally
+            {
+                ThreadPool.QueueUserWorkItem(dispatcher, args, true);
+            }
+        }
+
         private protected virtual void ReportError(SocketError error)
             => logger.SockerErrorOccurred(error);
 
-        private protected new virtual EndPoint RemoteEndPoint => Address;
+        private protected abstract bool AllowReceiveFromAnyHost { get; }
 
         private void BeginReceive(SocketAsyncEventArgs args)
         {
-            args.RemoteEndPoint = RemoteEndPoint;
+            args.RemoteEndPoint = AllowReceiveFromAnyHost ? AnyRemoteEndpoint : Address;
             bool result;
             try
             {
@@ -165,23 +167,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 BeginReceive(args);
             }
             senderPool.Populate(receiverPool.Length);
-        }
-
-        private protected void ProcessCancellation<TChannel, TContext>(RefAction<TChannel, TContext> action, ref TChannel channel, TContext context, SocketAsyncEventArgs args)
-            where TChannel : struct, INetworkTransport.IChannel
-        {
-            try
-            {
-                action(ref channel, context);
-            }
-            catch (Exception e)
-            {
-                channel.Exchange.OnException(e);
-            }
-            finally
-            {
-                ThreadPool.QueueUserWorkItem(dispatcher, args, true);
-            }
         }
 
         private protected async void ProcessDatagram<TChannel>(ConcurrentDictionary<CorrelationId, TChannel> channels, TChannel channel, CorrelationId correlationId, PacketHeaders headers, ReadOnlyMemory<byte> datagram, SocketAsyncEventArgs args)
@@ -250,7 +235,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 //write correlation ID and headers
                 id.WriteTo(bufferHolder.Memory);
                 headers.WriteTo(bufferHolder.Memory.Slice(CorrelationId.NaturalSize));
-                await SendToAsync(AdjustDatagram(bufferHolder.Memory, bytesWritten), endpoint);
+                await SendToAsync(AdjustPacket(bufferHolder.Memory, bytesWritten), endpoint);
             }
             finally
             {
@@ -261,12 +246,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private protected ByteBuffer AllocDatagramBuffer()
             => new ByteBuffer(bufferPool, datagramSize);
-
-        private protected static Memory<byte> AdjustToPayload(Memory<byte> datagram)
-            => datagram.Slice(PacketHeaders.NaturalSize + CorrelationId.NaturalSize);
-
-        private protected static Memory<byte> AdjustDatagram(Memory<byte> datagram, int payloadSize)
-            => datagram.Slice(0, PacketHeaders.NaturalSize + CorrelationId.NaturalSize + payloadSize);
 
         private void Cleanup(bool disposing)
         {
@@ -282,6 +261,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 senderPool.Clear();
             }
         }
+
+        private protected static Memory<byte> AdjustToPayload(Memory<byte> packet)
+            => packet.Slice(PacketHeaders.NaturalSize + CorrelationId.NaturalSize);
+
+        private protected static Memory<byte> AdjustPacket(Memory<byte> packet, int payloadSize)
+            => packet.Slice(0, PacketHeaders.NaturalSize + CorrelationId.NaturalSize + payloadSize);
 
         protected override void Dispose(bool disposing)
         {

@@ -42,13 +42,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly INetworkTransport.ChannelPool<Channel> channels;
         private readonly RefAction<Channel, CorrelationId> cancellationInvoker;
 
-        internal UdpClient(IPEndPoint address, int backlog, ArrayPool<byte> bufferPool, ILoggerFactory loggerFactory)
+        internal UdpClient(IPEndPoint address, int backlog, ArrayPool<byte> bufferPool, Func<long> appIdGenerator, ILoggerFactory loggerFactory)
             : base(address, backlog, bufferPool, loggerFactory)
         {
             channels = new INetworkTransport.ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;
 
-            applicationId = new Random().Next<long>();
+            applicationId = appIdGenerator();
             streamNumber = long.MinValue;
             cancellationInvoker = channels.CancellationRequested;
         }
@@ -96,8 +96,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             return result;
         }
 
-        public async void Enqueue<TExchange>(TExchange exchange, CancellationToken token)
-            where TExchange : class, IExchange
+        private protected override bool AllowReceiveFromAnyHost => false;
+
+        public async void Enqueue(IExchange exchange, CancellationToken token)
         {
             if (!Connected && !Start(exchange))
                 return;
@@ -108,7 +109,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 {
                     if (token.IsCancellationRequested)
                         throw new OperationCanceledException(token);
-                    if (!await SendAsync(id, channel, RemoteEndPoint).ConfigureAwait(false))
+                    if (!await SendAsync(id, channel, Address).ConfigureAwait(false))
                         throw new NotSupportedException(ExceptionMessages.UnexpectedUdpSenderBehavior);
                 }
                 catch (Exception e)

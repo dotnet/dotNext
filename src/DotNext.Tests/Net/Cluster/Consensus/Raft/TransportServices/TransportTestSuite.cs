@@ -134,8 +134,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 => ((ServerExchange)exchange).Reset();
         }
 
+        private readonly Func<long> appIdGenerator = new Random().Next<long>;
+
         private protected delegate IServer ServerFactory(IPEndPoint address, TimeSpan timeout);
-        private protected delegate IClient ClientFactory(IPEndPoint address);
+        private protected delegate IClient ClientFactory(IPEndPoint address, Func<long> appId);
 
         private protected async Task RequestResponseTest(ServerFactory serverFactory, ClientFactory clientFactory)
         {
@@ -145,7 +147,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             using var server = serverFactory(serverAddr, timeout);
             server.Start(new SimpleServerExchangePool());
             //prepare client
-            using var client = clientFactory(serverAddr);
+            using var client = clientFactory(serverAddr, appIdGenerator);
             //Vote request
             CancellationTokenSource timeoutTokenSource;
             Result<bool> result;
@@ -183,7 +185,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             using var server = serverFactory(serverAddr, timeout);
             server.Start(new SimpleServerExchangePool());
             //prepare client
-            using var client = clientFactory(serverAddr);
+            using var client = clientFactory(serverAddr, appIdGenerator);
             ICollection<Task<Result<bool>>> tasks = new LinkedList<Task<Result<bool>>>();
             using (var timeoutTokenSource = new CancellationTokenSource(timeout))
             {
@@ -211,7 +213,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var exchangePool = new SimpleServerExchangePool(smallAmountOfMetadata);
             server.Start(exchangePool);
             //prepare client
-            using var client = clientFactory(serverAddr);
+            using var client = clientFactory(serverAddr, appIdGenerator);
             var exchange = new MetadataExchange(CancellationToken.None);
             client.Enqueue(exchange, default);
             Equal(exchangePool.Metadata, await exchange.Task);
@@ -237,7 +239,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var exchangePool = new SimpleServerExchangePool(false) { Behavior = behavior };
             server.Start(exchangePool);
             //prepare client
-            using var client = clientFactory(serverAddr);
+            using var client = clientFactory(serverAddr, appIdGenerator);
             var buffer = new byte[533];
             var rnd = new Random();
             rnd.NextBytes(buffer);
@@ -282,7 +284,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var exchangePool = new SimpleServerExchangePool(false);
             server.Start(exchangePool);
             //prepare client
-            using var client = clientFactory(serverAddr);
+            using var client = clientFactory(serverAddr, appIdGenerator);
             var buffer = new byte[payloadSize];
             new Random().NextBytes(buffer);
             var snapshot = new BufferedEntry(10L, DateTimeOffset.Now, true, buffer);

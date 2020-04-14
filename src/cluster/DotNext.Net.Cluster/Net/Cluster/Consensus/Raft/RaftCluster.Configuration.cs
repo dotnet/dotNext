@@ -27,6 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private int clientChannels;
             private ArrayPool<byte>? bufferPool;
             private ILoggerFactory? loggerFactory;
+            private protected readonly Func<long> applicationIdGenerator;
 
             private protected Configuration(IPEndPoint hostAddress)
             {
@@ -36,6 +37,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Members = new HashSet<IPEndPoint>();
                 HostEndPoint = hostAddress;
                 clientChannels = Environment.ProcessorCount + 1;
+                applicationIdGenerator = new Random().Next<long>;
             }
 
             /// <summary>
@@ -215,7 +217,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             internal override IClient CreateClient(IPEndPoint address)
-                => new UdpClient(address, ClientBacklog, BufferPool, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
+                => new UdpClient(address, ClientBacklog, BufferPool, applicationIdGenerator, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
 
             internal override IServer CreateServer()
                 => new UdpServer(HostEndPoint, ServerBacklog, BufferPool, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
