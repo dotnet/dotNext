@@ -82,8 +82,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 channel = channels.GetOrAdd(correlationId, newChannel);
                 //returned channel is not associated with rented exchange
                 //so return exchange back to the pool
-                if(channel.Token.IsCancellationRequested)
-                    channels.CancellationRequested(ref channel, correlationId);
                 if (!channel.Represents(in newChannel))
                     using (newChannel)
                     {
@@ -95,9 +93,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 logger.NotEnoughRequestHandlers();
                 return;
             }
-            if(channel.Token.IsCancellationRequested && channels.TryRemove(correlationId, out channel))
-                channel.Dispose();
-            else if (headers.Control == FlowControl.Cancel)
+            if (headers.Control == FlowControl.Cancel)
                 ProcessCancellation(cancellationInvoker, ref channel, false, args);   //channel will be removed from the dictionary automatically
             else
                 ProcessDatagram(channels, channel, correlationId, headers, datagram, args);
