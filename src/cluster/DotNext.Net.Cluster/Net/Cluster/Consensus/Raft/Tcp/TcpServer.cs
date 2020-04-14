@@ -150,6 +150,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     {
                         case SocketError.OperationAborted:
                         case SocketError.ConnectionAborted:
+                        case SocketError.Shutdown:
                             break;
                         default:
                             logger.SockerErrorOccurred(e.SocketErrorCode);
