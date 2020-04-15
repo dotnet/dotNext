@@ -100,14 +100,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private async void HandleConnection(Socket remoteClient)
         {
             using var stream = new ServerNetworkStream(remoteClient);
-            while(stream.Connected)
+            while(stream.Connected && !IsDisposed)
             {
                 var timeoutSource = new CancellationTokenSource(receiveTimeout);
                 var buffer = AllocTransmissionBlock();
                 try
                 {
                     if(!await stream.Exchange(exchanges, buffer.Memory, timeoutSource.Token).ConfigureAwait(false))
-                        logger.NotEnoughRequestHandlers();    
+                    {
+                        logger.NotEnoughRequestHandlers();
+                        break;
+                    }    
                 }
                 catch(OperationCanceledException e)
                 {
@@ -131,7 +134,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private async void Listen()
         {
             using var args = new AcceptEventArgs();
-            for(var pending = true; pending; )
+            for(var pending = true; pending && !IsDisposed; )
                 try
                 {
                     if(socket.AcceptAsync(args))
