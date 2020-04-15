@@ -65,29 +65,28 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         private protected override void EndReceive(object sender, SocketAsyncEventArgs args)
         {
-            var exchangePool = Cast<IExchangePool>(args.UserToken);
             ReadOnlyMemory<byte> datagram = args.MemoryBuffer.Slice(0, args.BytesTransferred);
             //dispatch datagram to appropriate exchange
             var correlationId = new CorrelationId(ref datagram);
             var headers = new PacketHeaders(ref datagram);
             //try rent new exchange
-            var exchangeRented = exchangePool.TryRent(headers, out var exchange);
+            var exchangeRented = exchanges.TryRent(headers, out var exchange);
             if (channels.TryGetValue(correlationId, out var channel))
             {
                 //return exchange back to the pool
                 if (exchangeRented)
-                    exchangePool.Release(exchange);
+                    exchanges.Release(exchange);
             }
             else if (exchangeRented) //channel doesn't exist in the list of active channel but rented successfully
             {
-                var newChannel = new Channel(exchange, exchangePool, receiveTimeout, cancellationHandler, correlationId);
+                var newChannel = new Channel(exchange, exchanges, receiveTimeout, cancellationHandler, correlationId);
                 channel = channels.GetOrAdd(correlationId, newChannel);
                 //returned channel is not associated with rented exchange
                 //so return exchange back to the pool
                 if (!channel.Represents(in newChannel))
                     using (newChannel)
                     {
-                        exchangePool.Release(exchange);
+                        exchanges.Release(exchange);
                     }
             }
             else

@@ -17,6 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             if(exchange is ServerExchange serverExchange)
             {
                 serverExchange.Reset();
+                Add(serverExchange);
             }
         }
 

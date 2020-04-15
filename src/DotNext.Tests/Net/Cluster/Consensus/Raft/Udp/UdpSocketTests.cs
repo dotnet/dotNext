@@ -15,10 +15,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     [ExcludeFromCodeCoverage]
     public sealed class UdpSocketTests : TransportTestSuite
     {
+        private readonly Func<long> appIdGenerator = new Random().Next<long>;
+
         [Fact]
-        public static async Task ConnectionError()
+        public async Task ConnectionError()
         {
-            Func<long> appIdGenerator = new Random().Next<long>;
             using var client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 35665), 2, ArrayPool<byte>.Shared, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MaxDatagramSize,
@@ -47,7 +48,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
-            ClientFactory client = (address, appId) => new UdpClient(address, 2, ArrayPool<byte>.Shared, appId, NullLoggerFactory.Instance)
+            ClientFactory client = address => new UdpClient(address, 2, ArrayPool<byte>.Shared, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
@@ -64,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
-            ClientFactory client = (address, appId) => new UdpClient(address, 100, ArrayPool<byte>.Shared, appId, NullLoggerFactory.Instance)
+            ClientFactory client = address => new UdpClient(address, 100, ArrayPool<byte>.Shared, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
@@ -83,7 +84,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
-            ClientFactory client = (address, appId) => new UdpClient(address, 100, ArrayPool<byte>.Shared, appId, NullLoggerFactory.Instance)
+            ClientFactory client = address => new UdpClient(address, 100, ArrayPool<byte>.Shared, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
@@ -108,7 +109,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
-            ClientFactory client = (address, appId) => new UdpClient(address, 100, ArrayPool<byte>.Shared, appId, NullLoggerFactory.Instance)
+            ClientFactory client = address => new UdpClient(address, 100, ArrayPool<byte>.Shared, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
@@ -127,7 +128,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
-            ClientFactory client = (address, appId) => new UdpClient(address, 100, ArrayPool<byte>.Shared, appId, NullLoggerFactory.Instance)
+            ClientFactory client = address => new UdpClient(address, 100, ArrayPool<byte>.Shared, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
