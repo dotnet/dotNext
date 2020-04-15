@@ -41,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [Fact]
         public Task RequestResponse()
         {
-            ServerFactory server = (address, timeout) => new UdpServer(address, 2, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            ServerFactory server = (member, address, timeout) => new UdpServer(address, 2, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 DatagramSize = UdpSocket.MaxDatagramSize,
@@ -58,7 +58,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [Fact]
         public Task StressTest()
         {
-            ServerFactory server = (address, timeout) => new UdpServer(address, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            ServerFactory server = (member, address, timeout) => new UdpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 DatagramSize = UdpSocket.MaxDatagramSize,
@@ -77,7 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [InlineData(false)]
         public Task MetadataRequestResponse(bool smallAmountOfMetadata)
         {
-            ServerFactory server = (address, timeout) => new UdpServer(address, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            ServerFactory server = (member, address, timeout) => new UdpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 DatagramSize = UdpSocket.MinDatagramSize,
@@ -102,7 +102,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [InlineData(50, ReceiveEntriesBehavior.DropFirst)]
         public Task SendingLogEntries(int payloadSize, ReceiveEntriesBehavior behavior)
         {
-            ServerFactory server = (address, timeout) => new UdpServer(address, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            ServerFactory server = (member, address, timeout) => new UdpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 ReceiveTimeout = timeout,
@@ -121,7 +121,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         [InlineData(50)]
         public Task SendingSnapshot(int payloadSize)
         {
-            ServerFactory server = (address, timeout) => new UdpServer(address, 100, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            ServerFactory server = (member, address, timeout) => new UdpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 ReceiveTimeout = timeout,

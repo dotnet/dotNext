@@ -9,6 +9,7 @@ using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFa
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using IClientMetricsCollector = Metrics.IClientMetricsCollector;
     using TransportServices;
     using Udp;
 
@@ -38,6 +39,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 HostEndPoint = hostAddress;
                 clientChannels = Environment.ProcessorCount + 1;
                 applicationIdGenerator = new Random().Next<long>;
+            }
+
+            /// <summary>
+            /// Gets or sets metrics collector.
+            /// </summary>
+            public MetricsCollector? Metrics
+            {
+                get;
+                set;
             }
 
             /// <summary>
@@ -167,9 +177,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <value>The collection of cluster members.</value>
             public ICollection<IPEndPoint> Members { get; }
 
-            internal abstract IClient CreateClient(IPEndPoint address);
+            private protected Func<int, ServerExchangePool> ExchangePoolFactory(ILocalMember localMember)
+            {
+                ServerExchangePool CreateExchangePool(int count)
+                {
+                    var result = new ServerExchangePool();
+                    while(--count >= 0)
+                        result.Add(new ServerExchange(localMember, PipeConfig));
+                    return result;
+                }
+                return CreateExchangePool;
+            }
 
-            internal abstract IServer CreateServer();
+            internal abstract RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics);
+
+            internal abstract IServer CreateServer(ILocalMember localMember);
         }
 
         /// <summary>
@@ -216,11 +238,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set => datagramSize = UdpSocket.ValidateDatagramSize(value);
             }
 
-            internal override IClient CreateClient(IPEndPoint address)
+            private IClient CreateClient(IPEndPoint address)
                 => new UdpClient(address, ClientBacklog, BufferPool, applicationIdGenerator, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
 
-            internal override IServer CreateServer()
-                => new UdpServer(HostEndPoint, ServerBacklog, BufferPool, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
+            internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
+                => new ExchangePeer(localMember, endPoint, CreateClient, TimeSpan.FromMilliseconds(LowerElectionTimeout), PipeConfig, metrics);
+
+            internal override IServer CreateServer(ILocalMember localMember)
+                => new UdpServer(HostEndPoint, ServerBacklog, BufferPool, ExchangePoolFactory(localMember), LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
         }
     }
 }

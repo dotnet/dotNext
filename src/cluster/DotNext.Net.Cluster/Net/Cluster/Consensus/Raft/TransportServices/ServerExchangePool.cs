@@ -1,0 +1,29 @@
+using System;
+using System.Collections.Concurrent;
+
+namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
+{
+    internal sealed class ServerExchangePool : ConcurrentBag<ServerExchange>, IExchangePool, IDisposable
+    {
+        bool IExchangePool.TryRent(PacketHeaders headers, out IExchange exchange)
+        {
+            var result = TryTake(out var serverExchange);
+            exchange = serverExchange;
+            return result;
+        }
+
+        void IExchangePool.Release(IExchange exchange)
+        {
+            if(exchange is ServerExchange serverExchange)
+            {
+                serverExchange.Reset();
+            }
+        }
+
+        void IDisposable.Dispose()
+        {
+            while(TryTake(out var exchange))
+                exchange.Dispose();
+        }
+    }
+}

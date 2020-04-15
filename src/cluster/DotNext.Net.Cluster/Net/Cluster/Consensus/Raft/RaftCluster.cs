@@ -57,13 +57,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected ref struct MemberHolder
         {
             private readonly LinkedListNode<TMember> node;
-            private readonly Action<TMember>? removalCallback;
 
-            internal MemberHolder(LinkedListNode<TMember> node, Action<TMember>? removalCallback)
-            {
-                this.node = node;
-                this.removalCallback = removalCallback;
-            }
+            internal MemberHolder(LinkedListNode<TMember> node)
+                => this.node = node;
 
             /// <summary>
             /// Gets actual cluster member.
@@ -88,7 +84,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     node.List.Remove(node);
                     var member = node.Value;
                     node.Value = null!;
-                    removalCallback?.Invoke(member);
                     return member;
                 }
                 throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
@@ -114,14 +109,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public ref struct Enumerator
             {
                 private LinkedListNode<TMember> current;
-                private readonly Action<TMember>? removalCallback;
                 private bool started;
 
-                internal Enumerator(LinkedList<TMember> members, Action<TMember>? removalCallback)
+                internal Enumerator(LinkedList<TMember> members)
                 {
                     current = members.First;
                     started = false;
-                    this.removalCallback = removalCallback;
                 }
 
                 /// <summary>
@@ -140,23 +133,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 /// <summary>
                 /// Gets holder of the member holder at the current position of enumerator.
                 /// </summary>
-                public MemberHolder Current => new MemberHolder(current, removalCallback);
+                public MemberHolder Current => new MemberHolder(current);
             }
 
             private readonly MemberCollection members;
-            private readonly Action<TMember>? removalCallback;
 
-            internal MemberCollectionBuilder(IEnumerable<TMember> members, Action<TMember> removalCallback)
-            {
-                this.members = new MemberCollection(members);
-                this.removalCallback = removalCallback;
-            }
+            internal MemberCollectionBuilder(IEnumerable<TMember> members)
+                => this.members = new MemberCollection(members);
 
             internal MemberCollectionBuilder(out IMemberCollection members)
-            {
-                members = this.members = new MemberCollection();
-                this.removalCallback = null;
-            }
+                => members = this.members = new MemberCollection();
 
             /// <summary>
             /// Adds new cluster member.
@@ -168,7 +154,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Returns enumerator over cluster members.
             /// </summary>
             /// <returns>The enumerator over cluster members.</returns>
-            public Enumerator GetEnumerator() => new Enumerator(members, removalCallback);
+            public Enumerator GetEnumerator() => new Enumerator(members);
 
             internal IMemberCollection Build() => members;
         }
@@ -243,15 +229,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         protected CancellationToken Token => transitionCancellation.Token;
 
-        /// <summary>
-        /// Called automatically if the member is removed from the collection of members.
-        /// </summary>
-        /// <param name="member">The removed member.</param>
-        protected virtual void OnRemoved(TMember member) { }
-
         private void ChangeMembers(MemberCollectionMutator mutator)
         {
-            var members = new MemberCollectionBuilder(this.members, OnRemoved);
+            var members = new MemberCollectionBuilder(this.members);
             mutator(members);
             this.members = members.Build();
         }

@@ -18,19 +18,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents default implementation of Raft-based cluster.
     /// </summary>
-    public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember, IExchangePool
+    public partial class RaftCluster : RaftCluster<RaftClusterMember>, ILocalMember
     {
         private static readonly Func<RaftClusterMember, EndPoint, bool> MatchByEndPoint = IsMatchedByEndPoint;
 
-        private readonly ConcurrentBag<ServerExchange> exchangePool;
         private readonly ImmutableDictionary<string, string> metadata;
         private readonly IPEndPoint publicEndPoint;
-        private readonly Func<IPEndPoint, IClient> clientFactory;
-        private readonly Func<IServer> serverFactory;
-        private IServer server;
+        private readonly Func<ILocalMember, IPEndPoint, IClientMetricsCollector?, RaftClusterMember> clientFactory;
+        private readonly Func<ILocalMember, IServer> serverFactory;
+        private IServer? server;
         private readonly PipeOptions pipeConfig;
-        private bool reused;
-        private readonly TimeSpan requestTimeout;
+        private readonly TimeSpan receiveTimeout;
 
         /// <summary>
         /// Initializes a new default implementation of Raft-based cluster.
@@ -39,37 +37,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public RaftCluster(NodeConfiguration configuration)
             : base(configuration, out var members)
         {
-            requestTimeout = TimeSpan.FromMilliseconds(configuration.LowerElectionTimeout);
+            Metrics = configuration.Metrics;
+            receiveTimeout = TimeSpan.FromMilliseconds(configuration.LowerElectionTimeout);
             publicEndPoint = configuration.PublicEndPoint;
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
-            clientFactory = configuration.CreateClient;
+            clientFactory = configuration.CreateMemberClient;
             serverFactory = configuration.CreateServer;
-            pipeConfig = configuration.PipeConfig;
-            server = configuration.CreateServer();
-            server.ReceiveTimeout = requestTimeout;
-            exchangePool = new ConcurrentBag<ServerExchange>();
-            //populate pool
-            for (var i = 0; i <= configuration.ServerBacklog; i++)
-                exchangePool.Add(new ServerExchange(this, configuration.PipeConfig));
+            pipeConfig = configuration.PipeConfig;;
             //create members without starting clients
             foreach (var member in configuration.Members)
-                members.Add(CreateClient(member, false));
-        }
-
-        bool IExchangePool.TryRent(PacketHeaders headers, [NotNullWhen(true)] out IExchange exchange)
-        {
-            var result = exchangePool.TryTake(out var serverExchange);
-            exchange = serverExchange;
-            return result;
-        }
-
-        void IExchangePool.Release(IExchange exchange)
-        {
-            if (exchange is ServerExchange serverExchange)
-            {
-                serverExchange.Reset();
-                exchangePool.Add(serverExchange);
-            }
+                members.Add(configuration.CreateMemberClient(this, member, configuration.Metrics as IClientMetricsCollector));
         }
 
         private static bool IsMatchedByEndPoint(RaftClusterMember member, EndPoint endPoint)
@@ -84,14 +61,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (FindMember(MatchByEndPoint, publicEndPoint) is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
-            if (reused)
-            {
-                server = serverFactory();
-                server.ReceiveTimeout = requestTimeout;
-            }
-            else
-                reused = true;
-            server.Start(this);
+            server = serverFactory(this);
+            server.ReceiveTimeout = receiveTimeout;
+            server.Start();
             return base.StartAsync(token);
         }
 
@@ -102,16 +74,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>The task representing asynchronous execution of the method.</returns>
         public override Task StopAsync(CancellationToken token)
         {
-            server.Dispose();
+            server?.Dispose();
+            server = null;
             return base.StopAsync(token);
-        }
-
-        private RaftClusterMember CreateClient(IPEndPoint address, bool extendPool)
-        {
-            var result = new RaftClusterMember(this, address, clientFactory, requestTimeout, pipeConfig, Metrics as IClientMetricsCollector);
-            if (extendPool)
-                exchangePool.Add(new ServerExchange(this, pipeConfig));
-            return result;
         }
 
         /// <summary>
@@ -122,17 +87,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </remarks>
         /// <param name="address">The address of the cluster member.</param>
         /// <returns>A new client for communication with cluster member.</returns>
-        protected RaftClusterMember CreateClient(IPEndPoint address) => CreateClient(address, true);
-
-        /// <summary>
-        /// Called automatically when member is removed from the collection of members.
-        /// </summary>
-        /// <param name="member">The removed member.</param>
-        protected sealed override void OnRemoved(RaftClusterMember member)
-        {
-            if (exchangePool.TryTake(out var exchange))
-                exchange.Dispose();
-        }
+        protected RaftClusterMember CreateClient(IPEndPoint address)
+            => clientFactory(this, address, Metrics as IClientMetricsCollector);
 
         bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
@@ -169,10 +125,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             if (disposing)
             {
-                server.Dispose();
-                //dispose all exchanges
-                while (exchangePool.TryTake(out var exchange))
-                    exchange.Dispose();
+                server?.Dispose();
+                server = null;
             }
             base.Dispose(disposing);
         }

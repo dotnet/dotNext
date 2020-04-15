@@ -50,13 +50,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly Action<object> cancellationHandler;
         private TimeSpan receiveTimeout;
         private readonly RefAction<Channel, bool> cancellationInvoker;
+        private readonly IExchangePool exchanges;
 
-        internal UdpServer(IPEndPoint address, int backlog, ArrayPool<byte> bufferPool, ILoggerFactory loggerFactory)
+        internal UdpServer(IPEndPoint address, int backlog, ArrayPool<byte> bufferPool, Func<int, IExchangePool> exchangePoolFactory,  ILoggerFactory loggerFactory)
             : base(address, backlog, bufferPool, loggerFactory)
         {
             channels = new INetworkTransport.ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;
             cancellationInvoker = Channel.Cancel;
+            exchanges = exchangePoolFactory(backlog);
         }
 
         private protected override bool AllowReceiveFromAnyHost => true;
@@ -109,16 +111,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             }
         }
 
-        public void Start(IExchangePool exchanges)
+        public void Start()
         {
             Bind(Address);
-            base.Start(exchanges);
+            base.Start();
         }
 
         private void Cleanup(bool disposing)
         {
             if (disposing)
+            {
                 channels.ClearAndDestroyChannels();
+                (exchanges as IDisposable)?.Dispose();
+            }
         }
 
         protected override void Dispose(bool disposing)

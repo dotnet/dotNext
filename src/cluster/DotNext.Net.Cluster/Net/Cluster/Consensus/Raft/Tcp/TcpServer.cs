@@ -77,12 +77,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private readonly Socket socket;
         private TimeSpan receiveTimeout;
         private readonly int backlog;
+        private readonly IExchangePool exchanges;
 
-        internal TcpServer(IPEndPoint address, int backlog, ArrayPool<byte> pool, ILoggerFactory loggerFactory)
+        internal TcpServer(IPEndPoint address, int backlog, ArrayPool<byte> pool, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
             : base(address, pool, loggerFactory)
         {
             socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             this.backlog = backlog;
+            exchanges = exchangePoolFactory(backlog);
         }
 
         public TimeSpan ReceiveTimeout
@@ -95,7 +97,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
         }
 
-        private async void HandleConnection(IExchangePool pool, Socket remoteClient)
+        private async void HandleConnection(Socket remoteClient)
         {
             using var stream = new ServerNetworkStream(remoteClient);
             while(stream.Connected)
@@ -104,7 +106,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 var buffer = AllocTransmissionBlock();
                 try
                 {
-                    if(!await stream.Exchange(pool, buffer.Memory, timeoutSource.Token).ConfigureAwait(false))
+                    if(!await stream.Exchange(exchanges, buffer.Memory, timeoutSource.Token).ConfigureAwait(false))
                         logger.NotEnoughRequestHandlers();    
                 }
                 catch(OperationCanceledException e)
@@ -126,7 +128,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
         }
 
-        private async void Listen(IExchangePool pool)
+        private async void Listen()
         {
             using var args = new AcceptEventArgs();
             for(var pending = true; pending; )
@@ -137,7 +139,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     else if(args.SocketError != SocketError.Success)
                         throw new SocketException((int)args.SocketError);
                     ConfigureSocket(args.AcceptSocket);  
-                    HandleConnection(pool, args.AcceptSocket);
+                    HandleConnection(args.AcceptSocket);
                     args.Reset();
                 }
                 catch(ObjectDisposedException)
@@ -165,11 +167,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 }
         }
 
-        public void Start(IExchangePool pool)
+        public void Start()
         {
             socket.Bind(Address);
             socket.Listen(backlog);
-            Listen(pool);
+            Listen();
         }
 
         protected override void Dispose(bool disposing)
@@ -177,6 +179,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             if(disposing)
             {
                 socket.Dispose();
+                (exchanges as IDisposable)?.Dispose();
             }
             base.Dispose(disposing);
         }

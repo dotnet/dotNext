@@ -42,12 +42,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             DropFirst
         }
 
-        private sealed class SimpleServerExchangePool : Assert, ILocalMember, IExchangePool
+        private sealed class LocalMember : Assert, ILocalMember
         {
             internal readonly IList<BufferedEntry> ReceivedEntries = new List<BufferedEntry>();
             internal ReceiveEntriesBehavior Behavior;
 
-            internal SimpleServerExchangePool(bool smallAmountOfMetadata = false)
+            internal LocalMember(bool smallAmountOfMetadata = false)
             {
                 var metadata = ImmutableDictionary.CreateBuilder<string, string>();
                 if (smallAmountOfMetadata)
@@ -122,21 +122,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 return Task.FromResult(new Result<bool>(43L, true));
             }
 
-            public bool TryRent(PacketHeaders headers, out IExchange exchange)
-            {
-                exchange = new ServerExchange(this);
-                return true;
-            }
-
             public IReadOnlyDictionary<string, string> Metadata { get; }
-
-            void IExchangePool.Release(IExchange exchange)
-                => ((ServerExchange)exchange).Reset();
         }
 
         private readonly Func<long> appIdGenerator = new Random().Next<long>;
 
-        private protected delegate IServer ServerFactory(IPEndPoint address, TimeSpan timeout);
+        private protected static Func<int, ServerExchangePool> ExchangePoolFactory(ILocalMember localMember)
+        {
+            ServerExchangePool CreateExchangePool(int count)
+            {
+                var result = new ServerExchangePool();
+                while(--count >= 0)
+                    result.Add(new ServerExchange(localMember));
+                return result;
+            }
+            return CreateExchangePool;
+        }
+
+        private protected delegate IServer ServerFactory(ILocalMember localMember, IPEndPoint address, TimeSpan timeout);
         private protected delegate IClient ClientFactory(IPEndPoint address, Func<long> appId);
 
         private protected async Task RequestResponseTest(ServerFactory serverFactory, ClientFactory clientFactory)
@@ -144,8 +147,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(serverAddr, timeout);
-            server.Start(new SimpleServerExchangePool());
+            using var server = serverFactory(new LocalMember(), serverAddr, timeout);
+            server.Start();
             //prepare client
             using var client = clientFactory(serverAddr, appIdGenerator);
             //Vote request
@@ -182,8 +185,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(serverAddr, timeout);
-            server.Start(new SimpleServerExchangePool());
+            using var server = serverFactory(new LocalMember(), serverAddr, timeout);
+            server.Start();
             //prepare client
             using var client = clientFactory(serverAddr, appIdGenerator);
             ICollection<Task<Result<bool>>> tasks = new LinkedList<Task<Result<bool>>>();
@@ -208,15 +211,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var timeout = TimeSpan.FromSeconds(20);
             //prepare server
+            var member = new LocalMember(smallAmountOfMetadata);
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(serverAddr, timeout);
-            var exchangePool = new SimpleServerExchangePool(smallAmountOfMetadata);
-            server.Start(exchangePool);
+            using var server = serverFactory(member, serverAddr, timeout);
+            server.Start();
             //prepare client
             using var client = clientFactory(serverAddr, appIdGenerator);
             var exchange = new MetadataExchange(CancellationToken.None);
             client.Enqueue(exchange, default);
-            Equal(exchangePool.Metadata, await exchange.Task);
+            Equal(member.Metadata, await exchange.Task);
         }
 
         private static void Equal(in BufferedEntry x, in BufferedEntry y)
@@ -233,11 +236,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var timeout = TimeSpan.FromSeconds(20);
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
+            var member = new LocalMember(false) { Behavior = behavior };
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(serverAddr, timeout);
-            var exchangePool = new SimpleServerExchangePool(false) { Behavior = behavior };
-            server.Start(exchangePool);
+            using var server = serverFactory(member, serverAddr, timeout);
+            server.Start();
             //prepare client
             using var client = clientFactory(serverAddr, appIdGenerator);
             var buffer = new byte[533];
@@ -256,20 +259,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             switch (behavior)
             {
                 case ReceiveEntriesBehavior.ReceiveAll:
-                    Equal(2, exchangePool.ReceivedEntries.Count);
-                    Equal(entry1, exchangePool.ReceivedEntries[0]);
-                    Equal(entry2, exchangePool.ReceivedEntries[1]);
+                    Equal(2, member.ReceivedEntries.Count);
+                    Equal(entry1, member.ReceivedEntries[0]);
+                    Equal(entry2, member.ReceivedEntries[1]);
                     break;
                 case ReceiveEntriesBehavior.ReceiveFirst:
-                    Equal(1, exchangePool.ReceivedEntries.Count);
-                    Equal(entry1, exchangePool.ReceivedEntries[0]);
+                    Equal(1, member.ReceivedEntries.Count);
+                    Equal(entry1, member.ReceivedEntries[0]);
                     break;
                 case ReceiveEntriesBehavior.DropFirst:
-                    Equal(1, exchangePool.ReceivedEntries.Count);
-                    Equal(entry2, exchangePool.ReceivedEntries[0]);
+                    Equal(1, member.ReceivedEntries.Count);
+                    Equal(entry2, member.ReceivedEntries[0]);
                     break;
                 case ReceiveEntriesBehavior.DropAll:
-                    Empty(exchangePool.ReceivedEntries);
+                    Empty(member.ReceivedEntries);
                     break;
             }
         }
@@ -278,11 +281,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var timeout = TimeSpan.FromSeconds(20);
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
+            var member = new LocalMember(false);
             //prepare server
             var serverAddr = new IPEndPoint(IPAddress.Loopback, 3789);
-            using var server = serverFactory(serverAddr, timeout);
-            var exchangePool = new SimpleServerExchangePool(false);
-            server.Start(exchangePool);
+            using var server = serverFactory(member, serverAddr, timeout);
+            server.Start();
             //prepare client
             using var client = clientFactory(serverAddr, appIdGenerator);
             var buffer = new byte[payloadSize];
@@ -293,8 +296,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var result = await exchange.Task;
             Equal(43L, result.Term);
             True(result.Value);
-            NotEmpty(exchangePool.ReceivedEntries);
-            Equal(snapshot, exchangePool.ReceivedEntries[0]);
+            NotEmpty(member.ReceivedEntries);
+            Equal(snapshot, member.ReceivedEntries[0]);
         }
     }
 }

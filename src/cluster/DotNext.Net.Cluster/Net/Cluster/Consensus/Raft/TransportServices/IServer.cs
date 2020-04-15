@@ -9,6 +9,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     {
         TimeSpan ReceiveTimeout { get; set; }
 
-        void Start(IExchangePool pool);
+        void Start();
     }
 }
