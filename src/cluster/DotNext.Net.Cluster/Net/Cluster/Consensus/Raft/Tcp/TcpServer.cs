@@ -138,8 +138,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                         await args.Task.ConfigureAwait(false);
                     else if(args.SocketError != SocketError.Success)
                         throw new SocketException((int)args.SocketError);
-                    ConfigureSocket(args.AcceptSocket);  
-                    HandleConnection(args.AcceptSocket);
+                    ConfigureSocket(args.AcceptSocket, LingerOption);
+                    ThreadPool.QueueUserWorkItem(HandleConnection, args.AcceptSocket, false);
                     args.Reset();
                 }
                 catch(ObjectDisposedException)

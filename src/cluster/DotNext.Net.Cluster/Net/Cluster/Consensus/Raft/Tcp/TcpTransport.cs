@@ -28,7 +28,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 //write headers
                 headers.WriteTo(buffer);
-                WriteInt32LittleEndian(buffer.Span.Slice(0, PacketHeaders.NaturalSize), count);
+                WriteInt32LittleEndian(buffer.Span.Slice(PacketHeaders.NaturalSize), count);
                 //transmit packet to the remote endpoint
                 return WriteAsync(AdjustPacket(buffer, count), token);
             }
@@ -63,16 +63,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             logger = loggerFactory.CreateLogger(GetType());
             bufferPool = pool;
             transmissionBlockSize = MinTransmissionBlockSize;
+            LingerOption = new LingerOption(false, 0);
         }
         
-        private protected static void ConfigureSocket(Socket socket)
+        private protected static void ConfigureSocket(Socket socket, LingerOption linger)
         {
             socket.NoDelay = true;
-            socket.Blocking = false;
+            socket.LingerState = linger;
         }
 
         internal static int ValidateTranmissionBlockSize(int value)
             => value >= MinTransmissionBlockSize ? value : throw new ArgumentOutOfRangeException(nameof(value));
+
+        internal int TransmissionBlockSize
+        {
+            get => transmissionBlockSize;
+            set => transmissionBlockSize = ValidateTranmissionBlockSize(value);
+        }
+
+        internal LingerOption LingerOption { get; }
 
         IPEndPoint INetworkTransport.Address => Address;
 
