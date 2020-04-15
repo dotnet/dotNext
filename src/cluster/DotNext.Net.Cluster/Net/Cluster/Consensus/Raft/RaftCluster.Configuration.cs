@@ -17,7 +17,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents transport-agnostic configuration of cluster member.
         /// </summary>
-        public abstract class Configuration : IClusterMemberConfiguration
+        public abstract class NodeConfiguration : IClusterMemberConfiguration
         {
             private double heartbeatThreshold;
             private ElectionTimeout electionTimeout;
@@ -29,7 +29,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private ILoggerFactory? loggerFactory;
             private protected readonly Func<long> applicationIdGenerator;
 
-            private protected Configuration(IPEndPoint hostAddress)
+            private protected NodeConfiguration(IPEndPoint hostAddress)
             {
                 electionTimeout = ElectionTimeout.Recommended;
                 heartbeatThreshold = 0.5D;
@@ -175,7 +175,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Represents configuration of the local cluster node that relies on UDP transport.
         /// </summary>
-        public sealed class UdpConfiguration : Configuration
+        public sealed class UdpConfiguration : NodeConfiguration
         {
             private int datagramSize;
             private bool dontFragment;

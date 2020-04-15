@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Initializes a new default implementation of Raft-based cluster.
         /// </summary>
         /// <param name="configuration">The configuration of the cluster.</param>
-        public RaftCluster(Configuration configuration)
+        public RaftCluster(NodeConfiguration configuration)
             : base(configuration, out var members)
         {
             requestTimeout = TimeSpan.FromMilliseconds(configuration.LowerElectionTimeout);
