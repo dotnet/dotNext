@@ -80,8 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 }
                 catch (Exception e)
                 {
-                    exchange?.OnException(e);
-                    throw;
+                    exchange.OnException(e);
                 }
                 finally
                 {
