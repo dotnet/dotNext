@@ -26,7 +26,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly Func<ILocalMember, IServer> serverFactory;
         private IServer? server;
         private readonly PipeOptions pipeConfig;
-        private readonly TimeSpan receiveTimeout;
 
         /// <summary>
         /// Initializes a new default implementation of Raft-based cluster.
@@ -36,12 +35,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             : base(configuration, out var members)
         {
             Metrics = configuration.Metrics;
-            receiveTimeout = TimeSpan.FromMilliseconds(configuration.LowerElectionTimeout);
             publicEndPoint = configuration.PublicEndPoint;
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
             clientFactory = configuration.CreateMemberClient;
             serverFactory = configuration.CreateServer;
-            pipeConfig = configuration.PipeConfig; ;
+            pipeConfig = configuration.PipeConfig;
             //create members without starting clients
             foreach (var member in configuration.Members)
                 members.Add(configuration.CreateMemberClient(this, member, configuration.Metrics as IClientMetricsCollector));
@@ -60,7 +58,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (FindMember(MatchByEndPoint, publicEndPoint) is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
             server = serverFactory(this);
-            server.ReceiveTimeout = receiveTimeout;
             server.Start();
             return base.StartAsync(token);
         }

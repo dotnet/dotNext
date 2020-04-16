@@ -6,9 +6,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net;
 using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory;
+using LingerOption = System.Net.Sockets.LingerOption;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Tcp;
     using TransportServices;
     using Udp;
     using IClientMetricsCollector = Metrics.IClientMetricsCollector;
@@ -25,7 +27,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private IPEndPoint? publicAddress;
             private PipeOptions? pipeConfig;
             private int? serverChannels;
-            private int clientChannels;
             private ArrayPool<byte>? bufferPool;
             private ILoggerFactory? loggerFactory;
             private protected readonly Func<long> applicationIdGenerator;
@@ -37,7 +38,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Metadata = new Dictionary<string, string>();
                 Members = new HashSet<IPEndPoint>();
                 HostEndPoint = hostAddress;
-                clientChannels = Environment.ProcessorCount + 1;
                 applicationIdGenerator = new Random().Next<long>;
             }
 
@@ -102,6 +102,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set => electionTimeout = electionTimeout.Modify(value, electionTimeout.UpperValue);
             }
 
+            private protected TimeSpan Timeout
+                => TimeSpan.FromMilliseconds(LowerElectionTimeout);
+
             /// <summary>
             /// Gets upper possible value of leader election timeout, in milliseconds.
             /// </summary>
@@ -132,15 +135,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 get => serverChannels.GetValueOrDefault(Members.Count + 1);
                 set => serverChannels = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-            }
-
-            /// <summary>
-            /// Gets or sets the maximum number of parallel requests that can be initiated by the client.
-            /// </summary>
-            public int ClientBacklog
-            {
-                get => clientChannels;
-                set => clientChannels = value > 1 ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
             /// <summary>
@@ -199,6 +193,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public sealed class UdpConfiguration : NodeConfiguration
         {
+            private int clientChannels;
             private int datagramSize;
             private bool dontFragment;
 
@@ -210,6 +205,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 : base(localNodeHostAddress)
             {
                 datagramSize = UdpSocket.MinDatagramSize;
+                clientChannels = Environment.ProcessorCount + 1;
+            }
+
+            /// <summary>
+            /// Gets or sets the maximum number of parallel requests that can be initiated by the client.
+            /// </summary>
+            public int ClientBacklog
+            {
+                get => clientChannels;
+                set => clientChannels = value > 1 ? value : throw new ArgumentOutOfRangeException(nameof(value));
             }
 
             /// <summary>
@@ -238,14 +243,69 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set => datagramSize = UdpSocket.ValidateDatagramSize(value);
             }
 
-            private IClient CreateClient(IPEndPoint address)
+            private UdpClient CreateClient(IPEndPoint address)
                 => new UdpClient(address, ClientBacklog, BufferPool, applicationIdGenerator, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
+
+            internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
+                => new ExchangePeer(localMember, endPoint, CreateClient, Timeout, PipeConfig, metrics);
+
+            internal override IServer CreateServer(ILocalMember localMember)
+                => new UdpServer(HostEndPoint, ServerBacklog, BufferPool, ExchangePoolFactory(localMember), LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment, ReceiveTimeout = Timeout };
+        }
+
+        /// <summary>
+        /// Represents configuration of the local cluster node that relies on TCP transport.
+        /// </summary>
+        public sealed class TcpConfiguration : NodeConfiguration
+        {
+            private int transmissionBlockSize;
+
+            /// <summary>
+            /// Initializes a new UDP transport settings.
+            /// </summary>
+            /// <param name="localNodeHostAddress">The address used to listen requests to the local node.</param>
+            public TcpConfiguration(IPEndPoint localNodeHostAddress)
+                : base(localNodeHostAddress)
+            {
+                transmissionBlockSize = 65535;
+                LingerOption = new LingerOption(false, 0);
+            }
+
+            /// <summary>
+            /// Gets configuration that specifies whether a TCP socket will
+            /// delay its closing in an attempt to send all pending data. 
+            /// </summary>
+            public LingerOption LingerOption
+            {
+                get;
+            }
+
+            /// <summary>
+            /// Gets or sets the size of logical block that can be transmitted
+            /// to the remote host without requesting the next block.
+            /// </summary>
+            /// <remarks>
+            /// This property allows to reduce signal traffic between endpoints
+            /// and affects performance of <see cref="IRaftClusterMember.AppendEntriesAsync{TEntry, TList}"/>,
+            /// <see cref="IRaftClusterMember.InstallSnapshotAsync"/> and
+            /// <see cref="IClusterMember.GetMetadataAsync"/> methods. Ideally, the value
+            /// must be equal to average size of single log entry.
+            /// </remarks>
+            /// <value></value>
+            public int TransmissionBlockSize
+            {
+                get => transmissionBlockSize;
+                set => TcpTransport.ValidateTranmissionBlockSize(value);
+            }
+
+            private TcpClient CreateClient(IPEndPoint address)
+                => new TcpClient(address, BufferPool, LoggerFactory) { TransmissionBlockSize = TransmissionBlockSize, LingerOption = LingerOption };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
                 => new ExchangePeer(localMember, endPoint, CreateClient, TimeSpan.FromMilliseconds(LowerElectionTimeout), PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
-                => new UdpServer(HostEndPoint, ServerBacklog, BufferPool, ExchangePoolFactory(localMember), LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
+                => new TcpServer(HostEndPoint, ServerBacklog, BufferPool, ExchangePoolFactory(localMember), LoggerFactory) { TransmissionBlockSize = TransmissionBlockSize, LingerOption = LingerOption };
         }
     }
 }

@@ -10,6 +10,7 @@ using EndOfStreamException = System.IO.EndOfStreamException;
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
     using TransportServices;
+    using static Threading.LinkedTokenSourceFactory;
 
     internal sealed class TcpServer : TcpTransport, IServer
     {
@@ -32,7 +33,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         {
             Success = 0,
             ExchangePoolIsEmpty,
-            NoData
+            NoData,
+            Canceled
         }
 
         private sealed class ServerNetworkStream : TcpStream
@@ -44,11 +46,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
             internal bool Connected => Socket.Connected;
 
-            internal async Task<ExchangeResult> Exchange(IExchangePool pool, Memory<byte> buffer, CancellationToken token)
+            internal async Task<ExchangeResult> Exchange(IExchangePool pool, Memory<byte> buffer, TimeSpan receiveTimeout, CancellationToken token)
             {
                 var (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
                 var result = ExchangeResult.Success;
                 if (pool.TryRent(headers, out var exchange))
+                {
+                    var timeoutTracker = new CancellationTokenSource(receiveTimeout);
+                    var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutTracker.Token, token);
+                    token = combinedSource.Token;
                     try
                     {
                         while (await exchange.ProcessInboundMessageAsync(headers, request, Socket.RemoteEndPoint, token).ConfigureAwait(false))
@@ -72,7 +78,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     catch (OperationCanceledException e)
                     {
                         exchange.OnCanceled(e.CancellationToken);
-                        throw;
+                        result = ExchangeResult.Canceled;
                     }
                     catch (Exception e)
                     {
@@ -81,8 +87,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     }
                     finally
                     {
+                        combinedSource.Dispose();
+                        timeoutTracker.Dispose();
                         pool.Release(exchange);
                     }
+                }
                 else
                     result = ExchangeResult.ExchangePoolIsEmpty;
                 return result;
@@ -93,6 +102,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private TimeSpan receiveTimeout;
         private readonly int backlog;
         private readonly IExchangePool exchanges;
+        private readonly CancellationTokenSource transmissionState;
 
         internal TcpServer(IPEndPoint address, int backlog, ArrayPool<byte> pool, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
             : base(address, pool, loggerFactory)
@@ -100,6 +110,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             this.backlog = backlog;
             exchanges = exchangePoolFactory(backlog);
+            transmissionState = new CancellationTokenSource();
         }
 
         public TimeSpan ReceiveTimeout
@@ -117,27 +128,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             using var stream = new ServerNetworkStream(remoteClient);
             while (stream.Connected && !IsDisposed)
             {
-                var timeoutSource = new CancellationTokenSource(receiveTimeout);
                 var buffer = AllocTransmissionBlock();
                 try
                 {
-                    switch (await stream.Exchange(exchanges, buffer.Memory, timeoutSource.Token).ConfigureAwait(false))
+                    switch (await stream.Exchange(exchanges, buffer.Memory, receiveTimeout, transmissionState.Token).ConfigureAwait(false))
                     {
                         default:
                             return;
                         case ExchangeResult.Success:
                             continue;
+                        case ExchangeResult.Canceled:
+                            logger.RequestTimedOut();
+                            goto default;
                         case ExchangeResult.ExchangePoolIsEmpty:
                             logger.NotEnoughRequestHandlers();
                             goto default;
                     }
-                }
-                catch (OperationCanceledException e)
-                {
-                    if (timeoutSource.IsCancellationRequested)
-                        logger.RequestTimedOut(e);
-                    else
-                        logger.FailedToHandleRequest(e);
                 }
                 catch (Exception e)
                 {
@@ -146,7 +152,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 finally
                 {
                     buffer.Dispose();
-                    timeoutSource.Dispose();
                 }
             }
         }
@@ -199,12 +204,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                socket.Dispose();
-                (exchanges as IDisposable)?.Dispose();
-            }
             base.Dispose(disposing);
+            if (disposing)
+                try
+                {
+                    transmissionState.Cancel(false);
+                }
+                finally
+                {
+                    transmissionState.Dispose();
+                    socket.Dispose();
+                    (exchanges as IDisposable)?.Dispose();
+                }
         }
     }
 }
