@@ -98,8 +98,8 @@ namespace RaftNode
         {
             var configuration = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
             {
-                LowerElectionTimeout = 1000,
-                UpperElectionTimeout = 2000
+                LowerElectionTimeout = 150,
+                UpperElectionTimeout = 300
             };
             return UseConfiguration(configuration, persistentStorage);
         }
