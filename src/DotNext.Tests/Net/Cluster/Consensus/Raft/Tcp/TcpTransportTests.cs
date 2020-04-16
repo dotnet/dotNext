@@ -36,31 +36,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [Fact]
         public Task RequestResponse()
         {
-            ServerFactory server = (member, address, timeout) => new TcpServer(address, 2, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 2, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 65535
             };
-            ClientFactory client = address => new TcpClient(address, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            static TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 65535
             };
-            return RequestResponseTest(server, client);
+            return RequestResponseTest(CreateServer, CreateClient);
         }
 
         [Fact]
         public Task StressTest()
         {
-            ServerFactory server = (member, address, timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 65535
             };
-            ClientFactory client = address => new TcpClient(address, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            static TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 65535
             };
-            return StressTestTest(server, client);
+            return StressTestTest(CreateServer, CreateClient);
         }
 
         [Theory]
@@ -68,16 +68,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(false)]
         public Task MetadataRequestResponse(bool smallAmountOfMetadata)
         {
-            ServerFactory server = (member, address, timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 300
             };
-            ClientFactory client = address => new TcpClient(address, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            static TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 300
             };
-            return MetadataRequestResponseTest(server, client, smallAmountOfMetadata);
+            return MetadataRequestResponseTest(CreateServer, CreateClient, smallAmountOfMetadata);
         }
 
         [Theory]
@@ -91,16 +91,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(50, ReceiveEntriesBehavior.DropFirst)]
         public Task SendingLogEntries(int payloadSize, ReceiveEntriesBehavior behavior)
         {
-            ServerFactory server = (member, address, timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 400,
                 ReceiveTimeout = timeout,
             };
-            ClientFactory client = address => new TcpClient(address, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            static TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 400
             };
-            return SendingLogEntriesTest(server, client, payloadSize, behavior);
+            return SendingLogEntriesTest(CreateServer, CreateClient, payloadSize, behavior);
         }
 
         [Theory]
@@ -108,38 +108,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(50)]
         public Task SendingSnapshot(int payloadSize)
         {
-            ServerFactory server = (member, address, timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 350,
                 ReceiveTimeout = timeout,
             };
-            ClientFactory client = address => new TcpClient(address, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
+            static TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, ArrayPool<byte>.Shared, NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 350
             };
-            return SendingSnapshotTest(server, client, payloadSize);
-        }
-
-        private sealed class CompletionInfo
-        {
-            internal void OnCompleted(SocketAsyncEventArgs e)
-            {
-
-            }
-        }
-
-        [Fact]
-        public static async Task UdpLocalHostRepro()
-        {
-            var localhost = IPAddress.Loopback;
-            using var socket = new Socket(localhost.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
-            socket.Connect(new IPEndPoint(localhost, 3262));
-            
-            await socket.SendAsync(new byte[10], SocketFlags.None);
-            var args = new SocketAsyncEventArgs();
-            args.RemoteEndPoint = new IPEndPoint(localhost, 3262);
-            False(socket.ReceiveFromAsync(args));
-            Equal(SocketError.ConnectionRefused, args.SocketError);
+            return SendingSnapshotTest(CreateServer, CreateClient, payloadSize);
         }
     }
 }
