@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using EndOfStreamException = System.IO.EndOfStreamException;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
@@ -27,6 +28,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
         }
 
+        private enum ExchangeResult : byte
+        {
+            Success = 0,
+            ExchangePoolIsEmpty,
+            NoData
+        }
+
         private sealed class ServerNetworkStream : TcpStream
         {
             internal ServerNetworkStream(Socket client)
@@ -36,11 +44,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
             internal bool Connected => Socket.Connected;
 
-            internal async Task<bool> Exchange(IExchangePool pool, Memory<byte> buffer, CancellationToken token)
+            internal async Task<ExchangeResult> Exchange(IExchangePool pool, Memory<byte> buffer, CancellationToken token)
             {
                 var (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
-                bool result;
-                if(result = pool.TryRent(headers, out var exchange))
+                var result = ExchangeResult.Success;
+                if(pool.TryRent(headers, out var exchange))
                     try
                     {
                         while(await exchange.ProcessInboundMessageAsync(headers, request, Socket.RemoteEndPoint, token).ConfigureAwait(false))
@@ -56,6 +64,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                             (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);    
                         }
                     }
+                    catch(EndOfStreamException e)
+                    {
+                        exchange.OnException(e);
+                        result = ExchangeResult.NoData;
+                    }
                     catch(OperationCanceledException e)
                     {
                         exchange.OnCanceled(e.CancellationToken);
@@ -70,6 +83,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     {
                         pool.Release(exchange);
                     }
+                else
+                    result = ExchangeResult.ExchangePoolIsEmpty;
                 return result;
             }
         }
@@ -106,11 +121,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 var buffer = AllocTransmissionBlock();
                 try
                 {
-                    if(!await stream.Exchange(exchanges, buffer.Memory, timeoutSource.Token).ConfigureAwait(false))
+                    switch(await stream.Exchange(exchanges, buffer.Memory, timeoutSource.Token).ConfigureAwait(false))
                     {
-                        logger.NotEnoughRequestHandlers();
-                        break;
-                    }    
+                        default:
+                            return;
+                        case ExchangeResult.Success:
+                            continue;
+                        case ExchangeResult.ExchangePoolIsEmpty:
+                            logger.NotEnoughRequestHandlers();
+                            goto default;
+                    }
                 }
                 catch(OperationCanceledException e)
                 {

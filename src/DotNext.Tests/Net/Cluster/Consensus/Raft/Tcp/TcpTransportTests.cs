@@ -119,5 +119,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             };
             return SendingSnapshotTest(server, client, payloadSize);
         }
+
+        private sealed class CompletionInfo
+        {
+            internal void OnCompleted(SocketAsyncEventArgs e)
+            {
+
+            }
+        }
+
+        [Fact]
+        public static async Task UdpLocalHostRepro()
+        {
+            var localhost = IPAddress.Loopback;
+            using var socket = new Socket(localhost.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+            socket.Connect(new IPEndPoint(localhost, 3262));
+            
+            await socket.SendAsync(new byte[10], SocketFlags.None);
+            var args = new SocketAsyncEventArgs();
+            args.RemoteEndPoint = new IPEndPoint(localhost, 3262);
+            False(socket.ReceiveFromAsync(args));
+            Equal(SocketError.ConnectionRefused, args.SocketError);
+        }
     }
 }
