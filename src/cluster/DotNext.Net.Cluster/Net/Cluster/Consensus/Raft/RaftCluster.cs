@@ -320,7 +320,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             await auditTrail.InitializeAsync(token).ConfigureAwait(false);
             //start node in Follower state
-            state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+            state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
         }
 
         /// <summary>
@@ -362,14 +362,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 case LeaderState leaderState:
                     var newState = new FollowerState(this) { Metrics = Metrics };
                     await leaderState.StopAsync().ConfigureAwait(false);
-                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
                     leaderState.Dispose();
                     Metrics?.MovedToFollowerState();
                     break;
                 case CandidateState candidateState:
                     newState = new FollowerState(this) { Metrics = Metrics };
                     await candidateState.StopAsync().ConfigureAwait(false);
-                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
                     candidateState.Dispose();
                     Metrics?.MovedToFollowerState();
                     break;
