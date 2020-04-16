@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net;
 using System.Threading;
@@ -43,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
             clientFactory = configuration.CreateMemberClient;
             serverFactory = configuration.CreateServer;
-            pipeConfig = configuration.PipeConfig;;
+            pipeConfig = configuration.PipeConfig; ;
             //create members without starting clients
             foreach (var member in configuration.Members)
                 members.Add(configuration.CreateMemberClient(this, member, configuration.Metrics as IClientMetricsCollector));

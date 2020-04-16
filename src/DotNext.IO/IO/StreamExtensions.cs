@@ -540,10 +540,10 @@ namespace DotNext.IO
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
         public static void ReadBytes(this Stream stream, Span<byte> output)
         {
-            for(int size = output.Length, bytesRead, offset = 0; size > 0; size -= bytesRead, offset += bytesRead)
+            for (int size = output.Length, bytesRead, offset = 0; size > 0; size -= bytesRead, offset += bytesRead)
             {
                 bytesRead = stream.Read(output.Slice(offset, size));
-                if(bytesRead == 0)
+                if (bytesRead == 0)
                     throw new EndOfStreamException();
             }
         }
@@ -573,10 +573,10 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask ReadBytesAsync(this Stream stream, Memory<byte> output, CancellationToken token = default)
         {
-            for(int size = output.Length, bytesRead, offset = 0; size > 0; size -= bytesRead, offset += bytesRead)
+            for (int size = output.Length, bytesRead, offset = 0; size > 0; size -= bytesRead, offset += bytesRead)
             {
                 bytesRead = await stream.ReadAsync(output.Slice(offset, size), token).ConfigureAwait(false);
-                if(bytesRead == 0)
+                if (bytesRead == 0)
                     throw new EndOfStreamException();
             }
         }

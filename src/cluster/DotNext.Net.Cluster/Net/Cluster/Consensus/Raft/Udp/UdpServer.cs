@@ -9,7 +9,6 @@ using System.Threading;
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
     using TransportServices;
-    using static Runtime.Intrinsics;
 
     internal sealed class UdpServer : UdpSocket, IServer
     {
@@ -52,7 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly RefAction<Channel, bool> cancellationInvoker;
         private readonly IExchangePool exchanges;
 
-        internal UdpServer(IPEndPoint address, int backlog, ArrayPool<byte> bufferPool, Func<int, IExchangePool> exchangePoolFactory,  ILoggerFactory loggerFactory)
+        internal UdpServer(IPEndPoint address, int backlog, ArrayPool<byte> bufferPool, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
             : base(address, backlog, bufferPool, loggerFactory)
         {
             channels = new INetworkTransport.ChannelPool<Channel>(backlog);

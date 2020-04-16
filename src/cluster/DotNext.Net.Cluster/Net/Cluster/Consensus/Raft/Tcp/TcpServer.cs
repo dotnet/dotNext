@@ -48,33 +48,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 var (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
                 var result = ExchangeResult.Success;
-                if(pool.TryRent(headers, out var exchange))
+                if (pool.TryRent(headers, out var exchange))
                     try
                     {
-                        while(await exchange.ProcessInboundMessageAsync(headers, request, Socket.RemoteEndPoint, token).ConfigureAwait(false))
+                        while (await exchange.ProcessInboundMessageAsync(headers, request, Socket.RemoteEndPoint, token).ConfigureAwait(false))
                         {
                             bool waitForInput;
                             int count;
                             (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token);
                             //transmit packet to the remote endpoint
                             await WritePacket(headers, buffer, count, token).ConfigureAwait(false);
-                            if(!waitForInput)
+                            if (!waitForInput)
                                 break;
                             //read response
-                            (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);    
+                            (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
                         }
                     }
-                    catch(EndOfStreamException e)
+                    catch (EndOfStreamException e)
                     {
                         exchange.OnException(e);
                         result = ExchangeResult.NoData;
                     }
-                    catch(OperationCanceledException e)
+                    catch (OperationCanceledException e)
                     {
                         exchange.OnCanceled(e.CancellationToken);
                         throw;
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         exchange.OnException(e);
                         throw;
@@ -115,13 +115,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private async void HandleConnection(Socket remoteClient)
         {
             using var stream = new ServerNetworkStream(remoteClient);
-            while(stream.Connected && !IsDisposed)
+            while (stream.Connected && !IsDisposed)
             {
                 var timeoutSource = new CancellationTokenSource(receiveTimeout);
                 var buffer = AllocTransmissionBlock();
                 try
                 {
-                    switch(await stream.Exchange(exchanges, buffer.Memory, timeoutSource.Token).ConfigureAwait(false))
+                    switch (await stream.Exchange(exchanges, buffer.Memory, timeoutSource.Token).ConfigureAwait(false))
                     {
                         default:
                             return;
@@ -132,14 +132,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                             goto default;
                     }
                 }
-                catch(OperationCanceledException e)
+                catch (OperationCanceledException e)
                 {
-                    if(timeoutSource.IsCancellationRequested)
+                    if (timeoutSource.IsCancellationRequested)
                         logger.RequestTimedOut(e);
                     else
                         logger.FailedToHandleRequest(e);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     logger.FailedToHandleRequest(e);
                 }
@@ -154,24 +154,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private async void Listen()
         {
             using var args = new AcceptEventArgs();
-            for(var pending = true; pending && !IsDisposed; )
+            for (var pending = true; pending && !IsDisposed;)
                 try
                 {
-                    if(socket.AcceptAsync(args))
+                    if (socket.AcceptAsync(args))
                         await args.Task.ConfigureAwait(false);
-                    else if(args.SocketError != SocketError.Success)
+                    else if (args.SocketError != SocketError.Success)
                         throw new SocketException((int)args.SocketError);
                     ConfigureSocket(args.AcceptSocket, LingerOption);
                     ThreadPool.QueueUserWorkItem(HandleConnection, args.AcceptSocket, false);
                     args.Reset();
                 }
-                catch(ObjectDisposedException)
+                catch (ObjectDisposedException)
                 {
                     pending = false;
                 }
-                catch(SocketException e)
+                catch (SocketException e)
                 {
-                    switch(e.SocketErrorCode)
+                    switch (e.SocketErrorCode)
                     {
                         case SocketError.OperationAborted:
                         case SocketError.ConnectionAborted:
@@ -183,7 +183,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     }
                     pending = false;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     logger.SocketAcceptLoopTerminated(e);
                     pending = false;
@@ -199,7 +199,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 socket.Dispose();
                 (exchanges as IDisposable)?.Dispose();

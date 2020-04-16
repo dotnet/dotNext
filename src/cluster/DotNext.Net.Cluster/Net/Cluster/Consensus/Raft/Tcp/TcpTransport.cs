@@ -9,9 +9,9 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
-    using ByteBuffer = Buffers.ArrayRental<byte>;
     using TransportServices;
     using static IO.StreamExtensions;
+    using ByteBuffer = Buffers.ArrayRental<byte>;
 
     internal abstract class TcpTransport : Disposable, INetworkTransport
     {
@@ -65,7 +65,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             transmissionBlockSize = MinTransmissionBlockSize;
             LingerOption = new LingerOption(false, 0);
         }
-        
+
         private protected static void ConfigureSocket(Socket socket, LingerOption linger)
         {
             socket.NoDelay = true;

@@ -9,9 +9,9 @@ using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFa
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
-    using IClientMetricsCollector = Metrics.IClientMetricsCollector;
     using TransportServices;
     using Udp;
+    using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
     public partial class RaftCluster
     {
@@ -182,7 +182,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 ServerExchangePool CreateExchangePool(int count)
                 {
                     var result = new ServerExchangePool();
-                    while(--count >= 0)
+                    while (--count >= 0)
                         result.Add(new ServerExchange(localMember, PipeConfig));
                     return result;
                 }

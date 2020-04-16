@@ -23,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             => taskSource.OnCompleted(continuation, state, token, flags);
 
         internal virtual void Reset() => taskSource.Reset();
-        
+
         internal ValueTask Task => new ValueTask(this, taskSource.Version);
 
         private protected virtual bool IsCancellationRequested(out CancellationToken token)
@@ -34,14 +34,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         protected override void OnCompleted(SocketAsyncEventArgs e)
         {
-            switch(e.SocketError)
+            switch (e.SocketError)
             {
                 case SocketError.Success:
                     taskSource.SetResult(true);
                     break;
                 case SocketError.OperationAborted:
                 case SocketError.ConnectionAborted:
-                    if(IsCancellationRequested(out var token))
+                    if (IsCancellationRequested(out var token))
                     {
                         taskSource.SetException(new OperationCanceledException(token));
                         break;

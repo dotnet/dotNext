@@ -77,7 +77,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 VoteAsync(term, lastLogIndex, lastLogTerm, token);
 
         private protected abstract Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
-            where TEntry: IRaftLogEntry
+            where TEntry : IRaftLogEntry
             where TList : IReadOnlyList<TEntry>;
 
         Task<Result<bool>> IRaftClusterMember.AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)

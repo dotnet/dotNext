@@ -130,7 +130,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             ServerExchangePool CreateExchangePool(int count)
             {
                 var result = new ServerExchangePool();
-                while(--count >= 0)
+                while (--count >= 0)
                     result.Add(new ServerExchange(localMember));
                 return result;
             }

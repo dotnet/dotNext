@@ -10,7 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
     using Threading;
     using TransportServices;
-    
+
     /*
         This implementation doesn't support multiplexing over single TCP
         connection so CorrelationId header is not needed
@@ -48,15 +48,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token);
                     //transmit packet to the remote endpoint
                     await WritePacket(headers, buffer, count, token).ConfigureAwait(false);
-                    if(!waitForInput)
+                    if (!waitForInput)
                         break;
                     //read response
                     (headers, response) = await ReadPacket(buffer, token).ConfigureAwait(false);
                 }
-                while(await exchange.ProcessInboundMessageAsync(headers, response, Socket.RemoteEndPoint, token).ConfigureAwait(false));
+                while (await exchange.ProcessInboundMessageAsync(headers, response, Socket.RemoteEndPoint, token).ConfigureAwait(false));
             }
         }
-        
+
         private readonly AsyncExclusiveLock accessLock;
         private volatile ClientNetworkStream? stream;
 
@@ -73,12 +73,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         {
             using var args = new ConnectEventArgs(token);
             args.RemoteEndPoint = endPoint;
-            if(Socket.ConnectAsync(SocketType.Stream, ProtocolType.Tcp, args))
-                using(token.Register(CancelConnectAsync, args))
+            if (Socket.ConnectAsync(SocketType.Stream, ProtocolType.Tcp, args))
+                using (token.Register(CancelConnectAsync, args))
                 {
                     await args.Task.ConfigureAwait(false);
                 }
-            else if(args.SocketError != SocketError.Success)
+            else if (args.SocketError != SocketError.Success)
                 throw new SocketException((int)args.SocketError);
             ConfigureSocket(args.ConnectSocket, linger);
             return new ClientNetworkStream(args.ConnectSocket);
@@ -87,13 +87,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private async ValueTask<ClientNetworkStream?> ConnectAsync(IExchange exchange, CancellationToken token)
         {
             ClientNetworkStream? result;
-            using(await accessLock.AcquireLockAsync(token).ConfigureAwait(false))
-                if(stream is null)
+            using (await accessLock.AcquireLockAsync(token).ConfigureAwait(false))
+                if (stream is null)
                     try
                     {
                         result = stream = await ConnectAsync(Address, LingerOption, token).ConfigureAwait(false);
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         exchange.OnException(e);
                         result = null;
@@ -108,10 +108,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             ThrowIfDisposed();
             var stream = this.stream;
             //establish connection if needed
-            if(stream is null)
+            if (stream is null)
             {
                 stream = await ConnectAsync(exchange, token).ConfigureAwait(false);
-                if(stream is null)
+                if (stream is null)
                     return;
             }
             //allocate single buffer for this exchange session
@@ -121,18 +121,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 await stream.Exchange(exchange, buffer.Memory, token).ConfigureAwait(false);
             }
-            catch(OperationCanceledException e)
+            catch (OperationCanceledException e)
             {
                 exchange.OnCanceled(e.CancellationToken);
             }
-            catch(SocketException e)
+            catch (SocketException e)
             {
                 stream = Interlocked.Exchange(ref this.stream, null);
-                if(stream != null)
+                if (stream != null)
                     await stream.DisposeAsync().ConfigureAwait(false);
                 exchange.OnException(e);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 exchange.OnException(e);
             }
@@ -142,7 +142,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 lockHolder.Dispose();
             }
         }
-        
+
         public void CancelPendingRequests()
         {
             accessLock.CancelSuspendedCallers(new CancellationToken(true));
@@ -151,7 +151,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 Interlocked.Exchange(ref stream, null)?.Dispose();
                 accessLock.Dispose();

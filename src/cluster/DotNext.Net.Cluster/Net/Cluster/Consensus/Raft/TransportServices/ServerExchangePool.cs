@@ -14,7 +14,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         void IExchangePool.Release(IExchange exchange)
         {
-            if(exchange is ServerExchange serverExchange)
+            if (exchange is ServerExchange serverExchange)
             {
                 serverExchange.Reset();
                 Add(serverExchange);
@@ -23,7 +23,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         void IDisposable.Dispose()
         {
-            while(TryTake(out var exchange))
+            while (TryTake(out var exchange))
                 exchange.Dispose();
         }
     }
