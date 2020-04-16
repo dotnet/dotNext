@@ -3,8 +3,6 @@ using System;
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using System.Net.Sockets;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,28 +14,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     public sealed class UdpSocketTests : TransportTestSuite
     {
         private readonly Func<long> appIdGenerator = new Random().Next<long>;
-
-        [Fact]
-        public async Task ConnectionError()
-        {
-            using var client = new UdpClient(new IPEndPoint(IPAddress.Loopback, 35665), 2, ArrayPool<byte>.Shared, appIdGenerator, NullLoggerFactory.Instance)
-            {
-                DatagramSize = UdpSocket.MaxDatagramSize,
-                DontFragment = false
-            };
-            using var timeoutTokenSource = new CancellationTokenSource(500);
-            var exchange = new VoteExchange(10L, 20L, 30L);
-            client.Enqueue(exchange, timeoutTokenSource.Token);
-            switch (Environment.OSVersion.Platform)
-            {
-                case PlatformID.Unix:
-                    await ThrowsAsync<SocketException>(() => exchange.Task);
-                    break;
-                case PlatformID.Win32NT:
-                    await ThrowsAsync<TaskCanceledException>(() => exchange.Task);
-                    break;
-            }
-        }
 
         [Fact]
         public Task RequestResponse()
