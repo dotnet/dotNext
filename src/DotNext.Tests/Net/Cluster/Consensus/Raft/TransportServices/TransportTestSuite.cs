@@ -125,11 +125,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             public IReadOnlyDictionary<string, string> Metadata { get; }
         }
 
-        private protected static Func<int, ServerExchangePool> ExchangePoolFactory(ILocalMember localMember)
+        private protected static Func<int, ExchangePool> ExchangePoolFactory(ILocalMember localMember)
         {
-            ServerExchangePool CreateExchangePool(int count)
+            ExchangePool CreateExchangePool(int count)
             {
-                var result = new ServerExchangePool();
+                var result = new ExchangePool();
                 while (--count >= 0)
                     result.Add(new ServerExchange(localMember));
                 return result;

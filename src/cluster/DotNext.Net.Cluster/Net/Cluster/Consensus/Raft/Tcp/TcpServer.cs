@@ -94,10 +94,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private readonly Socket socket;
         private TimeSpan receiveTimeout;
         private readonly int backlog;
-        private readonly Func<IExchange> exchangeFactory;
+        private readonly Func<IReusableExchange> exchangeFactory;
         private readonly CancellationTokenSource transmissionState;
 
-        internal TcpServer(IPEndPoint address, int backlog, ArrayPool<byte> pool, Func<IExchange> exchangeFactory, ILoggerFactory loggerFactory)
+        internal TcpServer(IPEndPoint address, int backlog, ArrayPool<byte> pool, Func<IReusableExchange> exchangeFactory, ILoggerFactory loggerFactory)
             : base(address, pool, loggerFactory)
         {
             socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -129,6 +129,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                         default:
                             return;
                         case ExchangeResult.Success:
+                            exchange.Reset();
                             continue;
                         case ExchangeResult.TimeOut:
                             remoteClient.Disconnect(false);
@@ -140,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 buffer.Dispose();
                 stream.Dispose();
-                (exchange as IDisposable)?.Dispose();
+                exchange.Dispose();
             }
         }
 

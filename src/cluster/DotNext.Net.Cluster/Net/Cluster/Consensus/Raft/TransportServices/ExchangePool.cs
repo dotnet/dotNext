@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
-    internal sealed class ServerExchangePool : ConcurrentBag<ServerExchange>, IExchangePool, IDisposable
+    internal sealed class ExchangePool : ConcurrentBag<IReusableExchange>, IExchangePool, IDisposable
     {
         bool IExchangePool.TryRent(out IExchange exchange)
         {

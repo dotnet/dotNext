@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
-    internal sealed partial class ServerExchange : PipeExchange, IDisposable
+    internal sealed partial class ServerExchange : PipeExchange, IReusableExchange
     {
         private enum State : byte
         {
@@ -134,7 +134,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             }
         }
 
-        internal void Reset()
+        public void Reset()
         {
             ReusePipe();
             task = null;
