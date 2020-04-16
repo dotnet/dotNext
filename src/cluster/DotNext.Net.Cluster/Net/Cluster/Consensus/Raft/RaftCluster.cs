@@ -569,35 +569,37 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
         protected async Task<bool> ReceiveResignAsync(CancellationToken token)
         {
-            using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
+            var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+            var tokenSource = token.LinkTo(Token);
+            try
+            {
                 if (state is LeaderState leaderState)
                 {
                     await leaderState.StopAsync().ConfigureAwait(false);
-                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout), token);
                     leaderState.Dispose();
                     Leader = null;
                     return true;
                 }
                 else
                     return false;
-        }
-
-        async Task<bool> ICluster.ResignAsync(CancellationToken token)
-        {
-            var tokenSource = token.LinkTo(Token);
-            try
-            {
-                if (await ReceiveResignAsync(token).ConfigureAwait(false))
-                {
-                    var leader = Leader;
-                    return !(leader is null) && await leader.ResignAsync(token).ConfigureAwait(false);
-                }
             }
             finally
             {
                 tokenSource?.Dispose();
+                lockHolder.Dispose();
             }
-            return false;
+        }
+
+        async Task<bool> ICluster.ResignAsync(CancellationToken token)
+        {
+            if (await ReceiveResignAsync(token).ConfigureAwait(false))
+                return true;
+            else
+            {
+                var leader = Leader;
+                return !(leader is null) && await leader.ResignAsync(token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
@@ -645,7 +647,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 candidateState.Dispose();
                 Leader = newLeader as TMember;
                 state = new LeaderState(this, allowPartitioning, currentTerm) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
-                    auditTrail);
+                    auditTrail, Token);
                 await auditTrail.AppendNoOpEntry(Token);
                 Metrics?.MovedToLeaderState();
                 Logger.TransitionToLeaderStateCompleted();
