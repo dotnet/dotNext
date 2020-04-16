@@ -24,6 +24,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
             }
 
+            internal bool Connected => Socket.Connected;
+
             private protected ValueTask WritePacket(PacketHeaders headers, Memory<byte> buffer, int count, CancellationToken token)
             {
                 //write headers

@@ -125,14 +125,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 exchange.OnCanceled(e.CancellationToken);
             }
-            catch (SocketException e)
+            catch (Exception e) when (e is SocketException || e.InnerException is SocketException)
             {
-                stream = Interlocked.Exchange(ref this.stream, null);
-                if (stream != null)
-                    await stream.DisposeAsync().ConfigureAwait(false);
+                //broken socket detected
+                Interlocked.Exchange(ref this.stream, null)?.Dispose();
                 exchange.OnException(e);
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 exchange.OnException(e);
             }

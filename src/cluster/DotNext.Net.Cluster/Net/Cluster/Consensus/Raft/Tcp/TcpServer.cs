@@ -10,7 +10,6 @@ using EndOfStreamException = System.IO.EndOfStreamException;
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
     using TransportServices;
-    using static Threading.LinkedTokenSourceFactory;
 
     internal sealed class TcpServer : TcpTransport, IServer
     {
@@ -33,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         {
             Success = 0,
             ExchangePoolIsEmpty,
-            NoData,
+            SocketError,
             Canceled
         }
 
@@ -43,8 +42,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 : base(client, true)
             {
             }
-
-            internal bool Connected => Socket.Connected;
 
             internal async Task<ExchangeResult> Exchange(IExchangePool pool, Memory<byte> buffer, TimeSpan receiveTimeout, CancellationToken token)
             {
@@ -70,15 +67,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                             (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
                         }
                     }
-                    catch (EndOfStreamException e)
-                    {
-                        exchange.OnException(e);
-                        result = ExchangeResult.NoData;
-                    }
                     catch (OperationCanceledException e)
                     {
                         exchange.OnCanceled(e.CancellationToken);
                         result = ExchangeResult.Canceled;
+                    }
+                    catch(Exception e) when (e is EndOfStreamException || e is SocketException || e.InnerException is SocketException)
+                    {
+                        exchange.OnException(e);
+                        result = ExchangeResult.SocketError;
                     }
                     catch (Exception e)
                     {
@@ -87,9 +84,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     }
                     finally
                     {
+                        pool.Release(exchange);
                         combinedSource.Dispose();
                         timeoutTracker.Dispose();
-                        pool.Release(exchange);
                     }
                 }
                 else
@@ -138,6 +135,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                         case ExchangeResult.Success:
                             continue;
                         case ExchangeResult.Canceled:
+                            remoteClient.Disconnect(false);
                             logger.RequestTimedOut();
                             goto default;
                         case ExchangeResult.ExchangePoolIsEmpty:

@@ -21,6 +21,7 @@ namespace RaftNode
     {
         private const string HttpProtocolOption = "http";
         private const string UdpProtocolOption = "udp";
+        private const string TcpProtocolOption = "tcp";
 
         private static X509Certificate2 LoadCertificate()
         {
@@ -61,31 +62,46 @@ namespace RaftNode
             .RunAsync();
         }
 
-        private static async Task UseUdpTransport(int port, string? persistentStorage = null)
+        private static async Task UseConfiguration(RaftCluster.NodeConfiguration config, string? persistentStorage)
         {
-            var configuration = new RaftCluster.UdpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
-            {
-                LowerElectionTimeout = 1000,
-                UpperElectionTimeout = 2000
-            };
-            configuration.Members.Add(new IPEndPoint(IPAddress.Loopback, 3262));
-            configuration.Members.Add(new IPEndPoint(IPAddress.Loopback, 3263));
-            configuration.Members.Add(new IPEndPoint(IPAddress.Loopback, 3264));
+            config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3262));
+            config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3263));
+            config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3264));
             var loggerFactory = new LoggerFactory();
             var loggerOptions = new ConsoleLoggerOptions
             {
                 LogToStandardErrorThreshold = LogLevel.Warning
             };
             loggerFactory.AddProvider(new ConsoleLoggerProvider(new FakeOptionsMonitor<ConsoleLoggerOptions>(loggerOptions)));
-            configuration.LoggerFactory = loggerFactory;
+            config.LoggerFactory = loggerFactory;
 
-            using var cluster = new RaftCluster(configuration);
+            using var cluster = new RaftCluster(config);
             cluster.LeaderChanged += ClusterConfigurator.LeaderChanged;
             await cluster.StartAsync(CancellationToken.None);
             using var handler = new CancelKeyPressHandler();
             Console.CancelKeyPress += handler.Handler;
             await handler.WaitAsync();
             Console.CancelKeyPress -= handler.Handler;
+        }
+
+        private static Task UseUdpTransport(int port, string? persistentStorage)
+        {
+            var configuration = new RaftCluster.UdpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
+            {
+                LowerElectionTimeout = 150,
+                UpperElectionTimeout = 300
+            };
+            return UseConfiguration(configuration, persistentStorage);
+        }
+
+        private static Task UseTcpTransport(int port, string? persistentStorage)
+        {
+            var configuration = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
+            {
+                LowerElectionTimeout = 1000,
+                UpperElectionTimeout = 2000
+            };
+            return UseConfiguration(configuration, persistentStorage);
         }
 
         private static Task StartNode(int port, string? persistentStorage, string protocol)
@@ -96,6 +112,8 @@ namespace RaftNode
                     return UseAspNetCoreHost(port, persistentStorage);
                 case UdpProtocolOption:
                     return UseUdpTransport(port, persistentStorage);
+                case TcpProtocolOption:
+                    return UseTcpTransport(port, persistentStorage);
                 default:
                     Console.Error.WriteLine("Unsupported protocol type");
                     Environment.ExitCode = 1;
