@@ -5,7 +5,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
     internal sealed class ServerExchangePool : ConcurrentBag<ServerExchange>, IExchangePool, IDisposable
     {
-        bool IExchangePool.TryRent(PacketHeaders headers, out IExchange exchange)
+        bool IExchangePool.TryRent(out IExchange exchange)
         {
             var result = TryTake(out var serverExchange);
             exchange = serverExchange;

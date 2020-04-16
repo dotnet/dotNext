@@ -137,6 +137,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return CreateExchangePool;
         }
 
+        private protected static Func<ServerExchange> ServerExchangeFactory(ILocalMember localMember)
+            => () => new ServerExchange(localMember);
+
         private protected delegate IServer ServerFactory(ILocalMember localMember, IPEndPoint address, TimeSpan timeout);
         private protected delegate IClient ClientFactory(IPEndPoint address);
 

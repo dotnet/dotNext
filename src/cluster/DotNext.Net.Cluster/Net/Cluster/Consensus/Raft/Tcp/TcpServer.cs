@@ -31,9 +31,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private enum ExchangeResult : byte
         {
             Success = 0,
-            ExchangePoolIsEmpty,
             SocketError,
-            Canceled
+            TimeOut,
+            Stopped
         }
 
         private sealed class ServerNetworkStream : TcpStream
@@ -43,54 +43,51 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
             }
 
-            internal async Task<ExchangeResult> Exchange(IExchangePool pool, Memory<byte> buffer, TimeSpan receiveTimeout, CancellationToken token)
+            internal async Task<ExchangeResult> Exchange(IExchange exchange, Memory<byte> buffer, TimeSpan receiveTimeout, CancellationToken token)
             {
-                var (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
                 var result = ExchangeResult.Success;
-                if (pool.TryRent(headers, out var exchange))
+                CancellationTokenSource? timeoutTracker = null, combinedSource = null;
+                try
                 {
-                    var timeoutTracker = new CancellationTokenSource(receiveTimeout);
-                    var combinedSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutTracker.Token, token);
+                    var (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
+                    timeoutTracker = new CancellationTokenSource(receiveTimeout);
+                    combinedSource = CancellationTokenSource.CreateLinkedTokenSource(timeoutTracker.Token, token);
                     token = combinedSource.Token;
-                    try
+                    while (await exchange.ProcessInboundMessageAsync(headers, request, Socket.RemoteEndPoint, token).ConfigureAwait(false))
                     {
-                        while (await exchange.ProcessInboundMessageAsync(headers, request, Socket.RemoteEndPoint, token).ConfigureAwait(false))
-                        {
-                            bool waitForInput;
-                            int count;
-                            (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token);
-                            //transmit packet to the remote endpoint
-                            await WritePacket(headers, buffer, count, token).ConfigureAwait(false);
-                            if (!waitForInput)
-                                break;
-                            //read response
-                            (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
-                        }
-                    }
-                    catch (OperationCanceledException e)
-                    {
-                        exchange.OnCanceled(e.CancellationToken);
-                        result = ExchangeResult.Canceled;
-                    }
-                    catch(Exception e) when (e is EndOfStreamException || e is SocketException || e.InnerException is SocketException)
-                    {
-                        exchange.OnException(e);
-                        result = ExchangeResult.SocketError;
-                    }
-                    catch (Exception e)
-                    {
-                        exchange.OnException(e);
-                        throw;
-                    }
-                    finally
-                    {
-                        pool.Release(exchange);
-                        combinedSource.Dispose();
-                        timeoutTracker.Dispose();
+                        bool waitForInput;
+                        int count;
+                        (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token);
+                        //transmit packet to the remote endpoint
+                        await WritePacket(headers, buffer, count, token).ConfigureAwait(false);
+                        if (!waitForInput)
+                            break;
+                        //read response
+                        (headers, request) = await ReadPacket(buffer, token).ConfigureAwait(false);
                     }
                 }
-                else
-                    result = ExchangeResult.ExchangePoolIsEmpty;
+                catch (OperationCanceledException e)
+                {
+                    exchange.OnCanceled(e.CancellationToken);
+                    result = !(timeoutTracker is null) && timeoutTracker.IsCancellationRequested ? 
+                        ExchangeResult.TimeOut : 
+                        ExchangeResult.Stopped;
+                }
+                catch(Exception e) when (e is EndOfStreamException || e is SocketException || e.InnerException is SocketException)
+                {
+                    exchange.OnException(e);
+                    result = ExchangeResult.SocketError;
+                }
+                catch (Exception e)
+                {
+                    exchange?.OnException(e);
+                    throw;
+                }
+                finally
+                {
+                    combinedSource?.Dispose();
+                    timeoutTracker?.Dispose();
+                }
                 return result;
             }
         }
@@ -98,15 +95,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private readonly Socket socket;
         private TimeSpan receiveTimeout;
         private readonly int backlog;
-        private readonly IExchangePool exchanges;
+        private readonly Func<IExchange> exchangeFactory;
         private readonly CancellationTokenSource transmissionState;
 
-        internal TcpServer(IPEndPoint address, int backlog, ArrayPool<byte> pool, Func<int, IExchangePool> exchangePoolFactory, ILoggerFactory loggerFactory)
+        internal TcpServer(IPEndPoint address, int backlog, ArrayPool<byte> pool, Func<IExchange> exchangeFactory, ILoggerFactory loggerFactory)
             : base(address, pool, loggerFactory)
         {
             socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             this.backlog = backlog;
-            exchanges = exchangePoolFactory(backlog);
+            this.exchangeFactory = exchangeFactory;
             transmissionState = new CancellationTokenSource();
         }
 
@@ -122,35 +119,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
         private async void HandleConnection(Socket remoteClient)
         {
-            using var stream = new ServerNetworkStream(remoteClient);
-            while (stream.Connected && !IsDisposed)
+            var stream = new ServerNetworkStream(remoteClient);
+            var buffer = AllocTransmissionBlock();
+            var exchange = exchangeFactory();
+            try
             {
-                var buffer = AllocTransmissionBlock();
-                try
-                {
-                    switch (await stream.Exchange(exchanges, buffer.Memory, receiveTimeout, transmissionState.Token).ConfigureAwait(false))
+                while (stream.Connected && !IsDisposed)
+                    switch (await stream.Exchange(exchange, buffer.Memory, receiveTimeout, transmissionState.Token).ConfigureAwait(false))
                     {
                         default:
                             return;
                         case ExchangeResult.Success:
                             continue;
-                        case ExchangeResult.Canceled:
+                        case ExchangeResult.TimeOut:
                             remoteClient.Disconnect(false);
                             logger.RequestTimedOut();
                             goto default;
-                        case ExchangeResult.ExchangePoolIsEmpty:
-                            logger.NotEnoughRequestHandlers();
-                            goto default;
                     }
-                }
-                catch (Exception e)
-                {
-                    logger.FailedToHandleRequest(e);
-                }
-                finally
-                {
-                    buffer.Dispose();
-                }
+            }
+            finally
+            {
+                buffer.Dispose();
+                stream.Dispose();
+                (exchange as IDisposable)?.Dispose();
             }
         }
 
@@ -212,7 +203,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 {
                     transmissionState.Dispose();
                     socket.Dispose();
-                    (exchanges as IDisposable)?.Dispose();
                 }
         }
     }

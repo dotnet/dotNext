@@ -6,7 +6,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
     internal interface IExchangePool
     {
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
-        bool TryRent(PacketHeaders headers, [NotNullWhen(true)] out IExchange exchange);
+        bool TryRent([NotNullWhen(true)] out IExchange exchange);
 
         [ReliabilityContract(Consistency.WillNotCorruptState, Cer.Success)]
         void Release(IExchange exchange);

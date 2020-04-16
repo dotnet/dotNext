@@ -305,7 +305,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 => new ExchangePeer(localMember, endPoint, CreateClient, TimeSpan.FromMilliseconds(LowerElectionTimeout), PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
-                => new TcpServer(HostEndPoint, ServerBacklog, BufferPool, ExchangePoolFactory(localMember), LoggerFactory) { TransmissionBlockSize = TransmissionBlockSize, LingerOption = LingerOption, ReceiveTimeout = Timeout };
+            {
+                ServerExchange CreateExchange() => new ServerExchange(localMember, PipeConfig);
+                return new TcpServer(HostEndPoint, ServerBacklog, BufferPool, CreateExchange, LoggerFactory) 
+                { 
+                    TransmissionBlockSize = TransmissionBlockSize, 
+                    LingerOption = LingerOption, 
+                    ReceiveTimeout = Timeout 
+                };
+            }
         }
     }
 }

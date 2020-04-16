@@ -68,31 +68,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             //dispatch datagram to appropriate exchange
             var correlationId = new CorrelationId(ref datagram);
             var headers = new PacketHeaders(ref datagram);
-            //try rent new exchange
-            var exchangeRented = exchanges.TryRent(headers, out var exchange);
-            if (channels.TryGetValue(correlationId, out var channel))
-            {
-                //return exchange back to the pool
-                if (exchangeRented)
-                    exchanges.Release(exchange);
-            }
-            else if (exchangeRented) //channel doesn't exist in the list of active channel but rented successfully
-            {
-                var newChannel = new Channel(exchange, exchanges, receiveTimeout, cancellationHandler, correlationId);
-                channel = channels.GetOrAdd(correlationId, newChannel);
-                //returned channel is not associated with rented exchange
-                //so return exchange back to the pool
-                if (!channel.Represents(in newChannel))
-                    using (newChannel)
+            request_channel:
+            if (!channels.TryGetValue(correlationId, out var channel))
+                if (exchanges.TryRent(out var exchange)) //channel doesn't exist in the list of active channel but rented successfully
+                {
+                    channel = new Channel(exchange, exchanges, receiveTimeout, cancellationHandler, correlationId);
+                    if(!channels.TryAdd(correlationId, channel))
                     {
-                        exchanges.Release(exchange);
+                        channel.Dispose();
+                        goto request_channel;
                     }
-            }
-            else
-            {
-                logger.NotEnoughRequestHandlers();
-                return;
-            }
+                }
+                else
+                {
+                    logger.NotEnoughRequestHandlers();
+                    return;
+                }
             if (headers.Control == FlowControl.Cancel)
                 ProcessCancellation(cancellationInvoker, ref channel, false, args);   //channel will be removed from the dictionary automatically
             else

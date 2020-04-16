@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [Fact]
         public Task RequestResponse()
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 2, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 2, ArrayPool<byte>.Shared, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 65535
@@ -51,7 +51,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [Fact]
         public Task StressTest()
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 65535
@@ -68,7 +68,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(false)]
         public Task MetadataRequestResponse(bool smallAmountOfMetadata)
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
                 TransmissionBlockSize = 300
@@ -91,7 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(50, ReceiveEntriesBehavior.DropFirst)]
         public Task SendingLogEntries(int payloadSize, ReceiveEntriesBehavior behavior)
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 400,
                 ReceiveTimeout = timeout,
@@ -108,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         [InlineData(50)]
         public Task SendingSnapshot(int payloadSize)
         {
-            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ExchangePoolFactory(member), NullLoggerFactory.Instance)
+            static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, ArrayPool<byte>.Shared, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 TransmissionBlockSize = 350,
                 ReceiveTimeout = timeout,
