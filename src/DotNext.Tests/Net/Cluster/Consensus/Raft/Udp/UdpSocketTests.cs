@@ -69,6 +69,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         }
 
         [Theory]
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveAll)]
+        [InlineData(0, ReceiveEntriesBehavior.ReceiveFirst)]
+        [InlineData(0, ReceiveEntriesBehavior.DropAll)]
+        [InlineData(0, ReceiveEntriesBehavior.DropFirst)]
         [InlineData(512, ReceiveEntriesBehavior.ReceiveAll)]
         [InlineData(512, ReceiveEntriesBehavior.ReceiveFirst)]
         [InlineData(512, ReceiveEntriesBehavior.DropAll)]

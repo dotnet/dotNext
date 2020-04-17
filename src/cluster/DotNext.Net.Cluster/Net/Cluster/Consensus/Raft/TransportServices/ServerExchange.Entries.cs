@@ -75,12 +75,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private void SetState(State newState) => state = newState;
 
-        private bool IsReadyToReadEntry() => state == State.ReadyToReadEntry;
+        private bool IsReadyToReadEntry() => state.IsOneOf(State.ReceivingEntry, State.EntryReceived);
 
         private bool IsValidStateForResponse()
-            => state.IsOneOf(State.ReceivingEntriesFinished, State.ReadyToReceiveEntry, State.ReadyToReadEntry);
+            => state.IsOneOf(State.ReceivingEntriesFinished, State.ReadyToReceiveEntry, State.ReceivingEntry);
 
-        private bool IsValidForTransition() => state == State.AppendEntriesReceived;
+        private bool IsValidForTransition() => state.IsOneOf(State.AppendEntriesReceived, State.EntryReceived);
 
         async ValueTask<bool> IAsyncEnumerator<ReceivedLogEntry>.MoveNextAsync()
         {
@@ -116,13 +116,20 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             task = server.ReceiveEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
-        private void BeginReceiveEntry(ReadOnlyMemory<byte> prologue)
+        private async ValueTask<bool> BeginReceiveEntry(ReadOnlyMemory<byte> prologue, bool completed)
         {
             currentEntry = new ReceivedLogEntry(ref prologue, Reader);
             var memory = Writer.GetMemory(prologue.Length);
             prologue.CopyTo(memory);
             Writer.Advance(prologue.Length);
-            transmissionStateTrigger.Signal(this, setStateAction, State.ReadyToReadEntry);
+            if(completed)
+            {
+                await Writer.CompleteAsync().ConfigureAwait(false);
+                transmissionStateTrigger.Signal(this, setStateAction, State.EntryReceived);
+            }
+            else
+                transmissionStateTrigger.Signal(this, setStateAction, State.ReceivingEntry);
+            return true;
         }
 
         private async ValueTask<bool> ReceivingEntry(ReadOnlyMemory<byte> content, bool completed, CancellationToken token)
@@ -173,7 +180,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                         isContinueReceiving = true;
                         responseType = MessageType.NextEntry;
                         break;
-                    case State.ReadyToReadEntry:
+                    case State.ReceivingEntry:
                         count = 0;
                         isContinueReceiving = true;
                         responseType = MessageType.Continue;

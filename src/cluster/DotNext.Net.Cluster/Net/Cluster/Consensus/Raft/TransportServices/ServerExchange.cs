@@ -19,7 +19,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             AppendEntriesReceived,
 
             ReadyToReceiveEntry,    //ready to receive next entry
-            ReadyToReadEntry,   //log entry header is obtained, content is available
+            ReceivingEntry,   //log entry header is obtained, content is available
+            EntryReceived,  ///similar to ReceivingEntry but its content completely received
             ReceivingEntriesFinished,
             SnapshotReceived,
             ReceivingSnapshotFinished
@@ -80,9 +81,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                             BeginReceiveEntries(endpoint, payload.Span, token);
                             break;
                         case State.ReadyToReceiveEntry:
-                            BeginReceiveEntry(payload);
-                            break;
-                        case State.ReadyToReadEntry:
+                            return BeginReceiveEntry(payload, headers.Control == FlowControl.StreamEnd);
+                        case State.ReceivingEntry:
                             return ReceivingEntry(payload, headers.Control == FlowControl.StreamEnd, token);
                         default:
                             return default;
@@ -124,8 +124,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     return EndProcessHearbeat(output);
                 case State.AppendEntriesReceived:
                 case State.ReadyToReceiveEntry:
-                case State.ReadyToReadEntry:
+                case State.ReceivingEntry:
                 case State.ReceivingEntriesFinished:
+                case State.EntryReceived:
                     return TransmissionControl(output, token);
                 case State.SnapshotReceived:
                     return RequestSnapshotChunk();
