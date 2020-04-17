@@ -49,10 +49,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
+            var result = new ValueTask<bool>(true);
             switch (headers.Type)
             {
                 default:
-                    return new ValueTask<bool>(false);
+                    result = new ValueTask<bool>(false);
+                    break;
                 case MessageType.Vote:
                     state = State.VoteRequestReceived;
                     BeginVote(payload, endpoint, token);
@@ -81,11 +83,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                             BeginReceiveEntries(endpoint, payload.Span, token);
                             break;
                         case State.ReadyToReceiveEntry:
-                            return BeginReceiveEntry(payload, headers.Control == FlowControl.StreamEnd);
+                            result = BeginReceiveEntry(payload, headers.Control == FlowControl.StreamEnd);
+                            break;
                         case State.ReceivingEntry:
-                            return ReceivingEntry(payload, headers.Control == FlowControl.StreamEnd, token);
+                            result = ReceivingEntry(payload, headers.Control == FlowControl.StreamEnd, token);
+                            break;
                         default:
-                            return default;
+                            result = default;
+                            break;
                     }
                     break;
                 case MessageType.InstallSnapshot:
@@ -96,14 +101,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                             BeginReceiveSnapshot(payload.Span, endpoint, token);
                             break;
                         case State.SnapshotReceived:
-                            return ReceivingSnapshot(payload, headers.Control == FlowControl.StreamEnd, token);
+                            result = ReceivingSnapshot(payload, headers.Control == FlowControl.StreamEnd, token);
+                            break;
                         default:
-                            return default;
+                            result = default;
+                            break;
                     }
 
                     break;
             }
-            return new ValueTask<bool>(true);
+            return result;
         }
 
         public override ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> output, CancellationToken token)

@@ -78,7 +78,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 switch (Behavior)
                 {
                     case ReceiveEntriesBehavior.ReceiveAll:
-                        Equal(2, entries.RemainingCount);
                         while (await entries.MoveNextAsync())
                         {
                             True(entries.Current.Length.HasValue);
@@ -236,7 +235,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private protected async Task SendingLogEntriesTest(ServerFactory serverFactory, ClientFactory clientFactory, int payloadSize, ReceiveEntriesBehavior behavior)
         {
-            var timeout = TimeSpan.FromMinutes(20);
+            var timeout = TimeSpan.FromSeconds(20);
             using var timeoutTokenSource = new CancellationTokenSource(timeout);
             var member = new LocalMember(false) { Behavior = behavior };
             //prepare server
