@@ -13,11 +13,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
     internal sealed class SnapshotExchange : ClientExchange<Result<bool>>, IAsyncDisposable
     {
+        private static readonly int AnnouncementSize = sizeof(ushort) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + Unsafe.SizeOf<DateTimeOffset>();
         private readonly Pipe pipe;
         private readonly long term, snapshotIndex;
         private readonly IRaftLogEntry snapshot;
         private Task? transmission;
-        private bool transmitting;
 
         internal SnapshotExchange(long term, IRaftLogEntry snapshot, long snapshotIndex, PipeOptions? options = null)
         {
@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             pipe = new Pipe(options ?? PipeOptions.Default);
         }
 
-        internal static void ParseAnnouncement(ReadOnlySpan<byte> input, out ushort remotePort, out long term, out long snapshotIndex, out long length, out long snapshotTerm, out DateTimeOffset timestamp)
+        internal static int ParseAnnouncement(ReadOnlySpan<byte> input, out ushort remotePort, out long term, out long snapshotIndex, out long length, out long snapshotTerm, out DateTimeOffset timestamp)
         {
             remotePort = ReadUInt16LittleEndian(input);
             input = input.Slice(sizeof(ushort));
@@ -45,6 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             input = input.Slice(sizeof(long));
 
             timestamp = Span.Read<DateTimeOffset>(ref input);
+            return AnnouncementSize;
         }
 
         private int WriteAnnouncement(Span<byte> output)
@@ -66,7 +67,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
             Span.Write(snapshot.Timestamp, ref output);
 
-            return sizeof(ushort) + sizeof(long) + sizeof(long) + sizeof(long) + sizeof(long) + Unsafe.SizeOf<DateTimeOffset>();
+            return AnnouncementSize;
         }
 
         private async Task WriteSnapshotAsync(CancellationToken token)
@@ -77,42 +78,32 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         public override async ValueTask<(PacketHeaders, int, bool)> CreateOutboundMessageAsync(Memory<byte> payload, CancellationToken token)
         {
-            int count;
+            var count = default(int);
             FlowControl control;
-            if (transmitting)    //send chunk of snapshot 
-            {
-                if (transmission is null)
-                {
-                    control = FlowControl.StreamStart;
-                    transmission = WriteSnapshotAsync(token);
-                }
-                else
-                    control = FlowControl.Fragment;
-                count = await pipe.Reader.CopyToAsync(payload, token).ConfigureAwait(false);
-                if (count < payload.Length)
-                    control = FlowControl.StreamEnd;
-            }
-            else
+            if(transmission is null)
             {
                 count = WriteAnnouncement(payload.Span);
-                control = FlowControl.None;
+                payload = payload.Slice(count);
+                control = FlowControl.StreamStart;
+                transmission = WriteSnapshotAsync(token);
             }
+            else
+                control = FlowControl.Fragment;
+            count += await pipe.Reader.CopyToAsync(payload, token).ConfigureAwait(false);
+            if (count < payload.Length)
+                control = FlowControl.StreamEnd;
             return (new PacketHeaders(MessageType.InstallSnapshot, control), count, true);
         }
 
         public override ValueTask<bool> ProcessInboundMessageAsync(PacketHeaders headers, ReadOnlyMemory<byte> payload, EndPoint endpoint, CancellationToken token)
         {
-            bool result;
             if (headers.Type == MessageType.Continue)
-            {
-                transmitting = result = true;
-            }
+                return new ValueTask<bool>(true);
             else
             {
                 TrySetResult(IExchange.ReadResult(payload.Span));
-                result = false;
+                return default;
             }
-            return new ValueTask<bool>(result);
         }
 
         async ValueTask IAsyncDisposable.DisposeAsync()

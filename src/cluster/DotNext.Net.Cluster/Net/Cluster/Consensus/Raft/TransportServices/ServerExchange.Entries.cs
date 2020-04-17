@@ -29,9 +29,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             this.reader = reader;
         }
 
-        internal ReceivedLogEntry(ReadOnlySpan<byte> announcement, PipeReader reader, out ushort remotePort, out long term, out long snapshotIndex)
+        internal ReceivedLogEntry(ref ReadOnlyMemory<byte> announcement, PipeReader reader, out ushort remotePort, out long term, out long snapshotIndex)
         {
-            SnapshotExchange.ParseAnnouncement(announcement, out remotePort, out term, out snapshotIndex, out length, out this.term, out timestamp);
+            var count = SnapshotExchange.ParseAnnouncement(announcement.Span, out remotePort, out term, out snapshotIndex, out length, out this.term, out timestamp);
+            announcement = announcement.Slice(count);
             isSnapshot = true;
             this.reader = reader;
         }
@@ -120,9 +121,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             currentEntry = new ReceivedLogEntry(ref prologue, Reader);
             var result = await Writer.WriteAsync(prologue, token).ConfigureAwait(false);
-            if(result.IsCanceled)
-                return false;
-            else if(result.IsCompleted | completed)
+            if(result.IsCompleted | completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
                 transmissionStateTrigger.Signal(this, setStateAction, State.EntryReceived);

@@ -9,11 +9,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
     internal partial class ServerExchange
     {
-        private void BeginReceiveSnapshot(ReadOnlySpan<byte> input, EndPoint endPoint, CancellationToken token)
+        private async ValueTask<bool> BeginReceiveSnapshot(ReadOnlyMemory<byte> input, EndPoint endPoint, bool completed, CancellationToken token)
         {
-            var snapshot = new ReceivedLogEntry(input, Reader, out var remotePort, out var senderTerm, out var snapshotIndex);
+            var snapshot = new ReceivedLogEntry(ref input, Reader, out var remotePort, out var senderTerm, out var snapshotIndex);
+            var result = await Writer.WriteAsync(input, token).ConfigureAwait(false);
             ChangePort(ref endPoint, remotePort);
             task = server.ReceiveSnapshotAsync(endPoint, senderTerm, snapshot, snapshotIndex, token);
+            if(result.IsCompleted | completed)
+            {
+                await Writer.CompleteAsync().ConfigureAwait(false);
+                state = State.ReceivingSnapshotFinished;
+            }
+            return true;
         }
 
         private async ValueTask<bool> ReceivingSnapshot(ReadOnlyMemory<byte> content, bool completed, CancellationToken token)

@@ -98,7 +98,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                     {
                         case State.Ready:
                             state = State.SnapshotReceived;
-                            BeginReceiveSnapshot(payload.Span, endpoint, token);
+                            result = BeginReceiveSnapshot(payload, endpoint, headers.Control == FlowControl.StreamEnd, token);
                             break;
                         case State.SnapshotReceived:
                             result = ReceivingSnapshot(payload, headers.Control == FlowControl.StreamEnd, token);
