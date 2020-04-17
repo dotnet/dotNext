@@ -83,7 +83,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                             BeginReceiveEntries(endpoint, payload.Span, token);
                             break;
                         case State.ReadyToReceiveEntry:
-                            result = BeginReceiveEntry(payload, headers.Control == FlowControl.StreamEnd);
+                            result = BeginReceiveEntry(payload, headers.Control == FlowControl.StreamEnd, token);
                             break;
                         case State.ReceivingEntry:
                             result = ReceivingEntry(payload, headers.Control == FlowControl.StreamEnd, token);

@@ -116,13 +116,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             task = server.ReceiveEntriesAsync(sender, term, this, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
-        private async ValueTask<bool> BeginReceiveEntry(ReadOnlyMemory<byte> prologue, bool completed)
+        private async ValueTask<bool> BeginReceiveEntry(ReadOnlyMemory<byte> prologue, bool completed, CancellationToken token)
         {
             currentEntry = new ReceivedLogEntry(ref prologue, Reader);
-            var memory = Writer.GetMemory(prologue.Length);
-            prologue.CopyTo(memory);
-            Writer.Advance(prologue.Length);
-            if(completed)
+            var result = await Writer.WriteAsync(prologue, token).ConfigureAwait(false);
+            if(result.IsCanceled)
+                return false;
+            else if(result.IsCompleted | completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
                 transmissionStateTrigger.Signal(this, setStateAction, State.EntryReceived);
