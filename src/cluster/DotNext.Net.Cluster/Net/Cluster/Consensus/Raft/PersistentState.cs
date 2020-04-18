@@ -541,7 +541,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public Task<bool> WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitAsync(timeout, token);
 
-        Task<bool> IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
+        /// <summary>
+        /// Waits for specific commit.
+        /// </summary>
+        /// <param name="index">The index of the log record to be committed.</param>
+        /// <param name="timeout">The timeout used to wait for the commit.</param>
+        /// <param name="token">The token that can be used to cancel waiting.</param>
+        /// <returns><see langword="true"/> if log entry is committed; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+        public Task<bool> WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitForCommitAsync(NodeState.IsCommittedPredicate, state, index, timeout, token);
 
         private async ValueTask ForceCompaction(SnapshotBuilder builder, CancellationToken token)
