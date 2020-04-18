@@ -19,10 +19,6 @@ namespace RaftNode
 {
     public static class Program
     {
-        private const string HttpProtocolOption = "http";
-        private const string UdpProtocolOption = "udp";
-        private const string TcpProtocolOption = "tcp";
-
         private static X509Certificate2 LoadCertificate()
         {
             using var rawCertificate = Assembly.GetCallingAssembly().GetManifestResourceStream(typeof(Program), "node.pfx");
@@ -104,15 +100,16 @@ namespace RaftNode
             return UseConfiguration(configuration, persistentStorage);
         }
 
-        private static Task StartNode(int port, string? persistentStorage, string protocol)
+        private static Task StartNode(string protocol, int port, string? persistentStorage = null)
         {
-            switch (protocol)
+            switch (protocol.ToLowerInvariant())
             {
-                case HttpProtocolOption:
+                case "http":
+                case "https":
                     return UseAspNetCoreHost(port, persistentStorage);
-                case UdpProtocolOption:
+                case "udp":
                     return UseUdpTransport(port, persistentStorage);
-                case TcpProtocolOption:
+                case "tcp":
                     return UseTcpTransport(port, persistentStorage);
                 default:
                     Console.Error.WriteLine("Unsupported protocol type");
@@ -126,16 +123,14 @@ namespace RaftNode
             switch (args.LongLength)
             {
                 case 0:
-                    Console.WriteLine("Port number is not specified");
-                    break;
                 case 1:
-                    await StartNode(int.Parse(args[0]), null, HttpProtocolOption);
+                    Console.WriteLine("Port number and protocol are not specified");
                     break;
                 case 2:
-                    await StartNode(int.Parse(args[0]), args[1], HttpProtocolOption);
+                    await StartNode(args[1], int.Parse(args[0]));
                     break;
                 case 3:
-                    await StartNode(int.Parse(args[0]), args[1], args[2]);
+                    await StartNode(args[1], int.Parse(args[0]), args[2]);
                     break;
             }
         }
