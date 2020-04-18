@@ -52,7 +52,7 @@ namespace RaftNode
         {
             var commitIndex = GetLastIndex(true);
             await AppendAsync(new Int64LogEntry { Content = value, Term = Term }, token);
-            await ((IAuditTrail)this).WaitForCommitAsync(commitIndex + 1L, timeout, token);
+            await WaitForCommitAsync(commitIndex + 1L, timeout, token);
         }
 
         protected override SnapshotBuilder CreateSnapshotBuilder()
