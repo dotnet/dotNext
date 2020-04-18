@@ -7,19 +7,21 @@ using System.Runtime.InteropServices;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
+
     public partial class PersistentState
     {
         [StructLayout(LayoutKind.Auto)]
         private readonly struct DataAccessSession : IDisposable
         {
             internal readonly int SessionId;
-            private readonly IMemoryOwner<byte> owner;
+            private readonly MemoryOwner<byte> owner;
 
             //read session ctor
-            internal DataAccessSession(int sessionId, MemoryPool<byte> bufferPool, int bufferSize)
+            internal DataAccessSession(int sessionId, MemoryAllocator<byte> bufferPool, int bufferSize)
             {
                 SessionId = sessionId;
-                owner = bufferPool.Rent(bufferSize);
+                owner = bufferPool(bufferSize);
             }
 
             internal readonly Memory<byte> Buffer => owner.Memory;
@@ -37,13 +39,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             private readonly ConcurrentBag<int>? tokens;
             internal readonly int Capacity;
-            private readonly MemoryPool<byte> bufferPool;
+            private readonly MemoryAllocator<byte> bufferPool;
             internal readonly DataAccessSession WriteSession;
 
-            internal DataAccessSessionManager(int readersCount, Func<MemoryPool<byte>> sharedPool, int writeBufferSize)
+            internal DataAccessSessionManager(int readersCount, MemoryAllocator<byte> sharedPool, int writeBufferSize)
             {
                 Capacity = readersCount;
-                bufferPool = sharedPool();
+                bufferPool = sharedPool;
                 tokens = readersCount == 1 ? null : new ConcurrentBag<int>(Enumerable.Range(0, readersCount));
                 WriteSession = new DataAccessSession(0, bufferPool, writeBufferSize);
             }
@@ -66,11 +68,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 readSession.Dispose();
             }
 
-            public void Dispose()
-            {
-                WriteSession.Dispose();
-                bufferPool.Dispose();
-            }
+            public void Dispose() => WriteSession.Dispose();
         }
 
         //concurrent read sessions management

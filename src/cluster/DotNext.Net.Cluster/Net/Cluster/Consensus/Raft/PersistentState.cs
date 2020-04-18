@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using Collections.Specialized;
     using IO;
     using IO.Log;
@@ -52,8 +53,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly AsyncSharedLock syncRoot;
         private readonly IRaftLogEntry initialEntry;
         private readonly long initialSize;
-        private readonly MemoryPool<LogEntry> entryPool;
-        private readonly MemoryPool<LogEntryMetadata>? metadataPool;
+        private readonly MemoryAllocator<LogEntry> entryPool;
+        private readonly MemoryAllocator<LogEntryMetadata>? metadataPool;
         private readonly StreamSegment nullSegment;
         private readonly int bufferSize;
         private readonly bool replayOnInitialize;
@@ -80,10 +81,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.recordsPerPartition = recordsPerPartition;
             initialSize = configuration.InitialPartitionSize;
             commitEvent = new AsyncManualResetEvent(false);
-            sessionManager = new DataAccessSessionManager(configuration.MaxConcurrentReads, configuration.CreateMemoryPool<byte>, bufferSize);
+            sessionManager = new DataAccessSessionManager(configuration.MaxConcurrentReads, configuration.GetMemoryAllocator<byte>(), bufferSize);
             syncRoot = new AsyncSharedLock(sessionManager.Capacity);
-            entryPool = configuration.CreateMemoryPool<LogEntry>();
-            metadataPool = configuration.UseCaching ? configuration.CreateMemoryPool<LogEntryMetadata>() : null;
+            entryPool = configuration.GetMemoryAllocator<LogEntry>();
+            metadataPool = configuration.UseCaching ? configuration.GetMemoryAllocator<LogEntryMetadata>() : null;
             nullSegment = new StreamSegment(Stream.Null);
             initialEntry = new LogEntry(nullSegment, sessionManager.WriteSession.Buffer, new LogEntryMetadata());
             //sorted dictionary to improve performance of log compaction and snapshot installation procedures
@@ -146,10 +147,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             LogEntry entry;
             ValueTask<TResult> result;
             if (partitionTable.Count > 0)
-                using (var list = entryPool.Rent((int)length))
+                using (var list = entryPool((int)length))
                 {
                     var listIndex = 0;
-                    for (Partition? partition = null; startIndex <= endIndex; list.Memory.Span[listIndex++] = entry, startIndex++)
+                    for (Partition? partition = null; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                         if (startIndex == 0L)   //handle ephemeral entity
                             entry = First;
                         else if (TryGetPartition(startIndex, ref partition, out var switched)) //handle regular record
@@ -162,7 +163,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         }
                         else
                             break;
-                    result = reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list.Memory.Span[0].SnapshotIndex, token);
+                    result = reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list[0].SnapshotIndex, token);
                 }
             else if (snapshot.Length > 0)
             {
@@ -797,8 +798,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 syncRoot.Dispose();
                 snapshot.Dispose();
                 nullSegment.Dispose();
-                entryPool.Dispose();
-                metadataPool?.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -818,8 +817,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             syncRoot.Dispose();
             await snapshot.DisposeAsync().ConfigureAwait(false);
             await nullSegment.DisposeAsync().ConfigureAwait(false);
-            entryPool.Dispose();
-            metadataPool?.Dispose();
             base.Dispose(true);
         }
     }

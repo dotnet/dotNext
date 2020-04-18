@@ -18,6 +18,7 @@ namespace DotNext.Buffers
         public static void DefaultValue()
         {
             using var owner = new MemoryOwner<decimal>();
+            True(owner.IsEmpty);
             True(owner.Memory.IsEmpty);
         }
 
@@ -45,8 +46,11 @@ namespace DotNext.Buffers
         [Fact]
         public static void WrapArray()
         {
-            using var owner = new MemoryOwner<byte>(new byte[42]);
+            var array = new byte[42];
+            using var owner = new MemoryOwner<byte>(array);
             Equal(42, owner.Memory.Length);
+            owner[2] = 10;
+            Equal(10, array[2]);
         }
     }
 }

@@ -72,6 +72,11 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Determines whether this memory is empty.
+        /// </summary>
+        public bool IsEmpty => length == 0;
+
+        /// <summary>
         /// Gets the memory belonging to this owner.
         /// </summary>
         /// <value>The memory belonging to this owner.</value>
@@ -91,6 +96,29 @@ namespace DotNext.Buffers
                 else
                     result = default;
                 return result;
+            }
+        }
+
+        /// <summary>
+        /// Gets managed pointer to the item in the rented memory.
+        /// </summary>
+        /// <value>The managed pointer to the item.</value>
+        public ref T this[int index]
+        {
+            get
+            {
+                Span<T> result;
+                if(owner is IMemoryOwner<T> memory)
+                {
+                    result = memory.Memory.Span;
+                    if(length > 0)
+                        result = result.Slice(0, length);
+                }
+                else if(array != null)
+                    result = new Span<T>(array, 0, length);
+                else
+                    result = default;
+                return ref result[index];
             }
         }
 

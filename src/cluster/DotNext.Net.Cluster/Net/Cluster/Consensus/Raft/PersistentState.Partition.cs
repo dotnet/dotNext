@@ -12,6 +12,7 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using IO;
 
     public partial class PersistentState
@@ -28,14 +29,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             internal readonly long FirstIndex;
             internal readonly int Capacity;    //max number of entries
-            private readonly IMemoryOwner<LogEntryMetadata>? lookupCache;
+            private readonly MemoryOwner<LogEntryMetadata> lookupCache;
 
-            internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, MemoryPool<LogEntryMetadata>? cachePool, int readersCount)
+            internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, MemoryAllocator<LogEntryMetadata>? cachePool, int readersCount)
                 : base(Path.Combine(location.FullName, partitionNumber.ToString(InvariantCulture)), bufferSize, readersCount, FileOptions.RandomAccess | FileOptions.WriteThrough | FileOptions.Asynchronous)
             {
                 Capacity = recordsPerPartition;
                 FirstIndex = partitionNumber * recordsPerPartition;
-                lookupCache = cachePool?.Rent(recordsPerPartition);
+                lookupCache = cachePool is null ? default : cachePool(recordsPerPartition);
             }
 
             private long PayloadOffset => LogEntryMetadata.Size * (long)Capacity;
@@ -60,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             internal override void PopulateCache(in DataAccessSession session)
             {
-                if (lookupCache != null)
+                if (!lookupCache.IsEmpty)
                     PopulateCache(session.Buffer.Span, lookupCache.Memory.Span.Slice(0, Capacity));
             }
 
@@ -71,13 +72,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 LogEntryMetadata metadata;
                 if (refreshStream)
                     await reader.FlushAsync(token).ConfigureAwait(false);
-                if (lookupCache is null)
+                if (lookupCache.IsEmpty)
                 {
                     reader.BaseStream.Position = index * LogEntryMetadata.Size;
                     metadata = await reader.BaseStream.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
                 }
                 else
-                    metadata = lookupCache.Memory.Span[index];
+                    metadata = lookupCache[index];
                 return metadata.Offset > 0 ? new LogEntry(reader, buffer, metadata) : new LogEntry?();
             }
 
@@ -98,7 +99,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 LogEntryMetadata metadata;
                 if (index == 0L || index == 1L && FirstIndex == 0L)
                     offset = PayloadOffset;
-                else if (lookupCache is null)
+                else if (lookupCache.IsEmpty)
                 {
                     //read content offset and the length of the previous entry
                     Position = (index - 1) * LogEntryMetadata.Size;
@@ -108,7 +109,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 }
                 else
                 {
-                    metadata = lookupCache.Memory.Span[index - 1];
+                    metadata = lookupCache[index - 1];
                     Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
                     offset = metadata.Length + metadata.Offset;
                 }
@@ -120,8 +121,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Position = index * LogEntryMetadata.Size;
                 await this.WriteAsync(metadata, buffer).ConfigureAwait(false);
                 //update cache
-                if (lookupCache != null)
-                    lookupCache.Memory.Span[index] = metadata;
+                if (!lookupCache.IsEmpty)
+                    lookupCache[index] = metadata;
             }
 
             internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index)
@@ -136,7 +137,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             protected override void Dispose(bool disposing)
             {
                 if (disposing)
-                    lookupCache?.Dispose();
+                    lookupCache.Dispose();
                 base.Dispose(disposing);
             }
         }

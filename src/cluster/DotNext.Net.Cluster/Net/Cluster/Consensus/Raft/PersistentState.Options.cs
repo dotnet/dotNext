@@ -4,6 +4,8 @@ using System.IO.Compression;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
+
     public partial class PersistentState
     {
         /// <summary>
@@ -45,7 +47,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// Gets memory pool that is used by Write Ahead Log for its I/O operations.
             /// </summary>
             /// <returns>The instance of memory pool.</returns>
+            [Obsolete("Use GetMemoryAllocator instead")]
             public virtual MemoryPool<T> CreateMemoryPool<T>() where T : struct => MemoryPool<T>.Shared;
+
+            /// <summary>
+            /// Gets memory allocator for internal purposes.
+            /// </summary>
+            /// <typeparam name="T">The type of items in the pool.</typeparam>
+            /// <returns>The memory allocator.</returns>
+            public virtual MemoryAllocator<T> GetMemoryAllocator<T>()
+                where T : struct
+            {
+                //TODO: This code needed for backward compatibility
+                Func<MemoryPool<T>> factory = CreateMemoryPool<T>;
+                return factory.Method.DeclaringType == typeof(Options) ? ArrayPool<T>.Shared.ToAllocator() : factory().ToAllocator();
+            }
 
             /// <summary>
             /// Gets or sets the number of possible parallel reads.
