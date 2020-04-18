@@ -9,6 +9,7 @@ using System.Threading;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
+    using Buffers;
     using TransportServices;
     using static Threading.AtomicInt64;
 
@@ -42,8 +43,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly INetworkTransport.ChannelPool<Channel> channels;
         private readonly RefAction<Channel, CorrelationId> cancellationInvoker;
 
-        internal UdpClient(IPEndPoint address, int backlog, ArrayPool<byte> bufferPool, Func<long> appIdGenerator, ILoggerFactory loggerFactory)
-            : base(address, backlog, bufferPool, loggerFactory)
+        internal UdpClient(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<long> appIdGenerator, ILoggerFactory loggerFactory)
+            : base(address, backlog, allocator, loggerFactory)
         {
             channels = new INetworkTransport.ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;

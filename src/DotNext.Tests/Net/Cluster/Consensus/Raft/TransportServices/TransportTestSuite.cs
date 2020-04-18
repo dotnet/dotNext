@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
@@ -9,6 +10,7 @@ using Xunit;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 {
+    using Buffers;
     using IO;
     using IO.Log;
 
@@ -139,6 +141,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private protected static Func<ServerExchange> ServerExchangeFactory(ILocalMember localMember)
             => () => new ServerExchange(localMember);
+        
+        private protected static MemoryAllocator<byte> DefaultAllocator => ArrayPool<byte>.Shared.ToAllocator();
 
         private protected delegate IServer ServerFactory(ILocalMember localMember, IPEndPoint address, TimeSpan timeout);
         private protected delegate IClient ClientFactory(IPEndPoint address);

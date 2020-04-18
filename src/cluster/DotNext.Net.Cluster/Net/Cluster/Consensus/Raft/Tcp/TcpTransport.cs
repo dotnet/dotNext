@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using System;
-using System.Buffers;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -9,9 +8,9 @@ using static System.Buffers.Binary.BinaryPrimitives;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
+    using Buffers;
     using TransportServices;
     using static IO.StreamExtensions;
-    using ByteBuffer = Buffers.ArrayRental<byte>;
 
     internal abstract class TcpTransport : Disposable, INetworkTransport
     {
@@ -56,14 +55,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
         internal readonly IPEndPoint Address;
         private protected readonly ILogger logger;
-        private readonly ArrayPool<byte> bufferPool;
+        private readonly MemoryAllocator<byte> allocator;
         private int transmissionBlockSize;
 
-        private protected TcpTransport(IPEndPoint address, ArrayPool<byte> pool, ILoggerFactory loggerFactory)
+        private protected TcpTransport(IPEndPoint address, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
         {
             Address = address;
             logger = loggerFactory.CreateLogger(GetType());
-            bufferPool = pool;
+            this.allocator = allocator;
             transmissionBlockSize = MinTransmissionBlockSize;
             LingerOption = new LingerOption(false, 0);
         }
@@ -91,8 +90,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
         IPEndPoint INetworkTransport.Address => Address;
 
-        private protected ByteBuffer AllocTransmissionBlock()
-            => new ByteBuffer(bufferPool, transmissionBlockSize);
+        private protected MemoryOwner<byte> AllocTransmissionBlock()
+            => allocator(transmissionBlockSize);
 
         private protected static Memory<byte> AdjustToPayload(Memory<byte> packet)
             => packet.Slice(PacketPrologueSize);

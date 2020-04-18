@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using System;
-using System.Buffers;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -9,6 +8,7 @@ using EndOfStreamException = System.IO.EndOfStreamException;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
+    using Buffers;
     using TransportServices;
 
     internal sealed class TcpServer : TcpTransport, IServer
@@ -97,8 +97,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private readonly Func<IReusableExchange> exchangeFactory;
         private readonly CancellationTokenSource transmissionState;
 
-        internal TcpServer(IPEndPoint address, int backlog, ArrayPool<byte> pool, Func<IReusableExchange> exchangeFactory, ILoggerFactory loggerFactory)
-            : base(address, pool, loggerFactory)
+        internal TcpServer(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<IReusableExchange> exchangeFactory, ILoggerFactory loggerFactory)
+            : base(address, allocator, loggerFactory)
         {
             socket = new Socket(address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             this.backlog = backlog;

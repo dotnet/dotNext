@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using System;
-using System.Buffers;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
@@ -10,8 +9,8 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 {
+    using Buffers;
     using TransportServices;
-    using ByteBuffer = Buffers.ArrayRental<byte>;
 
     internal abstract class UdpSocket : Socket, INetworkTransport
     {
@@ -64,7 +63,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         internal const int MaxDatagramSize = 65507;
         internal const int MinDatagramSize = 300;
-        private protected readonly ArrayPool<byte> bufferPool;
+        private protected readonly MemoryAllocator<byte> allocator;
         internal readonly IPEndPoint Address;
         private protected readonly ILogger logger;
         //I/O management
@@ -73,14 +72,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private readonly Action<SocketAsyncEventArgs> dispatcher;
         private int datagramSize;
 
-        private protected UdpSocket(IPEndPoint address, int backlog, ArrayPool<byte> pool, ILoggerFactory loggerFactory)
+        private protected UdpSocket(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
             : base(address.AddressFamily, SocketType.Dgram, ProtocolType.Udp)
         {
             ExclusiveAddressUse = true;
             Blocking = false;
             Address = address;
             logger = loggerFactory.CreateLogger(GetType());
-            bufferPool = pool;
+            this.allocator = allocator;
             senderPool = new SendTaskPool();
             receiverPool = new SocketAsyncEventArgs?[backlog];
             dispatcher = BeginReceive;
@@ -244,8 +243,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             return waitForInput;
         }
 
-        private protected ByteBuffer AllocDatagramBuffer()
-            => new ByteBuffer(bufferPool, datagramSize);
+        private protected MemoryOwner<byte> AllocDatagramBuffer()
+            => allocator(datagramSize);
 
         private void Cleanup(bool disposing)
         {

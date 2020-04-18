@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
@@ -10,6 +9,7 @@ using LingerOption = System.Net.Sockets.LingerOption;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using Tcp;
     using TransportServices;
     using Udp;
@@ -26,8 +26,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private ElectionTimeout electionTimeout;
             private IPEndPoint? publicAddress;
             private PipeOptions? pipeConfig;
+            private MemoryAllocator<byte>? allocator;
             private int? serverChannels;
-            private ArrayPool<byte>? bufferPool;
             private ILoggerFactory? loggerFactory;
             private protected readonly Func<long> applicationIdGenerator;
 
@@ -102,6 +102,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set => electionTimeout = electionTimeout.Modify(value, electionTimeout.UpperValue);
             }
 
+            /// <summary>
+            /// Gets or sets memory allocator to be used for network I/O.
+            /// </summary>
+            [AllowNull]
+            public MemoryAllocator<byte> MemoryAllocator
+            {
+                get => allocator ?? PipeConfig.Pool.ToAllocator();
+                set => allocator = value;
+            }
+
             private protected TimeSpan Timeout
                 => TimeSpan.FromMilliseconds(LowerElectionTimeout);
 
@@ -135,16 +145,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 get => serverChannels.GetValueOrDefault(Members.Count + 1);
                 set => serverChannels = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
-            }
-
-            /// <summary>
-            /// Gets or sets buffer pool using for network I/O operations.
-            /// </summary>
-            [AllowNull]
-            public ArrayPool<byte> BufferPool
-            {
-                get => bufferPool ?? ArrayPool<byte>.Shared;
-                set => bufferPool = value;
             }
 
             /// <summary>
@@ -244,13 +244,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             private UdpClient CreateClient(IPEndPoint address)
-                => new UdpClient(address, ClientBacklog, BufferPool, applicationIdGenerator, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
+                => new UdpClient(address, ClientBacklog, MemoryAllocator, applicationIdGenerator, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
                 => new ExchangePeer(localMember, endPoint, CreateClient, Timeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
-                => new UdpServer(HostEndPoint, ServerBacklog, BufferPool, ExchangePoolFactory(localMember), LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment, ReceiveTimeout = Timeout };
+                => new UdpServer(HostEndPoint, ServerBacklog, MemoryAllocator, ExchangePoolFactory(localMember), LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment, ReceiveTimeout = Timeout };
         }
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
 
             private TcpClient CreateClient(IPEndPoint address)
-                => new TcpClient(address, BufferPool, LoggerFactory) { TransmissionBlockSize = TransmissionBlockSize, LingerOption = LingerOption };
+                => new TcpClient(address, MemoryAllocator, LoggerFactory) { TransmissionBlockSize = TransmissionBlockSize, LingerOption = LingerOption };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
                 => new ExchangePeer(localMember, endPoint, CreateClient, TimeSpan.FromMilliseconds(LowerElectionTimeout), PipeConfig, metrics);
@@ -307,7 +307,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal override IServer CreateServer(ILocalMember localMember)
             {
                 ServerExchange CreateExchange() => new ServerExchange(localMember, PipeConfig);
-                return new TcpServer(HostEndPoint, ServerBacklog, BufferPool, CreateExchange, LoggerFactory) 
+                return new TcpServer(HostEndPoint, ServerBacklog, MemoryAllocator, CreateExchange, LoggerFactory) 
                 { 
                     TransmissionBlockSize = TransmissionBlockSize, 
                     LingerOption = LingerOption, 

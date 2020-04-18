@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using System;
-using System.Buffers;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -8,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
+    using Buffers;
     using Threading;
     using TransportServices;
 
@@ -60,8 +60,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private readonly AsyncExclusiveLock accessLock;
         private volatile ClientNetworkStream? stream;
 
-        internal TcpClient(IPEndPoint address, ArrayPool<byte> pool, ILoggerFactory loggerFactory)
-            : base(address, pool, loggerFactory)
+        internal TcpClient(IPEndPoint address, MemoryAllocator<byte> allocator, ILoggerFactory loggerFactory)
+            : base(address, allocator, loggerFactory)
         {
             accessLock = new AsyncExclusiveLock();
         }
