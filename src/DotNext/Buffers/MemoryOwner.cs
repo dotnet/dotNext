@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.Buffers
 {
@@ -43,8 +44,9 @@ namespace DotNext.Buffers
         public MemoryOwner(MemoryPool<T> pool, int length = -1)
         {
             array = null;
-            owner = pool.Rent(length);
-            this.length = length;
+            IMemoryOwner<T> owner;
+            this.owner = owner = pool.Rent(length);
+            this.length = length < 0 ? owner.Memory.Length : length;
         }
 
         /// <summary>
@@ -86,16 +88,12 @@ namespace DotNext.Buffers
             {
                 Memory<T> result;
                 if(owner is IMemoryOwner<T> memory)
-                {
                     result = memory.Memory;
-                    if(length > 0)
-                        result = result.Slice(0, length);
-                }
                 else if(array != null)
-                    result = new Memory<T>(array, 0, length);
+                    result = new Memory<T>(array);
                 else
                     result = default;
-                return result;
+                return result.Slice(0, length);
             }
         }
 
@@ -107,18 +105,14 @@ namespace DotNext.Buffers
         {
             get
             {
-                Span<T> result;
+                if(index < 0 || index >= length)
+                    goto invalid_index;
                 if(owner is IMemoryOwner<T> memory)
-                {
-                    result = memory.Memory.Span;
-                    if(length > 0)
-                        result = result.Slice(0, length);
-                }
-                else if(array != null)
-                    result = new Span<T>(array, 0, length);
-                else
-                    result = default;
-                return ref result[index];
+                    return ref Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
+                if(array != null)
+                    return ref array[index];
+                invalid_index:
+                throw new ArgumentOutOfRangeException(nameof(index));
             }
         }
 
