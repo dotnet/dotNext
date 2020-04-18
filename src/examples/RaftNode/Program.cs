@@ -73,11 +73,21 @@ namespace RaftNode
 
             using var cluster = new RaftCluster(config);
             cluster.LeaderChanged += ClusterConfigurator.LeaderChanged;
+            var modifier = default(DataModifier?);
+            if(!string.IsNullOrEmpty(persistentStorage))
+            {
+                var state = new SimplePersistentState(persistentStorage);
+                cluster.AuditTrail = state;
+                modifier = new DataModifier(cluster, state);
+            }
             await cluster.StartAsync(CancellationToken.None);
+            await (modifier?.StartAsync(CancellationToken.None) ?? Task.CompletedTask);
             using var handler = new CancelKeyPressHandler();
             Console.CancelKeyPress += handler.Handler;
             await handler.WaitAsync();
             Console.CancelKeyPress -= handler.Handler;
+            await (modifier?.StopAsync(CancellationToken.None) ?? Task.CompletedTask);
+            await cluster.StopAsync(CancellationToken.None);
         }
 
         private static Task UseUdpTransport(int port, string? persistentStorage)
@@ -85,7 +95,8 @@ namespace RaftNode
             var configuration = new RaftCluster.UdpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
             {
                 LowerElectionTimeout = 150,
-                UpperElectionTimeout = 300
+                UpperElectionTimeout = 300,
+                DatagramSize = 1024
             };
             return UseConfiguration(configuration, persistentStorage);
         }
@@ -95,7 +106,8 @@ namespace RaftNode
             var configuration = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, port))
             {
                 LowerElectionTimeout = 150,
-                UpperElectionTimeout = 300
+                UpperElectionTimeout = 300,
+                TransmissionBlockSize = 4096
             };
             return UseConfiguration(configuration, persistentStorage);
         }

@@ -26,7 +26,7 @@ namespace RaftNode
 
         private long content;
 
-        private SimplePersistentState(string path)
+        public SimplePersistentState(string path)
             : base(path, 50, new Options { InitialPartitionSize = 50 * 8 })
         {
         }
