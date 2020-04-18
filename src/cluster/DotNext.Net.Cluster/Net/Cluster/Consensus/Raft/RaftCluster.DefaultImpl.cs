@@ -53,7 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="token">The token that can be used to cancel initialization process.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        public override Task StartAsync(CancellationToken token)
+        public override Task StartAsync(CancellationToken token = default)
         {
             if (FindMember(MatchByEndPoint, publicEndPoint) is null)
                 throw new RaftProtocolException(ExceptionMessages.UnresolvedLocalMember);
@@ -67,7 +67,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="token">The token that can be used to cancel shutdown process.</param>
         /// <returns>The task representing asynchronous execution of the method.</returns>
-        public override Task StopAsync(CancellationToken token)
+        public override Task StopAsync(CancellationToken token = default)
         {
             server?.Dispose();
             server = null;
