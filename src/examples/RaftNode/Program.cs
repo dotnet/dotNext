@@ -127,10 +127,10 @@ namespace RaftNode
                     Console.WriteLine("Port number and protocol are not specified");
                     break;
                 case 2:
-                    await StartNode(args[1], int.Parse(args[0]));
+                    await StartNode(args[0], int.Parse(args[1]));
                     break;
                 case 3:
-                    await StartNode(args[1], int.Parse(args[0]), args[2]);
+                    await StartNode(args[0], int.Parse(args[1]), args[2]);
                     break;
             }
         }
