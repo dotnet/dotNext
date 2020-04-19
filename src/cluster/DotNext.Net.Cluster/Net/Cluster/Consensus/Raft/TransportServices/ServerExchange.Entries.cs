@@ -121,7 +121,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             currentEntry = new ReceivedLogEntry(ref prologue, Reader);
             var result = await Writer.WriteAsync(prologue, token).ConfigureAwait(false);
-            if(result.IsCompleted | completed)
+            if (result.IsCompleted | completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
                 transmissionStateTrigger.Signal(this, setStateAction, State.EntryReceived);

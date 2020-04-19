@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net;
-using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory;
 using LingerOption = System.Net.Sockets.LingerOption;
+using NullLoggerFactory = Microsoft.Extensions.Logging.Abstractions.NullLoggerFactory;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -270,9 +270,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public IPEndPoint LocalEndPoint { get; set; }
 
             private UdpClient CreateClient(IPEndPoint address)
-                => new UdpClient(LocalEndPoint, address, ClientBacklog, MemoryAllocator, applicationIdGenerator, LoggerFactory) 
-                { 
-                    DatagramSize = datagramSize, 
+                => new UdpClient(LocalEndPoint, address, ClientBacklog, MemoryAllocator, applicationIdGenerator, LoggerFactory)
+                {
+                    DatagramSize = datagramSize,
                     DontFragment = DontFragment,
                     Ttl = TimeToLive
                 };
@@ -281,10 +281,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 => new ExchangePeer(localMember, endPoint, CreateClient, Timeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
-                => new UdpServer(HostEndPoint, ServerBacklog, MemoryAllocator, ExchangePoolFactory(localMember), LoggerFactory) 
-                { 
-                    DatagramSize = datagramSize, 
-                    DontFragment = DontFragment, 
+                => new UdpServer(HostEndPoint, ServerBacklog, MemoryAllocator, ExchangePoolFactory(localMember), LoggerFactory)
+                {
+                    DatagramSize = datagramSize,
+                    DontFragment = DontFragment,
                     ReceiveTimeout = Timeout,
                     Ttl = TimeToLive
                 };
@@ -345,9 +345,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set => TcpTransport.ValidateTranmissionBlockSize(value);
             }
 
-            private TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, MemoryAllocator, LoggerFactory) 
-            { 
-                TransmissionBlockSize = TransmissionBlockSize, 
+            private TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, MemoryAllocator, LoggerFactory)
+            {
+                TransmissionBlockSize = TransmissionBlockSize,
                 LingerOption = LingerOption,
                 Ttl = TimeToLive
             };
@@ -358,10 +358,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal override IServer CreateServer(ILocalMember localMember)
             {
                 ServerExchange CreateExchange() => new ServerExchange(localMember, PipeConfig);
-                return new TcpServer(HostEndPoint, ServerBacklog, MemoryAllocator, CreateExchange, LoggerFactory) 
-                { 
-                    TransmissionBlockSize = TransmissionBlockSize, 
-                    LingerOption = LingerOption, 
+                return new TcpServer(HostEndPoint, ServerBacklog, MemoryAllocator, CreateExchange, LoggerFactory)
+                {
+                    TransmissionBlockSize = TransmissionBlockSize,
+                    LingerOption = LingerOption,
                     ReceiveTimeout = Timeout,
                     GracefulShutdownTimeout = (int)GracefulShutdownTimeout.TotalMilliseconds,
                     Ttl = TimeToLive

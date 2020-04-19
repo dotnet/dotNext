@@ -131,7 +131,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 Interlocked.Exchange(ref this.stream, null)?.Dispose();
                 exchange.OnException(e);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 exchange.OnException(e);
             }

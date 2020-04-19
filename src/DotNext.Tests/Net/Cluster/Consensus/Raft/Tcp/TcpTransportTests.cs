@@ -139,25 +139,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         {
             static void CheckLeadership(IClusterMember member1, IClusterMember member2)
                 => Equal(member1.Endpoint, member2.Endpoint);
-            
+
             static void AddMembers(RaftCluster.NodeConfiguration config)
             {
                 config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3267));
                 config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3268));
                 config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3269));
             }
-            
+
             var config1 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3267));
-            AddMembers(config1);   
+            AddMembers(config1);
             var config2 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3268));
             AddMembers(config2);
             var config3 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3269));
-            AddMembers(config3);   
-            
+            AddMembers(config3);
+
             using var listener1 = new LeaderChangedEvent();
             using var listener2 = new LeaderChangedEvent();
             using var listener3 = new LeaderChangedEvent();
-            
+
             using var host1 = new RaftCluster(config1);
             host1.LeaderChanged += listener1.OnLeaderChanged;
             using var host2 = new RaftCluster(config2);

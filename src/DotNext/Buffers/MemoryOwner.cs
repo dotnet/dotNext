@@ -15,7 +15,7 @@ namespace DotNext.Buffers
     {
         private readonly object? owner;
         private readonly T[]? array;  //not null only if owner is ArrayPool
-        private readonly int length; 
+        private readonly int length;
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
@@ -57,7 +57,7 @@ namespace DotNext.Buffers
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="length"/> is less than 0 or greater than the length of <paramref name="array"/>.</exception>
         public MemoryOwner(T[] array, int length)
         {
-            if(length > array.Length || length < 0)
+            if (length > array.Length || length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
             this.array = array;
             this.length = length;
@@ -87,9 +87,9 @@ namespace DotNext.Buffers
             get
             {
                 Memory<T> result;
-                if(owner is IMemoryOwner<T> memory)
+                if (owner is IMemoryOwner<T> memory)
                     result = memory.Memory;
-                else if(array != null)
+                else if (array != null)
                     result = new Memory<T>(array);
                 else
                     result = default;
@@ -105,11 +105,11 @@ namespace DotNext.Buffers
         {
             get
             {
-                if(index < 0 || index >= length)
+                if (index < 0 || index >= length)
                     goto invalid_index;
-                if(owner is IMemoryOwner<T> memory)
+                if (owner is IMemoryOwner<T> memory)
                     return ref Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
-                if(array != null)
+                if (array != null)
                     return ref array[index];
                 invalid_index:
                 throw new ArgumentOutOfRangeException(nameof(index));
@@ -121,7 +121,7 @@ namespace DotNext.Buffers
         /// </summary>
         public void Dispose()
         {
-            switch(owner)
+            switch (owner)
             {
                 case IDisposable disposable:
                     disposable.Dispose();
@@ -129,7 +129,7 @@ namespace DotNext.Buffers
                 case ArrayPool<T> pool:
                     pool.Return(array);
                     break;
-            }           
+            }
         }
     }
 }

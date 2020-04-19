@@ -32,7 +32,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal FollowerState StartServing(TimeSpan timeout, CancellationToken token)
         {
-            if(token.IsCancellationRequested)
+            if (token.IsCancellationRequested)
             {
                 trackerCancellation.Cancel(false);
                 tracker = null;

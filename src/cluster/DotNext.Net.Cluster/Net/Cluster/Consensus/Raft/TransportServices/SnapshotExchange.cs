@@ -80,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         {
             var count = default(int);
             FlowControl control;
-            if(transmission is null)
+            if (transmission is null)
             {
                 count = WriteAnnouncement(payload.Span);
                 payload = payload.Slice(count);

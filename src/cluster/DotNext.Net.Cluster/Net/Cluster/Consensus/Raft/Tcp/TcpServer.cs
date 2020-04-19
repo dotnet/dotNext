@@ -69,11 +69,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 catch (OperationCanceledException e)
                 {
                     exchange.OnCanceled(e.CancellationToken);
-                    result = !(timeoutTracker is null) && timeoutTracker.IsCancellationRequested ? 
-                        ExchangeResult.TimeOut : 
+                    result = !(timeoutTracker is null) && timeoutTracker.IsCancellationRequested ?
+                        ExchangeResult.TimeOut :
                         ExchangeResult.Stopped;
                 }
-                catch(Exception e) when (e is EndOfStreamException || e is SocketException || e.InnerException is SocketException)
+                catch (Exception e) when (e is EndOfStreamException || e is SocketException || e.InnerException is SocketException)
                 {
                     exchange.OnException(e);
                     result = ExchangeResult.SocketError;
@@ -213,7 +213,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     socket.Close(GracefulShutdownTimeout);
                     socket.Dispose();
                 }
-                if(!SpinWait.SpinUntil(NoMoreConnections, GracefulShutdownTimeout))
+                if (!SpinWait.SpinUntil(NoMoreConnections, GracefulShutdownTimeout))
                     logger.TcpGracefulShutdownFailed(GracefulShutdownTimeout);
             }
         }

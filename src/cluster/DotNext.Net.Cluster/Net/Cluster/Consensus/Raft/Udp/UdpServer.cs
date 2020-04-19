@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using System;
-using System.Buffers;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
@@ -74,7 +73,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 if (exchanges.TryRent(out var exchange)) //channel doesn't exist in the list of active channel but rented successfully
                 {
                     channel = new Channel(exchange, exchanges, receiveTimeout, cancellationHandler, correlationId);
-                    if(!channels.TryAdd(correlationId, channel))
+                    if (!channels.TryAdd(correlationId, channel))
                     {
                         channel.Dispose();
                         goto request_channel;

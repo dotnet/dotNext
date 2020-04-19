@@ -74,7 +74,7 @@ namespace RaftNode
             using var cluster = new RaftCluster(config);
             cluster.LeaderChanged += ClusterConfigurator.LeaderChanged;
             var modifier = default(DataModifier?);
-            if(!string.IsNullOrEmpty(persistentStorage))
+            if (!string.IsNullOrEmpty(persistentStorage))
             {
                 var state = new SimplePersistentState(persistentStorage);
                 cluster.AuditTrail = state;

@@ -84,9 +84,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             set => transmissionBlockSize = ValidateTranmissionBlockSize(value);
         }
 
-        internal LingerOption LingerOption 
-        { 
-            get; 
+        internal LingerOption LingerOption
+        {
+            get;
             set;
         }
 

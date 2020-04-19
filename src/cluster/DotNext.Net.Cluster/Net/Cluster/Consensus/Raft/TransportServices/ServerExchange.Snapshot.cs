@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             var result = await Writer.WriteAsync(input, token).ConfigureAwait(false);
             ChangePort(ref endPoint, remotePort);
             task = server.ReceiveSnapshotAsync(endPoint, senderTerm, snapshot, snapshotIndex, token);
-            if(result.IsCompleted | completed)
+            if (result.IsCompleted | completed)
             {
                 await Writer.CompleteAsync().ConfigureAwait(false);
                 state = State.ReceivingSnapshotFinished;

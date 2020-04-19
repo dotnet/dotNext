@@ -99,7 +99,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static void SocketAcceptLoopTerminated(this ILogger logger, Exception e)
             => logger.LogDebug(e, Resources.GetString("SocketAcceptLoopTerminated"));
-        
+
         internal static void TcpGracefulShutdownFailed(this ILogger logger, int timeout)
             => logger.LogWarning(Resources.GetString("TcpGracefulShutdownFailed"), timeout);
     }

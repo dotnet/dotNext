@@ -56,7 +56,7 @@ namespace DotNext.Buffers
         {
             if (pool is null)
                 throw new ArgumentNullException(nameof(pool));
-            if(minBufferSize <= 0)
+            if (minBufferSize <= 0)
                 throw new ArgumentOutOfRangeException(nameof(minBufferSize));
             owner = pool.Rent(minBufferSize);
             memory = owner.Memory.Span.Slice(0, minBufferSize);

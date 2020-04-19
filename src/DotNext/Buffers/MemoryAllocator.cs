@@ -27,10 +27,10 @@ namespace DotNext.Buffers
         /// <returns>The array allocator.</returns>
         public static MemoryAllocator<T> ToAllocator<T>(this ArrayPool<T> pool)
             => pool.Allocate;
-        
+
         private static MemoryOwner<T> Allocate<T>(this MemoryPool<T> pool, int length)
             => new MemoryOwner<T>(pool, length);
-        
+
         /// <summary>
         /// Converts memory pool to the memory allocator.
         /// </summary>

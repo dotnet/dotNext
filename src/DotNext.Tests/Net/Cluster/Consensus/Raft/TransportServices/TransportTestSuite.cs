@@ -141,7 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private protected static Func<ServerExchange> ServerExchangeFactory(ILocalMember localMember)
             => () => new ServerExchange(localMember);
-        
+
         private protected static MemoryAllocator<byte> DefaultAllocator => ArrayPool<byte>.Shared.ToAllocator();
 
         private protected delegate IServer ServerFactory(ILocalMember localMember, IPEndPoint address, TimeSpan timeout);

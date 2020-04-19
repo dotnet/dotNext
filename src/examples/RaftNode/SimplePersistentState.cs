@@ -4,7 +4,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static DotNext.Threading.AtomicInt64;
-using IAuditTrail = DotNext.IO.Log.IAuditTrail;
 
 namespace RaftNode
 {
