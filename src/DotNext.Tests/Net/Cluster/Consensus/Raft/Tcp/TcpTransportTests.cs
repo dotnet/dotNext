@@ -144,16 +144,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             
             static void AddMembers(RaftCluster.NodeConfiguration config)
             {
-                config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3262));
-                config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3263));
-                config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3264));
+                config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3267));
+                config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3268));
+                config.Members.Add(new IPEndPoint(IPAddress.Loopback, 3269));
             }
             
-            var config1 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3262));
+            var config1 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3267));
             AddMembers(config1);   
-            var config2 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3263));
+            var config2 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3268));
             AddMembers(config2);
-            var config3 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3264));
+            var config3 = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback, 3269));
             AddMembers(config3);   
             
             using var listener1 = new LeaderChangedEvent();
