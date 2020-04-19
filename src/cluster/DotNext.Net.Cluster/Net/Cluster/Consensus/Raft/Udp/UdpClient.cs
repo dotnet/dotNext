@@ -61,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private protected override void ReportError(SocketError error)
             => channels.ReportError(error);
 
-        private protected override void EndReceive(object sender, SocketAsyncEventArgs args)
+        private protected override void EndReceive(SocketAsyncEventArgs args)
         {
             ReadOnlyMemory<byte> datagram = args.MemoryBuffer.Slice(0, args.BytesTransferred);
             //dispatch datagram to appropriate exchange

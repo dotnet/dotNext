@@ -97,9 +97,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             set => datagramSize = ValidateDatagramSize(value);
         }
 
-        private protected abstract void EndReceive(object sender, SocketAsyncEventArgs args);
+        private protected abstract void EndReceive(SocketAsyncEventArgs args);
 
-        private void EndReceiveImpl(object sender, SocketAsyncEventArgs args)
+        private void EndReceive(object sender, SocketAsyncEventArgs args)
         {
             switch (args.SocketError)
             {
@@ -110,7 +110,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 case SocketError.ConnectionAborted:
                     break;
                 case SocketError.Success:
-                    EndReceive(sender, args);
+                    EndReceive(args);
                     break;
             }
         }
@@ -151,12 +151,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 result = false;
             }
             if (!result) //completed synchronously
-                EndReceiveImpl(this, args);
+                EndReceive(this, args);
         }
 
         private protected void Start(object? userToken = null)
         {
-            EventHandler<SocketAsyncEventArgs> completedHandler = EndReceiveImpl;
+            EventHandler<SocketAsyncEventArgs> completedHandler = EndReceive;
             for (var i = 0; i < receiverPool.Length; i++)
             {
                 var args = new SocketAsyncEventArgs { UserToken = userToken };
