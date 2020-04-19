@@ -61,3 +61,12 @@ using System.Runtime.CompilerServices;
 var nullref = Unsafe.AsRef<byte>(default(void*));
 Intrinsics.IsNull(in nullref);
 ```
+
+# Exact Type-Testing
+The **is** operator in C# checks if the result of an expression is compatible with a given type. However, in some rare cases you need to check whether the object is of exact type. `IsExactTypeOf` method provides optimized implementation of this case:
+```csharp
+"a" is object;  //true
+"a" is string;  //true
+Intrinsics.IsExactTypeOf<object>("a");  //false
+Intrinsics.IsExactTypeOf<string>("a");  //true
+```
