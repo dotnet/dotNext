@@ -196,7 +196,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             Listen();
         }
 
-        private bool HasActiveConnections() => connections <= 0;
+        private bool NoMoreConnections() => connections <= 0;
 
         protected override void Dispose(bool disposing)
         {
@@ -213,7 +213,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     socket.Close(GracefulShutdownTimeout);
                     socket.Dispose();
                 }
-                if(!SpinWait.SpinUntil(HasActiveConnections, GracefulShutdownTimeout))
+                if(!SpinWait.SpinUntil(NoMoreConnections, GracefulShutdownTimeout))
                     logger.TcpGracefulShutdownFailed(GracefulShutdownTimeout);
             }
         }
