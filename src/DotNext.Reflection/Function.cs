@@ -38,9 +38,10 @@ namespace DotNext
             where A : struct
         {
             private readonly Function<T, A, R> function;
+            [NotNull]
             private readonly T target;
 
-            internal Closure(Function<T, A, R> function, T target)
+            internal Closure(Function<T, A, R> function, [DisallowNull]T target)
             {
                 this.function = function;
                 this.target = target;

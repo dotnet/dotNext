@@ -10,6 +10,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO.Log;
     using Threading;
+    using static Replication.CommitEvent;
 
     /// <summary>
     /// Represents lightweight Raft node state that is suitable for distributed consensus only.
@@ -21,6 +22,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     public sealed class ConsensusOnlyState : Disposable, IPersistentState
     {
         private static readonly IRaftLogEntry First = new EmptyEntry(0L);
+        private static readonly Func<ConsensusOnlyState, long, bool> IsCommittedPredicate = IsCommitted;
 
         [StructLayout(LayoutKind.Auto)]
         private readonly struct EntryList : IReadOnlyList<EmptyEntry>
@@ -73,6 +75,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         long IPersistentState.Term => term.VolatileRead();
 
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref First;
+
+        private static bool IsCommitted(ConsensusOnlyState state, long index) => index <= state.commitIndex.VolatileRead();
 
         private void Append(long[] terms, long startIndex)
         {
@@ -260,6 +264,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         Task<bool> IAuditTrail.WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitAsync(timeout, token);
+
+        Task<bool> IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
+            => commitEvent.WaitForCommitAsync(IsCommittedPredicate, this, index, timeout, token);
 
         private async Task EnsureConsistency(TimeSpan timeout, CancellationToken token)
         {

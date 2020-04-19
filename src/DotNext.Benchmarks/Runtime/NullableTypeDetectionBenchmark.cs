@@ -12,17 +12,17 @@ namespace DotNext.Runtime
     public class NullableTypeDetectionBenchmark
     {
         [Benchmark]
-        public void DetectNullableType()
+        public bool DetectNullableType()
         {
             var vt = Intrinsics.IsNullable<ValueFunc<int, int>>();
-            vt |= Intrinsics.IsNullable<StringBuilder>();
+            return vt |= Intrinsics.IsNullable<StringBuilder>();
         }
 
         [Benchmark]
-        public void DetectNullableUsingReflection()
+        public bool DetectNullableUsingReflection()
         {
             var vt = typeof(ValueFunc<int, int>).IsValueType;
-            vt |= typeof(StringBuilder).IsValueType;
+            return vt |= typeof(StringBuilder).IsValueType;
         }
     }
 }

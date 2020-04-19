@@ -339,7 +339,7 @@ namespace DotNext.Reflection
             return targetMethod is null ? null : new Method<D>(targetMethod, arglist, new[] { input });
         }
 
-        
+
 
         private static Method<D>? ReflectInstance(Type thisParam, Type[] parameters, Type returnType, string methodName, bool nonPublic)
         {

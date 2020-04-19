@@ -15,12 +15,12 @@ namespace DotNext
         private static readonly RandomNumberGenerator rng = RandomNumberGenerator.Create();
 
         [Benchmark]
-        public void GuidString() => Guid.NewGuid().ToString();
+        public string GuidString() => Guid.NewGuid().ToString();
 
         [Benchmark]
-        public void RandomString() => rnd.NextString(AllowedChars, 36);
+        public string RandomString() => rnd.NextString(AllowedChars, 36);
 
         [Benchmark]
-        public void CryptoRngString() => rng.NextString(AllowedChars, 36);
+        public string CryptoRngString() => rng.NextString(AllowedChars, 36);
     }
 }

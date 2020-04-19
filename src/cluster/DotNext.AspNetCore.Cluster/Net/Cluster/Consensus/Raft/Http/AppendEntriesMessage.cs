@@ -156,10 +156,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             private readonly Enumerable<TEntry, TList> entries;
             private readonly string boundary;
 
-            internal LogEntriesContent(TList entries)
+            internal LogEntriesContent(in TList entries)
             {
                 boundary = Guid.NewGuid().ToString();
-                this.entries = new Enumerable<TEntry, TList>(entries);
+                this.entries = new Enumerable<TEntry, TList>(in entries);
                 var contentType = new MediaTypeHeaderValue("multipart/mixed");
                 contentType.Parameters.Add(new NameValueHeaderValue(nameof(boundary), Quote + boundary + Quote));
                 Headers.ContentType = contentType;
@@ -216,7 +216,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             }
         }
 
-        private readonly TList entries;
+        private TList entries;  //not readonly to avoid hidden copies
 
         internal AppendEntriesMessage(IPEndPoint sender, long term, long prevLogIndex, long prevLogTerm, long commitIndex, TList entries)
             : base(sender, term, prevLogIndex, prevLogTerm, commitIndex)
@@ -226,7 +226,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
         {
             request.Headers.Add(CountHeader, entries.Count.ToString(InvariantCulture));
             if (entries.Count > 0)
-                request.Content = new LogEntriesContent(entries);
+                request.Content = new LogEntriesContent(in entries);
             base.PrepareRequest(request);
         }
 

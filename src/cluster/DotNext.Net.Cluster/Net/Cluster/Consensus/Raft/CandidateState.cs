@@ -43,6 +43,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 catch (MemberUnavailableException)
                 {
                     result = VotingResult.NotAvailable;
+                    term = -1L;
                 }
                 return new Result<VotingResult>(term, result);
             }
@@ -79,7 +80,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     stateMachine.MoveToFollowerState(false, result.Term);
                     return;
                 }
-
                 switch (result.Value)
                 {
                     case VotingResult.Canceled: //candidate timeout happened

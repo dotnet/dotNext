@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
@@ -45,6 +46,80 @@ namespace DotNext.Threading
             ThrowIfDisposed();
             return node is null ? CompletedTask<bool, BooleanConst.True>.Task : node.Task.WaitAsync(timeout, token);
         }
+
+        /// <summary>
+        /// Suspends the caller until this event is set.
+        /// </summary>
+        /// <remarks>
+        /// If given predicate returns true then caller will not be suspended.
+        /// </remarks>
+        /// <param name="condition">Additional condition that must be checked before suspension.</param>
+        /// <param name="arg">The argument to be passed to the predicate.</param>
+        /// <param name="timeout">The number of time to wait before this event is set.</param>
+        /// <param name="token">The token that can be used to cancel waiting operation.</param>
+        /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public Task<bool> WaitAsync<T>(Predicate<T> condition, T arg, TimeSpan timeout, CancellationToken token = default)
+        {
+            ThrowIfDisposed();
+            return node is null || condition(arg) ? CompletedTask<bool, BooleanConst.True>.Task : node.Task.WaitAsync(timeout, token);
+        }
+
+        /// <summary>
+        /// Suspends the caller until this event is set.
+        /// </summary>
+        /// <remarks>
+        /// If given predicate returns true then caller will not be suspended.
+        /// </remarks>
+        /// <param name="condition">Additional condition that must be checked before suspension.</param>
+        /// <param name="arg">The argument to be passed to the predicate.</param>
+        /// <param name="token">The token that can be used to cancel waiting operation.</param>
+        /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task WaitAsync<T>(Predicate<T> condition, T arg, CancellationToken token = default)
+            => WaitAsync(condition, arg, InfiniteTimeSpan, token);
+
+        /// <summary>
+        /// Suspends the caller until this event is set.
+        /// </summary>
+        /// <remarks>
+        /// If given predicate returns true then caller will not be suspended.
+        /// </remarks>
+        /// <param name="condition">Additional condition that must be checked before suspension.</param>
+        /// <param name="arg1">The first argument to be passed to the predicate.</param>
+        /// <param name="arg2">The second argument to be passed to the predicate.</param>
+        /// <param name="timeout">The number of time to wait before this event is set.</param>
+        /// <param name="token">The token that can be used to cancel waiting operation.</param>
+        /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="timeout"/> is negative.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public Task<bool> WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, TimeSpan timeout, CancellationToken token = default)
+        {
+            ThrowIfDisposed();
+            return node is null || condition(arg1, arg2) ? CompletedTask<bool, BooleanConst.True>.Task : node.Task.WaitAsync(timeout, token);
+        }
+
+        /// <summary>
+        /// Suspends the caller until this event is set.
+        /// </summary>
+        /// <remarks>
+        /// If given predicate returns true then caller will not be suspended.
+        /// </remarks>
+        /// <param name="condition">Additional condition that must be checked before suspension.</param>
+        /// <param name="arg1">The first argument to be passed to the predicate.</param>
+        /// <param name="arg2">The second argument to be passed to the predicate.</param>
+        /// <param name="token">The token that can be used to cancel waiting operation.</param>
+        /// <returns><see langword="true"/>, if this event was set; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="ObjectDisposedException">The current instance has already been disposed.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public Task WaitAsync<T1, T2>(Func<T1, T2, bool> condition, T1 arg1, T2 arg2, CancellationToken token = default)
+            => WaitAsync(condition, arg1, arg2, InfiniteTimeSpan, token);
 
         /// <summary>
         /// Releases all resources associated with exclusive lock.

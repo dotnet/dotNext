@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -9,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
+    using Buffers;
     using Collections.Specialized;
     using IO;
     using IO.Log;
@@ -39,14 +39,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// </remarks>
     public partial class PersistentState : Disposable, IPersistentState, IAsyncDisposable
     {
+        private static readonly Predicate<PersistentState> IsConsistentPredicate;
+
+        static PersistentState()
+        {
+            IsConsistentPredicate = DelegateHelpers.CreateOpenDelegate<Predicate<PersistentState>>(state => state.IsConsistent);
+        }
+
         private Snapshot snapshot;
         private readonly DirectoryInfo location;
         private readonly AsyncManualResetEvent commitEvent;
         private readonly AsyncSharedLock syncRoot;
         private readonly IRaftLogEntry initialEntry;
         private readonly long initialSize;
-        private readonly MemoryPool<LogEntry> entryPool;
-        private readonly MemoryPool<LogEntryMetadata>? metadataPool;
+        private readonly MemoryAllocator<LogEntry> entryPool;
+        private readonly MemoryAllocator<LogEntryMetadata>? metadataPool;
         private readonly StreamSegment nullSegment;
         private readonly int bufferSize;
         private readonly bool replayOnInitialize;
@@ -73,10 +80,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             this.recordsPerPartition = recordsPerPartition;
             initialSize = configuration.InitialPartitionSize;
             commitEvent = new AsyncManualResetEvent(false);
-            sessionManager = new DataAccessSessionManager(configuration.MaxConcurrentReads, configuration.CreateMemoryPool<byte>, bufferSize);
+            sessionManager = new DataAccessSessionManager(configuration.MaxConcurrentReads, configuration.GetMemoryAllocator<byte>(), bufferSize);
             syncRoot = new AsyncSharedLock(sessionManager.Capacity);
-            entryPool = configuration.CreateMemoryPool<LogEntry>();
-            metadataPool = configuration.UseCaching ? configuration.CreateMemoryPool<LogEntryMetadata>() : null;
+            entryPool = configuration.GetMemoryAllocator<LogEntry>();
+            metadataPool = configuration.UseCaching ? configuration.GetMemoryAllocator<LogEntryMetadata>() : null;
             nullSegment = new StreamSegment(Stream.Null);
             initialEntry = new LogEntry(nullSegment, sessionManager.WriteSession.Buffer, new LogEntryMetadata());
             //sorted dictionary to improve performance of log compaction and snapshot installation procedures
@@ -139,10 +146,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             LogEntry entry;
             ValueTask<TResult> result;
             if (partitionTable.Count > 0)
-                using (var list = entryPool.Rent((int)length))
+                using (var list = entryPool((int)length))
                 {
                     var listIndex = 0;
-                    for (Partition? partition = null; startIndex <= endIndex; list.Memory.Span[listIndex++] = entry, startIndex++)
+                    for (Partition? partition = null; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                         if (startIndex == 0L)   //handle ephemeral entity
                             entry = First;
                         else if (TryGetPartition(startIndex, ref partition, out var switched)) //handle regular record
@@ -155,7 +162,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         }
                         else
                             break;
-                    result = reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list.Memory.Span[0].SnapshotIndex, token);
+                    return await reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list[0].SnapshotIndex, token).ConfigureAwait(false);
                 }
             else if (snapshot.Length > 0)
             {
@@ -534,6 +541,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public Task<bool> WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitAsync(timeout, token);
 
+        /// <summary>
+        /// Waits for specific commit.
+        /// </summary>
+        /// <param name="index">The index of the log record to be committed.</param>
+        /// <param name="timeout">The timeout used to wait for the commit.</param>
+        /// <param name="token">The token that can be used to cancel waiting.</param>
+        /// <returns><see langword="true"/> if log entry is committed; otherwise, <see langword="false"/>.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been cancelled.</exception>
+        public Task<bool> WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
+            => commitEvent.WaitForCommitAsync(NodeState.IsCommittedPredicate, state, index, timeout, token);
+
         private async ValueTask ForceCompaction(SnapshotBuilder builder, CancellationToken token)
         {
             //1. Find the partitions that can be compacted
@@ -723,9 +741,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return Task.CompletedTask;
         }
 
+        private bool IsConsistent
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => state.Term <= lastTerm.VolatileRead();
+        }
+
         private async Task EnsureConsistencyImpl(TimeSpan timeout, CancellationToken token)
         {
-            for (var timeoutTracker = new Timeout(timeout); state.Term > lastTerm.VolatileRead(); await commitEvent.WaitAsync(timeout, token).ConfigureAwait(false))
+            for (var timeoutTracker = new Timeout(timeout); !IsConsistent; await commitEvent.WaitAsync(IsConsistentPredicate, this, timeout, token).ConfigureAwait(false))
                 timeoutTracker.ThrowIfExpired(out timeout);
         }
 
@@ -739,7 +763,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="TimeoutException">Timeout occurred.</exception>
         public Task EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token)
-            => state.Term <= lastTerm.VolatileRead() ? Task.CompletedTask : EnsureConsistencyImpl(timeout, token);
+            => IsConsistent ? Task.CompletedTask : EnsureConsistencyImpl(timeout, token);
 
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref initialEntry;
 
@@ -773,8 +797,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 syncRoot.Dispose();
                 snapshot.Dispose();
                 nullSegment.Dispose();
-                entryPool.Dispose();
-                metadataPool?.Dispose();
             }
             base.Dispose(disposing);
         }
@@ -794,8 +816,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             syncRoot.Dispose();
             await snapshot.DisposeAsync().ConfigureAwait(false);
             await nullSegment.DisposeAsync().ConfigureAwait(false);
-            entryPool.Dispose();
-            metadataPool?.Dispose();
             base.Dispose(true);
         }
     }

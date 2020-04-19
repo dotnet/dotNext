@@ -25,45 +25,24 @@ namespace DotNext.Reflection
         private const string StringValue = "748383565500";
 
         [Benchmark]
-        public void NoReflection()
-        {
-            decimal.TryParse(StringValue, out var _);
-        }
+        public bool NoReflection() => decimal.TryParse(StringValue, out var _);
 
         [Benchmark]
-        public void UseDynamicInvoker()
-        {
-            Invoker.Invoke(null, StringValue, decimal.Zero);
-        }
+        public object UseDynamicInvoker() => Invoker.Invoke(null, StringValue, decimal.Zero);
 
         [Benchmark]
-        public void UseReflection()
-        {
-            ReflectedMethod.Invoke(null, new object[] { StringValue, decimal.Zero });
-        }
+        public object UseReflection() => ReflectedMethod.Invoke(null, new object[] { StringValue, decimal.Zero });
 
         [Benchmark]
-        public void UseStronglyTypedReflection()
-        {
-            StronglyTyped(StringValue, out var result);
-        }
+        public bool UseStronglyTypedReflection() => StronglyTyped(StringValue, out var result);
 
         [Benchmark]
-        public void UseStronglyTypedSpecialReflection()
-        {
-            StronglyTypedSpecial((StringValue, decimal.Zero));
-        }
+        public bool UseStronglyTypedSpecialReflection() => StronglyTypedSpecial((StringValue, decimal.Zero));
 
         [Benchmark]
-        public void UseStronglyTypedSpecialUnreflected()
-        {
-            StronglyTypedSpecialUnreflected((StringValue, decimal.Zero));
-        }
+        public bool UseStronglyTypedSpecialUnreflected() => StronglyTypedSpecialUnreflected((StringValue, decimal.Zero));
 
         [Benchmark]
-        public void UseUntypedSpecialReflection()
-        {
-            UntypedSpecialUnreflected((StringValue, decimal.Zero));
-        }
+        public object UseUntypedSpecialReflection() => UntypedSpecialUnreflected((StringValue, decimal.Zero));
     }
 }

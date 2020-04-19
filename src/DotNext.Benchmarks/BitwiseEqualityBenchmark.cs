@@ -41,59 +41,45 @@ namespace DotNext
         private static readonly LargeStruct NonEmptyLargeStruct = new LargeStruct { C = 30 };
 
         [Benchmark]
-        public void GuidEqualsMethod()
-        {
-            NonEmptyGuid.Equals(default);
-        }
+        public bool GuidEqualsMethod() => NonEmptyGuid.Equals(default);
 
         [Benchmark]
-        public void GuidBitwiseEqualsMethod()
-        {
-            BitwiseComparer<Guid>.Equals<Guid>(NonEmptyGuid, default);
-        }
+        public bool GuidBitwiseEqualsMethod()
+            => BitwiseComparer<Guid>.Equals<Guid>(NonEmptyGuid, default);
 
         [Benchmark]
-        public unsafe void GuidBitwiseEqualsUsingSpan()
+        public unsafe bool GuidBitwiseEqualsUsingSpan()
         {
             var value = NonEmptyGuid;
             var span1 = new ReadOnlySpan<byte>(&value, sizeof(Guid));
             var empty = default(Guid);
             var span2 = new ReadOnlySpan<byte>(&empty, sizeof(Guid));
-            span1.SequenceEqual(span2);
+            return span1.SequenceEqual(span2);
         }
 
         [Benchmark]
-        public void LargeStructEqualsMethod()
-        {
-            NonEmptyLargeStruct.Equals(default);
-        }
+        public bool LargeStructEqualsMethod() => NonEmptyLargeStruct.Equals(default);
 
         [Benchmark]
-        public void LargeStructBitwiseEqualsMethod()
-        {
-            BitwiseComparer<LargeStruct>.Equals<LargeStruct>(NonEmptyLargeStruct, default);
-        }
+        public bool LargeStructBitwiseEqualsMethod()
+            => BitwiseComparer<LargeStruct>.Equals<LargeStruct>(NonEmptyLargeStruct, default);
 
         [Benchmark]
-        public unsafe void LargeStructEqualsUsingSpan()
+        public unsafe bool LargeStructEqualsUsingSpan()
         {
             var value = NonEmptyLargeStruct;
             var span1 = new ReadOnlySpan<byte>(&value, sizeof(LargeStruct));
             var empty = default(LargeStruct);
             var span2 = new ReadOnlySpan<byte>(&empty, sizeof(LargeStruct));
-            span1.SequenceEqual(span2);
+            return span1.SequenceEqual(span2);
         }
 
         [Benchmark]
-        public void EnumEqualsUsingDefaultComparer()
-        {
-            System.Collections.Generic.EqualityComparer<EnvironmentVariableTarget>.Default.Equals(EnvironmentVariableTarget.Machine, EnvironmentVariableTarget.Process);
-        }
+        public bool EnumEqualsUsingDefaultComparer()
+            => System.Collections.Generic.EqualityComparer<EnvironmentVariableTarget>.Default.Equals(EnvironmentVariableTarget.Machine, EnvironmentVariableTarget.Process);
 
         [Benchmark]
-        public void EnumEqualsUsingBitwiseComparer()
-        {
-            BitwiseComparer<EnvironmentVariableTarget>.Equals(EnvironmentVariableTarget.Machine, EnvironmentVariableTarget.Process);
-        }
+        public bool EnumEqualsUsingBitwiseComparer()
+            => BitwiseComparer<EnvironmentVariableTarget>.Equals(EnvironmentVariableTarget.Machine, EnvironmentVariableTarget.Process);
     }
 }

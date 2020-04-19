@@ -54,7 +54,7 @@ namespace DotNext.Threading
             internal bool IsRoot => previous is null && next is null;
         }
 
-        private protected interface ILockManager<out N>
+        private protected interface ILockManager<N>
             where N : WaitNode
         {
             bool TryAcquire();  //if true then Wait method can be completed synchronously; otherwise, false.
@@ -113,8 +113,9 @@ namespace DotNext.Threading
         }
 
         [MethodImpl(MethodImplOptions.Synchronized)]
-        private protected Task<bool> WaitAsync<M>(ref M manager, TimeSpan timeout, CancellationToken token)
-            where M : struct, ILockManager<WaitNode>
+        private protected Task<bool> WaitAsync<TNode, TManager>(ref TManager manager, TimeSpan timeout, CancellationToken token)
+            where TNode : WaitNode
+            where TManager : struct, ILockManager<TNode>
         {
             ThrowIfDisposed();
             if (timeout < TimeSpan.Zero && timeout != InfiniteTimeSpan)
@@ -132,6 +133,30 @@ namespace DotNext.Threading
             return timeout == InfiniteTimeSpan ?
                 token.CanBeCanceled ? WaitAsync(tail, token) : tail.Task
                 : WaitAsync(tail, timeout, token);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private protected static bool TryAcquire<TNode, TManager>(ref TManager manager)
+            where TNode : WaitNode
+            where TManager : struct, ILockManager<TNode>
+            => manager.TryAcquire();
+
+        /// <summary>
+        /// Cancels all suspended callers.
+        /// </summary>
+        /// <param name="token">The canceled token.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="token"/> is not in canceled state.</exception>
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        public void CancelSuspendedCallers(CancellationToken token)
+        {
+            if (!token.IsCancellationRequested)
+                throw new ArgumentOutOfRangeException(nameof(token));
+            for (WaitNode? current = head, next; !(current is null); current = next)
+            {
+                next = current.CleanupAndGotoNext();
+                current.TrySetCanceled(token);
+            }
+            head = tail = null;
         }
 
         /// <summary>

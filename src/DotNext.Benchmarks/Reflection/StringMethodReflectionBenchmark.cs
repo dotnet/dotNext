@@ -23,39 +23,21 @@ namespace DotNext.Reflection
         public string StringValue;
 
         [Benchmark]
-        public void WithoutReflection()
-        {
-            StringValue.IndexOf('7', 0);
-        }
+        public int WithoutReflection() => StringValue.IndexOf('7', 0);
 
         [Benchmark]
-        public void WithTypedFastReflection()
-        {
-            IndexOf(StringValue, '7', 0);
-        }
+        public int WithTypedFastReflection() => IndexOf(StringValue, '7', 0);
 
         [Benchmark]
-        public void WithTypedFastReflectionSpecial()
-        {
-            IndexOfSpecial(StringValue, ('7', 0));
-        }
+        public int WithTypedFastReflectionSpecial() => IndexOfSpecial(StringValue, ('7', 0));
 
         [Benchmark]
-        public void WithUntypedFastReflectionSpecial()
-        {
-            IndexOfSpecialUntyped(StringValue, ('7', 0));
-        }
+        public object WithUntypedFastReflectionSpecial() => IndexOfSpecialUntyped(StringValue, ('7', 0));
 
         [Benchmark]
-        public void WithReflection()
-        {
-            IndexOfReflected.Invoke(StringValue, new object[] { '7', 0 });
-        }
+        public object WithReflection() => IndexOfReflected.Invoke(StringValue, new object[] { '7', 0 });
 
         [Benchmark]
-        public void WithDynamicInvoker()
-        {
-            IndexOfDynamicInvoker.Invoke(StringValue, '7', 0);
-        }
+        public object WithDynamicInvoker() => IndexOfDynamicInvoker.Invoke(StringValue, '7', 0);
     }
 }

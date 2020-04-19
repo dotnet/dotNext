@@ -69,7 +69,7 @@ namespace DotNext.Reflection
             ValueTypeFieldTest(reader, writer);
         }
 
-        private unsafe static void TypedPointerFieldTest(DynamicInvoker reader, DynamicInvoker writer)
+        private static unsafe void TypedPointerFieldTest(DynamicInvoker reader, DynamicInvoker writer)
         {
             var obj = new MyClass() { TypedPointerField = (byte*)new IntPtr(42) };
             Equal(new IntPtr(42), new IntPtr(Pointer.Unbox(reader(obj))));
@@ -90,7 +90,7 @@ namespace DotNext.Reflection
             TypedPointerFieldTest(reader, writer);
         }
 
-        private unsafe static void PointerFieldTest(DynamicInvoker reader, DynamicInvoker writer)
+        private static unsafe void PointerFieldTest(DynamicInvoker reader, DynamicInvoker writer)
         {
             var obj = new MyClass() { UntypedPointerField = (void*)new IntPtr(42) };
             Equal(new IntPtr(42), new IntPtr(Pointer.Unbox(reader(obj))));
@@ -100,7 +100,7 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public unsafe static void PointerFieldGetSet()
+        public static unsafe void PointerFieldGetSet()
         {
             var field = typeof(MyClass).GetField(nameof(MyClass.UntypedPointerField));
             NotNull(field);
@@ -123,7 +123,7 @@ namespace DotNext.Reflection
         }
 
         [Fact]
-        public unsafe static void OperatorDynamicInvoke()
+        public static unsafe void OperatorDynamicInvoke()
         {
             var method = typeof(IntPtr).GetMethod(nameof(IntPtr.ToPointer), Array.Empty<Type>()).Unreflect();
             Equal(new IntPtr(42), new IntPtr(Pointer.Unbox(method(new IntPtr(42)))));

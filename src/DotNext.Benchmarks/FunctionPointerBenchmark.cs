@@ -30,39 +30,21 @@ namespace DotNext
         private static readonly ValueFunc<int, int> ClosedPtr = new ValueFunc<int, int>(ClosedDelegate);
 
         [Benchmark]
-        public void InvokeStaticUsingDelegate()
-        {
-            ParseToIntMethod("123");
-        }
+        public int InvokeStaticUsingDelegate() => ParseToIntMethod("123");
 
         [Benchmark]
-        public void InvokeStaticUsingPointer()
-        {
-            ParseToIntMethodPtr.Invoke("123");
-        }
+        public int InvokeStaticUsingPointer() => ParseToIntMethodPtr.Invoke("123");
 
         [Benchmark]
-        public void InvokeStaticUsingDelegateLargeArgs()
-        {
-            NegateDecimal(20M);
-        }
+        public decimal InvokeStaticUsingDelegateLargeArgs() => NegateDecimal(20M);
 
         [Benchmark]
-        public void InvokeStaticUsingPointerLargeArgs()
-        {
-            NegateDecimalPtr.Invoke(20M);
-        }
+        public decimal InvokeStaticUsingPointerLargeArgs() => NegateDecimalPtr.Invoke(20M);
 
         [Benchmark]
-        public void InvokeInstanceUsingDelegate()
-        {
-            ClosedDelegate(42);
-        }
+        public int InvokeInstanceUsingDelegate() => ClosedDelegate(42);
 
         [Benchmark]
-        public void InvokeInstanceUsingPointer()
-        {
-            ClosedPtr.Invoke(42);
-        }
+        public int InvokeInstanceUsingPointer() => ClosedPtr.Invoke(42);
     }
 }

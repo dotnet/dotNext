@@ -25,16 +25,12 @@ namespace DotNext
         }
 
         [Benchmark]
-        public void ShortGuidArrayBitwiseEquals()
-        {
-            ShortGuidArray1.BitwiseEquals(ShortGuidArray2);
-        }
+        public bool ShortGuidArrayBitwiseEquals()
+            => ShortGuidArray1.BitwiseEquals(ShortGuidArray2);
 
         [Benchmark]
-        public void ShortGuidArraySequenceEqual()
-        {
-            new ReadOnlySpan<Guid>(ShortGuidArray1).SequenceEqual(ShortGuidArray2);
-        }
+        public bool ShortGuidArraySequenceEqual()
+            => new ReadOnlySpan<Guid>(ShortGuidArray1).SequenceEqual(ShortGuidArray2);
 
         [Benchmark]
         public void ShortGuidArrayForEachEqual()
@@ -45,16 +41,12 @@ namespace DotNext
         }
 
         [Benchmark]
-        public void LongGuidArrayBitwiseEquals()
-        {
-            LongGuidArray1.BitwiseEquals(LongGuidArray2);
-        }
+        public bool LongGuidArrayBitwiseEquals()
+            => LongGuidArray1.BitwiseEquals(LongGuidArray2);
 
         [Benchmark]
-        public void LongGuidArraySequenceEqual()
-        {
-            new ReadOnlySpan<Guid>(LongGuidArray1).SequenceEqual(LongGuidArray2);
-        }
+        public bool LongGuidArraySequenceEqual()
+            => new ReadOnlySpan<Guid>(LongGuidArray1).SequenceEqual(LongGuidArray2);
 
         [Benchmark]
         public void LongGuidArrayForEachEqual()

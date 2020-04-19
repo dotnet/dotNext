@@ -238,7 +238,7 @@ namespace DotNext
         [return: NotNull]
         public T OrThrow<E>()
             where E : Exception, new()
-            => HasValue ? value : throw new E();
+            => HasValue ? value! : throw new E();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.
@@ -249,7 +249,7 @@ namespace DotNext
         [return: NotNull]
         public T OrThrow<E>(in ValueFunc<E> exceptionFactory)
             where E : Exception
-            => HasValue ? value : throw exceptionFactory.Invoke();
+            => HasValue ? value! : throw exceptionFactory.Invoke();
 
         /// <summary>
         /// If a value is present, returns the value, otherwise throw exception.

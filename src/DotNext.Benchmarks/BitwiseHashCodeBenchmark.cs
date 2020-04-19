@@ -13,27 +13,16 @@ namespace DotNext.Benchmarks
         private static readonly BitwiseEqualityBenchmark.LargeStruct NonEmptyLargeStruct = new BitwiseEqualityBenchmark.LargeStruct { X = 10M, C = 42M };
 
         [Benchmark]
-        public void GuidHashCode()
-        {
-            NonEmptyGuid.GetHashCode();
-        }
+        public int GuidHashCode() => NonEmptyGuid.GetHashCode();
 
         [Benchmark]
-        public void GuidBitwiseHashCode()
-        {
-            BitwiseComparer<Guid>.GetHashCode(NonEmptyGuid, false);
-        }
+        public int GuidBitwiseHashCode() => BitwiseComparer<Guid>.GetHashCode(NonEmptyGuid, false);
 
         [Benchmark]
-        public void LargeStructureHashCode()
-        {
-            NonEmptyLargeStruct.GetHashCode();
-        }
+        public int LargeStructureHashCode() => NonEmptyLargeStruct.GetHashCode();
 
         [Benchmark]
-        public void LargeStructureBitwiseHashCode()
-        {
-            BitwiseComparer<BitwiseEqualityBenchmark.LargeStruct>.GetHashCode(NonEmptyLargeStruct, false);
-        }
+        public int LargeStructureBitwiseHashCode()
+            => BitwiseComparer<BitwiseEqualityBenchmark.LargeStruct>.GetHashCode(NonEmptyLargeStruct, false);
     }
 }

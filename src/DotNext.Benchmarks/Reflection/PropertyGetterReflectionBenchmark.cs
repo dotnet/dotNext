@@ -36,50 +36,22 @@ namespace DotNext.Reflection
 
         private static readonly DynamicInvoker DynamicAccessor = ReflectedGetter.Unreflect();
 
-        private static void DummyReceiver(object first)
-        {
-        }
-
-        private static void DummyReceiver(int i)
-        {
-
-        }
+        [Benchmark]
+        public int NoReflection() => IndexOfCalc.IndexOf;
 
         [Benchmark]
-        public void NoReflection()
-        {
-            DummyReceiver(IndexOfCalc.IndexOf);
-        }
+        public object UseObjectAccessor() => Accessor["IndexOf"];
 
         [Benchmark]
-        public void UseObjectAccessor()
-        {
-            DummyReceiver(Accessor["IndexOf"]);
-        }
-
+        public int UseFastTypedReflection() => StaticallyReflected(IndexOfCalc);
 
         [Benchmark]
-        public void UseFastTypedReflection()
-        {
-            DummyReceiver(StaticallyReflected(IndexOfCalc));
-        }
+        public object UseFastUntypedReflection() => UntypedReflected(IndexOfCalc, new ValueTuple());
 
         [Benchmark]
-        public void UseFastUntypedReflection()
-        {
-            DummyReceiver(UntypedReflected(IndexOfCalc, new ValueTuple()));
-        }
+        public object UseReflection() => ReflectedGetter.Invoke(IndexOfCalc, Array.Empty<object>());
 
         [Benchmark]
-        public void UseReflection()
-        {
-            DummyReceiver(ReflectedGetter.Invoke(IndexOfCalc, Array.Empty<object>()));
-        }
-
-        [Benchmark]
-        public void UseDynamicInvoker()
-        {
-            DummyReceiver(DynamicAccessor(IndexOfCalc, Array.Empty<object>()));
-        }
+        public object UseDynamicInvoker() => DynamicAccessor(IndexOfCalc, Array.Empty<object>());
     }
 }

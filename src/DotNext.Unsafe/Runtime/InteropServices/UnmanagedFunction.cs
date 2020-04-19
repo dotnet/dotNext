@@ -3,7 +3,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
-using CallSiteDescr = InlineIL.StandAloneMethodSig;
+using static InlineIL.StandAloneMethodSig;
+using static InlineIL.TypeRef;
 
 namespace DotNext.Runtime.InteropServices
 {
@@ -20,7 +21,7 @@ namespace DotNext.Runtime.InteropServices
         public static void Cdecl(IntPtr functionPtr)
         {
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(void)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, typeof(void)));
             Ret();
         }
 
@@ -35,7 +36,7 @@ namespace DotNext.Runtime.InteropServices
         {
             Push(arg);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(void), typeof(T)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, typeof(void), Type<T>()));
             Ret();
         }
 
@@ -53,7 +54,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg1);
             Push(arg2);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(void), typeof(T1), typeof(T2)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, typeof(void), Type<T1>(), Type<T2>()));
             Ret();
         }
 
@@ -74,7 +75,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg2);
             Push(arg3);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(void), typeof(T1), typeof(T2), typeof(T3)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, typeof(void), Type<T1>(), Type<T2>(), Type<T3>()));
             Ret();
         }
 
@@ -98,7 +99,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg3);
             Push(arg4);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>()));
             Ret();
         }
 
@@ -125,7 +126,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg4);
             Push(arg5);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>()));
             Ret();
         }
 
@@ -155,7 +156,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg5);
             Push(arg6);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>()));
             Ret();
         }
 
@@ -188,7 +189,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg6);
             Push(arg7);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>()));
             Ret();
         }
 
@@ -224,7 +225,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg7);
             Push(arg8);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>(), Type<T8>()));
             Ret();
         }
 
@@ -263,7 +264,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg8);
             Push(arg9);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>(), Type<T8>(), Type<T9>()));
             Ret();
         }
 
@@ -275,7 +276,7 @@ namespace DotNext.Runtime.InteropServices
         public static void StdCall(IntPtr functionPtr)
         {
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(void)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, typeof(void)));
             Ret();
         }
 
@@ -290,7 +291,7 @@ namespace DotNext.Runtime.InteropServices
         {
             Push(arg);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(void), typeof(T)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, typeof(void), Type<T>()));
             Ret();
         }
 
@@ -308,7 +309,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg1);
             Push(arg2);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(void), typeof(T1), typeof(T2)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, typeof(void), Type<T1>(), Type<T2>()));
             Ret();
         }
 
@@ -329,7 +330,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg2);
             Push(arg3);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(void), typeof(T1), typeof(T2), typeof(T3)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, typeof(void), Type<T1>(), Type<T2>(), Type<T3>()));
             Ret();
         }
 
@@ -353,7 +354,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg3);
             Push(arg4);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>()));
             Ret();
         }
 
@@ -380,7 +381,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg4);
             Push(arg5);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>()));
             Ret();
         }
 
@@ -410,7 +411,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg5);
             Push(arg6);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>()));
             Ret();
         }
 
@@ -443,7 +444,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg6);
             Push(arg7);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>()));
             Ret();
         }
 
@@ -479,7 +480,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg7);
             Push(arg8);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>(), Type<T8>()));
             Ret();
         }
 
@@ -518,7 +519,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg8);
             Push(arg9);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(void), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, typeof(void), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>(), Type<T8>(), Type<T9>()));
             Ret();
         }
     }
@@ -539,7 +540,7 @@ namespace DotNext.Runtime.InteropServices
         public static R Cdecl(IntPtr functionPtr)
         {
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(R)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, Type<R>()));
             return Return<R>();
         }
 
@@ -555,7 +556,7 @@ namespace DotNext.Runtime.InteropServices
         {
             Push(arg);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(R), typeof(T)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, Type<R>(), Type<T>()));
             return Return<R>();
         }
 
@@ -574,7 +575,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg1);
             Push(arg2);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(R), typeof(T1), typeof(T2)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, Type<R>(), Type<T1>(), Type<T2>()));
             return Return<R>();
         }
 
@@ -596,7 +597,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg2);
             Push(arg3);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(R), typeof(T1), typeof(T2), typeof(T3)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>()));
             return Return<R>();
         }
 
@@ -621,7 +622,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg3);
             Push(arg4);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>()));
             return Return<R>();
         }
 
@@ -649,7 +650,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg4);
             Push(arg5);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>()));
             return Return<R>();
         }
 
@@ -680,7 +681,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg5);
             Push(arg6);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>()));
             return Return<R>();
         }
 
@@ -714,7 +715,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg6);
             Push(arg7);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>()));
             return Return<R>();
         }
 
@@ -751,7 +752,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg7);
             Push(arg8);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>(), Type<T8>()));
             return Return<R>();
         }
 
@@ -791,7 +792,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg8);
             Push(arg9);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.Cdecl, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9)));
+            Calli(UnmanagedMethod(CallingConvention.Cdecl, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>(), Type<T8>(), Type<T9>()));
             return Return<R>();
         }
 
@@ -804,7 +805,7 @@ namespace DotNext.Runtime.InteropServices
         public static R StdCall(IntPtr functionPtr)
         {
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(R)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, Type<R>()));
             return Return<R>();
         }
 
@@ -820,7 +821,7 @@ namespace DotNext.Runtime.InteropServices
         {
             Push(arg);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(R), typeof(T)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, Type<R>(), Type<T>()));
             return Return<R>();
         }
 
@@ -839,7 +840,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg1);
             Push(arg2);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(R), typeof(T1), typeof(T2)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, Type<R>(), Type<T1>(), Type<T2>()));
             return Return<R>();
         }
 
@@ -861,7 +862,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg2);
             Push(arg3);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(R), typeof(T1), typeof(T2), typeof(T3)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>()));
             return Return<R>();
         }
 
@@ -886,7 +887,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg3);
             Push(arg4);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>()));
             return Return<R>();
         }
 
@@ -914,7 +915,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg4);
             Push(arg5);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>()));
             return Return<R>();
         }
 
@@ -945,7 +946,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg5);
             Push(arg6);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>()));
             return Return<R>();
         }
 
@@ -979,7 +980,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg6);
             Push(arg7);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>()));
             return Return<R>();
         }
 
@@ -1016,7 +1017,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg7);
             Push(arg8);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>(), Type<T8>()));
             return Return<R>();
         }
 
@@ -1056,7 +1057,7 @@ namespace DotNext.Runtime.InteropServices
             Push(arg8);
             Push(arg9);
             Push(functionPtr);
-            Calli(new CallSiteDescr(CallingConvention.StdCall, typeof(R), typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9)));
+            Calli(UnmanagedMethod(CallingConvention.StdCall, Type<R>(), Type<T1>(), Type<T2>(), Type<T3>(), Type<T4>(), Type<T5>(), Type<T6>(), Type<T7>(), Type<T8>(), Type<T9>()));
             return Return<R>();
         }
     }
