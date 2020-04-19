@@ -18,7 +18,7 @@ The underlying state machine can be reconstruced at application startup using `I
 Elimination of duplicate commands received from clients should be implemented manually because basic framework is not aware about underlying network transport.
 
 # Guide: How To Implement Database
-This section contains recommendations about implementation of your own database based on .NEXT Cluster programming model. It can be K/V database or something else.
+This section contains recommendations about implementation of your own database or distributed service based on .NEXT Cluster programming model. It can be K/V database, distributed UUID generator, distributed lock or anything else.
 
 1. Derive from [PersistentState](../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.yml) class to implement core logic related to manipulation with state machine
     1. Override `ApplyAsync` method which contains interpretation of commands contained in log entries
@@ -39,7 +39,11 @@ This section contains recommendations about implementation of your own database 
 Transport-agnostic implementation of Raft is represented by [RaftCluster](https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs) class. It contains core consensus and replication logic but it's not aware about network-specific details. You can use this class as foundation for your own Raft implementation for particular network protocol. All you need is to implementation protocol-specific communication logic.  This chapter will guide you through all necessary steps.
 
 ## Existing Implementations
-.NEXT library ships [RaftHttpCluster](https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftHttpCluster.cs) as a part of `DotNext.AspNetCore.Cluster` library and offers HTTP 1.1/HTTP 2 implementations adopted for ASP.NET Core framework. It can be used as starting point to learn about protocol-specific implementation of Raft in addition to this chapter.
+.NEXT library ships multiple network transports: 
+* [RaftHttpCluster](https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftHttpCluster.cs) as a part of `DotNext.AspNetCore.Cluster` library offers HTTP 1.1/HTTP 2 implementations adopted for ASP.NET Core framework. 
+* [TransportServices](https://github.com/sakno/dotNext/tree/develop/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/TransportServices) as a part of `DotNext.Net.Cluster` library contains reusable network transport layer for UDP and TCP transport shipped as a part of this library.
+
+All these implementations can be used as examples of transport for Raft messages.
 
 ## Architecture
 `RaftCluster` contains implementation of consensus and replication logic so your focus is network-specific programming. First of all, you need to derive from this class. There are two main extensibility points when network-specific programing needed:
