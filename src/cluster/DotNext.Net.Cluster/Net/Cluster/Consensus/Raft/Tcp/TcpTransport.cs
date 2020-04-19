@@ -70,7 +70,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private protected static void ConfigureSocket(Socket socket, LingerOption linger)
         {
             socket.NoDelay = true;
-            socket.LingerState = linger;
+            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Linger, linger);
         }
 
         internal static int ValidateTranmissionBlockSize(int value)
