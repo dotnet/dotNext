@@ -94,13 +94,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static void SockerErrorOccurred(this ILogger logger, SocketError error)
             => logger.LogError(Resources.GetString("SockerErrorOccurred"), error);
 
-        internal static void FailedToHandleRequest(this ILogger logger, Exception e)
-            => logger.LogError(e, Resources.GetString("FailedToHandleRequest"));
-
         internal static void RequestTimedOut(this ILogger logger)
             => logger.LogWarning(Resources.GetString("RequestTimedOut"));
 
         internal static void SocketAcceptLoopTerminated(this ILogger logger, Exception e)
             => logger.LogDebug(e, Resources.GetString("SocketAcceptLoopTerminated"));
+        
+        internal static void TcpGracefulShutdownFailed(this ILogger logger, int timeout)
+            => logger.LogWarning(Resources.GetString("TcpGracefulShutdownFailed"), timeout);
     }
 }

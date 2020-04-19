@@ -259,6 +259,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public sealed class TcpConfiguration : NodeConfiguration
         {
             private int transmissionBlockSize;
+            private TimeSpan? gracefulShutdown;
 
             /// <summary>
             /// Initializes a new UDP transport settings.
@@ -278,6 +279,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public LingerOption LingerOption
             {
                 get;
+            }
+
+            /// <summary>
+            /// Gets or sets timeout used for graceful shtudown of the server.
+            /// </summary>
+            public TimeSpan GracefulShutdownTimeout
+            {
+                get => gracefulShutdown ?? Timeout;
+                set => gracefulShutdown = value;
             }
 
             /// <summary>
@@ -311,7 +321,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 { 
                     TransmissionBlockSize = TransmissionBlockSize, 
                     LingerOption = LingerOption, 
-                    ReceiveTimeout = Timeout 
+                    ReceiveTimeout = Timeout,
+                    GracefulShutdownTimeout = (int)GracefulShutdownTimeout.TotalMilliseconds
                 };
             }
         }

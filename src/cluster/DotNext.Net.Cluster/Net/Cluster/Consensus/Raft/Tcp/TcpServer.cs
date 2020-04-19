@@ -96,6 +96,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private readonly int backlog;
         private readonly Func<IReusableExchange> exchangeFactory;
         private readonly CancellationTokenSource transmissionState;
+        private volatile int connections;
+        internal int GracefulShutdownTimeout;
 
         internal TcpServer(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<IReusableExchange> exchangeFactory, ILoggerFactory loggerFactory)
             : base(address, allocator, loggerFactory)
@@ -121,6 +123,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             var stream = new ServerNetworkStream(remoteClient);
             var buffer = AllocTransmissionBlock();
             var exchange = exchangeFactory();
+            Interlocked.Increment(ref connections);
             try
             {
                 while (stream.Connected && !IsDisposed)
@@ -140,8 +143,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             finally
             {
                 buffer.Dispose();
+                stream.Close(GracefulShutdownTimeout);
                 stream.Dispose();
                 exchange.Dispose();
+                Interlocked.Decrement(ref connections);
             }
         }
 
@@ -191,10 +196,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             Listen();
         }
 
+        private bool HasActiveConnections() => connections <= 0;
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
             if (disposing)
+            {
                 try
                 {
                     transmissionState.Cancel(false);
@@ -202,8 +210,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 finally
                 {
                     transmissionState.Dispose();
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Close(GracefulShutdownTimeout);
                     socket.Dispose();
                 }
+                if(!SpinWait.SpinUntil(HasActiveConnections, GracefulShutdownTimeout))
+                    logger.TcpGracefulShutdownFailed(GracefulShutdownTimeout);
+            }
         }
     }
 }

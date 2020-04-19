@@ -22,6 +22,6 @@ SnapshotInstallationFailed=Critical error detected while installing snapshot of 
 PacketDropped=Datagram with id {PacketId} has dropped from remote endpoint {EndPoint} because it cannot be dispatched to appropriate logical channel
 NotEnoughRequestHandlers=Too many pallel requests
 SockerErrorOccurred=Socket error {SockerError} occurred
-FailedToHandleRequest=Failed to handle request from remote cluster member
 RequestTimedOut=Request has timed out
 SocketAcceptLoopTerminated=Listening of incoming connections unexpectedly failed
+TcpGracefulShutdownFailed=Graceful shutdown of TCP server failed. Timeout is {Timeout}

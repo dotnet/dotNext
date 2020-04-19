@@ -39,7 +39,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 2, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
-                TransmissionBlockSize = 65535
+                TransmissionBlockSize = 65535,
+                GracefulShutdownTimeout = 2000
             };
             static TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, DefaultAllocator, NullLoggerFactory.Instance)
             {
@@ -54,7 +55,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
-                TransmissionBlockSize = 65535
+                TransmissionBlockSize = 65535,
+                GracefulShutdownTimeout = 2000
             };
             static TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, DefaultAllocator, NullLoggerFactory.Instance)
             {
@@ -71,7 +73,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             static TcpServer CreateServer(ILocalMember member, IPEndPoint address, TimeSpan timeout) => new TcpServer(address, 100, DefaultAllocator, ServerExchangeFactory(member), NullLoggerFactory.Instance)
             {
                 ReceiveTimeout = timeout,
-                TransmissionBlockSize = 300
+                TransmissionBlockSize = 300,
+                GracefulShutdownTimeout = 2000
             };
             static TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, DefaultAllocator, NullLoggerFactory.Instance)
             {
@@ -99,6 +102,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 TransmissionBlockSize = 400,
                 ReceiveTimeout = timeout,
+                GracefulShutdownTimeout = 2000
             };
             static TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, DefaultAllocator, NullLoggerFactory.Instance)
             {
@@ -116,6 +120,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             {
                 TransmissionBlockSize = 350,
                 ReceiveTimeout = timeout,
+                GracefulShutdownTimeout = 2000
             };
             static TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, DefaultAllocator, NullLoggerFactory.Instance)
             {
