@@ -12,6 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     [ExcludeFromCodeCoverage]
     public sealed class UdpSocketTests : TransportTestSuite
     {
+        private static readonly IPEndPoint LocalHostRandomPort = new IPEndPoint(IPAddress.Loopback, 0);
         private readonly Func<long> appIdGenerator = new Random().Next<long>;
 
         [Fact]
@@ -23,7 +24,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
-            UdpClient CreateClient(IPEndPoint address) => new UdpClient(address, 2, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+            UdpClient CreateClient(IPEndPoint address) => new UdpClient(LocalHostRandomPort, address, 2, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
@@ -40,7 +41,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
             };
-            UdpClient CreateClient(IPEndPoint address) => new UdpClient(address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+            UdpClient CreateClient(IPEndPoint address) => new UdpClient(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MaxDatagramSize,
                 DontFragment = false
@@ -59,7 +60,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
             };
-            UdpClient CreateClient(IPEndPoint address) => new UdpClient(address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+            UdpClient CreateClient(IPEndPoint address) => new UdpClient(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
@@ -88,7 +89,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
-            UdpClient CreateClient(IPEndPoint address) => new UdpClient(address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+            UdpClient CreateClient(IPEndPoint address) => new UdpClient(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true
@@ -107,7 +108,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 ReceiveTimeout = timeout,
                 DontFragment = true
             };
-            UdpClient CreateClient(IPEndPoint address) => new UdpClient(address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
+            UdpClient CreateClient(IPEndPoint address) => new UdpClient(LocalHostRandomPort, address, 100, DefaultAllocator, appIdGenerator, NullLoggerFactory.Instance)
             {
                 DatagramSize = UdpSocket.MinDatagramSize,
                 DontFragment = true

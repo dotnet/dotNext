@@ -42,9 +42,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private long streamNumber;
         private readonly INetworkTransport.ChannelPool<Channel> channels;
         private readonly RefAction<Channel, CorrelationId> cancellationInvoker;
+        private readonly IPEndPoint localEndPoint;
 
-        internal UdpClient(IPEndPoint address, int backlog, MemoryAllocator<byte> allocator, Func<long> appIdGenerator, ILoggerFactory loggerFactory)
-            : base(address, backlog, allocator, loggerFactory)
+        internal UdpClient(IPEndPoint localEndPoint, IPEndPoint remoteEndPoint, int backlog, MemoryAllocator<byte> allocator, Func<long> appIdGenerator, ILoggerFactory loggerFactory)
+            : base(remoteEndPoint, backlog, allocator, loggerFactory)
         {
             channels = new INetworkTransport.ChannelPool<Channel>(backlog);
             cancellationHandler = channels.CancellationRequested;
@@ -52,6 +53,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             applicationId = appIdGenerator();
             streamNumber = long.MinValue;
             cancellationInvoker = channels.CancellationRequested;
+            this.localEndPoint = localEndPoint;
         }
 
         void IClient.CancelPendingRequests() => channels.ClearAndDestroyChannels();
@@ -80,11 +82,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
         private bool Start(IExchange exchange)
         {
             bool result;
-            if (Connected)
+            if (IsBound)
                 result = true;
             else
                 try
                 {
+                    Bind(localEndPoint);
                     Start();
                     result = true;
                 }
@@ -100,7 +103,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
 
         public async void Enqueue(IExchange exchange, CancellationToken token)
         {
-            if (!Connected && !Start(exchange))
+            if (!IsBound && !Start(exchange))
                 return;
             var id = new CorrelationId(applicationId, streamNumber.IncrementAndGet());
             var channel = new Channel(exchange, cancellationHandler, id, token);

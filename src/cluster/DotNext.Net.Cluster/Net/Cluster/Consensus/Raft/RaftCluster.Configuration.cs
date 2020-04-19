@@ -193,6 +193,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public sealed class UdpConfiguration : NodeConfiguration
         {
+            private static readonly IPEndPoint DefaultLocalEndPoint = new IPEndPoint(IPAddress.Any, 0);
+
             private int clientChannels;
             private int datagramSize;
             private bool dontFragment;
@@ -206,6 +208,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 datagramSize = UdpSocket.MinDatagramSize;
                 clientChannels = Environment.ProcessorCount + 1;
+                LocalEndPoint = DefaultLocalEndPoint;
             }
 
             /// <summary>
@@ -243,8 +246,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set => datagramSize = UdpSocket.ValidateDatagramSize(value);
             }
 
+            /// <summary>
+            /// Gets or sets local network interface to be used for receiving UDP packets
+            /// by Raft cluster member clients.
+            /// </summary>
+            /// <remarks>
+            /// This endpoint is not used for initialization of server, only for clients.
+            /// UDP is connectionless protocol and underlying implementation must know
+            /// which interface should be used for receiving responses from server through UDP
+            /// transport. By default, this property listens on all network interfaces and using 
+            /// randomly selected port. For most situations, it's redundant and unsafe.
+            /// </remarks>
+            public IPEndPoint LocalEndPoint { get; set; }
+
             private UdpClient CreateClient(IPEndPoint address)
-                => new UdpClient(address, ClientBacklog, MemoryAllocator, applicationIdGenerator, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
+                => new UdpClient(LocalEndPoint, address, ClientBacklog, MemoryAllocator, applicationIdGenerator, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
                 => new ExchangePeer(localMember, endPoint, CreateClient, Timeout, PipeConfig, metrics);
