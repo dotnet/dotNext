@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
         private async ValueTask<(PacketHeaders, int, bool)> SendMetadataPortionAsync(bool startStream, Memory<byte> output, CancellationToken token)
         {
-            var continueSending = true;
+            bool continueSending;
             FlowControl control;
             var bytesWritten = await Reader.CopyToAsync(output, token).ConfigureAwait(false);
             if (bytesWritten == output.Length)    //final packet detected
