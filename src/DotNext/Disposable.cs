@@ -15,14 +15,12 @@ namespace DotNext
     {
         private static readonly WaitCallback DisposeCallback = Runtime.Intrinsics.UnsafeDispose;
 
+        private volatile bool disposed;
+
         /// <summary>
         /// Indicates that this object is disposed.
         /// </summary>
-        protected bool IsDisposed
-        {
-            get;
-            private set;
-        }
+        protected bool IsDisposed => disposed;
 
         /// <summary>
         /// Throws exception if this object is disposed.
@@ -39,7 +37,7 @@ namespace DotNext
         /// Releases managed and unmanaged resources associated with this object.
         /// </summary>
         /// <param name="disposing"><see langword="true"/> if called from <see cref="Dispose()"/>; <see langword="false"/> if called from finalizer <see cref="Finalize()"/>.</param>
-		protected virtual void Dispose(bool disposing) => IsDisposed = true;
+		protected virtual void Dispose(bool disposing) => disposed = true;
 
         /// <summary>
         /// Releases all resources associated with this object.
