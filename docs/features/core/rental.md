@@ -59,3 +59,22 @@ public static unsafe string Reverse(this string str)
 In constrast to `ArrayRental<T>`, this type uses [MemoryPool](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1). It is possible to pass custom memory pool the constructor.
 
 The type is typically used in unsafe context when you need a temporary buffer to perform in-memory transformations. If you don't have intentions to use **stackalloc** then choose `ArrayRental<T>` instead.
+
+# MemoryOwner
+.NET offers two different models for memory pooling: [MemoryPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.memorypool-1) class and [ArrayPool&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1) class. Both are abstract classes so it's not possible to unify memory pooling API. For instance, [configuration model](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipes.pipeoptions) for I/O pipe from .NET expecting `MemoryPool<T>` instance. If you want to use custom `ArrayPool<T>` then you need to write wrapper for it.
+
+.NEXT library contains [MemoryOwner&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.ArrayRental-1.html) value type that represents rented memory regardless of the rental method:
+```csharp
+using DotNext.Buffers;
+using System.Buffers;
+
+using var rentedArray = new MemoryOwner<byte>(ArrayPool<byte>.Shared, 10);
+using var rentedMemory = new MemoryOwner<byte>(MemoryPool<byte>.Shared, 10);
+rentedArray.Memory.Slice(0, 5);
+rentedMemory.Memory.Slice(0, 5);
+```
+The value type implements [IMemoryOwner&lt;T&gt;](https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1) interface so you can easly access pooled memory in a uniform way.
+
+However, `MemoryOwner` provides subset of functionality available in `ArrayRental` and `MemoryRental` which are corner cases and specialized for particular pooling mechanism.
+
+Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. [MemoryAllocator&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html) delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. [MemoryAllocator](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator.html) static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.
