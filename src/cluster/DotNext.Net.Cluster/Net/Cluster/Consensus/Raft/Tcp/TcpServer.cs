@@ -210,7 +210,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 finally
                 {
                     transmissionState.Dispose();
-                    socket.Shutdown(SocketShutdown.Both);
                     socket.Close(GracefulShutdownTimeout);
                     socket.Dispose();
                 }
