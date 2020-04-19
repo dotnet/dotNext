@@ -31,6 +31,8 @@
       href: core/io.md
     - name: Alloc vs Rental
       href: core/rental.md
+    - name: Path MTU Discovery
+      href: core/mtu.md
 - name: Threading
   href: threading/index.md
   items:
