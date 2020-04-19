@@ -65,11 +65,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             this.allocator = allocator;
             transmissionBlockSize = MinTransmissionBlockSize;
             LingerOption = new LingerOption(false, 0);
+            Ttl = 64;
         }
 
-        private protected static void ConfigureSocket(Socket socket, LingerOption linger)
+        private protected static void ConfigureSocket(Socket socket, LingerOption linger, byte ttl)
         {
             socket.NoDelay = true;
+            socket.Ttl = ttl;
             socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Linger, linger);
         }
 
@@ -85,6 +87,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         internal LingerOption LingerOption 
         { 
             get; 
+            set;
+        }
+
+        internal byte Ttl
+        {
+            get;
             set;
         }
 

@@ -69,7 +69,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private static void CancelConnectAsync(object args)
             => Socket.CancelConnectAsync((SocketAsyncEventArgs)args);
 
-        private static async Task<ClientNetworkStream> ConnectAsync(IPEndPoint endPoint, LingerOption linger, CancellationToken token)
+        private static async Task<ClientNetworkStream> ConnectAsync(IPEndPoint endPoint, LingerOption linger, byte ttl, CancellationToken token)
         {
             using var args = new ConnectEventArgs(token);
             args.RemoteEndPoint = endPoint;
@@ -80,7 +80,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 }
             else if (args.SocketError != SocketError.Success)
                 throw new SocketException((int)args.SocketError);
-            ConfigureSocket(args.ConnectSocket, linger);
+            ConfigureSocket(args.ConnectSocket, linger, ttl);
             return new ClientNetworkStream(args.ConnectSocket);
         }
 
@@ -91,7 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 if (stream is null)
                     try
                     {
-                        result = stream = await ConnectAsync(Address, LingerOption, token).ConfigureAwait(false);
+                        result = stream = await ConnectAsync(Address, LingerOption, Ttl, token).ConfigureAwait(false);
                     }
                     catch (Exception e)
                     {

@@ -39,6 +39,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Members = new HashSet<IPEndPoint>();
                 HostEndPoint = hostAddress;
                 applicationIdGenerator = new Random().Next<long>;
+                TimeToLive = 64;
             }
 
             /// <summary>
@@ -145,6 +146,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 get => serverChannels.GetValueOrDefault(Members.Count + 1);
                 set => serverChannels = value > 0 ? value : throw new ArgumentOutOfRangeException(nameof(value));
+            }
+
+            /// <summary>
+            /// Gets or sets a value that specifies the Time To Live (TTL) value of Internet Protocol (IP) packets.
+            /// </summary>
+            public byte TimeToLive
+            {
+                get;
+                set;
             }
 
             /// <summary>
@@ -260,13 +270,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public IPEndPoint LocalEndPoint { get; set; }
 
             private UdpClient CreateClient(IPEndPoint address)
-                => new UdpClient(LocalEndPoint, address, ClientBacklog, MemoryAllocator, applicationIdGenerator, LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment };
+                => new UdpClient(LocalEndPoint, address, ClientBacklog, MemoryAllocator, applicationIdGenerator, LoggerFactory) 
+                { 
+                    DatagramSize = datagramSize, 
+                    DontFragment = DontFragment,
+                    Ttl = TimeToLive
+                };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
                 => new ExchangePeer(localMember, endPoint, CreateClient, Timeout, PipeConfig, metrics);
 
             internal override IServer CreateServer(ILocalMember localMember)
-                => new UdpServer(HostEndPoint, ServerBacklog, MemoryAllocator, ExchangePoolFactory(localMember), LoggerFactory) { DatagramSize = datagramSize, DontFragment = DontFragment, ReceiveTimeout = Timeout };
+                => new UdpServer(HostEndPoint, ServerBacklog, MemoryAllocator, ExchangePoolFactory(localMember), LoggerFactory) 
+                { 
+                    DatagramSize = datagramSize, 
+                    DontFragment = DontFragment, 
+                    ReceiveTimeout = Timeout,
+                    Ttl = TimeToLive
+                };
         }
 
         /// <summary>
@@ -324,8 +345,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 set => TcpTransport.ValidateTranmissionBlockSize(value);
             }
 
-            private TcpClient CreateClient(IPEndPoint address)
-                => new TcpClient(address, MemoryAllocator, LoggerFactory) { TransmissionBlockSize = TransmissionBlockSize, LingerOption = LingerOption };
+            private TcpClient CreateClient(IPEndPoint address) => new TcpClient(address, MemoryAllocator, LoggerFactory) 
+            { 
+                TransmissionBlockSize = TransmissionBlockSize, 
+                LingerOption = LingerOption,
+                Ttl = TimeToLive
+            };
 
             internal override RaftClusterMember CreateMemberClient(ILocalMember localMember, IPEndPoint endPoint, IClientMetricsCollector? metrics)
                 => new ExchangePeer(localMember, endPoint, CreateClient, TimeSpan.FromMilliseconds(LowerElectionTimeout), PipeConfig, metrics);
@@ -338,7 +363,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     TransmissionBlockSize = TransmissionBlockSize, 
                     LingerOption = LingerOption, 
                     ReceiveTimeout = Timeout,
-                    GracefulShutdownTimeout = (int)GracefulShutdownTimeout.TotalMilliseconds
+                    GracefulShutdownTimeout = (int)GracefulShutdownTimeout.TotalMilliseconds,
+                    Ttl = TimeToLive
                 };
             }
         }

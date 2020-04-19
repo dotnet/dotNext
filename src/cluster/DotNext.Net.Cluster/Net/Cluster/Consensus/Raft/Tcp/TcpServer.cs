@@ -160,7 +160,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                         await args.Task.ConfigureAwait(false);
                     else if (args.SocketError != SocketError.Success)
                         throw new SocketException((int)args.SocketError);
-                    ConfigureSocket(args.AcceptSocket, LingerOption);
+                    ConfigureSocket(args.AcceptSocket, LingerOption, Ttl);
                     ThreadPool.QueueUserWorkItem(HandleConnection, args.AcceptSocket, false);
                     args.Reset();
                 }
