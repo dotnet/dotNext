@@ -616,7 +616,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (randomizeTimeout)
                     electionTimeout = electionTimeoutProvider.RandomTimeout();
-                await (newTerm.HasValue ? StepDown(newTerm.Value) : StepDown()).ConfigureAwait(false);
+                await (newTerm.HasValue ? StepDown(newTerm.GetValueOrDefault()) : StepDown()).ConfigureAwait(false);
             }
         }
 
