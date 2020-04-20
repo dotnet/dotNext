@@ -52,9 +52,4 @@ Replication allows to share information between nodes to ensure consistency betw
 [IReplicationCluster](../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.yml) interface 
 
 # Implementations
-.NEXT offers extensions for ASP.NET Core which allow to build clustered microservices with the following features:
-1. Messaging is fully supported and organized through HTTP protocol
-1. Replication is fully supported
-1. Consensus is fully supported and based on Raft algorithm
-
-These extensions are located in [DotNext.Net.Cluster.Consensus.Raft.Http](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.yml) namespace. For more information, read [this article](./aspnetcore.md).
+* [.NEXT Raft Suite](./raft.md) is a fully-featured implementation of Raft algorithm and related infrastructure.
