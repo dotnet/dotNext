@@ -8,7 +8,7 @@
     <title>Cluster and Distributed Consensus | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Cluster and Distributed Consensus | .NEXT ">
-    <meta name="generator" content="docfx 2.50.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -120,13 +120,9 @@
 <p>Replication allows to share information between nodes to ensure consistency between them. Usually, consensus algorithm covers replication process. In .NEXT library, replication functionality relies on the fact that each cluster node has its own persistent audit trail (or transaction log). However, the only default implementation of it is in-memory log which is suitable in siutations when your distributed application requires distributed consensus only and don't have distributed state that should be synchronized across cluster. If you need reliable replication then provide your own implementation of <a href="../../api/DotNext.IO.Log.IAuditTrail-1.html">IAuditTrail</a> interface or use <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> class.</p>
 <p><a href="../../api/DotNext.Net.Cluster.Replication.IReplicationCluster-1.html">IReplicationCluster</a> interface</p>
 <h1 id="implementations">Implementations</h1>
-<p>.NEXT offers extensions for ASP.NET Core which allow to build clustered microservices with the following features:</p>
-<ol>
-<li>Messaging is fully supported and organized through HTTP protocol</li>
-<li>Replication is fully supported</li>
-<li>Consensus is fully supported and based on Raft algorithm</li>
-</ol>
-<p>These extensions are located in <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.html">DotNext.Net.Cluster.Consensus.Raft.Http</a> namespace. For more information, read <a href="aspnetcore.html">this article</a>.</p>
+<ul>
+<li><a href="raft.html">.NEXT Raft Suite</a> is a fully-featured implementation of Raft algorithm and related infrastructure.</li>
+</ul>
 </article>
           </div>
           

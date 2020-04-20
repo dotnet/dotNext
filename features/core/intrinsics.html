@@ -8,7 +8,7 @@
     <title>Intrinsics | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Intrinsics | .NEXT ">
-    <meta name="generator" content="docfx 2.50.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -119,6 +119,13 @@ using System.Runtime.CompilerServices;
 
 var nullref = Unsafe.AsRef&lt;byte&gt;(default(void*));
 Intrinsics.IsNull(in nullref);
+</code></pre>
+<h1 id="exact-type-testing">Exact Type-Testing</h1>
+<p>The <strong>is</strong> operator in C# checks if the result of an expression is compatible with a given type. However, in some rare cases you need to check whether the object is of exact type. <code>IsExactTypeOf</code> method provides optimized implementation of this case:</p>
+<pre><code class="lang-csharp">&quot;a&quot; is object;  //true
+&quot;a&quot; is string;  //true
+Intrinsics.IsExactTypeOf&lt;object&gt;(&quot;a&quot;);  //false
+Intrinsics.IsExactTypeOf&lt;string&gt;(&quot;a&quot;);  //true
 </code></pre>
 </article>
           </div>

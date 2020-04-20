@@ -8,7 +8,7 @@
     <title>Raft | .NEXT </title>
     <meta name="viewport" content="width=device-width">
     <meta name="title" content="Raft | .NEXT ">
-    <meta name="generator" content="docfx 2.50.0.0">
+    <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
     <link rel="stylesheet" href="../../styles/docfx.vendor.css">
@@ -69,7 +69,7 @@
             <article class="content wrap" id="_content" data-uid="">
 <h1 id="raft">Raft</h1>
 
-<p>This article describes details of Raft implementation provided by .NEXT library.</p>
+<p>The core of Raft implementation is <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html">RaftCluster&lt;TMember&gt;</a> class which contains transport-agnostic implementation of Raft algorithm. First-class support of Raft in ASP.NET Core as well as other features are based on this class.</p>
 <h1 id="consensus">Consensus</h1>
 <p>Correctness of consensus algorithm is tighly coupled with Write-Ahead Log defined via <code>AuditTrail</code> property of <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.IPersistentState.html">IRaftCluster</a> interface or via Dependency Injection. If your application requires only consensus without replication of real data then <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.ConsensusOnlyState.html">ConsensusOnlyState</a> implementation is used. Note that this implementation is used by default as well. It is lighweight and fast. However it doesn't store state on disk. Consider to use <a href="wal.html">persistent WAL</a> as fully-featured persistent log for Raft.</p>
 <h1 id="state-recovery">State Recovery</h1>
@@ -82,8 +82,242 @@
 <li><code>RaftCluster.ForceReplicationAsync</code> initiates a new round of heartbeats and waits for reply from majority of nodes</li>
 </ol>
 <p>Elimination of duplicate commands received from clients should be implemented manually because basic framework is not aware about underlying network transport.</p>
+<h1 id="network-transport">Network Transport</h1>
+<p>.NEXT supports the following network transports:</p>
+<ul>
+<li>HTTP 1.1 and HTTP 2.0 as a part of Clustered Microservices for ASP.NET Core</li>
+<li>TCP transport</li>
+<li>UDP transport</li>
+</ul>
+<p>TCP and UDP network transports shipped with <code>DotNext.Net.Cluster</code> library without heavyweight dependencies such as ASP.NET Core or DotNetty. The library provides specialized <a href="https://en.wikipedia.org/wiki/Application_layer">application protocol</a> on top of these transports which is binary protocol, highly optimized for Raft purposes and provide maximum bandwidth in contrast to HTTP. However, additional features for cluster programming is limited:</p>
+<ul>
+<li>General-purpose messaging between nodes is not supported via <a href="../../api/DotNext.Net.Cluster.Messaging.IMessageBus.html">IMessageBus</a> interface</li>
+<li><a href="../../api/DotNext.Net.Cluster.IExpandableCluster.html">IExpandableCluster</a> interface is not implemented by default. However, the library consumer can implement it easily because entry point in the form of <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.html">RaftCluster</a> class inherits from the core <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html">RaftCluster&lt;TMember&gt;</a> class.</li>
+</ul>
+<p>Cluster programming model using TCP and UDP transports is unified and exposed via <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.html">RaftCluster</a> class. The following example demonstrates usage of this class:</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
+
+RaftCluster.NodeConfiguration config = ...;//configuration of the local node
+//configuring members in the cluster
+config.Members.Add(new IPEndPoint(IPAddress.Loopback), 3262);
+config.Members.Add(new IPEndPoint(IPAddress.Loopback), 3263);
+
+using var cluster = new RaftCluster(config);
+await cluster.StartAsync(CancellationToken.None); //starts hosting of the local node
+//the code for working with cluster instance
+await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local node
+</code></pre>
+<p>The configuration of the local node depends on chosen network transport. <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.NodeConfiguration.html">NodeConfiguration</a> abstract class exposes common properties for both transports:</p>
+<table>
+<thead>
+<tr>
+<th>Configuration parameter</th>
+<th>Required</th>
+<th>Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Metrics</td>
+<td>No</td>
+<td><strong>null</strong></td>
+<td>Allows to specify custom metrics collector</td>
+</tr>
+<tr>
+<td>PublicEndPoint</td>
+<td>No</td>
+<td>The same as <code>HostEndPoint</code></td>
+<td>Allows to specify real IP address of the host where cluster node launched. Usually it is needed when node executed inside of Docker container. If this parameter is not specified then cluster node may fail to detect itself because network interfaces inside of Docker container have different addresses in comparison with real host network interfaces</td>
+</tr>
+<tr>
+<td>Partitioning</td>
+<td>No</td>
+<td>false</td>
+<td><code>true</code> if partitioning supported. In this case, each cluster partition may have its own leader, i.e. it is possible to have more that one leader for external observer. However, single partition cannot have more than 1 leader. <code>false</code> if partitioning is not supported and only one partition with majority of nodes can have leader. Note that cluster may be totally unavailable even if there are operating members presented</td>
+</tr>
+<tr>
+<td>HeartbeatThreshold</td>
+<td>No</td>
+<td>0.5</td>
+<td>Specifies frequency of heartbeat messages generated by leader node to inform follower nodes about its leadership. The range is (0, 1). The lower the value means that the messages are generated more frequently and vice versa</td>
+</tr>
+<tr>
+<td>LowerElectionTimeout, UpperElectionTimeout</td>
+<td>No</td>
+<td>150</td>
+<td>Defines range for election timeout (in milliseconds) which is picked randomly inside of it for each cluster member. If cluster node doesn't receive heartbeat from leader node during this timeout then it becomes a candidate and start a election. The recommended value for  <em>upperElectionTimeout</em> is <code>2 X lowerElectionTimeout</code></td>
+</tr>
+<tr>
+<td>PipeConfig</td>
+<td>No</td>
+<td><a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipeoptions.default">PipeOptions.Default</a></td>
+<td>The configuration of I/O pipeline used for passing bytes between application and network transport</td>
+</tr>
+<tr>
+<td>MemoryAllocator</td>
+<td>No</td>
+<td>Memory pool from <em>PipeConfig</em> property</td>
+<td>Memory allocator used to allocate memory for network packets</td>
+</tr>
+<tr>
+<td>Metadata</td>
+<td>No</td>
+<td>Empty dictionary</td>
+<td>A set of metadata properties associated with the local node</td>
+</tr>
+<tr>
+<td>Members</td>
+<td>Yes</td>
+<td>Empty list</td>
+<td>A set of cluster members. The list must contain address of the local node which is equal to <em>PublicEndPoint</em> value</td>
+</tr>
+<tr>
+<td>TimeToLive</td>
+<td>No</td>
+<td>64</td>
+<td>Time To Live (TTL) value of Internet Protocol (IP) packets</td>
+</tr>
+<tr>
+<td>LoggerFactory</td>
+<td>No</td>
+<td><a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.extensions.logging.abstractions.nullloggerfactory.instance">NullLoggerFactory.Instance</a></td>
+<td>The logger factory</td>
+</tr>
+</tbody>
+</table>
+<h2 id="aspnet-core">ASP.NET Core</h2>
+<p><code>DotNext.AspNetCore.Cluster</code> library is an extension for ASP.NET Core for writing microservices and supporting the following features:</p>
+<ol>
+<li>Messaging is fully supported and organized through HTTP 1.1 or 2.0 protocol including TLS.</li>
+<li>Replication is fully supported</li>
+<li>Consensus is fully supported and based on Raft algorithm</li>
+<li>Tight integration with ASP.NET Core ecosystem such as Dependency Injection and Configuration Object Model</li>
+<li>Compatible with Kestrel or any other third-party web host</li>
+<li>Detection of changes in the list of cluster nodes via configuration</li>
+</ol>
+<p>These extensions are located in <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.html">DotNext.Net.Cluster.Consensus.Raft.Http</a> namespace. For more information, read <a href="aspnetcore.html">this article</a>.</p>
+<p>This implementation is WAN friendly because it uses reliable network transport and supports TLS. It is good choice if your cluster nodes communicate over Internet or any other unreliable network. However, HTTP leads to performance and traffic overhead. Moreover, the library depends on ASP.NET Core.</p>
+<h2 id="tcp-transport">TCP Transport</h2>
+<p>TCP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport can be configured using [https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.html] class:</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
+
+RaftCluster.NodeConfiguration config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback));
+using var cluster = new RaftCluster(config);
+await cluster.StartAsync(CancellationToken.None); //starts hosting of the local node
+//the code for working with cluster instance
+await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local node
+</code></pre>
+<p>Constructor expecting address and port used for hosting of the local node.</p>
+<p>The following table describes configuration properties applicable to TCP transport:</p>
+<table>
+<thead>
+<tr>
+<th>Configuration parameter</th>
+<th>Required</th>
+<th>Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ServerBacklog</td>
+<td>No</td>
+<td>Equal to the number of cluster members</td>
+<td>The number of active incoming connections allowed by the local node</td>
+</tr>
+<tr>
+<td>LingerOption</td>
+<td>No</td>
+<td>Not enabled</td>
+<td>The configuration that specifies whether a TCP socket will delay its closing in an attempt to send all pending data</td>
+</tr>
+<tr>
+<td>GracefulShutdownTimeout</td>
+<td>No</td>
+<td>The same as <em>LowerElectionTimeout</em></td>
+<td>The timeout of graceful shutdown of active incoming connections</td>
+</tr>
+<tr>
+<td>TransmissionBlockSize</td>
+<td>No</td>
+<td>65535</td>
+<td>The size, in bytes, of internal memory block used for sending packets. If your network has high packet loss then you can decrease this value to avoid retranmission of large blocks.</td>
+</tr>
+</tbody>
+</table>
+<p>TCP transport is WAN friendly. However, it doesn't support TLS and should not be used for communication over Internet or any other untrusted public network. Its primary use is corporate isolated network for communication between cluster nodes located in geographically distributed datacenters.</p>
+<h2 id="udp-transport">UDP Transport</h2>
+<p>UDP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport doesn't use persistent connection in contrast to TCP. As a result, it has no TCP overhead related to congestion and flow control of messages. These capabilities are implemented by application protocol itself. However, retransmission of lost packets is not implemented. The transport uses pessimistic approach and interprets lost packets as connection timeout. This is reasonable approach because the leader node examines other cluster members periodically and the next attempt may be successful. Some Raft messages such as <strong>Vote</strong> and <strong>Heartbeat</strong> with empty set of log entries (or if log entries are small enough) for replication can be easily placed to single datagram without fragmentation.</p>
+<p>The transport has very low overhead which is equal to ~20 bytes per datagram. Therefore, most Raft messages can be placed to single datagram without streaming per request.</p>
+<p>UDP transport cannot detect path <a href="https://en.wikipedia.org/wiki/Maximum_transmission_unit">MTU</a> automatically and, by default, it uses minimal safe size of the datagram to avoid fragmentation. If need automatic path MTU discovery then use <a href="../core/mtu.html">MTU discovery</a> mechanism from .NEXT. After that, you can specify datagram size using configuration properties.</p>
+<table>
+<thead>
+<tr>
+<th>Configuration parameter</th>
+<th>Required</th>
+<th>Default Value</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ServerBacklog</td>
+<td>No</td>
+<td>Equal to the number of cluster members</td>
+<td>The number of incoming requests that can be handled simultaneously</td>
+</tr>
+<tr>
+<td>ClientBacklog</td>
+<td>No</td>
+<td>Equal to the number of logical processor on the host machine</td>
+<td>The number of outbound requests that can be initiated by the local node</td>
+</tr>
+<tr>
+<td>DontFragment</td>
+<td>No</td>
+<td>false</td>
+<td>Indicates that datagram cannot be fragmented by the underlying network layer such as IP (DF flag)</td>
+</tr>
+<tr>
+<td>DatagramSize</td>
+<td>No</td>
+<td>300 bytes</td>
+<td>Represents UDP datagram size. For maximum performance, this property must be set to the maximum allowed transmission unit size by your network</td>
+</tr>
+<tr>
+<td>LocalEndPoint</td>
+<td>No</td>
+<td>0.0.0.0 with random port</td>
+<td>Used for receiving responses from other cluster nodes</td>
+</tr>
+</tbody>
+</table>
+<p>If you are using Docker/LXC/Windows container for the clustered microservices based on UDP transport then you can leave <code>LocalEndPoint</code> untouched. Otherwise, it's recommended to use the address of the appropriate local network interface.</p>
+<p>UDP transport is WAN unfriendly. It should not be used in unreliable networks. However, it's much faster than TCP transport. It is recommended to use this protocol in the following situations:</p>
+<ul>
+<li>Cluster nodes are hosted in the same rack</li>
+<li>Cluster nodes are hosted in the different racks but located in the same datacenter and racks connected by high-speed physical interface such as FibreChannel.</li>
+<li>Cluster nodes are in Docker/LXC/Windows containers running on the same physical host</li>
+</ul>
+<h2 id="example">Example</h2>
+<p>There is Raft playground represented by RaftNode application. You can find this app <a href="https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode">here</a>. This playground allows to test Raft consensus protocol in real world using one of the supported transports: <code>http</code>, <code>tcp</code>, <code>udp</code>.</p>
+<p>Each instance of launched application represents cluster node. All nodes can be started using the following script:</p>
+<pre><code class="lang-bash">cd &lt;dotnext&gt;/src/examples/RaftNode
+dotnet run -- tcp 3262
+dotnet run -- tcp 3263
+dotnet run -- tcp 3264
+</code></pre>
+<p>Every instance should be launched in separated Terminal session. After that, you will see diagnostics messages in <code>stdout</code> about election process. Press <em>Ctrl+C</em> in the window related to the leader node and ensure that new leader will be elected.</p>
+<p>Optionally, you can test replication powered by persistent WAL. To do that, you need to specify the name of folder which is used to store Write Ahead Log files</p>
+<pre><code class="lang-bash">cd &lt;dotnext&gt;/src/examples/RaftNode
+dotnet run -- tcp 3262 node1
+dotnet run -- tcp 3263 node2
+dotnet run -- tcp 3264 node3
+</code></pre>
+<p>Now you can see replication messages in each Terminal window. The replicated state stored in the <code>node1</code>, <code>node2</code> and <code>node3</code> folders. You can restart one of the nodes and make sure that its state is recovered correctly.</p>
 <h1 id="guide-how-to-implement-database">Guide: How To Implement Database</h1>
-<p>This section contains recommendations about implementation of your own database based on .NEXT Cluster programming model. It can be K/V database or something else.</p>
+<p>This section contains recommendations about implementation of your own database or distributed service based on .NEXT Cluster programming model. It can be K/V database, distributed UUID generator, distributed lock or anything else.</p>
 <ol>
 <li>Derive from <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html">PersistentState</a> class to implement core logic related to manipulation with state machine
 <ol>
@@ -107,9 +341,14 @@
 <li>Call <code>ReplayAsync</code> method which is inherited from <code>PersistentState</code> class at application startup. This step is not need if you're using Raft implementation for ASP.NET Core.</li>
 </ol>
 <h1 id="guide-custom-transport">Guide: Custom Transport</h1>
-<p>Transport-agnostic implementation of Raft is represented by <a href="https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/RaftCluster.cs">RaftCluster</a> class. It contains core consensus and replication logic but it's not aware about network-specific details. You can use this class as foundation for your own Raft implementation for particular network protocol. All you need is to implementation protocol-specific communication logic.  This chapter will guide you through all necessary steps.</p>
+<p>Transport-agnostic implementation of Raft is represented by <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html">RaftCluster&lt;TMember&gt;</a> class. It contains core consensus and replication logic but it's not aware about network-specific details. You can use this class as foundation for your own Raft implementation for particular network protocol. All you need is to implementation protocol-specific communication logic.  This chapter will guide you through all necessary steps.</p>
 <h2 id="existing-implementations">Existing Implementations</h2>
-<p>.NEXT library ships <a href="https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftHttpCluster.cs">RaftHttpCluster</a> as a part of <code>DotNext.AspNetCore.Cluster</code> library and offers HTTP 1.1/HTTP 2 implementations adopted for ASP.NET Core framework. It can be used as starting point to learn about protocol-specific implementation of Raft in addition to this chapter.</p>
+<p>.NEXT library ships multiple network transports:</p>
+<ul>
+<li><a href="https://github.com/sakno/dotNext/blob/master/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/RaftHttpCluster.cs">RaftHttpCluster</a> as a part of <code>DotNext.AspNetCore.Cluster</code> library offers HTTP 1.1/HTTP 2 implementations adopted for ASP.NET Core framework.</li>
+<li><a href="https://github.com/sakno/dotNext/tree/develop/src/cluster/DotNext.Net.Cluster/Net/Cluster/Consensus/Raft/TransportServices">TransportServices</a> as a part of <code>DotNext.Net.Cluster</code> library contains reusable network transport layer for UDP and TCP transport shipped as a part of this library.</li>
+</ul>
+<p>All these implementations can be used as examples of transport for Raft messages.</p>
 <h2 id="architecture">Architecture</h2>
 <p><code>RaftCluster</code> contains implementation of consensus and replication logic so your focus is network-specific programming. First of all, you need to derive from this class. There are two main extensibility points when network-specific programing needed:</p>
 <ul>
