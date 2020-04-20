@@ -154,7 +154,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
         private async void Listen()
         {
-            
             using var args = new AcceptEventArgs();
             var token = transmissionState.Token;    //cache token here to avoid ObjectDisposedException in HandleConnection
             for (var pending = true; pending && !IsDisposed;)
