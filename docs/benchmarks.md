@@ -151,9 +151,9 @@ Strongly typed reflection provided by DotNext Reflection library has the same pe
 
 | Method | Mean | Error | StdDev | Median |
 | ---- | ---- | ---- | ---- | ---- |
-| Atomic | 333.4 us |  8.04 us |  76.01 us |   324.5 us |
-| Synchronized | 892.3 us |  7.64 us |  71.24 us |   884.0 us |
-| SpinLock | 1,756.7 us | 61.96 us | 589.24 us | 1,637.0 us |
+| Atomic | 359.6 us | 7.40 us | 69.64 us | 353.2 us |
+| Synchronized | 947.2 us | 10.30 us | 96.05 us | 945.1 us |
+| SpinLock | 1,707.6 us | 52.27 us | 488.34 us | 1,674.8 us |
 
 # Value Delegate
 [This benchmark](https://github.com/sakno/DotNext/blob/master/src/DotNext.Benchmarks/FunctionPointerBenchmark.cs) compares performance of indirect method call using classic delegates from .NET and [value delegates](./features/core/valued.md).
