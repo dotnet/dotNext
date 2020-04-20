@@ -64,7 +64,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 get
                 {
                     if (length.HasValue)
-                        return length;
+                        return length.GetValueOrDefault();
                     if (requestStream.CanSeek)
                         return requestStream.Length;
                     return null;

@@ -100,7 +100,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public int LowerElectionTimeout
             {
                 get => electionTimeout.LowerValue;
-                set => electionTimeout = electionTimeout.Modify(value, electionTimeout.UpperValue);
+                set => electionTimeout.Update(value, null);
             }
 
             /// <summary>
@@ -122,7 +122,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public int UpperElectionTimeout
             {
                 get => electionTimeout.UpperValue;
-                set => electionTimeout = electionTimeout.Modify(electionTimeout.LowerValue, value);
+                set => electionTimeout.Update(null, value);
             }
 
             /// <summary>

@@ -49,7 +49,7 @@ namespace DotNext.IO
                 where TReader : IAsyncBinaryReader
             {
                 using var ms = capacity.HasValue ?
-                    new RentedMemoryStream(capacity.Value) :
+                    new RentedMemoryStream(capacity.GetValueOrDefault()) :
                     new MemoryStream(DefaultBufferSize);
                 await reader.CopyToAsync(ms, token).ConfigureAwait(false);
                 ms.Seek(0, SeekOrigin.Begin);

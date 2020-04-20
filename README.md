@@ -15,7 +15,7 @@
 | [Concept Types](https://github.com/dotnet/csharplang/issues/110) | [Documentation](https://sakno.github.io/dotNext/features/concept.html) |
 | [Expression Trees covering additional language constructs](https://github.com/dotnet/csharplang/issues/158), i.e. `foreach`, `await`, patterns, multi-line lambda expressions | [Metaprogramming](https://sakno.github.io/dotNext/features/metaprogramming/index.html) |
 | [Async Locks](https://github.com/dotnet/corefx/issues/34073) | [Documentation](https://sakno.github.io/dotNext/features/threading/index.html) |
-| [High-performance general purpose Write Ahead Log](https://github.com/dotnet/corefx/issues/25034) | [Persistent Log](https://sakno.github.io/dotNext/features/cluster/wal.html)  | 
+| [High-performance general purpose Write-Ahead Log](https://github.com/dotnet/corefx/issues/25034) | [Persistent Log](https://sakno.github.io/dotNext/features/cluster/wal.html)  | 
 
 Quick overview of additional features:
 
@@ -26,12 +26,9 @@ Quick overview of additional features:
 * Fast conversion of bytes to hexadecimal representation and vice versa using `ToHex` and `FromHex` methods from [Span](https://sakno.github.io/dotNext/api/DotNext.Span.html) static class
 * `ManualResetEvent`, `ReaderWriterLockSlim` and other synchronization primitives now have their [asynchronous versions](https://sakno.github.io/dotNext/features/threading/rwlock.html)
 * Powerful concurrent [ObjectPool](https://sakno.github.io/dotNext/features/threading/objectpool.html)
-* [Atomic](https://sakno.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types
+* [Atomic](https://sakno.github.io/dotNext/features/core/atomic.html) memory access operations for arbitrary value types including enums
 * [PipeExtensions](https://sakno.github.io/dotNext/api/DotNext.IO.Pipelines.PipeExtensions.html) provides high-level I/O operations for pipelines such as string encoding and decoding
-* Fully-featured Raft implementation
-    * ASP.NET Core [Clustered microservices](https://sakno.github.io/dotNext/features/cluster/aspnetcore.html) powered by Raft Consensus Algorithm, data replication and point-to-point messaging
-    * TCP transport
-    * UDP transport
+* Fully-featured [Raft implementation](https://github.com/sakno/dotNext/tree/master/src/cluster)
 
 All these things are implemented in 100% managed code on top of existing .NET Standard stack without modifications of Roslyn compiler or CoreFX libraries.
 
@@ -50,7 +47,8 @@ Release Date: 04-XX-2020
 
 <a href="https://www.nuget.org/packages/dotnext/2.3.0">DotNext 2.3.0</a>
 * Performance improvements of `BitwiseComparer` and `Intrinsics` classes  
-* Introduced new `MemoryOwner<T>` value type that unifies working with memory and array pools
+* Introduced new [MemoryOwner&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryOwner-1.html) value type that unifies working with memory and array pools
+* Path MTU [discovery](https://sakno.github.io/dotNext/api/DotNext.Net.NetworkInformation.MtuDiscovery.html)
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.3.0">DotNext.Metaprogramming 2.3.0</a>
@@ -65,7 +63,7 @@ Release Date: 04-XX-2020
 
 <a href="https://www.nuget.org/packages/dotnext.threading/2.3.0">DotNext.Threading 2.3.0</a>
 * Improved performance of existing asynchronous locks
-* Added `AsyncTrigger` synchronization primitive
+* Added [AsyncTrigger](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) synchronization primitive
 
 <a href="https://www.nuget.org/packages/dotnext.reflection/2.3.0">DotNext.Reflection 2.3.0</a>
 * Updated dependencies
@@ -73,8 +71,8 @@ Release Date: 04-XX-2020
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/2.3.0">DotNext.Net.Cluster 2.3.0</a>
 * TCP transport for Raft
 * UDP transport for Raft
-* Fixed bug in `PersistentStore` class that causes incorrect usage of rented memory and unexpected result during replication between nodes
-* Methods for handling Raft messages inside of `RaftCluster<TMember>` class now support cancellation via token
+* Fixed bug in [PersistentState](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html) class that leads to incorrect usage of rented memory and unexpected result during replication between nodes
+* Methods for handling Raft messages inside of [RaftCluster&lt;TMember&gt;](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html) class now support cancellation via token
 
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.3.0">DotNext.AspNetCore.Cluster 2.3.0</a>
 * Updated dependencies

@@ -118,7 +118,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
         }
 
-        private async void HandleConnection(Socket remoteClient)
+        private async void HandleConnection(Socket remoteClient, CancellationToken token)
         {
             var stream = new ServerNetworkStream(remoteClient);
             var buffer = AllocTransmissionBlock();
@@ -127,7 +127,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             try
             {
                 while (stream.Connected && !IsDisposed)
-                    switch (await stream.Exchange(exchange, buffer.Memory, receiveTimeout, transmissionState.Token).ConfigureAwait(false))
+                    switch (await stream.Exchange(exchange, buffer.Memory, receiveTimeout, token).ConfigureAwait(false))
                     {
                         default:
                             return;
@@ -150,9 +150,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
         }
 
+        private void HandleConnection((Socket Client, CancellationToken Token) args) => HandleConnection(args.Client, args.Token);
+
         private async void Listen()
         {
             using var args = new AcceptEventArgs();
+            var token = transmissionState.Token;    //cache token here to avoid ObjectDisposedException in HandleConnection
             for (var pending = true; pending && !IsDisposed;)
                 try
                 {
@@ -161,7 +164,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     else if (args.SocketError != SocketError.Success)
                         throw new SocketException((int)args.SocketError);
                     ConfigureSocket(args.AcceptSocket, LingerOption, Ttl);
-                    ThreadPool.QueueUserWorkItem(HandleConnection, args.AcceptSocket, false);
+                    ThreadPool.QueueUserWorkItem(HandleConnection, (args.AcceptSocket, token), false);
                     args.Reset();
                 }
                 catch (ObjectDisposedException)

@@ -34,7 +34,7 @@ namespace DotNext.IO.Pipelines
                 if (count.HasValue)
                 {
                     limited = true;
-                    remainingBytes = count.Value;
+                    remainingBytes = count.GetValueOrDefault();
                 }
                 else
                 {
