@@ -176,7 +176,6 @@ Index of such entry is always 0.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask AppendAsync&lt;TEntryImpl&gt;(TEntryImpl entry, long startIndex)
-
     where TEntryImpl : TEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -272,7 +271,6 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">virtual ValueTask&lt;long&gt; AppendAsync&lt;TEntryImpl&gt;(TEntryImpl entry, CancellationToken token = default(CancellationToken))
-
     where TEntryImpl : TEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -365,7 +363,6 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt; entries, long startIndex, bool skipCommitted = false, CancellationToken token = default(CancellationToken))
-
     where TEntryImpl : TEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -470,7 +467,6 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;long&gt; AppendAsync&lt;TEntryImpl&gt;(ILogEntryProducer&lt;TEntryImpl&gt; entries, CancellationToken token = default(CancellationToken))
-
     where TEntryImpl : TEntry</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -640,7 +636,6 @@ If it is not, the method behaves in the same way as <a class="xref" href="DotNex
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, long endIndex, CancellationToken token = default(CancellationToken))
-
     where TReader : ILogEntryConsumer&lt;TEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -761,7 +756,6 @@ with the audit trail segment with entries.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, CancellationToken token = default(CancellationToken))
-
     where TReader : ILogEntryConsumer&lt;TEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -867,7 +861,6 @@ with the audit trail segment with entries.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; IAuditTrail.ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, long endIndex, CancellationToken token)
-
     where TReader : ILogEntryConsumer&lt;ILogEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -950,7 +943,6 @@ with the audit trail segment with entries.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask&lt;TResult&gt; IAuditTrail.ReadAsync&lt;TReader, TResult&gt;(TReader reader, long startIndex, CancellationToken token)
-
     where TReader : ILogEntryConsumer&lt;ILogEntry, TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

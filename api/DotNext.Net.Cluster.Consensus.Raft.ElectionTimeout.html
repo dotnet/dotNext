@@ -251,12 +251,13 @@
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_ElectionTimeout_Modify_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ElectionTimeout.Modify*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_ElectionTimeout_Modify_System_Int32_System_Int32_" data-uid="DotNext.Net.Cluster.Consensus.Raft.ElectionTimeout.Modify(System.Int32,System.Int32)">Modify(Int32, Int32)</h4>
-  <div class="markdown level1 summary"><p>Modifies the boundary of the timeout.</p>
+  <div class="markdown level1 summary"><p>Updates boundaries of the timeout.</p>
 </div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public ElectionTimeout Modify(int lowerValue, int upperValue)</code></pre>
+    <pre><code class="lang-csharp hljs">[Obsolete(&quot;Use ElectionTimeoutExtensions.Set method instead&quot;)]
+public ElectionTimeout Modify(int lowerValue, int upperValue)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -331,6 +332,9 @@
     </tbody>
   </table>
   <h3 id="extensionmethods">Extension Methods</h3>
+  <div>
+      <a class="xref" href="DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions.html#DotNext_Net_Cluster_Consensus_Raft_ElectionTimeoutExtensions_Update_DotNext_Net_Cluster_Consensus_Raft_ElectionTimeout__System_Nullable_System_Int32__System_Nullable_System_Int32__">ElectionTimeoutExtensions.Update(ref ElectionTimeout, Nullable&lt;Int32&gt;, Nullable&lt;Int32&gt;)</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Sequence.html#DotNext_Sequence_Skip__2___0__System_Int32_">Sequence.Skip&lt;TEnumerator, T&gt;(ref TEnumerator, Int32)</a>
   </div>

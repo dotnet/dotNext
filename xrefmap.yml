@@ -14616,6 +14616,28 @@ references:
   isSpec: "True"
   fullName: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeout.UpperValue
   nameWithType: ElectionTimeout.UpperValue
+- uid: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions
+  name: ElectionTimeoutExtensions
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions.html
+  commentId: T:DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions
+  nameWithType: ElectionTimeoutExtensions
+- uid: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions.Update(DotNext.Net.Cluster.Consensus.Raft.ElectionTimeout@,System.Nullable{System.Int32},System.Nullable{System.Int32})
+  name: Update(ref ElectionTimeout, Nullable<Int32>, Nullable<Int32>)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions.html#DotNext_Net_Cluster_Consensus_Raft_ElectionTimeoutExtensions_Update_DotNext_Net_Cluster_Consensus_Raft_ElectionTimeout__System_Nullable_System_Int32__System_Nullable_System_Int32__
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions.Update(DotNext.Net.Cluster.Consensus.Raft.ElectionTimeout@,System.Nullable{System.Int32},System.Nullable{System.Int32})
+  name.vb: Update(ByRef ElectionTimeout, Nullable(Of Int32), Nullable(Of Int32))
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions.Update(ref DotNext.Net.Cluster.Consensus.Raft.ElectionTimeout, System.Nullable<System.Int32>, System.Nullable<System.Int32>)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions.Update(ByRef DotNext.Net.Cluster.Consensus.Raft.ElectionTimeout, System.Nullable(Of System.Int32), System.Nullable(Of System.Int32))
+  nameWithType: ElectionTimeoutExtensions.Update(ref ElectionTimeout, Nullable<Int32>, Nullable<Int32>)
+  nameWithType.vb: ElectionTimeoutExtensions.Update(ByRef ElectionTimeout, Nullable(Of Int32), Nullable(Of Int32))
+- uid: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions.Update*
+  name: Update
+  href: api/DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions.html#DotNext_Net_Cluster_Consensus_Raft_ElectionTimeoutExtensions_Update_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions.Update
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.ElectionTimeoutExtensions.Update
+  nameWithType: ElectionTimeoutExtensions.Update
 - uid: DotNext.Net.Cluster.Consensus.Raft.EmptyEntry
   name: EmptyEntry
   href: api/DotNext.Net.Cluster.Consensus.Raft.EmptyEntry.html
