@@ -111,20 +111,20 @@ The benchmark uses series of different strings to run the same set of tests. Wor
 
 | Method | Condition | Mean | Error | StdDev |
 | ---- | ---- | ---- | ---- | ---- |
-| Direct call | Empty String | 4.284 ns | 0.1163 ns | 0.1088 ns |
-| Direct call | Best Case | 8.116 ns | 0.1956 ns | 0.2329 ns |
-| Direct call | Worst Case | 13.866 ns | 0.3406 ns | 0.6141 ns |
-| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Empty String | 9.419 ns | 0.1792 ns | 0.2267 ns |
-| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Best Case | 13.120 ns | 0.2540 ns | 0.3802 ns |
-| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Worst Case | 18.270 ns | 0.3618 ns | 0.3384 ns |
-| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Empty String | 13.548 ns | 0.2691 ns | 0.3683 ns |
-| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Best Case | 17.618 ns | 0.3591 ns | 0.3687 ns |
-| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Worst Case | 23.436 ns | 0.3828 ns | 0.3581 ns |
-| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Empty String | 41.128 ns | 0.7754 ns | 1.3376 ns |
-| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Best Case | 40.432 ns | 0.7127 ns | 0.6318 ns |
-| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Worst Case | 51.208 ns | 0.3256 ns | 0.3046 ns |
-| .NET reflection | Empty String | 335.322 ns | 7.5455 ns | 6.6889 ns |
-| .NET reflection | Best Case | 327.107 ns | 1.3891 ns | 1.1600 ns |
+| Direct call | Empty String | 6.321 ns | 0.1605 ns | 0.1784 ns |
+| Direct call | Best Case | 9.329 ns | 0.0867 ns | 0.0724 ns |
+| Direct call | Worst Case | 12.657 ns | 0.1746 ns | 0.1633 ns |
+| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Empty String | 8.017 ns | 0.0424 ns | 0.0331 ns |
+| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Best Case | 12.418 ns | 0.0512 ns | 0.0479 ns |
+| Reflection with DotNext using delegate type `Func<string, char, int, int>` | Worst Case | 18.113 ns | 0.0588 ns | 0.0550 ns |
+| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Empty String | 12.389 ns | 0.0227 ns | 0.0202 ns |
+| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Best Case | 17.252 ns | 0.0729 ns | 0.0682 ns |
+| Reflection with DotNext using delegate type `Function<string, (char, int), int>` | Worst Case | 20.930 ns | 0.0226 ns | 0.0200 ns |
+| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Empty String | 30.871 ns | 0.1307 ns | 0.1222 ns |
+| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Best Case | 33.069 ns | 0.5989 ns | 1.0006 ns |
+| Reflection with DotNext using delegate type `Function<object, (object, object), object>` | Worst Case | 35.981 ns | 0.7064 ns | 0.6938 ns |
+| .NET reflection | Empty String | 311.787 ns | 1.0205 ns | 0.9546 ns |
+| .NET reflection | Best Case | 318.686 ns | 6.2622 ns | 6.4308 ns |
 | .NET reflection | Worst Case | 332.189 ns | 1.3130 ns | 1.2282 ns |
 
 DotNext Reflection library offers the best result in case when delegate type exactly matches to the reflected method with small overhead measured in a few nanoseconds.
