@@ -89,14 +89,14 @@ The next series of benchmarks demonstrate performance of strongly typed reflecti
 1. Using strongly typed reflection from DotNext Reflection library using special delegate type `Function<object, ValueTuple, object>`. It is assumed that instance type and property type is not known at compile type (th) so the delegate performs type check on every call.
 1. Classic .NET reflection
 
-| Method | Mean | Error | StdDev |
-| ---- | ---- | ---- | ---- |
-| Direct call | 13.00 ns | 0.256 ns | 0.350 ns |
-| Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` | 16.26 ns | 0.048 ns | 0.045 ns |
-| Reflection with DotNext using `DynamicInvoker` | 20.32 ns | 0.053 ns | 0.042 ns |
-| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 20.89 ns | 0.054 ns | 0.048 ns |
-| `ObjectAccess` class from _FastMember_ library | 51.88 ns | 0.123 ns | 0.109 ns |
-| .NET reflection | 156.52 ns | 0.389 ns | 0.345 ns |
+| Method | Mean | Error | StdDev | Median |
+| ---- | ---- | ---- | ---- | ---- |
+| Direct call | 11.41 ns | 0.080 ns | 0.067 ns | 11.42 ns |
+| Reflection with DotNext using delegate type `MemberGetter<IndexOfCalculator, int>` | 12.71 ns | 0.196 ns | 0.184 ns | 12.64 ns |
+| Reflection with DotNext using `DynamicInvoker` | 21.99 ns | 0.046 ns | 0.043 ns | 21.98 ns |
+| Reflection with DotNext using delegate type `Function<object, ValueTuple, object>` | 21.98 ns | 0.072 ns | 0.060 ns | 21.97 ns |
+| `ObjectAccess` class from _FastMember_ library | 52.67 ns | 0.120 ns | 0.112 ns | 52.67 ns |
+| .NET reflection | 52.67 ns | 0.120 ns | 0.112 ns | 52.67 ns |
 
 Strongly typed reflection provided by DotNext Reflection library has the same performance as direct call.
 
