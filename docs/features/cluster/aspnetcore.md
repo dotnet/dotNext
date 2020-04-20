@@ -345,9 +345,9 @@ Implementation of reporting method should fast as possible or asynchronous. If r
 There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world. Each instance of launched application represents cluster node. All nodes can be started using the following script:
 ```bash
 cd <dotnext>/src/examples/RaftNode
-dotnet run -- 3262
-dotnet run -- 3263
-dotnet run -- 3264
+dotnet run -- http 3262
+dotnet run -- http 3263
+dotnet run -- http 3264
 ```
 
 Every instance should be launched in separated Terminal session. After that, you will see diagnostics messages in `stdout` about election process. Press _Ctrl+C_ in the window related to the leader node and ensure that new leader will be elected.
@@ -355,8 +355,8 @@ Every instance should be launched in separated Terminal session. After that, you
 Optionally, you can test replication powered by persistent WAL. To do that, you need to specify the name of folder which is used to store Write Ahead Log files
 ```bash
 cd <dotnext>/src/examples/RaftNode
-dotnet run -- 3262 node1
-dotnet run -- 3263 node2
-dotnet run -- 3264 node3
+dotnet run -- http 3262 node1
+dotnet run -- http 3263 node2
+dotnet run -- http 3264 node3
 ```
 Now you can see replication messages in each Terminal window. The replicated state stored in the `node1`, `node2` and `node3` folders. You can restart one of the nodes and make sure that its state is recovered correctly.

@@ -118,6 +118,28 @@ UDP transport is WAN unfriendly. It should not be used in unreliable networks. H
 * Cluster nodes are hosted in the different racks but located in the same datacenter and racks connected by high-speed physical interface such as FibreChannel.
 * Cluster nodes are in Docker/LXC/Windows containers running on the same physical host
 
+## Example
+There is Raft playground represented by RaftNode application. You can find this app [here](https://github.com/sakno/dotNext/tree/develop/src/examples/RaftNode). This playground allows to test Raft consensus protocol in real world using one of the supported transports: `http`, `tcp`, `udp`.
+
+Each instance of launched application represents cluster node. All nodes can be started using the following script:
+```bash
+cd <dotnext>/src/examples/RaftNode
+dotnet run -- tcp 3262
+dotnet run -- tcp 3263
+dotnet run -- tcp 3264
+```
+
+Every instance should be launched in separated Terminal session. After that, you will see diagnostics messages in `stdout` about election process. Press _Ctrl+C_ in the window related to the leader node and ensure that new leader will be elected.
+
+Optionally, you can test replication powered by persistent WAL. To do that, you need to specify the name of folder which is used to store Write Ahead Log files
+```bash
+cd <dotnext>/src/examples/RaftNode
+dotnet run -- tcp 3262 node1
+dotnet run -- tcp 3263 node2
+dotnet run -- tcp 3264 node3
+```
+Now you can see replication messages in each Terminal window. The replicated state stored in the `node1`, `node2` and `node3` folders. You can restart one of the nodes and make sure that its state is recovered correctly.
+
 # Guide: How To Implement Database
 This section contains recommendations about implementation of your own database or distributed service based on .NEXT Cluster programming model. It can be K/V database, distributed UUID generator, distributed lock or anything else.
 
