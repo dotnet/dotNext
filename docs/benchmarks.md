@@ -42,12 +42,12 @@ Bitwise equality method has the better performance than field-by-field equality 
 
 | Method | Mean | Error | StdDev | Median  |
 | ---- | ---- | ---- | ---- | ---- |
-| `Guid[].BitwiseEquals`, small arrays (~10 elements) | 8.706 ns | 0.0319 ns | 0.0283 ns |   8.710 ns |
-| `ReadOnlySpan<Guid>.SequenceEqual`, small arrays (~10 elements) | 44.331 ns | 0.1909 ns | 0.1693 ns |  44.344 ns |
-| `for` loop, small arrays (~10 elements) | 61.776 ns | 1.1145 ns | 0.8701 ns |  62.019 ns |
-| `Guid[].BitwiseEquals`, large arrays (~100 elements) | 47.300 ns | 0.9715 ns | 1.5961 ns |  48.246 ns |
-| `ReadOnlySpan<Guid>.SequenceEqual`, large arrays (~100 elements) | 423.927 ns | 7.4146 ns | 6.9356 ns | 426.833 ns |
-| `for` loop, large arrays (~100 elements) | 593.511 ns | 1.1789 ns | 0.9844 ns | 593.353 ns |
+| `Guid[].BitwiseEquals`, small arrays (~10 elements) | 9.039 ns | 0.0426 ns |  0.0399 ns | 9.042 ns |
+| `ReadOnlySpan<Guid>.SequenceEqual`, small arrays (~10 elements) | 45.571 ns |  0.1440 ns |  0.1276 ns | 45.569 ns |
+| `for` loop, small arrays (~10 elements) | 63.031 ns | 0.1057 ns | 0.0937 ns | 63.064 ns |
+| `Guid[].BitwiseEquals`, large arrays (~100 elements) | 47.892 ns |  0.2260 ns | 0.2004 ns | 47.893 ns |
+| `ReadOnlySpan<Guid>.SequenceEqual`, large arrays (~100 elements) | 381.872 ns | 7.4653 ns | 11.1737 ns | 375.948 ns |
+| `for` loop, large arrays (~100 elements) | 631.655 ns | 12.4212 ns | 19.7013 ns | 634.035 ns |
 
 Bitwise equality is an absolute winner for equality check between arrays of any size.
 
