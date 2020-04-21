@@ -12,6 +12,7 @@ namespace DotNext.Buffers
         {
             using var owner = ArrayPool<byte>.Shared.ToAllocator().Invoke(10);
             Equal(10, owner.Memory.Length);
+            Equal(owner.Length, owner.Memory.Length);
         }
 
         [Fact]

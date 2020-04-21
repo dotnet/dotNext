@@ -15,13 +15,12 @@ namespace DotNext.Buffers
     {
         private readonly object? owner;
         private readonly T[]? array;  //not null only if owner is ArrayPool
-        private readonly int length;
 
         internal MemoryOwner(ArrayPool<T>? pool, T[] array, int length)
         {
             this.array = array;
             owner = pool;
-            this.length = length;
+            Length = length;
         }
 
         /// <summary>
@@ -33,7 +32,7 @@ namespace DotNext.Buffers
         {
             array = pool.Rent(length);
             owner = pool;
-            this.length = length;
+            Length = length;
         }
 
         /// <summary>
@@ -46,7 +45,7 @@ namespace DotNext.Buffers
             array = null;
             IMemoryOwner<T> owner;
             this.owner = owner = pool.Rent(length);
-            this.length = length < 0 ? owner.Memory.Length : length;
+            Length = length < 0 ? owner.Memory.Length : length;
         }
 
         /// <summary>
@@ -60,7 +59,7 @@ namespace DotNext.Buffers
             if (length > array.Length || length < 0)
                 throw new ArgumentOutOfRangeException(nameof(length));
             this.array = array;
-            this.length = length;
+            Length = length;
             this.owner = null;
         }
 
@@ -74,9 +73,14 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Gets length of the rented memory, in bytes.
+        /// </summary>
+        public int Length { get; }
+
+        /// <summary>
         /// Determines whether this memory is empty.
         /// </summary>
-        public bool IsEmpty => length == 0;
+        public bool IsEmpty => Length == 0;
 
         /// <summary>
         /// Gets the memory belonging to this owner.
@@ -93,7 +97,7 @@ namespace DotNext.Buffers
                     result = new Memory<T>(array);
                 else
                     result = default;
-                return result.Slice(0, length);
+                return result.Slice(0, Length);
             }
         }
 
@@ -105,7 +109,7 @@ namespace DotNext.Buffers
         {
             get
             {
-                if (index < 0 || index >= length)
+                if (index < 0 || index >= Length)
                     goto invalid_index;
                 if (owner is IMemoryOwner<T> memory)
                     return ref Add(ref MemoryMarshal.GetReference(memory.Memory.Span), index);
