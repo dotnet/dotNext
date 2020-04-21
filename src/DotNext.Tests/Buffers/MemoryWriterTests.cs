@@ -142,5 +142,23 @@ namespace DotNext.Buffers
             Equal(50, result[4]);
             Equal(60, result[5]);
         }
+
+        [Fact]
+        public static void StreamInterop()
+        {
+            using var writer = new PooledArrayBufferWriter<byte>(ArrayPool<byte>.Shared, 25);
+            var span = writer.GetSpan(10);
+            new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}.AsSpan().CopyTo(span);
+            writer.Advance(10);
+            using var stream = writer.GetWrittenBytesAsStream();
+            True(stream.CanRead);
+            False(stream.CanWrite);
+            Equal(0, stream.Position);
+            Equal(10, stream.Length);
+            var buffer = new byte[10];
+            Equal(10, stream.Read(buffer, 0, 10));
+            for(var i = 0; i < buffer.Length; i++)
+                Equal(i, buffer[i]);
+        }
     }
 }
