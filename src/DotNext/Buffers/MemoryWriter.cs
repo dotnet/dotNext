@@ -7,7 +7,7 @@ namespace DotNext.Buffers
     /// Represents memory-backed output sink which <typeparamref name="T"/> data can be written.
     /// </summary>
     /// <typeparam name="T">The data type that can be written.</typeparam>
-    public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>
+    public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>
     {
         private protected const int DefaultInitialBufferSize = 256;
 
@@ -23,6 +23,8 @@ namespace DotNext.Buffers
         /// </summary>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public abstract ReadOnlyMemory<T> WrittenMemory { get; }
+
+        ReadOnlyMemory<T> IConvertible<ReadOnlyMemory<T>>.Convert() => WrittenMemory;
 
         /// <summary>
         /// Gets the amount of data written to the underlying memory so far.

@@ -12,7 +12,7 @@ namespace DotNext
     /// <seealso href="https://github.com/dotnet/corefx/issues/34077">EnumMember API</seealso>
     [SuppressMessage("Design", "CA1036")]
     [Serializable]
-    public readonly struct Enum<E> : IEquatable<E>, IComparable<E>, IFormattable, IEquatable<Enum<E>>, ISerializable
+    public readonly struct Enum<E> : IEquatable<E>, IComparable<E>, IFormattable, IEquatable<Enum<E>>, ISerializable, IConvertible<E>
         where E : struct, Enum
     {
         private readonly struct Tuple : IEquatable<Tuple>
@@ -193,6 +193,8 @@ namespace DotNext
         /// Represents value of the enum member.
         /// </summary>
         public E Value { get; }
+
+        E IConvertible<E>.Convert() => Value;
 
         /// <summary>
         /// Represents name of the enum member.

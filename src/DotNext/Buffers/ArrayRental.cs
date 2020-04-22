@@ -10,7 +10,7 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">Type of array elements.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ArrayRental<T> : IMemoryOwner<T>
+    public readonly struct ArrayRental<T> : IMemoryOwner<T>, IConvertible<Memory<T>>, IConvertible<ArraySegment<T>>, IConvertible<MemoryOwner<T>>
     {
         private readonly ArrayPool<T>? pool;
         private readonly T[] array;
@@ -81,6 +81,8 @@ namespace DotNext.Buffers
         /// </summary>
         public Memory<T> Memory => array is null ? default : new Memory<T>(array, 0, Length);
 
+        Memory<T> IConvertible<Memory<T>>.Convert() => Memory;
+
         /// <summary>
         /// Gets the span of array elements.
         /// </summary>
@@ -91,10 +93,14 @@ namespace DotNext.Buffers
         /// </summary>
         public ArraySegment<T> Segment => array is null ? ArraySegment<T>.Empty : new ArraySegment<T>(array, 0, Length);
 
+        ArraySegment<T> IConvertible<ArraySegment<T>>.Convert() => Segment;
+
         /// <summary>
         /// Converts this instance to <see cref="MemoryOwner{T}"/>.
         /// </summary>
         public MemoryOwner<T> Owner => array is null ? default : new MemoryOwner<T>(pool, array, Length);
+
+        MemoryOwner<T> IConvertible<MemoryOwner<T>>.Convert() => Owner;
 
         /// <summary>
         /// Gets the array element by its index.

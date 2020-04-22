@@ -22,7 +22,7 @@ namespace DotNext.Runtime.InteropServices
     /// Null-pointer is the only check performed by methods.
     /// </remarks>
     [StructLayout(LayoutKind.Sequential)]
-    public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox
+    public readonly struct Pointer<T> : IEquatable<Pointer<T>>, IStrongBox, IConvertible<IntPtr>, IConvertible<UIntPtr>
         where T : unmanaged
     {
         /// <summary>
@@ -800,6 +800,8 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator IntPtr(Pointer<T> ptr) => ptr.Address;
 
+        IntPtr IConvertible<IntPtr>.Convert() => Address;
+
         /// <summary>
         /// Obtains pointer value (address) as <see cref="UIntPtr"/>.
         /// </summary>
@@ -807,6 +809,8 @@ namespace DotNext.Runtime.InteropServices
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
         public static unsafe implicit operator UIntPtr(Pointer<T> ptr) => new UIntPtr(ptr.value);
+
+        unsafe UIntPtr IConvertible<UIntPtr>.Convert() => new UIntPtr(value);
 
         /// <summary>
         /// Obtains pointer to the memory represented by given memory handle.
