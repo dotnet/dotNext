@@ -78,3 +78,6 @@ The value type implements [IMemoryOwner&lt;T&gt;](https://docs.microsoft.com/en-
 However, `MemoryOwner` provides subset of functionality available in `ArrayRental` and `MemoryRental` which are corner cases and specialized for particular pooling mechanism.
 
 Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. [MemoryAllocator&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html) delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. [MemoryAllocator](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator.html) static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.
+
+# Growable Buffers
+If size of the required buffer is not known and can grow dynamically then you need to use [Dynamic Buffers](./buffers.md) that are based on memory pooling mechanism as well.
