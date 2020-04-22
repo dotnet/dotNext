@@ -10,6 +10,7 @@ namespace DotNext.IO
     public sealed class RentedMemoryStream : MemoryStream
     {
         private readonly ArrayPool<byte> pool;
+        private bool disposed;
 
         /// <summary>
         /// Initializes a new non-resizable memory stream of rented memory from shared array pool. 
@@ -39,7 +40,11 @@ namespace DotNext.IO
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-                pool.Return(GetBuffer());
+            {
+                if(!disposed)
+                    pool.Return(GetBuffer());
+                disposed = true;
+            }
             base.Dispose(disposing);
         }
     }

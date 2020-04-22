@@ -114,11 +114,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 if (stream is null)
                     return;
             }
+            AsyncLock.Holder lockHolder = default;
             //allocate single buffer for this exchange session
-            var lockHolder = await accessLock.AcquireLockAsync(token).ConfigureAwait(false);
-            var buffer = AllocTransmissionBlock();
+            MemoryOwner<byte> buffer = default;
             try
             {
+                buffer = AllocTransmissionBlock();
+                lockHolder = await accessLock.AcquireLockAsync(token).ConfigureAwait(false);
                 await stream.Exchange(exchange, buffer.Memory, token).ConfigureAwait(false);
             }
             catch (OperationCanceledException e)

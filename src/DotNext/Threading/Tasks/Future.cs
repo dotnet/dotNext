@@ -139,7 +139,7 @@ namespace DotNext.Threading.Tasks
     /// Represents Future pattern that can be converted into <see cref="Task"/>.
     /// </summary>
     /// <typeparam name="T">The type of task that is supported by awaitable object.</typeparam>
-    public abstract class Future<T> : Future
+    public abstract class Future<T> : Future, IConvertible<T>
         where T : Task
     {
         /// <summary>
@@ -161,5 +161,7 @@ namespace DotNext.Threading.Tasks
         /// </remarks>
         /// <returns>The task representing the current awaitable object.</returns>
         public abstract T AsTask();
+
+        T IConvertible<T>.Convert() => AsTask();
     }
 }
