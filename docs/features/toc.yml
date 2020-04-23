@@ -32,7 +32,7 @@
 - name: I/O Enhancements
   href: io/index.md
   items:
-    - name: Alloc vs Rental
+    - name: Alloc vs Pooling
       href: io/rental.md
     - name: Dynamic Buffers
       href: io/buffers.md

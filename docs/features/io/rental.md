@@ -1,4 +1,4 @@
-Alloc vs Rental
+Alloc vs Pooling
 =====
 .NET allows to rent a memory instead of allocation using **new** keyword. It is useful in many cases especially when you need a large block of memory or large array. There a many articles describing benefits of this approach.
 * [Pooling large arrays with ArrayPool](https://adamsitnik.com/Array-Pool/)
@@ -78,6 +78,15 @@ The value type implements [IMemoryOwner&lt;T&gt;](https://docs.microsoft.com/en-
 However, `MemoryOwner` provides subset of functionality available in `ArrayRental` and `MemoryRental` which are corner cases and specialized for particular pooling mechanism.
 
 Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. [MemoryAllocator&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html) delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. [MemoryAllocator](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator.html) static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.
+
+# RentedMemoryStream
+Another way to represent the rented memory is [RentedMemoryStream](https://sakno.github.io/dotNext/api/DotNext.IO.RentedMemoryStream.html) that allows to work with pooled memory in [stream](https://docs.microsoft.com/en-us/dotnet/api/system.io.stream)-like manner. The stream is available for read/write operations. However, it's capacity is fixed and cannot grow. Therefore, you need to request sufficient capacity.
+```csharp
+using DotNext.IO;
+
+using var stream = new RentedMemoryStream(1024);  //rent 1 KB of memory and wrap it to stream
+stream.Write(new byte[512], 0, 512);
+```
 
 # Growable Buffers
 If size of the required buffer is not known and can grow dynamically then you need to use [Dynamic Buffers](./buffers.md) that are based on memory pooling mechanism as well.
