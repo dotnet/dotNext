@@ -41,6 +41,15 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
+        /// Initializes a new writer with the default initial capacity and <see cref="ArrayPool{T}.Shared"/>
+        /// as the array pooling mechanism.
+        /// </summary>
+        public PooledArrayBufferWriter()
+            : this(ArrayPool<T>.Shared)
+        {
+        }
+
+        /// <summary>
         /// Gets the total amount of space within the underlying memory.
         /// </summary>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
