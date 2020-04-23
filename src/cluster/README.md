@@ -16,5 +16,5 @@ The list of supported features:
 
 Useful links:
 * [Overview of Cluster Programming Model](https://sakno.github.io/dotNext/features/cluster/index.html)
-* [Cluster Programming using Raft](https://sakno.github.io/dotNext/features/cluster/index.html)
+* [Cluster Programming using Raft](https://sakno.github.io/dotNext/features/cluster/raft.html)
 * [API Reference](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.html)
