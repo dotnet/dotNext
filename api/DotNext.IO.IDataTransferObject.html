@@ -166,7 +166,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">static ValueTask&lt;TResult&gt; DecodeAsync&lt;TResult, TDecoder&gt;(PipeReader input, TDecoder transformation, CancellationToken token)
-
     where TDecoder : IDataTransferObject.IDecoder&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -267,7 +266,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">static ValueTask&lt;TResult&gt; DecodeAsync&lt;TResult, TDecoder&gt;(Stream input, TDecoder transformation, bool resetStream, CancellationToken token)
-
     where TDecoder : IDataTransferObject.IDecoder&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -374,7 +372,6 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">virtual ValueTask&lt;TResult&gt; GetObjectDataAsync&lt;TResult, TDecoder&gt;(TDecoder parser, CancellationToken token = default(CancellationToken))
-
     where TDecoder : IDataTransferObject.IDecoder&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -473,7 +470,6 @@ before parsing.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask WriteToAsync&lt;TWriter&gt;(TWriter writer, CancellationToken token)
-
     where TWriter : IAsyncBinaryWriter</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
