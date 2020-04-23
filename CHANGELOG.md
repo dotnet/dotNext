@@ -1,7 +1,7 @@
 Release Notes
 ====
 
-# 04-XX-2020
+# 04-23-2020
 <a href="https://www.nuget.org/packages/dotnext/2.3.0">DotNext 2.3.0</a>
 * Performance improvements of `BitwiseComparer` and `Intrinsics` classes  
 * Introduced new [MemoryOwner&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryOwner-1.html) value type that unifies working with memory and array pools
