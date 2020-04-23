@@ -128,7 +128,7 @@
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_IO_MemoryMappedFiles_IMappedMemoryOwner_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IMappedMemoryOwner : IUnmanagedMemory&lt;byte&gt;, IUnmanagedMemory, IMemoryOwner&lt;byte&gt;, IDisposable, IFlushable</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IMappedMemoryOwner : IUnmanagedMemory&lt;byte&gt;, IUnmanagedMemory, IConvertible&lt;Stream&gt;, IMemoryOwner&lt;byte&gt;, IDisposable, IConvertible&lt;Memory&lt;byte&gt;&gt;, IFlushable</code></pre>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

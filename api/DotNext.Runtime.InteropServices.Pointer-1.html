@@ -80,6 +80,8 @@
     <h5>Implements</h5>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Runtime.InteropServices.Pointer-1.html">Pointer</a>&lt;T&gt;&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.istrongbox">IStrongBox</a></div>
+    <div><span class="xref">System.IConvertible</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.intptr">IntPtr</a>&gt;</div>
+    <div><span class="xref">System.IConvertible</span>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.uintptr">UIntPtr</a>&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -97,7 +99,7 @@
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_Runtime_InteropServices_Pointer_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct Pointer&lt;T&gt; : IEquatable&lt;Pointer&lt;T&gt;&gt;, IStrongBox where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public struct Pointer&lt;T&gt; : IEquatable&lt;Pointer&lt;T&gt;&gt;, IStrongBox, IConvertible&lt;IntPtr&gt;, IConvertible&lt;UIntPtr&gt; where T : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -517,7 +519,6 @@ to the size of <code data-dev-comment-type="typeparamref" class="typeparamref">T
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Pointer&lt;U&gt; As&lt;U&gt;()
-
     where U : struct</code></pre>
   </div>
   <h5 class="returns">Returns</h5>
@@ -1167,7 +1168,7 @@ to the size of <code data-dev-comment-type="typeparamref" class="typeparamref">T
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Equals__0_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Equals(%600%2CSystem.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L851">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L855">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Equals_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Equals__0_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals(`0,System.Collections.Generic.IEqualityComparer{`0})">Equals(T, IEqualityComparer&lt;T&gt;)</h4>
@@ -1223,7 +1224,7 @@ to the size of <code data-dev-comment-type="typeparamref" class="typeparamref">T
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L871">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L875">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Equals_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Equals_System_Object_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals(System.Object)">Equals(Object)</h4>
@@ -1275,7 +1276,7 @@ to the size of <code data-dev-comment-type="typeparamref" class="typeparamref">T
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Pointer_1_Equals__1_DotNext_Runtime_InteropServices_Pointer___0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.Equals%60%601(DotNext.Runtime.InteropServices.Pointer%7B%60%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L842">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L846">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_Equals_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_Equals__1_DotNext_Runtime_InteropServices_Pointer___0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.Equals``1(DotNext.Runtime.InteropServices.Pointer{``0})">Equals&lt;U&gt;(Pointer&lt;U&gt;)</h4>
@@ -1285,7 +1286,6 @@ to the size of <code data-dev-comment-type="typeparamref" class="typeparamref">T
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public bool Equals&lt;U&gt;(Pointer&lt;U&gt; other)
-
     where U : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1568,7 +1568,7 @@ to the size of <code data-dev-comment-type="typeparamref" class="typeparamref">T
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Pointer_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L864">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L868">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_GetHashCode_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetHashCode*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_GetHashCode" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetHashCode">GetHashCode()</h4>
@@ -1602,7 +1602,7 @@ to the size of <code data-dev-comment-type="typeparamref" class="typeparamref">T
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Pointer_1_GetHashCode_System_Collections_Generic_IEqualityComparer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.GetHashCode(System.Collections.Generic.IEqualityComparer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L858">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L862">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_GetHashCode_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetHashCode*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_GetHashCode_System_Collections_Generic_IEqualityComparer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.GetHashCode(System.Collections.Generic.IEqualityComparer{`0})">GetHashCode(IEqualityComparer&lt;T&gt;)</h4>
@@ -2172,7 +2172,7 @@ into managed heap as array of bytes.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Pointer_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L877">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L881">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_ToString_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToString*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_ToString" data-uid="DotNext.Runtime.InteropServices.Pointer`1.ToString">ToString()</h4>
@@ -2856,7 +2856,7 @@ public static Pointer&lt;T&gt; operator +(Pointer&lt;T&gt; pointer, ulong offset
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Explicit_System_Buffers_MemoryHandle___DotNext_Runtime_InteropServices_Pointer__0_.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Explicit(System.Buffers.MemoryHandle%40)~DotNext.Runtime.InteropServices.Pointer%7B%600%7D%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L815">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L819">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Explicit_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Explicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Explicit_System_Buffers_MemoryHandle___DotNext_Runtime_InteropServices_Pointer__0_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Explicit(System.Buffers.MemoryHandle@)~DotNext.Runtime.InteropServices.Pointer{`0}">Explicit(MemoryHandle to Pointer&lt;T&gt;)</h4>
@@ -2905,7 +2905,7 @@ public static Pointer&lt;T&gt; operator +(Pointer&lt;T&gt; pointer, ulong offset
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_False_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_False(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L831">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L835">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_False_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_False*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_False_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_False(DotNext.Runtime.InteropServices.Pointer{`0})">False(Pointer&lt;T&gt;)</h4>
@@ -3104,7 +3104,7 @@ public static implicit operator T*(Pointer&lt;T&gt; ptr)</code></pre>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0___System_UIntPtr.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_Implicit(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)~System.UIntPtr%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L807">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L809">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_Implicit_DotNext_Runtime_InteropServices_Pointer__0___System_UIntPtr" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_Implicit(DotNext.Runtime.InteropServices.Pointer{`0})~System.UIntPtr">Implicit(Pointer&lt;T&gt; to UIntPtr)</h4>
@@ -3497,7 +3497,7 @@ public static Pointer&lt;T&gt; operator -(Pointer&lt;T&gt; pointer, ulong offset
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Pointer_1_op_True_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.op_True(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L823">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L827">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_op_True_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_True*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_op_True_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.op_True(DotNext.Runtime.InteropServices.Pointer{`0})">True(Pointer&lt;T&gt;)</h4>
@@ -3549,7 +3549,7 @@ public static Pointer&lt;T&gt; operator -(Pointer&lt;T&gt; pointer, ulong offset
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_Pointer_1_System_IEquatable_DotNext_Runtime_InteropServices_Pointer_T___Equals_DotNext_Runtime_InteropServices_Pointer__0__.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.Pointer%601.System%23IEquatable%7BDotNext%23Runtime%23InteropServices%23Pointer%7BT%7D%7D%23Equals(DotNext.Runtime.InteropServices.Pointer%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L834">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/Pointer.cs/#L838">View Source</a>
   </span>
   <a id="DotNext_Runtime_InteropServices_Pointer_1_System_IEquatable_DotNext_Runtime_InteropServices_Pointer_T___Equals_" data-uid="DotNext.Runtime.InteropServices.Pointer`1.System#IEquatable{DotNext#Runtime#InteropServices#Pointer{T}}#Equals*"></a>
   <h4 id="DotNext_Runtime_InteropServices_Pointer_1_System_IEquatable_DotNext_Runtime_InteropServices_Pointer_T___Equals_DotNext_Runtime_InteropServices_Pointer__0__" data-uid="DotNext.Runtime.InteropServices.Pointer`1.System#IEquatable{DotNext#Runtime#InteropServices#Pointer{T}}#Equals(DotNext.Runtime.InteropServices.Pointer{`0})">IEquatable&lt;Pointer&lt;T&gt;&gt;.Equals(Pointer&lt;T&gt;)</h4>
@@ -3627,6 +3627,12 @@ public static Pointer&lt;T&gt; operator -(Pointer&lt;T&gt; pointer, ulong offset
   </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.istrongbox">System.Runtime.CompilerServices.IStrongBox</a>
+  </div>
+  <div>
+      <span class="xref">System.IConvertible&lt;&gt;</span>
+  </div>
+  <div>
+      <span class="xref">System.IConvertible&lt;&gt;</span>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

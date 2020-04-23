@@ -408,7 +408,7 @@ sealed class ClusterMember : Disposable, IRaftClusterMember
 <ul>
 <li><code>IAsyncBinaryReader.Create</code> static factory method can wrap <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipereader">PipeReader</a> to enable high-level decoding operations</li>
 <li><code>IAsyncBinaryWriter.Create</code> static factory method can wrap <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipewriter">PipeWriter</a> to enable high-level encoding operations</li>
-<li>Various <a href="../core/io.html">I/O enhancements</a> aimed to simplify programming using pipes</li>
+<li>Various <a href="../io/index.html">I/O enhancements</a> aimed to simplify programming using pipes</li>
 </ul>
 <h2 id="network-programming">Network programming</h2>
 <p>The most important configuration of Raft cluster member is election timeout. Your transport-specific implementation should align socket timeouts correctly with it. For instance, connection timeout should not be greater than lower election timeout. Otherwise, you will have unstable cluster with frequent re-elections.</p>

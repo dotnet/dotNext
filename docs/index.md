@@ -65,7 +65,7 @@ But this is not all features of this library. Read more [here](./features/thread
 
 # DotNext.IO
 <a href="https://www.nuget.org/packages/dotnext.io/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.io.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.io.svg)<br/>
-Extending streams and I/O pipelines with methods for reading and writing typed values including strings asynchronously. Arbitrary character encodings are supported. Now encoding or decoding data using [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe) is much easier and comparable with [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter) or [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader). Read more [here](features/core/io.md).
+Extending streams and I/O pipelines with methods for reading and writing typed values including strings asynchronously. Arbitrary character encodings are supported. Now encoding or decoding data using [pipes](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipe) is much easier and comparable with [BinaryWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.binarywriter) or [BinaryReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.binaryreader). Read more [here](features/io/index.md).
 
 # DotNext.Net.Cluster
 <a href="https://www.nuget.org/packages/dotnext.net.cluster/absoluteLatest"><img src="https://img.shields.io/nuget/v/dotnext.net.cluster.svg?logo=NuGet"></a>  ![Downloads](https://img.shields.io/nuget/dt/dotnext.net.cluster.svg)<br/>

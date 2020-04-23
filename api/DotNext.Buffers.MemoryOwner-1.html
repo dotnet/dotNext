@@ -81,6 +81,7 @@ types of memory pools.</p>
     <h5>Implements</h5>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner</a>&lt;T&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">IDisposable</a></div>
+    <div><a class="xref" href="DotNext.IConvertible-1.html">IConvertible</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;T&gt;&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -107,7 +108,7 @@ types of memory pools.</p>
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Buffers_MemoryOwner_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public struct MemoryOwner&lt;T&gt; : IMemoryOwner&lt;T&gt;, IDisposable</code></pre>
+    <pre><code class="lang-csharp hljs">public struct MemoryOwner&lt;T&gt; : IMemoryOwner&lt;T&gt;, IDisposable, IConvertible&lt;Memory&lt;T&gt;&gt;</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -132,7 +133,7 @@ types of memory pools.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryOwner_1__ctor__0___.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.%23ctor(%600%5B%5D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L71">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L70">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1__ctor_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1__ctor__0___" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor(`0[])">MemoryOwner(T[])</h4>
@@ -166,7 +167,7 @@ types of memory pools.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryOwner_1__ctor__0___System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.%23ctor(%600%5B%5D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L58">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L57">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1__ctor_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1__ctor__0___System_Int32_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor(`0[],System.Int32)">MemoryOwner(T[], Int32)</h4>
@@ -222,7 +223,7 @@ types of memory pools.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryOwner_1__ctor_System_Buffers_ArrayPool__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.%23ctor(System.Buffers.ArrayPool%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L32">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L31">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1__ctor_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1__ctor_System_Buffers_ArrayPool__0__System_Int32_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor(System.Buffers.ArrayPool{`0},System.Int32)">MemoryOwner(ArrayPool&lt;T&gt;, Int32)</h4>
@@ -262,7 +263,7 @@ types of memory pools.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryOwner_1__ctor_System_Buffers_MemoryPool__0__System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.%23ctor(System.Buffers.MemoryPool%7B%600%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L44">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L43">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1__ctor_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1__ctor_System_Buffers_MemoryPool__0__System_Int32_" data-uid="DotNext.Buffers.MemoryOwner`1.#ctor(System.Buffers.MemoryPool{`0},System.Int32)">MemoryOwner(MemoryPool&lt;T&gt;, Int32)</h4>
@@ -304,7 +305,7 @@ types of memory pools.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryOwner_1_IsEmpty.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.IsEmpty%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L79">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L83">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_IsEmpty_" data-uid="DotNext.Buffers.MemoryOwner`1.IsEmpty*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_IsEmpty" data-uid="DotNext.Buffers.MemoryOwner`1.IsEmpty">IsEmpty</h4>
@@ -335,7 +336,7 @@ types of memory pools.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryOwner_1_Item_System_Int32_.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.Item(System.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L104">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L110">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_Item_" data-uid="DotNext.Buffers.MemoryOwner`1.Item*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_Item_System_Int32_" data-uid="DotNext.Buffers.MemoryOwner`1.Item(System.Int32)">Item[Int32]</h4>
@@ -381,10 +382,41 @@ types of memory pools.</p>
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryOwner_1_Length.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.Length%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L78">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_MemoryOwner_1_Length_" data-uid="DotNext.Buffers.MemoryOwner`1.Length*"></a>
+  <h4 id="DotNext_Buffers_MemoryOwner_1_Length" data-uid="DotNext.Buffers.MemoryOwner`1.Length">Length</h4>
+  <div class="markdown level1 summary"><p>Gets length of the rented memory, in bytes.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public int Length { get; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.int32">Int32</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryOwner_1_Memory.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.Memory%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L85">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L89">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_Memory_" data-uid="DotNext.Buffers.MemoryOwner`1.Memory*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_Memory" data-uid="DotNext.Buffers.MemoryOwner`1.Memory">Memory</h4>
@@ -418,7 +450,7 @@ types of memory pools.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryOwner_1_Dispose.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.Dispose%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L122">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L128">View Source</a>
   </span>
   <a id="DotNext_Buffers_MemoryOwner_1_Dispose_" data-uid="DotNext.Buffers.MemoryOwner`1.Dispose*"></a>
   <h4 id="DotNext_Buffers_MemoryOwner_1_Dispose" data-uid="DotNext.Buffers.MemoryOwner`1.Dispose">Dispose()</h4>
@@ -429,12 +461,47 @@ types of memory pools.</p>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Dispose()</code></pre>
   </div>
+  <h3 id="eii">Explicit Interface Implementations
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Buffers_MemoryOwner_1_DotNext_IConvertible_System_Memory_T___Convert.md&amp;value=---%0Auid%3A%20DotNext.Buffers.MemoryOwner%601.DotNext%23IConvertible%7BSystem%23Memory%7BT%7D%7D%23Convert%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Buffers/MemoryOwner.cs/#L104">View Source</a>
+  </span>
+  <a id="DotNext_Buffers_MemoryOwner_1_DotNext_IConvertible_System_Memory_T___Convert_" data-uid="DotNext.Buffers.MemoryOwner`1.DotNext#IConvertible{System#Memory{T}}#Convert*"></a>
+  <h4 id="DotNext_Buffers_MemoryOwner_1_DotNext_IConvertible_System_Memory_T___Convert" data-uid="DotNext.Buffers.MemoryOwner`1.DotNext#IConvertible{System#Memory{T}}#Convert">IConvertible&lt;Memory&lt;T&gt;&gt;.Convert()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">Memory&lt;T&gt; IConvertible&lt;Memory&lt;T&gt;&gt;.Convert()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.memory-1">Memory</a>&lt;T&gt;</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
   <h3 id="implements">Implements</h3>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.buffers.imemoryowner-1">System.Buffers.IMemoryOwner&lt;T&gt;</a>
   </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.idisposable">System.IDisposable</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IConvertible-1.html">IConvertible&lt;T&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

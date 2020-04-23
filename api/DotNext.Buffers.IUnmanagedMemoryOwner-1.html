@@ -178,7 +178,7 @@ unmanaged memory.</p>
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_Buffers_IUnmanagedMemoryOwner_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IUnmanagedMemoryOwner&lt;T&gt; : IUnmanagedMemory&lt;T&gt;, IMemoryOwner&lt;T&gt;, IUnmanagedArray&lt;T&gt;, IUnmanagedMemory, IDisposable, IEnumerable&lt;T&gt;, IEnumerable, ICloneable where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IUnmanagedMemoryOwner&lt;T&gt; : IUnmanagedMemory&lt;T&gt;, IMemoryOwner&lt;T&gt;, IConvertible&lt;Memory&lt;T&gt;&gt;, IUnmanagedArray&lt;T&gt;, IUnmanagedMemory, IDisposable, IConvertible&lt;Stream&gt;, IEnumerable&lt;T&gt;, IEnumerable, ICloneable, IConvertible&lt;T[]&gt; where T : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">

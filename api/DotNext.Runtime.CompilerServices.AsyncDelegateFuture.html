@@ -85,12 +85,16 @@
   </div>
   <div classs="implements">
     <h5>Implements</h5>
+    <div><a class="xref" href="DotNext.IConvertible-1.html">IConvertible</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/system.threading.tasks.task">Task</a>&gt;</div>
     <div><a class="xref" href="DotNext.Threading.Tasks.Future.IAwaiter.html">Future.IAwaiter</a></div>
     <div><a class="xref" href="DotNext.Threading.Tasks.IFuture.html">IFuture</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.compilerservices.inotifycompletion">INotifyCompletion</a></div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="DotNext.Threading.Tasks.Future-1.html#DotNext_Threading_Tasks_Future_1_DotNext_IConvertible_T__Convert">Future&lt;Task&gt;.IConvertible&lt;Task&gt;.Convert()</a>
+    </div>
     <div>
       <a class="xref" href="DotNext.Threading.Tasks.Future.html#DotNext_Threading_Tasks_Future_IsCompleted">Future.IsCompleted</a>
     </div>
@@ -126,7 +130,7 @@
   <h6><strong>Assembly</strong>: DotNext.dll</h6>
   <h5 id="DotNext_Runtime_CompilerServices_AsyncDelegateFuture_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public abstract class AsyncDelegateFuture : Future&lt;Task&gt;, Future.IAwaiter, IFuture, INotifyCompletion</code></pre>
+    <pre><code class="lang-csharp hljs">public abstract class AsyncDelegateFuture : Future&lt;Task&gt;, IConvertible&lt;Task&gt;, Future.IAwaiter, IFuture, INotifyCompletion</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
@@ -214,6 +218,9 @@
     <pre><code class="lang-csharp hljs">void Future.IAwaiter.GetResult()</code></pre>
   </div>
   <h3 id="implements">Implements</h3>
+  <div>
+      <a class="xref" href="DotNext.IConvertible-1.html">IConvertible&lt;T&gt;</a>
+  </div>
   <div>
       <a class="xref" href="DotNext.Threading.Tasks.Future.IAwaiter.html">Future.IAwaiter</a>
   </div>

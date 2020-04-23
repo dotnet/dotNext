@@ -285,6 +285,63 @@ references:
   fullName.vb: DotNext.Buffers.ArrayRental(Of T).Dispose
   nameWithType: ArrayRental<T>.Dispose
   nameWithType.vb: ArrayRental(Of T).Dispose
+- uid: DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{DotNext#Buffers#MemoryOwner{T}}#Convert
+  name: IConvertible<MemoryOwner<T>>.Convert()
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_DotNext_IConvertible_DotNext_Buffers_MemoryOwner_T___Convert
+  commentId: M:DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{DotNext#Buffers#MemoryOwner{T}}#Convert
+  name.vb: DotNext.IConvertible<DotNext.Buffers.MemoryOwner<T>>.Convert()
+  fullName: DotNext.Buffers.ArrayRental<T>.DotNext.IConvertible<DotNext.Buffers.MemoryOwner<T>>.Convert()
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).DotNext.IConvertible<DotNext.Buffers.MemoryOwner<T>>.Convert()
+  nameWithType: ArrayRental<T>.IConvertible<MemoryOwner<T>>.Convert()
+  nameWithType.vb: ArrayRental(Of T).DotNext.IConvertible<DotNext.Buffers.MemoryOwner<T>>.Convert()
+- uid: DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{DotNext#Buffers#MemoryOwner{T}}#Convert*
+  name: IConvertible<MemoryOwner<T>>.Convert
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_DotNext_IConvertible_DotNext_Buffers_MemoryOwner_T___Convert_
+  commentId: Overload:DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{DotNext#Buffers#MemoryOwner{T}}#Convert
+  isSpec: "True"
+  name.vb: DotNext.IConvertible<DotNext.Buffers.MemoryOwner<T>>.Convert
+  fullName: DotNext.Buffers.ArrayRental<T>.DotNext.IConvertible<DotNext.Buffers.MemoryOwner<T>>.Convert
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).DotNext.IConvertible<DotNext.Buffers.MemoryOwner<T>>.Convert
+  nameWithType: ArrayRental<T>.IConvertible<MemoryOwner<T>>.Convert
+  nameWithType.vb: ArrayRental(Of T).DotNext.IConvertible<DotNext.Buffers.MemoryOwner<T>>.Convert
+- uid: DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{System#ArraySegment{T}}#Convert
+  name: IConvertible<ArraySegment<T>>.Convert()
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_DotNext_IConvertible_System_ArraySegment_T___Convert
+  commentId: M:DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{System#ArraySegment{T}}#Convert
+  name.vb: DotNext.IConvertible<System.ArraySegment<T>>.Convert()
+  fullName: DotNext.Buffers.ArrayRental<T>.DotNext.IConvertible<System.ArraySegment<T>>.Convert()
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).DotNext.IConvertible<System.ArraySegment<T>>.Convert()
+  nameWithType: ArrayRental<T>.IConvertible<ArraySegment<T>>.Convert()
+  nameWithType.vb: ArrayRental(Of T).DotNext.IConvertible<System.ArraySegment<T>>.Convert()
+- uid: DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{System#ArraySegment{T}}#Convert*
+  name: IConvertible<ArraySegment<T>>.Convert
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_DotNext_IConvertible_System_ArraySegment_T___Convert_
+  commentId: Overload:DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{System#ArraySegment{T}}#Convert
+  isSpec: "True"
+  name.vb: DotNext.IConvertible<System.ArraySegment<T>>.Convert
+  fullName: DotNext.Buffers.ArrayRental<T>.DotNext.IConvertible<System.ArraySegment<T>>.Convert
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).DotNext.IConvertible<System.ArraySegment<T>>.Convert
+  nameWithType: ArrayRental<T>.IConvertible<ArraySegment<T>>.Convert
+  nameWithType.vb: ArrayRental(Of T).DotNext.IConvertible<System.ArraySegment<T>>.Convert
+- uid: DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{System#Memory{T}}#Convert
+  name: IConvertible<Memory<T>>.Convert()
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_DotNext_IConvertible_System_Memory_T___Convert
+  commentId: M:DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{System#Memory{T}}#Convert
+  name.vb: DotNext.IConvertible<System.Memory<T>>.Convert()
+  fullName: DotNext.Buffers.ArrayRental<T>.DotNext.IConvertible<System.Memory<T>>.Convert()
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).DotNext.IConvertible<System.Memory<T>>.Convert()
+  nameWithType: ArrayRental<T>.IConvertible<Memory<T>>.Convert()
+  nameWithType.vb: ArrayRental(Of T).DotNext.IConvertible<System.Memory<T>>.Convert()
+- uid: DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{System#Memory{T}}#Convert*
+  name: IConvertible<Memory<T>>.Convert
+  href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_DotNext_IConvertible_System_Memory_T___Convert_
+  commentId: Overload:DotNext.Buffers.ArrayRental`1.DotNext#IConvertible{System#Memory{T}}#Convert
+  isSpec: "True"
+  name.vb: DotNext.IConvertible<System.Memory<T>>.Convert
+  fullName: DotNext.Buffers.ArrayRental<T>.DotNext.IConvertible<System.Memory<T>>.Convert
+  fullName.vb: DotNext.Buffers.ArrayRental(Of T).DotNext.IConvertible<System.Memory<T>>.Convert
+  nameWithType: ArrayRental<T>.IConvertible<Memory<T>>.Convert
+  nameWithType.vb: ArrayRental(Of T).DotNext.IConvertible<System.Memory<T>>.Convert
 - uid: DotNext.Buffers.ArrayRental`1.IsEmpty
   name: IsEmpty
   href: api/DotNext.Buffers.ArrayRental-1.html#DotNext_Buffers_ArrayRental_1_IsEmpty
@@ -825,6 +882,25 @@ references:
   fullName.vb: DotNext.Buffers.MemoryOwner(Of T).Dispose
   nameWithType: MemoryOwner<T>.Dispose
   nameWithType.vb: MemoryOwner(Of T).Dispose
+- uid: DotNext.Buffers.MemoryOwner`1.DotNext#IConvertible{System#Memory{T}}#Convert
+  name: IConvertible<Memory<T>>.Convert()
+  href: api/DotNext.Buffers.MemoryOwner-1.html#DotNext_Buffers_MemoryOwner_1_DotNext_IConvertible_System_Memory_T___Convert
+  commentId: M:DotNext.Buffers.MemoryOwner`1.DotNext#IConvertible{System#Memory{T}}#Convert
+  name.vb: DotNext.IConvertible<System.Memory<T>>.Convert()
+  fullName: DotNext.Buffers.MemoryOwner<T>.DotNext.IConvertible<System.Memory<T>>.Convert()
+  fullName.vb: DotNext.Buffers.MemoryOwner(Of T).DotNext.IConvertible<System.Memory<T>>.Convert()
+  nameWithType: MemoryOwner<T>.IConvertible<Memory<T>>.Convert()
+  nameWithType.vb: MemoryOwner(Of T).DotNext.IConvertible<System.Memory<T>>.Convert()
+- uid: DotNext.Buffers.MemoryOwner`1.DotNext#IConvertible{System#Memory{T}}#Convert*
+  name: IConvertible<Memory<T>>.Convert
+  href: api/DotNext.Buffers.MemoryOwner-1.html#DotNext_Buffers_MemoryOwner_1_DotNext_IConvertible_System_Memory_T___Convert_
+  commentId: Overload:DotNext.Buffers.MemoryOwner`1.DotNext#IConvertible{System#Memory{T}}#Convert
+  isSpec: "True"
+  name.vb: DotNext.IConvertible<System.Memory<T>>.Convert
+  fullName: DotNext.Buffers.MemoryOwner<T>.DotNext.IConvertible<System.Memory<T>>.Convert
+  fullName.vb: DotNext.Buffers.MemoryOwner(Of T).DotNext.IConvertible<System.Memory<T>>.Convert
+  nameWithType: MemoryOwner<T>.IConvertible<Memory<T>>.Convert
+  nameWithType.vb: MemoryOwner(Of T).DotNext.IConvertible<System.Memory<T>>.Convert
 - uid: DotNext.Buffers.MemoryOwner`1.IsEmpty
   name: IsEmpty
   href: api/DotNext.Buffers.MemoryOwner-1.html#DotNext_Buffers_MemoryOwner_1_IsEmpty
@@ -860,6 +936,23 @@ references:
   fullName.vb: DotNext.Buffers.MemoryOwner(Of T).Item
   nameWithType: MemoryOwner<T>.Item
   nameWithType.vb: MemoryOwner(Of T).Item
+- uid: DotNext.Buffers.MemoryOwner`1.Length
+  name: Length
+  href: api/DotNext.Buffers.MemoryOwner-1.html#DotNext_Buffers_MemoryOwner_1_Length
+  commentId: P:DotNext.Buffers.MemoryOwner`1.Length
+  fullName: DotNext.Buffers.MemoryOwner<T>.Length
+  fullName.vb: DotNext.Buffers.MemoryOwner(Of T).Length
+  nameWithType: MemoryOwner<T>.Length
+  nameWithType.vb: MemoryOwner(Of T).Length
+- uid: DotNext.Buffers.MemoryOwner`1.Length*
+  name: Length
+  href: api/DotNext.Buffers.MemoryOwner-1.html#DotNext_Buffers_MemoryOwner_1_Length_
+  commentId: Overload:DotNext.Buffers.MemoryOwner`1.Length
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryOwner<T>.Length
+  fullName.vb: DotNext.Buffers.MemoryOwner(Of T).Length
+  nameWithType: MemoryOwner<T>.Length
+  nameWithType.vb: MemoryOwner(Of T).Length
 - uid: DotNext.Buffers.MemoryOwner`1.Memory
   name: Memory
   href: api/DotNext.Buffers.MemoryOwner-1.html#DotNext_Buffers_MemoryOwner_1_Memory
@@ -1052,6 +1145,529 @@ references:
   fullName.vb: DotNext.Buffers.MemoryRental(Of T).ToString
   nameWithType: MemoryRental<T>.ToString
   nameWithType.vb: MemoryRental(Of T).ToString
+- uid: DotNext.Buffers.MemoryWriter`1
+  name: MemoryWriter<T>
+  href: api/DotNext.Buffers.MemoryWriter-1.html
+  commentId: T:DotNext.Buffers.MemoryWriter`1
+  name.vb: MemoryWriter(Of T)
+  fullName: DotNext.Buffers.MemoryWriter<T>
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T)
+  nameWithType: MemoryWriter<T>
+  nameWithType.vb: MemoryWriter(Of T)
+- uid: DotNext.Buffers.MemoryWriter`1.Advance(System.Int32)
+  name: Advance(Int32)
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Advance_System_Int32_
+  commentId: M:DotNext.Buffers.MemoryWriter`1.Advance(System.Int32)
+  fullName: DotNext.Buffers.MemoryWriter<T>.Advance(System.Int32)
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).Advance(System.Int32)
+  nameWithType: MemoryWriter<T>.Advance(Int32)
+  nameWithType.vb: MemoryWriter(Of T).Advance(Int32)
+- uid: DotNext.Buffers.MemoryWriter`1.Advance*
+  name: Advance
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Advance_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.Advance
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.Advance
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).Advance
+  nameWithType: MemoryWriter<T>.Advance
+  nameWithType.vb: MemoryWriter(Of T).Advance
+- uid: DotNext.Buffers.MemoryWriter`1.Capacity
+  name: Capacity
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Capacity
+  commentId: P:DotNext.Buffers.MemoryWriter`1.Capacity
+  fullName: DotNext.Buffers.MemoryWriter<T>.Capacity
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).Capacity
+  nameWithType: MemoryWriter<T>.Capacity
+  nameWithType.vb: MemoryWriter(Of T).Capacity
+- uid: DotNext.Buffers.MemoryWriter`1.Capacity*
+  name: Capacity
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Capacity_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.Capacity
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.Capacity
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).Capacity
+  nameWithType: MemoryWriter<T>.Capacity
+  nameWithType.vb: MemoryWriter(Of T).Capacity
+- uid: DotNext.Buffers.MemoryWriter`1.Clear
+  name: Clear()
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Clear
+  commentId: M:DotNext.Buffers.MemoryWriter`1.Clear
+  fullName: DotNext.Buffers.MemoryWriter<T>.Clear()
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).Clear()
+  nameWithType: MemoryWriter<T>.Clear()
+  nameWithType.vb: MemoryWriter(Of T).Clear()
+- uid: DotNext.Buffers.MemoryWriter`1.Clear*
+  name: Clear
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_Clear_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.Clear
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.Clear
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).Clear
+  nameWithType: MemoryWriter<T>.Clear
+  nameWithType.vb: MemoryWriter(Of T).Clear
+- uid: DotNext.Buffers.MemoryWriter`1.DotNext#IConvertible{System#ReadOnlyMemory{T}}#Convert
+  name: IConvertible<ReadOnlyMemory<T>>.Convert()
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_DotNext_IConvertible_System_ReadOnlyMemory_T___Convert
+  commentId: M:DotNext.Buffers.MemoryWriter`1.DotNext#IConvertible{System#ReadOnlyMemory{T}}#Convert
+  name.vb: DotNext.IConvertible<System.ReadOnlyMemory<T>>.Convert()
+  fullName: DotNext.Buffers.MemoryWriter<T>.DotNext.IConvertible<System.ReadOnlyMemory<T>>.Convert()
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).DotNext.IConvertible<System.ReadOnlyMemory<T>>.Convert()
+  nameWithType: MemoryWriter<T>.IConvertible<ReadOnlyMemory<T>>.Convert()
+  nameWithType.vb: MemoryWriter(Of T).DotNext.IConvertible<System.ReadOnlyMemory<T>>.Convert()
+- uid: DotNext.Buffers.MemoryWriter`1.DotNext#IConvertible{System#ReadOnlyMemory{T}}#Convert*
+  name: IConvertible<ReadOnlyMemory<T>>.Convert
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_DotNext_IConvertible_System_ReadOnlyMemory_T___Convert_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.DotNext#IConvertible{System#ReadOnlyMemory{T}}#Convert
+  isSpec: "True"
+  name.vb: DotNext.IConvertible<System.ReadOnlyMemory<T>>.Convert
+  fullName: DotNext.Buffers.MemoryWriter<T>.DotNext.IConvertible<System.ReadOnlyMemory<T>>.Convert
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).DotNext.IConvertible<System.ReadOnlyMemory<T>>.Convert
+  nameWithType: MemoryWriter<T>.IConvertible<ReadOnlyMemory<T>>.Convert
+  nameWithType.vb: MemoryWriter(Of T).DotNext.IConvertible<System.ReadOnlyMemory<T>>.Convert
+- uid: DotNext.Buffers.MemoryWriter`1.FreeCapacity
+  name: FreeCapacity
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_FreeCapacity
+  commentId: P:DotNext.Buffers.MemoryWriter`1.FreeCapacity
+  fullName: DotNext.Buffers.MemoryWriter<T>.FreeCapacity
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).FreeCapacity
+  nameWithType: MemoryWriter<T>.FreeCapacity
+  nameWithType.vb: MemoryWriter(Of T).FreeCapacity
+- uid: DotNext.Buffers.MemoryWriter`1.FreeCapacity*
+  name: FreeCapacity
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_FreeCapacity_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.FreeCapacity
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.FreeCapacity
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).FreeCapacity
+  nameWithType: MemoryWriter<T>.FreeCapacity
+  nameWithType.vb: MemoryWriter(Of T).FreeCapacity
+- uid: DotNext.Buffers.MemoryWriter`1.GetMemory(System.Int32)
+  name: GetMemory(Int32)
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_GetMemory_System_Int32_
+  commentId: M:DotNext.Buffers.MemoryWriter`1.GetMemory(System.Int32)
+  fullName: DotNext.Buffers.MemoryWriter<T>.GetMemory(System.Int32)
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).GetMemory(System.Int32)
+  nameWithType: MemoryWriter<T>.GetMemory(Int32)
+  nameWithType.vb: MemoryWriter(Of T).GetMemory(Int32)
+- uid: DotNext.Buffers.MemoryWriter`1.GetMemory*
+  name: GetMemory
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_GetMemory_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.GetMemory
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.GetMemory
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).GetMemory
+  nameWithType: MemoryWriter<T>.GetMemory
+  nameWithType.vb: MemoryWriter(Of T).GetMemory
+- uid: DotNext.Buffers.MemoryWriter`1.GetSpan(System.Int32)
+  name: GetSpan(Int32)
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_GetSpan_System_Int32_
+  commentId: M:DotNext.Buffers.MemoryWriter`1.GetSpan(System.Int32)
+  fullName: DotNext.Buffers.MemoryWriter<T>.GetSpan(System.Int32)
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).GetSpan(System.Int32)
+  nameWithType: MemoryWriter<T>.GetSpan(Int32)
+  nameWithType.vb: MemoryWriter(Of T).GetSpan(Int32)
+- uid: DotNext.Buffers.MemoryWriter`1.GetSpan*
+  name: GetSpan
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_GetSpan_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.GetSpan
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.GetSpan
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).GetSpan
+  nameWithType: MemoryWriter<T>.GetSpan
+  nameWithType.vb: MemoryWriter(Of T).GetSpan
+- uid: DotNext.Buffers.MemoryWriter`1.WrittenCount
+  name: WrittenCount
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_WrittenCount
+  commentId: P:DotNext.Buffers.MemoryWriter`1.WrittenCount
+  fullName: DotNext.Buffers.MemoryWriter<T>.WrittenCount
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).WrittenCount
+  nameWithType: MemoryWriter<T>.WrittenCount
+  nameWithType.vb: MemoryWriter(Of T).WrittenCount
+- uid: DotNext.Buffers.MemoryWriter`1.WrittenCount*
+  name: WrittenCount
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_WrittenCount_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.WrittenCount
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.WrittenCount
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).WrittenCount
+  nameWithType: MemoryWriter<T>.WrittenCount
+  nameWithType.vb: MemoryWriter(Of T).WrittenCount
+- uid: DotNext.Buffers.MemoryWriter`1.WrittenMemory
+  name: WrittenMemory
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_WrittenMemory
+  commentId: P:DotNext.Buffers.MemoryWriter`1.WrittenMemory
+  fullName: DotNext.Buffers.MemoryWriter<T>.WrittenMemory
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).WrittenMemory
+  nameWithType: MemoryWriter<T>.WrittenMemory
+  nameWithType.vb: MemoryWriter(Of T).WrittenMemory
+- uid: DotNext.Buffers.MemoryWriter`1.WrittenMemory*
+  name: WrittenMemory
+  href: api/DotNext.Buffers.MemoryWriter-1.html#DotNext_Buffers_MemoryWriter_1_WrittenMemory_
+  commentId: Overload:DotNext.Buffers.MemoryWriter`1.WrittenMemory
+  isSpec: "True"
+  fullName: DotNext.Buffers.MemoryWriter<T>.WrittenMemory
+  fullName.vb: DotNext.Buffers.MemoryWriter(Of T).WrittenMemory
+  nameWithType: MemoryWriter<T>.WrittenMemory
+  nameWithType.vb: MemoryWriter(Of T).WrittenMemory
+- uid: DotNext.Buffers.PooledArrayBufferWriter
+  name: PooledArrayBufferWriter
+  href: api/DotNext.Buffers.PooledArrayBufferWriter.html
+  commentId: T:DotNext.Buffers.PooledArrayBufferWriter
+  fullName: DotNext.Buffers.PooledArrayBufferWriter
+  nameWithType: PooledArrayBufferWriter
+- uid: DotNext.Buffers.PooledArrayBufferWriter.GetWrittenBytesAsStream(DotNext.Buffers.PooledArrayBufferWriter{System.Byte})
+  name: GetWrittenBytesAsStream(PooledArrayBufferWriter<Byte>)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter.html#DotNext_Buffers_PooledArrayBufferWriter_GetWrittenBytesAsStream_DotNext_Buffers_PooledArrayBufferWriter_System_Byte__
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter.GetWrittenBytesAsStream(DotNext.Buffers.PooledArrayBufferWriter{System.Byte})
+  name.vb: GetWrittenBytesAsStream(PooledArrayBufferWriter(Of Byte))
+  fullName: DotNext.Buffers.PooledArrayBufferWriter.GetWrittenBytesAsStream(DotNext.Buffers.PooledArrayBufferWriter<System.Byte>)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter.GetWrittenBytesAsStream(DotNext.Buffers.PooledArrayBufferWriter(Of System.Byte))
+  nameWithType: PooledArrayBufferWriter.GetWrittenBytesAsStream(PooledArrayBufferWriter<Byte>)
+  nameWithType.vb: PooledArrayBufferWriter.GetWrittenBytesAsStream(PooledArrayBufferWriter(Of Byte))
+- uid: DotNext.Buffers.PooledArrayBufferWriter.GetWrittenBytesAsStream*
+  name: GetWrittenBytesAsStream
+  href: api/DotNext.Buffers.PooledArrayBufferWriter.html#DotNext_Buffers_PooledArrayBufferWriter_GetWrittenBytesAsStream_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter.GetWrittenBytesAsStream
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledArrayBufferWriter.GetWrittenBytesAsStream
+  nameWithType: PooledArrayBufferWriter.GetWrittenBytesAsStream
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1
+  name: PooledArrayBufferWriter<T>
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html
+  commentId: T:DotNext.Buffers.PooledArrayBufferWriter`1
+  name.vb: PooledArrayBufferWriter(Of T)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T)
+  nameWithType: PooledArrayBufferWriter<T>
+  nameWithType.vb: PooledArrayBufferWriter(Of T)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.#ctor
+  name: PooledArrayBufferWriter()
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1__ctor
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.#ctor
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.PooledArrayBufferWriter()
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).PooledArrayBufferWriter()
+  nameWithType: PooledArrayBufferWriter<T>.PooledArrayBufferWriter()
+  nameWithType.vb: PooledArrayBufferWriter(Of T).PooledArrayBufferWriter()
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0})
+  name: PooledArrayBufferWriter(ArrayPool<T>)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0})
+  name.vb: PooledArrayBufferWriter(ArrayPool(Of T))
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.PooledArrayBufferWriter(System.Buffers.ArrayPool<T>)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).PooledArrayBufferWriter(System.Buffers.ArrayPool(Of T))
+  nameWithType: PooledArrayBufferWriter<T>.PooledArrayBufferWriter(ArrayPool<T>)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).PooledArrayBufferWriter(ArrayPool(Of T))
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0},System.Int32)
+  name: PooledArrayBufferWriter(ArrayPool<T>, Int32)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1__ctor_System_Buffers_ArrayPool__0__System_Int32_
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.#ctor(System.Buffers.ArrayPool{`0},System.Int32)
+  name.vb: PooledArrayBufferWriter(ArrayPool(Of T), Int32)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.PooledArrayBufferWriter(System.Buffers.ArrayPool<T>, System.Int32)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).PooledArrayBufferWriter(System.Buffers.ArrayPool(Of T), System.Int32)
+  nameWithType: PooledArrayBufferWriter<T>.PooledArrayBufferWriter(ArrayPool<T>, Int32)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).PooledArrayBufferWriter(ArrayPool(Of T), Int32)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.#ctor*
+  name: PooledArrayBufferWriter
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1__ctor_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.#ctor
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.PooledArrayBufferWriter
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).PooledArrayBufferWriter
+  nameWithType: PooledArrayBufferWriter<T>.PooledArrayBufferWriter
+  nameWithType.vb: PooledArrayBufferWriter(Of T).PooledArrayBufferWriter
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.Capacity
+  name: Capacity
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Capacity
+  commentId: P:DotNext.Buffers.PooledArrayBufferWriter`1.Capacity
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.Capacity
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).Capacity
+  nameWithType: PooledArrayBufferWriter<T>.Capacity
+  nameWithType.vb: PooledArrayBufferWriter(Of T).Capacity
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.Capacity*
+  name: Capacity
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Capacity_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.Capacity
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.Capacity
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).Capacity
+  nameWithType: PooledArrayBufferWriter<T>.Capacity
+  nameWithType.vb: PooledArrayBufferWriter(Of T).Capacity
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.Clear
+  name: Clear()
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Clear
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.Clear
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.Clear()
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).Clear()
+  nameWithType: PooledArrayBufferWriter<T>.Clear()
+  nameWithType.vb: PooledArrayBufferWriter(Of T).Clear()
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.Clear*
+  name: Clear
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Clear_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.Clear
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.Clear
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).Clear
+  nameWithType: PooledArrayBufferWriter<T>.Clear
+  nameWithType.vb: PooledArrayBufferWriter(Of T).Clear
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.Dispose(System.Boolean)
+  name: Dispose(Boolean)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_System_Boolean_
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.Dispose(System.Boolean)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.Dispose(System.Boolean)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).Dispose(System.Boolean)
+  nameWithType: PooledArrayBufferWriter<T>.Dispose(Boolean)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).Dispose(Boolean)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_Dispose_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.Dispose
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.Dispose
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).Dispose
+  nameWithType: PooledArrayBufferWriter<T>.Dispose
+  nameWithType.vb: PooledArrayBufferWriter(Of T).Dispose
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.DotNext#IConvertible{System#ArraySegment{T}}#Convert
+  name: IConvertible<ArraySegment<T>>.Convert()
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_DotNext_IConvertible_System_ArraySegment_T___Convert
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.DotNext#IConvertible{System#ArraySegment{T}}#Convert
+  name.vb: DotNext.IConvertible<System.ArraySegment<T>>.Convert()
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.DotNext.IConvertible<System.ArraySegment<T>>.Convert()
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).DotNext.IConvertible<System.ArraySegment<T>>.Convert()
+  nameWithType: PooledArrayBufferWriter<T>.IConvertible<ArraySegment<T>>.Convert()
+  nameWithType.vb: PooledArrayBufferWriter(Of T).DotNext.IConvertible<System.ArraySegment<T>>.Convert()
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.DotNext#IConvertible{System#ArraySegment{T}}#Convert*
+  name: IConvertible<ArraySegment<T>>.Convert
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_DotNext_IConvertible_System_ArraySegment_T___Convert_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.DotNext#IConvertible{System#ArraySegment{T}}#Convert
+  isSpec: "True"
+  name.vb: DotNext.IConvertible<System.ArraySegment<T>>.Convert
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.DotNext.IConvertible<System.ArraySegment<T>>.Convert
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).DotNext.IConvertible<System.ArraySegment<T>>.Convert
+  nameWithType: PooledArrayBufferWriter<T>.IConvertible<ArraySegment<T>>.Convert
+  nameWithType.vb: PooledArrayBufferWriter(Of T).DotNext.IConvertible<System.ArraySegment<T>>.Convert
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.GetArray(System.Int32)
+  name: GetArray(Int32)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_System_Int32_
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.GetArray(System.Int32)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.GetArray(System.Int32)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).GetArray(System.Int32)
+  nameWithType: PooledArrayBufferWriter<T>.GetArray(Int32)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).GetArray(Int32)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.GetArray*
+  name: GetArray
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_GetArray_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.GetArray
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.GetArray
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).GetArray
+  nameWithType: PooledArrayBufferWriter<T>.GetArray
+  nameWithType.vb: PooledArrayBufferWriter(Of T).GetArray
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory(System.Int32)
+  name: GetMemory(Int32)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_System_Int32_
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory(System.Int32)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.GetMemory(System.Int32)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).GetMemory(System.Int32)
+  nameWithType: PooledArrayBufferWriter<T>.GetMemory(Int32)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).GetMemory(Int32)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory*
+  name: GetMemory
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_GetMemory_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.GetMemory
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.GetMemory
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).GetMemory
+  nameWithType: PooledArrayBufferWriter<T>.GetMemory
+  nameWithType.vb: PooledArrayBufferWriter(Of T).GetMemory
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan(System.Int32)
+  name: GetSpan(Int32)
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_System_Int32_
+  commentId: M:DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan(System.Int32)
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.GetSpan(System.Int32)
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).GetSpan(System.Int32)
+  nameWithType: PooledArrayBufferWriter<T>.GetSpan(Int32)
+  nameWithType.vb: PooledArrayBufferWriter(Of T).GetSpan(Int32)
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan*
+  name: GetSpan
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_GetSpan_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.GetSpan
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.GetSpan
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).GetSpan
+  nameWithType: PooledArrayBufferWriter<T>.GetSpan
+  nameWithType.vb: PooledArrayBufferWriter(Of T).GetSpan
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray
+  name: WrittenArray
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray
+  commentId: P:DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.WrittenArray
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).WrittenArray
+  nameWithType: PooledArrayBufferWriter<T>.WrittenArray
+  nameWithType.vb: PooledArrayBufferWriter(Of T).WrittenArray
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray*
+  name: WrittenArray
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_WrittenArray_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.WrittenArray
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.WrittenArray
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).WrittenArray
+  nameWithType: PooledArrayBufferWriter<T>.WrittenArray
+  nameWithType.vb: PooledArrayBufferWriter(Of T).WrittenArray
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory
+  name: WrittenMemory
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory
+  commentId: P:DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.WrittenMemory
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).WrittenMemory
+  nameWithType: PooledArrayBufferWriter<T>.WrittenMemory
+  nameWithType.vb: PooledArrayBufferWriter(Of T).WrittenMemory
+- uid: DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory*
+  name: WrittenMemory
+  href: api/DotNext.Buffers.PooledArrayBufferWriter-1.html#DotNext_Buffers_PooledArrayBufferWriter_1_WrittenMemory_
+  commentId: Overload:DotNext.Buffers.PooledArrayBufferWriter`1.WrittenMemory
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledArrayBufferWriter<T>.WrittenMemory
+  fullName.vb: DotNext.Buffers.PooledArrayBufferWriter(Of T).WrittenMemory
+  nameWithType: PooledArrayBufferWriter<T>.WrittenMemory
+  nameWithType.vb: PooledArrayBufferWriter(Of T).WrittenMemory
+- uid: DotNext.Buffers.PooledBufferWriter`1
+  name: PooledBufferWriter<T>
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html
+  commentId: T:DotNext.Buffers.PooledBufferWriter`1
+  name.vb: PooledBufferWriter(Of T)
+  fullName: DotNext.Buffers.PooledBufferWriter<T>
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T)
+  nameWithType: PooledBufferWriter<T>
+  nameWithType.vb: PooledBufferWriter(Of T)
+- uid: DotNext.Buffers.PooledBufferWriter`1.#ctor(DotNext.Buffers.MemoryAllocator{`0})
+  name: PooledBufferWriter(MemoryAllocator<T>)
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1__ctor_DotNext_Buffers_MemoryAllocator__0__
+  commentId: M:DotNext.Buffers.PooledBufferWriter`1.#ctor(DotNext.Buffers.MemoryAllocator{`0})
+  name.vb: PooledBufferWriter(MemoryAllocator(Of T))
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.PooledBufferWriter(DotNext.Buffers.MemoryAllocator<T>)
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).PooledBufferWriter(DotNext.Buffers.MemoryAllocator(Of T))
+  nameWithType: PooledBufferWriter<T>.PooledBufferWriter(MemoryAllocator<T>)
+  nameWithType.vb: PooledBufferWriter(Of T).PooledBufferWriter(MemoryAllocator(Of T))
+- uid: DotNext.Buffers.PooledBufferWriter`1.#ctor(DotNext.Buffers.MemoryAllocator{`0},System.Int32)
+  name: PooledBufferWriter(MemoryAllocator<T>, Int32)
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1__ctor_DotNext_Buffers_MemoryAllocator__0__System_Int32_
+  commentId: M:DotNext.Buffers.PooledBufferWriter`1.#ctor(DotNext.Buffers.MemoryAllocator{`0},System.Int32)
+  name.vb: PooledBufferWriter(MemoryAllocator(Of T), Int32)
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.PooledBufferWriter(DotNext.Buffers.MemoryAllocator<T>, System.Int32)
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).PooledBufferWriter(DotNext.Buffers.MemoryAllocator(Of T), System.Int32)
+  nameWithType: PooledBufferWriter<T>.PooledBufferWriter(MemoryAllocator<T>, Int32)
+  nameWithType.vb: PooledBufferWriter(Of T).PooledBufferWriter(MemoryAllocator(Of T), Int32)
+- uid: DotNext.Buffers.PooledBufferWriter`1.#ctor*
+  name: PooledBufferWriter
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1__ctor_
+  commentId: Overload:DotNext.Buffers.PooledBufferWriter`1.#ctor
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.PooledBufferWriter
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).PooledBufferWriter
+  nameWithType: PooledBufferWriter<T>.PooledBufferWriter
+  nameWithType.vb: PooledBufferWriter(Of T).PooledBufferWriter
+- uid: DotNext.Buffers.PooledBufferWriter`1.Capacity
+  name: Capacity
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_Capacity
+  commentId: P:DotNext.Buffers.PooledBufferWriter`1.Capacity
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.Capacity
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).Capacity
+  nameWithType: PooledBufferWriter<T>.Capacity
+  nameWithType.vb: PooledBufferWriter(Of T).Capacity
+- uid: DotNext.Buffers.PooledBufferWriter`1.Capacity*
+  name: Capacity
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_Capacity_
+  commentId: Overload:DotNext.Buffers.PooledBufferWriter`1.Capacity
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.Capacity
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).Capacity
+  nameWithType: PooledBufferWriter<T>.Capacity
+  nameWithType.vb: PooledBufferWriter(Of T).Capacity
+- uid: DotNext.Buffers.PooledBufferWriter`1.Clear
+  name: Clear()
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_Clear
+  commentId: M:DotNext.Buffers.PooledBufferWriter`1.Clear
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.Clear()
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).Clear()
+  nameWithType: PooledBufferWriter<T>.Clear()
+  nameWithType.vb: PooledBufferWriter(Of T).Clear()
+- uid: DotNext.Buffers.PooledBufferWriter`1.Clear*
+  name: Clear
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_Clear_
+  commentId: Overload:DotNext.Buffers.PooledBufferWriter`1.Clear
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.Clear
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).Clear
+  nameWithType: PooledBufferWriter<T>.Clear
+  nameWithType.vb: PooledBufferWriter(Of T).Clear
+- uid: DotNext.Buffers.PooledBufferWriter`1.Dispose(System.Boolean)
+  name: Dispose(Boolean)
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_Dispose_System_Boolean_
+  commentId: M:DotNext.Buffers.PooledBufferWriter`1.Dispose(System.Boolean)
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.Dispose(System.Boolean)
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).Dispose(System.Boolean)
+  nameWithType: PooledBufferWriter<T>.Dispose(Boolean)
+  nameWithType.vb: PooledBufferWriter(Of T).Dispose(Boolean)
+- uid: DotNext.Buffers.PooledBufferWriter`1.Dispose*
+  name: Dispose
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_Dispose_
+  commentId: Overload:DotNext.Buffers.PooledBufferWriter`1.Dispose
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.Dispose
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).Dispose
+  nameWithType: PooledBufferWriter<T>.Dispose
+  nameWithType.vb: PooledBufferWriter(Of T).Dispose
+- uid: DotNext.Buffers.PooledBufferWriter`1.GetMemory(System.Int32)
+  name: GetMemory(Int32)
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_GetMemory_System_Int32_
+  commentId: M:DotNext.Buffers.PooledBufferWriter`1.GetMemory(System.Int32)
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.GetMemory(System.Int32)
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).GetMemory(System.Int32)
+  nameWithType: PooledBufferWriter<T>.GetMemory(Int32)
+  nameWithType.vb: PooledBufferWriter(Of T).GetMemory(Int32)
+- uid: DotNext.Buffers.PooledBufferWriter`1.GetMemory*
+  name: GetMemory
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_GetMemory_
+  commentId: Overload:DotNext.Buffers.PooledBufferWriter`1.GetMemory
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.GetMemory
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).GetMemory
+  nameWithType: PooledBufferWriter<T>.GetMemory
+  nameWithType.vb: PooledBufferWriter(Of T).GetMemory
+- uid: DotNext.Buffers.PooledBufferWriter`1.GetSpan(System.Int32)
+  name: GetSpan(Int32)
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_GetSpan_System_Int32_
+  commentId: M:DotNext.Buffers.PooledBufferWriter`1.GetSpan(System.Int32)
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.GetSpan(System.Int32)
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).GetSpan(System.Int32)
+  nameWithType: PooledBufferWriter<T>.GetSpan(Int32)
+  nameWithType.vb: PooledBufferWriter(Of T).GetSpan(Int32)
+- uid: DotNext.Buffers.PooledBufferWriter`1.GetSpan*
+  name: GetSpan
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_GetSpan_
+  commentId: Overload:DotNext.Buffers.PooledBufferWriter`1.GetSpan
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.GetSpan
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).GetSpan
+  nameWithType: PooledBufferWriter<T>.GetSpan
+  nameWithType.vb: PooledBufferWriter(Of T).GetSpan
+- uid: DotNext.Buffers.PooledBufferWriter`1.WrittenMemory
+  name: WrittenMemory
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_WrittenMemory
+  commentId: P:DotNext.Buffers.PooledBufferWriter`1.WrittenMemory
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.WrittenMemory
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).WrittenMemory
+  nameWithType: PooledBufferWriter<T>.WrittenMemory
+  nameWithType.vb: PooledBufferWriter(Of T).WrittenMemory
+- uid: DotNext.Buffers.PooledBufferWriter`1.WrittenMemory*
+  name: WrittenMemory
+  href: api/DotNext.Buffers.PooledBufferWriter-1.html#DotNext_Buffers_PooledBufferWriter_1_WrittenMemory_
+  commentId: Overload:DotNext.Buffers.PooledBufferWriter`1.WrittenMemory
+  isSpec: "True"
+  fullName: DotNext.Buffers.PooledBufferWriter<T>.WrittenMemory
+  fullName.vb: DotNext.Buffers.PooledBufferWriter(Of T).WrittenMemory
+  nameWithType: PooledBufferWriter<T>.WrittenMemory
+  nameWithType.vb: PooledBufferWriter(Of T).WrittenMemory
 - uid: DotNext.Buffers.UnmanagedMemoryPool`1
   name: UnmanagedMemoryPool<T>
   href: api/DotNext.Buffers.UnmanagedMemoryPool-1.html
@@ -3496,6 +4112,25 @@ references:
   fullName.vb: DotNext.Enum(Of E).CompareTo
   nameWithType: Enum<E>.CompareTo
   nameWithType.vb: Enum(Of E).CompareTo
+- uid: DotNext.Enum`1.DotNext#IConvertible{E}#Convert
+  name: IConvertible<E>.Convert()
+  href: api/DotNext.Enum-1.html#DotNext_Enum_1_DotNext_IConvertible_E__Convert
+  commentId: M:DotNext.Enum`1.DotNext#IConvertible{E}#Convert
+  name.vb: DotNext.IConvertible<E>.Convert()
+  fullName: DotNext.Enum<E>.DotNext.IConvertible<E>.Convert()
+  fullName.vb: DotNext.Enum(Of E).DotNext.IConvertible<E>.Convert()
+  nameWithType: Enum<E>.IConvertible<E>.Convert()
+  nameWithType.vb: Enum(Of E).DotNext.IConvertible<E>.Convert()
+- uid: DotNext.Enum`1.DotNext#IConvertible{E}#Convert*
+  name: IConvertible<E>.Convert
+  href: api/DotNext.Enum-1.html#DotNext_Enum_1_DotNext_IConvertible_E__Convert_
+  commentId: Overload:DotNext.Enum`1.DotNext#IConvertible{E}#Convert
+  isSpec: "True"
+  name.vb: DotNext.IConvertible<E>.Convert
+  fullName: DotNext.Enum<E>.DotNext.IConvertible<E>.Convert
+  fullName.vb: DotNext.Enum(Of E).DotNext.IConvertible<E>.Convert
+  nameWithType: Enum<E>.IConvertible<E>.Convert
+  nameWithType.vb: Enum(Of E).DotNext.IConvertible<E>.Convert
 - uid: DotNext.Enum`1.Equals(`0)
   name: Equals(E)
   href: api/DotNext.Enum-1.html#DotNext_Enum_1_Equals__0_
@@ -42944,6 +43579,25 @@ references:
   fullName.vb: DotNext.Threading.Tasks.Future(Of T).AsTask
   nameWithType: Future<T>.AsTask
   nameWithType.vb: Future(Of T).AsTask
+- uid: DotNext.Threading.Tasks.Future`1.DotNext#IConvertible{T}#Convert
+  name: IConvertible<T>.Convert()
+  href: api/DotNext.Threading.Tasks.Future-1.html#DotNext_Threading_Tasks_Future_1_DotNext_IConvertible_T__Convert
+  commentId: M:DotNext.Threading.Tasks.Future`1.DotNext#IConvertible{T}#Convert
+  name.vb: DotNext.IConvertible<T>.Convert()
+  fullName: DotNext.Threading.Tasks.Future<T>.DotNext.IConvertible<T>.Convert()
+  fullName.vb: DotNext.Threading.Tasks.Future(Of T).DotNext.IConvertible<T>.Convert()
+  nameWithType: Future<T>.IConvertible<T>.Convert()
+  nameWithType.vb: Future(Of T).DotNext.IConvertible<T>.Convert()
+- uid: DotNext.Threading.Tasks.Future`1.DotNext#IConvertible{T}#Convert*
+  name: IConvertible<T>.Convert
+  href: api/DotNext.Threading.Tasks.Future-1.html#DotNext_Threading_Tasks_Future_1_DotNext_IConvertible_T__Convert_
+  commentId: Overload:DotNext.Threading.Tasks.Future`1.DotNext#IConvertible{T}#Convert
+  isSpec: "True"
+  name.vb: DotNext.IConvertible<T>.Convert
+  fullName: DotNext.Threading.Tasks.Future<T>.DotNext.IConvertible<T>.Convert
+  fullName.vb: DotNext.Threading.Tasks.Future(Of T).DotNext.IConvertible<T>.Convert
+  nameWithType: Future<T>.IConvertible<T>.Convert
+  nameWithType.vb: Future(Of T).DotNext.IConvertible<T>.Convert
 - uid: DotNext.Threading.Tasks.IFuture
   name: IFuture
   href: api/DotNext.Threading.Tasks.IFuture.html

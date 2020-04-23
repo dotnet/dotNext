@@ -130,7 +130,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static Span&lt;byte&gt; AsBytes&lt;T&gt;(T*pointer)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -199,7 +198,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.span-1">
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static Span&lt;byte&gt; AsBytes&lt;T&gt;(ref T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -268,7 +266,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static ReadOnlySpan&lt;byte&gt; AsReadOnlyBytes&lt;T&gt;(in T value)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -336,7 +333,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseCompare&lt;T&gt;(this ReadOnlySpan&lt;T&gt; first, ReadOnlySpan&lt;T&gt; second)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -410,7 +406,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseCompare&lt;T&gt;(this Span&lt;T&gt; first, Span&lt;T&gt; second)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -484,7 +479,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool BitwiseEquals&lt;T&gt;(this ReadOnlySpan&lt;T&gt; first, ReadOnlySpan&lt;T&gt; second)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -561,7 +555,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool BitwiseEquals&lt;T&gt;(this Span&lt;T&gt; first, Span&lt;T&gt; second)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -638,7 +631,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -712,7 +704,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, int hash, in ValueFunc&lt;int, int, int&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -798,7 +789,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -884,7 +874,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this Span&lt;T&gt; span, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -958,7 +947,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this Span&lt;T&gt; span, int hash, in ValueFunc&lt;int, int, int&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1044,7 +1032,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static int BitwiseHashCode&lt;T&gt;(this Span&lt;T&gt; span, int hash, Func&lt;int, int, int&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1130,7 +1117,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1204,7 +1190,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, long hash, in ValueFunc&lt;long, long, long&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1290,7 +1275,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this ReadOnlySpan&lt;T&gt; span, long hash, Func&lt;long, long, long&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1376,7 +1360,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this Span&lt;T&gt; span, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1450,7 +1433,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this Span&lt;T&gt; span, long hash, in ValueFunc&lt;long, long, long&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1536,7 +1518,6 @@ into <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.readonly
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static long BitwiseHashCode64&lt;T&gt;(this Span&lt;T&gt; span, long hash, Func&lt;long, long, long&gt; hashFunction, bool salted = true)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2005,7 +1986,6 @@ from the block of memory and advances the original span.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static T Read&lt;T&gt;(ref ReadOnlySpan&lt;byte&gt; bytes)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2519,7 +2499,6 @@ If length is less that <code data-dev-comment-type="paramref" class="paramref">m
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Write&lt;T&gt;(in T value, ref Span&lt;byte&gt; output)
-
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

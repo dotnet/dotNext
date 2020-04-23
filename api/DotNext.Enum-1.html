@@ -83,6 +83,7 @@
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iformattable">IFormattable</a></div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.iequatable-1">IEquatable</a>&lt;<a class="xref" href="DotNext.Enum-1.html">Enum</a>&lt;E&gt;&gt;</div>
     <div><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">ISerializable</a></div>
+    <div><a class="xref" href="DotNext.IConvertible-1.html">IConvertible</a>&lt;E&gt;</div>
   </div>
   <div class="inheritedMembers">
     <h5>Inherited Members</h5>
@@ -101,7 +102,7 @@
   <h5 id="DotNext_Enum_1_syntax">Syntax</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[Serializable]
-public struct Enum&lt;E&gt; : IEquatable&lt;E&gt;, IComparable&lt;E&gt;, IFormattable, IEquatable&lt;Enum&lt;E&gt;&gt;, ISerializable where E : struct, Enum</code></pre>
+public struct Enum&lt;E&gt; : IEquatable&lt;E&gt;, IComparable&lt;E&gt;, IFormattable, IEquatable&lt;Enum&lt;E&gt;&gt;, ISerializable, IConvertible&lt;E&gt; where E : struct, Enum</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -219,7 +220,7 @@ public struct Enum&lt;E&gt; : IEquatable&lt;E&gt;, IComparable&lt;E&gt;, IFormat
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_Name.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.Name%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L200">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L202">View Source</a>
   </span>
   <a id="DotNext_Enum_1_Name_" data-uid="DotNext.Enum`1.Name*"></a>
   <h4 id="DotNext_Enum_1_Name" data-uid="DotNext.Enum`1.Name">Name</h4>
@@ -345,7 +346,7 @@ public struct Enum&lt;E&gt; : IEquatable&lt;E&gt;, IComparable&lt;E&gt;, IFormat
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_CompareTo__0_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.CompareTo(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L213">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L215">View Source</a>
   </span>
   <a id="DotNext_Enum_1_CompareTo_" data-uid="DotNext.Enum`1.CompareTo*"></a>
   <h4 id="DotNext_Enum_1_CompareTo__0_" data-uid="DotNext.Enum`1.CompareTo(`0)">CompareTo(E)</h4>
@@ -395,7 +396,7 @@ public struct Enum&lt;E&gt; : IEquatable&lt;E&gt;, IComparable&lt;E&gt;, IFormat
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_Equals__0_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.Equals(%600)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L220">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L222">View Source</a>
   </span>
   <a id="DotNext_Enum_1_Equals_" data-uid="DotNext.Enum`1.Equals*"></a>
   <h4 id="DotNext_Enum_1_Equals__0_" data-uid="DotNext.Enum`1.Equals(`0)">Equals(E)</h4>
@@ -445,7 +446,7 @@ public struct Enum&lt;E&gt; : IEquatable&lt;E&gt;, IComparable&lt;E&gt;, IFormat
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_Equals_DotNext_Enum__0__.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.Equals(DotNext.Enum%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L227">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L229">View Source</a>
   </span>
   <a id="DotNext_Enum_1_Equals_" data-uid="DotNext.Enum`1.Equals*"></a>
   <h4 id="DotNext_Enum_1_Equals_DotNext_Enum__0__" data-uid="DotNext.Enum`1.Equals(DotNext.Enum{`0})">Equals(Enum&lt;E&gt;)</h4>
@@ -495,7 +496,7 @@ public struct Enum&lt;E&gt; : IEquatable&lt;E&gt;, IComparable&lt;E&gt;, IFormat
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_Equals_System_Object_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.Equals(System.Object)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L234">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L236">View Source</a>
   </span>
   <a id="DotNext_Enum_1_Equals_" data-uid="DotNext.Enum`1.Equals*"></a>
   <h4 id="DotNext_Enum_1_Equals_System_Object_" data-uid="DotNext.Enum`1.Equals(System.Object)">Equals(Object)</h4>
@@ -547,7 +548,7 @@ public struct Enum&lt;E&gt; : IEquatable&lt;E&gt;, IComparable&lt;E&gt;, IFormat
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_GetHashCode.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.GetHashCode%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L245">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L247">View Source</a>
   </span>
   <a id="DotNext_Enum_1_GetHashCode_" data-uid="DotNext.Enum`1.GetHashCode*"></a>
   <h4 id="DotNext_Enum_1_GetHashCode" data-uid="DotNext.Enum`1.GetHashCode">GetHashCode()</h4>
@@ -848,7 +849,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_ToString.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.ToString%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L251">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L253">View Source</a>
   </span>
   <a id="DotNext_Enum_1_ToString_" data-uid="DotNext.Enum`1.ToString*"></a>
   <h4 id="DotNext_Enum_1_ToString" data-uid="DotNext.Enum`1.ToString">ToString()</h4>
@@ -996,7 +997,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_op_Equality_DotNext_Enum__0__DotNext_Enum__0__.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.op_Equality(DotNext.Enum%7B%600%7D%2CDotNext.Enum%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L261">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L263">View Source</a>
   </span>
   <a id="DotNext_Enum_1_op_Equality_" data-uid="DotNext.Enum`1.op_Equality*"></a>
   <h4 id="DotNext_Enum_1_op_Equality_DotNext_Enum__0__DotNext_Enum__0__" data-uid="DotNext.Enum`1.op_Equality(DotNext.Enum{`0},DotNext.Enum{`0})">Equality(Enum&lt;E&gt;, Enum&lt;E&gt;)</h4>
@@ -1052,7 +1053,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_op_Implicit_DotNext_Enum__0_____0.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.op_Implicit(DotNext.Enum%7B%600%7D%40)~%600%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L206">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L208">View Source</a>
   </span>
   <a id="DotNext_Enum_1_op_Implicit_" data-uid="DotNext.Enum`1.op_Implicit*"></a>
   <h4 id="DotNext_Enum_1_op_Implicit_DotNext_Enum__0_____0" data-uid="DotNext.Enum`1.op_Implicit(DotNext.Enum{`0}@)~`0">Implicit(Enum&lt;E&gt; to E)</h4>
@@ -1101,7 +1102,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_op_Inequality_DotNext_Enum__0__DotNext_Enum__0__.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.op_Inequality(DotNext.Enum%7B%600%7D%2CDotNext.Enum%7B%600%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L269">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L271">View Source</a>
   </span>
   <a id="DotNext_Enum_1_op_Inequality_" data-uid="DotNext.Enum`1.op_Inequality*"></a>
   <h4 id="DotNext_Enum_1_op_Inequality_DotNext_Enum__0__DotNext_Enum__0__" data-uid="DotNext.Enum`1.op_Inequality(DotNext.Enum{`0},DotNext.Enum{`0})">Inequality(Enum&lt;E&gt;, Enum&lt;E&gt;)</h4>
@@ -1156,10 +1157,40 @@ with the current instance are set in the given value.</p>
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_DotNext_IConvertible_E__Convert.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.DotNext%23IConvertible%7BE%7D%23Convert%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L197">View Source</a>
+  </span>
+  <a id="DotNext_Enum_1_DotNext_IConvertible_E__Convert_" data-uid="DotNext.Enum`1.DotNext#IConvertible{E}#Convert*"></a>
+  <h4 id="DotNext_Enum_1_DotNext_IConvertible_E__Convert" data-uid="DotNext.Enum`1.DotNext#IConvertible{E}#Convert">IConvertible&lt;E&gt;.Convert()</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">E IConvertible&lt;E&gt;.Convert()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">E</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_System_IFormattable_ToString_System_String_System_IFormatProvider_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.System%23IFormattable%23ToString(System.String%2CSystem.IFormatProvider)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L253">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L255">View Source</a>
   </span>
   <a id="DotNext_Enum_1_System_IFormattable_ToString_" data-uid="DotNext.Enum`1.System#IFormattable#ToString*"></a>
   <h4 id="DotNext_Enum_1_System_IFormattable_ToString_System_String_System_IFormatProvider_" data-uid="DotNext.Enum`1.System#IFormattable#ToString(System.String,System.IFormatProvider)">IFormattable.ToString(String, IFormatProvider)</h4>
@@ -1211,7 +1242,7 @@ with the current instance are set in the given value.</p>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Enum_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_.md&amp;value=---%0Auid%3A%20DotNext.Enum%601.System%23Runtime%23Serialization%23ISerializable%23GetObjectData(System.Runtime.Serialization.SerializationInfo%2CSystem.Runtime.Serialization.StreamingContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L271">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext/Enum.cs/#L273">View Source</a>
   </span>
   <a id="DotNext_Enum_1_System_Runtime_Serialization_ISerializable_GetObjectData_" data-uid="DotNext.Enum`1.System#Runtime#Serialization#ISerializable#GetObjectData*"></a>
   <h4 id="DotNext_Enum_1_System_Runtime_Serialization_ISerializable_GetObjectData_System_Runtime_Serialization_SerializationInfo_System_Runtime_Serialization_StreamingContext_" data-uid="DotNext.Enum`1.System#Runtime#Serialization#ISerializable#GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">ISerializable.GetObjectData(SerializationInfo, StreamingContext)</h4>
@@ -1258,6 +1289,9 @@ with the current instance are set in the given value.</p>
   </div>
   <div>
       <a class="xref" href="https://docs.microsoft.com/dotnet/api/system.runtime.serialization.iserializable">System.Runtime.Serialization.ISerializable</a>
+  </div>
+  <div>
+      <a class="xref" href="DotNext.IConvertible-1.html">IConvertible&lt;T&gt;</a>
   </div>
   <h3 id="extensionmethods">Extension Methods</h3>
   <div>

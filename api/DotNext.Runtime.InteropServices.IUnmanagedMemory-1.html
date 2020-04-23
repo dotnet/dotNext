@@ -128,7 +128,7 @@
   <h6><strong>Assembly</strong>: DotNext.Unsafe.dll</h6>
   <h5 id="DotNext_Runtime_InteropServices_IUnmanagedMemory_1_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public interface IUnmanagedMemory&lt;T&gt; : IUnmanagedMemory, IMemoryOwner&lt;T&gt;, IDisposable where T : struct</code></pre>
+    <pre><code class="lang-csharp hljs">public interface IUnmanagedMemory&lt;T&gt; : IUnmanagedMemory, IConvertible&lt;Stream&gt;, IMemoryOwner&lt;T&gt;, IDisposable, IConvertible&lt;Memory&lt;T&gt;&gt; where T : struct</code></pre>
   </div>
   <h5 class="typeParameters">Type Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -224,7 +224,7 @@
                     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Runtime_InteropServices_IUnmanagedMemory_1.md&amp;value=---%0Auid%3A%20DotNext.Runtime.InteropServices.IUnmanagedMemory%601%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
                   </li>
                   <li>
-                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L113" class="contribution-link">View Source</a>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/DotNext.Unsafe/Runtime/InteropServices/IUnmanagedMemory.cs/#L115" class="contribution-link">View Source</a>
                   </li>
                 </ul>
               </div>

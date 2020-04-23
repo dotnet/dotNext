@@ -1,0 +1,142 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Dynamic Buffers | .NEXT </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Dynamic Buffers | .NEXT ">
+    <meta name="generator" content="docfx 2.52.0.0">
+    
+    <link rel="shortcut icon" href="../../fav.ico">
+    <link rel="stylesheet" href="../../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../../styles/docfx.css">
+    <link rel="stylesheet" href="../../styles/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <meta property="docfx:navrel" content="../../toc.html">
+    <meta property="docfx:tocrel" content="../toc.html">
+    
+    
+    
+  </head>  <body data-spy="scroll" data-target="#affix" data-offset="120">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../../index.html">
+                <img id="logo" class="svg" src="../../doc_logo.png" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="">
+<h1 id="dynamic-buffers">Dynamic Buffers</h1>
+
+<p><a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraybufferwriter-1">ArrayBufferWriter&lt;T&gt;</a> represents default implementation of dynamically-sized, heap-based and array-backed buffer. Unfortunately, it's not flexible enough in the following aspects:</p>
+<ul>
+<li>Not possible to use array or memory pooling mechanism. As a result, umnanaged memory cannot be used for such writer.</li>
+<li>Not compatible with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1">ArraySegment&lt;T&gt;</a></li>
+<li>No easy way to obtain stream over written memory</li>
+<li>Allocation on the heap</li>
+</ul>
+<p>With .NEXT, you have this flexibility.</p>
+<h1 id="pooledbufferwriter">PooledBufferWriter</h1>
+<p><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html">PooledBufferWriter&lt;T&gt;</a> is similar to <code>ArrayBufferWriter</code> but accepts <a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html">memory allocator</a> that is used for allocation of internal buffers. Thus, you can use any pooling mechanism from .NET: memory or array pool. If writer detects that capacity exceeded then it rents a new internal buffer and copies written content from previous one.</p>
+<pre><code class="lang-csharp">using DotNext.Buffers;
+
+using var writer = new PooledBufferWriter&lt;byte&gt;(ArrayPool&lt;byte&gt;.Shared.ToAllocator());
+Span&lt;byte&gt; span = writer.GetSpan(1024);
+new byte[512].AsSpan().CopyTo(span);
+span.Advance(512);
+var result = writer.WrittenMemory;  //length is 512
+</code></pre>
+<p>In contrast to <code>ArrayBufferWriter</code>, you must not use written memory if <code>Dispose</code> is called. When <code>Dispose</code> method is called, the internal buffer returns to the pool.</p>
+<h1 id="pooledarraybufferwriter">PooledArrayBufferWriter</h1>
+<p><a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html">PooledArrayBufferWriter&lt;T&gt;</a> exposes the same functionality as <code>PooledBufferWriter</code> but specialized for working with <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.arraypool-1">ArrayPool&lt;T&gt;</a>. As a result, you can make writes or obtain written memory using <a href="https://docs.microsoft.com/en-us/dotnet/api/system.arraysegment-1">ArraySegment&lt;T&gt;</a>. Additionally, if the buffer is for bytes (actual generic argument is <code>byte</code>) then written memory can be exposed as read-only <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.memorystream">MemoryStream</a> without copying written bytes.</p>
+<pre><code class="lang-csharp">using DotNext.Buffers;
+using System;
+
+using var writer = new PooledBufferWriter&lt;byte&gt;(ArrayPool&lt;byte&gt;.Shared);
+ArraySegment&lt;byte&gt; array = writer.GetArray(1024);
+array[0] = 42;
+array[1] = 43;
+span.Advance(2);
+ArraySegment&lt;byte&gt; result = writer.WrittenArray;  //length is 512
+using Stream stream = writer.GetWrittenBytesAsStream();
+</code></pre>
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/sakno/dotNext/blob/gh-pages/docs/features/io/buffers.md/#L1" class="contribution-link">Improve this Doc</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../../styles/docfx.js"></script>
+    <script type="text/javascript" src="../../styles/main.js"></script>
+  </body>
+</html>
