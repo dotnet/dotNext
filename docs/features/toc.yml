@@ -27,12 +27,15 @@
       href: core/asyncd.md
     - name: Intrinsics
       href: core/intrinsics.md
-    - name: I/O Enhancements
-      href: core/io.md
-    - name: Alloc vs Rental
-      href: core/rental.md
     - name: Path MTU Discovery
       href: core/mtu.md
+- name: I/O Enhancements
+  href: io/index.md
+  items:
+    - name: Alloc vs Rental
+      href: io/rental.md
+    - name: Dynamic Buffers
+      href: io/buffers.md
 - name: Threading
   href: threading/index.md
   items:
