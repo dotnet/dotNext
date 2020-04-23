@@ -232,7 +232,7 @@ Pipe is more preferred way because of its asynchronous nature and shared memory 
 .NEXT has broad support of I/O pipelines:
 * `IAsyncBinaryReader.Create` static factory method can wrap [PipeReader](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipereader) to enable high-level decoding operations
 * `IAsyncBinaryWriter.Create` static factory method can wrap [PipeWriter](https://docs.microsoft.com/en-us/dotnet/api/system.io.pipelines.pipewriter) to enable high-level encoding operations
-* Various [I/O enhancements](../core/io.md) aimed to simplify programming using pipes
+* Various [I/O enhancements](../io/index.md) aimed to simplify programming using pipes
 
 ## Network programming
 The most important configuration of Raft cluster member is election timeout. Your transport-specific implementation should align socket timeouts correctly with it. For instance, connection timeout should not be greater than lower election timeout. Otherwise, you will have unstable cluster with frequent re-elections.
