@@ -5,9 +5,9 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Alloc vs Rental | .NEXT </title>
+    <title>Alloc vs Pooling | .NEXT </title>
     <meta name="viewport" content="width=device-width">
-    <meta name="title" content="Alloc vs Rental | .NEXT ">
+    <meta name="title" content="Alloc vs Pooling | .NEXT ">
     <meta name="generator" content="docfx 2.52.0.0">
     
     <link rel="shortcut icon" href="../../fav.ico">
@@ -67,7 +67,7 @@
         <div class="article row grid-right">
           <div class="col-md-10">
             <article class="content wrap" id="_content" data-uid="">
-<h1 id="alloc-vs-rental">Alloc vs Rental</h1>
+<h1 id="alloc-vs-pooling">Alloc vs Pooling</h1>
 
 <p>.NET allows to rent a memory instead of allocation using <strong>new</strong> keyword. It is useful in many cases especially when you need a large block of memory or large array. There a many articles describing benefits of this approach.</p>
 <ul>
@@ -139,6 +139,13 @@ rentedMemory.Memory.Slice(0, 5);
 <p>The value type implements <a href="https://docs.microsoft.com/en-us/dotnet/api/system.buffers.imemoryowner-1">IMemoryOwner&lt;T&gt;</a> interface so you can easly access pooled memory in a uniform way.</p>
 <p>However, <code>MemoryOwner</code> provides subset of functionality available in <code>ArrayRental</code> and <code>MemoryRental</code> which are corner cases and specialized for particular pooling mechanism.</p>
 <p>Additionally, .NEXT offers special abstraction layer for memory pooling which is compatible with existing mechanisms in .NET. <a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator-1.html">MemoryAllocator&lt;T&gt;</a> delegate represents universal way to rent the memory. The consumer of your library can supply concrete instance of this delegate to supply appropriate allocation mechanism. <a href="https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryAllocator.html">MemoryAllocator</a> static class provides extension methods for interop between memory allocator and existing .NET memory pooling APIs.</p>
+<h1 id="rentedmemorystream">RentedMemoryStream</h1>
+<p>Another way to represent the rented memory is <a href="https://sakno.github.io/dotNext/api/DotNext.IO.RentedMemoryStream.html">RentedMemoryStream</a> that allows to work with pooled memory in <a href="https://docs.microsoft.com/en-us/dotnet/api/system.io.stream">stream</a>-like manner. The stream is available for read/write operations. However, it's capacity is fixed and cannot grow. Therefore, you need to request sufficient capacity.</p>
+<pre><code class="lang-csharp">using DotNext.IO;
+
+using var stream = new RentedMemoryStream(1024);  //rent 1 KB of memory and wrap it to stream
+stream.Write(new byte[512], 0, 512);
+</code></pre>
 <h1 id="growable-buffers">Growable Buffers</h1>
 <p>If size of the required buffer is not known and can grow dynamically then you need to use <a href="buffers.html">Dynamic Buffers</a> that are based on memory pooling mechanism as well.</p>
 </article>
