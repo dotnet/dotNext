@@ -67,9 +67,15 @@ namespace DotNext.Buffers
         /// <param name="disposing"><see langword="true"/> to release all resources; <see langword="false"/> to release unmanaged memory only.</param>
         protected override void Dispose(bool disposing)
         {
-            OnDisposed?.Invoke(this);
-            OnDisposed = null;
-            base.Dispose(disposing);
+            try
+            {
+                OnDisposed?.Invoke(this);
+                OnDisposed = null;
+            }
+            finally
+            {
+                base.Dispose(disposing);
+            }
         }
 
         void IUnmanagedMemoryOwner<T>.Reallocate(int length)

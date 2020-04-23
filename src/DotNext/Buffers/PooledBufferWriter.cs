@@ -108,7 +108,10 @@ namespace DotNext.Buffers
         protected override void Dispose(bool disposing)
         {
             if(disposing)
+            {
                 buffer.Dispose();
+                buffer = default;
+            }
             base.Dispose(disposing);
         }
     }

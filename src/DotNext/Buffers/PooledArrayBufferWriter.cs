@@ -161,6 +161,7 @@ namespace DotNext.Buffers
             {
                 if(buffer.Length > 0)
                     pool.Return(buffer);
+                buffer = Array.Empty<T>();
             }
             base.Dispose(disposing);
         }
