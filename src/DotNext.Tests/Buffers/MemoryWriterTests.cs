@@ -146,7 +146,7 @@ namespace DotNext.Buffers
         [Fact]
         public static void StreamInterop()
         {
-            using var writer = new PooledArrayBufferWriter<byte>(ArrayPool<byte>.Shared, 25);
+            using var writer = new PooledArrayBufferWriter<byte>();
             var span = writer.GetSpan(10);
             new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}.AsSpan().CopyTo(span);
             writer.Advance(10);

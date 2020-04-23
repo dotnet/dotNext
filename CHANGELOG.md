@@ -6,6 +6,7 @@ Release Notes
 * Performance improvements of `BitwiseComparer` and `Intrinsics` classes  
 * Introduced new [MemoryOwner&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryOwner-1.html) value type that unifies working with memory and array pools
 * Path MTU [discovery](https://sakno.github.io/dotNext/api/DotNext.Net.NetworkInformation.MtuDiscovery.html)
+* Pooled buffer writes: [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) and [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html)
 * Updated dependencies
 
 <a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.3.0">DotNext.Metaprogramming 2.3.0</a>
