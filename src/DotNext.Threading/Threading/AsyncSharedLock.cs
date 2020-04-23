@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using static System.Threading.Timeout;
 
 namespace DotNext.Threading
 {
+    using Runtime.CompilerServices;
+
     /// <summary>
     /// Represents a lock that can be acquired in exclusive or weak mode.
     /// </summary>
@@ -25,7 +28,8 @@ namespace DotNext.Threading
             internal StrongLockNode(WaitNode previous) : base(previous) { }
         }
 
-        private sealed class State
+        [StructLayout(LayoutKind.Auto)]
+        private struct State : ILockManager<StrongLockNode>, ILockManager<WaitNode>
         {
             internal readonly long ConcurrencyLevel;
             internal long RemainingLocks;   //-1 means that the lock is acquired in exclusive mode
@@ -35,45 +39,29 @@ namespace DotNext.Threading
             internal long IncrementLocks() => RemainingLocks = RemainingLocks == ExclusiveMode ? ConcurrencyLevel : RemainingLocks + 1L;
 
             internal bool IsEmpty => RemainingLocks == ConcurrencyLevel;
-        }
 
-        private readonly struct StrongLockManager : ILockManager<StrongLockNode>
-        {
-            private readonly State state;
-
-            internal StrongLockManager(State state) => this.state = state;
+            bool ILockManager<StrongLockNode>.TryAcquire()
+            {
+                if (RemainingLocks < ConcurrencyLevel)
+                    return false;
+                RemainingLocks = ExclusiveMode;
+                return true;
+            }
 
             StrongLockNode ILockManager<StrongLockNode>.CreateNode(WaitNode? tail) => tail is null ? new StrongLockNode() : new StrongLockNode(tail);
 
-            public bool TryAcquire()
+            bool ILockManager<WaitNode>.TryAcquire()
             {
-                if (state.RemainingLocks < state.ConcurrencyLevel)
+                if (RemainingLocks <= 0L)
                     return false;
-                state.RemainingLocks = ExclusiveMode;
+                RemainingLocks -= 1L;
                 return true;
             }
-        }
-
-        private readonly struct WeakLockManager : ILockManager<WaitNode>
-        {
-            private readonly State state;
-
-            internal WeakLockManager(State state) => this.state = state;
 
             WaitNode ILockManager<WaitNode>.CreateNode(WaitNode? tail) => tail is null ? new WaitNode() : new WaitNode(tail);
-
-            public bool TryAcquire()
-            {
-                if (state.RemainingLocks <= 0L)
-                    return false;
-                state.RemainingLocks -= 1L;
-                return true;
-            }
         }
 
-        private readonly State state;
-        private WeakLockManager weakLock;
-        private StrongLockManager strongLock;
+        private readonly Box<State> state;
 
         /// <summary>
         /// Initializes a new shared lock.
@@ -84,25 +72,23 @@ namespace DotNext.Threading
         {
             if (concurrencyLevel < 1L)
                 throw new ArgumentOutOfRangeException(nameof(concurrencyLevel));
-            state = new State(concurrencyLevel);
-            weakLock = new WeakLockManager(state);
-            strongLock = new StrongLockManager(state);
+            state = new Box<State>(new State(concurrencyLevel));
         }
 
         /// <summary>
         /// Gets the number of shared locks that can be acquired.
         /// </summary>
-        public long RemainingCount => Math.Max(state.RemainingLocks, 0L);
+        public long RemainingCount => Math.Max(state.Value.RemainingLocks, 0L);
 
         /// <summary>
         /// Gets the maximum number of locks that can be obtained simultaneously.
         /// </summary>
-        public long ConcurrencyLevel => state.ConcurrencyLevel;
+        public long ConcurrencyLevel => state.Value.ConcurrencyLevel;
 
         /// <summary>
         /// Indicates that the lock is acquired in exclusive or shared mode.
         /// </summary>
-        public bool IsLockHeld => state.RemainingLocks < ConcurrencyLevel;
+        public bool IsLockHeld => state.Value.RemainingLocks < ConcurrencyLevel;
 
         /// <summary>
         /// Attempts to obtain lock synchronously without blocking caller thread.
@@ -111,7 +97,7 @@ namespace DotNext.Threading
         /// <returns><see langword="true"/> if the caller entered the lock; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.Synchronized)]
         public bool TryAcquire(bool strongLock)
-            => strongLock ? this.strongLock.TryAcquire() : weakLock.TryAcquire();
+            => strongLock ? TryAcquire<StrongLockNode, State>(ref state.Value) : TryAcquire<WaitNode, State>(ref state.Value);
 
         /// <summary>
         /// Attempts to enter the lock asynchronously, with an optional time-out.
@@ -123,7 +109,7 @@ namespace DotNext.Threading
         /// <exception cref="ArgumentOutOfRangeException">Time-out value is negative.</exception>
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task<bool> TryAcquireAsync(bool strongLock, TimeSpan timeout, CancellationToken token)
-            => strongLock ? WaitAsync(ref this.strongLock, timeout, token) : WaitAsync(ref weakLock, timeout, token);
+            => strongLock ? WaitAsync<StrongLockNode, State>(ref state.Value, timeout, token) : WaitAsync<WaitNode, State>(ref state.Value, timeout, token);
 
         /// <summary>
         /// Attempts to enter the lock asynchronously, with an optional time-out.
@@ -156,9 +142,10 @@ namespace DotNext.Threading
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task AcquireAsync(bool strongLock, CancellationToken token) => TryAcquireAsync(strongLock, InfiniteTimeSpan, token);
 
-        private void ReleasePendingWeakLocks()
+        private void ResumePendingCallers()
         {
-            for (WaitNode? current = head, next; !(current is null || current is StrongLockNode) && state.RemainingLocks > 0L; state.RemainingLocks--, current = next)
+            ref var stateHolder = ref state.Value;
+            for (WaitNode? current = head, next; !(current is null || current is StrongLockNode) && stateHolder.RemainingLocks > 0L; stateHolder.RemainingLocks--, current = next)
             {
                 next = current.Next;
                 RemoveNode(current);
@@ -175,10 +162,11 @@ namespace DotNext.Threading
         public void Downgrade()
         {
             ThrowIfDisposed();
-            if (state.IsEmpty)    //nothing to release
+            ref var stateHolder = ref state.Value;
+            if (stateHolder.IsEmpty)    //nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            state.RemainingLocks = ConcurrencyLevel - 1;
-            ReleasePendingWeakLocks();
+            stateHolder.RemainingLocks = ConcurrencyLevel - 1;
+            ResumePendingCallers();
         }
 
         /// <summary>
@@ -190,16 +178,17 @@ namespace DotNext.Threading
         public void Release()
         {
             ThrowIfDisposed();
-            if (state.IsEmpty)    //nothing to release
+            ref var stateHolder = ref state.Value;
+            if (stateHolder.IsEmpty)    //nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            else if (state.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
+            else if (stateHolder.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
             {
                 RemoveNode(exclusiveNode);
                 exclusiveNode.Complete();
-                state.RemainingLocks = ExclusiveMode;
+                stateHolder.RemainingLocks = ExclusiveMode;
             }
             else
-                ReleasePendingWeakLocks();
+                ResumePendingCallers();
         }
     }
 }

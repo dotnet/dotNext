@@ -2,6 +2,7 @@ variables:
     Solution: src/DotNext.sln
     TestFolder: src/DotNext.Tests
     TestProject: $(TestFolder)/DotNext.Tests.csproj
+    InternetAccess: false
 trigger:
     - master
     - develop
@@ -10,6 +11,13 @@ jobs:
       pool:
         vmImage: windows-2019
       steps:
+        - task: DotNetCoreCLI@2
+          inputs:
+            command: 'restore'
+            projects: '$(Solution)'
+            feedsToUse: 'config'
+            nugetConfigPath: 'NuGet.config'
+            arguments: --configuration Debug
         - task: DotNetCoreCLI@2
           displayName: Test Debug
           inputs:
@@ -24,10 +32,13 @@ jobs:
       pool:
         vmImage: ubuntu-18.04
       steps:
-        - task: UseDotNet@2
+        - task: DotNetCoreCLI@2
           inputs:
-            packageType: 'sdk'
-            version: '3.1.x'
+            command: 'restore'
+            projects: '$(Solution)'
+            feedsToUse: 'config'
+            nugetConfigPath: 'NuGet.config'
+            arguments: --configuration Debug
         - task: DotNetCoreCLI@2
           displayName: Test Debug
           inputs:

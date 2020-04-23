@@ -9,7 +9,7 @@ namespace DotNext.IO
     /// Represents transfer object for value of blittable type.
     /// </summary>
     /// <typeparam name="T">The type of encapsulated value.</typeparam>
-    public class BinaryTransferObject<T> : IDataTransferObject
+    public class BinaryTransferObject<T> : IDataTransferObject, IConvertible<T>
         where T : unmanaged
     {
         /// <summary>
@@ -20,6 +20,8 @@ namespace DotNext.IO
             get;
             set;
         }
+
+        T IConvertible<T>.Convert() => Content;
 
         bool IDataTransferObject.IsReusable => true;
 
@@ -34,7 +36,7 @@ namespace DotNext.IO
     /// <summary>
     /// Represents binary object.
     /// </summary>
-    public class BinaryTransferObject : IDataTransferObject
+    public class BinaryTransferObject : IDataTransferObject, IConvertible<ReadOnlySequence<byte>>
     {
         /// <summary>
         /// Initializes a new binary DTO.
@@ -55,6 +57,8 @@ namespace DotNext.IO
         /// Gets stream representing content.
         /// </summary>
         public ReadOnlySequence<byte> Content { get; }
+
+        ReadOnlySequence<byte> IConvertible<ReadOnlySequence<byte>>.Convert() => Content;
 
         bool IDataTransferObject.IsReusable => true;
 

@@ -51,12 +51,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public int UpperValue { get; }
 
         /// <summary>
-        /// Modifies the boundary of the timeout.
+        /// Updates boundaries of the timeout.
         /// </summary>
         /// <param name="lowerValue">The lower possible value of leader election timeout, in milliseconds.</param>
         /// <param name="upperValue">The upper possible value of leader election timeout, in milliseconds.</param>
         /// <returns>The modified leader election timeout.</returns>
+        [Obsolete("Use ElectionTimeoutExtensions.Set method instead")]
         public ElectionTimeout Modify(int lowerValue, int upperValue)
             => new ElectionTimeout(lowerValue, upperValue, random);
+        
+        internal static void Modify(ref ElectionTimeout timeout, int lowerValue, int upperValue)
+            => timeout = new ElectionTimeout(lowerValue, upperValue);
+    }
+
+    /// <summary>
+    /// Represents extension methods for <see cref="ElectionTimeout"/> value type.
+    /// </summary>
+    public static class ElectionTimeoutExtensions
+    {
+        /// <summary>
+        /// Updates boundaries of the timeout.
+        /// </summary>
+        /// <param name="timeout">The election timeout to update.</param>
+        /// <param name="lowerValue">The lower possible value of leader election timeout, in milliseconds.</param>
+        /// <param name="upperValue">The upper possible value of leader election timeout, in milliseconds.</param>
+        public static void Update(this ref ElectionTimeout timeout, int? lowerValue, int? upperValue)
+            => ElectionTimeout.Modify(ref timeout, lowerValue ?? timeout.LowerValue, upperValue ?? timeout.UpperValue);
     }
 }

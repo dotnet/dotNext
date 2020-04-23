@@ -48,9 +48,9 @@ namespace DotNext
         }
 
         [Benchmark]
-        public void ToHexUsingBitConverter() => BitConverter.ToString(Bytes.Value);
+        public string ToHexUsingBitConverter() => BitConverter.ToString(Bytes.Value);
 
         [Benchmark]
-        public void ToHexUsingSpanConverter() => Span.ToHex(Bytes.Value);
+        public string ToHexUsingSpanConverter() => Span.ToHex(Bytes.Value);
     }
 }

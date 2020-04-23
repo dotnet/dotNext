@@ -10,7 +10,7 @@ namespace DotNext.Buffers
     /// </summary>
     /// <typeparam name="T">Type of array elements.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ArrayRental<T> : IDisposable
+    public readonly struct ArrayRental<T> : IMemoryOwner<T>, IConvertible<Memory<T>>, IConvertible<ArraySegment<T>>, IConvertible<MemoryOwner<T>>
     {
         private readonly ArrayPool<T>? pool;
         private readonly T[] array;
@@ -81,6 +81,8 @@ namespace DotNext.Buffers
         /// </summary>
         public Memory<T> Memory => array is null ? default : new Memory<T>(array, 0, Length);
 
+        Memory<T> IConvertible<Memory<T>>.Convert() => Memory;
+
         /// <summary>
         /// Gets the span of array elements.
         /// </summary>
@@ -90,6 +92,15 @@ namespace DotNext.Buffers
         /// Gets the rented array.
         /// </summary>
         public ArraySegment<T> Segment => array is null ? ArraySegment<T>.Empty : new ArraySegment<T>(array, 0, Length);
+
+        ArraySegment<T> IConvertible<ArraySegment<T>>.Convert() => Segment;
+
+        /// <summary>
+        /// Converts this instance to <see cref="MemoryOwner{T}"/>.
+        /// </summary>
+        public MemoryOwner<T> Owner => array is null ? default : new MemoryOwner<T>(pool, array, Length);
+
+        MemoryOwner<T> IConvertible<MemoryOwner<T>>.Convert() => Owner;
 
         /// <summary>
         /// Gets the array element by its index.
@@ -119,6 +130,13 @@ namespace DotNext.Buffers
         /// </summary>
         /// <returns>The textual representation of the rented memory.</returns>
         public override string ToString() => Memory.ToString();
+
+        /// <summary>
+        /// Converts rented array to the memory owner.
+        /// </summary>
+        /// <param name="array">The rented array.</param>
+        /// <returns>The array owner.</returns>
+        public static implicit operator MemoryOwner<T>(in ArrayRental<T> array) => array.Owner;
 
         /// <summary>
         /// Returns the array back to the pool.

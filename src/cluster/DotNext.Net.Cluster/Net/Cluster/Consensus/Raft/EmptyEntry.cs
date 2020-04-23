@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
     using IO;
     using IO.Log;
-    using System.Threading;
-    using System.Threading.Tasks;
 
     /// <summary>
     /// Represents No-OP entry.

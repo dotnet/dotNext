@@ -533,6 +533,22 @@ namespace DotNext.IO
         }
 
         /// <summary>
+        /// Reads exact number of bytes.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
+        /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+        public static void ReadBytes(this Stream stream, Span<byte> output)
+        {
+            for (int size = output.Length, bytesRead, offset = 0; size > 0; size -= bytesRead, offset += bytesRead)
+            {
+                bytesRead = stream.Read(output.Slice(offset, size));
+                if (bytesRead == 0)
+                    throw new EndOfStreamException();
+            }
+        }
+
+        /// <summary>
         /// Deserializes the value type from the stream.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
@@ -543,7 +559,26 @@ namespace DotNext.IO
             where T : unmanaged
         {
             var result = default(T);
-            return stream.Read(Span.AsBytes(ref result)) == sizeof(T) ? result : throw new EndOfStreamException();
+            stream.ReadBytes(Span.AsBytes(ref result));
+            return result;
+        }
+
+        /// <summary>
+        /// Reads exact number of bytes asynchronously.
+        /// </summary>
+        /// <param name="stream">The stream to read from.</param>
+        /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        public static async ValueTask ReadBytesAsync(this Stream stream, Memory<byte> output, CancellationToken token = default)
+        {
+            for (int size = output.Length, bytesRead, offset = 0; size > 0; size -= bytesRead, offset += bytesRead)
+            {
+                bytesRead = await stream.ReadAsync(output.Slice(offset, size), token).ConfigureAwait(false);
+                if (bytesRead == 0)
+                    throw new EndOfStreamException();
+            }
         }
 
         /// <summary>
@@ -555,11 +590,12 @@ namespace DotNext.IO
         /// <typeparam name="T">The value type to be deserialized.</typeparam>
         /// <returns>The value deserialized from the stream.</returns>
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<T> ReadAsync<T>(this Stream stream, Memory<byte> buffer, CancellationToken token = default)
             where T : unmanaged
         {
-            var bytesRead = await stream.ReadAsync(buffer.Slice(0, Unsafe.SizeOf<T>()), token).ConfigureAwait(false);
-            return bytesRead == Unsafe.SizeOf<T>() ? MemoryMarshal.Read<T>(buffer.Span) : throw new EndOfStreamException();
+            await stream.ReadBytesAsync(buffer.Slice(0, Unsafe.SizeOf<T>()), token).ConfigureAwait(false);
+            return MemoryMarshal.Read<T>(buffer.Span);
         }
 
         /// <summary>
@@ -570,11 +606,13 @@ namespace DotNext.IO
         /// <typeparam name="T">The value type to be deserialized.</typeparam>
         /// <returns>The value deserialized from the stream.</returns>
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask<T> ReadAsync<T>(this Stream stream, CancellationToken token = default)
             where T : unmanaged
         {
             using var buffer = new ArrayRental<byte>(Unsafe.SizeOf<T>());
-            return await ReadAsync<T>(stream, buffer.Memory, token);
+            await stream.ReadBytesAsync(buffer.Memory, token).ConfigureAwait(false);
+            return MemoryMarshal.Read<T>(buffer.Span);
         }
 
         /// <summary>

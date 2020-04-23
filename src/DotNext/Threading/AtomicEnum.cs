@@ -5,8 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using static InlineIL.IL;
-using MR = InlineIL.MethodRef;
-using TR = InlineIL.TypeRef;
+using static InlineIL.MethodRef;
+using static InlineIL.TypeRef;
 using Var = InlineIL.LocalVar;
 
 namespace DotNext.Threading
@@ -36,19 +36,19 @@ namespace DotNext.Threading
             const string nonFastPath = "nonFastPath";
             DeclareLocals(false, new Var(resultVar, typeof(long)));
             Push(ref value);
-            Emit.Sizeof(typeof(E));
+            Emit.Sizeof<E>();
             Emit.Ldc_I4_8();
             Emit.Beq(nonFastPath);
             //fast path - use volatile read instruction
             Emit.Volatile();
-            Emit.Ldobj(typeof(E));
+            Emit.Ldobj<E>();
             Emit.Ret();
             //non-fast path - use Volatile class
             MarkLabel(nonFastPath);
-            Emit.Call(new MR(typeof(Volatile), nameof(Volatile.Read), new TR(typeof(long)).MakeByRefType()));
+            Emit.Call(Method(typeof(Volatile), nameof(Volatile.Read), Type<long>().MakeByRefType()));
             Emit.Stloc(resultVar);
             Emit.Ldloca(resultVar);
-            Emit.Ldobj(typeof(E));
+            Emit.Ldobj<E>();
             return Return<E>();
         }
 
@@ -69,19 +69,19 @@ namespace DotNext.Threading
         {
             const string nonFastPath = "nonFastPath";
             Push(ref value);
-            Emit.Sizeof(typeof(E));
+            Emit.Sizeof<E>();
             Emit.Ldc_I4_8();
             Emit.Beq(nonFastPath);
             //fast path - use volatile write instruction
             Push(newValue);
             Emit.Volatile();
-            Emit.Stobj(typeof(E));
+            Emit.Stobj<E>();
             Emit.Ret();
             //non-fast path - use Volatile class
             MarkLabel(nonFastPath);
             Push(ref newValue);
             Emit.Ldind_I8();
-            Emit.Call(new MR(typeof(Volatile), nameof(Volatile.Write), new TR(typeof(long)).MakeByRefType(), typeof(long)));
+            Emit.Call(Method(typeof(Volatile), nameof(Volatile.Write), Type<long>().MakeByRefType(), typeof(long)));
             Emit.Ret();
         }
     }

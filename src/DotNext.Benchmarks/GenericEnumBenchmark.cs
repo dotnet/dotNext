@@ -27,39 +27,21 @@ namespace DotNext
         }
 
         [Benchmark]
-        public void ToInt32UsingConstrainedCall()
-        {
-            ToInt32(EnvironmentVariableTarget.Machine);
-        }
+        public int ToInt32UsingConstrainedCall() => ToInt32(EnvironmentVariableTarget.Machine);
 
         [Benchmark]
-        public void ToInt64UsingConstrainedCall()
-        {
-            ToInt64(EnvironmentVariableTarget.Machine);
-        }
+        public long ToInt64UsingConstrainedCall() => ToInt64(EnvironmentVariableTarget.Machine);
 
         [Benchmark]
-        public void ToInt32UsingGenericConverter()
-        {
-            EnvironmentVariableTarget.Machine.ToInt32();
-        }
+        public int ToInt32UsingGenericConverter() => EnvironmentVariableTarget.Machine.ToInt32();
 
         [Benchmark]
-        public void ToInt64UsingGenericConverter()
-        {
-            EnvironmentVariableTarget.Machine.ToInt64();
-        }
+        public long ToInt64UsingGenericConverter() => EnvironmentVariableTarget.Machine.ToInt64();
 
         [Benchmark]
-        public void ToEnumUsingBitcast()
-        {
-            ToEnum<EnvironmentVariableTarget>(2);
-        }
+        public EnvironmentVariableTarget ToEnumUsingBitcast() => ToEnum<EnvironmentVariableTarget>(2);
 
         [Benchmark]
-        public void ToEnumUsingGenericConverter()
-        {
-            2.ToEnum<EnvironmentVariableTarget>();
-        }
+        public EnvironmentVariableTarget ToEnumUsingGenericConverter() => 2.ToEnum<EnvironmentVariableTarget>();
     }
 }

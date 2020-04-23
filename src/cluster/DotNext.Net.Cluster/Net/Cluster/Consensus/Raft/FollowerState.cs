@@ -21,23 +21,30 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             trackerCancellation = new CancellationTokenSource();
         }
 
-        private static async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, Action candidateState, CancellationToken token)
+        private static async Task Track(TimeSpan timeout, IAsyncEvent refreshEvent, Action candidateState, params CancellationToken[] tokens)
         {
+            using var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(tokens);
             //spin loop to wait for the timeout
-            while (await refreshEvent.WaitAsync(timeout, token).ConfigureAwait(false)) { }
+            while (await refreshEvent.WaitAsync(timeout, tokenSource.Token).ConfigureAwait(false)) { }
             //timeout happened, move to candidate state
             candidateState();
         }
 
-        internal FollowerState StartServing(TimeSpan timeout)
+        internal FollowerState StartServing(TimeSpan timeout, CancellationToken token)
         {
-            tracker = Track(timeout, refreshEvent, stateMachine.MoveToCandidateState, trackerCancellation.Token);
+            if (token.IsCancellationRequested)
+            {
+                trackerCancellation.Cancel(false);
+                tracker = null;
+            }
+            else
+                tracker = Track(timeout, refreshEvent, stateMachine.MoveToCandidateState, trackerCancellation.Token, token);
             return this;
         }
 
         internal override Task StopAsync()
         {
-            trackerCancellation.Cancel();
+            trackerCancellation.Cancel(false);
             return tracker?.OnCompleted() ?? Task.CompletedTask;
         }
 

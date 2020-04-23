@@ -33,12 +33,22 @@ namespace DotNext
 
         internal static string NoAvailableReadSessions => Resources.GetString("NoAvailableReadSessions");
 
-        internal static string LockConflict => Resources.GetString("LockConflict");
-
-        internal static string LockNameIsEmpty => Resources.GetString("LockNameIsEmpty");
-
         internal static string InvalidLockToken => Resources.GetString("InvalidLockToken");
 
         internal static string UnsupportedAddressFamily => Resources.GetString("UnsupportedAddressFamily");
+
+        internal static string NotEnoughSenders => Resources.GetString("NotEnoughSenders");
+
+        internal static string DuplicateCorrelationId => Resources.GetString("DuplicateCorrelationId");
+
+        internal static string UnexpectedUdpSenderBehavior => Resources.GetString("UnexpectedUdpSenderBehavior");
+
+        internal static string ExchangeCompleted => Resources.GetString("ExchangeCompleted");
+
+        internal static string CanceledByRemoteHost => Resources.GetString("CanceledByRemoteHost");
+
+        internal static string UnavailableMember => Resources.GetString("UnavailableMember");
+
+        internal static string UnresolvedLocalMember => Resources.GetString("UnresolvedLocalMember");
     }
 }

@@ -1,6 +1,41 @@
 Release Notes
 ====
 
+# 04-23-2020
+<a href="https://www.nuget.org/packages/dotnext/2.3.0">DotNext 2.3.0</a>
+* Performance improvements of `BitwiseComparer` and `Intrinsics` classes  
+* Introduced new [MemoryOwner&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.MemoryOwner-1.html) value type that unifies working with memory and array pools
+* Path MTU [discovery](https://sakno.github.io/dotNext/api/DotNext.Net.NetworkInformation.MtuDiscovery.html)
+* Pooled buffer writes: [PooledBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledBufferWriter-1.html) and [PooledArrayBufferWriter&lt;T&gt;](https://sakno.github.io/dotNext/api/DotNext.Buffers.PooledArrayBufferWriter-1.html)
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.3.0">DotNext.Metaprogramming 2.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.3.0">DotNext.Unsafe 2.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.io/2.3.0">DotNext.IO 2.3.0</a>
+* Fixed bugs that lead to unexpected EndOfStreamException in some methods of `StreamExtensions` class
+* Introduced new methods in `StreamExtensions` class for reading data of exact size
+
+<a href="https://www.nuget.org/packages/dotnext.threading/2.3.0">DotNext.Threading 2.3.0</a>
+* Improved performance of existing asynchronous locks
+* Added [AsyncTrigger](https://sakno.github.io/dotNext/api/DotNext.Threading.AsyncTrigger.html) synchronization primitive
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.3.0">DotNext.Reflection 2.3.0</a>
+* Updated dependencies
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.3.0">DotNext.Net.Cluster 2.3.0</a>
+* TCP transport for Raft
+* UDP transport for Raft
+* Fixed bug in [PersistentState](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.PersistentState.html) class that leads to incorrect usage of rented memory and unexpected result during replication between nodes
+* Methods for handling Raft messages inside of [RaftCluster&lt;TMember&gt;](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster-1.html) class now support cancellation via token
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.3.0">DotNext.AspNetCore.Cluster 2.3.0</a>
+* Updated dependencies
+* Fixed cancellation of asynchronous operations
+
 # 03-08-2020
 <a href="https://www.nuget.org/packages/dotnext/2.2.0">DotNext 2.2.0</a>
 * Ability to slice lists using range syntax and new `ListSegment` data type

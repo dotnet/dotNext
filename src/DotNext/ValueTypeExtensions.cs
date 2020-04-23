@@ -116,6 +116,19 @@ namespace DotNext
         }
 
         /// <summary>
+        /// Converts <see cref="bool"/> into <see cref="byte"/>.
+        /// </summary>
+        /// <param name="value">The value to convert.</param>
+        /// <returns><see cref="byte"/> representation of <paramref name="value"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static byte ToByte(this bool value)
+        {
+            Push(value);
+            Conv_U1();
+            return Return<byte>();
+        }
+
+        /// <summary>
         /// Converts <see cref="int"/> into <see cref="bool"/>.
         /// </summary>
         /// <param name="value">The value to convert.</param>

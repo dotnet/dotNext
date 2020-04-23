@@ -1,18 +1,19 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Collections.Generic
 {
     [StructLayout(LayoutKind.Auto)]
-    internal readonly struct Enumerable<T, TList>
+    internal struct Enumerable<T, TList> : IEnumerable<T>
         where TList : IReadOnlyList<T>
     {
         [StructLayout(LayoutKind.Auto)]
-        internal struct Enumerator
+        internal struct Enumerator : IEnumerator<T>
         {
             private const int InitialIndex = -1;
             private int index;
-            private readonly TList list;
+            private TList list;
 
             internal Enumerator(TList list)
             {
@@ -22,15 +23,25 @@ namespace DotNext.Collections.Generic
 
             public bool MoveNext() => ++index < list.Count;
 
-            public T Current => list[index];
+            public readonly T Current => list[index];
+
+            readonly object? IEnumerator.Current => Current;
+
+            void IEnumerator.Reset() => index = InitialIndex;
+
+            public void Dispose() => this = default;
         }
 
-        private readonly TList list;
+        private TList list;
 
-        internal Enumerable(TList list) => this.list = list;
+        internal Enumerable(in TList list) => this.list = list;
 
-        internal int Count => list.Count;
+        internal readonly int Count => list.Count;
 
-        public Enumerator GetEnumerator() => new Enumerator(list);
+        public readonly Enumerator GetEnumerator() => new Enumerator(list);
+
+        readonly IEnumerator<T> IEnumerable<T>.GetEnumerator() => GetEnumerator();
+
+        readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

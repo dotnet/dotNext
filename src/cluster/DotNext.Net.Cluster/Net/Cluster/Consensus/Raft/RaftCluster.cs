@@ -1,8 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -27,28 +27,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal interface IMemberCollection : ICollection<TMember>, IReadOnlyCollection<TMember>
         {
-
         }
 
-        private sealed class EmptyMemberCollection : IMemberCollection
+        private sealed class EmptyMemberCollection : ReadOnlyCollection<TMember>, IMemberCollection
         {
-            public int Count => 0;
-
-            void ICollection<TMember>.Add(TMember member) => throw new NotSupportedException();
-
-            void ICollection<TMember>.Clear() { }
-
-            bool ICollection<TMember>.Contains(TMember member) => false;
-
-            bool ICollection<TMember>.Remove(TMember member) => false;
-
-            bool ICollection<TMember>.IsReadOnly => true;
-
-            void ICollection<TMember>.CopyTo(TMember[] array, int arrayIndex) { }
-
-            public IEnumerator<TMember> GetEnumerator() => Enumerable.Empty<TMember>().GetEnumerator();
-
-            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+            internal EmptyMemberCollection()
+                : base(Array.Empty<TMember>())
+            {
+            }
         }
 
         private sealed class MemberCollection : LinkedList<TMember>, IMemberCollection
@@ -72,7 +58,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             private readonly LinkedListNode<TMember> node;
 
-            internal MemberHolder(LinkedListNode<TMember> node) => this.node = node;
+            internal MemberHolder(LinkedListNode<TMember> node)
+                => this.node = node;
 
             /// <summary>
             /// Gets actual cluster member.
@@ -151,7 +138,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
             private readonly MemberCollection members;
 
-            internal MemberCollectionBuilder(IEnumerable<TMember> members) => this.members = new MemberCollection(members);
+            internal MemberCollectionBuilder(IEnumerable<TMember> members)
+                => this.members = new MemberCollection(members);
 
             internal MemberCollectionBuilder(out IMemberCollection members)
                 => members = this.members = new MemberCollection();
@@ -176,7 +164,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
         protected delegate void MemberCollectionMutator(MemberCollectionBuilder members);
-
 
         private volatile IMemberCollection members;
 
@@ -253,13 +240,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// Modifies collection of cluster members.
         /// </summary>
         /// <param name="mutator">The action that can be used to change set of cluster members.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
         /// <returns>The task representing asynchronous execution of this method.</returns>
-        protected async Task ChangeMembersAsync(MemberCollectionMutator mutator)
+        protected async Task ChangeMembersAsync(MemberCollectionMutator mutator, CancellationToken token)
         {
-            using var holder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false);
-            if (holder)
-                ChangeMembers(mutator);
+            var tokenSource = token.LinkTo(Token);
+            var transitionLock = await transitionSync.TryAcquireAsync(token).ConfigureAwait(false);
+            try
+            {
+                if (transitionLock)
+                    ChangeMembers(mutator);
+            }
+            finally
+            {
+                transitionLock.Dispose();
+                tokenSource?.Dispose();
+            }
         }
+
+        /// <summary>
+        /// Modifies collection of cluster members.
+        /// </summary>
+        /// <param name="mutator">The action that can be used to change set of cluster members.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
+        protected Task ChangeMembersAsync(MemberCollectionMutator mutator)
+            => ChangeMembersAsync(mutator, CancellationToken.None);
 
         /// <summary>
         /// Gets members of Raft-based cluster.
@@ -315,7 +320,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             await auditTrail.InitializeAsync(token).ConfigureAwait(false);
             //start node in Follower state
-            state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+            state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
         }
 
         /// <summary>
@@ -357,14 +362,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 case LeaderState leaderState:
                     var newState = new FollowerState(this) { Metrics = Metrics };
                     await leaderState.StopAsync().ConfigureAwait(false);
-                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
                     leaderState.Dispose();
                     Metrics?.MovedToFollowerState();
                     break;
                 case CandidateState candidateState:
                     newState = new FollowerState(this) { Metrics = Metrics };
                     await candidateState.StopAsync().ConfigureAwait(false);
-                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+                    state = newState.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
                     candidateState.Dispose();
                     Metrics?.MovedToFollowerState();
                     break;
@@ -375,10 +380,58 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Finds cluster member using predicate.
         /// </summary>
-        /// <param name="matcher">The predicate used to find appropriate member.</param>
+        /// <param name="criteria">The predicate used to find appropriate member.</param>
+        /// <returns>The cluster member; or <see langword="null"/> if there is not member matching to the specified criteria.</returns>
+        protected TMember? FindMember(Predicate<TMember> criteria)
+            => members.FirstOrDefault(criteria.AsFunc());
+
+        /// <summary>
+        /// Finds cluster member using predicate.
+        /// </summary>
+        /// <param name="criteria">The predicate used to find appropriate member.</param>
+        /// <param name="arg">The argument to be passed to the matching function.</param>
         /// <returns>The cluster member; </returns>
-        protected TMember? FindMember(Predicate<TMember> matcher)
-            => members.FirstOrDefault(matcher.AsFunc());
+        protected TMember? FindMember<TArg>(Func<TMember, TArg, bool> criteria, TArg arg)
+        {
+            foreach (var member in members)
+                if (criteria(member, arg))
+                    return member;
+            return null;
+        }
+
+        /// <summary>
+        /// Handles InstallSnapshot message received from remote cluster member.
+        /// </summary>
+        /// <param name="sender">The sender of the snapshot message.</param>
+        /// <param name="senderTerm">Term value provided by InstallSnapshot message sender.</param>
+        /// <param name="snapshot">The snapshot to be installed into local audit trail.</param>
+        /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
+        protected async Task<Result<bool>> ReceiveSnapshotAsync<TSnapshot>(TMember sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
+            where TSnapshot : IRaftLogEntry
+        {
+            var tokenSource = token.LinkTo(Token);
+            var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+            try
+            {
+                var currentTerm = auditTrail.Term;
+                if (snapshot.IsSnapshot && senderTerm >= currentTerm && snapshotIndex > auditTrail.GetLastIndex(true))
+                {
+                    await StepDown(senderTerm).ConfigureAwait(false);
+                    Leader = sender;
+                    await auditTrail.AppendAsync(snapshot, snapshotIndex).ConfigureAwait(false);
+                    return new Result<bool>(currentTerm, true);
+                }
+                else
+                    return new Result<bool>(currentTerm, false);
+            }
+            finally
+            {
+                transitionLock.Dispose();
+                tokenSource?.Dispose();
+            }
+        }
 
         /// <summary>
         /// Handles InstallSnapshot message received from remote cluster member.
@@ -388,18 +441,55 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="snapshot">The snapshot to be installed into local audit trail.</param>
         /// <param name="snapshotIndex">The index of the last log entry included in the snapshot.</param>
         /// <returns><see langword="true"/> if snapshot is installed successfully; <see langword="false"/> if snapshot is outdated.</returns>
-        protected async Task<Result<bool>> ReceiveSnapshot(TMember sender, long senderTerm, IRaftLogEntry snapshot, long snapshotIndex)
+        [Obsolete("Use ReceiveSnapshotAsync method instead")]
+        protected Task<Result<bool>> ReceiveSnapshot(TMember sender, long senderTerm, IRaftLogEntry snapshot, long snapshotIndex)
+            => ReceiveSnapshotAsync(sender, senderTerm, snapshot, snapshotIndex, CancellationToken.None);
+
+        /// <summary>
+        /// Handles AppendEntries message received from remote cluster member.
+        /// </summary>
+        /// <typeparam name="TEntry">The actual type of the log entry returned by the supplier.</typeparam>
+        /// <param name="sender">The sender of the replica message.</param>
+        /// <param name="senderTerm">Term value provided by Heartbeat message sender.</param>
+        /// <param name="entries">The stateful function that provides entries to be committed locally.</param>
+        /// <param name="prevLogIndex">Index of log entry immediately preceding new ones.</param>
+        /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
+        /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
+        protected async Task<Result<bool>> ReceiveEntriesAsync<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
+            where TEntry : IRaftLogEntry
         {
-            using (await transitionSync.AcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
-                if (snapshot.IsSnapshot && senderTerm >= auditTrail.Term && snapshotIndex > auditTrail.GetLastIndex(true))
+            var tokenSource = token.LinkTo(Token);
+            var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+            try
+            {
+                var result = false;
+                var currentTerm = auditTrail.Term;
+                if (currentTerm <= senderTerm)
                 {
                     await StepDown(senderTerm).ConfigureAwait(false);
                     Leader = sender;
-                    await auditTrail.AppendAsync(snapshot, snapshotIndex).ConfigureAwait(false);
-                    return new Result<bool>(auditTrail.Term, true);
+                    if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, token).ConfigureAwait(false))
+                    {
+                        /*
+                        * AppendAsync is called with skipCommitted=true because HTTP response from the previous
+                        * replication might fail but the log entry was committed by the local node.
+                        * In this case the leader repeat its replication from the same prevLogIndex which is already committed locally.
+                        * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
+                        * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
+                        */
+                        await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, token).ConfigureAwait(false);
+                        result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0;
+                    }
                 }
-                else
-                    return new Result<bool>(auditTrail.Term, false);
+                return new Result<bool>(currentTerm, result);
+            }
+            finally
+            {
+                transitionLock.Dispose();
+                tokenSource?.Dispose();
+            }
         }
 
         /// <summary>
@@ -413,30 +503,50 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="prevLogTerm">Term of <paramref name="prevLogIndex"/> entry.</param>
         /// <param name="commitIndex">The last entry known to be committed on the sender side.</param>
         /// <returns><see langword="true"/> if log entry is committed successfully; <see langword="false"/> if preceding is not present in local audit trail.</returns>
-        protected async Task<Result<bool>> ReceiveEntries<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
+        [Obsolete("Use ReceiveEntriesAsync method instead")]
+        protected Task<Result<bool>> ReceiveEntries<TEntry>(TMember sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex)
             where TEntry : IRaftLogEntry
+            => ReceiveEntriesAsync(sender, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, CancellationToken.None);
+
+        /// <summary>
+        /// Votes for the new candidate.
+        /// </summary>
+        /// <param name="sender">The vote sender.</param>
+        /// <param name="senderTerm">Term value provided by sender of the request.</param>
+        /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
+        /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
+        protected async Task<Result<bool>> ReceiveVoteAsync(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
-            using (await transitionSync.AcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
+            var tokenSource = token.LinkTo(Token);
+            var transitionLock = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+            try
             {
-                var result = false;
-                if (auditTrail.Term <= senderTerm)
+                var currentTerm = auditTrail.Term;
+                if (currentTerm > senderTerm) //currentTerm > term
+                    goto reject;
+                if (currentTerm < senderTerm)
                 {
+                    Leader = null;
                     await StepDown(senderTerm).ConfigureAwait(false);
-                    Leader = sender;
-                    if (await auditTrail.ContainsAsync(prevLogIndex, prevLogTerm, transitionCancellation.Token).ConfigureAwait(false))
-                    {
-                        /*
-                        * AppendAsync is called with skipCommitted=true because HTTP response from the previous
-                        * replication might fail but the log entry was committed by the local node.
-                        * In this case the leader repeat its replication from the same prevLogIndex which is already committed locally.
-                        * skipCommitted=true allows to skip the passed committed entry and append uncommitted entries.
-                        * If it is 'false' then the method will throw the exception and the node becomes unavailable in each replication cycle.
-                        */
-                        await auditTrail.AppendAsync(entries, prevLogIndex + 1L, true, transitionCancellation.Token).ConfigureAwait(false);
-                        result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, transitionCancellation.Token).ConfigureAwait(false) > 0;
-                    }
                 }
-                return new Result<bool>(auditTrail.Term, result);
+                else if (state is FollowerState follower)
+                    follower.Refresh();
+                else
+                    goto reject;
+                if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
+                {
+                    await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
+                    return new Result<bool>(currentTerm, true);
+                }
+                reject:
+                return new Result<bool>(currentTerm, false);
+            }
+            finally
+            {
+                transitionLock.Dispose();
+                tokenSource?.Dispose();
             }
         }
 
@@ -448,78 +558,72 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="lastLogIndex">Index of candidate's last log entry.</param>
         /// <param name="lastLogTerm">Term of candidate's last log entry.</param>
         /// <returns><see langword="true"/> if local node accepts new leader in the cluster; otherwise, <see langword="false"/>.</returns>
-        protected async Task<Result<bool>> ReceiveVote(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm)
-        {
-            using (await transitionSync.AcquireAsync(transitionCancellation.Token).ConfigureAwait(false))
-            {
-                if (auditTrail.Term > senderTerm) //currentTerm > term
-                    goto reject;
-                if (auditTrail.Term < senderTerm)
-                {
-                    Leader = null;
-                    await StepDown(senderTerm).ConfigureAwait(false);
-                }
-                else if (state is FollowerState follower)
-                    follower.Refresh();
-                else
-                    goto reject;
-                if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, transitionCancellation.Token).ConfigureAwait(false))
-                {
-                    await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
-                    return new Result<bool>(auditTrail.Term, true);
-                }
-                reject:
-                return new Result<bool>(auditTrail.Term, false);
-            }
-        }
+        [Obsolete("Use ReceiveVoteAsync method instead")]
+        protected Task<Result<bool>> ReceiveVote(TMember sender, long senderTerm, long lastLogIndex, long lastLogTerm)
+            => ReceiveVoteAsync(sender, senderTerm, lastLogIndex, lastLogTerm, CancellationToken.None);
 
-        private async Task<bool> ResignAsync(CancellationToken token)
+        /// <summary>
+        /// Revokes leadership of the local node.
+        /// </summary>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
+        protected async Task<bool> ReceiveResignAsync(CancellationToken token)
         {
-            using (await transitionSync.AcquireAsync(token).ConfigureAwait(false))
+            var lockHolder = await transitionSync.AcquireAsync(token).ConfigureAwait(false);
+            var tokenSource = token.LinkTo(Token);
+            try
+            {
                 if (state is LeaderState leaderState)
                 {
                     await leaderState.StopAsync().ConfigureAwait(false);
-                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout));
+                    state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout), token);
                     leaderState.Dispose();
                     Leader = null;
                     return true;
                 }
                 else
                     return false;
+            }
+            finally
+            {
+                tokenSource?.Dispose();
+                lockHolder.Dispose();
+            }
         }
 
         async Task<bool> ICluster.ResignAsync(CancellationToken token)
         {
-            using (var tokenSource = CancellationTokenSource.CreateLinkedTokenSource(token, transitionCancellation.Token))
-                if (await ResignAsync(tokenSource.Token).ConfigureAwait(false))
-                {
-                    var leader = Leader;
-                    return !(leader is null) && await leader.ResignAsync(tokenSource.Token).ConfigureAwait(false);
-                }
-            return false;
+            if (await ReceiveResignAsync(token).ConfigureAwait(false))
+                return true;
+            else
+            {
+                var leader = Leader;
+                return !(leader is null) && await leader.ResignAsync(token).ConfigureAwait(false);
+            }
         }
 
         /// <summary>
         /// Revokes leadership of the local node.
         /// </summary>
         /// <returns><see langword="true"/>, if leadership is revoked successfully; otherwise, <see langword="false"/>.</returns>
-        protected Task<bool> ReceiveResign() => ResignAsync(transitionCancellation.Token);
+        [Obsolete("Use ReceiveResignAsync method instead")]
+        protected Task<bool> ReceiveResign() => ReceiveResignAsync(CancellationToken.None);
 
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
-            using var lockHolder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
             if (lockHolder)
             {
                 if (randomizeTimeout)
                     electionTimeout = electionTimeoutProvider.RandomTimeout();
-                await (newTerm.HasValue ? StepDown(newTerm.Value) : StepDown()).ConfigureAwait(false);
+                await (newTerm.HasValue ? StepDown(newTerm.GetValueOrDefault()) : StepDown()).ConfigureAwait(false);
             }
         }
 
         async void IRaftStateMachine.MoveToCandidateState()
         {
             Logger.TransitionToCandidateStateStarted();
-            using var lockHolder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false);
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
             if (lockHolder && state is FollowerState followerState)
             {
                 followerState.Dispose();
@@ -536,14 +640,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
             Logger.TransitionToLeaderStateStarted();
-            using var lockHolder = await transitionSync.TryAcquireAsync(transitionCancellation.Token).ConfigureAwait(false);
-            if (lockHolder && state is CandidateState candidateState && candidateState.Term == auditTrail.Term)
+            using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
+            long currentTerm;
+            if (lockHolder && state is CandidateState candidateState && candidateState.Term == (currentTerm = auditTrail.Term))
             {
                 candidateState.Dispose();
                 Leader = newLeader as TMember;
-                state = new LeaderState(this, allowPartitioning, auditTrail.Term) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
-                    auditTrail);
-                await auditTrail.AppendNoOpEntry(transitionCancellation.Token);
+                state = new LeaderState(this, allowPartitioning, currentTerm) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
+                    auditTrail, Token);
+                await auditTrail.AppendNoOpEntry(Token);
                 Metrics?.MovedToLeaderState();
                 Logger.TransitionToLeaderStateCompleted();
             }

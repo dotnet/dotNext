@@ -31,9 +31,10 @@ namespace DotNext
             where A : struct
         {
             private readonly Procedure<T, A> procedure;
+            [NotNull]
             private readonly T target;
 
-            internal Closure(Procedure<T, A> procedure, T target)
+            internal Closure(Procedure<T, A> procedure, [DisallowNull]T target)
             {
                 this.procedure = procedure;
                 this.target = target;

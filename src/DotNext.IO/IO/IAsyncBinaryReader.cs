@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace DotNext.IO
 {
+    using static Buffers.BufferReader;
     using DecodingContext = Text.DecodingContext;
 
     /// <summary>
@@ -30,6 +31,51 @@ namespace DotNext.IO
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
         ValueTask<T> ReadAsync<T>(CancellationToken token = default) where T : unmanaged;
+
+        /// <summary>
+        /// Decodes 64-bit signed integer using the specified endianness.
+        /// </summary>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<long> ReadInt64Async(bool littleEndian, CancellationToken token = default)
+        {
+            var result = await ReadAsync<long>(token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes 32-bit signed integer using the specified endianness.
+        /// </summary>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>        
+        async ValueTask<int> ReadInt32Async(bool littleEndian, CancellationToken token = default)
+        {
+            var result = await ReadAsync<int>(token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
+
+        /// <summary>
+        /// Decodes 16-bit signed integer using the specified endianness.
+        /// </summary>
+        /// <param name="littleEndian"><see langword="true"/> if value is stored in the underlying binary stream as little-endian; otherwise, use big-endian.</param>
+        /// <param name="token">The token that can be used to cancel the operation.</param>
+        /// <returns>The decoded value.</returns>
+        /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
+        /// <exception cref="EndOfStreamException">The underlying source doesn't contain necessary amount of bytes to decode the value.</exception>
+        async ValueTask<short> ReadInt16Async(bool littleEndian, CancellationToken token = default)
+        {
+            var result = await ReadAsync<short>(token).ConfigureAwait(false);
+            result.ReverseIfNeeded(littleEndian);
+            return result;
+        }
 
         /// <summary>
         /// Reads the block of bytes.

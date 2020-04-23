@@ -7,7 +7,7 @@ namespace DotNext.IO.MemoryMappedFiles
 {
     using Runtime.InteropServices;
 
-    internal unsafe sealed class MappedMemoryOwner : MemoryManager<byte>, IMappedMemoryOwner
+    internal sealed unsafe class MappedMemoryOwner : MemoryManager<byte>, IMappedMemoryOwner
     {
         private readonly MemoryMappedViewAccessor accessor;
         private readonly int length;

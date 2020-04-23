@@ -3,9 +3,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Threading;
+using static InlineIL.FieldRef;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
-using F = InlineIL.FieldRef;
+using static InlineIL.TypeRef;
 
 namespace DotNext.Threading
 {
@@ -42,7 +43,7 @@ namespace DotNext.Threading
             {
                 Ldarg_0();
                 Volatile();
-                Ldfld(new F(typeof(AtomicBoolean), nameof(value)));
+                Ldfld(Field(Type<AtomicBoolean>(), nameof(value)));
                 return Return<bool>();
             }
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -51,7 +52,7 @@ namespace DotNext.Threading
                 Ldarg_0();
                 Push(value);
                 Volatile();
-                Stfld(new F(typeof(AtomicBoolean), nameof(this.value)));
+                Stfld(Field(Type<AtomicBoolean>(), nameof(this.value)));
                 Ret();
             }
         }

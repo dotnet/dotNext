@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using static InlineIL.IL;
-using static InlineIL.IL.Emit;
-using M = InlineIL.MethodRef;
-using TR = InlineIL.TypeRef;
+using static System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext
 {
-    using Intrinsics = Runtime.Intrinsics;
+    using static Runtime.Intrinsics;
 
     /// <summary>
     /// Represents bitwise comparer for the arbitrary value type.
@@ -18,7 +15,6 @@ namespace DotNext
     {
         private BitwiseComparer()
         {
-
         }
 
         /// <summary>
@@ -45,64 +41,23 @@ namespace DotNext
         public static bool Equals<G>(in T first, in G second)
             where G : struct
         {
-            const string methodExit = "exit";
-            Sizeof(typeof(T));
-            Pop(out uint size);
-            Push(size);
-            Sizeof(typeof(G));
-            Ceq();
-            Dup();
-            Brfalse(methodExit);
-            Pop();
-            switch (size)
+            if (SizeOf<T>() != SizeOf<G>())
+                return false;
+            switch (SizeOf<T>())
             {
                 default:
-                    Ldarg(nameof(first));
-                    Ldarg(nameof(second));
-                    Push(size);
-                    Conv_I8();
-                    Call(new M(typeof(Intrinsics), nameof(Intrinsics.EqualsAligned)));
-                    break;
-                case 0U:
-                    Ldc_I4_1();
-                    break;
+                    return EqualsAligned(ref InToRef<T, byte>(first), ref InToRef<G, byte>(second), SizeOf<T>());
+                case 0:
+                    return true;
                 case sizeof(byte):
-                    Ldarg(nameof(first));
-                    Ldind_U1();
-                    Ldarg(nameof(second));
-                    Ldind_I1();
-                    Ceq();
-                    break;
-                case sizeof(short):
-                    Ldarg(nameof(first));
-                    Ldind_I2();
-                    Ldarg(nameof(second));
-                    Ldind_I2();
-                    Ceq();
-                    break;
-                case 3:
-                    goto default;
-                case sizeof(int):
-                    Ldarg(nameof(first));
-                    Ldind_I4();
-                    Ldarg(nameof(second));
-                    Ldind_I4();
-                    Ceq();
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
-                case sizeof(long):
-                    Ldarg(nameof(first));
-                    Ldind_I8();
-                    Ldarg(nameof(second));
-                    Ldind_I8();
-                    Ceq();
-                    break;
+                    return InToRef<T, byte>(first) == InToRef<G, byte>(second);
+                case sizeof(ushort):
+                    return InToRef<T, ushort>(first) == InToRef<G, ushort>(second);
+                case sizeof(uint):
+                    return InToRef<T, uint>(first) == InToRef<G, uint>(second);
+                case sizeof(ulong):
+                    return InToRef<T, ulong>(first) == InToRef<G, ulong>(second);
             }
-            MarkLabel(methodExit);
-            return Return<bool>();
         }
 
         /// <summary>
@@ -115,60 +70,23 @@ namespace DotNext
         public static int Compare<G>(in T first, in G second)
             where G : struct
         {
-            const string methodExit = "exit";
-            Sizeof(typeof(T));
-            Pop(out uint size);
-            Push(size);
-            Sizeof(typeof(G));
-            Ceq();
-            Dup();
-            Brfalse(methodExit);
-            Pop();
-            switch (size)
+            if (SizeOf<T>() != SizeOf<G>())
+                return SizeOf<T>() - SizeOf<G>();
+            switch (SizeOf<G>())
             {
                 default:
-                    Ldarg(nameof(first));
-                    Ldarg(nameof(second));
-                    Push(size);
-                    Conv_I8();
-                    Call(new M(typeof(Intrinsics), nameof(Intrinsics.Compare), new TR(typeof(byte)).MakeByRefType(), new TR(typeof(byte)).MakeByRefType(), typeof(long)));
-                    break;
-                case 0U:
-                    Ldc_I4_0();
-                    break;
+                    return Runtime.Intrinsics.Compare(ref InToRef<T, byte>(first), ref InToRef<G, byte>(second), SizeOf<T>());
+                case 0:
+                    return 0;
                 case sizeof(byte):
-                    Ldarg(nameof(first));
-                    Ldarg(nameof(second));
-                    Ldind_U1();
-                    Call(new M(typeof(byte), nameof(byte.CompareTo), typeof(byte)));
-                    break;
+                    return InToRef<T, byte>(first).CompareTo(InToRef<G, byte>(second));
                 case sizeof(ushort):
-                    Ldarg(nameof(first));
-                    Ldarg(nameof(second));
-                    Ldind_U2();
-                    Call(new M(typeof(ushort), nameof(ushort.CompareTo), typeof(ushort)));
-                    break;
-                case 3:
-                    goto default;
+                    return InToRef<T, ushort>(first).CompareTo(InToRef<G, ushort>(second));
                 case sizeof(uint):
-                    Ldarg(nameof(first));
-                    Ldarg(nameof(second));
-                    Ldind_U4();
-                    Call(new M(typeof(uint), nameof(uint.CompareTo), typeof(uint)));
-                    break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
+                    return InToRef<T, uint>(first).CompareTo(InToRef<G, uint>(second));
                 case sizeof(ulong):
-                    Ldarg(nameof(first));
-                    Ldarg(nameof(second));
-                    Ldobj(typeof(ulong));
-                    Call(new M(typeof(ulong), nameof(ulong.CompareTo), typeof(ulong)));
-                    break;
+                    return InToRef<T, ulong>(first).CompareTo(InToRef<G, ulong>(second));
             }
-            MarkLabel(methodExit);
-            return Return<int>();
         }
 
         /// <summary>
@@ -179,50 +97,30 @@ namespace DotNext
         /// <returns>Content hash code.</returns>
         public static int GetHashCode(in T value, bool salted = true)
         {
-            const string methodExit = "exit";
-            Sizeof(typeof(T));
-            Pop(out uint size);
-            switch (size)
+            int hash;
+            switch (SizeOf<T>())
             {
                 default:
-                    Ldarg(nameof(value));
-                    Push(size);
-                    Conv_I8();
-                    Push(salted);
-                    Call(new M(typeof(Intrinsics), nameof(Intrinsics.GetHashCode32), new TR(typeof(byte)).MakeByRefType(), typeof(long), typeof(bool)));
-                    return Return<int>();
-                case 0U:
-                    Ldc_I4_0();
+                    return GetHashCode32(ref InToRef<T, byte>(value), SizeOf<T>(), salted);
+                case 0:
+                    hash = 0;
                     break;
                 case sizeof(byte):
-                    Ldarg(nameof(value));
-                    Ldind_I1();
+                    hash = InToRef<T, byte>(value);
                     break;
-                case sizeof(short):
-                    Ldarg(nameof(value));
-                    Ldind_I2();
+                case sizeof(ushort):
+                    hash = InToRef<T, ushort>(value);
                     break;
-                case 3:
-                    goto default;
                 case sizeof(int):
-                    Ldarg(nameof(value));
-                    Ldind_I4();
+                    hash = InToRef<T, int>(value);
                     break;
-                case 5:
-                case 6:
-                case 7:
-                    goto default;
-                case sizeof(long):
-                    Ldarg(nameof(value));
-                    Call(new M(typeof(ulong), nameof(GetHashCode)));
+                case sizeof(ulong):
+                    hash = InToRef<T, ulong>(value).GetHashCode();
                     break;
             }
-            Push(salted);
-            Brfalse(methodExit);
-            Push(RandomExtensions.BitwiseHashSalt);
-            Add();
-            MarkLabel(methodExit);
-            return Return<int>();
+            if (salted)
+                hash ^= RandomExtensions.BitwiseHashSalt;
+            return hash;
         }
 
         /// <summary>
@@ -238,16 +136,7 @@ namespace DotNext
         /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
         /// <returns>Bitwise hash code.</returns>
         public static int GetHashCode(in T value, int hash, in ValueFunc<int, int, int> hashFunction, bool salted)
-        {
-            Ldarg(nameof(value));
-            Sizeof(typeof(T));
-            Conv_I8();
-            Push(hash);
-            Ldarg(nameof(hashFunction));
-            Push(salted);
-            Call(new M(typeof(Intrinsics), nameof(Intrinsics.GetHashCode32), new TR(typeof(byte)).MakeByRefType(), typeof(long), typeof(int), typeof(ValueFunc<int, int, int>).MakeByRefType(), typeof(bool)));
-            return Return<int>();
-        }
+            => GetHashCode32(ref InToRef<T, byte>(value), SizeOf<T>(), hash, in hashFunction, salted);
 
         /// <summary>
         /// Computes bitwise hash code for the specified value.

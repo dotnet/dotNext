@@ -13,13 +13,18 @@ using static System.Diagnostics.Debug;
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
     using Messaging;
+    using static Threading.LinkedTokenSourceFactory;
 
     internal partial class RaftHttpCluster : IOutputChannel
     {
+        private static readonly Func<RaftClusterMember, IPEndPoint, bool> MatchByEndPoint = IsMatchedByEndPoint;
         private readonly DuplicateRequestDetector duplicationDetector;
         private volatile ISet<IPNetwork> allowedNetworks;
         private volatile ImmutableList<IInputChannel> messageHandlers;
         private volatile MemberMetadata metadata;
+
+        private static bool IsMatchedByEndPoint(RaftClusterMember member, IPEndPoint endPoint)
+            => member.Endpoint.Equals(endPoint);
 
         [MethodImpl(MethodImplOptions.Synchronized)]
         void IMessageBus.AddListener(IInputChannel handler)
@@ -37,63 +42,75 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 return await responseReader(responseMsg, token).ConfigureAwait(false);
             }
 
-            if (!token.CanBeCanceled)
-                token = Token;
-            do
+            var tokenSource = token.LinkTo(Token);
+            try
             {
-                var leader = Leader;
-                if (leader is null)
-                    throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
-                try
+                do
                 {
-                    return await (leader.IsRemote ?
-                        leader.SendMessageAsync(message, responseReader, true, token) :
-                        TryReceiveMessage(leader, message, messageHandlers, responseReader, token))
-                        .ConfigureAwait(false);
+                    var leader = Leader;
+                    if (leader is null)
+                        throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
+                    try
+                    {
+                        return await (leader.IsRemote ?
+                            leader.SendMessageAsync(message, responseReader, true, token) :
+                            TryReceiveMessage(leader, message, messageHandlers, responseReader, token))
+                            .ConfigureAwait(false);
+                    }
+                    catch (MemberUnavailableException e)
+                    {
+                        Logger.FailedToRouteMessage(message.Name, e);
+                    }
+                    catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.BadRequest) //keep in sync with ReceiveMessage behavior
+                    {
+                        Logger.FailedToRouteMessage(message.Name, e);
+                    }
                 }
-                catch (MemberUnavailableException e)
-                {
-                    Logger.FailedToRouteMessage(message.Name, e);
-                }
-                catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.BadRequest) //keep in sync with ReceiveMessage behavior
-                {
-                    Logger.FailedToRouteMessage(message.Name, e);
-                }
+                while (!token.IsCancellationRequested);
             }
-            while (!token.IsCancellationRequested);
+            finally
+            {
+                tokenSource?.Dispose();
+            }
             throw new OperationCanceledException(token);
         }
 
         async Task IOutputChannel.SendSignalAsync(IMessage message, CancellationToken token)
         {
-            if (!token.CanBeCanceled)
-                token = Token;
             Assert(localMember != null);
             //keep the same message between retries for correct identification of duplicate messages
-            var signal = new CustomMessage(localMember.Endpoint, message, true) { RespectLeadership = true };
-            do
+            var signal = new CustomMessage(localMember, message, true) { RespectLeadership = true };
+            var tokenSource = token.LinkTo(Token);
+            try
             {
-                var leader = Leader;
-                if (leader is null)
-                    throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
-                try
+                do
                 {
-                    var response = leader.IsRemote ?
-                        leader.SendSignalAsync(signal, token) :
-                        (messageHandlers.TryReceiveSignal(leader, signal.Message, null, token) ?? throw new UnexpectedStatusCodeException(new NotImplementedException()));
-                    await response.ConfigureAwait(false);
-                    return;
+                    var leader = Leader;
+                    if (leader is null)
+                        throw new InvalidOperationException(ExceptionMessages.LeaderIsUnavailable);
+                    try
+                    {
+                        var response = leader.IsRemote ?
+                            leader.SendSignalAsync(signal, token) :
+                            (messageHandlers.TryReceiveSignal(leader, signal.Message, null, token) ?? throw new UnexpectedStatusCodeException(new NotImplementedException()));
+                        await response.ConfigureAwait(false);
+                        return;
+                    }
+                    catch (MemberUnavailableException e)
+                    {
+                        Logger.FailedToRouteMessage(message.Name, e);
+                    }
+                    catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.ServiceUnavailable) //keep in sync with ReceiveMessage behavior
+                    {
+                        Logger.FailedToRouteMessage(message.Name, e);
+                    }
                 }
-                catch (MemberUnavailableException e)
-                {
-                    Logger.FailedToRouteMessage(message.Name, e);
-                }
-                catch (UnexpectedStatusCodeException e) when (e.StatusCode == HttpStatusCode.ServiceUnavailable) //keep in sync with ReceiveMessage behavior
-                {
-                    Logger.FailedToRouteMessage(message.Name, e);
-                }
+                while (!token.IsCancellationRequested);
             }
-            while (!token.IsCancellationRequested);
+            finally
+            {
+                tokenSource?.Dispose();
+            }
             throw new OperationCanceledException(token);
         }
 
@@ -146,9 +163,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 await CustomMessage.SaveResponse(response, await task.ConfigureAwait(false), token).ConfigureAwait(false);
         }
 
-        private Task ReceiveMessage(CustomMessage message, HttpResponse response)
+        private Task ReceiveMessage(CustomMessage message, HttpResponse response, CancellationToken token)
         {
-            var sender = FindMember(message.Sender.Represents);
+            var sender = FindMember(MatchByEndPoint, message.Sender);
             var task = Task.CompletedTask;
             if (sender is null)
                 response.StatusCode = StatusCodes.Status404NotFound;
@@ -156,13 +173,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
                 switch (message.Mode)
                 {
                     case CustomMessage.DeliveryMode.RequestReply:
-                        task = ReceiveMessage(sender, message, messageHandlers, response, Token);
+                        task = ReceiveMessage(sender, message, messageHandlers, response, token);
                         break;
                     case CustomMessage.DeliveryMode.OneWay:
-                        task = ReceiveOneWayMessage(sender, message, messageHandlers, true, response, Token);
+                        task = ReceiveOneWayMessage(sender, message, messageHandlers, true, response, token);
                         break;
                     case CustomMessage.DeliveryMode.OneWayNoAck:
-                        task = ReceiveOneWayMessage(sender, message, messageHandlers, false, response, Token);
+                        task = ReceiveOneWayMessage(sender, message, messageHandlers, false, response, token);
                         break;
                     default:
                         response.StatusCode = StatusCodes.Status400BadRequest;
@@ -175,57 +192,57 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             return task;
         }
 
-        private async Task ReceiveVote(RequestVoteMessage request, HttpResponse response)
+        private async Task ReceiveVote(RequestVoteMessage request, HttpResponse response, CancellationToken token)
         {
-            var sender = FindMember(request.Sender.Represents);
+            var sender = FindMember(MatchByEndPoint, request.Sender);
             if (sender is null)
-                await request.SaveResponse(response, new Result<bool>(Term, false), Token).ConfigureAwait(false);
+                await request.SaveResponse(response, new Result<bool>(Term, false), token).ConfigureAwait(false);
             else
             {
                 await request.SaveResponse(response,
-                    await ReceiveVote(sender, request.ConsensusTerm, request.LastLogIndex, request.LastLogTerm)
-                        .ConfigureAwait(false), Token).ConfigureAwait(false);
+                    await ReceiveVoteAsync(sender, request.ConsensusTerm, request.LastLogIndex, request.LastLogTerm, token)
+                        .ConfigureAwait(false), token).ConfigureAwait(false);
                 sender.Touch();
             }
         }
 
-        private async Task Resign(ResignMessage request, HttpResponse response)
+        private async Task Resign(ResignMessage request, HttpResponse response, CancellationToken token)
         {
-            var sender = FindMember(request.Sender.Represents);
-            await request.SaveResponse(response, await ReceiveResign().ConfigureAwait(false), Token).ConfigureAwait(false);
+            var sender = FindMember(MatchByEndPoint, request.Sender);
+            await request.SaveResponse(response, await ReceiveResignAsync(token).ConfigureAwait(false), token).ConfigureAwait(false);
             sender?.Touch();
         }
 
-        private Task GetMetadata(MetadataMessage request, HttpResponse response)
+        private Task GetMetadata(MetadataMessage request, HttpResponse response, CancellationToken token)
         {
-            var sender = FindMember(request.Sender.Represents);
-            var result = request.SaveResponse(response, metadata, Token);
+            var sender = FindMember(MatchByEndPoint, request.Sender);
+            var result = request.SaveResponse(response, metadata, token);
             sender?.Touch();
             return result;
         }
 
-        private async Task ReceiveEntries(HttpRequest request, HttpResponse response)
+        private async Task ReceiveEntries(HttpRequest request, HttpResponse response, CancellationToken token)
         {
             var message = new AppendEntriesMessage(request, out var entries);
             await using (entries)
             {
-                var sender = FindMember(message.Sender.Represents);
+                var sender = FindMember(MatchByEndPoint, message.Sender);
                 if (sender is null)
                     response.StatusCode = StatusCodes.Status404NotFound;
                 else
-                    await message.SaveResponse(response, await ReceiveEntries(sender, message.ConsensusTerm,
+                    await message.SaveResponse(response, await ReceiveEntriesAsync(sender, message.ConsensusTerm,
                         entries, message.PrevLogIndex,
-                        message.PrevLogTerm, message.CommitIndex).ConfigureAwait(false), Token).ConfigureAwait(false);
+                        message.PrevLogTerm, message.CommitIndex, token).ConfigureAwait(false), token).ConfigureAwait(false);
             }
         }
 
-        private async Task InstallSnapshot(InstallSnapshotMessage message, HttpResponse response)
+        private async Task InstallSnapshot(InstallSnapshotMessage message, HttpResponse response, CancellationToken token)
         {
-            var sender = FindMember(message.Sender.Represents);
+            var sender = FindMember(MatchByEndPoint, message.Sender);
             if (sender is null)
                 response.StatusCode = StatusCodes.Status404NotFound;
             else
-                await message.SaveResponse(response, await ReceiveSnapshot(sender, message.ConsensusTerm, message.Snapshot, message.Index).ConfigureAwait(false), Token).ConfigureAwait(false);
+                await message.SaveResponse(response, await ReceiveSnapshotAsync(sender, message.ConsensusTerm, message.Snapshot, message.Index, token).ConfigureAwait(false), token).ConfigureAwait(false);
         }
 
         internal Task ProcessRequest(HttpContext context)
@@ -234,7 +251,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             if (localMember is null)
             {
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                return context.Response.WriteAsync(ExceptionMessages.UnresolvedLocalMember, Token);
+                return context.Response.WriteAsync(ExceptionMessages.UnresolvedLocalMember, context.RequestAborted);
             }
             var networks = allowedNetworks;
             //checks whether the client's address is allowed
@@ -248,17 +265,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
             switch (HttpMessage.GetMessageType(context.Request))
             {
                 case RequestVoteMessage.MessageType:
-                    return ReceiveVote(new RequestVoteMessage(context.Request), context.Response);
+                    return ReceiveVote(new RequestVoteMessage(context.Request), context.Response, context.RequestAborted);
                 case ResignMessage.MessageType:
-                    return Resign(new ResignMessage(context.Request), context.Response);
+                    return Resign(new ResignMessage(context.Request), context.Response, context.RequestAborted);
                 case MetadataMessage.MessageType:
-                    return GetMetadata(new MetadataMessage(context.Request), context.Response);
+                    return GetMetadata(new MetadataMessage(context.Request), context.Response, context.RequestAborted);
                 case AppendEntriesMessage.MessageType:
-                    return ReceiveEntries(context.Request, context.Response);
+                    return ReceiveEntries(context.Request, context.Response, context.RequestAborted);
                 case CustomMessage.MessageType:
-                    return ReceiveMessage(new CustomMessage(context.Request), context.Response);
+                    return ReceiveMessage(new CustomMessage(context.Request), context.Response, context.RequestAborted);
                 case InstallSnapshotMessage.MessageType:
-                    return InstallSnapshot(new InstallSnapshotMessage(context.Request), context.Response);
+                    return InstallSnapshot(new InstallSnapshotMessage(context.Request), context.Response, context.RequestAborted);
                 default:
                     context.Response.StatusCode = StatusCodes.Status400BadRequest;
                     return Task.CompletedTask;

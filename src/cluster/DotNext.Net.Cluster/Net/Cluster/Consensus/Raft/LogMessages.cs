@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Reflection;
 using System.Resources;
 using System.Threading.Tasks;
@@ -49,6 +50,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         internal static void MemberUnavailable(this ILogger logger, IPEndPoint member)
             => logger.LogDebug(Resources.GetString("MemberUnavailable"), member);
 
+        internal static void MemberUnavailable(this ILogger logger, IPEndPoint member, Exception e)
+            => logger.LogWarning(Resources.GetString("MemberUnavailable"), member, e);
+
         internal static void TimeoutReset(this ILogger logger)
             => logger.LogDebug(Resources.GetString("TimeoutReset"));
 
@@ -79,5 +83,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         internal static Task PrintLockInfo(this TextWriter output, string lockName, string owner, in Guid version, DateTimeOffset creationTime, TimeSpan leaseTime)
             => output.WriteLineAsync(string.Format(Resources.GetString("LockInfo"), lockName, owner, version.ToString(), creationTime.ToString(InvariantCulture), leaseTime.ToString()));
+
+        internal static void PacketDropped<T>(this ILogger logger, T packetId, EndPoint endPoint)
+            where T : struct
+            => logger.LogError(Resources.GetString("PacketDropped"), packetId.ToString(), endPoint);
+
+        internal static void NotEnoughRequestHandlers(this ILogger logger)
+            => logger.LogError(Resources.GetString("NotEnoughRequestHandlers"));
+
+        internal static void SockerErrorOccurred(this ILogger logger, SocketError error)
+            => logger.LogError(Resources.GetString("SockerErrorOccurred"), error);
+
+        internal static void RequestTimedOut(this ILogger logger)
+            => logger.LogWarning(Resources.GetString("RequestTimedOut"));
+
+        internal static void SocketAcceptLoopTerminated(this ILogger logger, Exception e)
+            => logger.LogDebug(e, Resources.GetString("SocketAcceptLoopTerminated"));
+
+        internal static void TcpGracefulShutdownFailed(this ILogger logger, int timeout)
+            => logger.LogWarning(Resources.GetString("TcpGracefulShutdownFailed"), timeout);
     }
 }

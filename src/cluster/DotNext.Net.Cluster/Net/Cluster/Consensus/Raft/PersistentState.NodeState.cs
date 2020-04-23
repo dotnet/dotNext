@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.IO.MemoryMappedFiles;
 using System.Net;
 using System.Threading;
@@ -22,6 +23,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
          */
         private sealed class NodeState : Disposable
         {
+            internal static readonly Func<NodeState, long, bool> IsCommittedPredicate = IsCommitted;
+
             private const string FileName = "node.state";
             private const long Capacity = 128;
             private const long TermOffset = 0L;
@@ -69,6 +72,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     commitIndex.VolatileWrite(value);
                 }
             }
+
+            private static bool IsCommitted(NodeState state, long index) => index <= state.commitIndex.VolatileRead();
 
             internal long LastApplied
             {

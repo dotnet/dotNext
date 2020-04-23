@@ -4,7 +4,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using static DotNext.Threading.AtomicInt64;
-using IAuditTrail = DotNext.IO.Log.IAuditTrail;
 
 namespace RaftNode
 {
@@ -26,7 +25,7 @@ namespace RaftNode
 
         private long content;
 
-        private SimplePersistentState(string path)
+        public SimplePersistentState(string path)
             : base(path, 50, new Options { InitialPartitionSize = 50 * 8 })
         {
         }
@@ -52,7 +51,7 @@ namespace RaftNode
         {
             var commitIndex = GetLastIndex(true);
             await AppendAsync(new Int64LogEntry { Content = value, Term = Term }, token);
-            await ((IAuditTrail)this).WaitForCommitAsync(commitIndex + 1L, timeout, token);
+            await WaitForCommitAsync(commitIndex + 1L, timeout, token);
         }
 
         protected override SnapshotBuilder CreateSnapshotBuilder()

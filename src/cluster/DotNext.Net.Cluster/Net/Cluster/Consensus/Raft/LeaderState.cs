@@ -97,7 +97,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 if (snapshotIndex.HasValue)
                 {
-                    logger.InstallingSnapshot(currentIndex = snapshotIndex.Value);
+                    logger.InstallingSnapshot(currentIndex = snapshotIndex.GetValueOrDefault());
                     replicationAwaiter = member.InstallSnapshotAsync(term, entries[0], currentIndex, token).ConfigureAwait(false).GetAwaiter();
                 }
                 else
@@ -212,9 +212,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 waiter.SetResult(true);
         }
 
-        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail)
+        private async Task DoHeartbeats(TimeSpan period, IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
-            for (var token = timerCancellation.Token; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); await forcedReplication.WaitAsync(period, token).ConfigureAwait(false))
+            using var cancellationSource = CancellationTokenSource.CreateLinkedTokenSource(token, timerCancellation.Token);
+            for (token = cancellationSource.Token; await DoHeartbeats(auditTrail, token).ConfigureAwait(false); await forcedReplication.WaitAsync(period, token).ConfigureAwait(false))
                 DrainReplicationQueue();
         }
 
@@ -231,16 +232,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         /// <param name="period">Time period of Heartbeats</param>
         /// <param name="transactionLog">Transaction log.</param>
-        internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog)
+        /// <param name="token">The toke that can be used to cancel the operation.</param>
+        internal LeaderState StartLeading(TimeSpan period, IAuditTrail<IRaftLogEntry> transactionLog, CancellationToken token)
         {
             foreach (var member in stateMachine.Members)
                 member.NextIndex = transactionLog.GetLastIndex(false) + 1;
-            heartbeatTask = DoHeartbeats(period, transactionLog);
+            heartbeatTask = DoHeartbeats(period, transactionLog, token);
             return this;
         }
-
-        //the token that can be used to track leadership
-        internal CancellationToken Token => IsDisposed ? new CancellationToken(true) : timerCancellation.Token;
 
         internal override Task StopAsync()
         {

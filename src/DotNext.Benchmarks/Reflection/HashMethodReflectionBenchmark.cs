@@ -25,27 +25,15 @@ namespace DotNext.Reflection
         }
 
         [Benchmark]
-        public void WithoutReflection()
-        {
-            hash.ComputeHash(data, 0, data.Length);
-        }
+        public byte[] WithoutReflection() => hash.ComputeHash(data, 0, data.Length);
 
         [Benchmark]
-        public void WithTypedReflection()
-        {
-            ComputeHash(hash, data, 0, data.Length);
-        }
+        public byte[] WithTypedReflection() => ComputeHash(hash, data, 0, data.Length);
 
         [Benchmark]
-        public void WithTypedReflectionSpecial()
-        {
-            ComputeHashSpecial(hash, (data, 0, data.Length));
-        }
+        public byte[] WithTypedReflectionSpecial() => ComputeHashSpecial(hash, (data, 0, data.Length));
 
         [Benchmark]
-        public void WithReflection()
-        {
-            ComputeHashReflected.Invoke(hash, new object[] { data, 0, data.Length });
-        }
+        public object WithReflection() => ComputeHashReflected.Invoke(hash, new object[] { data, 0, data.Length });
     }
 }

@@ -104,6 +104,6 @@ namespace DotNext.Threading
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         /// <exception cref="ObjectDisposedException">This object is disposed.</exception>
         public Task<bool> WaitAsync(TimeSpan timeout, CancellationToken token)
-            => WaitAsync(ref manager, timeout, token);
+            => WaitAsync<WaitNode, LockManager>(ref manager, timeout, token);
     }
 }

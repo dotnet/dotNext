@@ -1,12 +1,8 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http
 {
-    internal interface IHttpClientMetrics
-    {
-        void ReportResponseTime(TimeSpan value);
-    }
+    using IClientMetricsCollector = Metrics.IClientMetricsCollector;
 
     /// <summary>
     /// Contains a set of callbacks that can be used to report
@@ -16,8 +12,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
     /// You need to register singleton service of type <see cref="MetricsCollector"/>
     /// to collect metrics produced by Raft node.
     /// </remarks>
-    [SuppressMessage("Security", "CA2119", Justification = "Internal interfaces for convenient programming only")]
-    public class HttpMetricsCollector : MetricsCollector, IHttpClientMetrics
+    public class HttpMetricsCollector : MetricsCollector, IClientMetricsCollector
     {
         /// <summary>
         /// Reports about HTTP response time.
