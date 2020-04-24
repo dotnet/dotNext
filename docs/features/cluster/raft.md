@@ -92,7 +92,7 @@ The following table describes configuration properties applicable to TCP transpo
 | ServerBacklog | No | Equal to the number of cluster members | The number of active incoming connections allowed by the local node |
 | LingerOption | No | Not enabled | The configuration that specifies whether a TCP socket will delay its closing in an attempt to send all pending data |
 | GracefulShutdownTimeout | No | The same as _LowerElectionTimeout_ | The timeout of graceful shutdown of active incoming connections |
-| TransmissionBlockSize | No | 65535 | The size, in bytes, of internal memory block used for sending packets. If your network has high packet loss then you can decrease this value to avoid retranmission of large blocks. |
+| TransmissionBlockSize | No | 65535 | The size, in bytes, of internal memory block used for sending packets. If your network has high packet loss then you can decrease this value to avoid retransmission of large blocks. |
 
 TCP transport is WAN friendly. However, it doesn't support TLS and should not be used for communication over Internet or any other untrusted public network. Its primary use is corporate isolated network for communication between cluster nodes located in geographically distributed datacenters.
 
