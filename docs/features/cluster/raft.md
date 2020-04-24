@@ -107,7 +107,7 @@ UDP transport cannot detect path [MTU](https://en.wikipedia.org/wiki/Maximum_tra
 | ---- | ---- | ---- | ---- |
 | ServerBacklog | No | Equal to the number of cluster members | The number of incoming requests that can be handled simultaneously |
 | ClientBacklog | No | Equal to the number of logical processor on the host machine | The number of outbound requests that can be initiated by the local node |
-| DontFragment | No | false | Indicates that datagram cannot be fragmented by the underlying network layer such as IP (DF flag) |
+| DontFragment | No | true | Indicates that datagram cannot be fragmented by the underlying network layer such as IP (DF flag) |
 | DatagramSize | No | 300 bytes | Represents UDP datagram size. For maximum performance, this property must be set to the maximum allowed transmission unit size by your network |
 | LocalEndPoint | No | 0.0.0.0 with random port | Used for receiving responses from other cluster nodes |
 
