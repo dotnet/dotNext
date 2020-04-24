@@ -199,7 +199,7 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <p>These extensions are located in <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.html">DotNext.Net.Cluster.Consensus.Raft.Http</a> namespace. For more information, read <a href="aspnetcore.html">this article</a>.</p>
 <p>This implementation is WAN friendly because it uses reliable network transport and supports TLS. It is good choice if your cluster nodes communicate over Internet or any other unreliable network. However, HTTP leads to performance and traffic overhead. Moreover, the library depends on ASP.NET Core.</p>
 <h2 id="tcp-transport">TCP Transport</h2>
-<p>TCP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport can be configured using [https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.html] class:</p>
+<p>TCP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport can be configured using <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.html">TcpConfiguration</a> class:</p>
 <pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
 
 RaftCluster.NodeConfiguration config = new RaftCluster.TcpConfiguration(new IPEndPoint(IPAddress.Loopback));
@@ -251,6 +251,7 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 <p>UDP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport doesn't use persistent connection in contrast to TCP. As a result, it has no TCP overhead related to congestion and flow control of messages. These capabilities are implemented by application protocol itself. However, retransmission of lost packets is not implemented. The transport uses pessimistic approach and interprets lost packets as connection timeout. This is reasonable approach because the leader node examines other cluster members periodically and the next attempt may be successful. Some Raft messages such as <strong>Vote</strong> and <strong>Heartbeat</strong> with empty set of log entries (or if log entries are small enough) for replication can be easily placed to single datagram without fragmentation.</p>
 <p>The transport has very low overhead which is equal to ~20 bytes per datagram. Therefore, most Raft messages can be placed to single datagram without streaming per request.</p>
 <p>UDP transport cannot detect path <a href="https://en.wikipedia.org/wiki/Maximum_transmission_unit">MTU</a> automatically and, by default, it uses minimal safe size of the datagram to avoid fragmentation. If need automatic path MTU discovery then use <a href="../core/mtu.html">MTU discovery</a> mechanism from .NEXT. After that, you can specify datagram size using configuration properties.</p>
+<p>This transport can be configured using <a href="https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.UdpConfiguration.html">UdpConfiguration</a> class:</p>
 <table>
 <thead>
 <tr>
@@ -293,6 +294,15 @@ await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local
 </tr>
 </tbody>
 </table>
+<p>The following example demonstrates configuration of UDP transport:</p>
+<pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft;
+
+RaftCluster.NodeConfiguration config = new RaftCluster.UdpConfiguration(new IPEndPoint(IPAddress.Loopback));
+using var cluster = new RaftCluster(config);
+await cluster.StartAsync(CancellationToken.None); //starts hosting of the local node
+//the code for working with cluster instance
+await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local node
+</code></pre>
 <p>If you are using Docker/LXC/Windows container for the clustered microservices based on UDP transport then you can leave <code>LocalEndPoint</code> untouched. Otherwise, it's recommended to use the address of the appropriate local network interface.</p>
 <p>UDP transport is WAN unfriendly. It should not be used in unreliable networks. However, it's much faster than TCP transport. It is recommended to use this protocol in the following situations:</p>
 <ul>
