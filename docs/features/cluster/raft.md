@@ -72,7 +72,7 @@ These extensions are located in [DotNext.Net.Cluster.Consensus.Raft.Http](../../
 This implementation is WAN friendly because it uses reliable network transport and supports TLS. It is good choice if your cluster nodes communicate over Internet or any other unreliable network. However, HTTP leads to performance and traffic overhead. Moreover, the library depends on ASP.NET Core.
 
 ## TCP Transport
-TCP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport can be configured using [https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.html] class:
+TCP transport used as bottom layer for specialized application protocol aimed to efficient transmission of Raft messages. This transport can be configured using [TcpConfiguration](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.TcpConfiguration.html) class:
 ```csharp
 using DotNext.Net.Cluster.Consensus.Raft;
 
@@ -103,6 +103,8 @@ The transport has very low overhead which is equal to ~20 bytes per datagram. Th
 
 UDP transport cannot detect path [MTU](https://en.wikipedia.org/wiki/Maximum_transmission_unit) automatically and, by default, it uses minimal safe size of the datagram to avoid fragmentation. If need automatic path MTU discovery then use [MTU discovery](../core/mtu.md) mechanism from .NEXT. After that, you can specify datagram size using configuration properties.
 
+This transport can be configured using [UdpConfiguration](https://sakno.github.io/dotNext/api/DotNext.Net.Cluster.Consensus.Raft.RaftCluster.UdpConfiguration.html) class:
+
 | Configuration parameter | Required | Default Value | Description |
 | ---- | ---- | ---- | ---- |
 | ServerBacklog | No | Equal to the number of cluster members | The number of incoming requests that can be handled simultaneously |
@@ -110,6 +112,17 @@ UDP transport cannot detect path [MTU](https://en.wikipedia.org/wiki/Maximum_tra
 | DontFragment | No | true | Indicates that datagram cannot be fragmented by the underlying network layer such as IP (DF flag) |
 | DatagramSize | No | 300 bytes | Represents UDP datagram size. For maximum performance, this property must be set to the maximum allowed transmission unit size by your network |
 | LocalEndPoint | No | 0.0.0.0 with random port | Used for receiving responses from other cluster nodes |
+
+The following example demonstrates configuration of UDP transport:
+```csharp
+using DotNext.Net.Cluster.Consensus.Raft;
+
+RaftCluster.NodeConfiguration config = new RaftCluster.UdpConfiguration(new IPEndPoint(IPAddress.Loopback));
+using var cluster = new RaftCluster(config);
+await cluster.StartAsync(CancellationToken.None); //starts hosting of the local node
+//the code for working with cluster instance
+await cluster.StopAsync(CancellationToken.None);    //stops hosting of the local node
+```
 
 If you are using Docker/LXC/Windows container for the clustered microservices based on UDP transport then you can leave `LocalEndPoint` untouched. Otherwise, it's recommended to use the address of the appropriate local network interface.
 
