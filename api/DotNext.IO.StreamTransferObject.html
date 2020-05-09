@@ -250,6 +250,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public ValueTask&lt;TResult&gt; GetObjectDataAsync&lt;TResult, TDecoder&gt;(TDecoder parser, CancellationToken token = default(CancellationToken))
+
     where TDecoder : IDataTransferObject.IDecoder&lt;TResult&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -452,6 +453,7 @@
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">ValueTask IDataTransferObject.WriteToAsync&lt;TWriter&gt;(TWriter writer, CancellationToken token)
+
     where TWriter : IAsyncBinaryWriter</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

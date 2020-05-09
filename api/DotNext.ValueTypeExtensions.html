@@ -1191,6 +1191,7 @@ of the specified values.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool IsOneOf&lt;T&gt;(this T value, params T[] values)
+
     where T : struct, IEquatable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1269,6 +1270,7 @@ of the specified values.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool IsOneOf&lt;T&gt;(this T value, IEnumerable&lt;T&gt; values)
+
     where T : struct, IEquatable&lt;T&gt;</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -2799,6 +2801,7 @@ public static UIntPtr ToUIntPtr(this IntPtr value)</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool TryGetValue&lt;T&gt;(this T? nullable, out T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

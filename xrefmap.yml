@@ -15336,6 +15336,19 @@ references:
   commentId: T:DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions
   fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions
   nameWithType: ConfigurationExtensions
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.ConfigureLocalNode(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)
+  name: ConfigureLocalNode(IServiceCollection, IConfiguration)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_ConfigureLocalNode_Microsoft_Extensions_DependencyInjection_IServiceCollection_Microsoft_Extensions_Configuration_IConfiguration_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.ConfigureLocalNode(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.ConfigureLocalNode(Microsoft.Extensions.DependencyInjection.IServiceCollection, Microsoft.Extensions.Configuration.IConfiguration)
+  nameWithType: ConfigurationExtensions.ConfigureLocalNode(IServiceCollection, IConfiguration)
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.ConfigureLocalNode*
+  name: ConfigureLocalNode
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_ConfigureLocalNode_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.ConfigureLocalNode
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.ConfigureLocalNode
+  nameWithType: ConfigurationExtensions.ConfigureLocalNode
 - uid: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder)
   name: JoinCluster(IHostBuilder)
   href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_
@@ -15374,6 +15387,19 @@ references:
   commentId: T:DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions
   fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions
   nameWithType: ConfigurationExtensions
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.ConfigureLocalNode(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)
+  name: ConfigureLocalNode(IServiceCollection, IConfiguration)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_ConfigurationExtensions_ConfigureLocalNode_Microsoft_Extensions_DependencyInjection_IServiceCollection_Microsoft_Extensions_Configuration_IConfiguration_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.ConfigureLocalNode(Microsoft.Extensions.DependencyInjection.IServiceCollection,Microsoft.Extensions.Configuration.IConfiguration)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.ConfigureLocalNode(Microsoft.Extensions.DependencyInjection.IServiceCollection, Microsoft.Extensions.Configuration.IConfiguration)
+  nameWithType: ConfigurationExtensions.ConfigureLocalNode(IServiceCollection, IConfiguration)
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.ConfigureLocalNode*
+  name: ConfigureLocalNode
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_ConfigurationExtensions_ConfigureLocalNode_
+  commentId: Overload:DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.ConfigureLocalNode
+  isSpec: "True"
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.ConfigureLocalNode
+  nameWithType: ConfigurationExtensions.ConfigureLocalNode
 - uid: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder)
   name: JoinCluster(IHostBuilder)
   href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_

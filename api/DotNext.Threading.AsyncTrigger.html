@@ -156,6 +156,7 @@ callers based on registered conditions.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Signal&lt;TState&gt;(TState state)
+
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -223,6 +224,7 @@ callers based on registered conditions.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Signal&lt;TState&gt;(TState state, Action&lt;TState&gt; mutator)
+
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -296,6 +298,7 @@ callers based on registered conditions.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public void Signal&lt;TState, TArgs&gt;(TState state, Action&lt;TState, TArgs&gt; mutator, TArgs args)
+
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -381,6 +384,7 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task SignalAndWaitAsync&lt;TState&gt;(TState state, Action&lt;TState&gt; mutator, Predicate&lt;TState&gt; condition, CancellationToken token = default(CancellationToken))
+
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -488,6 +492,7 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; SignalAndWaitAsync&lt;TState&gt;(TState state, Action&lt;TState&gt; mutator, Predicate&lt;TState&gt; condition, TimeSpan timeout, CancellationToken token = default(CancellationToken))
+
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -601,6 +606,7 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task SignalAndWaitAsync&lt;TState&gt;(TState state, Predicate&lt;TState&gt; condition, CancellationToken token = default(CancellationToken))
+
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -702,6 +708,7 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; SignalAndWaitAsync&lt;TState&gt;(TState state, Predicate&lt;TState&gt; condition, TimeSpan timeout, CancellationToken token = default(CancellationToken))
+
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -809,6 +816,7 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task SignalAndWaitAsync&lt;TState, TArgs&gt;(TState state, Action&lt;TState, TArgs&gt; mutator, TArgs args, Predicate&lt;TState&gt; condition, CancellationToken token = default(CancellationToken))
+
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -927,6 +935,7 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; SignalAndWaitAsync&lt;TState, TArgs&gt;(TState state, Action&lt;TState, TArgs&gt; mutator, TArgs args, Predicate&lt;TState&gt; condition, TimeSpan timeout, CancellationToken token = default(CancellationToken))
+
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1134,6 +1143,7 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task WaitAsync&lt;TState&gt;(TState state, Predicate&lt;TState&gt; condition, CancellationToken token = default(CancellationToken))
+
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1234,6 +1244,7 @@ atomically.</p>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public Task&lt;bool&gt; WaitAsync&lt;TState&gt;(TState state, Predicate&lt;TState&gt; condition, TimeSpan timeout, CancellationToken token = default(CancellationToken))
+
     where TState : class</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>

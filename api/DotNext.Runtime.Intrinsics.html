@@ -350,6 +350,7 @@ reinterpreting the object representation of <code data-dev-comment-type="typepar
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Bitcast&lt;T, TResult&gt;(in T input, out TResult output)
+
     where T : struct where TResult : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -611,6 +612,7 @@ public static int Compare(void *first, void *second, long length)</code></pre>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static void Copy&lt;T&gt;(T*input, T*output)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -668,6 +670,7 @@ public static void Copy&lt;T&gt;(T*input, T*output)
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Copy&lt;T&gt;(in T input, out T output)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -726,6 +729,7 @@ public static void Copy&lt;T&gt;(T*input, T*output)
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static void Copy&lt;T&gt;(in T source, ref T destination, long count)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -790,6 +794,7 @@ public static void Copy&lt;T&gt;(in T source, ref T destination, long count)
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static void CopyUnaligned&lt;T&gt;(T*input, T*output)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1495,6 +1500,7 @@ public static T GetReadonlyRef&lt;T&gt;(this T[] array, long index)</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static O GetReadonlyRef&lt;I, O&gt;(this I[] array, long index)
+
     where I : class, O</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1573,6 +1579,7 @@ public static T GetReadonlyRef&lt;T&gt;(this T[] array, long index)</code></pre>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static bool HasFlag&lt;T&gt;(T value, T flag)
+
     where T : struct, Enum</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1894,6 +1901,7 @@ On mainstream implementations of .NET CLR, this method is replaced by constant v
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">public static void Reverse&lt;T&gt;(ref T value)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
@@ -1946,6 +1954,7 @@ On mainstream implementations of .NET CLR, this method is replaced by constant v
   <div class="codewrapper">
     <pre><code class="lang-csharp hljs">[CLSCompliant(false)]
 public static void Swap&lt;T&gt;(T*first, T*second)
+
     where T : struct</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
