@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 05-09-2020
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.3.1">DotNext.AspNetCore.Cluster 2.3.1</a>
+* Alternative methods for configuring local node
+
 # 04-23-2020
 <a href="https://www.nuget.org/packages/dotnext/2.3.0">DotNext 2.3.0</a>
 * Performance improvements of `BitwiseComparer` and `Intrinsics` classes  
