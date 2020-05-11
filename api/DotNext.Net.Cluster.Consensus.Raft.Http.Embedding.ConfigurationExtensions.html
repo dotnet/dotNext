@@ -234,10 +234,132 @@ or <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensi
 </div>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_System_Func_Microsoft_Extensions_Configuration_IConfiguration_Microsoft_Extensions_Hosting_IHostEnvironment_Microsoft_Extensions_Configuration_IConfiguration__.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder%2CSystem.Func%7BMicrosoft.Extensions.Configuration.IConfiguration%2CMicrosoft.Extensions.Hosting.IHostEnvironment%2CMicrosoft.Extensions.Configuration.IConfiguration%7D)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/Embedding/ConfigurationExtensions.cs/#L61">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_System_Func_Microsoft_Extensions_Configuration_IConfiguration_Microsoft_Extensions_Hosting_IHostEnvironment_Microsoft_Extensions_Configuration_IConfiguration__" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder,System.Func{Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration})">JoinCluster(IHostBuilder, Func&lt;IConfiguration, IHostEnvironment, IConfiguration&gt;)</h4>
+  <div class="markdown level1 summary"><p>Allows to inject <see cref="!:ICluster"></see>, <see cref="!:IRaftCluster"></see>, <see cref="!:IExpandableCluster"></see>
+to application services and establishes network communication with other cluster members.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IHostBuilder JoinCluster(this IHostBuilder builder, Func&lt;IConfiguration, IHostEnvironment, IConfiguration&gt; memberConfig)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostbuilder">IHostBuilder</a></td>
+        <td><span class="parametername">builder</span></td>
+        <td><p>The host builder.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.func-3">Func</a>&lt;<a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.configuration.iconfiguration">IConfiguration</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostenvironment">IHostEnvironment</a>, <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.configuration.iconfiguration">IConfiguration</a>&gt;</td>
+        <td><span class="parametername">memberConfig</span></td>
+        <td><p>The delegate that allows to resolve location of local member configuration.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostbuilder">IHostBuilder</a></td>
+        <td><p>The modified host builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_System_Func_Microsoft_Extensions_Configuration_IConfiguration_Microsoft_Extensions_Hosting_IHostEnvironment_Microsoft_Extensions_Configuration_IConfiguration___remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Should be called exactly after <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.generichostwebhostbuilderextensions.configurewebhost#Microsoft_Extensions_Hosting_GenericHostWebHostBuilderExtensions_ConfigureWebHost_Microsoft_Extensions_Hosting_IHostBuilder_System_Action_Microsoft_AspNetCore_Hosting_IWebHostBuilder__">ConfigureWebHost(IHostBuilder, Action&lt;IWebHostBuilder&gt;)</a>
+or <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.generichostbuilderextensions.configurewebhostdefaults#Microsoft_Extensions_Hosting_GenericHostBuilderExtensions_ConfigureWebHostDefaults_Microsoft_Extensions_Hosting_IHostBuilder_System_Action_Microsoft_AspNetCore_Hosting_IWebHostBuilder__">ConfigureWebHostDefaults(IHostBuilder, Action&lt;IWebHostBuilder&gt;)</a>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_System_String_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder%2CSystem.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/Embedding/ConfigurationExtensions.cs/#L78">View Source</a>
+  </span>
+  <a id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster*"></a>
+  <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_System_String_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder,System.String)">JoinCluster(IHostBuilder, String)</h4>
+  <div class="markdown level1 summary"><p>Allows to inject <see cref="!:ICluster"></see>, <see cref="!:IRaftCluster"></see>, <see cref="!:IExpandableCluster"></see>
+to application services and establishes network communication with other cluster members.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public static IHostBuilder JoinCluster(this IHostBuilder builder, string memberConfigSection)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostbuilder">IHostBuilder</a></td>
+        <td><span class="parametername">builder</span></td>
+        <td><p>The host builder.</p>
+</td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/system.string">String</a></td>
+        <td><span class="parametername">memberConfigSection</span></td>
+        <td><p>The name of local member configuration section.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.ihostbuilder">IHostBuilder</a></td>
+        <td><p>The modified host builder.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_System_String__remarks">Remarks</h5>
+  <div class="markdown level1 remarks"><p>Should be called exactly after <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.generichostwebhostbuilderextensions.configurewebhost#Microsoft_Extensions_Hosting_GenericHostWebHostBuilderExtensions_ConfigureWebHost_Microsoft_Extensions_Hosting_IHostBuilder_System_Action_Microsoft_AspNetCore_Hosting_IWebHostBuilder__">ConfigureWebHost(IHostBuilder, Action&lt;IWebHostBuilder&gt;)</a>
+or <a class="xref" href="https://docs.microsoft.com/dotnet/api/microsoft.extensions.hosting.generichostbuilderextensions.configurewebhostdefaults#Microsoft_Extensions_Hosting_GenericHostBuilderExtensions_ConfigureWebHostDefaults_Microsoft_Extensions_Hosting_IHostBuilder_System_Action_Microsoft_AspNetCore_Hosting_IWebHostBuilder__">ConfigureWebHostDefaults(IHostBuilder, Action&lt;IWebHostBuilder&gt;)</a>.</p>
+</div>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/sakno/dotNext/new/gh-pages/apiSpec/new?filename=DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_UseConsensusProtocolHandler_Microsoft_AspNetCore_Builder_IApplicationBuilder_.md&amp;value=---%0Auid%3A%20DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.UseConsensusProtocolHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/Embedding/ConfigurationExtensions.cs/#L55">View Source</a>
+    <a href="https://github.com/sakno/dotNext/blob/gh-pages/src/cluster/DotNext.AspNetCore.Cluster/Net/Cluster/Consensus/Raft/Http/Embedding/ConfigurationExtensions.cs/#L89">View Source</a>
   </span>
   <a id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_UseConsensusProtocolHandler_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.UseConsensusProtocolHandler*"></a>
   <h4 id="DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_UseConsensusProtocolHandler_Microsoft_AspNetCore_Builder_IApplicationBuilder_" data-uid="DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.UseConsensusProtocolHandler(Microsoft.AspNetCore.Builder.IApplicationBuilder)">UseConsensusProtocolHandler(IApplicationBuilder)</h4>

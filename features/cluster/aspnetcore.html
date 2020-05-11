@@ -310,6 +310,7 @@ IHost host = new HostBuilder()
 </code></pre>
 <p>Note that <code>JoinCluster</code> method declared in <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.html">DotNext.Net.Cluster.Consensus.Raft.Http.Hosting</a> namespace and should be called after <code>ConfigureWebHost</code>. Otherwise, the behavior of this method is undefined.</p>
 <p>By default, .NEXT uses Kestrel web server to serve Raft requests. However, it is possible to configure dedicated host manually. To do that, you need to register singleton service implementing <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder.html">IDedicatedHostBuilder</a> interface. In this case, <code>port</code> configuration property will be ignored.</p>
+<p><code>JoinCluster</code> method has overloads that allow to specify custom configuration section containing configuration of local node.</p>
 <h1 id="embedded-mode">Embedded Mode</h1>
 <p>Embedded mode shares the same <a href="https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhost">Web Host</a> and port with underlying Web Application. To serve Raft-specific requests the implementation uses dedicated endpoint <code>/cluster-consensus/raft</code> that can be changed through configuration parameter. The following example demonstrates how to setup embedded mode:</p>
 <pre><code class="lang-csharp">using DotNext.Net.Cluster.Consensus.Raft.Http.Embedding;
@@ -343,6 +344,7 @@ IHost host = new HostBuilder()
     .Build();
 </code></pre>
 <p>Note that <code>JoinCluster</code> declared in <a href="../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.html">DotNext.Net.Cluster.Consensus.Raft.Http.Embedding</a> namespace and should be called after <code>ConfigureWebHost</code>. Otherwise, the behavior of this method is undefined.</p>
+<p><code>JoinCluster</code> method has overloads that allow to specify custom configuration section containing configuration of local node.</p>
 <p><code>UseConsensusProtocolHandler</code> method should be called before registration of any authentication/authorization middleware.</p>
 <h1 id="redirection-to-leader">Redirection to Leader</h1>
 <p>Now cluster of ASP.NET Core applications can receive requests from outside. Some of these requests may be handled by leader node only. .NEXT cluster programming model provides a way to automatically redirect request to leader node if it was originally received by follower node. The redirection is organized with help of <em>307 Temporary Redirect</em> status code. Every follower node knows the actual address of the leader node. If cluster or its partition doesn't have leader then node returns <em>503 Service Unavailable</em>.</p>

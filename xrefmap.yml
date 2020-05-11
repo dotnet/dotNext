@@ -15355,6 +15355,21 @@ references:
   commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder)
   fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder)
   nameWithType: ConfigurationExtensions.JoinCluster(IHostBuilder)
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder,System.Func{Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration})
+  name: JoinCluster(IHostBuilder, Func<IConfiguration, IHostEnvironment, IConfiguration>)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_System_Func_Microsoft_Extensions_Configuration_IConfiguration_Microsoft_Extensions_Hosting_IHostEnvironment_Microsoft_Extensions_Configuration_IConfiguration__
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder,System.Func{Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration})
+  name.vb: JoinCluster(IHostBuilder, Func(Of IConfiguration, IHostEnvironment, IConfiguration))
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder, System.Func<Microsoft.Extensions.Configuration.IConfiguration, Microsoft.Extensions.Hosting.IHostEnvironment, Microsoft.Extensions.Configuration.IConfiguration>)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder, System.Func(Of Microsoft.Extensions.Configuration.IConfiguration, Microsoft.Extensions.Hosting.IHostEnvironment, Microsoft.Extensions.Configuration.IConfiguration))
+  nameWithType: ConfigurationExtensions.JoinCluster(IHostBuilder, Func<IConfiguration, IHostEnvironment, IConfiguration>)
+  nameWithType.vb: ConfigurationExtensions.JoinCluster(IHostBuilder, Func(Of IConfiguration, IHostEnvironment, IConfiguration))
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder,System.String)
+  name: JoinCluster(IHostBuilder, String)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_System_String_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder,System.String)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder, System.String)
+  nameWithType: ConfigurationExtensions.JoinCluster(IHostBuilder, String)
 - uid: DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.JoinCluster*
   name: JoinCluster
   href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Embedding_ConfigurationExtensions_JoinCluster_
@@ -15406,6 +15421,21 @@ references:
   commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder)
   fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder)
   nameWithType: ConfigurationExtensions.JoinCluster(IHostBuilder)
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder,System.Func{Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration})
+  name: JoinCluster(IHostBuilder, Func<IConfiguration, IHostEnvironment, IConfiguration>)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_System_Func_Microsoft_Extensions_Configuration_IConfiguration_Microsoft_Extensions_Hosting_IHostEnvironment_Microsoft_Extensions_Configuration_IConfiguration__
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder,System.Func{Microsoft.Extensions.Configuration.IConfiguration,Microsoft.Extensions.Hosting.IHostEnvironment,Microsoft.Extensions.Configuration.IConfiguration})
+  name.vb: JoinCluster(IHostBuilder, Func(Of IConfiguration, IHostEnvironment, IConfiguration))
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder, System.Func<Microsoft.Extensions.Configuration.IConfiguration, Microsoft.Extensions.Hosting.IHostEnvironment, Microsoft.Extensions.Configuration.IConfiguration>)
+  fullName.vb: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder, System.Func(Of Microsoft.Extensions.Configuration.IConfiguration, Microsoft.Extensions.Hosting.IHostEnvironment, Microsoft.Extensions.Configuration.IConfiguration))
+  nameWithType: ConfigurationExtensions.JoinCluster(IHostBuilder, Func<IConfiguration, IHostEnvironment, IConfiguration>)
+  nameWithType.vb: ConfigurationExtensions.JoinCluster(IHostBuilder, Func(Of IConfiguration, IHostEnvironment, IConfiguration))
+- uid: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder,System.String)
+  name: JoinCluster(IHostBuilder, String)
+  href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_ConfigurationExtensions_JoinCluster_Microsoft_Extensions_Hosting_IHostBuilder_System_String_
+  commentId: M:DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder,System.String)
+  fullName: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.JoinCluster(Microsoft.Extensions.Hosting.IHostBuilder, System.String)
+  nameWithType: ConfigurationExtensions.JoinCluster(IHostBuilder, String)
 - uid: DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.JoinCluster*
   name: JoinCluster
   href: api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.ConfigurationExtensions.html#DotNext_Net_Cluster_Consensus_Raft_Http_Hosting_ConfigurationExtensions_JoinCluster_
