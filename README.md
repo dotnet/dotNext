@@ -43,10 +43,10 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 05-09-2020
+Release Date: 05-11-2020
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.3.1">DotNext.AspNetCore.Cluster 2.3.1</a>
-* Alternative methods for configuring local node
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.3.2">DotNext.AspNetCore.Cluster 2.3.2</a>
+* Section with local node configuration can be defined explicitly
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 

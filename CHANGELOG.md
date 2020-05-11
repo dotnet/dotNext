@@ -1,6 +1,10 @@
 Release Notes
 ====
 
+# 05-11-2020
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.3.2">DotNext.AspNetCore.Cluster 2.3.2</a>
+* Section with local node configuration can be defined explicitly
+
 # 05-09-2020
 <a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.3.1">DotNext.AspNetCore.Cluster 2.3.1</a>
 * Alternative methods for configuring local node
