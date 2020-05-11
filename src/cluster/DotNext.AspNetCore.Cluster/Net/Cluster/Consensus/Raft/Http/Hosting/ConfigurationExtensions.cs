@@ -39,5 +39,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// <returns>The builder of main application host.</returns>
         public static IHostBuilder JoinCluster(this IHostBuilder builder)
             => builder.ConfigureServices(ConfigureClusterMember);
+
+        private static void JoinCluster(this Func<IConfiguration, IHostEnvironment, IConfiguration> memberConfig, HostBuilderContext context, IServiceCollection services)
+            => ConfigureLocalNode(services, memberConfig(context.Configuration, context.HostingEnvironment));
+
+        /// <summary>
+        /// Allows to inject <see cref="ICluster"/>, <see cref="IRaftCluster"/>, <see cref="IExpandableCluster"/>
+        /// to application services and establishes network communication with other cluster members.
+        /// </summary>
+        /// <param name="builder">The builder of main application host.</param>
+        /// <param name="memberConfig">The delegate that allows to resolve location of local member configuration.</param>
+        /// <returns>The builder of main application host.</returns>
+        public static IHostBuilder JoinCluster(this IHostBuilder builder, Func<IConfiguration, IHostEnvironment, IConfiguration> memberConfig)
+            => builder.ConfigureServices(memberConfig.JoinCluster);
+
+        private static void JoinCluster(this string memberConfigSection, HostBuilderContext context, IServiceCollection services)
+            => ConfigureLocalNode(services, context.Configuration.GetSection(memberConfigSection));
+
+        /// <summary>
+        /// Allows to inject <see cref="ICluster"/>, <see cref="IRaftCluster"/>, <see cref="IExpandableCluster"/>
+        /// to application services and establishes network communication with other cluster members.
+        /// </summary>
+        /// <param name="builder">The builder of main application host.</param>
+        /// <param name="memberConfigSection">The name of local member configuration section.</param>
+        /// <returns>The builder of main application host.</returns>
+        public static IHostBuilder JoinCluster(this IHostBuilder builder, string memberConfigSection)
+            => builder.ConfigureServices(memberConfigSection.JoinCluster);
     }
 }
