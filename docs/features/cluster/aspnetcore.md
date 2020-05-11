@@ -172,6 +172,8 @@ Note that `JoinCluster` method declared in [DotNext.Net.Cluster.Consensus.Raft.H
 
 By default, .NEXT uses Kestrel web server to serve Raft requests. However, it is possible to configure dedicated host manually. To do that, you need to register singleton service implementing [IDedicatedHostBuilder](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Hosting.IDedicatedHostBuilder.yml) interface. In this case, `port` configuration property will be ignored.
 
+`JoinCluster` method has overloads that allow to specify custom configuration section containing configuration of local node.
+
 # Embedded Mode
 Embedded mode shares the same [Web Host](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.hosting.iwebhost) and port with underlying Web Application. To serve Raft-specific requests the implementation uses dedicated endpoint `/cluster-consensus/raft` that can be changed through configuration parameter. The following example demonstrates how to setup embedded mode:
 
@@ -208,6 +210,8 @@ IHost host = new HostBuilder()
 ```
 
 Note that `JoinCluster` declared in [DotNext.Net.Cluster.Consensus.Raft.Http.Embedding](../../api/DotNext.Net.Cluster.Consensus.Raft.Http.Embedding.yml) namespace and should be called after `ConfigureWebHost`. Otherwise, the behavior of this method is undefined.
+
+`JoinCluster` method has overloads that allow to specify custom configuration section containing configuration of local node.
 
 `UseConsensusProtocolHandler` method should be called before registration of any authentication/authorization middleware.
 
