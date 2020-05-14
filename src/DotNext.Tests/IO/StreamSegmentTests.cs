@@ -63,9 +63,14 @@ namespace DotNext.IO
         {
             using var ms = new MemoryStream(new byte[] { 1, 3, 5, 8, 12 });
             using var segment = new StreamSegment(ms);
+            True(segment.CanRead);
+            True(segment.CanSeek);
+            False(segment.CanWrite);
             Throws<NotSupportedException>(() => segment.WriteByte(2));
             Throws<NotSupportedException>(() => segment.Write(new byte[3], 0, 3));
+            Throws<NotSupportedException>(() => segment.Write(new byte[2]));
             await ThrowsAsync<NotSupportedException>(() => segment.WriteAsync(new byte[3], 0, 3));
+            await ThrowsAsync<NotSupportedException>(segment.WriteAsync(new ReadOnlyMemory<byte>()).AsTask);
         }
     }
 }
