@@ -3,6 +3,7 @@ using System.IO;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -268,6 +269,28 @@ namespace DotNext.IO
             Equal(10, stream.Read(buffer, 0, 10));
             for(var i = 0; i < buffer.Length; i++)
                 Equal(i, buffer[i]);
+        }
+
+        [Fact]
+        public static void StressTest()
+        {
+            ReadOnlySequence<byte> sequence;
+            var dict = new Dictionary<string, string>
+            {
+                {"Key1", "Value1"},
+                {"Key2", "Value2"}
+            };
+            var formatter = new BinaryFormatter();
+
+            using (var ms = new MemoryStream(1024))
+            {
+                formatter.Serialize(ms, dict);
+                ms.Position = 0L;
+                sequence = new ChunkSequence<byte>(ms.ToArray(), 10).ToReadOnlySequence();
+            }
+
+            using var stream = sequence.AsStream();
+            Equal(dict, formatter.Deserialize(stream));
         }
     }
 }
