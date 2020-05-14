@@ -6,10 +6,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DotNext.Buffers
+namespace DotNext.IO
 {
+    using Buffers;
+
     [ExcludeFromCodeCoverage]
-    public sealed class ReadOnlySequenceTests : Test
+    public sealed class StreamSourceTests : Test
     {
         private static readonly byte[] data = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 };
 
@@ -211,6 +213,24 @@ namespace DotNext.Buffers
             Throws<NotSupportedException>(() => src.WriteByte(42));
             await ThrowsAsync<NotSupportedException>(src.WriteAsync(new ReadOnlyMemory<byte>()).AsTask);
             await ThrowsAsync<NotSupportedException>(() => src.WriteAsync(new byte[2], 0, 2));
+        }
+
+        [Fact]
+        public static void BufferWriterToStream()
+        {
+            using var writer = new PooledArrayBufferWriter<byte>();
+            var span = writer.GetSpan(10);
+            new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}.AsSpan().CopyTo(span);
+            writer.Advance(10);
+            using var stream = writer.AsStream();
+            True(stream.CanRead);
+            False(stream.CanWrite);
+            Equal(0, stream.Position);
+            Equal(10, stream.Length);
+            var buffer = new byte[10];
+            Equal(10, stream.Read(buffer, 0, 10));
+            for(var i = 0; i < buffer.Length; i++)
+                Equal(i, buffer[i]);
         }
     }
 }

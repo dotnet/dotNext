@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.MemoryMarshal;
 
-namespace DotNext.Buffers
+namespace DotNext.IO
 {
     using AsyncResult = Threading.Tasks.AsyncResult;
 

@@ -27,7 +27,7 @@ namespace DotNext.IO
             BaseStream = stream ?? throw new ArgumentNullException(nameof(stream));
             length = stream.Length;
             position = 0L;
-            this.leaveOpen = leaveOpen;
+            this.leaveOpen = leaveOpen; 
         }
 
         /// <summary>
@@ -73,14 +73,10 @@ namespace DotNext.IO
         /// <value>Always <see langword="false"/>.</value>
         public override bool CanWrite => false;
 
-        /// <summary>
-        /// Gets the length in bytes of the stream.
-        /// </summary>
+        /// <inheritdoc/>
         public override long Length => length;
 
-        /// <summary>
-        /// Gets or sets relative position from the beginning of this segment.
-        /// </summary>
+        /// <inheritdoc/>
         public override long Position
         {
             get => position;
@@ -92,28 +88,16 @@ namespace DotNext.IO
             }
         }
 
-        /// <summary>
-        /// Clears all buffers for this stream and causes any buffered data to be written to the underlying device.
-        /// </summary>
+        /// <inheritdoc/>
         public override void Flush() => BaseStream.Flush();
 
-        /// <summary>
-        /// Asynchronously clears all buffers for this stream, causes any buffered data to  be written to the underlying device, and monitors cancellation requests.
-        /// </summary>
-        /// <param name="token">The token to monitor for cancellation requests.</param>
-        /// <returns>A task that represents the asynchronous flush operation.</returns>
+        /// <inheritdoc/>
         public override Task FlushAsync(CancellationToken token = default) => BaseStream.FlushAsync(token);
 
-        /// <summary>
-        /// Gets a value that determines whether the current stream can time out.
-        /// </summary>
-        /// <value>A value that determines whether the current stream can time out.</value>
+        /// <inheritdoc/>
         public override bool CanTimeout => BaseStream.CanTimeout;
 
-        /// <summary>
-        /// Reads a byte from the stream and advances the position within the stream by one byte, or returns -1 if at the end of the stream.
-        /// </summary>
-        /// <returns>The unsigned byte cast to an Int32, or -1 if at the end of the stream.</returns>
+        /// <inheritdoc/>
         public override int ReadByte()
         {
             if (position >= length)
@@ -122,20 +106,10 @@ namespace DotNext.IO
             return BaseStream.ReadByte();
         }
 
-        /// <summary>
-        /// This method is not supported.
-        /// </summary>
-        /// <param name="value">The byte to write to the stream.</param>
-        /// <exception cref="NotSupportedException">The method is not supported.</exception>
+        /// <inheritdoc/>
         public override void WriteByte(byte value) => throw new NotSupportedException();
 
-        /// <summary>
-        /// Reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
-        /// </summary>
-        /// <param name="buffer">Contains the specified byte array with the values between <paramref name="offset"/> and <c>(offset + count - 1)</c> replaced by the bytes read from the current source.</param>
-        /// <param name="offset"> The zero-based byte offset in buffer at which to begin storing the data read from the current stream.</param>
-        /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
-        /// <returns>The total number of bytes read into the buffer.</returns>
+        /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
         {
             count = BaseStream.Read(buffer, offset, (int)Math.Min(count, length - position));
@@ -143,11 +117,7 @@ namespace DotNext.IO
             return count;
         }
 
-        /// <summary>
-        /// Reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
-        /// </summary>
-        /// <param name="buffer">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
-        /// <returns>The total number of bytes read into the buffer.</returns>
+        /// <inheritdoc/>
         public override int Read(Span<byte> buffer)
         {
             buffer = buffer.Slice(0, (int)Math.Min(buffer.Length, length - position));
@@ -156,14 +126,7 @@ namespace DotNext.IO
             return count;
         }
 
-        /// <summary>
-        /// Asynchronously reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
-        /// </summary>
-        /// <param name="buffer">Contains the specified byte array with the values between <paramref name="offset"/> and <c>(offset + count - 1)</c> replaced by the bytes read from the current source.</param>
-        /// <param name="offset"> The zero-based byte offset in buffer at which to begin storing the data read from the current stream.</param>
-        /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
-        /// <param name="token">The token to monitor for cancellation requests.</param>
-        /// <returns>The total number of bytes read into the buffer.</returns>
+        /// <inheritdoc/>
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
         {
             count = await BaseStream.ReadAsync(buffer, offset, (int)Math.Min(count, length - position)).ConfigureAwait(false);
@@ -171,12 +134,7 @@ namespace DotNext.IO
             return count;
         }
 
-        /// <summary>
-        /// Asynchronously reads a sequence of bytes from the current stream and advances the position within the stream by the number of bytes read.
-        /// </summary>
-        /// <param name="buffer">The region of memory to write the data into.</param>
-        /// <param name="token">The token to monitor for cancellation requests.</param>
-        /// <returns>The total number of bytes read into the buffer.</returns>
+        /// <inheritdoc/>
         public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken token = default)
         {
             buffer = buffer.Slice(0, (int)Math.Min(buffer.Length, length - position));
@@ -185,38 +143,28 @@ namespace DotNext.IO
             return count;
         }
 
-        /// <summary>
-        /// Sets the position within the current stream.
-        /// </summary>
-        /// <param name="offset">A byte offset relative to the origin parameter.</param>
-        /// <param name="origin">The reference point used to obtain the new position.</param>
-        /// <returns>The new position within the current stream.</returns>
+        /// <inheritdoc/>
         public override long Seek(long offset, SeekOrigin origin)
         {
-            var newPosition = position;
-            switch (origin)
+            var newPosition = origin switch
             {
-                case SeekOrigin.Begin:
-                    newPosition = offset;
-                    break;
-                case SeekOrigin.Current:
-                    newPosition += offset;
-                    break;
-                case SeekOrigin.End:
-                    newPosition = length + offset;
-                    break;
-            }
+                SeekOrigin.Begin => offset,
+                SeekOrigin.Current => position + offset,
+                SeekOrigin.End => length + offset,
+                _ => throw new ArgumentOutOfRangeException(nameof(origin))
+            };
+
+            if (newPosition < 0)
+                throw new IOException();
+
             if (newPosition > length)
                 throw new ArgumentOutOfRangeException(nameof(offset));
+
             position = newPosition;
             return newPosition;
         }
 
-        /// <summary>
-        /// Sets the length of the current stream.
-        /// </summary>
-        /// <param name="value">The desired length of the current stream in bytes.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is greater than remaining length of the stream.</exception>
+        /// <inheritdoc/>
         public override void SetLength(long value)
         {
             if (value > BaseStream.Length - BaseStream.Position)
@@ -224,67 +172,41 @@ namespace DotNext.IO
             length = value;
         }
 
-        /// <summary>
-        /// This method is not supported.
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="offset"></param>
-        /// <param name="count"></param>
-        /// <exception cref="NotSupportedException">The method is not supported.</exception>
+        /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
 
-        /// <summary>
-        /// This method is not supported.
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <exception cref="NotSupportedException">The method is not supported.</exception>
+        /// <inheritdoc/>
         public override void Write(ReadOnlySpan<byte> buffer) => throw new NotSupportedException();
 
-        /// <summary>
-        /// This method is not supported.
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="offset"></param>
-        /// <param name="count"></param>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        /// <exception cref="NotSupportedException">The method is not supported.</exception>
+        /// <inheritdoc/>
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token = default) => Task.FromException(new NotSupportedException());
 
-        /// <summary>
-        /// This method is not supported.
-        /// </summary>
-        /// <param name="buffer"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        /// <exception cref="NotSupportedException">The method is not supported.</exception>
+        /// <inheritdoc/>
         public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) 
             => new ValueTask(Task.FromException(new NotSupportedException()));
 
-        /// <summary>
-        /// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to read before timing out.
-        /// </summary>
-        /// <value> A value, in miliseconds, that determines how long the stream will attempt to read before timing out.</value>
+        /// <inheritdoc/>
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback callback, object state)
+            => throw new NotSupportedException();
+
+        /// <inheritdoc/>
+        public override void EndWrite(IAsyncResult asyncResult) => throw new InvalidOperationException();
+
+        /// <inheritdoc/>
         public override int ReadTimeout
         {
             get => BaseStream.ReadTimeout;
             set => BaseStream.ReadTimeout = value;
         }
 
-        /// <summary>
-        /// Gets or sets a value, in miliseconds, that determines how long the stream will attempt to write before timing out.
-        /// </summary>
-        /// <value>A value, in miliseconds, that determines how long the stream will attempt to write before timing out.</value>
+        /// <inheritdoc/>
         public override int WriteTimeout
         {
             get => BaseStream.WriteTimeout;
             set => BaseStream.WriteTimeout = value;
         }
 
-        /// <summary>
-        ///  Releases the unmanaged resources used by this stream and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing"><see langword="true"/> to release both managed and unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if (disposing && !leaveOpen)
@@ -292,10 +214,7 @@ namespace DotNext.IO
             base.Dispose(disposing);
         }
 
-        /// <summary>
-        /// Asynchronously releases the unmanaged resources used by this stream.
-        /// </summary>
-        /// <returns>A task that represents the asynchronous dispose operation.</returns>
+        /// <inheritdoc/>
         public override async ValueTask DisposeAsync()
         {
             if (!leaveOpen)

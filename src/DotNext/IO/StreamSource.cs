@@ -2,8 +2,10 @@ using System;
 using System.Buffers;
 using System.IO;
 
-namespace DotNext.Buffers
+namespace DotNext.IO
 {
+    using Buffers;
+
     /// <summary>
     /// Represents conversion of various buffer types to stream.
     /// </summary>
