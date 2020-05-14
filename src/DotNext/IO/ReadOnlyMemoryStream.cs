@@ -136,9 +136,9 @@ namespace DotNext.IO
         public override int EndRead(IAsyncResult ar) => ((AsyncResult)ar).End<int>();
 
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-            => new AsyncResult(WriteAsync(buffer, offset, count), callback, state);
+            => throw new NotSupportedException();
 
-        public override void EndWrite(IAsyncResult ar) =>((AsyncResult)ar).End();
+        public override void EndWrite(IAsyncResult ar) => throw new InvalidOperationException();
 
         public override string ToString() => sequence.ToString();
     }

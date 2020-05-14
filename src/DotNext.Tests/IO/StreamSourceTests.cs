@@ -211,6 +211,8 @@ namespace DotNext.IO
             Throws<NotSupportedException>(() => src.Write(new byte[2], 0, 2));
             Throws<NotSupportedException>(() => src.Write(new byte[2]));
             Throws<NotSupportedException>(() => src.WriteByte(42));
+            Throws<NotSupportedException>(() => src.BeginWrite(new byte[2], 0, 2, null, null));
+            Throws<InvalidOperationException>(() => src.EndWrite(Task.CompletedTask));
             await ThrowsAsync<NotSupportedException>(src.WriteAsync(new ReadOnlyMemory<byte>()).AsTask);
             await ThrowsAsync<NotSupportedException>(() => src.WriteAsync(new byte[2], 0, 2));
         }

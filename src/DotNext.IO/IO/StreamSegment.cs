@@ -127,6 +127,21 @@ namespace DotNext.IO
         }
 
         /// <inheritdoc/>
+        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
+        {
+            count = (int)Math.Min(count, length - position);
+            return BaseStream.BeginRead(buffer, offset, count, callback, state);
+        }
+
+        /// <inheritdoc/>
+        public override int EndRead(IAsyncResult asyncResult)
+        {
+            var count = BaseStream.EndRead(asyncResult);
+            position += count;
+            return count;
+        }
+
+        /// <inheritdoc/>
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token = default)
         {
             count = await BaseStream.ReadAsync(buffer, offset, (int)Math.Min(count, length - position)).ConfigureAwait(false);
