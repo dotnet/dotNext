@@ -64,7 +64,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http
 
             async ValueTask<bool> IAsyncEnumerator<ReceivedLogEntry>.MoveNextAsync()
             {
-                await (current?.DisposeAsync() ?? new ValueTask()).ConfigureAwait(false);
+                if (!(current is null))
+                    await current.DisposeAsync().ConfigureAwait(false);
                 var section = await ReadNextSectionAsync().ConfigureAwait(false);
                 if (section is null)
                     return false;

@@ -237,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             {
                 AbortIO();
                 await writeSession.ConfigureAwait(false);
-                await pipe.Reader.CompleteAsync();
+                await pipe.Reader.CompleteAsync().ConfigureAwait(false);
                 pipe.Reset();
             }
             this.writeSession = WriteEntryAsync(token);

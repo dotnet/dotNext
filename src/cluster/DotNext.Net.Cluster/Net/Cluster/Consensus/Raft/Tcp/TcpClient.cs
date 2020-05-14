@@ -45,7 +45,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 ReadOnlyMemory<byte> response;
                 do
                 {
-                    (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token);
+                    (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token).ConfigureAwait(false);
                     //transmit packet to the remote endpoint
                     await WritePacket(headers, buffer, count, token).ConfigureAwait(false);
                     if (!waitForInput)
@@ -71,8 +71,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 
         private static async Task<ClientNetworkStream> ConnectAsync(IPEndPoint endPoint, LingerOption linger, byte ttl, CancellationToken token)
         {
-            using var args = new ConnectEventArgs(token);
-            args.RemoteEndPoint = endPoint;
+            using var args = new ConnectEventArgs(token)
+            {
+                RemoteEndPoint = endPoint
+            };
             if (Socket.ConnectAsync(SocketType.Stream, ProtocolType.Tcp, args))
                 using (token.Register(CancelConnectAsync, args))
                 {

@@ -16,7 +16,7 @@ namespace DotNext.Metaprogramming
 
         private protected LambdaExpression(bool tailCall) : base(false) => this.tailCall = tailCall;
 
-        private protected IReadOnlyList<ParameterExpression> GetParameters(System.Reflection.ParameterInfo[] parameters)
+        private protected static IReadOnlyList<ParameterExpression> GetParameters(System.Reflection.ParameterInfo[] parameters)
             => Array.ConvertAll(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
 
         /// <summary>

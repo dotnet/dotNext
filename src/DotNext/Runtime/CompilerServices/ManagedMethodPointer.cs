@@ -28,6 +28,7 @@ namespace DotNext.Runtime.CompilerServices
         {
             PushInRef(in arg0);
             Push(arg1);
+            Push(methodPtr);
             Calli(ManagedMethod(CallingConventions.Standard, Type<O>(), Type<I>().MakeByRefType(), typeof(int)));
             return Return<O>();
         }

@@ -154,6 +154,7 @@ namespace DotNext.Runtime.CompilerServices
                 attributes.Clear();
                 statements.Clear();
             }
+            base.Dispose(disposing);
         }
     }
 }

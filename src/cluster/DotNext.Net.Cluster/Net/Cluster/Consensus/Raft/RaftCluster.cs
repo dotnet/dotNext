@@ -648,7 +648,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 Leader = newLeader as TMember;
                 state = new LeaderState(this, allowPartitioning, currentTerm) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
                     auditTrail, Token);
-                await auditTrail.AppendNoOpEntry(Token);
+                await auditTrail.AppendNoOpEntry(Token).ConfigureAwait(false);
                 Metrics?.MovedToLeaderState();
                 Logger.TransitionToLeaderStateCompleted();
             }

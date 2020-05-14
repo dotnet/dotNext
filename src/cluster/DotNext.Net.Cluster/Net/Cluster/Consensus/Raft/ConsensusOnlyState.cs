@@ -237,7 +237,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             if (endIndex < 0L)
                 throw new ArgumentOutOfRangeException(nameof(endIndex));
             if (endIndex < startIndex)
-                return await reader.ReadAsync<EmptyEntry, EmptyEntry[]>(Array.Empty<EmptyEntry>(), null, token);
+                return await reader.ReadAsync<EmptyEntry, EmptyEntry[]>(Array.Empty<EmptyEntry>(), null, token).ConfigureAwait(false);
             using (await syncRoot.AcquireReadLockAsync(token).ConfigureAwait(false))
                 return await ReadAsync<TReader, TResult>(reader, startIndex, endIndex, token).ConfigureAwait(false);
         }

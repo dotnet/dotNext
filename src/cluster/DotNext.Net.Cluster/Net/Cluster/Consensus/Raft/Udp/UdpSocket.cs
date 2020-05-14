@@ -234,7 +234,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
                 //write correlation ID and headers
                 id.WriteTo(bufferHolder.Memory);
                 headers.WriteTo(bufferHolder.Memory.Slice(CorrelationId.NaturalSize));
-                await SendToAsync(AdjustPacket(bufferHolder.Memory, bytesWritten), endpoint);
+                await SendToAsync(AdjustPacket(bufferHolder.Memory, bytesWritten), endpoint).ConfigureAwait(false);
             }
             finally
             {

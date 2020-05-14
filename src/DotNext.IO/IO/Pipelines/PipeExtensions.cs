@@ -113,7 +113,7 @@ namespace DotNext.IO.Pipelines
             if (length == 0)
                 return string.Empty;
             using var resultBuffer = new ArrayBuffer<char>(length);
-            return await ReadAsync<string, StringReader<ArrayBuffer<char>>>(reader, new StringReader<ArrayBuffer<char>>(context, resultBuffer), token);
+            return await ReadAsync<string, StringReader<ArrayBuffer<char>>>(reader, new StringReader<ArrayBuffer<char>>(context, resultBuffer), token).ConfigureAwait(false);
         }
 
         private static async ValueTask<int> ReadLengthAsync(this PipeReader reader, StringLengthEncoding lengthFormat, CancellationToken token)

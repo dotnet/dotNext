@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -230,6 +231,7 @@ namespace DotNext.IO.Log
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
         ValueTask AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex) where TEntryImpl : notnull, TEntry;
 
+
         /// <summary>
         /// Adds uncommitted log entry to the end of this log. 
         /// </summary>
@@ -241,6 +243,7 @@ namespace DotNext.IO.Log
         /// <typeparam name="TEntryImpl">The actual type of the supplied log entry.</typeparam>
         /// <returns>The index of the added entry.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="entry"/> is the snapshot entry.</exception>
+        [SuppressMessage("Reliability", "CA2000", Justification = "SingleEntryProducer.Dispose is trivial and can be omitted")]
         ValueTask<long> AppendAsync<TEntryImpl>(TEntryImpl entry, CancellationToken token = default)
             where TEntryImpl : notnull, TEntry
             => AppendAsync(new SingleEntryProducer<TEntryImpl>(entry), token);

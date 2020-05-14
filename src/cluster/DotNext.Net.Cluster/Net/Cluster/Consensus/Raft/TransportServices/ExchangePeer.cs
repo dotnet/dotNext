@@ -61,7 +61,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 linkedSource?.Dispose();
                 timeoutSource.Dispose();
                 if (exchange is IAsyncDisposable disposable)
-                    await disposable.DisposeAsync();
+                    await disposable.DisposeAsync().ConfigureAwait(false);
             }
         }
 

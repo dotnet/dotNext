@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -148,6 +149,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return false;
         }
 
+        [SuppressMessage("Reliability", "CA2012", Justification = "Replicator task should be added to collection to ensure parallelism")]
         private async Task<bool> DoHeartbeats(IAuditTrail<IRaftLogEntry> auditTrail, CancellationToken token)
         {
             var timeStamp = Timestamp.Current;
@@ -159,7 +161,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             foreach (var member in stateMachine.Members)
                 if (member.IsRemote)
                 {
-                    long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token);
+                    long precedingIndex = Math.Max(0, member.NextIndex - 1), precedingTerm = await auditTrail.GetTermAsync(precedingIndex, token).ConfigureAwait(false);
                     tasks.AddLast(new Replicator(member, commitIndex, currentIndex, term, precedingIndex, precedingTerm, stateMachine.Logger, token).Start(auditTrail));
                 }
             var quorum = 1;  //because we know that the entry is replicated in this node

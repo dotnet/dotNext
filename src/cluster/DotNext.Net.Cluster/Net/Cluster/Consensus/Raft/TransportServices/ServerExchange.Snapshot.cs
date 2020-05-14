@@ -40,7 +40,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             return true;
         }
 
-        private ValueTask<(PacketHeaders, int, bool)> RequestSnapshotChunk()
+        private static ValueTask<(PacketHeaders, int, bool)> RequestSnapshotChunk()
             => new ValueTask<(PacketHeaders, int, bool)>((new PacketHeaders(MessageType.Continue, FlowControl.Ack), 0, true));
 
         private async ValueTask<(PacketHeaders, int, bool)> EndReceiveSnapshot(Memory<byte> output)

@@ -57,7 +57,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                     {
                         bool waitForInput;
                         int count;
-                        (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token);
+                        (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token).ConfigureAwait(false);
                         //transmit packet to the remote endpoint
                         await WritePacket(headers, buffer, count, token).ConfigureAwait(false);
                         if (!waitForInput)

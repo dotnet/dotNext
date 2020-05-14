@@ -44,7 +44,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
                 await writer.WriteStringAsync(key.AsMemory(), context, lengthFormat: LengthEncoding, token: token).ConfigureAwait(false);
                 await writer.WriteStringAsync(value.AsMemory(), context, lengthFormat: LengthEncoding, token: token).ConfigureAwait(false);
             }
-            await writer.CompleteAsync();
+            await writer.CompleteAsync().ConfigureAwait(false);
         }
 
         private static async Task<IReadOnlyDictionary<string, string>> ReadAsync(PipeReader reader, CancellationToken token)

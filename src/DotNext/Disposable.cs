@@ -72,7 +72,8 @@ namespace DotNext
         public static async ValueTask DisposeAsync(IEnumerable<IAsyncDisposable?> objects)
         {
             foreach (var obj in objects)
-                await (obj?.DisposeAsync()).GetValueOrDefault();
+                if (!(obj is null))
+                    await obj.DisposeAsync().ConfigureAwait(false);
         }
 
         /// <summary>

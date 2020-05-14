@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     internal sealed class UdpServer : UdpSocket, IServer
     {
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Channel : INetworkTransport.IChannel
+        private readonly struct Channel : INetworkTransport.IChannel, IDisposable
         {
             private readonly IExchangePool exchangeOwner;
             private readonly IExchange exchange;
