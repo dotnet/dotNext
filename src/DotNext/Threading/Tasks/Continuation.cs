@@ -97,5 +97,17 @@ namespace DotNext.Threading.Tasks
         public static Task<T> OnCanceled<T, C>(this Task<T> task, TaskScheduler? scheduler = null)
             where C : Constant<T>, new()
             => ContinueWithConstant<T, C>(task, task.IsCanceled, Continuation<T, C>.WhenCanceled, DefaultOf<CancellationToken>(), scheduler);
+    
+        internal static async void OnCompleted(this Task task, AsyncCallback callback)
+        {
+            try
+            {
+                await task.ConfigureAwait(false);
+            }
+            finally
+            {
+                callback(task);
+            }
+        }
     }
 }

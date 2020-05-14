@@ -208,8 +208,7 @@ namespace DotNext.IO
             var buffer = new byte[4];
             src.Position = 1;
             var ar = src.BeginRead(buffer, 0, 2, null, "state");
-            True(ar.CompletedSynchronously);
-            True(ar.IsCompleted);
+            False(ar.CompletedSynchronously);
             Equal("state", ar.AsyncState);
             True(ar.AsyncWaitHandle.WaitOne(DefaultTimeout));
             Equal(2, src.EndRead(ar));

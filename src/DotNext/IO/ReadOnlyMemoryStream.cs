@@ -7,7 +7,7 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.IO
 {
-    using AsyncResult = Threading.Tasks.AsyncResult;
+    using static Threading.Tasks.Continuation;
 
     internal sealed class ReadOnlyMemoryStream : Stream
     {
@@ -131,9 +131,14 @@ namespace DotNext.IO
         }
 
         public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
-            => new AsyncResult(ReadAsync(buffer, offset, count), callback, state);
+        {
+            var task = Task<int>.Factory.StartNew(s => Read(buffer, offset, count), state);
+            if (!(callback is null))
+                task.OnCompleted(callback);
+            return task;
+        }
         
-        public override int EndRead(IAsyncResult ar) => ((AsyncResult)ar).End<int>();
+        public override int EndRead(IAsyncResult ar) => ((Task<int>)ar).Result;
 
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
             => throw new NotSupportedException();
