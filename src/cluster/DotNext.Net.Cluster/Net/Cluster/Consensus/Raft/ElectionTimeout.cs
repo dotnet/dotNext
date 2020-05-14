@@ -59,7 +59,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [Obsolete("Use ElectionTimeoutExtensions.Set method instead")]
         public ElectionTimeout Modify(int lowerValue, int upperValue)
             => new ElectionTimeout(lowerValue, upperValue, random);
-        
+
         internal static void Modify(ref ElectionTimeout timeout, int lowerValue, int upperValue)
             => timeout = new ElectionTimeout(lowerValue, upperValue);
     }

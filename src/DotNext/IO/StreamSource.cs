@@ -18,7 +18,7 @@ namespace DotNext.IO
         /// <returns>The stream over sequence of bytes.</returns>
         public static Stream AsStream(this ReadOnlySequence<byte> sequence)
             => new ReadOnlyMemoryStream(sequence);
-        
+
         /// <summary>
         /// Converts read-only memory to a read-only stream.
         /// </summary>
@@ -26,7 +26,7 @@ namespace DotNext.IO
         /// <returns>The stream over memory of bytes.</returns>
         public static Stream AsStream(this ReadOnlyMemory<byte> memory)
             => AsStream(new ReadOnlySequence<byte>(memory));
-        
+
         private static MemoryStream CreateStream(byte[] buffer, int length)
             => new MemoryStream(buffer, 0, length, false, false);
 

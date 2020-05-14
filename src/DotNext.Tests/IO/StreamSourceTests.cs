@@ -1,8 +1,8 @@
 using System;
-using System.IO;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 using Xunit;
@@ -17,7 +17,7 @@ namespace DotNext.IO
         private static readonly byte[] data = { 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120 };
 
         public static IEnumerable<object[]> TestBuffers()
-        {   
+        {
             yield return new object[] { new ReadOnlySequence<byte>(data) };
             yield return new object[] { new ChunkSequence<byte>(data, 2).ToReadOnlySequence() };
             yield return new object[] { new ChunkSequence<byte>(data, 3).ToReadOnlySequence() };
@@ -71,7 +71,7 @@ namespace DotNext.IO
             dest.Position = 0;
             Equal(data, dest.ToArray());
         }
-        
+
         [Fact]
         public static void CopyAfterReuse()
         {
@@ -185,7 +185,7 @@ namespace DotNext.IO
         public static void ReadSingleByte(ReadOnlySequence<byte> sequence)
         {
             using var src = sequence.AsStream();
-            
+
             for (var i = 0; i < data.Length; i++)
                 Equal(data[i], src.ReadByte());
 
@@ -258,7 +258,7 @@ namespace DotNext.IO
         {
             using var writer = new PooledArrayBufferWriter<byte>();
             var span = writer.GetSpan(10);
-            new byte[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}.AsSpan().CopyTo(span);
+            new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.AsSpan().CopyTo(span);
             writer.Advance(10);
             using var stream = writer.AsStream();
             True(stream.CanRead);
@@ -267,7 +267,7 @@ namespace DotNext.IO
             Equal(10, stream.Length);
             var buffer = new byte[10];
             Equal(10, stream.Read(buffer, 0, 10));
-            for(var i = 0; i < buffer.Length; i++)
+            for (var i = 0; i < buffer.Length; i++)
                 Equal(i, buffer[i]);
         }
 

@@ -75,7 +75,7 @@ namespace DotNext.IO
 
             if (remaining <= 0L || buffer.Length == 0)
                 return 0;
-            
+
             var count = (int)Math.Min(buffer.Length, remaining);
             sequence.Slice(position, count).CopyTo(buffer);
             position += count;
@@ -137,7 +137,7 @@ namespace DotNext.IO
                 task.OnCompleted(callback);
             return task;
         }
-        
+
         public override int EndRead(IAsyncResult ar) => ((Task<int>)ar).Result;
 
         public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)

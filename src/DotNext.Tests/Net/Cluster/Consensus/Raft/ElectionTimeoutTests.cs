@@ -19,7 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public static void UpdateBoundaries()
         {
             var timeout = new ElectionTimeout(10, 20);
-            timeout.Update(null, null); 
+            timeout.Update(null, null);
             Equal(10, timeout.LowerValue);
             Equal(20, timeout.UpperValue);
             timeout.Update(15, null);

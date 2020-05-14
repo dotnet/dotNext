@@ -24,7 +24,7 @@ namespace DotNext.Buffers
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than or equal to zero.</exception>
         public PooledArrayBufferWriter(ArrayPool<T> pool, int initialCapacity)
         {
-            if(initialCapacity <= 0)
+            if (initialCapacity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(initialCapacity));
             this.pool = pool;
             buffer = pool.Rent(initialCapacity);
@@ -90,7 +90,7 @@ namespace DotNext.Buffers
 
         ArraySegment<T> IConvertible<ArraySegment<T>>.Convert() => WrittenArray;
 
-        internal TWrapper WrapBuffer<TWrapper>(ValueFunc<T[], int, TWrapper> factory) 
+        internal TWrapper WrapBuffer<TWrapper>(ValueFunc<T[], int, TWrapper> factory)
             => factory.Invoke(buffer, position);
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public override void Clear()
         {
-            if(buffer.Length > 0)
+            if (buffer.Length > 0)
                 pool.Return(buffer);
             position = 0;
         }
@@ -157,9 +157,9 @@ namespace DotNext.Buffers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
-                if(buffer.Length > 0)
+                if (buffer.Length > 0)
                     pool.Return(buffer);
                 buffer = Array.Empty<T>();
             }

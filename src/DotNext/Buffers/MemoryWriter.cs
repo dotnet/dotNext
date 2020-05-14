@@ -73,9 +73,9 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public void Advance(int count)
         {
-            if(count < 0)
+            if (count < 0)
                 throw new ArgumentOutOfRangeException(nameof(count));
-            if(position > Capacity - count)
+            if (position > Capacity - count)
                 throw new InvalidOperationException();
             position += count;
         }
@@ -102,20 +102,20 @@ namespace DotNext.Buffers
 
         private protected void CheckAndResizeBuffer(int sizeHint)
         {
-            if(sizeHint < 0)
+            if (sizeHint < 0)
                 throw new ArgumentOutOfRangeException(nameof(sizeHint));
-            if(sizeHint == 0)
+            if (sizeHint == 0)
                 sizeHint = 1;
-            if(sizeHint > FreeCapacity)
+            if (sizeHint > FreeCapacity)
             {
                 int currentLength = Capacity, growBy = Math.Max(currentLength, sizeHint);
-                if(currentLength == 0)
+                if (currentLength == 0)
                     growBy = Math.Max(growBy, DefaultInitialBufferSize);
                 var newSize = currentLength + growBy;
-                if((uint)newSize > int.MaxValue)
+                if ((uint)newSize > int.MaxValue)
                 {
                     newSize = currentLength + sizeHint;
-                    if((uint)newSize > int.MaxValue)
+                    if ((uint)newSize > int.MaxValue)
                         throw new OutOfMemoryException();
                 }
                 Resize(newSize);

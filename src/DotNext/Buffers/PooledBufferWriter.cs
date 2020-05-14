@@ -19,7 +19,7 @@ namespace DotNext.Buffers
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="initialCapacity"/> is less than or equal to zero.</exception>
         public PooledBufferWriter(MemoryAllocator<T> allocator, int initialCapacity)
         {
-            if(initialCapacity <= 0)
+            if (initialCapacity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(initialCapacity));
             this.allocator = allocator;
             buffer = allocator(initialCapacity);
@@ -107,7 +107,7 @@ namespace DotNext.Buffers
         /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
-            if(disposing)
+            if (disposing)
             {
                 buffer.Dispose();
                 buffer = default;

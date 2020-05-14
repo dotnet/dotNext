@@ -27,7 +27,7 @@ namespace DotNext.IO
             BaseStream = stream ?? throw new ArgumentNullException(nameof(stream));
             length = stream.Length;
             position = 0L;
-            this.leaveOpen = leaveOpen; 
+            this.leaveOpen = leaveOpen;
         }
 
         /// <summary>
@@ -197,7 +197,7 @@ namespace DotNext.IO
         public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token = default) => Task.FromException(new NotSupportedException());
 
         /// <inheritdoc/>
-        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) 
+        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
             => new ValueTask(Task.FromException(new NotSupportedException()));
 
         /// <inheritdoc/>
