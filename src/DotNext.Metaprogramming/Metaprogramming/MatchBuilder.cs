@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -248,6 +249,7 @@ namespace DotNext.Metaprogramming
 
             Expression ICaseStatementBuilder.Build(ParameterExpression value) => statement(value);
 
+            [SuppressMessage("Usage", "CA1801", Justification = "Required by delegate signature")]
             internal static Expression Build(Expression result, ParameterExpression value) => result;
 
             public static implicit operator CaseStatementBuilder(CaseStatement statement) => new CaseStatementBuilder(statement);
