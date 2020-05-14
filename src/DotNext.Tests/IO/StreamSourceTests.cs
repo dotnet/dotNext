@@ -202,6 +202,23 @@ namespace DotNext.IO
         }
 
         [Fact]
+        public static void ReadApm()
+        {
+            using var src = new ReadOnlyMemory<byte>(data).AsStream();
+            var buffer = new byte[4];
+            src.Position = 1;
+            var ar = src.BeginRead(buffer, 0, 2, null, "state");
+            True(ar.CompletedSynchronously);
+            True(ar.IsCompleted);
+            Equal("state", ar.AsyncState);
+            True(ar.AsyncWaitHandle.WaitOne(DefaultTimeout));
+            Equal(2, src.EndRead(ar));
+            Equal(data[1], buffer[0]);
+            Equal(data[2], buffer[1]);
+            Equal(0, buffer[2]);
+        }
+
+        [Fact]
         public static async Task WriteNotSupported()
         {
             using var src = new ReadOnlyMemory<byte>(data).AsStream();
