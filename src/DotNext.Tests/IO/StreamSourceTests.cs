@@ -219,6 +219,25 @@ namespace DotNext.IO
         }
 
         [Fact]
+        public static void Truncation()
+        {
+            using var src = new ReadOnlyMemory<byte>(data).AsStream();
+            src.Position = 1L;
+            src.SetLength(data.Length - 2L);
+            Equal(data.Length - 2L, src.Length);
+            var buffer = new byte[3];
+            Equal(3, src.Read(buffer));
+            Equal(data[1], buffer[0]);
+            Equal(data[2], buffer[1]);
+            Equal(data[3], buffer[2]);
+
+            src.Position = src.Length;
+            src.SetLength(1L);
+            buffer[0] = 0;
+            Equal(0, src.Read(buffer));
+        }
+
+        [Fact]
         public static async Task WriteNotSupported()
         {
             using var src = new ReadOnlyMemory<byte>(data).AsStream();
