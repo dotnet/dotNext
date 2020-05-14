@@ -7,7 +7,7 @@
     <Authors>Roman Sakno</Authors>
     <Company />
     <Product>.NEXT Family of Libraries</Product>
-    <Version>2.3.0</Version>
+    <Version>2.3.2</Version>
 	<AssemblyName>DotNext</AssemblyName>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://sakno.github.io/dotNext/</PackageProjectUrl>
