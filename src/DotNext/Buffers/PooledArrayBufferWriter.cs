@@ -172,15 +172,13 @@ namespace DotNext.Buffers
     /// </summary>
     public static class PooledArrayBufferWriter
     {
-        private static MemoryStream CreateStream(byte[] buffer, int length)
-            => new MemoryStream(buffer, 0, length, false, false);
-
         /// <summary>
         /// Gets written content as read-only stream.
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
         /// <returns>The stream representing written bytes.</returns>
+        [Obsolete("Use StreamSource.AsStream instead")]
         public static Stream GetWrittenBytesAsStream(this PooledArrayBufferWriter<byte> writer)
-            => writer.WrapBuffer(new ValueFunc<byte[], int, MemoryStream>(CreateStream));
+            => StreamSource.AsStream(writer);
     }
 }

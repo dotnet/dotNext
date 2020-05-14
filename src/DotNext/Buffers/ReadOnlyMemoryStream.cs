@@ -7,6 +7,8 @@ using static System.Runtime.InteropServices.MemoryMarshal;
 
 namespace DotNext.Buffers
 {
+    using AsyncResult = Threading.Tasks.AsyncResult;
+
     internal sealed class ReadOnlyMemoryStream : Stream
     {
         private ReadOnlySequence<byte> sequence;
@@ -127,6 +129,16 @@ namespace DotNext.Buffers
 
             return position = newPosition;
         }
+
+        public override IAsyncResult BeginRead(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
+            => new AsyncResult(ReadAsync(buffer, offset, count), callback, state);
+        
+        public override int EndRead(IAsyncResult ar) => ((AsyncResult)ar).End<int>();
+
+        public override IAsyncResult BeginWrite(byte[] buffer, int offset, int count, AsyncCallback? callback, object? state)
+            => new AsyncResult(WriteAsync(buffer, offset, count), callback, state);
+
+        public override void EndWrite(IAsyncResult ar) =>((AsyncResult)ar).End();
 
         public override string ToString() => sequence.ToString();
     }

@@ -202,7 +202,7 @@ namespace DotNext.Buffers
         [Fact]
         public static async Task WriteNotSupported()
         {
-            using var src = new ReadOnlySequence<byte>(data).AsStream();
+            using var src = new ReadOnlyMemory<byte>(data).AsStream();
             True(src.CanRead);
             True(src.CanSeek);
             False(src.CanWrite);
