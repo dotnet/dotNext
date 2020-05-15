@@ -14,7 +14,8 @@ namespace DotNext.Metaprogramming
     {
         private protected readonly bool tailCall;
 
-        private protected LambdaExpression(bool tailCall) : base(false) => this.tailCall = tailCall;
+        private protected LambdaExpression(bool tailCall)
+            : base(false) => this.tailCall = tailCall;
 
         private protected static IReadOnlyList<ParameterExpression> GetParameters(System.Reflection.ParameterInfo[] parameters)
             => Array.ConvertAll(parameters, parameter => Expression.Parameter(parameter.ParameterType, parameter.Name));
@@ -41,23 +42,22 @@ namespace DotNext.Metaprogramming
     /// <summary>
     /// Represents lambda function builder.
     /// </summary>
-    /// <typeparam name="D">The delegate describing signature of lambda function.</typeparam>
-    internal sealed class LambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>, ILexicalScope<Expression<D>, Action<LambdaContext, ParameterExpression>>, ILexicalScope<Expression<D>, Func<LambdaContext, Expression>>
-        where D : Delegate
+    /// <typeparam name="TDelegate">The delegate describing signature of lambda function.</typeparam>
+    internal sealed class LambdaExpression<TDelegate> : LambdaExpression, ILexicalScope<Expression<TDelegate>, Action<LambdaContext>>, ILexicalScope<Expression<TDelegate>, Action<LambdaContext, ParameterExpression>>, ILexicalScope<Expression<TDelegate>, Func<LambdaContext, Expression>>
+        where TDelegate : Delegate
     {
+        private readonly Type returnType;
         private ParameterExpression? recursion;
         private ParameterExpression? lambdaResult;
         private LabelTarget? returnLabel;
-
-        private readonly Type returnType;
 
         [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         internal LambdaExpression(bool tailCall)
             : base(tailCall)
         {
-            if (typeof(D).IsAbstract)
-                throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
-            var invokeMethod = GetInvokeMethod<D>();
+            if (typeof(TDelegate).IsAbstract)
+                throw new GenericArgumentException<TDelegate>(ExceptionMessages.AbstractDelegate, nameof(TDelegate));
+            var invokeMethod = GetInvokeMethod<TDelegate>();
             Parameters = GetParameters(invokeMethod.GetParameters());
             returnType = invokeMethod.ReturnType;
         }
@@ -68,7 +68,7 @@ namespace DotNext.Metaprogramming
         /// <remarks>
         /// This property can be used to make recursive calls.
         /// </remarks>
-        internal override Expression Self => recursion ?? (recursion = Expression.Variable(typeof(D), "self"));
+        internal override Expression Self => recursion ?? (recursion = Expression.Variable(typeof(TDelegate), "self"));
 
         /// <summary>
         /// Gets lambda parameters.
@@ -97,38 +97,45 @@ namespace DotNext.Metaprogramming
             return result;
         }
 
-        private new Expression<D> Build()
+        private new Expression<TDelegate> Build()
         {
             if (!(returnLabel is null))
                 AddStatement(Expression.Label(returnLabel));
-            //last instruction should be always a result of a function
+
+            // last instruction should be always a result of a function
             if (!(lambdaResult is null))
                 AddStatement(lambdaResult);
-            //rewrite body
+
+            // rewrite body
             var body = Expression.Block(returnType, Variables, this);
-            //build lambda expression
+
+            // build lambda expression
             if (!(recursion is null))
-                body = Expression.Block(Sequence.Singleton(recursion),
-                    Expression.Assign(recursion, Expression.Lambda<D>(body, tailCall, Parameters)),
+            {
+                body = Expression.Block(
+                    Sequence.Singleton(recursion),
+                    Expression.Assign(recursion, Expression.Lambda<TDelegate>(body, tailCall, Parameters)),
                     Expression.Invoke(recursion, Parameters));
-            return Expression.Lambda<D>(body, tailCall, Parameters);
+            }
+
+            return Expression.Lambda<TDelegate>(body, tailCall, Parameters);
         }
 
-        public Expression<D> Build(Action<LambdaContext> scope)
+        public Expression<TDelegate> Build(Action<LambdaContext> scope)
         {
             using (var context = new LambdaContext(this))
                 scope(context);
             return Build();
         }
 
-        public Expression<D> Build(Action<LambdaContext, ParameterExpression> scope)
+        public Expression<TDelegate> Build(Action<LambdaContext, ParameterExpression> scope)
         {
             using (var context = new LambdaContext(this))
                 scope(context, Result ?? throw new InvalidOperationException(ExceptionMessages.VoidLambda));
             return Build();
         }
 
-        public Expression<D> Build(Func<LambdaContext, Expression> body)
+        public Expression<TDelegate> Build(Func<LambdaContext, Expression> body)
         {
             using (var context = new LambdaContext(this))
                 AddStatement(body(context));

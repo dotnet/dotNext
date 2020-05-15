@@ -25,9 +25,9 @@ namespace DotNext.Metaprogramming
         public delegate Expression Handler(ParameterExpression exception);
 
         private readonly Expression tryBlock;
+        private readonly ICollection<CatchBlock> handlers;
         private Expression? faultBlock;
         private Expression? finallyBlock;
-        private readonly ICollection<CatchBlock> handlers;
 
         internal TryBuilder(Expression tryBlock, ILexicalScope currentScope)
             : base(currentScope)
@@ -68,10 +68,11 @@ namespace DotNext.Metaprogramming
         /// <summary>
         /// Constructs exception handling clause.
         /// </summary>
-        /// <typeparam name="E">Expected exception.</typeparam>
+        /// <typeparam name="TException">Expected exception.</typeparam>
         /// <param name="handler">Exception handling block.</param>
         /// <returns><c>this</c> builder.</returns>
-        public TryBuilder Catch<E>(Handler handler) where E : Exception => Catch(typeof(E), handler);
+        public TryBuilder Catch<TException>(Handler handler)
+            where TException : Exception => Catch(typeof(TException), handler);
 
         /// <summary>
         /// Constructs exception handling clause that can capture any exception.
@@ -81,7 +82,7 @@ namespace DotNext.Metaprogramming
         public TryBuilder Catch(Expression handler) => Catch(Expression.Variable(typeof(Exception), "e"), null, handler);
 
         /// <summary>
-        /// Associates expression to be returned from structured exception handling block 
+        /// Associates expression to be returned from structured exception handling block
         /// in case of any exception.
         /// </summary>
         /// <param name="fault">The expression to be returned from SEH block.</param>

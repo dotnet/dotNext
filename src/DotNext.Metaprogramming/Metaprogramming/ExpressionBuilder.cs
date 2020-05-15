@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using static System.Threading.Thread;
 
@@ -13,14 +14,13 @@ namespace DotNext.Metaprogramming
     /// Any derived expression builder is not thread-safe and event cannot
     /// be shared between threads.
     /// </remarks>
-    /// <typeparam name="E">Type of expression to be constructed.</typeparam>
-    public abstract class ExpressionBuilder<E> : IExpressionBuilder<E>
-        where E : Expression
+    /// <typeparam name="TExpression">Type of expression to be constructed.</typeparam>
+    public abstract class ExpressionBuilder<TExpression> : IExpressionBuilder<TExpression>
+        where TExpression : Expression
     {
-        private ILexicalScope? currentScope;
-
-        private Type? expressionType;
         private readonly int ownerThread;
+        private ILexicalScope? currentScope;
+        private Type? expressionType;
 
         private protected ExpressionBuilder(ILexicalScope currentScope)
         {
@@ -44,7 +44,7 @@ namespace DotNext.Metaprogramming
         /// </remarks>
         /// <param name="expressionType">The expression type.</param>
         /// <returns>This builder.</returns>
-        public ExpressionBuilder<E> OfType(Type expressionType)
+        public ExpressionBuilder<TExpression> OfType(Type expressionType)
         {
             VerifyCaller();
             this.expressionType = expressionType;
@@ -56,11 +56,12 @@ namespace DotNext.Metaprogramming
         /// </summary>
         /// <typeparam name="T">The expression type.</typeparam>
         /// <returns>This builder.</returns>
-        public ExpressionBuilder<E> OfType<T>() => OfType(typeof(T));
+        public ExpressionBuilder<TExpression> OfType<T>() => OfType(typeof(T));
 
-        private protected abstract E Build();
+        private protected abstract TExpression Build();
 
-        E IExpressionBuilder<E>.Build() => Build();
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
+        TExpression IExpressionBuilder<TExpression>.Build() => Build();
 
         private protected virtual void Cleanup() => currentScope = null;
 

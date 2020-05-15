@@ -32,7 +32,9 @@ namespace DotNext.Linq.Expressions
                 Resource = param;
             }
             else
+            {
                 assignment = Assign(Resource = Variable(resource.Type, "resource"), resource);
+            }
         }
 
         /// <summary>

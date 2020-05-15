@@ -15,21 +15,15 @@ namespace DotNext.Linq.Expressions
         private enum Kind : byte
         {
             PlainString = 0,
-            FormattableString
+            FormattableString,
         }
 
-        private static Expression GetArgument(object arg)
+        private static Expression GetArgument(object arg) => arg switch
         {
-            switch (arg)
-            {
-                case null:
-                    return Constant(null, typeof(object));
-                case Expression expr:
-                    return expr;
-                default:
-                    return Constant(arg);
-            }
-        }
+            null => Constant(null, typeof(object)),
+            Expression expr => expr,
+            _ => Constant(arg),
+        };
 
         private readonly Expression[] arguments;
         private readonly Kind kind;
@@ -44,7 +38,6 @@ namespace DotNext.Linq.Expressions
         private InterpolationExpression(FormattableString str, Kind kind)
             : this(str.Format, str.GetArguments(), kind)
         {
-
         }
 
         /// <summary>
@@ -90,18 +83,12 @@ namespace DotNext.Linq.Expressions
         /// </remarks>
         public override Type Type
         {
-            get
+            get => kind switch
             {
-                switch (kind)
-                {
-                    case Kind.PlainString:
-                        return typeof(string);
-                    case Kind.FormattableString:
-                        return typeof(FormattableString);
-                    default:
-                        return typeof(void);
-                }
-            }
+                Kind.PlainString => typeof(string),
+                Kind.FormattableString => typeof(FormattableString),
+                _ => typeof(void),
+            };
         }
 
         /// <summary>
@@ -111,7 +98,7 @@ namespace DotNext.Linq.Expressions
 
         private Expression MakePlainString()
         {
-            //string.Format(format, arguments)
+            // string.Format(format, arguments)
             switch (arguments.LongLength)
             {
                 case 0:
@@ -139,17 +126,11 @@ namespace DotNext.Linq.Expressions
         /// using Lowering technique.
         /// </summary>
         /// <returns>Translated expression.</returns>
-        public override Expression Reduce()
+        public override Expression Reduce() => kind switch
         {
-            switch (kind)
-            {
-                case Kind.PlainString:
-                    return MakePlainString();
-                case Kind.FormattableString:
-                    return MakeFormattableString();
-                default:
-                    return Empty();
-            }
-        }
+            Kind.PlainString => MakePlainString(),
+            Kind.FormattableString => MakeFormattableString(),
+            _ => Empty(),
+        };
     }
 }

@@ -2,9 +2,9 @@ using Expression = System.Linq.Expressions.Expression;
 
 namespace DotNext.Linq.Expressions
 {
-    internal interface IExpressionBuilder<out E>
-        where E : notnull, Expression
+    internal interface IExpressionBuilder<out TExpression>
+        where TExpression : notnull, Expression
     {
-        E Build();
+        TExpression Build();
     }
 }

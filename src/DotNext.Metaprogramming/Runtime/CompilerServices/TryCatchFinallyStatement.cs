@@ -40,12 +40,13 @@ namespace DotNext.Runtime.CompilerServices
 
         protected override Expression VisitChildren(ExpressionVisitor visitor)
         {
-            //generate try block
+            // generate try block
             var tryBody = visitor.Visit(Wrap(Content.Body));
             tryBody = tryBody.AddPrologue(false, prologue);
             if (!(finallyLabel is null))
                 tryBody = tryBody.AddEpilogue(false, finallyLabel.Goto(), FaultLabel.LandingSite());
-            //generate exception handlers block
+
+            // generate exception handlers block
             var handlers = new LinkedList<Expression>();
             if (finallyLabel != null)
             {
@@ -54,7 +55,8 @@ namespace DotNext.Runtime.CompilerServices
                 foreach (var handler in Content.Handlers)
                     handlers.AddLast(visitor.Visit(new CatchStatement(handler, finallyLabel)));
             }
-            //generate finally block
+
+            // generate finally block
             Expression fault = new FinallyStatement(Content.Finally ?? Content.Fault, previousState, finallyLabel ?? FaultLabel);
             fault = visitor.Visit(fault);
             return tryBody.AddEpilogue(false, handlers).AddEpilogue(false, fault);

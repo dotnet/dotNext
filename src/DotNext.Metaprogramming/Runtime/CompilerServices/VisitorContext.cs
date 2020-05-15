@@ -20,7 +20,7 @@ namespace DotNext.Runtime.CompilerServices
             asyncMethodEnd = Expression.Label("end_async_method");
             attributes = new Stack<ExpressionAttributes>();
             statements = new Stack<Statement>();
-            asyncMethodEnd.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId = previousStateId = IAsyncStateMachine<ValueTuple>.FINAL_STATE;
+            asyncMethodEnd.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId = previousStateId = IAsyncStateMachine<ValueTuple>.FinalState;
         }
 
         internal Statement CurrentStatement => statements.Peek();
@@ -35,12 +35,15 @@ namespace DotNext.Runtime.CompilerServices
             return pair;
         }
 
-        private S? FindStatement<S>()
-            where S : Statement
+        private TStatement? FindStatement<TStatement>()
+            where TStatement : Statement
         {
             foreach (var statement in statements)
-                if (statement is S result)
+            {
+                if (statement is TStatement result)
                     return result;
+            }
+
             return null;
         }
 
@@ -51,10 +54,13 @@ namespace DotNext.Runtime.CompilerServices
             get
             {
                 foreach (var attr in attributes)
+                {
                     if (ReferenceEquals(ExpressionAttributes.Get(CurrentStatement), attr))
                         break;
                     else if (attr.ContainsAwait)
                         return true;
+                }
+
                 return false;
             }
         }
@@ -64,10 +70,12 @@ namespace DotNext.Runtime.CompilerServices
         private void ContainsAwait()
         {
             foreach (var attr in attributes)
+            {
                 if (ReferenceEquals(ExpressionAttributes.Get(CurrentStatement), attr))
                     return;
                 else
                     attr.ContainsAwait = true;
+            }
         }
 
         private void AttachLabel(LabelTarget target)
@@ -78,12 +86,12 @@ namespace DotNext.Runtime.CompilerServices
             target.GetUserData().GetOrSet(StateIdPlaceholder).StateId = stateId;
         }
 
-        internal O Rewrite<I, O, A>(I expression, Converter<I, O> rewriter, Action<A>? initializer = null)
-            where I : Expression
-            where O : Expression
-            where A : ExpressionAttributes, new()
+        internal TOutput Rewrite<TInput, TOutput, TAttributes>(TInput expression, Converter<TInput, TOutput> rewriter, Action<TAttributes>? initializer = null)
+            where TInput : Expression
+            where TOutput : Expression
+            where TAttributes : ExpressionAttributes, new()
         {
-            var attr = new A() { StateId = stateId };
+            var attr = new TAttributes() { StateId = stateId };
             initializer?.Invoke(attr);
             attr.AttachTo(expression);
 
@@ -109,6 +117,7 @@ namespace DotNext.Runtime.CompilerServices
                     ContainsAwait();
                     break;
             }
+
             attributes.Push(attr);
             var result = rewriter(expression);
             attributes.Pop().AttachTo(result);
@@ -117,13 +126,14 @@ namespace DotNext.Runtime.CompilerServices
                 statements.Pop();
                 previousStateId = attr.StateId;
             }
+
             return result;
         }
 
-        internal O Rewrite<I, O>(I expression, Converter<I, O> rewriter)
-            where I : Expression
-            where O : Expression
-            => Rewrite<I, O, ExpressionAttributes>(expression, rewriter);
+        internal TOutput Rewrite<TInput, TOutput>(TInput expression, Converter<TInput, TOutput> rewriter)
+            where TInput : Expression
+            where TOutput : Expression
+            => Rewrite<TInput, TOutput, ExpressionAttributes>(expression, rewriter);
 
         internal Expression Rewrite(TryExpression expression, IDictionary<uint, StateTransition> transitionTable, Converter<TryCatchFinallyStatement, Expression> rewriter)
         {
@@ -136,13 +146,17 @@ namespace DotNext.Runtime.CompilerServices
         {
             var state = @goto.Target.GetUserData().GetOrSet(StateIdPlaceholder);
             var result = new LinkedList<Expression>();
-            //iterate through snapshot of statements because collection can be modified
+
+            // iterate through snapshot of statements because collection can be modified
             var statements = this.statements.Clone();
             foreach (var lookup in statements)
+            {
                 if (ExpressionAttributes.Get(lookup)?.Labels.Contains(@goto.Target) ?? false)
                     break;
                 else if (lookup is TryCatchFinallyStatement statement)
                     result.AddLast(statement.InlineFinally(visitor, state));
+            }
+
             statements.Clear();
             return result;
         }
@@ -154,6 +168,7 @@ namespace DotNext.Runtime.CompilerServices
                 attributes.Clear();
                 statements.Clear();
             }
+
             base.Dispose(disposing);
         }
     }

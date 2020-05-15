@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using static System.Globalization.CultureInfo;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
 using static InlineIL.StandAloneMethodSig;
 using static InlineIL.TypeRef;
-using static System.Globalization.CultureInfo;
 
 namespace DotNext
 {

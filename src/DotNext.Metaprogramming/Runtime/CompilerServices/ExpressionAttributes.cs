@@ -21,7 +21,7 @@ namespace DotNext.Runtime.CompilerServices
         internal bool ContainsAwait;
 
         /// <summary>
-        /// Represents state of the expression
+        /// Represents state of the expression.
         /// </summary>
         internal uint StateId;
 

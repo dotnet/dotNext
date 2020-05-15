@@ -25,6 +25,7 @@ namespace DotNext.Metaprogramming
 
         internal LabelTarget BreakLabel => Labels.BreakLabel;
 
+        /// <inheritdoc/>
         void IDisposable.Dispose()
         {
             loop.Free();

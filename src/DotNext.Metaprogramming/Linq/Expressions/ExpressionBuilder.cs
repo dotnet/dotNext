@@ -19,7 +19,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs unary plus expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>+a</c>
+        /// The equivalent code is <c>+a</c>.
         /// </remarks>
         /// <param name="expression">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -30,7 +30,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs negate expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>-a</c>
+        /// The equivalent code is <c>-a</c>.
         /// </remarks>
         /// <param name="expression">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -41,7 +41,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs logical NOT expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>!a</c>
+        /// The equivalent code is <c>!a</c>.
         /// </remarks>
         /// <param name="expression">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -52,7 +52,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs ones complement.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>~a</c>
+        /// The equivalent code is <c>~a</c>.
         /// </remarks>
         /// <param name="expression">The operand.</param>
         /// <returns>Unary expression.</returns>
@@ -63,7 +63,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary logical AND expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a &amp; b</c>
+        /// The equivalent code is <c>a &amp; b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -75,7 +75,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary logical OR expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a | b</c>
+        /// The equivalent code is <c>a | b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -87,7 +87,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary logical exclusive OR expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a ^ b</c>
+        /// The equivalent code is <c>a ^ b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -99,7 +99,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs arithmetic remainder expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a % b</c>
+        /// The equivalent code is <c>a % b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -111,7 +111,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary arithmetic addition expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a + b</c>
+        /// The equivalent code is <c>a + b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -140,7 +140,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary arithmetic subtraction expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a - b</c>
+        /// The equivalent code is <c>a - b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -152,7 +152,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary arithmetic multiplication expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a * b</c>
+        /// The equivalent code is <c>a * b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -164,7 +164,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs binary arithmetic division expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a / b</c>
+        /// The equivalent code is <c>a / b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -176,7 +176,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs "greater than" numeric comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a &gt; b</c>
+        /// The equivalent code is <c>a &gt; b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -188,7 +188,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs "less than" numeric comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a &lt; b</c>
+        /// The equivalent code is <c>a &lt; b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -200,7 +200,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs "greater than or equal" numeric comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a &gt;= b</c>
+        /// The equivalent code is <c>a &gt;= b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -212,7 +212,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs "less than or equal" numeric comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a &lt;= b</c>
+        /// The equivalent code is <c>a &lt;= b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -224,7 +224,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs equality comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a == b</c>
+        /// The equivalent code is <c>a == b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -236,7 +236,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs inequality comparison.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a != b</c>
+        /// The equivalent code is <c>a != b</c>.
         /// </remarks>
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
@@ -248,21 +248,23 @@ namespace DotNext.Linq.Expressions
         /// Constructs <see langword="null"/> check.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>a is null</c>
+        /// The equivalent code is <c>a is null</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns><see langword="null"/> check operation.</returns>
         public static Expression IsNull(this Expression operand)
         {
-            //handle nullable value type
+            // handle nullable value type
             Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
                 return operand.Property(nameof(Nullable<int>.HasValue)).Not();
-            //handle optional type
+
+            // handle optional type
             underlyingType = Optional.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
                 return operand.Property(nameof(Optional<int>.HasValue)).Not();
-            //handle reference type or value type
+
+            // handle reference type or value type
             return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression)Const<bool>(false) : Expression.ReferenceEqual(operand, Expression.Constant(null, operand.Type));
         }
 
@@ -270,21 +272,23 @@ namespace DotNext.Linq.Expressions
         /// Constructs <see langword="null"/> check.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>!(a is null)</c>
+        /// The equivalent code is <c>!(a is null)</c>.
         /// </remarks>
         /// <param name="operand">The operand.</param>
         /// <returns><see langword="null"/> check operation.</returns>
         public static Expression IsNotNull(this Expression operand)
         {
-            //handle nullable value type
+            // handle nullable value type
             Type? underlyingType = Nullable.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
                 return operand.Property(nameof(Nullable<int>.HasValue));
-            //handle optional type
+
+            // handle optional type
             underlyingType = Optional.GetUnderlyingType(operand.Type);
             if (!(underlyingType is null))
                 return operand.Property(nameof(Optional<int>.HasValue));
-            //handle reference type or value type
+
+            // handle reference type or value type
             return operand.Type.IsValueType || operand.Type.IsPointer ? (Expression)Const<bool>(true) : Expression.ReferenceNotEqual(operand, Expression.Constant(null, operand.Type));
         }
 
@@ -631,7 +635,7 @@ namespace DotNext.Linq.Expressions
         /// <remarks>
         /// The equivalent code is <c>await b</c>.
         /// </remarks>
-        /// <param name="expression">The expression </param>
+        /// <param name="expression">The awaitable expression.</param>
         /// <param name="configureAwait"><see langword="true"/> to call <see cref="System.Threading.Tasks.Task.ConfigureAwait(bool)"/> with <see langword="false"/> argument.</param>
         /// <returns><see langword="await"/> expression.</returns>
         /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/await">Await expression</seealso>
@@ -678,12 +682,12 @@ namespace DotNext.Linq.Expressions
         /// <summary>
         /// Extracts body of lambda expression.
         /// </summary>
-        /// <typeparam name="D">The type of the delegate describing lambda call site.</typeparam>
+        /// <typeparam name="TDelegate">The type of the delegate describing lambda call site.</typeparam>
         /// <param name="lambda">The lambda expression.</param>
         /// <param name="arguments">The arguments used to replace lambda parameters.</param>
         /// <returns>The body of lambda expression.</returns>
-        public static Expression Fragment<D>(Expression<D> lambda, params Expression[] arguments)
-            where D : MulticastDelegate
+        public static Expression Fragment<TDelegate>(Expression<TDelegate> lambda, params Expression[] arguments)
+            where TDelegate : MulticastDelegate
         {
             if (lambda.Parameters.Count != arguments.LongLength)
                 throw new ArgumentException(ExceptionMessages.InvalidFragmentRendering);
@@ -771,7 +775,7 @@ namespace DotNext.Linq.Expressions
             => indicies.LongLength == 0 ? (Expression)Expression.Property(instance, property) : Expression.Property(instance, property, indicies);
 
         /// <summary>
-        /// Constructs instance property or indexer access expression declared in the given interface or base type. 
+        /// Constructs instance property or indexer access expression declared in the given interface or base type.
         /// </summary>
         /// <remarks>
         /// The equivalent code is <c>a.b</c> or <c>a.b[i]</c>.
@@ -897,7 +901,7 @@ namespace DotNext.Linq.Expressions
         }
 
         /// <summary>
-        /// Constructs expression that calls <see cref="object.ToString"/>
+        /// Constructs expression that calls <see cref="object.ToString"/>.
         /// </summary>
         /// <param name="obj">The object to be converted into string.</param>
         /// <returns>The expression representing <c>ToString()</c> method call.</returns>
@@ -942,7 +946,7 @@ namespace DotNext.Linq.Expressions
         /// Constructs unconditional control transfer expression.
         /// </summary>
         /// <param name="label">The declared label.</param>
-        /// <param name="value"></param>
+        /// <param name="value">The value associated with the label.</param>
         /// <returns>Unconditional control transfer expression.</returns>
         public static GotoExpression Goto(this LabelTarget label, Expression value) => Expression.Goto(label, value);
 
@@ -1030,13 +1034,13 @@ namespace DotNext.Linq.Expressions
         /// <remarks>
         /// The equivalent code is <c>a ? b : c</c>.
         /// </remarks>
-        /// <typeparam name="R">The type of conditional expression. Default is <see cref="void"/>.</typeparam>
+        /// <typeparam name="TResult">The type of conditional expression. Default is <see cref="void"/>.</typeparam>
         /// <param name="test">Test expression.</param>
         /// <param name="ifTrue">Positive branch.</param>
         /// <param name="ifFalse">Negative branch.</param>
         /// <returns>Conditional expression.</returns>
-        public static ConditionalExpression Condition<R>(this Expression test, Expression ifTrue, Expression ifFalse)
-            => test.Condition(ifTrue, ifFalse, typeof(R));
+        public static ConditionalExpression Condition<TResult>(this Expression test, Expression ifTrue, Expression ifFalse)
+            => test.Condition(ifTrue, ifFalse, typeof(TResult));
 
         /// <summary>
         /// Constructs a <c>try</c> block with a <c>finally</c> block without <c>catch</c> block.
@@ -1045,7 +1049,7 @@ namespace DotNext.Linq.Expressions
         /// The equivalent code is <c>try { } finally { }</c>.
         /// </remarks>
         /// <param name="try"><c>try</c> block.</param>
-        /// <param name="finally"><c>finally</c> block</param>
+        /// <param name="finally"><c>finally</c> block.</param>
         /// <returns>Try-finally statement.</returns>
         public static TryExpression Finally(this Expression @try, Expression @finally) => Expression.TryFinally(@try, @finally);
 
@@ -1065,7 +1069,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <typeparam name="T">The type of constant.</typeparam>
         /// <param name="value">The constant value.</param>
-        /// <returns></returns>
+        /// <returns>The expression representing constant.</returns>
         public static ConstantExpression Const<T>(this T value) => Expression.Constant(value, typeof(T));
 
         /// <summary>
@@ -1179,7 +1183,7 @@ namespace DotNext.Linq.Expressions
         /// Creates <c>while</c> loop expression.
         /// </summary>
         /// <remarks>
-        /// The equivalent code is <c>while(condition) {  }</c>
+        /// The equivalent code is <c>while(condition) {  }</c>.
         /// </remarks>
         /// <param name="condition">The loop condition.</param>
         /// <param name="body">The delegate that is used to construct loop body.</param>
@@ -1293,7 +1297,7 @@ namespace DotNext.Linq.Expressions
         /// </summary>
         /// <param name="start">The inclusive start index of the range.</param>
         /// <param name="end">The exclusive end index of the range.</param>
-        /// <returns>The range expression.</returns>        
+        /// <returns>The range expression.</returns>
         public static RangeExpression To(this ItemIndexExpression start, Index end)
             => start.To(end.Quote());
 

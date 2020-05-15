@@ -7,7 +7,9 @@ namespace DotNext.Runtime.CompilerServices
         private protected readonly Expression StateId;
 
         private protected TransitionExpression(uint state) => StateId = Constant(state);
+
         private protected TransitionExpression(StatePlaceholderExpression placeholder) => StateId = placeholder;
+
         private protected TransitionExpression(StateIdExpression state) => StateId = state;
     }
 }

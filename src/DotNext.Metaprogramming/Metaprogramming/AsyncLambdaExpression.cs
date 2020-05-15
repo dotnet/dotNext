@@ -9,26 +9,27 @@ namespace DotNext.Metaprogramming
     using Runtime.CompilerServices;
     using static Reflection.DelegateType;
 
-    internal sealed class AsyncLambdaExpression<D> : LambdaExpression, ILexicalScope<Expression<D>, Action<LambdaContext>>
-        where D : Delegate
+    internal sealed class AsyncLambdaExpression<TDelegate> : LambdaExpression, ILexicalScope<Expression<TDelegate>, Action<LambdaContext>>
+        where TDelegate : Delegate
     {
-        private ParameterExpression? recursion;
         private readonly TaskType taskType;
+        private ParameterExpression? recursion;
 
         [SuppressMessage("Usage", "CA2208", Justification = "The name of the generic parameter is correct")]
         internal AsyncLambdaExpression()
             : base(false)
         {
-            if (typeof(D).IsAbstract)
-                throw new GenericArgumentException<D>(ExceptionMessages.AbstractDelegate, nameof(D));
-            var invokeMethod = GetInvokeMethod<D>();
+            if (typeof(TDelegate).IsAbstract)
+                throw new GenericArgumentException<TDelegate>(ExceptionMessages.AbstractDelegate, nameof(TDelegate));
+            var invokeMethod = GetInvokeMethod<TDelegate>();
             taskType = new TaskType(invokeMethod.ReturnType);
             Parameters = GetParameters(invokeMethod.GetParameters());
         }
+
         /// <summary>
         /// Gets this lambda expression suitable for recursive call.
         /// </summary>
-        internal override Expression Self => recursion ?? (recursion = Expression.Variable(typeof(D), "self"));
+        internal override Expression Self => recursion ?? (recursion = Expression.Variable(typeof(TDelegate), "self"));
 
         /// <summary>
         /// The list lambda function parameters.
@@ -37,25 +38,31 @@ namespace DotNext.Metaprogramming
 
         internal override Expression Return(Expression? result) => new AsyncResultExpression(result, taskType);
 
-        private new Expression<D> Build()
+        private new Expression<TDelegate> Build()
         {
             var body = base.Build();
             if (body.Type != taskType)
                 body = body.AddEpilogue(taskType.HasResult, new AsyncResultExpression(taskType));
-            Expression<D> lambda;
-            using (var builder = new AsyncStateMachineBuilder<D>(Parameters))
+            Expression<TDelegate> lambda;
+            using (var builder = new AsyncStateMachineBuilder<TDelegate>(Parameters))
             {
                 lambda = builder.Build(body, tailCall);
             }
-            //build lambda expression
+
+            // build lambda expression
             if (!(recursion is null))
-                lambda = Expression.Lambda<D>(Expression.Block(Sequence.Singleton(recursion),
+            {
+                lambda = Expression.Lambda<TDelegate>(
+                    Expression.Block(
+                    Sequence.Singleton(recursion),
                     Expression.Assign(recursion, lambda),
                     Expression.Invoke(recursion, Parameters)), Parameters);
+            }
+
             return lambda;
         }
 
-        public Expression<D> Build(Action<LambdaContext> scope)
+        public Expression<TDelegate> Build(Action<LambdaContext> scope)
         {
             using (var context = new LambdaContext(this))
                 scope(context);

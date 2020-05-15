@@ -24,7 +24,9 @@ namespace DotNext.Linq.Expressions
         internal WithExpression(Expression expr)
         {
             if (expr is ParameterExpression variable)
+            {
                 Variable = variable;
+            }
             else
             {
                 Variable = Expression.Variable(expr.Type, "scopeVar");

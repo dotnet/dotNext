@@ -20,7 +20,9 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         public override bool CanReduce => stateId.HasValue;
+
         public override ExpressionType NodeType => ExpressionType.Extension;
+
         public override Type Type => typeof(uint);
 
         public override Expression Reduce()
@@ -28,6 +30,7 @@ namespace DotNext.Runtime.CompilerServices
             Debug.Assert(stateId.HasValue);
             return Constant(stateId.Value);
         }
+
         protected override Expression VisitChildren(ExpressionVisitor visitor) => this;
     }
 }

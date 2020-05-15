@@ -27,9 +27,7 @@ namespace DotNext.Collections.Generic
         /// <param name="range">The range of elements.</param>
         public ListSegment(IList<T> list, Range range)
         {
-            var tuple = range.GetOffsetAndLength(list.Count);
-            startIndex = tuple.Offset;
-            Count = tuple.Length;
+            (startIndex, Count) = range.GetOffsetAndLength(list.Count);
             this.list = list;
         }
 

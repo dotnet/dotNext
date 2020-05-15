@@ -106,9 +106,13 @@ namespace DotNext.Linq.Expressions
         {
             var binding = PrepareExpression();
             if (binder.Type == typeof(Expression))
+            {
                 return new DynamicMetaObject(binding, Restrictions);
+            }
             else if (binder.Type == typeof(UniversalExpression))
+            {
                 return new DynamicMetaObject(typeof(UniversalExpression).New(binding), Restrictions);
+            }
             else
             {
                 binding = Expression.Call(MakeUnaryMethod, ConvertOperator, binding, binder.Type.Const());

@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 namespace DotNext.Metaprogramming
 {
     /// <summary>
-    /// Represents selection statement that chooses a single section to execute from a 
+    /// Represents selection statement that chooses a single section to execute from a
     /// list of candidates based on a pattern matching.
     /// </summary>
     /// <seealso href="https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/switch">switch statement</seealso>

@@ -91,6 +91,7 @@ namespace DotNext.Linq.Expressions
                 completedTask = typeof(CompletedTask<>).MakeGenericType(AsyncResult.Type).New(AsyncResult);
                 failedTask = completedTask.Type.New(caughtException);
             }
+
             return AsyncResult is ConstantExpression || AsyncResult is DefaultExpression ?
                 completedTask.Convert(taskType) :
                 TryCatch(completedTask, Catch(caughtException, failedTask)).Convert(taskType);
@@ -98,7 +99,7 @@ namespace DotNext.Linq.Expressions
 
         internal Expression Reduce(ParameterExpression stateMachine, LabelTarget endOfAsyncMethod)
         {
-            //if state machine is non-void then use Result property
+            // if state machine is non-void then use Result property
             var resultProperty = stateMachine.Type.GetProperty(nameof(AsyncStateMachine<ValueTuple, int>.Result));
             return resultProperty is null ?
                 Block(AsyncResult, stateMachine.Call(nameof(AsyncStateMachine<ValueTuple>.Complete)), endOfAsyncMethod.Return()) :

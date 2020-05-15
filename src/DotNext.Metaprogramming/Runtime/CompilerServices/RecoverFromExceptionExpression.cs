@@ -17,6 +17,7 @@ namespace DotNext.Runtime.CompilerServices
         }
 
         public override Expression Reduce() => true.Const();
+
         public override Type Type => typeof(bool);
 
         internal override Expression Reduce(ParameterExpression stateMachine)

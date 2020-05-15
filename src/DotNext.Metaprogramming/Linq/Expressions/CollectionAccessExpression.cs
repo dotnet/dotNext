@@ -14,8 +14,8 @@ namespace DotNext.Linq.Expressions
     {
         private const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
 
-        private readonly PropertyInfo? indexer; //if null then collection is array
-        private readonly PropertyInfo? count;   //if null then indexer != null because it has explicit Index parameter type
+        private readonly PropertyInfo? indexer; // if null then collection is array
+        private readonly PropertyInfo? count;   // if null then indexer != null because it has explicit Index parameter type
 
         /// <summary>
         /// Initializes a new collection access expression.
@@ -39,6 +39,7 @@ namespace DotNext.Linq.Expressions
                 resolved = true;
             }
             else
+            {
                 foreach (var indexer in GetIndexers(collection.Type))
                 {
                     var parameters = indexer.GetIndexParameters();
@@ -52,6 +53,7 @@ namespace DotNext.Linq.Expressions
                         resolved = true;
                         break;
                     }
+
                     if (firstParam == typeof(int))
                     {
                         count = GetCountProperty(collection.Type) ?? throw new ArgumentException(ExceptionMessages.CollectionExpected(collection.Type), nameof(collection));
@@ -60,6 +62,8 @@ namespace DotNext.Linq.Expressions
                         break;
                     }
                 }
+            }
+
             Index = resolved ? index : throw new ArgumentException(ExceptionMessages.CollectionExpected(collection.Type), nameof(collection));
             Collection = collection;
         }
@@ -76,6 +80,7 @@ namespace DotNext.Linq.Expressions
                 if (property?.PropertyType == intType)
                     return property;
             }
+
             return null;
         }
 
