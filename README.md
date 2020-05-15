@@ -43,10 +43,33 @@ Documentation for older versions:
 * [1.x](https://sakno.github.io/dotNext/versions/1.x/index.html)
 
 # What's new
-Release Date: 05-11-2020
+Release Date: 05-15-2020
 
-<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.3.2">DotNext.AspNetCore.Cluster 2.3.2</a>
-* Section with local node configuration can be defined explicitly
+<a href="https://www.nuget.org/packages/dotnext/2.3.5">DotNext 2.3.5</a>
+* `DotNext.IO.StreamSource` class allows to convert `ReadOnlyMemory<byte>` or `ReadOnlySequence<byte>` to stream
+
+<a href="https://www.nuget.org/packages/dotnext.io/2.3.5">DotNext.IO 2.3.5</a>
+* Support of `BeginRead` and `EndRead` methods in `StreamSegment` class
+* Update to the latest `System.IO.Pipelines` library
+
+<a href="https://www.nuget.org/packages/dotnext.metaprogramming/2.3.5">DotNext.Metaprogramming 2.3.5</a>
+* Fixed several compiler warnings
+
+<a href="https://www.nuget.org/packages/dotnext.reflection/2.3.5">DotNext.Reflection 2.3.5</a>
+* Fixed several compiler warnings
+
+<a href="https://www.nuget.org/packages/dotnext.threading/2.3.5">DotNext.Threading 2.3.5</a>
+* Fixed several compiler warnings
+* Update to the latest `System.Threading.Channels` library
+
+<a href="https://www.nuget.org/packages/dotnext.unsafe/2.3.5">DotNext.Unsafe 2.3.5</a>
+* Ability to convert `Pointer<T>` to `IMemoryOwner<T>`
+
+<a href="https://www.nuget.org/packages/dotnext.net.cluster/2.3.5">DotNext.Net.Cluster 2.3.5</a>
+* Added calls to `ConfigureAwait` in multiple places
+
+<a href="https://www.nuget.org/packages/dotnext.aspnetcore.cluster/2.3.5">DotNext.AspNetCore.Cluster 2.3.5</a>
+* Added calls to `ConfigureAwait` in multiple places
 
 Changelog for previous versions located [here](./CHANGELOG.md).
 
