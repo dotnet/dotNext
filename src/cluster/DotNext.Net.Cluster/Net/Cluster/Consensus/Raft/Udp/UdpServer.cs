@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
     internal sealed class UdpServer : UdpSocket, IServer
     {
         [StructLayout(LayoutKind.Auto)]
-        private readonly struct Channel : INetworkTransport.IChannel, IDisposable
+        private readonly struct Channel : INetworkTransport.IChannel
         {
             private readonly IExchangePool exchangeOwner;
             private readonly IExchange exchange;
@@ -31,8 +31,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Udp
             IExchange INetworkTransport.IChannel.Exchange => exchange;
 
             public CancellationToken Token => timeoutTokenSource.Token;
-
-            internal bool Represents(in Channel other) => ReferenceEquals(exchange, other.exchange);
 
             internal static void Cancel(ref Channel channel, bool throwOnFirstException)
                 => channel.timeoutTokenSource.Cancel(throwOnFirstException);
