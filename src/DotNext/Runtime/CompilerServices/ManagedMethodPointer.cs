@@ -24,13 +24,13 @@ namespace DotNext.Runtime.CompilerServices
         internal ManagedMethodPointer(RuntimeMethodHandle method)
             => methodPtr = method.GetFunctionPointer();
 
-        internal O Invoke<I, O>(in I arg0, int arg1)
+        internal TOutput Invoke<TInput, TOutput>(in TInput arg0, int arg1)
         {
             PushInRef(in arg0);
             Push(arg1);
             Push(methodPtr);
-            Calli(ManagedMethod(CallingConventions.Standard, Type<O>(), Type<I>().MakeByRefType(), typeof(int)));
-            return Return<O>();
+            Calli(ManagedMethod(CallingConventions.Standard, Type<TOutput>(), Type<TInput>().MakeByRefType(), typeof(int)));
+            return Return<TOutput>();
         }
 
         /// <summary>

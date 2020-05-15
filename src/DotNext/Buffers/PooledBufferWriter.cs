@@ -48,7 +48,7 @@ namespace DotNext.Buffers
         }
 
         /// <summary>
-        /// Gets the data written to the underlying buffer so far
+        /// Gets the data written to the underlying buffer so far.
         /// </summary>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public override ReadOnlyMemory<T> WrittenMemory
@@ -93,6 +93,7 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public override Span<T> GetSpan(int sizeHint = 0) => GetMemory(sizeHint).Span;
 
+        /// <inheritdoc/>
         private protected override void Resize(int newSize)
         {
             var newBuffer = allocator(newSize);
@@ -101,10 +102,7 @@ namespace DotNext.Buffers
             buffer = newBuffer;
         }
 
-        /// <summary>
-        /// Returns the memory used by this writer back to the pool.
-        /// </summary>
-        /// <param name="disposing"></param>
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -112,6 +110,7 @@ namespace DotNext.Buffers
                 buffer.Dispose();
                 buffer = default;
             }
+
             base.Dispose(disposing);
         }
     }

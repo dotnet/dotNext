@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using static System.Globalization.CultureInfo;
 using static InlineIL.IL;
 using static InlineIL.IL.Emit;
 using static InlineIL.MethodRef;
 using static InlineIL.StandAloneMethodSig;
 using static InlineIL.TypeRef;
-using static System.Globalization.CultureInfo;
 
 namespace DotNext
 {
-    internal static class EnumConverter<I, O>
-            where I : struct, IConvertible, IComparable, IFormattable
-            where O : struct, IConvertible, IComparable, IFormattable
+    internal static class EnumConverter<TInput, TOutput>
+            where TInput : struct, IConvertible, IComparable, IFormattable
+            where TOutput : struct, IConvertible, IComparable, IFormattable
     {
-        private static readonly IntPtr converter;
+        private static readonly IntPtr Converter;
 
         static EnumConverter()
         {
-            var conversionMethod = (System.Type.GetTypeCode(typeof(O))) switch
+            var conversionMethod = System.Type.GetTypeCode(typeof(TOutput)) switch
             {
                 TypeCode.Byte => nameof(System.Convert.ToByte),
                 TypeCode.SByte => nameof(System.Convert.ToSByte),
@@ -38,44 +38,46 @@ namespace DotNext
                 TypeCode.DateTime => nameof(System.Convert.ToDateTime),
                 _ => "<unknown>",
             };
-            var type = typeof(I);
+            var type = typeof(TInput);
             if (type.IsEnum)
                 type = type.GetEnumUnderlyingType();
-            //find conversion method using Reflection
+
+            // find conversion method using Reflection
             var method = typeof(Convert).GetMethod(conversionMethod, new[] { type }) ?? MethodBase.GetMethodFromHandle(ConvertSlowMethodHandle);
             Debug.Assert(method.IsStatic & method.IsPublic);
-            converter = method.MethodHandle.GetFunctionPointer();
+            Converter = method.MethodHandle.GetFunctionPointer();
         }
 
-        private static O ConvertSlow(I value) => (O)value.ToType(typeof(O), CurrentCulture);
+        private static TOutput ConvertSlow(TInput value) => (TOutput)value.ToType(typeof(TOutput), CurrentCulture);
 
         private static RuntimeMethodHandle ConvertSlowMethodHandle
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                Ldtoken(Method(typeof(EnumConverter<I, O>), nameof(ConvertSlow), Type<I>()));
+                Ldtoken(Method(typeof(EnumConverter<TInput, TOutput>), nameof(ConvertSlow), Type<TInput>()));
                 return Return<RuntimeMethodHandle>();
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static O Convert(I value)
+        internal static TOutput Convert(TInput value)
         {
             const string slowPath = "slow";
-            //if sizeof(I)==sizeof(O) then do fast path
-            Sizeof(typeof(I));
-            Sizeof(typeof(O));
+
+            // if sizeof(I)==sizeof(O) then do fast path
+            Sizeof(typeof(TInput));
+            Sizeof(typeof(TOutput));
             Bne_Un(slowPath);
             Push(ref value);
-            Ldobj(typeof(O));
+            Ldobj(typeof(TOutput));
             Ret();
 
             MarkLabel(slowPath);
             Push(value);
-            Push(converter);
-            Calli(ManagedMethod(CallingConventions.Standard, Type<O>(), Type<I>()));
-            return Return<O>();
+            Push(Converter);
+            Calli(ManagedMethod(CallingConventions.Standard, Type<TOutput>(), Type<TInput>()));
+            return Return<TOutput>();
         }
     }
 
@@ -91,7 +93,9 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="long"/> value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T ToEnum<T>(this long value) where T : struct, Enum => EnumConverter<long, T>.Convert(value);
+        public static T ToEnum<T>(this long value)
+            where T : struct, Enum
+            => EnumConverter<long, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="int"/> into enum of type <typeparamref name="T"/>.
@@ -100,7 +104,9 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="int"/> value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T ToEnum<T>(this int value) where T : struct, Enum => EnumConverter<int, T>.Convert(value);
+        public static T ToEnum<T>(this int value)
+            where T : struct, Enum
+            => EnumConverter<int, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="short"/> into enum of type <typeparamref name="T"/>.
@@ -109,7 +115,9 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="short"/> value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T ToEnum<T>(this short value) where T : struct, Enum => EnumConverter<short, T>.Convert(value);
+        public static T ToEnum<T>(this short value)
+            where T : struct, Enum
+            => EnumConverter<short, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="byte"/> into enum of type <typeparamref name="T"/>.
@@ -118,7 +126,9 @@ namespace DotNext
         /// <param name="value">The value to be converted.</param>
         /// <returns>Enum value equals to the given <see cref="byte"/> value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T ToEnum<T>(this byte value) where T : struct, Enum => EnumConverter<byte, T>.Convert(value);
+        public static T ToEnum<T>(this byte value)
+            where T : struct, Enum
+            => EnumConverter<byte, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="byte"/> into enum of type <typeparamref name="T"/>.
@@ -128,7 +138,9 @@ namespace DotNext
         /// <returns>Enum value equals to the given <see cref="byte"/> value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this sbyte value) where T : struct, Enum => EnumConverter<sbyte, T>.Convert(value);
+        public static T ToEnum<T>(this sbyte value)
+            where T : struct, Enum
+            => EnumConverter<sbyte, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="ushort"/> into enum of type <typeparamref name="T"/>.
@@ -138,7 +150,9 @@ namespace DotNext
         /// <returns>Enum value equals to the given <see cref="ushort"/> value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this ushort value) where T : struct, Enum => EnumConverter<ushort, T>.Convert(value);
+        public static T ToEnum<T>(this ushort value)
+            where T : struct, Enum
+            => EnumConverter<ushort, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="uint"/> into enum of type <typeparamref name="T"/>.
@@ -148,7 +162,9 @@ namespace DotNext
         /// <returns>Enum value equals to the given <see cref="uint"/> value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this uint value) where T : struct, Enum => EnumConverter<uint, T>.Convert(value);
+        public static T ToEnum<T>(this uint value)
+            where T : struct, Enum
+            => EnumConverter<uint, T>.Convert(value);
 
         /// <summary>
         /// Converts <see cref="ulong"/> into enum of type <typeparamref name="T"/>.
@@ -158,7 +174,9 @@ namespace DotNext
         /// <returns>Enum value equals to the given <see cref="ulong"/> value.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
-        public static T ToEnum<T>(this ulong value) where T : struct, Enum => EnumConverter<ulong, T>.Convert(value);
+        public static T ToEnum<T>(this ulong value)
+            where T : struct, Enum
+            => EnumConverter<ulong, T>.Convert(value);
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="long"/>.
@@ -167,7 +185,9 @@ namespace DotNext
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="long"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long ToInt64<T>(this T value) where T : struct, Enum => EnumConverter<T, long>.Convert(value);
+        public static long ToInt64<T>(this T value)
+            where T : struct, Enum
+            => EnumConverter<T, long>.Convert(value);
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="int"/>.
@@ -176,7 +196,9 @@ namespace DotNext
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="int"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int ToInt32<T>(this T value) where T : struct, Enum => EnumConverter<T, int>.Convert(value);
+        public static int ToInt32<T>(this T value)
+            where T : struct, Enum
+            => EnumConverter<T, int>.Convert(value);
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="short"/>.
@@ -185,7 +207,9 @@ namespace DotNext
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="short"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static short ToInt16<T>(this T value) where T : struct, Enum => EnumConverter<T, short>.Convert(value);
+        public static short ToInt16<T>(this T value)
+            where T : struct, Enum
+            => EnumConverter<T, short>.Convert(value);
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="byte"/>.
@@ -194,7 +218,9 @@ namespace DotNext
         /// <param name="value">Enum value to be converted.</param>
         /// <returns>Enum value represented as <see cref="byte"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static byte ToByte<T>(this T value) where T : struct, Enum => EnumConverter<T, byte>.Convert(value);
+        public static byte ToByte<T>(this T value)
+            where T : struct, Enum
+            => EnumConverter<T, byte>.Convert(value);
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="ulong"/>.
@@ -204,7 +230,9 @@ namespace DotNext
         /// <returns>Enum value represented as <see cref="ulong"/>.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ulong ToUInt64<T>(this T value) where T : struct, Enum => EnumConverter<T, ulong>.Convert(value);
+        public static ulong ToUInt64<T>(this T value)
+            where T : struct, Enum
+            => EnumConverter<T, ulong>.Convert(value);
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="uint"/>.
@@ -214,7 +242,9 @@ namespace DotNext
         /// <returns>Enum value represented as <see cref="uint"/>.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static uint ToUInt32<T>(this T value) where T : struct, Enum => EnumConverter<T, uint>.Convert(value);
+        public static uint ToUInt32<T>(this T value)
+            where T : struct, Enum
+            => EnumConverter<T, uint>.Convert(value);
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="ushort"/>.
@@ -224,7 +254,9 @@ namespace DotNext
         /// <returns>Enum value represented as <see cref="ushort"/>.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ushort ToUInt16<T>(this T value) where T : struct, Enum => EnumConverter<T, ushort>.Convert(value);
+        public static ushort ToUInt16<T>(this T value)
+            where T : struct, Enum
+            => EnumConverter<T, ushort>.Convert(value);
 
         /// <summary>
         /// Converts enum value into primitive type <see cref="sbyte"/>.
@@ -234,7 +266,9 @@ namespace DotNext
         /// <returns>Enum value represented as <see cref="sbyte"/>.</returns>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static sbyte ToSByte<T>(this T value) where T : struct, Enum => EnumConverter<T, sbyte>.Convert(value);
+        public static sbyte ToSByte<T>(this T value)
+            where T : struct, Enum
+            => EnumConverter<T, sbyte>.Convert(value);
 
         /// <summary>
         /// Checks whether the specified value is equal to one
@@ -248,8 +282,11 @@ namespace DotNext
             where T : struct, Enum
         {
             foreach (var item in values)
+            {
                 if (EqualityComparer<T>.Default.Equals(value, item))
                     return true;
+            }
+
             return false;
         }
     }

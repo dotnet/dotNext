@@ -19,6 +19,7 @@ namespace DotNext.Security.Cryptography
     public readonly struct HashBuilder : ICryptoTransform, IDisposable
     {
         private delegate void HashMethod(HashAlgorithm algorithm, ReadOnlySpan<byte> bytes);
+
         private delegate bool TryHashFinalMethod(HashAlgorithm algorithm, Span<byte> hashCode, out int bytesWritten);
 
         private static readonly HashMethod HashCore;
@@ -46,7 +47,7 @@ namespace DotNext.Security.Cryptography
         public HashBuilder(HashAlgorithm algorithm, bool leaveOpen = true)
         {
             this.algorithm = algorithm ?? throw new ArgumentNullException(nameof(algorithm));
-            this.disposeAlg = !leaveOpen;
+            disposeAlg = !leaveOpen;
         }
 
         /// <summary>
@@ -57,8 +58,8 @@ namespace DotNext.Security.Cryptography
         /// <exception cref="ArgumentException">Hash algorithm with name <paramref name="hashName"/> doesn't exist.</exception>
         public HashBuilder(string hashName)
         {
-            this.algorithm = HashAlgorithm.Create(hashName) ?? throw new ArgumentException(ExceptionMessages.UnknownHashAlgorithm, nameof(hashName));
-            this.disposeAlg = true;
+            algorithm = HashAlgorithm.Create(hashName) ?? throw new ArgumentException(ExceptionMessages.UnknownHashAlgorithm, nameof(hashName));
+            disposeAlg = true;
         }
 
         /// <summary>
@@ -72,17 +73,23 @@ namespace DotNext.Security.Cryptography
         /// </summary>
         public int HashSize => algorithm?.HashSize ?? 0;
 
+        /// <inheritdoc/>
         bool ICryptoTransform.CanReuseTransform => (algorithm?.CanReuseTransform).GetValueOrDefault();
 
+        /// <inheritdoc/>
         bool ICryptoTransform.CanTransformMultipleBlocks => (algorithm?.CanTransformMultipleBlocks).GetValueOrDefault();
 
+        /// <inheritdoc/>
         int ICryptoTransform.InputBlockSize => algorithm?.InputBlockSize ?? 0;
 
+        /// <inheritdoc/>
         int ICryptoTransform.OutputBlockSize => algorithm?.OutputBlockSize ?? 0;
 
+        /// <inheritdoc/>
         int ICryptoTransform.TransformBlock(byte[] inputBuffer, int inputOffset, int inputCount, byte[]? outputBuffer, int outputOffset)
             => algorithm?.TransformBlock(inputBuffer, inputOffset, inputCount, outputBuffer, outputOffset) ?? 0;
 
+        /// <inheritdoc/>
         byte[] ICryptoTransform.TransformFinalBlock(byte[] inputBuffer, int inputOffset, int inputCount)
             => algorithm?.TransformFinalBlock(inputBuffer, inputOffset, inputCount) ?? Array.Empty<byte>();
 
@@ -107,7 +114,7 @@ namespace DotNext.Security.Cryptography
         /// Adds a single value to the hash code.
         /// </summary>
         /// <param name="value">The value to add to the hash code.</param>
-        /// <typeparam name="T">The type of the value to add to the hash code.</typeparam>        
+        /// <typeparam name="T">The type of the value to add to the hash code.</typeparam>
         public void Add<T>(in T value)
             where T : unmanaged
             => Add(Span.AsReadOnlyBytes(in value));

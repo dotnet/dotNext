@@ -5,7 +5,7 @@ namespace DotNext.Reflection
 {
     /// <summary>
     /// Provides specialized reflection methods for
-    /// delegate types. 
+    /// delegate types.
     /// </summary>
     public static class DelegateType
     {
@@ -14,16 +14,16 @@ namespace DotNext.Reflection
         /// <summary>
         /// Returns special Invoke method generate for each delegate type.
         /// </summary>
-        /// <typeparam name="D">Type of delegate.</typeparam>
+        /// <typeparam name="TDelegate">Type of delegate.</typeparam>
         /// <returns>An object representing reflected method Invoke.</returns>
-        /// <exception cref="GenericArgumentException{G}"><typeparamref name="D"/> is not a concrete delegate type.</exception>
-        public static MethodInfo GetInvokeMethod<D>()
-            where D : Delegate
+        /// <exception cref="GenericArgumentException{G}"><typeparamref name="TDelegate"/> is not a concrete delegate type.</exception>
+        public static MethodInfo GetInvokeMethod<TDelegate>()
+            where TDelegate : Delegate
         {
-            var delegateType = typeof(D);
+            var delegateType = typeof(TDelegate);
             return delegateType.IsSealed ?
                 delegateType.GetMethod(InvokeMethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly)
-                : throw new GenericArgumentException<D>(ExceptionMessages.ConcreteDelegateExpected);
+                : throw new GenericArgumentException<TDelegate>(ExceptionMessages.ConcreteDelegateExpected);
         }
     }
 }

@@ -8,7 +8,6 @@ namespace DotNext
 
     internal static class UserDataSlot
     {
-
         private static long counter;
 
         internal static long NewId => counter.IncrementAndGet();
@@ -18,7 +17,8 @@ namespace DotNext
     /// Uniquely identifies user data which can be associated
     /// with any object.
     /// </summary>
-    public readonly struct UserDataSlot<V> : IEquatable<UserDataSlot<V>>
+    /// <typeparam name="TValue">The type of the value stored in user data slot.</typeparam>
+    public readonly struct UserDataSlot<TValue> : IEquatable<UserDataSlot<TValue>>
     {
         /// <summary>
         /// Unique identifier of the data slot.
@@ -31,16 +31,16 @@ namespace DotNext
         /// Allocates a new data slot.
         /// </summary>
         /// <returns>Allocated data slot.</returns>
-        public static UserDataSlot<V> Allocate() => new UserDataSlot<V>(UserDataSlot.NewId);
+        public static UserDataSlot<TValue> Allocate() => new UserDataSlot<TValue>(UserDataSlot.NewId);
 
         [return: NotNullIfNotNull("defaultValue")]
         [return: MaybeNull]
-        internal V GetUserData(IDictionary<long, object?> storage, [AllowNull]V defaultValue)
-            => storage.TryGetValue(id, out var userData) && userData is V result ? result : defaultValue;
+        internal TValue GetUserData(IDictionary<long, object?> storage, [AllowNull]TValue defaultValue)
+            => storage.TryGetValue(id, out var userData) && userData is TValue result ? result : defaultValue;
 
-        internal bool GetUserData(IDictionary<long, object?> storage, [NotNullWhen(true)]out V userData)
+        internal bool GetUserData(IDictionary<long, object?> storage, [NotNullWhen(true)]out TValue userData)
         {
-            if (storage.TryGetValue(id, out var value) && value is V typedValue)
+            if (storage.TryGetValue(id, out var value) && value is TValue typedValue)
             {
                 userData = typedValue;
                 return true;
@@ -52,7 +52,7 @@ namespace DotNext
             }
         }
 
-        internal void SetUserData(IDictionary<long, object?> storage, V userData)
+        internal void SetUserData(IDictionary<long, object?> storage, TValue userData)
         {
             if (id == 0)
                 throw new ArgumentException(ExceptionMessages.InvalidUserDataSlot);
@@ -68,14 +68,14 @@ namespace DotNext
         /// </summary>
         /// <param name="other">Other data slot to check.</param>
         /// <returns><see langword="true"/> if both data slots identifies the same data key.</returns>
-        public bool Equals(UserDataSlot<V> other) => id == other.id;
+        public bool Equals(UserDataSlot<TValue> other) => id == other.id;
 
         /// <summary>
         /// Checks whether the two data slots are the same.
         /// </summary>
         /// <param name="other">Other data slot to check.</param>
         /// <returns><see langword="true"/> if both data slots identifies the same data key.</returns>
-        public override bool Equals(object? other) => other is UserDataSlot<V> slot && Equals(slot);
+        public override bool Equals(object? other) => other is UserDataSlot<TValue> slot && Equals(slot);
 
         /// <summary>
         /// Computes hash code for this data slot.
@@ -96,7 +96,7 @@ namespace DotNext
         /// <param name="first">The first data slot to check.</param>
         /// <param name="second">The second data slot to check.</param>
         /// <returns><see langword="true"/> if both data slots identifies the same data key.</returns>
-        public static bool operator ==(UserDataSlot<V> first, UserDataSlot<V> second)
+        public static bool operator ==(UserDataSlot<TValue> first, UserDataSlot<TValue> second)
             => first.id == second.id;
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace DotNext
         /// <param name="first">The first data slot to check.</param>
         /// <param name="second">The second data slot to check.</param>
         /// <returns><see langword="false"/> if both data slots identifies the same data key.</returns>
-        public static bool operator !=(UserDataSlot<V> first, UserDataSlot<V> second)
+        public static bool operator !=(UserDataSlot<TValue> first, UserDataSlot<TValue> second)
             => first.id != second.id;
     }
 }

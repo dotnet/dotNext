@@ -22,7 +22,7 @@ namespace DotNext.Generic
             /// <summary>
             /// Represents constant value.
             /// </summary>
-            public const int Value = 0;
+            public new const int Value = 0;
 
             /// <summary>
             /// Initializes a new constant value.
@@ -41,7 +41,7 @@ namespace DotNext.Generic
             /// <summary>
             /// Represents constant value.
             /// </summary>
-            public const int Value = int.MaxValue;
+            public new const int Value = int.MaxValue;
 
             /// <summary>
             /// Initializes a new constant value.
@@ -60,7 +60,7 @@ namespace DotNext.Generic
             /// <summary>
             /// Represents constant value.
             /// </summary>
-            public const int Value = int.MinValue;
+            public new const int Value = int.MinValue;
 
             /// <summary>
             /// Initializes a new constant value.

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using static System.Runtime.CompilerServices.Unsafe;
@@ -21,7 +22,7 @@ namespace DotNext.Threading
             ReadLock,
             UpgradeableReadLock,
             WriteLock,
-            Semaphore
+            Semaphore,
         }
 
         /// <summary>
@@ -41,6 +42,11 @@ namespace DotNext.Threading
                 this.lockedObject = lockedObject;
                 this.type = type;
             }
+
+            /// <summary>
+            /// Indicates that this object doesn't hold the lock.
+            /// </summary>
+            public bool IsEmpty => lockedObject is null;
 
             /// <summary>
             /// Releases the acquired lock.
@@ -68,6 +74,7 @@ namespace DotNext.Threading
                         As<SemaphoreSlim>(lockedObject).Release();
                         break;
                 }
+
                 this = default;
             }
 
@@ -76,6 +83,7 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="holder">The lock holder.</param>
             /// <returns><see langword="true"/>, if the object holds successfully acquired lock; otherwise, <see langword="false"/>.</returns>
+            [SuppressMessage("Usage", "CA2225", Justification = "Accessible via property")]
             public static bool operator true(in Holder holder) => !(holder.lockedObject is null);
 
             /// <summary>
@@ -151,6 +159,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Acquires lock.
         /// </summary>
+        /// <returns>The holder of the acquired lock.</returns>
         public readonly Holder Acquire()
         {
             switch (type)
@@ -171,6 +180,7 @@ namespace DotNext.Threading
                     As<SemaphoreSlim>(lockedObject).Wait();
                     break;
             }
+
             return new Holder(lockedObject, type);
         }
 
@@ -188,7 +198,7 @@ namespace DotNext.Threading
         /// Attempts to acquire lock.
         /// </summary>
         /// <param name="holder">The lock holder that can be used to release acquired lock.</param>
-        /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/></returns>
+        /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
         public readonly bool TryAcquire(out Holder holder)
         {
             if (TryAcquire())
@@ -216,9 +226,9 @@ namespace DotNext.Threading
         /// <summary>
         /// Attempts to acquire lock.
         /// </summary>
+        /// <param name="timeout">The amount of time to wait for the lock.</param>
         /// <param name="holder">The lock holder that can be used to release acquired lock.</param>
-        /// <param name="timeout">The amount of time to wait for the lock</param>
-        /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/></returns>
+        /// <returns><see langword="true"/>, if lock is acquired successfully; otherwise, <see langword="false"/>.</returns>
         public readonly bool TryAcquire(TimeSpan timeout, out Holder holder)
         {
             if (TryAcquire(timeout))
@@ -236,7 +246,8 @@ namespace DotNext.Threading
         /// <summary>
         /// Acquires lock.
         /// </summary>
-        /// <param name="timeout">The amount of time to wait for the lock</param>
+        /// <param name="timeout">The amount of time to wait for the lock.</param>
+        /// <returns>The holder of the acquired lock.</returns>
         /// <exception cref="TimeoutException">The lock has not been acquired during the specified timeout.</exception>
         public readonly Holder Acquire(TimeSpan timeout)
             => TryAcquire(timeout) ? new Holder(lockedObject, type) : throw new TimeoutException();

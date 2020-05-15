@@ -20,7 +20,9 @@ namespace DotNext.Reflection
         {
             enumerableInterface = collectionType.FindGenericInstance(typeof(IEnumerable<>));
             if (!(enumerableInterface is null))
+            {
                 return enumerableInterface.GetGenericArguments()[0];
+            }
             else if (typeof(IEnumerable).IsAssignableFrom(collectionType))
             {
                 enumerableInterface = typeof(IEnumerable);
@@ -59,6 +61,7 @@ namespace DotNext.Reflection
                 if (!(instance is null))
                     return instance;
             }
+
             return null;
         }
     }

@@ -21,11 +21,18 @@ namespace DotNext.Reflection
         public static bool IsImmutable(this Type type)
         {
             if (type.IsPrimitive)
+            {
                 return true;
+            }
             else if (type.IsValueType)
+            {
                 foreach (var attribute in type.GetCustomAttributesData())
+                {
                     if (attribute.AttributeType == typeof(IsReadOnlyAttribute))
                         return true;
+                }
+            }
+
             return false;
         }
 
@@ -39,22 +46,32 @@ namespace DotNext.Reflection
             if (type.IsGenericType || type.IsGenericTypeDefinition || type.IsGenericParameter)
             {
                 foreach (var attribute in type.GetCustomAttributesData())
+                {
                     if (attribute.AttributeType.FullName == IsUnmanagedAttributeName)
                         return true;
+                }
+
                 return false;
             }
             else if (type.IsPrimitive || type.IsPointer || type.IsEnum)
+            {
                 return true;
+            }
             else if (type.IsValueType)
             {
-                //check all fields
+                // check all fields
                 foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
+                {
                     if (!field.FieldType.IsUnmanaged())
                         return false;
+                }
+
                 return true;
             }
             else
+            {
                 return false;
+            }
         }
 
         /// <summary>
@@ -69,8 +86,10 @@ namespace DotNext.Reflection
             for (var lookup = includeTopLevel ? type : type.BaseType; !(lookup is null); lookup = lookup.BaseType)
                 yield return lookup;
             if (includeInterfaces)
+            {
                 foreach (var iface in type.GetInterfaces())
                     yield return iface;
+            }
         }
 
         /// <summary>
@@ -87,20 +106,29 @@ namespace DotNext.Reflection
                 goto exit;
             if (abstractMethod.DeclaringType.IsInterface && abstractMethod.DeclaringType.IsAssignableFrom(type))
             {
-                //Interface maps for generic interfaces on arrays cannot be retrieved.
+                // Interface maps for generic interfaces on arrays cannot be retrieved.
                 if (type.IsArray && abstractMethod.DeclaringType.IsGenericType)
                     goto exit;
                 var interfaceMap = type.GetInterfaceMap(abstractMethod.DeclaringType);
                 for (var i = 0L; i < interfaceMap.InterfaceMethods.LongLength; i++)
+                {
                     if (interfaceMap.InterfaceMethods[i] == abstractMethod)
                         return interfaceMap.TargetMethods[i];
+                }
+
                 goto exit;
             }
-            //handle virtual method
+
+            // handle virtual method
             foreach (var lookup in GetBaseTypes(type, includeTopLevel: true))
+            {
                 foreach (var candidate in lookup.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                {
                     if (candidate.GetBaseDefinition() == abstractMethod)
                         return candidate;
+                }
+            }
+
             exit:
             return null;
         }
@@ -113,15 +141,22 @@ namespace DotNext.Reflection
             if (genericDefinition.IsInterface)
             {
                 foreach (var iface in type.GetInterfaces())
+                {
                     if (IsGenericInstanceOf(iface))
                         return iface;
+                }
             }
             else
+            {
                 while (!(type is null))
+                {
                     if (IsGenericInstanceOf(type))
                         return type;
                     else
                         type = type.BaseType;
+                }
+            }
+
             return null;
         }
 
@@ -137,22 +172,22 @@ namespace DotNext.Reflection
         /// typeof(List&lt;int&gt;).IsGenericInstanceOf(typeof(List&lt;int&gt;));   //returns true
         /// </code>
         /// </example>
-		public static bool IsGenericInstanceOf(this Type type, Type genericDefinition)
+        public static bool IsGenericInstanceOf(this Type type, Type genericDefinition)
             => !(FindGenericInstance(type, genericDefinition) is null);
 
         /// <summary>
         /// Returns actual generic arguments passed into generic type definition implemented by the input type.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="genericDefinition"></param>
-        /// <returns></returns>
+        /// <param name="type">The type that inherits from generic class or implements generic interface.</param>
+        /// <param name="genericDefinition">The definition of generic type.</param>
+        /// <returns>The array of actual generic types required by <paramref name="genericDefinition"/>.</returns>
         /// <example>
         /// <code>
         /// var elementTypes = typeof(byte[]).IsGenericInstanceOf(typeof(IEnumerable&lt;&gt;));
         /// elementTypes[0] == typeof(byte); //true
         /// </code>
         /// </example>
-		public static Type[] GetGenericArguments(this Type type, Type genericDefinition)
+        public static Type[] GetGenericArguments(this Type type, Type genericDefinition)
             => FindGenericInstance(type, genericDefinition)?.GetGenericArguments() ?? Array.Empty<Type>();
 
         /// <summary>
@@ -180,7 +215,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object to be cast.</param>
         /// <returns>The object after casting, or <see langword="null"/> if <paramref name="obj"/> is <see langword="null"/>.</returns>
         /// <exception cref="InvalidCastException">
-        /// If the object is not <see langword="null"/> and is not assignable to the <paramref name="type"/>; 
+        /// If the object is not <see langword="null"/> and is not assignable to the <paramref name="type"/>;
         /// or if object is <see langword="null"/> and <paramref name="type"/> is value type.
         /// </exception>
         [return: NotNullIfNotNull("obj")]

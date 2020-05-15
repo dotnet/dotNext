@@ -33,6 +33,7 @@ namespace DotNext.Collections.Generic
             this.list = list;
         }
 
+        /// <inheritdoc/>
         bool ICollection<T>.IsReadOnly => true;
 
         /// <summary>
@@ -54,8 +55,7 @@ namespace DotNext.Collections.Generic
         /// <summary>
         /// Gets or sets element at the specified index.
         /// </summary>
-        /// <param name="index"></param>
-        /// <returns></returns>
+        /// <param name="index">The index of the element in this segment.</param>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="index"/> is less than zero; or greater than or equal to <see cref="Count"/>.</exception>
         public readonly T this[int index]
         {
@@ -64,7 +64,7 @@ namespace DotNext.Collections.Generic
         }
 
         /// <summary>
-        /// Determines the index of a specific item
+        /// Determines the index of a specific item.
         /// </summary>
         /// <param name="item">The object to locate in this section.</param>
         /// <returns>The index of <paramref name="item"/> in this section; otherwise, <c>-1</c>.</returns>
@@ -74,12 +74,16 @@ namespace DotNext.Collections.Generic
             return ToRelativeIndex(ref index) ? index : -1;
         }
 
+        /// <inheritdoc/>
         void IList<T>.Insert(int index, T item) => throw new NotSupportedException();
 
+        /// <inheritdoc/>
         void IList<T>.RemoveAt(int index) => throw new NotSupportedException();
 
+        /// <inheritdoc/>
         void ICollection<T>.Add(T item) => throw new NotSupportedException();
 
+        /// <inheritdoc/>
         void ICollection<T>.Clear() => throw new NotSupportedException();
 
         /// <summary>
@@ -111,6 +115,7 @@ namespace DotNext.Collections.Generic
             }
         }
 
+        /// <inheritdoc/>
         bool ICollection<T>.Remove(T item) => throw new NotSupportedException();
 
         /// <summary>
@@ -124,6 +129,7 @@ namespace DotNext.Collections.Generic
             return enumerator.Limit(Count);
         }
 
+        /// <inheritdoc/>
         readonly IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

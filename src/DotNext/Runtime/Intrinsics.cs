@@ -80,13 +80,13 @@ namespace DotNext.Runtime
         }
 
         /// <summary>
-        /// Obtain a value of type <typeparamref name="TResult"/> by 
-        /// reinterpreting the object representation of <typeparamref name="T"/>. 
+        /// Obtain a value of type <typeparamref name="TResult"/> by
+        /// reinterpreting the object representation of <typeparamref name="T"/>.
         /// </summary>
         /// <remarks>
-        /// Every bit in the value representation of the returned <typeparamref name="TResult"/> object 
-        /// is equal to the corresponding bit in the object representation of <typeparamref name="T"/>. 
-        /// The values of padding bits in the returned <typeparamref name="TResult"/> object are unspecified. 
+        /// Every bit in the value representation of the returned <typeparamref name="TResult"/> object
+        /// is equal to the corresponding bit in the object representation of <typeparamref name="T"/>.
+        /// The values of padding bits in the returned <typeparamref name="TResult"/> object are unspecified.
         /// The method takes into account size of <typeparamref name="T"/> and <typeparamref name="TResult"/> types
         /// and able to provide conversion between types of different size. However, the result may very between
         /// CPU architectures if size of types is different.
@@ -99,14 +99,15 @@ namespace DotNext.Runtime
             where T : unmanaged
             where TResult : unmanaged
         {
-            //ldobj/stobj pair is used instead of cpobj because this instruction
-            //has unspecified behavior if src is not assignable to dst, ECMA-335 III.4.4
+            // ldobj/stobj pair is used instead of cpobj because this instruction
+            // has unspecified behavior if src is not assignable to dst, ECMA-335 III.4.4
             const string slowPath = "slow";
             PushOutRef(out output);
             Sizeof<T>();
             Sizeof<TResult>();
             Blt_Un(slowPath);
-            //copy from input into output as-is
+
+            // copy from input into output as-is
             PushInRef(in input);
             Ldobj<TResult>();
             Stobj<TResult>();
@@ -119,12 +120,13 @@ namespace DotNext.Runtime
             Ldobj<T>();
             Stobj<T>();
             Ret();
-            throw Unreachable();    //output must be defined within scope
+            throw Unreachable();    // output must be defined within scope
         }
 
         /// <summary>
         /// Indicates that specified value type is the default value.
         /// </summary>
+        /// <typeparam name="T">The type of the value to check.</typeparam>
         /// <param name="value">Value to check.</param>
         /// <returns><see langword="true"/>, if value is default value; otherwise, <see langword="false"/>.</returns>
         public static bool IsDefault<T>(in T value)
@@ -177,6 +179,7 @@ namespace DotNext.Runtime
         /// <summary>
         /// Determines whether one or more bit fields are set in the given value.
         /// </summary>
+        /// <typeparam name="T">The enum type.</typeparam>
         /// <param name="value">The value to check.</param>
         /// <param name="flag">An enumeration value.</param>
         /// <returns><see langword="true"/> if the bit field or bit fields that are set in <paramref name="flag"/> are also set in <paramref name="value"/>; otherwise, <see langword="false"/>.</returns>
@@ -200,19 +203,19 @@ namespace DotNext.Runtime
             }
         }
 
-        internal static E GetTupleItem<T, E>(ref T tuple, int index)
+        internal static TItem GetTupleItem<T, TItem>(ref T tuple, int index)
             where T : struct, ITuple
         {
             if (index < 0 || index >= tuple.Length)
                 throw new ArgumentOutOfRangeException(nameof(index));
             Push(ref tuple);
-            Sizeof<E>();
+            Sizeof<TItem>();
             Push(index);
             Conv_U4();
             Mul_Ovf_Un();
             Add();
-            Ldobj<E>();
-            return Return<E>();
+            Ldobj<TItem>();
+            return Return<TItem>();
         }
 
         /// <summary>
@@ -294,6 +297,7 @@ namespace DotNext.Runtime
                 count = length.Truncate();
                 comparison = MemoryMarshal.CreateSpan(ref first, count).SequenceCompareTo(MemoryMarshal.CreateSpan(ref second, count));
             }
+
             return comparison;
         }
 
@@ -321,35 +325,46 @@ namespace DotNext.Runtime
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
+            {
                 for (; length >= sizeof(Vector<byte>); first = ref first.Advance<Vector<byte>>(), second = ref second.Advance<Vector<byte>>())
+                {
                     if (first.Read<Vector<byte>>() == second.Read<Vector<byte>>())
                         length -= Vector<byte>.Count;
                     else
                         goto exit;
+                }
+            }
+
             for (; length >= sizeof(UIntPtr); first = ref first.Advance<UIntPtr>(), second = ref second.Advance<UIntPtr>())
+            {
                 if (first.Read<UIntPtr>() == second.Read<UIntPtr>())
                     length -= sizeof(UIntPtr);
                 else
                     goto exit;
+            }
+
             for (; length > 0; first = ref first.Advance<byte>(), second = ref second.Advance<byte>())
+            {
                 if (first == second)
                     length -= sizeof(byte);
                 else
                     goto exit;
-            //TODO: Workaround for https://github.com/dotnet/coreclr/issues/13549
+            }
+
+            // TODO: Workaround for https://github.com/dotnet/coreclr/issues/13549
             result = true;
             exit:
             return result;
         }
 
         /// <summary>
-		/// Computes equality between two blocks of memory.
-		/// </summary>
-		/// <param name="first">A pointer to the first memory block.</param>
-		/// <param name="second">A pointer to the second memory block.</param>
-		/// <param name="length">Length of first and second memory blocks, in bytes.</param>
-		/// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
-		[CLSCompliant(false)]
+        /// Computes equality between two blocks of memory.
+        /// </summary>
+        /// <param name="first">A pointer to the first memory block.</param>
+        /// <param name="second">A pointer to the second memory block.</param>
+        /// <param name="length">Length of first and second memory blocks, in bytes.</param>
+        /// <returns><see langword="true"/>, if both memory blocks have the same data; otherwise, <see langword="false"/>.</returns>
+        [CLSCompliant(false)]
         public static unsafe bool Equals(void* first, void* second, long length)
         {
             var result = true;
@@ -358,6 +373,7 @@ namespace DotNext.Runtime
                 count = length.Truncate();
                 result = new ReadOnlySpan<byte>(first, count).SequenceEqual(new ReadOnlySpan<byte>(second, count));
             }
+
             return result;
         }
 
@@ -376,21 +392,21 @@ namespace DotNext.Runtime
         /// <summary>
         /// Allows to reinterpret managed pointer to array element.
         /// </summary>
-        /// <typeparam name="I">The type of array elements.</typeparam>
-        /// <typeparam name="O">The requested</typeparam>
+        /// <typeparam name="T">The type of array elements.</typeparam>
+        /// <typeparam name="TBase">The requested.</typeparam>
         /// <param name="array">The array object.</param>
         /// <param name="index">The index of the array element.</param>
         /// <returns>The reference to the array element with restricted mutability.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static ref readonly O GetReadonlyRef<I, O>(this I[] array, long index)
-            where I : class, O
+        public static ref readonly TBase GetReadonlyRef<T, TBase>(this T[] array, long index)
+            where T : class, TBase
         {
             Push(array);
             Push(index);
             Conv_Ovf_I();
             Readonly();
-            Ldelema<O>();
-            return ref ReturnRef<O>();
+            Ldelema<TBase>();
+            return ref ReturnRef<TBase>();
         }
 
         /// <summary>
@@ -438,7 +454,7 @@ namespace DotNext.Runtime
             PushInRef(in input);
             Cpobj<T>();
             Ret();
-            throw Unreachable();    //need here because output var should be assigned
+            throw Unreachable();    // need here because output var should be assigned
         }
 
         /// <summary>
@@ -449,6 +465,7 @@ namespace DotNext.Runtime
         /// <param name="output">The reference to the destination location.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [CLSCompliant(false)]
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "SA1107", Justification = "Unaligned is a prefix instruction")]
         public static unsafe void CopyUnaligned<T>(T* input, T* output)
             where T : unmanaged
         {
@@ -492,7 +509,7 @@ namespace DotNext.Runtime
         /// <typeparam name="T">The type of the element.</typeparam>
         [CLSCompliant(false)]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe void Copy<T>(in T source, ref T destination, long count)   //TODO: destination should be out parameter
+        public static unsafe void Copy<T>(in T source, ref T destination, long count) // TODO: destination should be out parameter
             where T : unmanaged
             => Copy(ref Unsafe.As<T, byte>(ref Unsafe.AsRef(source)), ref Unsafe.As<T, byte>(ref destination), checked(count * sizeof(T)));
 
@@ -566,21 +583,32 @@ namespace DotNext.Runtime
         {
             var result = false;
             if (Vector.IsHardwareAccelerated)
+            {
                 while (length >= Vector<byte>.Count)
+                {
                     if (address.Read<Vector<byte>>() == Vector<byte>.Zero)
                         address = ref address.Advance<Vector<byte>>(&length);
                     else
                         goto exit;
+                }
+            }
+
             while (length >= sizeof(UIntPtr))
+            {
                 if (address.Read<UIntPtr>() == default)
                     address = ref address.Advance<UIntPtr>(&length);
                 else
                     goto exit;
+            }
+
             while (length > 0)
+            {
                 if (address == 0)
                     address = ref address.Advance<byte>(&length);
                 else
                     goto exit;
+            }
+
             result = true;
             exit:
             return result;
@@ -636,6 +664,7 @@ namespace DotNext.Runtime
                 case 7:
                     goto default;
             }
+
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
@@ -668,23 +697,24 @@ namespace DotNext.Runtime
                 case 7:
                     goto default;
             }
+
             return salted ? FNV1a64.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
         /// <summary>
-		/// Computes 64-bit hash code for the block of memory, 64-bit version.
-		/// </summary>
-		/// <remarks>
-		/// This method may give different value each time you run the program for
-		/// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
-		/// </remarks>
-		/// <param name="source">A pointer to the block of memory.</param>
-		/// <param name="length">Length of memory block to be hashed, in bytes.</param>
-		/// <param name="hash">Initial value of the hash.</param>
-		/// <param name="hashFunction">Hashing function.</param>
-		/// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
-		/// <returns>Hash code of the memory block.</returns>
-		[CLSCompliant(false)]
+        /// Computes 64-bit hash code for the block of memory, 64-bit version.
+        /// </summary>
+        /// <remarks>
+        /// This method may give different value each time you run the program for
+        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
+        /// </remarks>
+        /// <param name="source">A pointer to the block of memory.</param>
+        /// <param name="length">Length of memory block to be hashed, in bytes.</param>
+        /// <param name="hash">Initial value of the hash.</param>
+        /// <param name="hashFunction">Hashing function.</param>
+        /// <param name="salted"><see langword="true"/> to include randomized salt data into hashing; <see langword="false"/> to use data from memory only.</param>
+        /// <returns>Hash code of the memory block.</returns>
+        [CLSCompliant(false)]
         public static unsafe long GetHashCode64([In] void* source, long length, long hash, Func<long, long, long> hashFunction, bool salted = true)
             => GetHashCode64(source, length, hash, new ValueFunc<long, long, long>(hashFunction, true), salted);
 
@@ -693,7 +723,7 @@ namespace DotNext.Runtime
         /// </summary>
         /// <remarks>
         /// This method may give different value each time you run the program for
-        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
+        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
         /// </remarks>
         /// <param name="source">A pointer to the block of memory.</param>
         /// <param name="length">Length of memory block to be hashed, in bytes.</param>
@@ -725,7 +755,7 @@ namespace DotNext.Runtime
         /// </summary>
         /// <remarks>
         /// This method may give different value each time you run the program for
-        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
+        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
         /// </remarks>
         /// <param name="source">A pointer to the block of memory.</param>
         /// <param name="length">Length of memory block to be hashed, in bytes.</param>
@@ -756,6 +786,7 @@ namespace DotNext.Runtime
                     hash = hashFunction.Invoke(hash, Unsafe.ReadUnaligned<ushort>(ref source));
                     break;
             }
+
             return salted ? hashFunction.Invoke(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
@@ -779,6 +810,7 @@ namespace DotNext.Runtime
                     hash = FNV1a32.GetHashCode(hash, Unsafe.ReadUnaligned<ushort>(ref source));
                     break;
             }
+
             return salted ? FNV1a32.GetHashCode(hash, RandomExtensions.BitwiseHashSalt) : hash;
         }
 
@@ -787,7 +819,7 @@ namespace DotNext.Runtime
         /// </summary>
         /// <remarks>
         /// This method may give different value each time you run the program for
-        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>. 
+        /// the same data. To disable this behavior, pass false to <paramref name="salted"/>.
         /// </remarks>
         /// <param name="source">A pointer to the block of memory.</param>
         /// <param name="length">Length of memory block to be hashed, in bytes.</param>
@@ -820,7 +852,9 @@ namespace DotNext.Runtime
         /// </summary>
         /// <typeparam name="T">Blittable type.</typeparam>
         /// <param name="value">The value which bytes should be reversed.</param>
-        public static void Reverse<T>(ref T value) where T : unmanaged => Span.AsBytes(ref value).Reverse();
+        public static void Reverse<T>(ref T value)
+            where T : unmanaged
+            => Span.AsBytes(ref value).Reverse();
 
         /// <summary>
         /// Checks whether the specified object is exactly of the specified type.

@@ -24,8 +24,8 @@ namespace DotNext.Buffers
         public struct Enumerator : IEnumerator<ReadOnlyMemory<T>>
         {
             private readonly ReadOnlyMemory<T> source;
-            private int startIndex, length;
             private readonly int chunkSize;
+            private int startIndex, length;
 
             internal Enumerator(ReadOnlyMemory<T> source, int chunkSize)
             {
@@ -39,8 +39,10 @@ namespace DotNext.Buffers
             /// </summary>
             public readonly ReadOnlyMemory<T> Current => source.Slice(startIndex, length);
 
+            /// <inheritdoc/>
             readonly object IEnumerator.Current => Current;
 
+            /// <inheritdoc/>
             void IDisposable.Dispose() => this = default;
 
             /// <summary>
@@ -59,6 +61,7 @@ namespace DotNext.Buffers
                     startIndex += chunkSize;
                     length = Math.Min(source.Length - startIndex, chunkSize);
                 }
+
                 return startIndex < source.Length;
             }
 
@@ -91,9 +94,11 @@ namespace DotNext.Buffers
         /// <returns>The enumerator over memory chunks.</returns>
         public Enumerator GetEnumerator() => new Enumerator(memory, chunkSize);
 
+        /// <inheritdoc/>
         IEnumerator<ReadOnlyMemory<T>> IEnumerable<ReadOnlyMemory<T>>.GetEnumerator()
             => GetEnumerator();
 
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator()
             => GetEnumerator();
 

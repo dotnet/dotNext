@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using static System.Diagnostics.Stopwatch;
 
 namespace DotNext.Diagnostics
@@ -37,6 +38,7 @@ namespace DotNext.Diagnostics
         /// Gets <see cref="TimeSpan"/> representing the given timestamp.
         /// </summary>
         /// <param name="stamp">The timestamp to convert.</param>
+        [SuppressMessage("Usage", "CA2225", Justification = "Accessible via property")]
         public static implicit operator TimeSpan(Timestamp stamp) => stamp.Value;
 
         /// <summary>

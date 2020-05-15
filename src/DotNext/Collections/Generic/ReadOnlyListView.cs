@@ -10,20 +10,20 @@ namespace DotNext.Collections.Generic
     /// <summary>
     /// Represents lazily converted read-only list.
     /// </summary>
-    /// <typeparam name="I">Type of items in the source list.</typeparam>
-    /// <typeparam name="O">Type of items in the converted list.</typeparam>
+    /// <typeparam name="TInput">Type of items in the source list.</typeparam>
+    /// <typeparam name="TOutput">Type of items in the converted list.</typeparam>
     [StructLayout(LayoutKind.Auto)]
-    public readonly struct ReadOnlyListView<I, O> : IReadOnlyList<O>, IEquatable<ReadOnlyListView<I, O>>
+    public readonly struct ReadOnlyListView<TInput, TOutput> : IReadOnlyList<TOutput>, IEquatable<ReadOnlyListView<TInput, TOutput>>
     {
-        private readonly IReadOnlyList<I> source;
-        private readonly ValueFunc<I, O> mapper;
+        private readonly IReadOnlyList<TInput> source;
+        private readonly ValueFunc<TInput, TOutput> mapper;
 
         /// <summary>
         /// Initializes a new lazily converted view.
         /// </summary>
         /// <param name="list">Read-only list to convert.</param>
         /// <param name="mapper">List items converter.</param>
-        public ReadOnlyListView(IReadOnlyList<I> list, in ValueFunc<I, O> mapper)
+        public ReadOnlyListView(IReadOnlyList<TInput> list, in ValueFunc<TInput, TOutput> mapper)
         {
             source = list ?? throw new ArgumentNullException(nameof(list));
             this.mapper = mapper;
@@ -34,7 +34,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="index">Zero-based index of the item.</param>
         /// <returns>Converted item at the specified position.</returns>
-        public O this[int index] => mapper.Invoke(source[index]);
+        public TOutput this[int index] => mapper.Invoke(source[index]);
 
         /// <summary>
         /// Count of items in the list.
@@ -45,8 +45,9 @@ namespace DotNext.Collections.Generic
         /// Returns enumerator over converted items.
         /// </summary>
         /// <returns>The enumerator over converted items.</returns>
-        public IEnumerator<O> GetEnumerator() => source.Select(mapper.ToDelegate()).GetEnumerator();
+        public IEnumerator<TOutput> GetEnumerator() => source.Select(mapper.ToDelegate()).GetEnumerator();
 
+        /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>
@@ -54,7 +55,7 @@ namespace DotNext.Collections.Generic
         /// </summary>
         /// <param name="other">Other list to compare.</param>
         /// <returns><see langword="true"/> if this view wraps the same source list and contains the same converter as other view; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(ReadOnlyListView<I, O> other) => ReferenceEquals(source, other.source) && mapper == other.mapper;
+        public bool Equals(ReadOnlyListView<TInput, TOutput> other) => ReferenceEquals(source, other.source) && mapper == other.mapper;
 
         /// <summary>
         /// Returns hash code for the this list.
@@ -68,7 +69,7 @@ namespace DotNext.Collections.Generic
         /// <param name="other">Other list to compare.</param>
         /// <returns><see langword="true"/> if this collection wraps the same source collection and contains the same converter as other collection; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other)
-            => other is ReadOnlyListView<I, O> view ? Equals(view) : Equals(source, other);
+            => other is ReadOnlyListView<TInput, TOutput> view ? Equals(view) : Equals(source, other);
 
         /// <summary>
         /// Determines whether two views are same.
@@ -76,7 +77,7 @@ namespace DotNext.Collections.Generic
         /// <param name="first">The first list view to compare.</param>
         /// <param name="second">The second list view to compare.</param>
         /// <returns><see langword="true"/> if the first view wraps the same source collection and contains the same converter as the second view; otherwise, <see langword="false"/>.</returns>
-        public static bool operator ==(ReadOnlyListView<I, O> first, ReadOnlyListView<I, O> second)
+        public static bool operator ==(ReadOnlyListView<TInput, TOutput> first, ReadOnlyListView<TInput, TOutput> second)
             => first.Equals(second);
 
         /// <summary>
@@ -85,7 +86,7 @@ namespace DotNext.Collections.Generic
         /// <param name="first">The first list view to compare.</param>
         /// <param name="second">The second list view to compare.</param>
         /// <returns><see langword="true"/> if the first view wraps the different source collection and contains the different converter as the second view; otherwise, <see langword="false"/>.</returns>
-        public static bool operator !=(ReadOnlyListView<I, O> first, ReadOnlyListView<I, O> second)
+        public static bool operator !=(ReadOnlyListView<TInput, TOutput> first, ReadOnlyListView<TInput, TOutput> second)
             => !first.Equals(second);
     }
 }

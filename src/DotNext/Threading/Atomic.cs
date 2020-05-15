@@ -12,6 +12,7 @@ namespace DotNext.Threading
     /// <summary>
     /// Provides atomic access to non-primitive data type.
     /// </summary>
+    /// <typeparam name="T">The type of the value to be accessible in atomic manner.</typeparam>
     /// <remarks>
     /// Synchronized methods can be declared in classes only. If you don't need to have extra heap allocation
     /// to keep synchronization root in the form of the object or you need to have volatile field
@@ -41,7 +42,7 @@ namespace DotNext.Threading
         private T value;
 
         private AtomicBoolean lockState;
-        private volatile int version;    //used for optimistic lock
+        private volatile int version;    // used for optimistic lock
 
         /// <summary>
         /// Clones this container atomically.
@@ -54,6 +55,7 @@ namespace DotNext.Threading
             return result;
         }
 
+        /// <inheritdoc/>
         object ICloneable.Clone() => Clone();
 
         /// <summary>
@@ -166,7 +168,7 @@ namespace DotNext.Threading
         /// <summary>
         /// Atomically updates the stored value with the results of applying the given function, returning the updated value.
         /// </summary>
-        /// <param name="updater">A side-effect-free function</param>
+        /// <param name="updater">A side-effect-free function.</param>
         /// <param name="result">The updated value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
         public void UpdateAndGet(Updater updater, out T result)
@@ -187,10 +189,10 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-        /// Atomically updates the stored value with the results 
+        /// Atomically updates the stored value with the results
         /// of applying the given function, returning the original value.
         /// </summary>
-        /// <param name="updater">A side-effect-free function</param>
+        /// <param name="updater">A side-effect-free function.</param>
         /// <param name="result">The original value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="updater"/> is <see langword="null"/>.</exception>
         public void GetAndUpdate(Updater updater, out T result)
@@ -212,14 +214,14 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-        /// Atomically updates the stored value with the results of applying the given function 
+        /// Atomically updates the stored value with the results of applying the given function
         /// to the current and given values, returning the original value.
         /// </summary>
         /// <remarks>
         /// The function is applied with the current value as its first argument, and the given update as the second argument.
         /// </remarks>
         /// <param name="x">Accumulator operand.</param>
-        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <param name="result">The updated value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
         public void AccumulateAndGet(in T x, Accumulator accumulator, out T result)
@@ -240,14 +242,14 @@ namespace DotNext.Threading
         }
 
         /// <summary>
-        /// Atomically updates the stored value with the results of applying the given function 
+        /// Atomically updates the stored value with the results of applying the given function
         /// to the current and given values, returning the updated value.
         /// </summary>
         /// <remarks>
         /// The function is applied with the current value as its first argument, and the given update as the second argument.
         /// </remarks>
         /// <param name="x">Accumulator operand.</param>
-        /// <param name="accumulator">A side-effect-free function of two arguments</param>
+        /// <param name="accumulator">A side-effect-free function of two arguments.</param>
         /// <param name="result">The original value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="accumulator"/> is <see langword="null"/>.</exception>
         public void GetAndAccumulate(in T x, Accumulator accumulator, out T result)
@@ -285,6 +287,7 @@ namespace DotNext.Threading
             set => Write(value);
         }
 
+        /// <inheritdoc/>
         object IStrongBox.Value
         {
             readonly get => Value;

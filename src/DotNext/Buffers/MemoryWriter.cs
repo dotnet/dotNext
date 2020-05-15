@@ -9,21 +9,30 @@ namespace DotNext.Buffers
     /// <typeparam name="T">The data type that can be written.</typeparam>
     public abstract class MemoryWriter<T> : Disposable, IBufferWriter<T>, IConvertible<ReadOnlyMemory<T>>
     {
+        /// <summary>
+        /// Represents default initial buffer size.
+        /// </summary>
         private protected const int DefaultInitialBufferSize = 256;
 
+        /// <summary>
+        /// Represents position of write cursor.
+        /// </summary>
         private protected int position;
 
+        /// <summary>
+        /// Initializes a new memory writer.
+        /// </summary>
         private protected MemoryWriter()
         {
-
         }
 
         /// <summary>
-        /// Gets the data written to the underlying buffer so far
+        /// Gets the data written to the underlying buffer so far.
         /// </summary>
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public abstract ReadOnlyMemory<T> WrittenMemory { get; }
 
+        /// <inheritdoc/>
         ReadOnlyMemory<T> IConvertible<ReadOnlyMemory<T>>.Convert() => WrittenMemory;
 
         /// <summary>
@@ -98,8 +107,16 @@ namespace DotNext.Buffers
         /// <exception cref="ObjectDisposedException">This writer has been disposed.</exception>
         public abstract Span<T> GetSpan(int sizeHint = 0);
 
+        /// <summary>
+        /// Reallocates internal buffer.
+        /// </summary>
+        /// <param name="newSize">A new size of internal buffer.</param>
         private protected abstract void Resize(int newSize);
 
+        /// <summary>
+        /// Ensures capacity of internal buffer.
+        /// </summary>
+        /// <param name="sizeHint">The requested size of the buffer.</param>
         private protected void CheckAndResizeBuffer(int sizeHint)
         {
             if (sizeHint < 0)
@@ -118,6 +135,7 @@ namespace DotNext.Buffers
                     if ((uint)newSize > int.MaxValue)
                         throw new OutOfMemoryException();
                 }
+
                 Resize(newSize);
             }
         }

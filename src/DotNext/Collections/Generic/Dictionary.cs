@@ -1,122 +1,129 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace DotNext.Collections.Generic
 {
+    using UnreachableCodeExecutionException = Diagnostics.UnreachableCodeExecutionException;
+
     /// <summary>
     /// Represents various extensions for types <see cref="Dictionary{TKey, TValue}"/>
     /// and <see cref="IDictionary{TKey, TValue}"/>.
     /// </summary>
     public static class Dictionary
     {
-        private static class Indexer<D, K, V>
-            where D : class, IEnumerable<KeyValuePair<K, V>>
+        private static class Indexer<TDictionary, TKey, TValue>
+            where TDictionary : class, IEnumerable<KeyValuePair<TKey, TValue>>
         {
-            internal static readonly Func<D, K, V> Getter;
-            internal static readonly Action<D, K, V>? Setter;
+            internal static readonly Func<TDictionary, TKey, TValue> Getter;
+            internal static readonly Action<TDictionary, TKey, TValue>? Setter;
 
+            [SuppressMessage("Design", "CA1065", Justification = "The exception should never be raised")]
             static Indexer()
             {
-                foreach (var member in typeof(D).GetDefaultMembers())
+                foreach (var member in typeof(TDictionary).GetDefaultMembers())
+                {
                     if (member is PropertyInfo indexer)
                     {
-                        Getter = indexer.GetMethod.CreateDelegate<Func<D, K, V>>();
-                        Setter = indexer.SetMethod?.CreateDelegate<Action<D, K, V>>();
+                        Getter = indexer.GetMethod.CreateDelegate<Func<TDictionary, TKey, TValue>>();
+                        Setter = indexer.SetMethod?.CreateDelegate<Action<TDictionary, TKey, TValue>>();
                         return;
                     }
-                throw new InvalidProgramException(ExceptionMessages.UnreachableCodeDetected);
+                }
+
+                throw new UnreachableCodeExecutionException();
             }
         }
 
         /// <summary>
         /// Provides strongly-typed access to dictionary indexer.
         /// </summary>
-        /// <typeparam name="K">Type of keys in the dictionary.</typeparam>
-        /// <typeparam name="V">Type of values in the dictionary.</typeparam>
-		public static class Indexer<K, V>
+        /// <typeparam name="TKey">Type of keys in the dictionary.</typeparam>
+        /// <typeparam name="TValue">Type of values in the dictionary.</typeparam>
+        public static class Indexer<TKey, TValue>
         {
             /// <summary>
             /// Represents read-only dictionary indexer.
             /// </summary>
-			public static Func<IReadOnlyDictionary<K, V>, K, V> ReadOnly => Indexer<IReadOnlyDictionary<K, V>, K, V>.Getter;
+            public static Func<IReadOnlyDictionary<TKey, TValue>, TKey, TValue> ReadOnly => Indexer<IReadOnlyDictionary<TKey, TValue>, TKey, TValue>.Getter;
 
             /// <summary>
             /// Represents dictionary value getter.
             /// </summary>
-			public static Func<IDictionary<K, V>, K, V> Getter => Indexer<IDictionary<K, V>, K, V>.Getter;
+            public static Func<IDictionary<TKey, TValue>, TKey, TValue> Getter => Indexer<IDictionary<TKey, TValue>, TKey, TValue>.Getter;
 
             /// <summary>
             /// Represents dictionary value setter.
             /// </summary>
-			public static Action<IDictionary<K, V>, K, V> Setter => Indexer<IDictionary<K, V>, K, V>.Setter!;
+            public static Action<IDictionary<TKey, TValue>, TKey, TValue> Setter => Indexer<IDictionary<TKey, TValue>, TKey, TValue>.Setter!;
         }
 
         /// <summary>
         /// Returns <see cref="IReadOnlyDictionary{TKey, TValue}.get_Item"/> as
         /// delegate attached to the dictionary instance.
         /// </summary>
-        /// <typeparam name="K">Type of dictionary keys.</typeparam>
-        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
         /// <param name="dictionary">Read-only dictionary instance.</param>
         /// <returns>A delegate representing dictionary indexer.</returns>
-        public static Func<K, V> IndexerGetter<K, V>(this IReadOnlyDictionary<K, V> dictionary)
-            => Indexer<K, V>.ReadOnly.Bind(dictionary);
+        public static Func<TKey, TValue> IndexerGetter<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary)
+            => Indexer<TKey, TValue>.ReadOnly.Bind(dictionary);
 
         /// <summary>
         /// Returns <see cref="IDictionary{TKey, TValue}.get_Item"/> as
         /// delegate attached to the dictionary instance.
         /// </summary>
-        /// <typeparam name="K">Type of dictionary keys.</typeparam>
-        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
         /// <param name="dictionary">Mutable dictionary instance.</param>
         /// <returns>A delegate representing dictionary indexer.</returns>
-        public static Func<K, V> IndexerGetter<K, V>(this IDictionary<K, V> dictionary)
-            => Indexer<K, V>.Getter.Bind(dictionary);
+        public static Func<TKey, TValue> IndexerGetter<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+            => Indexer<TKey, TValue>.Getter.Bind(dictionary);
 
         /// <summary>
         /// Returns <see cref="IDictionary{TKey, TValue}.set_Item"/> as
         /// delegate attached to the dictionary instance.
         /// </summary>
-        /// <typeparam name="K">Type of dictionary keys.</typeparam>
-        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
         /// <param name="dictionary">Mutable dictionary instance.</param>
         /// <returns>A delegate representing dictionary indexer.</returns>
-        public static Action<K, V> IndexerSetter<K, V>(this IDictionary<K, V> dictionary)
-            => Indexer<K, V>.Setter.Bind(dictionary);
+        public static Action<TKey, TValue> IndexerSetter<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+            => Indexer<TKey, TValue>.Setter.Bind(dictionary);
 
         /// <summary>
         /// Adds a key-value pair to the dictionary if the key does not exist.
         /// </summary>
-        /// <typeparam name="K">The key type of the dictionary.</typeparam>
-        /// <typeparam name="V">The value type of the dictionary.</typeparam>
+        /// <typeparam name="TKey">The key type of the dictionary.</typeparam>
+        /// <typeparam name="TValue">The value type of the dictionary.</typeparam>
         /// <param name="dictionary">The source dictionary.</param>
         /// <param name="key">The key of the key-value pair.</param>
         /// <returns>
-        /// The corresponding value in the dictionary if <paramref name="key"/> already exists, 
-        /// or a new instance of <typeparamref name="V"/>.
+        /// The corresponding value in the dictionary if <paramref name="key"/> already exists,
+        /// or a new instance of <typeparamref name="TValue"/>.
         /// </returns>
-        public static V GetOrAdd<K, V>(this Dictionary<K, V> dictionary, K key)
-            where V : new()
+        public static TValue GetOrAdd<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key)
+            where TValue : new()
         {
             if (!dictionary.TryGetValue(key, out var value))
-                dictionary.Add(key, value = new V());
+                dictionary.Add(key, value = new TValue());
             return value;
         }
 
         /// <summary>
         /// Adds a key-value pair to the dictionary if the key does not exist.
         /// </summary>
-        /// <typeparam name="K">The key type of the dictionary.</typeparam>
-        /// <typeparam name="V">The value type of the dictionary.</typeparam>
+        /// <typeparam name="TKey">The key type of the dictionary.</typeparam>
+        /// <typeparam name="TValue">The value type of the dictionary.</typeparam>
         /// <param name="dictionary">The source dictionary.</param>
         /// <param name="key">The key of the key-value pair.</param>
         /// <param name="value">The value of the key-value pair.</param>
         /// <returns>
-        /// The corresponding value in the dictionary if <paramref name="key"/> already exists, 
+        /// The corresponding value in the dictionary if <paramref name="key"/> already exists,
         /// or <paramref name="value"/>.
         /// </returns>
-        public static V GetOrAdd<K, V>(this Dictionary<K, V> dictionary, K key, V value)
+        public static TValue GetOrAdd<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
             if (dictionary.TryGetValue(key, out var temp))
                 value = temp;
@@ -129,82 +136,79 @@ namespace DotNext.Collections.Generic
         /// Generates a value and adds the key-value pair to the dictionary if the key does not
         /// exist.
         /// </summary>
-        /// <typeparam name="K">The key type of the dictionary.</typeparam>
-        /// <typeparam name="V">The value type of the dictionary.</typeparam>
+        /// <typeparam name="TKey">The key type of the dictionary.</typeparam>
+        /// <typeparam name="TValue">The value type of the dictionary.</typeparam>
         /// <param name="dictionary">The source dictionary.</param>
         /// <param name="key">The key of the key-value pair.</param>
         /// <param name="valueFactory">
         /// The function used to generate the value from the key.
         /// </param>
         /// <returns>
-        /// The corresponding value in the dictionary if <paramref name="key"/> already exists, 
+        /// The corresponding value in the dictionary if <paramref name="key"/> already exists,
         /// or the value generated by <paramref name="valueFactory"/>.
         /// </returns>
-        public static V GetOrAdd<K, V>(this Dictionary<K, V> dictionary, K key, in ValueFunc<K, V> valueFactory)
+        public static TValue GetOrAdd<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, in ValueFunc<TKey, TValue> valueFactory)
         {
             if (dictionary.TryGetValue(key, out var value))
                 return value;
-            else
-            {
-                value = valueFactory.Invoke(key);
-                dictionary.Add(key, value);
-                return value;
-            }
+            value = valueFactory.Invoke(key);
+            dictionary.Add(key, value);
+            return value;
         }
 
         /// <summary>
         /// Generates a value and adds the key-value pair to the dictionary if the key does not
         /// exist.
         /// </summary>
-        /// <typeparam name="K">The key type of the dictionary.</typeparam>
-        /// <typeparam name="V">The value type of the dictionary.</typeparam>
+        /// <typeparam name="TKey">The key type of the dictionary.</typeparam>
+        /// <typeparam name="TValue">The value type of the dictionary.</typeparam>
         /// <param name="dictionary">The source dictionary.</param>
         /// <param name="key">The key of the key-value pair.</param>
         /// <param name="valueFactory">
         /// The function used to generate the value from the key.
         /// </param>
         /// <returns>
-        /// The corresponding value in the dictionary if <paramref name="key"/> already exists, 
+        /// The corresponding value in the dictionary if <paramref name="key"/> already exists,
         /// or the value generated by <paramref name="valueFactory"/>.
         /// </returns>
-        public static V GetOrAdd<K, V>(this Dictionary<K, V> dictionary, K key, Func<K, V> valueFactory)
-            => GetOrAdd(dictionary, key, new ValueFunc<K, V>(valueFactory, true));
+        public static TValue GetOrAdd<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TKey key, Func<TKey, TValue> valueFactory)
+            => GetOrAdd(dictionary, key, new ValueFunc<TKey, TValue>(valueFactory, true));
 
         /// <summary>
-        /// Applies specific action to each dictionary
+        /// Applies specific action to each dictionary.
         /// </summary>
-        /// <typeparam name="K">The key type of the dictionary.</typeparam>
-        /// <typeparam name="V">The value type of the dictionary.</typeparam>
+        /// <typeparam name="TKey">The key type of the dictionary.</typeparam>
+        /// <typeparam name="TValue">The value type of the dictionary.</typeparam>
         /// <param name="dictionary">A dictionary to read from.</param>
         /// <param name="action">The action to be applied for each key/value pair.</param>
-		public static void ForEach<K, V>(this IDictionary<K, V> dictionary, in ValueAction<K, V> action)
+        public static void ForEach<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, in ValueAction<TKey, TValue> action)
         {
             foreach (var (key, value) in dictionary)
                 action.Invoke(key, value);
         }
 
         /// <summary>
-        /// Applies specific action to each dictionary
+        /// Applies specific action to each dictionary.
         /// </summary>
-        /// <typeparam name="K">The key type of the dictionary.</typeparam>
-        /// <typeparam name="V">The value type of the dictionary.</typeparam>
+        /// <typeparam name="TKey">The key type of the dictionary.</typeparam>
+        /// <typeparam name="TValue">The value type of the dictionary.</typeparam>
         /// <param name="dictionary">A dictionary to read from.</param>
         /// <param name="action">The action to be applied for each key/value pair.</param>
-        public static void ForEach<K, V>(this IDictionary<K, V> dictionary, Action<K, V> action)
-            => ForEach(dictionary, new ValueAction<K, V>(action, true));
+        public static void ForEach<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Action<TKey, TValue> action)
+            => ForEach(dictionary, new ValueAction<TKey, TValue>(action, true));
 
         /// <summary>
         /// Gets dictionary value by key if it exists or
         /// invoke <paramref name="defaultValue"/> and
         /// return its result as a default value.
         /// </summary>
-        /// <typeparam name="K">Type of dictionary keys.</typeparam>
-        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
         /// <param name="dictionary">A dictionary to read from.</param>
         /// <param name="key">A key associated with the value.</param>
         /// <param name="defaultValue">A delegate to be invoked if key doesn't exist in the dictionary.</param>
         /// <returns>The value associated with the key or returned by the delegate.</returns>
-        public static V GetOrInvoke<K, V>(this IDictionary<K, V> dictionary, K key, in ValueFunc<V> defaultValue)
+        public static TValue GetOrInvoke<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, in ValueFunc<TValue> defaultValue)
             => dictionary.TryGetValue(key, out var value) ? value : defaultValue.Invoke();
 
         /// <summary>
@@ -212,72 +216,72 @@ namespace DotNext.Collections.Generic
         /// invoke <paramref name="defaultValue"/> and
         /// return its result as a default value.
         /// </summary>
-        /// <typeparam name="K">Type of dictionary keys.</typeparam>
-        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
         /// <param name="dictionary">A dictionary to read from.</param>
         /// <param name="key">A key associated with the value.</param>
         /// <param name="defaultValue">A delegate to be invoked if key doesn't exist in the dictionary.</param>
         /// <returns>The value associated with the key or returned by the delegate.</returns>
-		public static V GetOrInvoke<K, V>(this IDictionary<K, V> dictionary, K key, Func<V> defaultValue)
-            => GetOrInvoke(dictionary, key, new ValueFunc<V>(defaultValue, true));
+        public static TValue GetOrInvoke<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> defaultValue)
+            => GetOrInvoke(dictionary, key, new ValueFunc<TValue>(defaultValue, true));
 
         /// <summary>
         /// Gets the value associated with the specified key.
         /// </summary>
         /// <param name="dictionary">A dictionary to read from.</param>
         /// <param name="key">The key whose value to get.</param>
-        /// <typeparam name="K">Type of dictionary keys.</typeparam>
-        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
         /// <returns>The optional value associated with the key.</returns>
-        public static Optional<V> TryGetValue<K, V>(this IDictionary<K, V> dictionary, K key)
-            => dictionary.TryGetValue(key, out var value) ? new Optional<V>(value) : Optional<V>.Empty;
+        public static Optional<TValue> TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+            => dictionary.TryGetValue(key, out var value) ? new Optional<TValue>(value) : Optional<TValue>.Empty;
 
         /// <summary>
         /// Removes the value with the specified key and return the removed value.
         /// </summary>
         /// <param name="dictionary">A dictionary to modify.</param>
         /// <param name="key">The key of the element to remove.</param>
-        /// <typeparam name="K">Type of dictionary keys.</typeparam>
-        /// <typeparam name="V">Type of dictionary values.</typeparam>
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
         /// <returns>The removed value.</returns>
-        public static Optional<V> TryRemove<K, V>(this IDictionary<K, V> dictionary, K key)
-            => dictionary.TryGetValue(key, out var value) && dictionary.Remove(key) ? new Optional<V>(value) : Optional<V>.Empty;
+        public static Optional<TValue> TryRemove<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key)
+            => dictionary.TryGetValue(key, out var value) && dictionary.Remove(key) ? new Optional<TValue>(value) : Optional<TValue>.Empty;
 
         /// <summary>
         /// Gets the value associated with the specified key.
         /// </summary>
         /// <param name="dictionary">A dictionary to read from.</param>
         /// <param name="key">The key whose value to get.</param>
-        /// <typeparam name="K">Type of dictionary keys.</typeparam>
-        /// <typeparam name="V">Type of dictionary values.</typeparam>
-        /// <returns>The optional value associated with the key.</returns>        
-        public static Optional<V> TryGetValue<K, V>(IReadOnlyDictionary<K, V> dictionary, K key)
-            => dictionary.TryGetValue(key, out var value) ? new Optional<V>(value) : Optional<V>.Empty;
+        /// <typeparam name="TKey">Type of dictionary keys.</typeparam>
+        /// <typeparam name="TValue">Type of dictionary values.</typeparam>
+        /// <returns>The optional value associated with the key.</returns>
+        public static Optional<TValue> TryGetValue<TKey, TValue>(IReadOnlyDictionary<TKey, TValue> dictionary, TKey key)
+            => dictionary.TryGetValue(key, out var value) ? new Optional<TValue>(value) : Optional<TValue>.Empty;
 
         /// <summary>
         /// Applies lazy conversion for each dictionary value.
         /// </summary>
-        /// <typeparam name="K">Type of keys.</typeparam>
-        /// <typeparam name="V">Type of values.</typeparam>
-        /// <typeparam name="T">Type of mapped values.</typeparam>
+        /// <typeparam name="TKey">Type of keys.</typeparam>
+        /// <typeparam name="TValue">Type of values.</typeparam>
+        /// <typeparam name="TResult">Type of mapped values.</typeparam>
         /// <param name="dictionary">A dictionary to be mapped.</param>
         /// <param name="mapper">Mapping function.</param>
         /// <returns>Read-only view of the dictionary where each value is converted in lazy manner.</returns>
-        public static ReadOnlyDictionaryView<K, V, T> ConvertValues<K, V, T>(this IReadOnlyDictionary<K, V> dictionary, in ValueFunc<V, T> mapper)
-            where K : notnull
-            => new ReadOnlyDictionaryView<K, V, T>(dictionary, mapper);
+        public static ReadOnlyDictionaryView<TKey, TValue, TResult> ConvertValues<TKey, TValue, TResult>(this IReadOnlyDictionary<TKey, TValue> dictionary, in ValueFunc<TValue, TResult> mapper)
+            where TKey : notnull
+            => new ReadOnlyDictionaryView<TKey, TValue, TResult>(dictionary, mapper);
 
         /// <summary>
         /// Applies lazy conversion for each dictionary value.
         /// </summary>
-        /// <typeparam name="K">Type of keys.</typeparam>
-        /// <typeparam name="V">Type of values.</typeparam>
-        /// <typeparam name="T">Type of mapped values.</typeparam>
+        /// <typeparam name="TKey">Type of keys.</typeparam>
+        /// <typeparam name="TValue">Type of values.</typeparam>
+        /// <typeparam name="TResult">Type of mapped values.</typeparam>
         /// <param name="dictionary">A dictionary to be mapped.</param>
         /// <param name="mapper">Mapping function.</param>
         /// <returns>Read-only view of the dictionary where each value is converted in lazy manner.</returns>
-        public static ReadOnlyDictionaryView<K, V, T> ConvertValues<K, V, T>(this IReadOnlyDictionary<K, V> dictionary, Converter<V, T> mapper)
-            where K : notnull
+        public static ReadOnlyDictionaryView<TKey, TValue, TResult> ConvertValues<TKey, TValue, TResult>(this IReadOnlyDictionary<TKey, TValue> dictionary, Converter<TValue, TResult> mapper)
+            where TKey : notnull
             => ConvertValues(dictionary, mapper.AsValueFunc(true));
     }
 }

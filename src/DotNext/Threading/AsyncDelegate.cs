@@ -22,23 +22,23 @@ namespace DotNext.Threading
         /// <param name="delegate">A delegate to be invoked asynchronously.</param>
         /// <param name="invoker">Synchronous invoker of the delegate from invocation list.</param>
         /// <param name="token">Cancellation token.</param>
-        /// <typeparam name="D">Type of delegate to invoke.</typeparam>
+        /// <typeparam name="TDelegate">Type of delegate to invoke.</typeparam>
         /// <returns>A task allows to control asynchronous invocation of methods attached to the multicast delegate.</returns>
-        public static AsyncDelegateFuture InvokeAsync<D>(this D @delegate, Action<D> invoker, CancellationToken token = default)
-            where D : MulticastDelegate
-            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new CustomDelegateFuture<D>(invoker, token).Invoke(@delegate);
+        public static AsyncDelegateFuture InvokeAsync<TDelegate>(this TDelegate @delegate, Action<TDelegate> invoker, CancellationToken token = default)
+            where TDelegate : MulticastDelegate
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new CustomDelegateFuture<TDelegate>(invoker, token).Invoke(@delegate);
 
         /// <summary>
         /// Invokes event handlers asynchronously.
         /// </summary>
-        /// <typeparam name="E">Type of event object.</typeparam>
+        /// <typeparam name="TEventArgs">Type of event object.</typeparam>
         /// <param name="handler">A set event handlers combined as single delegate.</param>
         /// <param name="sender">Event sender.</param>
         /// <param name="args">Event arguments.</param>
         /// <param name="token">Optional cancellation token.</param>
         /// <returns>An object representing state of the asynchronous invocation.</returns>
-        public static AsyncDelegateFuture InvokeAsync<E>(this EventHandler<E> handler, object sender, E args, CancellationToken token = default)
-            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new EventHandlerFuture<E>(sender, args, token).Invoke(handler);
+        public static AsyncDelegateFuture InvokeAsync<TEventArgs>(this EventHandler<TEventArgs> handler, object sender, TEventArgs args, CancellationToken token = default)
+            => token.IsCancellationRequested ? CanceledAsyncDelegateFuture.Instance : new EventHandlerFuture<TEventArgs>(sender, args, token).Invoke(handler);
 
         /// <summary>
         /// Invokes event handlers asynchronously.

@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
@@ -39,11 +40,10 @@ namespace DotNext.Buffers
         public ArrayRental(int minimumLength, bool clearArray = false)
             : this(ArrayPool<T>.Shared, minimumLength, clearArray)
         {
-
         }
 
         /// <summary>
-        /// Rents the array.  
+        /// Rents the array.
         /// </summary>
         /// <param name="array">The array to rent.</param>
         /// <param name="length">The length of the rented segment.</param>
@@ -81,6 +81,7 @@ namespace DotNext.Buffers
         /// </summary>
         public Memory<T> Memory => array is null ? default : new Memory<T>(array, 0, Length);
 
+        /// <inheritdoc/>
         Memory<T> IConvertible<Memory<T>>.Convert() => Memory;
 
         /// <summary>
@@ -93,6 +94,7 @@ namespace DotNext.Buffers
         /// </summary>
         public ArraySegment<T> Segment => array is null ? ArraySegment<T>.Empty : new ArraySegment<T>(array, 0, Length);
 
+        /// <inheritdoc/>
         ArraySegment<T> IConvertible<ArraySegment<T>>.Convert() => Segment;
 
         /// <summary>
@@ -100,6 +102,7 @@ namespace DotNext.Buffers
         /// </summary>
         public MemoryOwner<T> Owner => array is null ? default : new MemoryOwner<T>(pool, array, Length);
 
+        /// <inheritdoc/>
         MemoryOwner<T> IConvertible<MemoryOwner<T>>.Convert() => Owner;
 
         /// <summary>
@@ -136,6 +139,7 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="array">The rented array.</param>
         /// <returns>The array owner.</returns>
+        [SuppressMessage("Usage", "CA2225", Justification = "Accessible via Owner property")]
         public static implicit operator MemoryOwner<T>(in ArrayRental<T> array) => array.Owner;
 
         /// <summary>

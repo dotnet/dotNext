@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 
@@ -13,7 +14,8 @@ namespace DotNext.Threading
     public readonly struct Timeout
     {
         private readonly Timestamp created;
-        //null means that this timeout is infinite
+
+        // null means that this timeout is infinite
         private readonly TimeSpan? timeout;
 
         /// <summary>
@@ -31,6 +33,11 @@ namespace DotNext.Threading
             else
                 this.timeout = timeout;
         }
+
+        /// <summary>
+        /// Gets value of this timeout.
+        /// </summary>
+        public TimeSpan Value => timeout ?? InfiniteTimeSpan;
 
         /// <summary>
         /// Determines whether this timeout is infinite.
@@ -75,6 +82,7 @@ namespace DotNext.Threading
                     var remaining = timeout - created.Elapsed;
                     return remaining >= TimeSpan.Zero ? new TimeSpan?(remaining) : null;
                 }
+
                 return InfiniteTimeSpan;
             }
         }
@@ -84,6 +92,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="timeout">Timeout control object.</param>
         /// <returns><see langword="true"/>, if timeout is reached; otherwise, <see langword="false"/>.</returns>
+        [SuppressMessage("Usage", "CA2225", Justification = "Accessible via property")]
         public static bool operator true(in Timeout timeout) => timeout.IsExpired;
 
         /// <summary>
@@ -98,6 +107,7 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="timeout">Timeout control object.</param>
         /// <returns>The original timeout value.</returns>
-		public static implicit operator TimeSpan(in Timeout timeout) => timeout.timeout ?? InfiniteTimeSpan;
+        [SuppressMessage("Usage", "CA2225", Justification = "Accessible via property")]
+        public static implicit operator TimeSpan(in Timeout timeout) => timeout.Value;
     }
 }

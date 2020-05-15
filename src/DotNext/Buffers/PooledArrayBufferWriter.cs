@@ -8,7 +8,7 @@ namespace DotNext.Buffers
     /// Represents memory writer that is backed by the array obtained from the pool.
     /// </summary>
     /// <remarks>
-    /// This class provides additional methods for access to array segments in contrast to <see cref="PooledBufferWriter{T}"/>. 
+    /// This class provides additional methods for access to array segments in contrast to <see cref="PooledBufferWriter{T}"/>.
     /// </remarks>
     /// <typeparam name="T">The data type that can be written.</typeparam>
     public sealed class PooledArrayBufferWriter<T> : MemoryWriter<T>, IConvertible<ArraySegment<T>>
@@ -88,6 +88,7 @@ namespace DotNext.Buffers
             }
         }
 
+        /// <inheritdoc/>
         ArraySegment<T> IConvertible<ArraySegment<T>>.Convert() => WrittenArray;
 
         internal TWrapper WrapBuffer<TWrapper>(ValueFunc<T[], int, TWrapper> factory)
@@ -143,6 +144,7 @@ namespace DotNext.Buffers
             return new ArraySegment<T>(buffer, position, buffer.Length - position);
         }
 
+        /// <inheritdoc/>
         private protected override void Resize(int newSize)
         {
             var newBuffer = pool.Rent(newSize);
@@ -151,10 +153,7 @@ namespace DotNext.Buffers
             buffer = newBuffer;
         }
 
-        /// <summary>
-        /// Returns the memory used by this writer back to the pool.
-        /// </summary>
-        /// <param name="disposing"></param>
+        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -163,6 +162,7 @@ namespace DotNext.Buffers
                     pool.Return(buffer);
                 buffer = Array.Empty<T>();
             }
+
             base.Dispose(disposing);
         }
     }

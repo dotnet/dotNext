@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 namespace DotNext.IO
 {
     /// <summary>
-    /// Represents a destination of data that can be flushed
+    /// Represents a destination of data that can be flushed.
     /// </summary>
     public interface IFlushable
     {
