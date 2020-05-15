@@ -114,4 +114,7 @@
     <Rule Id="CA1825" Action="Error" />
     <Rule Id="CA2207" Action="None" />
   </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzer" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="AD0001" Action="None" />
+  </Rules>
 </RuleSet>
