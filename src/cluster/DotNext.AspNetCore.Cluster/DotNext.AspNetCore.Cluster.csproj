@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>DotNext</RootNamespace>
     <Nullable>enable</Nullable>
-    <Version>2.3.2</Version>
+    <Version>2.3.5</Version>
     <Authors>Roman Sakno</Authors>
     <Product>.NEXT Family of Libraries</Product>
     <Description>Framework for fault-tolerant clustered microservices based on ASP.NET Core</Description>
