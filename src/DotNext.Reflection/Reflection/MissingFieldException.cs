@@ -20,17 +20,17 @@ namespace DotNext.Reflection
             FieldName = fieldName;
         }
 
-        internal static MissingFieldException Create<T, F>(string fieldName)
-            => new MissingFieldException(typeof(T), fieldName, typeof(F));
+        internal static MissingFieldException Create<T, TValue>(string fieldName)
+            => new MissingFieldException(typeof(T), fieldName, typeof(TValue));
 
         /// <summary>
         /// Gets type of the field.
         /// </summary>
-		public Type FieldType { get; }
+        public Type FieldType { get; }
 
         /// <summary>
         /// Gets name of the missing field.
         /// </summary>
-		public string FieldName { get; }
+        public string FieldName { get; }
     }
 }

@@ -9,18 +9,18 @@ namespace DotNext.Reflection
     public enum OperatorLookup : byte
     {
         /// <summary>
-		/// Check for predefined operator only.
-		/// </summary>
+        /// Check for predefined operator only.
+        /// </summary>
         Predefined = 0,
 
         /// <summary>
-		/// Check for user-defined (overloaded) operator only.
-		/// </summary>
+        /// Check for user-defined (overloaded) operator only.
+        /// </summary>
         Overloaded = 1,
 
         /// <summary>
-		/// Check for any operator.
-		/// </summary>
-        Any = 2
+        /// Check for any operator.
+        /// </summary>
+        Any = 2,
     }
 }

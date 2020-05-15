@@ -9,13 +9,13 @@ namespace DotNext.Reflection
     public enum MethodLookup : byte
     {
         /// <summary>
-		/// Represents static method.
-		/// </summary>
+        /// Represents static method.
+        /// </summary>
         Static = 0,
 
         /// <summary>
-		/// Represents instance method.
-		/// </summary>
-        Instance = 1
+        /// Represents instance method.
+        /// </summary>
+        Instance = 1,
     }
 }

@@ -20,17 +20,17 @@ namespace DotNext.Reflection
             PropertyName = propertyName;
         }
 
-        internal static MissingPropertyException Create<T, P>(string propertyName)
-            => new MissingPropertyException(typeof(T), propertyName, typeof(P));
+        internal static MissingPropertyException Create<T, TValue>(string propertyName)
+            => new MissingPropertyException(typeof(T), propertyName, typeof(TValue));
 
         /// <summary>
         /// Gets type of the missing property.
         /// </summary>
-		public Type PropertyType { get; }
+        public Type PropertyType { get; }
 
         /// <summary>
         /// Gets name of the missing property.
         /// </summary>
-		public string PropertyName { get; }
+        public string PropertyName { get; }
     }
 }

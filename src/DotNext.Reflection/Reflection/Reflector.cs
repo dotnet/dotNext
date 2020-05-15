@@ -31,7 +31,8 @@ namespace DotNext.Reflection
         /// <typeparam name="TMember">Type of member to reflect.</typeparam>
         /// <returns>Reflected member; or <see langword="null"/>, if lambda expression doesn't reference a member.</returns>
         [Obsolete("Use overloaded generic method that allows to specify delegate type explicitly")]
-        public static TMember? MemberOf<TMember>(Expression<Action> exprTree) where TMember : MemberInfo => MemberOf<TMember, Action>(exprTree);
+        public static TMember? MemberOf<TMember>(Expression<Action> exprTree)
+            where TMember : MemberInfo => MemberOf<TMember, Action>(exprTree);
 
         /// <summary>
         /// Extracts member metadata from expression tree.
@@ -48,35 +49,38 @@ namespace DotNext.Reflection
         /// <summary>
         /// Unreflects constructor to its typed and callable representation.
         /// </summary>
-        /// <typeparam name="D">A delegate representing signature of constructor.</typeparam>
+        /// <typeparam name="TDelegate">A delegate representing signature of constructor.</typeparam>
         /// <param name="ctor">Constructor to unreflect.</param>
         /// <returns>Unreflected constructor.</returns>
-        public static Constructor<D>? Unreflect<D>(this ConstructorInfo ctor) where D : MulticastDelegate => Constructor<D>.GetOrCreate(ctor);
+        public static Constructor<TDelegate>? Unreflect<TDelegate>(this ConstructorInfo ctor)
+            where TDelegate : MulticastDelegate => Constructor<TDelegate>.GetOrCreate(ctor);
 
         /// <summary>
         /// Unreflects method to its typed and callable representation.
         /// </summary>
-        /// <typeparam name="D">A delegate representing signature of method.</typeparam>
+        /// <typeparam name="TDelegate">A delegate representing signature of method.</typeparam>
         /// <param name="method">A method to unreflect.</param>
         /// <returns>Unreflected method.</returns>
-        public static Method<D>? Unreflect<D>(this MethodInfo method) where D : MulticastDelegate => Method<D>.GetOrCreate(method);
+        public static Method<TDelegate>? Unreflect<TDelegate>(this MethodInfo method)
+            where TDelegate : MulticastDelegate => Method<TDelegate>.GetOrCreate(method);
 
         /// <summary>
         /// Obtains managed pointer to the static field.
         /// </summary>
-        /// <typeparam name="V">The field type.</typeparam>
+        /// <typeparam name="TValue">The field type.</typeparam>
         /// <param name="field">The field to unreflect.</param>
         /// <returns>Unreflected static field.</returns>
-        public static Field<V> Unreflect<V>(this FieldInfo field) => Field<V>.GetOrCreate(field);
+        public static Field<TValue> Unreflect<TValue>(this FieldInfo field) => Field<TValue>.GetOrCreate(field);
 
         /// <summary>
         /// Obtains managed pointer to the instance field.
         /// </summary>
         /// <typeparam name="T">The type of the object that declares instance field.</typeparam>
-        /// <typeparam name="V">The field type.</typeparam>
+        /// <typeparam name="TValue">The field type.</typeparam>
         /// <param name="field">The field to unreflect.</param>
         /// <returns>Unreflected instance field.</returns>
-        public static Field<T, V> Unreflect<T, V>(this FieldInfo field) where T : notnull => Field<T, V>.GetOrCreate(field);
+        public static Field<T, TValue> Unreflect<T, TValue>(this FieldInfo field)
+            where T : notnull => Field<T, TValue>.GetOrCreate(field);
 
         private static MemberExpression BuildFieldAccess(FieldInfo field, ParameterExpression target)
             => field.IsStatic ? Expression.Field(null, field) : Expression.Field(Expression.Convert(target, field.DeclaringType), field);
@@ -120,7 +124,8 @@ namespace DotNext.Reflection
             var target = Expression.Parameter(typeof(object));
             var arguments = Expression.Parameter(typeof(object[]));
             var fieldAccess = BuildFieldAccess(field, target);
-            var body = Expression.Condition(Expression.Equal(Expression.ArrayLength(arguments), Expression.Constant(0)),
+            var body = Expression.Condition(
+                Expression.Equal(Expression.ArrayLength(arguments), Expression.Constant(0)),
                 BuildGetter(fieldAccess),
                 BuildSetter(fieldAccess, arguments),
                 typeof(object));
@@ -161,12 +166,15 @@ namespace DotNext.Reflection
             var thisArg = method.IsStatic || method.MemberType == MemberTypes.Constructor ? null : Expression.Convert(target, method.DeclaringType);
             ICollection<Expression> arglist = new LinkedList<Expression>(), prologue = new LinkedList<Expression>(), epilogue = new LinkedList<Expression>();
             ICollection<ParameterExpression> tempVars = new LinkedList<ParameterExpression>();
-            //handle parameters
+
+            // handle parameters
             foreach (var parameter in method.GetParameters())
             {
                 Expression argument = Expression.ArrayAccess(arguments, Expression.Constant(parameter.Position));
                 if (parameter.ParameterType.IsByRefLike)
+                {
                     throw new NotSupportedException();
+                }
                 else if (parameter.ParameterType.IsByRef)
                 {
                     var parameterType = parameter.ParameterType.GetElementType();
@@ -182,12 +190,18 @@ namespace DotNext.Reflection
                     argument = tempVar;
                 }
                 else if (parameter.ParameterType.IsPointer)
+                {
                     argument = Unwrap(argument, parameter.ParameterType);
+                }
                 else
+                {
                     argument = Expression.Convert(argument, parameter.ParameterType);
+                }
+
                 arglist.Add(argument);
             }
-            //construct body of the method
+
+            // construct body of the method
             Expression result = resultBuilder(thisArg, method, arglist);
             if (result.Type.IsByRefLike)
                 throw new NotSupportedException();
@@ -197,7 +211,8 @@ namespace DotNext.Reflection
                 result = Wrap(result);
             else if (result.Type.IsValueType)
                 result = Expression.Convert(result, typeof(object));
-            //construct lambda expression
+
+            // construct lambda expression
             bool useTailCall;
             if (epilogue.Count > 0)
             {
@@ -209,8 +224,11 @@ namespace DotNext.Reflection
                 useTailCall = false;
             }
             else
+            {
                 useTailCall = true;
-            //help GC
+            }
+
+            // help GC
             arglist.Clear();
             prologue.Clear();
             epilogue.Clear();

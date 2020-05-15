@@ -76,28 +76,28 @@ namespace DotNext.Reflection
         /// <summary>
         /// if(!value)
         /// </summary>
-        IsFalse = ExpressionType.IsFalse
+        IsFalse = ExpressionType.IsFalse,
     }
 
     /// <summary>
-    /// Represents unary operator applicable to type <typeparamref name="T"/>.
+    /// Represents unary operator applicable to type <typeparamref name="TOperand"/>.
     /// </summary>
-	/// <typeparam name="T">Target type.</typeparam>
-    /// <typeparam name="R">Type of unary operator result.</typeparam>
-	[DefaultMember("Invoke")]
-    public sealed class UnaryOperator<T, R> : Operator<Operator<T, R>>
+    /// <typeparam name="TOperand">Target type.</typeparam>
+    /// <typeparam name="TResult">Type of unary operator result.</typeparam>
+    [DefaultMember("Invoke")]
+    public sealed class UnaryOperator<TOperand, TResult> : Operator<Operator<TOperand, TResult>>
     {
-        private sealed class Cache : Cache<UnaryOperator<T, R>>
+        private sealed class Cache : Cache<UnaryOperator<TOperand, TResult>>
         {
-            private protected override UnaryOperator<T, R>? Create(Operator.Kind kind) => Reflect(kind);
+            private protected override UnaryOperator<TOperand, TResult>? Create(Operator.Kind kind) => Reflect(kind);
         }
 
-        private UnaryOperator(Expression<Operator<T, R>> invoker, UnaryOperator type, MethodInfo? overloaded)
+        private UnaryOperator(Expression<Operator<TOperand, TResult>> invoker, UnaryOperator type, MethodInfo? overloaded)
             : base(invoker.Compile(), type.ToExpressionType(), overloaded)
         {
         }
 
-        private protected override Type DeclaringType => typeof(T);
+        private protected override Type DeclaringType => typeof(TOperand);
 
         /// <summary>
         /// Type of operator.
@@ -111,13 +111,14 @@ namespace DotNext.Reflection
         /// <returns>Result of unary operator.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [return: MaybeNull]
-        public R Invoke(in T operand) => Invoker(in operand);
+        public TResult Invoke(in TOperand operand) => Invoker(in operand);
 
-        private static Expression<Operator<T, R>>? MakeUnary(Operator.Kind @operator, Operator.Operand operand, out MethodInfo? overloaded)
+        private static Expression<Operator<TOperand, TResult>>? MakeUnary(Operator.Kind @operator, Operator.Operand operand, out MethodInfo? overloaded)
         {
-            var resultType = typeof(R);
+            var resultType = typeof(TResult);
             bool usePrimitiveCast;
-            //perform automatic cast from byte/short/ushort/sbyte so unary operators become available for these types
+
+            // perform automatic cast from byte/short/ushort/sbyte so unary operators become available for these types
             switch ((ExpressionType)@operator)
             {
                 case ExpressionType.Convert:
@@ -128,15 +129,16 @@ namespace DotNext.Reflection
                     usePrimitiveCast = resultType.IsPrimitive && operand.NormalizePrimitive();
                     break;
             }
-            tail_call: //C# doesn't support tail calls so replace it with label/goto
+
+            tail_call: // C# doesn't support tail calls so replace it with label/goto
             overloaded = null;
             try
             {
-                var body = @operator.MakeUnary<R>(operand);
+                var body = @operator.MakeUnary<TResult>(operand);
                 overloaded = body.Method;
                 if (overloaded is null && usePrimitiveCast)
                     body = Expression.Convert(body, resultType);
-                return Expression.Lambda<Operator<T, R>>(body, operand.Source);
+                return Expression.Lambda<Operator<TOperand, TResult>>(body, operand.Source);
             }
             catch (ArgumentException e)
             {
@@ -145,31 +147,32 @@ namespace DotNext.Reflection
             }
             catch (InvalidOperationException)
             {
-                //ignore exception
+                // ignore exception
             }
+
             if (operand.Upcast())
                 goto tail_call;
             else
                 return null;
         }
 
-
-        private static UnaryOperator<T, R>? Reflect(Operator.Kind op)
+        private static UnaryOperator<TOperand, TResult>? Reflect(Operator.Kind op)
         {
-            var parameter = Expression.Parameter(typeof(T).MakeByRefType(), "operand");
+            var parameter = Expression.Parameter(typeof(TOperand).MakeByRefType(), "operand");
             var result = MakeUnary(op, parameter, out var overloaded);
             if (result is null)
                 return null;
-            //handle situation when trying to cast two incompatible reference types
-            else if (overloaded is null && (op == ExpressionType.Convert || op == ExpressionType.ConvertChecked) && !parameter.Type.IsValueType && !typeof(R).IsAssignableFrom(parameter.Type))
+
+            // handle situation when trying to cast two incompatible reference types
+            else if (overloaded is null && (op == ExpressionType.Convert || op == ExpressionType.ConvertChecked) && !parameter.Type.IsValueType && !typeof(TResult).IsAssignableFrom(parameter.Type))
                 return null;
             else
-                return new UnaryOperator<T, R>(result, op, overloaded);
+                return new UnaryOperator<TOperand, TResult>(result, op, overloaded);
         }
 
-        private static UnaryOperator<T, R>? GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(T)).GetOrCreate(op);
+        private static UnaryOperator<TOperand, TResult>? GetOrCreate(Operator.Kind op) => Cache.Of<Cache>(typeof(TOperand)).GetOrCreate(op);
 
-        internal static UnaryOperator<T, R>? GetOrCreate(UnaryOperator @operator, OperatorLookup lookup)
+        internal static UnaryOperator<TOperand, TResult>? GetOrCreate(UnaryOperator @operator, OperatorLookup lookup)
             => lookup switch
             {
                 OperatorLookup.Predefined => GetOrCreate(new Operator.Kind(@operator, false)),

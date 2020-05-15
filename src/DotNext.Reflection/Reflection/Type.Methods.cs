@@ -7,151 +7,151 @@ namespace DotNext.Reflection
     {
         /// <summary>
         /// Reflects static method declared in type <typeparamref name="T"/> which
-        /// returns value of type <typeparamref name="R"/> and has arguments described
-        /// by type <typeparamref name="A"/>.
+        /// returns value of type <typeparamref name="TResult"/> and has arguments described
+        /// by type <typeparamref name="TArgs"/>.
         /// </summary>
         /// <remarks>
-        /// The reflected method is represented by universal delegate type <see cref="Function{A, R}"/> which 
+        /// The reflected method is represented by universal delegate type <see cref="Function{A, R}"/> which
         /// allocates arguments on the stack instead of registry-based allocated or any other optimizations
         /// performed by .NET Runtime.
         /// </remarks>
-        /// <typeparam name="A">The value type describing arguments of the method.</typeparam>
-        /// <typeparam name="R">The method return type.</typeparam>
+        /// <typeparam name="TArgs">The value type describing arguments of the method.</typeparam>
+        /// <typeparam name="TResult">The method return type.</typeparam>
         /// <param name="methodName">The name of the method.</param>
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
         /// <returns>The reflected method; or <see langword="null"/> if method doesn't exist.</returns>
-        public static Reflection.Method<Function<A, R>>? GetStaticMethod<A, R>(string methodName, bool nonPublic = false)
-            where A : struct
-            => Method.Get<Function<A, R>>(methodName, MethodLookup.Static, nonPublic);
+        public static Reflection.Method<Function<TArgs, TResult>>? GetStaticMethod<TArgs, TResult>(string methodName, bool nonPublic = false)
+            where TArgs : struct
+            => Method.Get<Function<TArgs, TResult>>(methodName, MethodLookup.Static, nonPublic);
 
         /// <summary>
         /// Reflects static method declared in type <typeparamref name="T"/> which
-        /// returns value of type <typeparamref name="R"/> and has arguments described
-        /// by type <typeparamref name="A"/>.
+        /// returns value of type <typeparamref name="TResult"/> and has arguments described
+        /// by type <typeparamref name="TArgs"/>.
         /// </summary>
         /// <remarks>
-        /// The reflected method is represented by universal delegate type <see cref="Function{A, R}"/> which 
+        /// The reflected method is represented by universal delegate type <see cref="Function{A, R}"/> which
         /// allocates arguments on the stack instead of registry-based allocated or any other optimizations
         /// performed by .NET Runtime.
         /// </remarks>
-        /// <typeparam name="A">The value type describing arguments of the method.</typeparam>
-        /// <typeparam name="R">The method return type.</typeparam>
+        /// <typeparam name="TArgs">The value type describing arguments of the method.</typeparam>
+        /// <typeparam name="TResult">The method return type.</typeparam>
         /// <param name="methodName">The name of the method.</param>
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
         /// <returns>The reflected method.</returns>
         /// <exception cref="MissingMethodException">The method doesn't exist.</exception>
-        public static Reflection.Method<Function<A, R>> RequireStaticMethod<A, R>(string methodName, bool nonPublic = false)
-            where A : struct
-            => GetStaticMethod<A, R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, A, R>(methodName);
+        public static Reflection.Method<Function<TArgs, TResult>> RequireStaticMethod<TArgs, TResult>(string methodName, bool nonPublic = false)
+            where TArgs : struct
+            => GetStaticMethod<TArgs, TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, TArgs, TResult>(methodName);
 
         /// <summary>
         /// Reflects instance method declared in type <typeparamref name="T"/> which
-        /// returns value of type <typeparamref name="R"/> and has arguments described
-        /// by type <typeparamref name="A"/>.
+        /// returns value of type <typeparamref name="TResult"/> and has arguments described
+        /// by type <typeparamref name="TArgs"/>.
         /// </summary>
         /// <remarks>
-        /// The reflected method is represented by universal delegate type <see cref="Function{T, A, R}"/> which 
+        /// The reflected method is represented by universal delegate type <see cref="Function{T, A, R}"/> which
         /// allocates arguments on the stack instead of registry-based allocated or any other optimizations
         /// performed by .NET Runtime.
         /// </remarks>
-        /// <typeparam name="A">The value type describing arguments of the method.</typeparam>
-        /// <typeparam name="R">The method return type.</typeparam>
+        /// <typeparam name="TArgs">The value type describing arguments of the method.</typeparam>
+        /// <typeparam name="TResult">The method return type.</typeparam>
         /// <param name="methodName">The name of the method.</param>
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
         /// <returns>The reflected method; or <see langword="null"/> if method doesn't exist.</returns>
-        public static Reflection.Method<Function<T, A, R>>? GetMethod<A, R>(string methodName, bool nonPublic = false)
-            where A : struct
-            => Method.Get<Function<T, A, R>>(methodName, MethodLookup.Instance, nonPublic);
+        public static Reflection.Method<Function<T, TArgs, TResult>>? GetMethod<TArgs, TResult>(string methodName, bool nonPublic = false)
+            where TArgs : struct
+            => Method.Get<Function<T, TArgs, TResult>>(methodName, MethodLookup.Instance, nonPublic);
 
         /// <summary>
         /// Reflects instance method declared in type <typeparamref name="T"/> which
-        /// returns value of type <typeparamref name="R"/> and has arguments described
-        /// by type <typeparamref name="A"/>.
+        /// returns value of type <typeparamref name="TResult"/> and has arguments described
+        /// by type <typeparamref name="TArgs"/>.
         /// </summary>
         /// <remarks>
-        /// The reflected method is represented by universal delegate type <see cref="Function{T, A, R}"/> which 
+        /// The reflected method is represented by universal delegate type <see cref="Function{T, A, R}"/> which
         /// allocates arguments on the stack instead of registry-based allocated or any other optimizations
         /// performed by .NET Runtime.
         /// </remarks>
-        /// <typeparam name="A">The value type describing arguments of the method.</typeparam>
-        /// <typeparam name="R">The method return type.</typeparam>
+        /// <typeparam name="TArgs">The value type describing arguments of the method.</typeparam>
+        /// <typeparam name="TResult">The method return type.</typeparam>
         /// <param name="methodName">The name of the method.</param>
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
         /// <returns>The reflected method.</returns>
         /// <exception cref="MissingMethodException">The method doesn't exist.</exception>
-        public static Reflection.Method<Function<T, A, R>> RequireMethod<A, R>(string methodName, bool nonPublic = false)
-            where A : struct
-            => GetMethod<A, R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, A, R>(methodName);
+        public static Reflection.Method<Function<T, TArgs, TResult>> RequireMethod<TArgs, TResult>(string methodName, bool nonPublic = false)
+            where TArgs : struct
+            => GetMethod<TArgs, TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, TArgs, TResult>(methodName);
 
         /// <summary>
-        /// Reflects static method declared in type <typeparamref name="T"/> without return value 
-        /// and has arguments described by type <typeparamref name="A"/>.
+        /// Reflects static method declared in type <typeparamref name="T"/> without return value
+        /// and has arguments described by type <typeparamref name="TArgs"/>.
         /// </summary>
         /// <remarks>
-        /// The reflected method is represented by universal delegate type <see cref="Procedure{A}"/> which 
+        /// The reflected method is represented by universal delegate type <see cref="Procedure{A}"/> which
         /// allocates arguments on the stack instead of registry-based allocated or any other optimizations
         /// performed by .NET Runtime.
         /// </remarks>
-        /// <typeparam name="A">The value type describing arguments of the method.</typeparam>
+        /// <typeparam name="TArgs">The value type describing arguments of the method.</typeparam>
         /// <param name="methodName">The name of the method.</param>
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
         /// <returns>The reflected method; or <see langword="null"/> if method doesn't exist.</returns>
-        public static Reflection.Method<Procedure<A>>? GetStaticMethod<A>(string methodName, bool nonPublic = false)
-            where A : struct
-            => Method.Get<Procedure<A>>(methodName, MethodLookup.Static, nonPublic);
+        public static Reflection.Method<Procedure<TArgs>>? GetStaticMethod<TArgs>(string methodName, bool nonPublic = false)
+            where TArgs : struct
+            => Method.Get<Procedure<TArgs>>(methodName, MethodLookup.Static, nonPublic);
 
         /// <summary>
-        /// Reflects static method declared in type <typeparamref name="T"/> without return value 
-        /// and has arguments described by type <typeparamref name="A"/>.
+        /// Reflects static method declared in type <typeparamref name="T"/> without return value
+        /// and has arguments described by type <typeparamref name="TArgs"/>.
         /// </summary>
         /// <remarks>
-        /// The reflected method is represented by universal delegate type <see cref="Procedure{A}"/> which 
+        /// The reflected method is represented by universal delegate type <see cref="Procedure{A}"/> which
         /// allocates arguments on the stack instead of registry-based allocated or any other optimizations
         /// performed by .NET Runtime.
         /// </remarks>
-        /// <typeparam name="A">The value type describing arguments of the method.</typeparam>
+        /// <typeparam name="TArgs">The value type describing arguments of the method.</typeparam>
         /// <param name="methodName">The name of the method.</param>
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
         /// <returns>The reflected method; or <see langword="null"/>.</returns>
         /// <exception cref="MissingMethodException">The method doesn't exist.</exception>
-        public static Reflection.Method<Procedure<A>> RequireStaticMethod<A>(string methodName, bool nonPublic = false)
-            where A : struct
-            => GetStaticMethod<A>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, A, Missing>(methodName);
+        public static Reflection.Method<Procedure<TArgs>> RequireStaticMethod<TArgs>(string methodName, bool nonPublic = false)
+            where TArgs : struct
+            => GetStaticMethod<TArgs>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, TArgs, Missing>(methodName);
 
         /// <summary>
-        /// Reflects instance method declared in type <typeparamref name="T"/> without return value 
-        /// and has arguments described by type <typeparamref name="A"/>.
+        /// Reflects instance method declared in type <typeparamref name="T"/> without return value
+        /// and has arguments described by type <typeparamref name="TArgs"/>.
         /// </summary>
         /// <remarks>
-        /// The reflected method is represented by universal delegate type <see cref="Procedure{T, A}"/> which 
+        /// The reflected method is represented by universal delegate type <see cref="Procedure{T, A}"/> which
         /// allocates arguments on the stack instead of registry-based allocated or any other optimizations
         /// performed by .NET Runtime.
         /// </remarks>
-        /// <typeparam name="A">The value type describing arguments of the method.</typeparam>
+        /// <typeparam name="TArgs">The value type describing arguments of the method.</typeparam>
         /// <param name="methodName">The name of the method.</param>
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
         /// <returns>The reflected method; or <see langword="null"/> if method doesn't exist.</returns>
-        public static Reflection.Method<Procedure<T, A>>? GetMethod<A>(string methodName, bool nonPublic = false)
-            where A : struct
-            => Method.Get<Procedure<T, A>>(methodName, MethodLookup.Instance, nonPublic);
+        public static Reflection.Method<Procedure<T, TArgs>>? GetMethod<TArgs>(string methodName, bool nonPublic = false)
+            where TArgs : struct
+            => Method.Get<Procedure<T, TArgs>>(methodName, MethodLookup.Instance, nonPublic);
 
         /// <summary>
-        /// Reflects instance method declared in type <typeparamref name="T"/> without return value 
-        /// and has arguments described by type <typeparamref name="A"/>.
+        /// Reflects instance method declared in type <typeparamref name="T"/> without return value
+        /// and has arguments described by type <typeparamref name="TArgs"/>.
         /// </summary>
         /// <remarks>
-        /// The reflected method is represented by universal delegate type <see cref="Procedure{T, A}"/> which 
+        /// The reflected method is represented by universal delegate type <see cref="Procedure{T, A}"/> which
         /// allocates arguments on the stack instead of registry-based allocated or any other optimizations
         /// performed by .NET Runtime.
         /// </remarks>
-        /// <typeparam name="A">The value type describing arguments of the method.</typeparam>
+        /// <typeparam name="TArgs">The value type describing arguments of the method.</typeparam>
         /// <param name="methodName">The name of the method.</param>
         /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
         /// <returns>The reflected method; or <see langword="null"/>.</returns>
         /// <exception cref="MissingMethodException">The method doesn't exist.</exception>
-        public static Reflection.Method<Procedure<T, A>> RequireMethod<A>(string methodName, bool nonPublic = false)
-            where A : struct
-            => GetMethod<A>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, A, Missing>(methodName);
+        public static Reflection.Method<Procedure<T, TArgs>> RequireMethod<TArgs>(string methodName, bool nonPublic = false)
+            where TArgs : struct
+            => GetMethod<TArgs>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, TArgs, Missing>(methodName);
 
         /// <summary>
         /// Provides access to methods declared in type <typeparamref name="T"/>.
@@ -167,14 +167,14 @@ namespace DotNext.Reflection
             /// The value returned by this method is cached by the given delegate type and method name.
             /// Two calls of this method with the same arguments will return the same object.
             /// </remarks>
-            /// <typeparam name="D">The delegate describing signature of the requested method.</typeparam>
+            /// <typeparam name="TSignature">The delegate describing signature of the requested method.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="methodType">The type of the method to be resolved.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<D>? Get<D>(string methodName, MethodLookup methodType, bool nonPublic = false)
-                where D : MulticastDelegate
-                => Reflection.Method<D>.GetOrCreate<T>(methodName, nonPublic, methodType);
+            public static Reflection.Method<TSignature>? Get<TSignature>(string methodName, MethodLookup methodType, bool nonPublic = false)
+                where TSignature : MulticastDelegate
+                => Reflection.Method<TSignature>.GetOrCreate<T>(methodName, nonPublic, methodType);
 
             /// <summary>
             /// Reflects class method.
@@ -185,15 +185,15 @@ namespace DotNext.Reflection
             /// The value returned by this method is cached by the given delegate type and method name.
             /// Two calls of this method with the same arguments will return the same object.
             /// </remarks>
-            /// <typeparam name="D">The delegate describing signature of the requested method.</typeparam>
+            /// <typeparam name="TSignature">The delegate describing signature of the requested method.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="methodType">The type of the method to be resolved.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<D> Require<D>(string methodName, MethodLookup methodType, bool nonPublic = false)
-                where D : MulticastDelegate
-                => Get<D>(methodName, methodType, nonPublic) ?? throw MissingMethodException.Create<T, D>(methodName);
+            public static Reflection.Method<TSignature> Require<TSignature>(string methodName, MethodLookup methodType, bool nonPublic = false)
+                where TSignature : MulticastDelegate
+                => Get<TSignature>(methodName, methodType, nonPublic) ?? throw MissingMethodException.Create<T, TSignature>(methodName);
 
             /// <summary>
             /// Reflects instance parameterless method without return type as delegate type <see cref="Action{T}"/>.
@@ -236,51 +236,51 @@ namespace DotNext.Reflection
             /// <summary>
             /// Reflects instance parameterless method which as delegate type <see cref="Func{T, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<T, R>>? Get<R>(string methodName, bool nonPublic = false)
-                => Get<Func<T, R>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Func<T, TResult>>? Get<TResult>(string methodName, bool nonPublic = false)
+                => Get<Func<T, TResult>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance parameterless method which as delegate type <see cref="Func{T, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<T, R>> Require<R>(string methodName, bool nonPublic = false)
-                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<R>>(methodName);
+            public static Reflection.Method<Func<T, TResult>> Require<TResult>(string methodName, bool nonPublic = false)
+                => Get<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<TResult>>(methodName);
 
             /// <summary>
             /// Reflects static parameterless method which as delegate type <see cref="Func{R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<R>>? GetStatic<R>(string methodName, bool nonPublic = false)
-                => Get<Func<R>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Func<TResult>>? GetStatic<TResult>(string methodName, bool nonPublic = false)
+                => Get<Func<TResult>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static parameterless method which as delegate type <see cref="Func{R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<R>> RequireStatic<R>(string methodName, bool nonPublic = false)
-                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<R>>(methodName);
+            public static Reflection.Method<Func<TResult>> RequireStatic<TResult>(string methodName, bool nonPublic = false)
+                => GetStatic<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<TResult>>(methodName);
         }
 
         /// <summary>
         /// Provides access to methods with single parameter declared in type <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="P">Type of method parameter.</typeparam>
-        public static class Method<P>
+        /// <typeparam name="TParam">Type of method parameter.</typeparam>
+        public static class Method<TParam>
         {
             /// <summary>
             /// Reflects instance method with single parameter and without return type as delegate type <see cref="Action{T, P}"/>.
@@ -288,8 +288,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<T, P>>? Get(string methodName, bool nonPublic = false)
-                => Method.Get<Action<T, P>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Action<T, TParam>>? Get(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T, TParam>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with single parameter and without return type as delegate type <see cref="Action{T, P}"/>.
@@ -298,8 +298,8 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<T, P>> Require(string methodName, bool nonPublic = false)
-                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P>>(methodName);
+            public static Reflection.Method<Action<T, TParam>> Require(string methodName, bool nonPublic = false)
+                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<TParam>>(methodName);
 
             /// <summary>
             /// Reflects static method with single parameter and without return type as delegate type <see cref="Action{P}"/>.
@@ -307,8 +307,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<P>>? GetStatic(string methodName, bool nonPublic = false)
-                => Method.Get<Action<P>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Action<TParam>>? GetStatic(string methodName, bool nonPublic = false)
+                => Method.Get<Action<TParam>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with single parameter and without return type as delegate type <see cref="Action{P}"/>.
@@ -317,58 +317,58 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<P>> RequireStatic(string methodName, bool nonPublic = false)
-                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P>>(methodName);
+            public static Reflection.Method<Action<TParam>> RequireStatic(string methodName, bool nonPublic = false)
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<TParam>>(methodName);
 
             /// <summary>
             /// Reflects instance method with single parameter as delegate type <see cref="Func{T, P, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<T, P, R>>? Get<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<T, P, R>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Func<T, TParam, TResult>>? Get<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T, TParam, TResult>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with single parameter as delegate type <see cref="Func{T, P, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<T, P, R>> Require<R>(string methodName, bool nonPublic = false)
-                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P, R>>(methodName);
+            public static Reflection.Method<Func<T, TParam, TResult>> Require<TResult>(string methodName, bool nonPublic = false)
+                => Get<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<TParam, TResult>>(methodName);
 
             /// <summary>
             /// Reflects static method with single parameter as delegate type <see cref="Func{P, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<P, R>>? GetStatic<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<P, R>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Func<TParam, TResult>>? GetStatic<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<TParam, TResult>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with single parameter as delegate type <see cref="Func{P, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<P, R>> RequireStatic<R>(string methodName, bool nonPublic = false)
-                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P, R>>(methodName);
+            public static Reflection.Method<Func<TParam, TResult>> RequireStatic<TResult>(string methodName, bool nonPublic = false)
+                => GetStatic<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<TParam, TResult>>(methodName);
         }
 
         /// <summary>
         /// Provides access to methods with two parameters declared in type <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="P1">Type of first method parameter.</typeparam>
-        /// <typeparam name="P2">Type of second method parameter.</typeparam>
-        public static class Method<P1, P2>
+        /// <typeparam name="T1">Type of first method parameter.</typeparam>
+        /// <typeparam name="T2">Type of second method parameter.</typeparam>
+        public static class Method<T1, T2>
         {
             /// <summary>
             /// Reflects instance method with two parameters and without return type as delegate type <see cref="Action{T, P1, P2}"/>.
@@ -376,8 +376,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<T, P1, P2>>? Get(string methodName, bool nonPublic = false)
-                => Method.Get<Action<T, P1, P2>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Action<T, T1, T2>>? Get(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T, T1, T2>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with two parameters and without return type as delegate type <see cref="Action{T, P1, P2}"/>.
@@ -386,8 +386,8 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<T, P1, P2>> Require(string methodName, bool nonPublic = false)
-                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2>>(methodName);
+            public static Reflection.Method<Action<T, T1, T2>> Require(string methodName, bool nonPublic = false)
+                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<T1, T2>>(methodName);
 
             /// <summary>
             /// Reflects static method with two parameters and without return type as delegate type <see cref="Action{P1, P2}"/>.
@@ -395,8 +395,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<P1, P2>>? GetStatic(string methodName, bool nonPublic = false)
-                => Method.Get<Action<P1, P2>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Action<T1, T2>>? GetStatic(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T1, T2>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with two parameters and without return type as delegate type <see cref="Action{P1, P2}"/>.
@@ -405,59 +405,59 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<P1, P2>> RequireStatic(string methodName, bool nonPublic = false)
-                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2>>(methodName);
+            public static Reflection.Method<Action<T1, T2>> RequireStatic(string methodName, bool nonPublic = false)
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<T1, T2>>(methodName);
 
             /// <summary>
             /// Reflects instance method with two parameters as delegate type <see cref="Func{T, P1, P2, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<T, P1, P2, R>>? Get<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<T, P1, P2, R>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Func<T, T1, T2, TResult>>? Get<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T, T1, T2, TResult>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with two parameters as delegate type <see cref="Func{T, P1, P2, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<T, P1, P2, R>> Require<R>(string methodName, bool nonPublic = false)
-                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P1, P2, R>>(methodName);
+            public static Reflection.Method<Func<T, T1, T2, TResult>> Require<TResult>(string methodName, bool nonPublic = false)
+                => Get<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<T1, T2, TResult>>(methodName);
 
             /// <summary>
             /// Reflects static method with two parameters as delegate type <see cref="Func{P1, P2, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<P1, P2, R>>? GetStatic<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<P1, P2, R>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Func<T1, T2, TResult>>? GetStatic<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T1, T2, TResult>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with two parameters as delegate type <see cref="Func{P1, P2, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<P1, P2, R>> RequireStatic<R>(string methodName, bool nonPublic = false)
-                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P1, P2, R>>(methodName);
+            public static Reflection.Method<Func<T1, T2, TResult>> RequireStatic<TResult>(string methodName, bool nonPublic = false)
+                => GetStatic<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<T1, T2, TResult>>(methodName);
         }
 
         /// <summary>
         /// Provides access to methods with three parameters declared in type <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="P1">Type of first method parameter.</typeparam>
-        /// <typeparam name="P2">Type of second method parameter.</typeparam>
-        /// <typeparam name="P3">Type of third method parameter.</typeparam>
-        public static class Method<P1, P2, P3>
+        /// <typeparam name="T1">Type of first method parameter.</typeparam>
+        /// <typeparam name="T2">Type of second method parameter.</typeparam>
+        /// <typeparam name="T3">Type of third method parameter.</typeparam>
+        public static class Method<T1, T2, T3>
         {
             /// <summary>
             /// Reflects instance method with three parameters and without return type as delegate type <see cref="Action{T, P1, P2, P3}"/>.
@@ -465,8 +465,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<T, P1, P2, P3>>? Get(string methodName, bool nonPublic = false)
-                => Method.Get<Action<T, P1, P2, P3>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Action<T, T1, T2, T3>>? Get(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T, T1, T2, T3>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with three parameters and without return type as delegate type <see cref="Action{T, P1, P2, P3}"/>.
@@ -475,8 +475,8 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<T, P1, P2, P3>> Require(string methodName, bool nonPublic = false)
-                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2, P3>>(methodName);
+            public static Reflection.Method<Action<T, T1, T2, T3>> Require(string methodName, bool nonPublic = false)
+                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<T1, T2, T3>>(methodName);
 
             /// <summary>
             /// Reflects static method with three parameters and without return type as delegate type <see cref="Action{P1, P2, P3}"/>.
@@ -484,8 +484,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<P1, P2, P3>>? GetStatic(string methodName, bool nonPublic = false)
-                => Method.Get<Action<P1, P2, P3>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Action<T1, T2, T3>>? GetStatic(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T1, T2, T3>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with three parameters and without return type as delegate type <see cref="Action{P1, P2, P3}"/>.
@@ -494,60 +494,60 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<P1, P2, P3>> RequireStatic(string methodName, bool nonPublic = false)
-                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2, P3>>(methodName);
+            public static Reflection.Method<Action<T1, T2, T3>> RequireStatic(string methodName, bool nonPublic = false)
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<T1, T2, T3>>(methodName);
 
             /// <summary>
             /// Reflects instance method with three parameters as delegate type <see cref="Func{T, P1, P2, P3, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<T, P1, P2, P3, R>>? Get<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<T, P1, P2, P3, R>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Func<T, T1, T2, T3, TResult>>? Get<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T, T1, T2, T3, TResult>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with three parameters as delegate type <see cref="Func{T, P1, P2, P3, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<T, P1, P2, P3, R>> Require<R>(string methodName, bool nonPublic = false)
-                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P1, P2, P3, R>>(methodName);
+            public static Reflection.Method<Func<T, T1, T2, T3, TResult>> Require<TResult>(string methodName, bool nonPublic = false)
+                => Get<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<T1, T2, T3, TResult>>(methodName);
 
             /// <summary>
             /// Reflects static method with three parameters as delegate type <see cref="Func{P1, P2, P3, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<P1, P2, P3, R>>? GetStatic<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<P1, P2, P3, R>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Func<T1, T2, T3, TResult>>? GetStatic<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T1, T2, T3, TResult>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with three parameters as delegate type <see cref="Func{P1, P2, P3, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<P1, P2, P3, R>> RequireStatic<R>(string methodName, bool nonPublic = false)
-                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P1, P2, P3, R>>(methodName);
+            public static Reflection.Method<Func<T1, T2, T3, TResult>> RequireStatic<TResult>(string methodName, bool nonPublic = false)
+                => GetStatic<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<T1, T2, T3, TResult>>(methodName);
         }
 
         /// <summary>
         /// Provides access to methods with four parameters declared in type <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="P1">Type of first method parameter.</typeparam>
-        /// <typeparam name="P2">Type of second method parameter.</typeparam>
-        /// <typeparam name="P3">Type of third method parameter.</typeparam>
-        /// <typeparam name="P4">Type of fourth method parameter.</typeparam>
-        public static class Method<P1, P2, P3, P4>
+        /// <typeparam name="T1">Type of first method parameter.</typeparam>
+        /// <typeparam name="T2">Type of second method parameter.</typeparam>
+        /// <typeparam name="T3">Type of third method parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth method parameter.</typeparam>
+        public static class Method<T1, T2, T3, T4>
         {
             /// <summary>
             /// Reflects instance method with four parameters and without return type as delegate type <see cref="Action{T, P1, P2, P3, P4}"/>.
@@ -555,8 +555,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<T, P1, P2, P3, P4>>? Get(string methodName, bool nonPublic = false)
-                => Method.Get<Action<T, P1, P2, P3, P4>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Action<T, T1, T2, T3, T4>>? Get(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T, T1, T2, T3, T4>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with four parameters and without return type as delegate type <see cref="Action{T, P1, P2, P3, P4}"/>.
@@ -565,8 +565,8 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<T, P1, P2, P3, P4>> Require(string methodName, bool nonPublic = false)
-                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2, P3, P4>>(methodName);
+            public static Reflection.Method<Action<T, T1, T2, T3, T4>> Require(string methodName, bool nonPublic = false)
+                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<T1, T2, T3, T4>>(methodName);
 
             /// <summary>
             /// Reflects static method with four parameters and without return type as delegate type <see cref="Action{P1, P2, P3, P4}"/>.
@@ -574,8 +574,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<P1, P2, P3, P4>>? GetStatic(string methodName, bool nonPublic = false)
-                => Method.Get<Action<P1, P2, P3, P4>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Action<T1, T2, T3, T4>>? GetStatic(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T1, T2, T3, T4>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with four parameters and without return type as delegate type <see cref="Action{P1, P2, P3, P4}"/>.
@@ -584,61 +584,61 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<P1, P2, P3, P4>> RequireStatic(string methodName, bool nonPublic = false)
-                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2, P3, P4>>(methodName);
+            public static Reflection.Method<Action<T1, T2, T3, T4>> RequireStatic(string methodName, bool nonPublic = false)
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<T1, T2, T3, T4>>(methodName);
 
             /// <summary>
             /// Reflects instance method with four parameters as delegate type <see cref="Func{T, P1, P2, P3, P4, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<T, P1, P2, P3, P4, R>>? Get<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<T, P1, P2, P3, P4, R>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Func<T, T1, T2, T3, T4, TResult>>? Get<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T, T1, T2, T3, T4, TResult>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with four parameters as delegate type <see cref="Func{T, P1, P2, P3, P4, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<T, P1, P2, P3, P4, R>> Require<R>(string methodName, bool nonPublic = false)
-                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P1, P2, P3, P4, R>>(methodName);
+            public static Reflection.Method<Func<T, T1, T2, T3, T4, TResult>> Require<TResult>(string methodName, bool nonPublic = false)
+                => Get<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<T1, T2, T3, T4, TResult>>(methodName);
 
             /// <summary>
             /// Reflects static method with four parameters as delegate type <see cref="Func{P1, P2, P3, P4, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<P1, P2, P3, P4, R>>? GetStatic<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<P1, P2, P3, P4, R>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Func<T1, T2, T3, T4, TResult>>? GetStatic<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T1, T2, T3, T4, TResult>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with four parameters as delegate type <see cref="Func{P1, P2, P3, P4, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<P1, P2, P3, P4, R>> RequireStatic<R>(string methodName, bool nonPublic = false)
-                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P1, P2, P3, P4, R>>(methodName);
+            public static Reflection.Method<Func<T1, T2, T3, T4, TResult>> RequireStatic<TResult>(string methodName, bool nonPublic = false)
+                => GetStatic<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<T1, T2, T3, T4, TResult>>(methodName);
         }
 
         /// <summary>
         /// Provides access to methods with five parameters declared in type <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="P1">Type of first method parameter.</typeparam>
-        /// <typeparam name="P2">Type of second method parameter.</typeparam>
-        /// <typeparam name="P3">Type of third method parameter.</typeparam>
-        /// <typeparam name="P4">Type of fourth method parameter.</typeparam>
-        /// <typeparam name="P5">Type of fifth method parameter.</typeparam>
-        public static class Method<P1, P2, P3, P4, P5>
+        /// <typeparam name="T1">Type of first method parameter.</typeparam>
+        /// <typeparam name="T2">Type of second method parameter.</typeparam>
+        /// <typeparam name="T3">Type of third method parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth method parameter.</typeparam>
+        /// <typeparam name="T5">Type of fifth method parameter.</typeparam>
+        public static class Method<T1, T2, T3, T4, T5>
         {
             /// <summary>
             /// Reflects instance method with five parameters and without return type as delegate type <see cref="Action{T, P1, P2, P3, P4, P5}"/>.
@@ -646,8 +646,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<T, P1, P2, P3, P4, P5>>? Get(string methodName, bool nonPublic = false)
-                => Method.Get<Action<T, P1, P2, P3, P4, P5>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Action<T, T1, T2, T3, T4, T5>>? Get(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T, T1, T2, T3, T4, T5>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with five parameters and without return type as delegate type <see cref="Action{T, P1, P2, P3, P4, P5}"/>.
@@ -656,8 +656,8 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<T, P1, P2, P3, P4, P5>> Require(string methodName, bool nonPublic = false)
-                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2, P3, P4, P5>>(methodName);
+            public static Reflection.Method<Action<T, T1, T2, T3, T4, T5>> Require(string methodName, bool nonPublic = false)
+                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<T1, T2, T3, T4, T5>>(methodName);
 
             /// <summary>
             /// Reflects static method with five parameters and without return type as delegate type <see cref="Action{P1, P2, P3, P4, P5}"/>.
@@ -665,8 +665,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<P1, P2, P3, P4, P5>>? GetStatic(string methodName, bool nonPublic = false)
-                => Method.Get<Action<P1, P2, P3, P4, P5>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Action<T1, T2, T3, T4, T5>>? GetStatic(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T1, T2, T3, T4, T5>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with five parameters and without return type as delegate type <see cref="Action{P1, P2, P3, P4, P5}"/>.
@@ -675,62 +675,62 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<P1, P2, P3, P4, P5>> RequireStatic(string methodName, bool nonPublic = false)
-                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2, P3, P4, P5>>(methodName);
+            public static Reflection.Method<Action<T1, T2, T3, T4, T5>> RequireStatic(string methodName, bool nonPublic = false)
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<T1, T2, T3, T4, T5>>(methodName);
 
             /// <summary>
             /// Reflects instance method with five parameters as delegate type <see cref="Func{T, P1, P2, P3, P4, P5, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<T, P1, P2, P3, P4, P5, R>>? Get<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<T, P1, P2, P3, P4, P5, R>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Func<T, T1, T2, T3, T4, T5, TResult>>? Get<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T, T1, T2, T3, T4, T5, TResult>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with five parameters as delegate type <see cref="Func{T, P1, P2, P3, P4, P5, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<T, P1, P2, P3, P4, P5, R>> Require<R>(string methodName, bool nonPublic = false)
-                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P1, P2, P3, P4, P5, R>>(methodName);
+            public static Reflection.Method<Func<T, T1, T2, T3, T4, T5, TResult>> Require<TResult>(string methodName, bool nonPublic = false)
+                => Get<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<T1, T2, T3, T4, T5, TResult>>(methodName);
 
             /// <summary>
             /// Reflects static method with five parameters as delegate type <see cref="Func{P1, P2, P3, P4, P5, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<P1, P2, P3, P4, P5, R>>? GetStatic<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<P1, P2, P3, P4, P5, R>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Func<T1, T2, T3, T4, T5, TResult>>? GetStatic<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T1, T2, T3, T4, T5, TResult>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with five parameters as delegate type <see cref="Func{P1, P2, P3, P4, P5, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<P1, P2, P3, P4, P5, R>> RequireStatic<R>(string methodName, bool nonPublic = false)
-                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P1, P2, P3, P4, P5, R>>(methodName);
+            public static Reflection.Method<Func<T1, T2, T3, T4, T5, TResult>> RequireStatic<TResult>(string methodName, bool nonPublic = false)
+                => GetStatic<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<T1, T2, T3, T4, T5, TResult>>(methodName);
         }
 
         /// <summary>
         /// Provides access to methods with six parameters declared in type <typeparamref name="T"/>.
         /// </summary>
-        /// <typeparam name="P1">Type of first method parameter.</typeparam>
-        /// <typeparam name="P2">Type of second method parameter.</typeparam>
-        /// <typeparam name="P3">Type of third method parameter.</typeparam>
-        /// <typeparam name="P4">Type of fourth method parameter.</typeparam>
-        /// <typeparam name="P5">Type of fifth method parameter.</typeparam>
-        /// <typeparam name="P6">Type of sixth method parameter.</typeparam>
-        public static class Method<P1, P2, P3, P4, P5, P6>
+        /// <typeparam name="T1">Type of first method parameter.</typeparam>
+        /// <typeparam name="T2">Type of second method parameter.</typeparam>
+        /// <typeparam name="T3">Type of third method parameter.</typeparam>
+        /// <typeparam name="T4">Type of fourth method parameter.</typeparam>
+        /// <typeparam name="T5">Type of fifth method parameter.</typeparam>
+        /// <typeparam name="T6">Type of sixth method parameter.</typeparam>
+        public static class Method<T1, T2, T3, T4, T5, T6>
         {
             /// <summary>
             /// Reflects instance method with six parameters and without return type as delegate type <see cref="Action{T, P1, P2, P3, P4, P5, P6}"/>.
@@ -738,8 +738,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<T, P1, P2, P3, P4, P5, P6>>? Get(string methodName, bool nonPublic = false)
-                => Method.Get<Action<T, P1, P2, P3, P4, P5, P6>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Action<T, T1, T2, T3, T4, T5, T6>>? Get(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T, T1, T2, T3, T4, T5, T6>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with six parameters and without return type as delegate type <see cref="Action{T, P1, P2, P3, P4, P5, P6}"/>.
@@ -748,8 +748,8 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<T, P1, P2, P3, P4, P5, P6>> Require(string methodName, bool nonPublic = false)
-                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2, P3, P4, P5, P6>>(methodName);
+            public static Reflection.Method<Action<T, T1, T2, T3, T4, T5, T6>> Require(string methodName, bool nonPublic = false)
+                => Get(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<T1, T2, T3, T4, T5, T6>>(methodName);
 
             /// <summary>
             /// Reflects static method with six parameters and without return type as delegate type <see cref="Action{P1, P2, P3, P4, P5, P6}"/>.
@@ -757,8 +757,8 @@ namespace DotNext.Reflection
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Action<P1, P2, P3, P4, P5, P6>>? GetStatic(string methodName, bool nonPublic = false)
-                => Method.Get<Action<P1, P2, P3, P4, P5, P6>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Action<T1, T2, T3, T4, T5, T6>>? GetStatic(string methodName, bool nonPublic = false)
+                => Method.Get<Action<T1, T2, T3, T4, T5, T6>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with six parameters and without return type as delegate type <see cref="Action{P1, P2, P3, P4, P5, P6}"/>.
@@ -767,50 +767,50 @@ namespace DotNext.Reflection
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Action<P1, P2, P3, P4, P5, P6>> RequireStatic(string methodName, bool nonPublic = false)
-                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<P1, P2, P3, P4, P5, P6>>(methodName);
+            public static Reflection.Method<Action<T1, T2, T3, T4, T5, T6>> RequireStatic(string methodName, bool nonPublic = false)
+                => GetStatic(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Action<T1, T2, T3, T4, T5, T6>>(methodName);
 
             /// <summary>
             /// Reflects instance method with six parameters as delegate type <see cref="Func{T, P1, P2, P3, P4, P5, P6, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<T, P1, P2, P3, P4, P5, P6, R>>? Get<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<T, P1, P2, P3, P4, P5, P6, R>>(methodName, MethodLookup.Instance, nonPublic);
+            public static Reflection.Method<Func<T, T1, T2, T3, T4, T5, T6, TResult>>? Get<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T, T1, T2, T3, T4, T5, T6, TResult>>(methodName, MethodLookup.Instance, nonPublic);
 
             /// <summary>
             /// Reflects instance method with six parameters as delegate type <see cref="Func{T, P1, P2, P3, P4, P5, P6, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<T, P1, P2, P3, P4, P5, P6, R>> Require<R>(string methodName, bool nonPublic = false)
-                => Get<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P1, P2, P3, P4, P5, P6, R>>(methodName);
+            public static Reflection.Method<Func<T, T1, T2, T3, T4, T5, T6, TResult>> Require<TResult>(string methodName, bool nonPublic = false)
+                => Get<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<T1, T2, T3, T4, T5, T6, TResult>>(methodName);
 
             /// <summary>
             /// Reflects static method with six parameters as delegate type <see cref="Func{P1, P2, P3, P4, P5, P6, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method; otherwise, <see langword="null"/> if method doesn't exist.</returns>
-            public static Reflection.Method<Func<P1, P2, P3, P4, P5, P6, R>>? GetStatic<R>(string methodName, bool nonPublic = false)
-                => Method.Get<Func<P1, P2, P3, P4, P5, P6, R>>(methodName, MethodLookup.Static, nonPublic);
+            public static Reflection.Method<Func<T1, T2, T3, T4, T5, T6, TResult>>? GetStatic<TResult>(string methodName, bool nonPublic = false)
+                => Method.Get<Func<T1, T2, T3, T4, T5, T6, TResult>>(methodName, MethodLookup.Static, nonPublic);
 
             /// <summary>
             /// Reflects static method with six parameters as delegate type <see cref="Func{P1, P2, P3, P4, P5, P6, R}"/>.
             /// </summary>
-            /// <typeparam name="R">The method return type.</typeparam>
+            /// <typeparam name="TResult">The method return type.</typeparam>
             /// <param name="methodName">The name of the method.</param>
             /// <param name="nonPublic"><see langword="true"/> to reflect non-public method.</param>
             /// <returns>The reflected method.</returns>
             /// <exception cref="MissingMethodException">The requested method doesn't exist.</exception>
-            public static Reflection.Method<Func<P1, P2, P3, P4, P5, P6, R>> RequireStatic<R>(string methodName, bool nonPublic = false)
-                => GetStatic<R>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<P1, P2, P3, P4, P5, P6, R>>(methodName);
+            public static Reflection.Method<Func<T1, T2, T3, T4, T5, T6, TResult>> RequireStatic<TResult>(string methodName, bool nonPublic = false)
+                => GetStatic<TResult>(methodName, nonPublic) ?? throw MissingMethodException.Create<T, Func<T1, T2, T3, T4, T5, T6, TResult>>(methodName);
         }
     }
 }

@@ -10,8 +10,8 @@ namespace DotNext.Reflection
     /// <summary>
     /// Represents non-indexer property.
     /// </summary>
-    /// <typeparam name="V">Type of property value.</typeparam>
-    public abstract class PropertyBase<V> : PropertyInfo, IProperty, IEquatable<PropertyInfo?>
+    /// <typeparam name="TValue">Type of property value.</typeparam>
+    public abstract class PropertyBase<TValue> : PropertyInfo, IProperty, IEquatable<PropertyInfo?>
     {
         private readonly PropertyInfo property;
 
@@ -23,7 +23,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be returned.</param>
         /// <param name="value">An object containing the value of the property reflected by this instance.</param>
         /// <returns><see langword="true"/>, if property value is obtained successfully; otherwise, <see langword="false"/>.</returns>
-		public abstract bool GetValue(object? obj, [MaybeNull]out V value);
+        public abstract bool GetValue(object? obj, [MaybeNull]out TValue value);
 
         /// <summary>
         /// Sets the value of the property supported by the given object.
@@ -31,7 +31,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be set.</param>
         /// <param name="value">The value to assign to the property.</param>
         /// <returns><see langword="true"/>, if property value is modified successfully; otherwise, <see langword="false"/>.</returns>
-        public abstract bool SetValue(object? obj, V value);
+        public abstract bool SetValue(object? obj, TValue value);
 
         /// <summary>
         /// Returns the property value of a specified object with index values for indexed properties.
@@ -85,7 +85,7 @@ namespace DotNext.Reflection
         public sealed override MethodInfo? SetMethod => property.SetMethod;
 
         /// <summary>
-        /// Returns an array whose elements reflect the public and, if specified, non-public get and set accessors of the 
+        /// Returns an array whose elements reflect the public and, if specified, non-public get and set accessors of the
         /// property reflected by the current instance.
         /// </summary>
         /// <param name="nonPublic">Indicates whether non-public methods should be returned in the returned array.</param>
@@ -114,7 +114,7 @@ namespace DotNext.Reflection
         /// <summary>
         /// Returns an array of types representing the optional custom modifiers of the property.
         /// </summary>
-        /// <returns>An array of objects that identify the optional custom modifiers of the current property</returns>
+        /// <returns>An array of objects that identify the optional custom modifiers of the current property.</returns>
         public sealed override Type[] GetOptionalCustomModifiers() => property.GetOptionalCustomModifiers();
 
         /// <summary>
@@ -219,6 +219,7 @@ namespace DotNext.Reflection
         /// </summary>
         public sealed override IEnumerable<CustomAttributeData> CustomAttributes => property.CustomAttributes;
 
+        /// <inheritdoc/>
         PropertyInfo IMember<PropertyInfo>.RuntimeMember => property;
 
         /// <summary>
@@ -226,7 +227,7 @@ namespace DotNext.Reflection
         /// </summary>
         /// <param name="other">Other property to compare.</param>
         /// <returns><see langword="true"/> if this object reflects the same property as the specified object; otherwise, <see langword="false"/>.</returns>
-        public bool Equals(PropertyInfo? other) => other is PropertyBase<V> property ? Equals(property.property, this.property) : Equals(this.property, other);
+        public bool Equals(PropertyInfo? other) => other is PropertyBase<TValue> property ? Equals(property.property, this.property) : Equals(this.property, other);
 
         /// <summary>
         /// Determines whether this property is equal to the given property.
@@ -235,7 +236,7 @@ namespace DotNext.Reflection
         /// <returns><see langword="true"/> if this object reflects the same property as the specified object; otherwise, <see langword="false"/>.</returns>
         public override bool Equals(object? other) => other switch
         {
-            PropertyBase<V> property => this.property == property.property,
+            PropertyBase<TValue> property => this.property == property.property,
             PropertyInfo property => this.property == property,
             _ => false,
         };
@@ -256,50 +257,51 @@ namespace DotNext.Reflection
     /// <summary>
     /// Provides typed access to static property.
     /// </summary>
-    /// <typeparam name="V">Type of property.</typeparam>
-    public sealed class Property<V> : PropertyBase<V>, IProperty<V>
+    /// <typeparam name="TValue">Type of property.</typeparam>
+    public sealed class Property<TValue> : PropertyBase<TValue>, IProperty<TValue>
     {
-        private sealed class Cache<T> : MemberCache<PropertyInfo, Property<V>>
+        private sealed class Cache<T> : MemberCache<PropertyInfo, Property<TValue>>
         {
-            private protected override Property<V>? Create(string propertyName, bool nonPublic) => Reflect(typeof(T), propertyName, nonPublic);
+            private protected override Property<TValue>? Create(string propertyName, bool nonPublic) => Reflect(typeof(T), propertyName, nonPublic);
         }
+
         private const BindingFlags PublicFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly;
         private const BindingFlags NonPublicFlags = BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
 
         private Property(PropertyInfo property)
             : base(property)
         {
-            GetMethod = property.GetMethod?.Unreflect<MemberGetter<V>>();
-            SetMethod = property.SetMethod?.Unreflect<MemberSetter<V>>();
+            GetMethod = property.GetMethod?.Unreflect<MemberGetter<TValue>>();
+            SetMethod = property.SetMethod?.Unreflect<MemberSetter<TValue>>();
         }
 
         /// <summary>
         /// Obtains property getter in the form of the delegate instance.
         /// </summary>
         /// <param name="property">The reflected property.</param>
-		public static implicit operator MemberGetter<V>?(Property<V>? property) => property?.GetMethod;
+        public static implicit operator MemberGetter<TValue>?(Property<TValue>? property) => property?.GetMethod;
 
         /// <summary>
         /// Obtains property setter in the form of the delegate instance.
         /// </summary>
         /// <param name="property">The reflected property.</param>
-		public static implicit operator MemberSetter<V>?(Property<V>? property) => property?.SetMethod;
+        public static implicit operator MemberSetter<TValue>?(Property<TValue>? property) => property?.SetMethod;
 
         /// <summary>
         /// Gets property getter.
         /// </summary>
-        public new Method<MemberGetter<V>>? GetMethod { get; }
+        public new Method<MemberGetter<TValue>>? GetMethod { get; }
 
         /// <summary>
         /// Gets property setter.
         /// </summary>
-        public new Method<MemberSetter<V>>? SetMethod { get; }
+        public new Method<MemberSetter<TValue>>? SetMethod { get; }
 
         /// <summary>
         /// Gets or sets property value.
         /// </summary>
         [MaybeNull]
-        public V Value
+        public TValue Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => GetMethod is null ? throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name)) : GetMethod.Invoke();
@@ -319,7 +321,7 @@ namespace DotNext.Reflection
         /// <param name="obj">Must be <see langword="null"/>.</param>
         /// <param name="value">An object containing the value of the property reflected by this instance.</param>
         /// <returns><see langword="true"/>, if property value is obtained successfully; otherwise, <see langword="false"/>.</returns>
-		public override bool GetValue(object? obj, [MaybeNull]out V value)
+        public override bool GetValue(object? obj, [MaybeNull]out TValue value)
         {
             if (GetMethod is null || !(obj is null))
             {
@@ -339,10 +341,12 @@ namespace DotNext.Reflection
         /// <param name="obj">Must be <see langword="null"/>.</param>
         /// <param name="value">The value to assign to the property.</param>
         /// <returns><see langword="true"/>, if property value is modified successfully; otherwise, <see langword="false"/>.</returns>
-		public override bool SetValue(object? obj, V value)
+        public override bool SetValue(object? obj, TValue value)
         {
             if (SetMethod is null || !(obj is null))
+            {
                 return false;
+            }
             else
             {
                 SetMethod.Invoke(value);
@@ -350,15 +354,15 @@ namespace DotNext.Reflection
             }
         }
 
-        private static Property<V>? Reflect(Type declaringType, string propertyName, bool nonPublic)
+        private static Property<TValue>? Reflect(Type declaringType, string propertyName, bool nonPublic)
         {
-            PropertyInfo? property = declaringType.GetProperty(propertyName, (nonPublic ? NonPublicFlags : PublicFlags));
-            return property?.PropertyType == typeof(V) && property.GetIndexParameters().IsNullOrEmpty() ?
-                new Property<V>(property) :
+            PropertyInfo? property = declaringType.GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
+            return property?.PropertyType == typeof(TValue) && property.GetIndexParameters().IsNullOrEmpty() ?
+                new Property<TValue>(property) :
                 null;
         }
 
-        internal static Property<V>? GetOrCreate<T>(string propertyName, bool nonPublic)
+        internal static Property<TValue>? GetOrCreate<T>(string propertyName, bool nonPublic)
             => Cache<T>.Of<Cache<T>>(typeof(T)).GetOrCreate(propertyName, nonPublic);
     }
 
@@ -366,47 +370,47 @@ namespace DotNext.Reflection
     /// Provides typed access to instance property declared in type <typeparamref name="T"/>.
     /// </summary>
     /// <typeparam name="T">Declaring type.</typeparam>
-    /// <typeparam name="V">Type of property.</typeparam>
-    public sealed class Property<T, V> : PropertyBase<V>, IProperty<T, V>
+    /// <typeparam name="TValue">Type of property.</typeparam>
+    public sealed class Property<T, TValue> : PropertyBase<TValue>, IProperty<T, TValue>
     {
-        private sealed class Cache : MemberCache<PropertyInfo, Property<T, V>>
+        private sealed class Cache : MemberCache<PropertyInfo, Property<T, TValue>>
         {
-            private protected override Property<T, V>? Create(string propertyName, bool nonPublic) => Reflect(propertyName, nonPublic);
+            private protected override Property<T, TValue>? Create(string propertyName, bool nonPublic) => Reflect(propertyName, nonPublic);
         }
+
         private const BindingFlags PublicFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.FlattenHierarchy;
         private const BindingFlags NonPublicFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly;
-
 
         private Property(PropertyInfo property)
             : base(property)
         {
-            GetMethod = property.GetMethod?.Unreflect<MemberGetter<T, V>>();
-            SetMethod = property.SetMethod?.Unreflect<MemberSetter<T, V>>();
+            GetMethod = property.GetMethod?.Unreflect<MemberGetter<T, TValue>>();
+            SetMethod = property.SetMethod?.Unreflect<MemberSetter<T, TValue>>();
         }
 
         /// <summary>
         /// Obtains property getter in the form of the delegate instance.
         /// </summary>
         /// <param name="property">The reflected property.</param>
-        public static implicit operator MemberGetter<T, V>?(Property<T, V>? property)
+        public static implicit operator MemberGetter<T, TValue>?(Property<T, TValue>? property)
             => property?.GetMethod;
 
         /// <summary>
         /// Obtains property setter in the form of the delegate instance.
         /// </summary>
         /// <param name="property">The reflected property.</param>
-        public static implicit operator MemberSetter<T, V>?(Property<T, V>? property)
+        public static implicit operator MemberSetter<T, TValue>?(Property<T, TValue>? property)
             => property?.SetMethod;
 
         /// <summary>
         /// Gets property getter.
         /// </summary>
-        public new Method<MemberGetter<T, V>>? GetMethod { get; }
+        public new Method<MemberGetter<T, TValue>>? GetMethod { get; }
 
         /// <summary>
         /// Gets property setter.
         /// </summary>
-        public new Method<MemberSetter<T, V>>? SetMethod { get; }
+        public new Method<MemberSetter<T, TValue>>? SetMethod { get; }
 
         /// <summary>
         /// Returns the value of the property supported by a given object.
@@ -414,7 +418,7 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be returned.</param>
         /// <param name="value">An object containing the value of the property reflected by this instance.</param>
         /// <returns><see langword="true"/>, if property value is obtained successfully; otherwise, <see langword="false"/>.</returns>
-		public override bool GetValue(object? obj, [MaybeNull]out V value)
+        public override bool GetValue(object? obj, [MaybeNull]out TValue value)
         {
             if (GetMethod is null || !(obj is T thisArg))
             {
@@ -434,10 +438,12 @@ namespace DotNext.Reflection
         /// <param name="obj">The object whose property value will be set.</param>
         /// <param name="value">The value to assign to the property.</param>
         /// <returns><see langword="true"/>, if property value is modified successfully; otherwise, <see langword="false"/>.</returns>
-		public override bool SetValue(object? obj, V value)
+        public override bool SetValue(object? obj, TValue value)
         {
             if (SetMethod is null || !(obj is T))
+            {
                 return false;
+            }
             else
             {
                 SetMethod.Invoke((T)obj, value);
@@ -451,7 +457,7 @@ namespace DotNext.Reflection
         /// <param name="this"><c>this</c> argument.</param>
         /// <returns>Property value.</returns>
         [MaybeNull]
-        public V this[[DisallowNull]in T @this]
+        public TValue this[[DisallowNull]in T @this]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => GetMethod is null ? throw new InvalidOperationException(ExceptionMessages.PropertyWithoutGetter(Name)) : GetMethod.Invoke(@this);
@@ -465,15 +471,15 @@ namespace DotNext.Reflection
             }
         }
 
-        private static Property<T, V>? Reflect(string propertyName, bool nonPublic)
+        private static Property<T, TValue>? Reflect(string propertyName, bool nonPublic)
         {
-            PropertyInfo? property = typeof(T).GetProperty(propertyName, (nonPublic ? NonPublicFlags : PublicFlags));
-            return property?.PropertyType == typeof(V) && property.GetIndexParameters().IsNullOrEmpty() ?
-                new Property<T, V>(property) :
+            PropertyInfo? property = typeof(T).GetProperty(propertyName, nonPublic ? NonPublicFlags : PublicFlags);
+            return property?.PropertyType == typeof(TValue) && property.GetIndexParameters().IsNullOrEmpty() ?
+                new Property<T, TValue>(property) :
                 null;
         }
 
-        internal static Property<T, V>? GetOrCreate(string propertyName, bool nonPublic)
+        internal static Property<T, TValue>? GetOrCreate(string propertyName, bool nonPublic)
             => Cache.Of<Cache>(typeof(T)).GetOrCreate(propertyName, nonPublic);
     }
 }

@@ -121,6 +121,7 @@
     <Rule Id="SA1408" Action="None" />
     <Rule Id="SA1503" Action="None" />
     <Rule Id="SA1507" Action="Error" />
+    <Rule Id="SA1601" Action="None" />
     <Rule Id="SA1623" Action="None" />
     <Rule Id="SA1633" Action="None" />
     <Rule Id="SA1634" Action="None" />

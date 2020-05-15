@@ -12,7 +12,7 @@ namespace DotNext
     /// </summary>
     /// <remarks>
     /// This type demonstrates how to build concept type
-    /// using method from type <see cref="Type{T}"/>
+    /// using method from type <see cref="Type{T}"/>.
     /// </remarks>
     /// <typeparam name="T">Primitive numeric type.</typeparam>
     [CLSCompliant(false)]
@@ -60,8 +60,10 @@ namespace DotNext
         /// <returns><see langword="true"/> if this number is equal to the given number; otherwise, <see langword="false"/>.</returns>
         public bool Equals(T other) => value.Equals(other);
 
+        /// <inheritdoc/>
         bool IEquatable<Number<T>>.Equals(Number<T> other) => Equals(other);
 
+        /// <inheritdoc/>
         int IComparable<T>.CompareTo(T other) => value.CompareTo(other);
 
         /// <summary>
@@ -141,7 +143,7 @@ namespace DotNext
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns><see langword="true"/>, if two numbers are equal; otherwise, <see langword="false"/>.</returns>
-		public static bool operator ==(Number<T> left, T right)
+        public static bool operator ==(Number<T> left, T right)
             => left.value.Equals(right);
 
         /// <summary>
@@ -150,7 +152,7 @@ namespace DotNext
         /// <param name="left">The left operand.</param>
         /// <param name="right">The right operand.</param>
         /// <returns><see langword="true"/>, if two numbers are not equal; otherwise, <see langword="false"/>.</returns>
-		public static bool operator !=(Number<T> left, T right)
+        public static bool operator !=(Number<T> left, T right)
             => !left.value.Equals(right);
 
         /// <summary>
@@ -190,7 +192,7 @@ namespace DotNext
         /// </summary>
         /// <param name="other">The number to compare.</param>
         /// <returns><see langword="true"/>, if two numbers are equal; otherwise, <see langword="false"/>.</returns>
-		public override bool Equals(object? other) => other switch
+        public override bool Equals(object? other) => other switch
         {
             T number => Equals(number),
             Number<T> number => Equals(number),
@@ -198,9 +200,9 @@ namespace DotNext
         };
 
         /// <summary>
-        /// Converts the string representation of a number to its typed equivalent.  
+        /// Converts the string representation of a number to its typed equivalent.
         /// </summary>
-        /// <param name="text">A string containing a number to convert</param>
+        /// <param name="text">A string containing a number to convert.</param>
         /// <param name="value">Converted number value.</param>
         /// <returns>Parsed number.</returns>
         public static bool TryParse(string text, out Number<T> value)
@@ -213,7 +215,7 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Converts the string representation of a number to its typed equivalent.  
+        /// Converts the string representation of a number to its typed equivalent.
         /// </summary>
         /// <param name="text">A string containing a number to convert.</param>
         /// <param name="styles">Style of the number supplied as a string.</param>
@@ -232,7 +234,7 @@ namespace DotNext
         }
 
         /// <summary>
-        /// Converts the string representation of a number to its typed equivalent. 
+        /// Converts the string representation of a number to its typed equivalent.
         /// </summary>
         /// <param name="text">A string containing a number to convert.</param>
         /// <returns>Parsed number.</returns>

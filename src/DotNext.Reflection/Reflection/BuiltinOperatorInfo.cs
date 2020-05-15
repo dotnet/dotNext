@@ -37,7 +37,7 @@ namespace DotNext.Reflection
 
         public override IList<CustomAttributeData> GetCustomAttributesData() => Array.Empty<CustomAttributeData>();
 
-        public override Module Module => typeof(string).Module; //built-in operators always in core module
+        public override Module Module => typeof(string).Module; // built-in operators always in core module
 
         public override int MetadataToken => 0;
 

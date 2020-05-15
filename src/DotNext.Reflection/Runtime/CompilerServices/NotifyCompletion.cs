@@ -11,13 +11,13 @@ namespace DotNext.Runtime.CompilerServices
     /// <remarks>
     /// This concept doesn't provide methods to obtain task result.
     /// </remarks>
-    /// <typeparam name="TAwaiter">Any type implementing awaiter pattern</typeparam>
+    /// <typeparam name="TAwaiter">Any type implementing awaiter pattern.</typeparam>
     [Concept]
     [BeforeFieldInit(false)]
     public static class NotifyCompletion<TAwaiter>
         where TAwaiter : INotifyCompletion
     {
-        private static readonly MemberGetter<TAwaiter, bool> isCompleted = Type<TAwaiter>.Property<bool>.RequireGetter(nameof(TaskAwaiter.IsCompleted))!;
+        private static readonly MemberGetter<TAwaiter, bool> IsCompletedImpl = Type<TAwaiter>.Property<bool>.RequireGetter(nameof(TaskAwaiter.IsCompleted))!;
 
         /// <summary>
         /// Gets a value that indicates whether the asynchronous task has completed.
@@ -25,7 +25,7 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="awaiter">An object that waits for the completion of an asynchronous task.</param>
         /// <returns><see langword="true"/> if the task has completed; otherwise, <see langword="false"/>.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool IsCompleted(in TAwaiter awaiter) => isCompleted(awaiter);
+        public static bool IsCompleted(in TAwaiter awaiter) => IsCompletedImpl(awaiter);
 
         /// <summary>
         /// Schedules the continuation action that's invoked when the instance completes.
@@ -34,6 +34,6 @@ namespace DotNext.Runtime.CompilerServices
         /// <param name="continuation">The action to invoke when the operation completes.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void OnCompleted(in TAwaiter awaiter, Action continuation)
-            => (Unsafe.AsRef(in awaiter)).OnCompleted(continuation);
+            => Unsafe.AsRef(in awaiter).OnCompleted(continuation);
     }
 }
