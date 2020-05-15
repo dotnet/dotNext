@@ -7,6 +7,7 @@ namespace DotNext.Buffers
         where T : unmanaged
     {
         int Length { get; }
+
         Span<T> Span { get; }
     }
 

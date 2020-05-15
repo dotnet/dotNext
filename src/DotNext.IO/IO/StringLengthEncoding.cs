@@ -35,6 +35,6 @@ namespace DotNext.IO
         /// <remarks>
         /// This format provides optimized binary size.
         /// </remarks>
-        Compressed
+        Compressed,
     }
 }

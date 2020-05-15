@@ -1,7 +1,6 @@
 using System;
 using System.Buffers;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 namespace DotNext.Buffers
@@ -139,7 +138,6 @@ namespace DotNext.Buffers
         /// </summary>
         /// <param name="array">The rented array.</param>
         /// <returns>The array owner.</returns>
-        [SuppressMessage("Usage", "CA2225", Justification = "Accessible via Owner property")]
         public static implicit operator MemoryOwner<T>(in ArrayRental<T> array) => array.Owner;
 
         /// <summary>

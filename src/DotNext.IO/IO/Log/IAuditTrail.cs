@@ -38,8 +38,11 @@ namespace DotNext.IO.Log
             if (index < 0L)
                 throw new ArgumentOutOfRangeException(nameof(index));
             for (var timeoutMeasurement = new Timeout(timeout); GetLastIndex(true) < index; await WaitForCommitAsync(timeout, token).ConfigureAwait(false))
+            {
                 if (!timeoutMeasurement.RemainingTime.TryGetValue(out timeout))
                     return false;
+            }
+
             return true;
         }
 
@@ -164,6 +167,7 @@ namespace DotNext.IO.Log
         new ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token = default)
             where TReader : notnull, ILogEntryConsumer<TEntry, TResult>;
 
+        /// <inheritdoc/>
         ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
             => ReadAsync<TReader, TResult>(reader, startIndex, endIndex, token);
 
@@ -181,6 +185,7 @@ namespace DotNext.IO.Log
         new ValueTask<TResult> ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token = default)
             where TReader : notnull, ILogEntryConsumer<TEntry, TResult>;
 
+        /// <inheritdoc/>
         ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
             => ReadAsync<TReader, TResult>(reader, startIndex, token);
 
@@ -229,11 +234,11 @@ namespace DotNext.IO.Log
         /// <param name="startIndex">The index from which all previous log entries should be dropped and replaced with the new entry.</param>
         /// <returns>The task representing asynchronous state of the method.</returns>
         /// <exception cref="InvalidOperationException"><paramref name="startIndex"/> is less than the index of the last committed entry and <paramref name="entry"/> is not a snapshot.</exception>
-        ValueTask AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex) where TEntryImpl : notnull, TEntry;
-
+        ValueTask AppendAsync<TEntryImpl>(TEntryImpl entry, long startIndex)
+            where TEntryImpl : notnull, TEntry;
 
         /// <summary>
-        /// Adds uncommitted log entry to the end of this log. 
+        /// Adds uncommitted log entry to the end of this log.
         /// </summary>
         /// <remarks>
         /// This method cannot be used to append a snapshot.

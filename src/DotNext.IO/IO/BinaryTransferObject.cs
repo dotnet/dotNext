@@ -21,14 +21,18 @@ namespace DotNext.IO
             set;
         }
 
+        /// <inheritdoc/>
         T IConvertible<T>.Convert() => Content;
 
+        /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
 
         private static unsafe int Length => sizeof(T);
 
+        /// <inheritdoc/>
         long? IDataTransferObject.Length => Length;
 
+        /// <inheritdoc/>
         ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             => writer.WriteAsync(Content, token);
     }
@@ -58,12 +62,16 @@ namespace DotNext.IO
         /// </summary>
         public ReadOnlySequence<byte> Content { get; }
 
+        /// <inheritdoc/>
         ReadOnlySequence<byte> IConvertible<ReadOnlySequence<byte>>.Convert() => Content;
 
+        /// <inheritdoc/>
         bool IDataTransferObject.IsReusable => true;
 
+        /// <inheritdoc/>
         long? IDataTransferObject.Length => Content.Length;
 
+        /// <inheritdoc/>
         async ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
         {
             foreach (var segment in Content)

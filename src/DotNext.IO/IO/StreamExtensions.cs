@@ -84,6 +84,7 @@ namespace DotNext.IO
                 if (count == 0)
                     throw new EndOfStreamException();
             }
+
             return (int)reader.Result;
         }
 
@@ -322,6 +323,7 @@ namespace DotNext.IO
                 length -= n;
                 resultOffset += decoder.GetChars(buffer.Slice(0, n), result.Span.Slice(resultOffset), length == 0);
             }
+
             return new string(result.Span.Slice(0, resultOffset));
         }
 
@@ -346,6 +348,7 @@ namespace DotNext.IO
                     result = stream.Read7BitEncodedInt();
                     break;
             }
+
             result.ReverseIfNeeded(littleEndian);
             return result;
         }
@@ -371,6 +374,7 @@ namespace DotNext.IO
                     result = stream.Read7BitEncodedIntAsync(buffer, token);
                     break;
             }
+
             var length = await result.ConfigureAwait(false);
             length.ReverseIfNeeded(littleEndian);
             return length;
@@ -380,8 +384,8 @@ namespace DotNext.IO
         /// Reads a length-prefixed string using the specified encoding and supplied reusable buffer.
         /// </summary>
         /// <remarks>
-        /// This method decodes string length (in bytes) from 
-        /// stream in contrast to <see cref="ReadString(Stream, int, in DecodingContext, Span{byte})"/>
+        /// This method decodes string length (in bytes) from
+        /// stream in contrast to <see cref="ReadString(Stream, int, in DecodingContext, Span{byte})"/>.
         /// </remarks>
         /// <param name="stream">The stream to read from.</param>
         /// <param name="lengthFormat">The format of the string length encoded in the stream.</param>
@@ -418,7 +422,7 @@ namespace DotNext.IO
         /// Reads a length-prefixed string using the specified encoding.
         /// </summary>
         /// <remarks>
-        /// This method decodes string length (in bytes) from 
+        /// This method decodes string length (in bytes) from
         /// stream in contrast to <see cref="ReadString(Stream, int, Encoding)"/>.
         /// </remarks>
         /// <param name="stream">The stream to read from.</param>
@@ -466,6 +470,7 @@ namespace DotNext.IO
                 length -= n;
                 resultOffset += decoder.GetChars(buffer.Span.Slice(0, n), result.Span.Slice(resultOffset), length == 0);
             }
+
             return new string(result.Span.Slice(0, resultOffset));
         }
 
@@ -473,7 +478,7 @@ namespace DotNext.IO
         /// Reads a length-prefixed string asynchronously using the specified encoding and supplied reusable buffer.
         /// </summary>
         /// <remarks>
-        /// This method decodes string length (in bytes) from 
+        /// This method decodes string length (in bytes) from
         /// stream in contrast to <see cref="ReadStringAsync(Stream, int, DecodingContext, Memory{byte}, CancellationToken)"/>.
         /// </remarks>
         /// <param name="stream">The stream to read from.</param>
@@ -515,7 +520,7 @@ namespace DotNext.IO
         /// Reads a length-prefixed string asynchronously using the specified encoding and supplied reusable buffer.
         /// </summary>
         /// <remarks>
-        /// This method decodes string length (in bytes) from 
+        /// This method decodes string length (in bytes) from
         /// stream in contrast to <see cref="ReadStringAsync(Stream, int, Encoding, CancellationToken)"/>.
         /// </remarks>
         /// <param name="stream">The stream to read from.</param>
@@ -569,6 +574,7 @@ namespace DotNext.IO
         /// <param name="stream">The stream to read from.</param>
         /// <param name="output">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         /// <exception cref="EndOfStreamException">The end of the stream is reached.</exception>
         /// <exception cref="OperationCanceledException">The operation has been canceled.</exception>
         public static async ValueTask ReadBytesAsync(this Stream stream, Memory<byte> output, CancellationToken token = default)
@@ -621,7 +627,8 @@ namespace DotNext.IO
         /// <param name="stream">The stream to write into.</param>
         /// <param name="value">The value to be written into the stream.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
-        public static unsafe void Write<T>(this Stream stream, in T value) where T : unmanaged => stream.Write(Span.AsReadOnlyBytes(in value));
+        public static unsafe void Write<T>(this Stream stream, in T value)
+            where T : unmanaged => stream.Write(Span.AsReadOnlyBytes(in value));
 
         /// <summary>
         /// Asynchronously serializes value to the stream.
@@ -631,7 +638,7 @@ namespace DotNext.IO
         /// <param name="buffer">The buffer that is used for serialization.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
-        /// <returns>The task representing asynchronous st</returns>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         public static ValueTask WriteAsync<T>(this Stream stream, T value, Memory<byte> buffer, CancellationToken token = default)
             where T : unmanaged
         {
@@ -646,7 +653,7 @@ namespace DotNext.IO
         /// <param name="value">The value to be written into the stream.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <typeparam name="T">The value type to be serialized.</typeparam>
-        /// <returns>The task representing asynchronous st</returns>
+        /// <returns>The task representing asynchronous execution of this method.</returns>
         public static async ValueTask WriteAsync<T>(this Stream stream, T value, CancellationToken token = default)
             where T : unmanaged
         {
@@ -671,6 +678,7 @@ namespace DotNext.IO
                 totalBytes += count;
                 await destination.WriteAsync(buffer.Slice(0, count), token).ConfigureAwait(false);
             }
+
             return totalBytes;
         }
 
@@ -692,6 +700,7 @@ namespace DotNext.IO
                 token.ThrowIfCancellationRequested();
                 destination.Write(buffer.Slice(0, count));
             }
+
             return totalBytes;
         }
     }

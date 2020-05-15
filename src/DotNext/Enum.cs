@@ -209,7 +209,6 @@ namespace DotNext
         /// Converts typed enum wrapper into actual enum value.
         /// </summary>
         /// <param name="en">Enum wrapper to convert.</param>
-        [SuppressMessage("Usage", "CA2225", Justification = "Accessible via property")]
         public static implicit operator TEnum(in Enum<TEnum> en) => en.Value;
 
         /// <summary>

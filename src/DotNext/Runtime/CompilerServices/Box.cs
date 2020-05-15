@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -49,7 +48,6 @@ namespace DotNext.Runtime.CompilerServices
         /// </summary>
         /// <param name="box">The boxed representation of value type.</param>
         /// <returns>Unboxed value type.</returns>
-        [SuppressMessage("Usage", "CA2225", Justification = "Accessible via Value property")]
         public static explicit operator T(Box<T> box) => box.Value;
 
         /// <summary>

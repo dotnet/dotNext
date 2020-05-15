@@ -6,7 +6,7 @@ using System.Threading;
 namespace DotNext.IO.Pipelines
 {
     /// <summary>
-    /// Provides various extension methods for <see cref="FlushResult"/> 
+    /// Provides various extension methods for <see cref="FlushResult"/>
     /// and <see cref="ReadResult"/> types.
     /// </summary>
     public static class ResultExtensions

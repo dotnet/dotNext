@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Threading;
 using static System.Runtime.CompilerServices.Unsafe;
@@ -83,7 +82,6 @@ namespace DotNext.Threading
             /// </summary>
             /// <param name="holder">The lock holder.</param>
             /// <returns><see langword="true"/>, if the object holds successfully acquired lock; otherwise, <see langword="false"/>.</returns>
-            [SuppressMessage("Usage", "CA2225", Justification = "Accessible via property")]
             public static bool operator true(in Holder holder) => !(holder.lockedObject is null);
 
             /// <summary>

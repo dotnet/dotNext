@@ -44,7 +44,8 @@ namespace DotNext.IO
         /// <typeparam name="T">The type of the value to decode.</typeparam>
         /// <returns>The decoded value.</returns>
         /// <exception cref="EndOfStreamException">Unexpected end of sequence.</exception>
-        public T Read<T>() where T : unmanaged => Read<T, ValueReader<T>>(new ValueReader<T>());
+        public T Read<T>()
+            where T : unmanaged => Read<T, ValueReader<T>>(new ValueReader<T>());
 
         /// <summary>
         /// Copies the bytes from the sequence into contiguous block of memory.
@@ -102,15 +103,18 @@ namespace DotNext.IO
                     length = Read<int, SevenBitEncodedIntReader>(new SevenBitEncodedIntReader(5));
                     break;
             }
+
             length.ReverseIfNeeded(littleEndian);
             return ReadString(length, in context);
         }
 
+        /// <inheritdoc/>
         ValueTask<T> IAsyncBinaryReader.ReadAsync<T>(CancellationToken token)
             => token.IsCancellationRequested ?
                 new ValueTask<T>(Task.FromCanceled<T>(token)) :
                 new ValueTask<T>(Read<T>());
 
+        /// <inheritdoc/>
         ValueTask IAsyncBinaryReader.ReadAsync(Memory<byte> output, CancellationToken token)
         {
             if (token.IsCancellationRequested)
@@ -119,22 +123,26 @@ namespace DotNext.IO
             return new ValueTask();
         }
 
+        /// <inheritdoc/>
         ValueTask<string> IAsyncBinaryReader.ReadStringAsync(int length, DecodingContext context, CancellationToken token)
             => token.IsCancellationRequested ?
                 new ValueTask<string>(Task.FromCanceled<string>(token)) :
                 new ValueTask<string>(ReadString(length, in context));
 
+        /// <inheritdoc/>
         ValueTask<string> IAsyncBinaryReader.ReadStringAsync(StringLengthEncoding lengthFormat, DecodingContext context, CancellationToken token)
             => token.IsCancellationRequested ?
                 new ValueTask<string>(Task.FromCanceled<string>(token)) :
                 new ValueTask<string>(ReadString(lengthFormat, in context));
 
+        /// <inheritdoc/>
         async Task IAsyncBinaryReader.CopyToAsync(Stream output, CancellationToken token)
         {
             while (sequence.TryGet(ref position, out var block))
                 await output.WriteAsync(block, token).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         async Task IAsyncBinaryReader.CopyToAsync(PipeWriter output, CancellationToken token)
         {
             while (sequence.TryGet(ref position, out var block))

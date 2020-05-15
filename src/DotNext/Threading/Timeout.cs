@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using static System.Threading.Timeout;
 
@@ -92,7 +91,6 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="timeout">Timeout control object.</param>
         /// <returns><see langword="true"/>, if timeout is reached; otherwise, <see langword="false"/>.</returns>
-        [SuppressMessage("Usage", "CA2225", Justification = "Accessible via property")]
         public static bool operator true(in Timeout timeout) => timeout.IsExpired;
 
         /// <summary>
@@ -107,7 +105,6 @@ namespace DotNext.Threading
         /// </summary>
         /// <param name="timeout">Timeout control object.</param>
         /// <returns>The original timeout value.</returns>
-        [SuppressMessage("Usage", "CA2225", Justification = "Accessible via property")]
         public static implicit operator TimeSpan(in Timeout timeout) => timeout.Value;
     }
 }

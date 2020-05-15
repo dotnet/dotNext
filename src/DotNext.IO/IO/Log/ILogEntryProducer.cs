@@ -51,13 +51,13 @@ namespace DotNext.IO.Log
     /// Represents default implementation of <see cref="ILogEntryProducer{TEntry}"/> backed by the list
     /// of the log entries.
     /// </summary>
-    /// <typeparam name="TEntry">The type of the entries supplied by this</typeparam>
+    /// <typeparam name="TEntry">The type of the supplied entries.</typeparam>
     public sealed class LogEntryProducer<TEntry> : ILogEntryProducer<TEntry>
         where TEntry : notnull, ILogEntry
     {
         private const int InitialPosition = -1;
-        private int currentIndex;
         private readonly IList<TEntry> source;
+        private int currentIndex;
 
         /// <summary>
         /// Initializes a new producer of the log entries passed as list.
@@ -86,10 +86,13 @@ namespace DotNext.IO.Log
         {
         }
 
+        /// <inheritdoc/>
         TEntry IAsyncEnumerator<TEntry>.Current => source[currentIndex];
 
+        /// <inheritdoc/>
         long ILogEntryProducer<TEntry>.RemainingCount => source.Count - currentIndex - 1;
 
+        /// <inheritdoc/>
         ValueTask<bool> IAsyncEnumerator<TEntry>.MoveNextAsync() => new ValueTask<bool>(++currentIndex < source.Count);
 
         /// <summary>
@@ -97,6 +100,7 @@ namespace DotNext.IO.Log
         /// </summary>
         public void Reset() => currentIndex = InitialPosition;
 
+        /// <inheritdoc/>
         ValueTask IAsyncDisposable.DisposeAsync()
         {
             if (!source.IsReadOnly)

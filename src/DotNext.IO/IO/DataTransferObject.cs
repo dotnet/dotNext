@@ -164,8 +164,8 @@ namespace DotNext.IO
         /// <summary>
         /// Converts DTO to value of blittable type.
         /// </summary>
-        /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <typeparam name="TResult">The type of result.</typeparam>
+        /// <typeparam name="TObject">The type of data transfer object.</typeparam>
         /// <param name="dto">Data transfer object to read from.</param>
         /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The content of the object.</returns>
