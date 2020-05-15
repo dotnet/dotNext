@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -66,7 +67,7 @@ namespace DotNext.Runtime.InteropServices
             /// Adjust pointer.
             /// </summary>
             /// <returns><see langword="true"/>, if next element is available; <see langword="false"/>, if end of sequence reached.</returns>
-            public bool MoveNext() => ptr != default && ++index < count;
+            public bool MoveNext() => ptr != null && ++index < count;
 
             /// <summary>
             /// Sets the enumerator to its initial position.
@@ -470,7 +471,7 @@ namespace DotNext.Runtime.InteropServices
         public unsafe bool IsNull
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => value == default;
+            get => value == null;
         }
 
         /// <summary>
@@ -811,6 +812,14 @@ namespace DotNext.Runtime.InteropServices
         public static unsafe implicit operator UIntPtr(Pointer<T> ptr) => new UIntPtr(ptr.value);
 
         unsafe UIntPtr IConvertible<UIntPtr>.Convert() => new UIntPtr(value);
+
+        /// <summary>
+        /// Converts this pointer the memory owner.
+        /// </summary>
+        /// <param name="length">The number of elements in the memory.</param>
+        /// <returns>The instance of memory owner.</returns>
+        public unsafe IMemoryOwner<T> ToMemoryOwner(int length)
+            => value == null ? new Buffers.UnmanagedMemory<T>(IntPtr.Zero, 0) : new Buffers.UnmanagedMemory<T>(new IntPtr(value), length);
 
         /// <summary>
         /// Obtains pointer to the memory represented by given memory handle.

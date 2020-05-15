@@ -454,5 +454,19 @@ namespace DotNext.Runtime.InteropServices
             ptr.Value = 42U;
             Equal(42, value);
         }
+
+        [Fact]
+        public static unsafe void ConversionToMemoryOwner()
+        {
+            Throws<ObjectDisposedException>(() => default(Pointer<int>).ToMemoryOwner(2).Memory);
+            Pointer<int> ptr = stackalloc int[10];
+            ptr.Clear(10);
+            ptr[0] = 12;
+            ptr[1] = 24;
+            var memory = ptr.ToMemoryOwner(2).Memory.Span;
+            Equal(2, memory.Length);
+            Equal(12, memory[0]);
+            Equal(24, memory[1]);
+        }
     }
 }
