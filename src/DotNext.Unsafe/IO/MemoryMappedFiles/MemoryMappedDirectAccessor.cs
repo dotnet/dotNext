@@ -25,12 +25,12 @@ namespace DotNext.IO.MemoryMappedFiles
         }
 
         /// <summary>
-        /// Converts the segment of the memory-mapped file
+        /// Converts the segment of the memory-mapped file.
         /// </summary>
         /// <remarks>
         /// The caller is responsible for disposing of the returned stream.
         /// </remarks>
-        /// <value>The stream representing virtual memory of the memory-mapped file.</value>
+        /// <returns>The stream representing virtual memory of the memory-mapped file.</returns>
         public Stream AsStream() => accessor is null ? Stream.Null : Pointer.AsStream(Size, accessor.GetFileAccess());
 
         /// <summary>

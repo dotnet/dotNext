@@ -41,13 +41,13 @@ namespace DotNext.Runtime.InteropServices
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         Stream AsStream();
 
+        /// <inheritdoc/>
         Stream IConvertible<Stream>.Convert() => AsStream();
 
         /// <summary>
         /// Copies bytes from the memory location to the stream.
         /// </summary>
         /// <param name="destination">The destination stream.</param>
-        /// <returns>The task instance representing asynchronous state of the copying process.</returns>
         /// <exception cref="ObjectDisposedException">The underlying unmanaged memory is released.</exception>
         void WriteTo(Stream destination) => Pointer.WriteTo(destination, Size);
 
@@ -115,6 +115,7 @@ namespace DotNext.Runtime.InteropServices
     public interface IUnmanagedMemory<T> : IUnmanagedMemory, IMemoryOwner<T>, IConvertible<Memory<T>>
         where T : unmanaged
     {
+        /// <inheritdoc/>
         Memory<T> IConvertible<Memory<T>>.Convert() => Memory;
     }
 }
