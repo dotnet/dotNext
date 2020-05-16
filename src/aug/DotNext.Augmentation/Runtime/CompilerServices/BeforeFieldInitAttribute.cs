@@ -17,6 +17,6 @@ namespace DotNext.Runtime.CompilerServices
         /// <summary>
         /// Gets type initialization policy.
         /// </summary>
-        public readonly bool LazyTypeInit;
+        public bool LazyTypeInit { get; }
     }
 }
