@@ -1,11 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System;
 using IServer = Microsoft.AspNetCore.Hosting.Server.IServer;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Embedding
 {
+    [SuppressMessage("Usage", "CA1812", Justification = "This class is instantiated by DI container")]
     internal sealed class RaftEmbeddedCluster : RaftHttpCluster
     {
         internal readonly PathString ProtocolPath;

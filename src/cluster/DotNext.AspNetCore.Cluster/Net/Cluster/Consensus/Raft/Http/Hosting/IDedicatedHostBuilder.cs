@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using System;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
@@ -15,7 +15,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
     public interface IDedicatedHostBuilder : IHostingStartup
     {
         /// <summary>
-        /// Configures application dedicated for Raft 
+        /// Configures application dedicated for Raft.
         /// </summary>
         /// <param name="builder">The application builder.</param>
         void Configure(IApplicationBuilder builder);

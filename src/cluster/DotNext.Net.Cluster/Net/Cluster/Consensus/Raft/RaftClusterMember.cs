@@ -69,6 +69,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private protected void ChangeStatus(ClusterMemberStatus newState)
             => IClusterMember.OnMemberStatusChanged(this, ref status, newState, MemberStatusChanged);
 
+        internal void Touch() => ChangeStatus(ClusterMemberStatus.Available);
+
         private protected abstract Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token);
 
         /// <inheritdoc/>

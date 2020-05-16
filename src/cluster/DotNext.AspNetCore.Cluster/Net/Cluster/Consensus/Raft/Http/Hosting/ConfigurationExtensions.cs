@@ -1,7 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
 {
@@ -25,7 +25,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// <param name="services">The collection of services.</param>
         /// <param name="memberConfig">The configuration of local cluster node.</param>
         /// <returns>The modified collection of services.</returns>
-        public static void ConfigureLocalNode(this IServiceCollection services, IConfiguration memberConfig)
+        public static IServiceCollection ConfigureLocalNode(this IServiceCollection services, IConfiguration memberConfig)
             => services.AddClusterAsSingleton<RaftHostedCluster, RaftHostedClusterMemberConfiguration>(memberConfig);
 
         private static void ConfigureClusterMember(HostBuilderContext context, IServiceCollection services)
@@ -36,7 +36,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// to application services and establishes network communication with other cluster members.
         /// </summary>
         /// <param name="builder">The builder of main application host.</param>
-        /// <returns>The builder of main application host.</returns>
+        /// <returns>The builder of the application host.</returns>
         public static IHostBuilder JoinCluster(this IHostBuilder builder)
             => builder.ConfigureServices(ConfigureClusterMember);
 
@@ -49,7 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// </summary>
         /// <param name="builder">The builder of main application host.</param>
         /// <param name="memberConfig">The delegate that allows to resolve location of local member configuration.</param>
-        /// <returns>The builder of main application host.</returns>
+        /// <returns>The builder of the application host.</returns>
         public static IHostBuilder JoinCluster(this IHostBuilder builder, Func<IConfiguration, IHostEnvironment, IConfiguration> memberConfig)
             => builder.ConfigureServices(memberConfig.JoinCluster);
 
@@ -62,7 +62,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Http.Hosting
         /// </summary>
         /// <param name="builder">The builder of main application host.</param>
         /// <param name="memberConfigSection">The name of local member configuration section.</param>
-        /// <returns>The builder of main application host.</returns>
+        /// <returns>The builder of the application host.</returns>
         public static IHostBuilder JoinCluster(this IHostBuilder builder, string memberConfigSection)
             => builder.ConfigureServices(memberConfigSection.JoinCluster);
     }

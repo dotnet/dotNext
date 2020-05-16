@@ -102,21 +102,33 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         Task<Result<bool>> ILocalMember.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
-            return member is null ? Task.FromResult(new Result<bool>(Term, false)) : ReceiveEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
+            if (member is null)
+                return Task.FromResult(new Result<bool>(Term, false));
+
+            member.Touch();
+            return ReceiveEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         Task<Result<bool>> ILocalMember.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
-            return member is null ? Task.FromResult(new Result<bool>(Term, false)) : ReceiveVoteAsync(member, term, lastLogIndex, lastLogTerm, token);
+            if (member is null)
+                return Task.FromResult(new Result<bool>(Term, false));
+
+            member.Touch();
+            return ReceiveVoteAsync(member, term, lastLogIndex, lastLogTerm, token);
         }
 
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         Task<Result<bool>> ILocalMember.ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
-            return member is null ? Task.FromResult(new Result<bool>(Term, false)) : ReceiveSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token);
+            if (member is null)
+                return Task.FromResult(new Result<bool>(Term, false));
+
+            member.Touch();
+            return ReceiveSnapshotAsync(member, senderTerm, snapshot, snapshotIndex, token);
         }
 
         /// <summary>
