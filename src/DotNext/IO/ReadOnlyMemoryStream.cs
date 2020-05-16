@@ -26,6 +26,8 @@ namespace DotNext.IO
 
         public override bool CanSeek => true;
 
+        public override bool CanTimeout => false;
+
         public override long Length => sequence.Length;
 
         public override long Position

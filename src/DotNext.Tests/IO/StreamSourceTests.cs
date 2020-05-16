@@ -10,6 +10,7 @@ using Xunit;
 namespace DotNext.IO
 {
     using Buffers;
+    using System.Threading;
 
     [ExcludeFromCodeCoverage]
     public sealed class StreamSourceTests : Test
@@ -98,7 +99,7 @@ namespace DotNext.IO
             Equal(data.Length - 1, src.Seek(-1L, SeekOrigin.End));
             src.CopyTo(dest);
             Equal(1L, dest.Length);
-            Equal(data[data.Length - 1], dest.ToArray()[0]);
+            Equal(data[^1], dest.ToArray()[0]);
         }
 
         [Fact]
@@ -109,7 +110,7 @@ namespace DotNext.IO
             Equal(data.Length - 1, src.Seek(data.Length - 1, SeekOrigin.Begin));
             src.CopyTo(dest);
             Equal(1L, dest.Length);
-            Equal(data[data.Length - 1], dest.ToArray()[0]);
+            Equal(data[^1], dest.ToArray()[0]);
         }
 
         [Fact]
@@ -121,7 +122,7 @@ namespace DotNext.IO
             Equal(data.Length - 1, src.Seek(data.Length - 2, SeekOrigin.Current));
             src.CopyTo(dest);
             Equal(1L, dest.Length);
-            Equal(data[data.Length - 1], dest.ToArray()[0]);
+            Equal(data[^1], dest.ToArray()[0]);
         }
 
         [Theory]
@@ -135,7 +136,7 @@ namespace DotNext.IO
 
             src.Position = sequence.Length - 1;
             Equal(1, src.Read(dest.Slice(0, 1)));
-            Equal(data[data.Length - 1], dest[0]);
+            Equal(data[^1], dest[0]);
         }
 
         [Theory]
@@ -149,7 +150,7 @@ namespace DotNext.IO
 
             src.Position = sequence.Length - 1;
             Equal(1, src.Read(dest, 0, 1));
-            Equal(data[data.Length - 1], dest[0]);
+            Equal(data[^1], dest[0]);
         }
 
         [Theory]
@@ -163,7 +164,7 @@ namespace DotNext.IO
 
             src.Position = sequence.Length - 1;
             Equal(1, await src.ReadAsync(dest.Slice(0, 1)));
-            Equal(data[data.Length - 1], dest.Span[0]);
+            Equal(data[^1], dest.Span[0]);
         }
 
         [Theory]
@@ -177,7 +178,7 @@ namespace DotNext.IO
 
             src.Position = sequence.Length - 1;
             Equal(1, await src.ReadAsync(dest, 0, 1));
-            Equal(data[data.Length - 1], dest[0]);
+            Equal(data[^1], dest[0]);
         }
 
         [Theory]
@@ -190,7 +191,7 @@ namespace DotNext.IO
                 Equal(data[i], src.ReadByte());
 
             src.Seek(-1L, SeekOrigin.End);
-            Equal(data[data.Length - 1], src.ReadByte());
+            Equal(data[^1], src.ReadByte());
             Equal(-1, src.ReadByte());
         }
 
@@ -244,6 +245,7 @@ namespace DotNext.IO
             True(src.CanRead);
             True(src.CanSeek);
             False(src.CanWrite);
+            False(src.CanTimeout);
             Throws<NotSupportedException>(() => src.Write(new byte[2], 0, 2));
             Throws<NotSupportedException>(() => src.Write(new byte[2]));
             Throws<NotSupportedException>(() => src.WriteByte(42));
@@ -291,6 +293,110 @@ namespace DotNext.IO
 
             using var stream = sequence.AsStream();
             Equal(dict, formatter.Deserialize(stream));
+        }
+
+        private sealed class FlushCounter
+        {
+            internal volatile int Value;
+
+            internal void Flush(IBufferWriter<byte> writer)
+            {
+                NotNull(writer);
+                Interlocked.Increment(ref Value);
+            }
+
+            internal Task FlushAsync(IBufferWriter<byte> writer, CancellationToken token)
+            {
+                NotNull(writer);
+                token.ThrowIfCancellationRequested();
+                Interlocked.Increment(ref Value);
+                return Task.CompletedTask;
+            }
+        }
+
+        [Fact]
+        public static void BufferWriterToWritableStream()
+        {
+            var writer = new ArrayBufferWriter<byte>();
+            var counter = new FlushCounter();
+            using var stream = writer.AsStream(flush: counter.Flush);
+
+            stream.Write(new byte[2] { 10, 20 });
+            stream.Write(new byte[2] { 30, 40 }, 1, 1);
+            stream.Flush();
+            Equal(1, counter.Value);
+
+            Equal(3, writer.WrittenCount);
+
+            Equal(10, writer.WrittenSpan[0]);
+            Equal(20, writer.WrittenSpan[1]);
+            Equal(40, writer.WrittenSpan[2]);
+            Equal(3, stream.Position);
+
+            stream.WriteByte(50);
+            Equal(4, stream.Position);
+            Equal(4, writer.WrittenCount);
+            Equal(50, writer.WrittenSpan[3]);
+        }
+
+        [Fact]
+        public static async Task BufferWriterToWritableStreamAsync()
+        {
+            var writer = new ArrayBufferWriter<byte>();
+            var counter = new FlushCounter();
+            using var stream = writer.AsStream(flushAsync: counter.FlushAsync);
+
+            await stream.WriteAsync(new byte[2] { 10, 20 });
+            await stream.WriteAsync(new byte[2] { 30, 40 }, 1, 1);
+            stream.Flush();
+            Equal(1, counter.Value);
+            await stream.FlushAsync();
+            Equal(2, counter.Value);
+
+            Equal(3, writer.WrittenCount);
+
+            Equal(10, writer.WrittenSpan[0]);
+            Equal(20, writer.WrittenSpan[1]);
+            Equal(40, writer.WrittenSpan[2]);
+            Equal(3, stream.Position);
+        }
+
+        [Fact]
+        public static void BufferWriterToWritableStreamApm()
+        {
+            var writer = new ArrayBufferWriter<byte>();
+            using var stream = writer.AsStream();
+            var ar = stream.BeginWrite(new byte[2] { 30, 40 }, 1, 1, null, "state");
+            Equal("state", ar.AsyncState);
+            True(ar.AsyncWaitHandle.WaitOne(DefaultTimeout));
+            stream.EndWrite(ar);
+            Equal(1L, stream.Position);
+            Equal(1, writer.WrittenCount);
+            stream.Flush();
+            Equal(40, writer.WrittenSpan[0]);
+        }
+
+        [Fact]
+        public static async Task BufferWriterStreamUnsupportedMethods()
+        {
+            var writer = new ArrayBufferWriter<byte>();
+            using var stream = writer.AsStream();
+            False(stream.CanRead);
+            False(stream.CanSeek);
+            True(stream.CanWrite);
+            False(stream.CanTimeout);
+
+            Throws<NotSupportedException>(() => stream.ReadByte());
+            Throws<NotSupportedException>(() => stream.Read(new byte[2]));
+            Throws<NotSupportedException>(() => stream.Read(new byte[2], 0, 2));
+            Throws<NotSupportedException>(() => stream.Position = 0);
+            Throws<NotSupportedException>(() => stream.Length);
+            Throws<NotSupportedException>(() => stream.SetLength(10L));
+            Throws<NotSupportedException>(() => stream.Seek(-1L, SeekOrigin.End));
+            Throws<NotSupportedException>(() => stream.BeginRead(new byte[2], 0, 2, null, null));
+            Throws<InvalidOperationException>(() => stream.EndRead(Task.CompletedTask));
+            await ThrowsAsync<NotSupportedException>(stream.ReadAsync(new byte[2]).AsTask);
+            await ThrowsAsync<NotSupportedException>(() => stream.ReadAsync(new byte[2], 0, 2));
         }
     }
 }

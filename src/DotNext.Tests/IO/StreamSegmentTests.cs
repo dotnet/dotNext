@@ -80,6 +80,7 @@ namespace DotNext.IO
             True(segment.CanRead);
             True(segment.CanSeek);
             False(segment.CanWrite);
+            Equal(ms.CanTimeout, segment.CanTimeout);
             Throws<NotSupportedException>(() => segment.WriteByte(2));
             Throws<NotSupportedException>(() => segment.Write(new byte[3], 0, 3));
             Throws<NotSupportedException>(() => segment.Write(new byte[2]));

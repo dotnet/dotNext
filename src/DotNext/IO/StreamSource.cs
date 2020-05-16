@@ -1,6 +1,9 @@
 using System;
 using System.Buffers;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using Unsafe = System.Runtime.CompilerServices.Unsafe;
 
 namespace DotNext.IO
 {
@@ -37,5 +40,29 @@ namespace DotNext.IO
         /// <returns>The stream representing written bytes.</returns>
         public static Stream GetWrittenBytesAsStream(this PooledArrayBufferWriter<byte> writer)
             => writer.WrapBuffer(new ValueFunc<byte[], int, MemoryStream>(CreateStream));
+
+        /// <summary>
+        /// Returns the writable stream associated with the buffer writer.
+        /// </summary>
+        /// <typeparam name="TWriter">The type of the writer.</typeparam>
+        /// <param name="writer">The writer to be wrapped by the stream.</param>
+        /// <param name="flush">Optional synchronous flush action.</param>
+        /// <param name="flushAsync">Optiona asynchronous flush action.</param>
+        /// <returns>The stream wrapping buffer writer.</returns>
+        public static Stream AsStream<TWriter>(this TWriter writer, Action<TWriter>? flush = null, Func<TWriter, CancellationToken, Task>? flushAsync = null)
+            where TWriter : class, IBufferWriter<byte>
+        {
+            if (writer is IFlushable)
+            {
+                flush ??= Flush;
+                flushAsync ??= FlushAsync;
+            }
+
+            return new BufferWriterStream<TWriter>(writer, flush, flushAsync);
+
+            static void Flush(TWriter writer) => Unsafe.As<IFlushable>(writer).Flush();
+
+            static Task FlushAsync(TWriter writer, CancellationToken token) => Unsafe.As<IFlushable>(writer).FlushAsync(token);
+        }
     }
 }
