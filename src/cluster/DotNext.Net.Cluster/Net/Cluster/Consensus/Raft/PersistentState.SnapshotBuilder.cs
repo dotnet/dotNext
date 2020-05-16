@@ -32,18 +32,24 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal ValueTask ApplyCoreAsync(LogEntry entry)
             {
                 term = Math.Max(entry.Term, term);
-                //drop empty log entries during snapshot construction
+
+                // drop empty log entries during snapshot construction
                 return entry.IsEmpty ? new ValueTask() : ApplyAsync(entry);
             }
 
+            /// <inheritdoc/>
             long? IDataTransferObject.Length => null;
 
+            /// <inheritdoc/>
             long IRaftLogEntry.Term => term;
 
+            /// <inheritdoc/>
             DateTimeOffset ILogEntry.Timestamp => timestamp;
 
+            /// <inheritdoc/>
             bool IDataTransferObject.IsReusable => false;
 
+            /// <inheritdoc/>
             bool ILogEntry.IsSnapshot => true;
 
             /// <summary>

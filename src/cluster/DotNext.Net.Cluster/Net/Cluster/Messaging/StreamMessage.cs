@@ -36,7 +36,6 @@ namespace DotNext.Net.Cluster.Messaging
         public StreamMessage(string name, ContentType type, int size = 1024, bool growable = true)
             : this(growable ? new MemoryStream(size) : new RentedMemoryStream(size), false, name, type)
         {
-
         }
 
         /// <summary>

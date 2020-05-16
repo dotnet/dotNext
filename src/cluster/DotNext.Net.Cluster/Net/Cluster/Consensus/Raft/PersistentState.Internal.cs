@@ -50,7 +50,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private abstract class ConcurrentStorageAccess : FileStream
         {
-            private readonly StreamSegment[] readers;   //a pool of read-only streams that can be shared between multiple readers in parallel
+            private readonly StreamSegment[] readers;   // a pool of read-only streams that can be shared between multiple readers in parallel
 
             [SuppressMessage("Reliability", "CA2000", Justification = "All streams are disposed in Dispose method")]
             private protected ConcurrentStorageAccess(string fileName, int bufferSize, int readersCount, FileOptions options)
@@ -58,10 +58,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 readers = new StreamSegment[readersCount];
                 if (readersCount == 1)
+                {
                     readers[0] = new StreamSegment(this, true);
+                }
                 else
+                {
                     foreach (ref var reader in readers.AsSpan())
                         reader = new StreamSegment(new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, bufferSize, FileOptions.Asynchronous | FileOptions.RandomAccess), false);
+                }
             }
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -75,19 +79,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             protected override void Dispose(bool disposing)
             {
                 if (disposing)
+                {
                     foreach (ref var reader in readers.AsSpan())
                     {
                         reader?.Dispose();
                         reader = null;
                     }
+                }
+
                 base.Dispose(disposing);
             }
 
             public override async ValueTask DisposeAsync()
             {
                 foreach (Stream? reader in readers)
+                {
                     if (reader != null)
                         await reader.DisposeAsync().ConfigureAwait(false);
+                }
+
                 Array.Clear(readers, 0, readers.Length);
                 await base.DisposeAsync().ConfigureAwait(false);
                 base.Dispose(true);

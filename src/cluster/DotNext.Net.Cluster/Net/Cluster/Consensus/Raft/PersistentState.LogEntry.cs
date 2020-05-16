@@ -128,13 +128,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             public Task CopyToAsync(PipeWriter output, CancellationToken token = default)
                 => content.CopyToAsync(output, token);
 
+            /// <inheritdoc/>
             ValueTask IDataTransferObject.WriteToAsync<TWriter>(TWriter writer, CancellationToken token)
             {
                 Reset();
                 return new ValueTask(writer.CopyFromAsync(content, token));
             }
 
+            /// <inheritdoc/>
             long? IDataTransferObject.Length => Length;
+
+            /// <inheritdoc/>
             bool IDataTransferObject.IsReusable => false;
 
             /// <summary>
@@ -147,6 +151,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// </summary>
             public DateTimeOffset Timestamp => new DateTimeOffset(metadata.Timestamp, TimeSpan.Zero);
 
+            /// <inheritdoc/>
             ValueTask<TResult> IDataTransferObject.GetObjectDataAsync<TResult, TDecoder>(TDecoder parser, CancellationToken token)
             {
                 Reset();

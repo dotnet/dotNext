@@ -38,7 +38,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private readonly MemoryMappedViewAccessor stateView;
             private AsyncLock syncRoot;
             private volatile IPEndPoint? votedFor;
-            private long term, commitIndex, lastIndex, lastApplied;  //volatile
+            private long term, commitIndex, lastIndex, lastApplied;  // volatile
 
             internal NodeState(DirectoryInfo location, AsyncLock writeLock)
             {
@@ -52,7 +52,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 var port = stateView.ReadInt32(PortOffset);
                 var length = stateView.ReadInt32(AddressLengthOffset);
                 if (length == 0)
+                {
                     votedFor = null;
+                }
                 else
                 {
                     var address = new byte[length];
@@ -140,6 +142,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         stateView.Write(AddressLengthOffset, address.Length);
                         stateView.WriteArray(AddressOffset, address, 0, address.Length);
                     }
+
                     stateView.Flush();
                     votedFor = member;
                 }
@@ -154,12 +157,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     syncRoot = default;
                     votedFor = null;
                 }
+
                 base.Dispose(disposing);
             }
         }
 
         private readonly NodeState state;
-        private long lastTerm;  //term of last committed entry
+        private long lastTerm;  // term of last committed entry
 
         /// <summary>
         /// Gets index of the committed or last log entry.

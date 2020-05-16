@@ -29,6 +29,7 @@ namespace DotNext.Net.Cluster.Replication
         /// </summary>
         new IAuditTrail<TEntry> AuditTrail { get; }
 
+        /// <inheritdoc/>
         IAuditTrail IReplicationCluster.AuditTrail => AuditTrail;
 
         /// <summary>

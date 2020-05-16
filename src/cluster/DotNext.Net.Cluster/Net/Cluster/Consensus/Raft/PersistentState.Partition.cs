@@ -27,7 +27,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private sealed class Partition : ConcurrentStorageAccess
         {
             internal readonly long FirstIndex;
-            internal readonly int Capacity;    //max number of entries
+            internal readonly int Capacity;    // max number of entries
             private readonly MemoryOwner<LogEntryMetadata> lookupCache;
 
             internal Partition(DirectoryInfo location, int bufferSize, int recordsPerPartition, long partitionNumber, MemoryAllocator<LogEntryMetadata>? cachePool, int readersCount)
@@ -67,7 +67,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private async ValueTask<LogEntry?> ReadAsync(StreamSegment reader, Memory<byte> buffer, int index, bool refreshStream, CancellationToken token)
             {
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
-                //find pointer to the content
+
+                // find pointer to the content
                 LogEntryMetadata metadata;
                 if (refreshStream)
                     await reader.FlushAsync(token).ConfigureAwait(false);
@@ -77,13 +78,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     metadata = await reader.BaseStream.ReadAsync<LogEntryMetadata>(buffer, token).ConfigureAwait(false);
                 }
                 else
+                {
                     metadata = lookupCache[index];
+                }
+
                 return metadata.Offset > 0 ? new LogEntry(reader, buffer, metadata) : new LogEntry?();
             }
 
             internal ValueTask<LogEntry?> ReadAsync(in DataAccessSession session, long index, bool absoluteIndex, bool refreshStream, CancellationToken token)
             {
-                //calculate relative index
+                // calculate relative index
                 if (absoluteIndex)
                     index -= FirstIndex;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
@@ -93,14 +97,16 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private async ValueTask WriteAsync<TEntry>(TEntry entry, int index, Memory<byte> buffer)
                 where TEntry : notnull, IRaftLogEntry
             {
-                //calculate offset of the previous entry
+                // calculate offset of the previous entry
                 long offset;
                 LogEntryMetadata metadata;
                 if (index == 0L || index == 1L && FirstIndex == 0L)
+                {
                     offset = PayloadOffset;
+                }
                 else if (lookupCache.IsEmpty)
                 {
-                    //read content offset and the length of the previous entry
+                    // read content offset and the length of the previous entry
                     Position = (index - 1) * LogEntryMetadata.Size;
                     metadata = await this.ReadAsync<LogEntryMetadata>(buffer).ConfigureAwait(false);
                     Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
@@ -112,14 +118,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Debug.Assert(metadata.Offset > 0, "Previous entry doesn't exist for unknown reason");
                     offset = metadata.Length + metadata.Offset;
                 }
-                //write content
+
+                // write content
                 Position = offset;
                 await entry.WriteToAsync(this, buffer).ConfigureAwait(false);
                 metadata = LogEntryMetadata.Create(entry, offset, Position - offset);
-                //record new log entry to the allocation table
+
+                // record new log entry to the allocation table
                 Position = index * LogEntryMetadata.Size;
                 await this.WriteAsync(metadata, buffer).ConfigureAwait(false);
-                //update cache
+
+                // update cache
                 if (!lookupCache.IsEmpty)
                     lookupCache[index] = metadata;
             }
@@ -127,7 +136,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal ValueTask WriteAsync<TEntry>(in DataAccessSession session, TEntry entry, long index)
                 where TEntry : notnull, IRaftLogEntry
             {
-                //calculate relative index
+                // calculate relative index
                 index -= FirstIndex;
                 Debug.Assert(index >= 0 && index < Capacity, $"Invalid index value {index}, offset {FirstIndex}");
                 return WriteAsync(entry, (int)index, session.Buffer);
@@ -177,7 +186,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             private static async ValueTask<LogEntry> ReadAsync(StreamSegment reader, Memory<byte> buffer, CancellationToken token)
             {
                 reader.BaseStream.Position = 0;
-                //snapshot reader stream may be out of sync with writer stream
+
+                // snapshot reader stream may be out of sync with writer stream
                 await reader.FlushAsync(token).ConfigureAwait(false);
                 return new LogEntry(reader, buffer, await reader.BaseStream.ReadAsync<SnapshotMetadata>(buffer, token).ConfigureAwait(false));
             }
@@ -185,7 +195,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             internal ValueTask<LogEntry> ReadAsync(in DataAccessSession session, CancellationToken token)
                 => ReadAsync(GetReadSessionStream(session), session.Buffer, token);
 
-            //cached index of the snapshotted entry
+            // cached index of the snapshotted entry
             internal long Index
             {
                 get;
@@ -194,7 +204,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         private readonly int recordsPerPartition;
-        //key is the number of partition
+
+        // key is the number of partition
         private readonly IDictionary<long, Partition> partitionTable;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -235,7 +246,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 GetOrCreatePartition(recordIndex, out partition);
             }
             else
+            {
                 flushTask = Task.CompletedTask;
+            }
+
             return flushTask;
         }
 

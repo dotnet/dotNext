@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Net;
 using System.Threading;
@@ -25,7 +26,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly Func<ILocalMember, IPEndPoint, IClientMetricsCollector?, RaftClusterMember> clientFactory;
         private readonly Func<ILocalMember, IServer> serverFactory;
         private IServer? server;
-        private readonly PipeOptions pipeConfig;
 
         /// <summary>
         /// Initializes a new default implementation of Raft-based cluster.
@@ -39,8 +39,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             metadata = ImmutableDictionary.CreateRange(StringComparer.Ordinal, configuration.Metadata);
             clientFactory = configuration.CreateMemberClient;
             serverFactory = configuration.CreateServer;
-            pipeConfig = configuration.PipeConfig;
-            //create members without starting clients
+
+            // create members without starting clients
             foreach (var member in configuration.Members)
                 members.Add(configuration.CreateMemberClient(this, member, configuration.Metrics as IClientMetricsCollector));
         }
@@ -85,27 +85,34 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         protected RaftClusterMember CreateClient(IPEndPoint address)
             => clientFactory(this, address, Metrics as IClientMetricsCollector);
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         bool ILocalMember.IsLeader(IRaftClusterMember member) => ReferenceEquals(Leader, member);
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         IPEndPoint ILocalMember.Address => publicEndPoint;
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         IReadOnlyDictionary<string, string> ILocalMember.Metadata => metadata;
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         Task<bool> ILocalMember.ResignAsync(CancellationToken token)
             => ReceiveResignAsync(token);
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         Task<Result<bool>> ILocalMember.ReceiveEntriesAsync<TEntry>(EndPoint sender, long senderTerm, ILogEntryProducer<TEntry> entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
             return member is null ? Task.FromResult(new Result<bool>(Term, false)) : ReceiveEntriesAsync(member, senderTerm, entries, prevLogIndex, prevLogTerm, commitIndex, token);
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         Task<Result<bool>> ILocalMember.ReceiveVoteAsync(EndPoint sender, long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
             return member is null ? Task.FromResult(new Result<bool>(Term, false)) : ReceiveVoteAsync(member, term, lastLogIndex, lastLogTerm, token);
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         Task<Result<bool>> ILocalMember.ReceiveSnapshotAsync<TSnapshot>(EndPoint sender, long senderTerm, TSnapshot snapshot, long snapshotIndex, CancellationToken token)
         {
             var member = FindMember(MatchByEndPoint, sender);
@@ -123,6 +130,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 server?.Dispose();
                 server = null;
             }
+
             base.Dispose(disposing);
         }
     }

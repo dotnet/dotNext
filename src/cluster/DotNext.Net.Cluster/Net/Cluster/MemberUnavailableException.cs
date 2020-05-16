@@ -13,7 +13,8 @@ namespace DotNext.Net.Cluster
         /// </summary>
         /// <param name="member">The unavailable member.</param>
         /// <param name="message">Human-readable text describing the issue.</param>
-        public MemberUnavailableException(IClusterMember member, string message) : base(message) => Member = member;
+        public MemberUnavailableException(IClusterMember member, string message)
+            : base(message) => Member = member;
 
         /// <summary>
         /// Initializes a new instance of exception.
@@ -21,12 +22,12 @@ namespace DotNext.Net.Cluster
         /// <param name="member">The unavailable member.</param>
         /// <param name="message">Human-readable text describing the issue.</param>
         /// <param name="innerException">The underlying network-related exception.</param>
-        public MemberUnavailableException(IClusterMember member, string message, Exception innerException) : base(message, innerException) => Member = member;
+        public MemberUnavailableException(IClusterMember member, string message, Exception innerException)
+            : base(message, innerException) => Member = member;
 
         /// <summary>
         /// Gets unavailable member.
         /// </summary>
-        /// <value></value>
         public IClusterMember Member { get; }
     }
 }

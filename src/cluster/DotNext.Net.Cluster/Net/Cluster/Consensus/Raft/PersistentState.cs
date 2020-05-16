@@ -46,7 +46,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IsConsistentPredicate = DelegateHelpers.CreateOpenDelegate<Predicate<PersistentState>>(state => state.IsConsistent);
         }
 
-        private Snapshot snapshot;
         private readonly DirectoryInfo location;
         private readonly AsyncManualResetEvent commitEvent;
         private readonly AsyncSharedLock syncRoot;
@@ -57,6 +56,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private readonly StreamSegment nullSegment;
         private readonly int bufferSize;
         private readonly bool replayOnInitialize;
+        private Snapshot snapshot;
 
         /// <summary>
         /// Initializes a new persistent audit trail.
@@ -86,16 +86,21 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             metadataPool = configuration.UseCaching ? configuration.GetMemoryAllocator<LogEntryMetadata>() : null;
             nullSegment = new StreamSegment(Stream.Null);
             initialEntry = new LogEntry(nullSegment, sessionManager.WriteSession.Buffer, new LogEntryMetadata());
-            //sorted dictionary to improve performance of log compaction and snapshot installation procedures
+
+            // sorted dictionary to improve performance of log compaction and snapshot installation procedures
             partitionTable = new SortedDictionary<long, Partition>();
-            //load all partitions from file system
+
+            // load all partitions from file system
             foreach (var file in path.EnumerateFiles())
+            {
                 if (long.TryParse(file.Name, out var partitionNumber))
                 {
                     var partition = new Partition(file.Directory, bufferSize, recordsPerPartition, partitionNumber, metadataPool, sessionManager.Capacity);
                     partition.PopulateCache(sessionManager.WriteSession);
                     partitionTable[partitionNumber] = partition;
                 }
+            }
+
             state = new NodeState(path, AsyncLock.Exclusive(syncRoot));
             snapshot = new Snapshot(path, bufferSize, sessionManager.Capacity);
             snapshot.PopulateCache(sessionManager.WriteSession);
@@ -146,31 +151,47 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             LogEntry entry;
             ValueTask<TResult> result;
             if (partitionTable.Count > 0)
-                using (var list = entryPool((int)length))
+            {
+                using var list = entryPool((int)length);
+                var listIndex = 0;
+                for (Partition? partition = null; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
                 {
-                    var listIndex = 0;
-                    for (Partition? partition = null; startIndex <= endIndex; list[listIndex++] = entry, startIndex++)
-                        if (startIndex == 0L)   //handle ephemeral entity
-                            entry = First;
-                        else if (TryGetPartition(startIndex, ref partition, out var switched)) //handle regular record
-                            entry = (await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false)).Value;
-                        else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)    //probably the record is snapshotted
-                        {
-                            entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
-                            //skip squashed log entries
-                            startIndex = state.CommitIndex - (state.CommitIndex + 1) % recordsPerPartition;
-                        }
-                        else
-                            break;
-                    return await reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list[0].SnapshotIndex, token).ConfigureAwait(false);
+                    // handle ephemeral entity
+                    if (startIndex == 0L)
+                    {
+                        entry = First;
+                    }
+                    else if (TryGetPartition(startIndex, ref partition, out var switched))
+                    {
+                        // handle regular record
+                        entry = (await partition.ReadAsync(session, startIndex, true, switched, token).ConfigureAwait(false)).Value;
+                    }
+                    else if (snapshot.Length > 0 && startIndex <= state.CommitIndex)
+                    {
+                        // probably the record is snapshotted
+                        entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
+
+                        // skip squashed log entries
+                        startIndex = state.CommitIndex - ((state.CommitIndex + 1) % recordsPerPartition);
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
+
+                return await reader.ReadAsync<LogEntry, InMemoryList<LogEntry>>(list.Memory.Slice(0, listIndex), list[0].SnapshotIndex, token).ConfigureAwait(false);
+            }
             else if (snapshot.Length > 0)
             {
                 entry = await snapshot.ReadAsync(session, token).ConfigureAwait(false);
                 result = reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(entry), entry.SnapshotIndex, token);
             }
             else
+            {
                 result = startIndex == 0L ? reader.ReadAsync<LogEntry, SingletonEntryList<LogEntry>>(new SingletonEntryList<LogEntry>(First), null, token) : reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token);
+            }
+
             return await result.ConfigureAwait(false);
         }
 
@@ -200,7 +221,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(endIndex));
             if (endIndex < startIndex)
                 return await reader.ReadAsync<LogEntry, LogEntry[]>(Array.Empty<LogEntry>(), null, token).ConfigureAwait(false);
-            //obtain weak lock as read lock
+
+            // obtain weak lock as read lock
             await syncRoot.AcquireAsync(false, token).ConfigureAwait(false);
             var session = sessionManager.OpenSession(bufferSize);
             try
@@ -209,11 +231,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
             finally
             {
-                sessionManager.CloseSession(session);  //return session back to the pool
+                sessionManager.CloseSession(session);  // return session back to the pool
                 syncRoot.Release();
             }
         }
 
+        /// <inheritdoc/>
         ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
             => ReadAsync<TReader, TResult>(reader, startIndex, endIndex, token);
 
@@ -245,24 +268,27 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        /// <inheritdoc/>
         ValueTask<TResult> IAuditTrail.ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
             => ReadAsync<TReader, TResult>(reader, startIndex, token);
 
         private async ValueTask InstallSnapshot<TSnapshot>(TSnapshot snapshot, long snapshotIndex)
             where TSnapshot : notnull, IRaftLogEntry
         {
-            //0. The snapshot can be installed only if the partitions were squashed on the sender side
-            //therefore, snapshotIndex should be a factor of recordsPerPartition
+            // 0. The snapshot can be installed only if the partitions were squashed on the sender side
+            // therefore, snapshotIndex should be a factor of recordsPerPartition
             if ((snapshotIndex + 1) % recordsPerPartition != 0)
                 throw new ArgumentOutOfRangeException(nameof(snapshotIndex));
-            //1. Save the snapshot into temporary file to avoid corruption caused by network connection
+
+            // 1. Save the snapshot into temporary file to avoid corruption caused by network connection
             string tempSnapshotFile, snapshotFile = this.snapshot.Name;
             using (var tempSnapshot = new Snapshot(location, Buffer.Length, 0, true))
             {
                 tempSnapshotFile = tempSnapshot.Name;
                 await tempSnapshot.WriteAsync(sessionManager.WriteSession, snapshot, snapshotIndex, CancellationToken.None).ConfigureAwait(false);
             }
-            //2. Delete existing snapshot file
+
+            // 2. Delete existing snapshot file
             this.snapshot.Dispose();
             /*
              * Swapping snapshot file is unsafe operation because of potential disk I/O failures.
@@ -278,19 +304,23 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 Environment.FailFast(LogMessages.SnapshotInstallationFailed, e);
             }
+
             this.snapshot = new Snapshot(location, Buffer.Length, sessionManager.Capacity);
             this.snapshot.PopulateCache(sessionManager.WriteSession);
-            //3. Identify all partitions to be replaced by snapshot
+
+            // 3. Identify all partitions to be replaced by snapshot
             var compactionScope = new Dictionary<long, Partition>();
             foreach (var (partitionNumber, partition) in partitionTable)
                 if (partition.LastIndex <= snapshotIndex)
                     compactionScope.Add(partitionNumber, partition);
                 else
-                    break;  //enumeration is sorted by partition number so we don't need to enumerate over all partitions
-            //4. Delete these partitions
+                    break;  // enumeration is sorted by partition number so we don't need to enumerate over all partitions
+
+            // 4. Delete these partitions
             RemovePartitions(compactionScope);
             compactionScope.Clear();
-            //5. Apply snapshot to the underlying state machine
+
+            // 5. Apply snapshot to the underlying state machine
             state.CommitIndex = snapshotIndex;
             state.LastIndex = Math.Max(snapshotIndex, state.LastIndex);
 
@@ -309,21 +339,29 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
             Partition? partition;
             for (partition = null; !token.IsCancellationRequested && await supplier.MoveNextAsync().ConfigureAwait(false); state.LastIndex = startIndex++)
+            {
                 if (supplier.Current.IsSnapshot)
                     throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
-                else if (startIndex > state.CommitIndex)
+
+                if (startIndex > state.CommitIndex)
                 {
                     await GetOrCreatePartitionAsync(startIndex, ref partition).ConfigureAwait(false);
                     await partition.WriteAsync(sessionManager.WriteSession, supplier.Current, startIndex).ConfigureAwait(false);
                 }
                 else if (!skipCommitted)
+                {
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+                }
+            }
+
             await FlushAsync(partition).ConfigureAwait(false);
-            //flush updated state
+
+            // flush updated state
             state.Flush();
             token.ThrowIfCancellationRequested();
         }
 
+        /// <inheritdoc/>
         async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, long startIndex, bool skipCommitted, CancellationToken token)
         {
             if (entries.RemainingCount == 0L)
@@ -343,11 +381,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             where TEntry : notnull, IRaftLogEntry
         {
             if (startIndex <= state.CommitIndex)
+            {
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+            }
             else if (entry.IsSnapshot)
+            {
                 await InstallSnapshot(entry, startIndex).ConfigureAwait(false);
+            }
             else if (startIndex > state.LastIndex + 1L)
+            {
                 throw new ArgumentOutOfRangeException(nameof(startIndex));
+            }
             else
             {
                 GetOrCreatePartition(startIndex, out var partition);
@@ -413,7 +457,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Adds uncommitted log entry to the end of this log. 
+        /// Adds uncommitted log entry to the end of this log.
         /// </summary>
         /// <remarks>
         /// This method cannot be used to append a snapshot.
@@ -434,7 +478,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         /// <summary>
-        /// Adds uncommitted log entry to the end of this log. 
+        /// Adds uncommitted log entry to the end of this log.
         /// </summary>
         /// <remarks>
         /// This method cannot be used to append a snapshot.
@@ -459,6 +503,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 syncRoot.Release();
             }
+
             return startIndex;
         }
 
@@ -489,6 +534,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 syncRoot.Release();
             }
+
             return startIndex;
         }
 
@@ -512,9 +558,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 count = state.LastIndex - startIndex + 1L;
                 state.LastIndex = startIndex - 1L;
                 state.Flush();
-                //find partitions to be deleted
+
+                // find partitions to be deleted
                 var partitionNumber = Math.DivRem(startIndex, recordsPerPartition, out var remainder);
-                //take the next partition if startIndex is not a beginning of the calculated partition
+
+                // take the next partition if startIndex is not a beginning of the calculated partition
                 partitionNumber += (remainder > 0L).ToInt32();
                 for (Partition partition; partitionTable.TryGetValue(partitionNumber, out partition); partitionNumber++)
                 {
@@ -528,6 +576,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 syncRoot.Release();
             }
+
             return count;
         }
 
@@ -554,7 +603,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
 
         private async ValueTask ForceCompaction(SnapshotBuilder builder, CancellationToken token)
         {
-            //1. Find the partitions that can be compacted
+            // 1. Find the partitions that can be compacted
             var compactionScope = new SortedDictionary<long, Partition>();
             foreach (var (partNumber, partition) in partitionTable)
             {
@@ -562,35 +611,44 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 if (partition.LastIndex <= state.CommitIndex)
                     compactionScope.Add(partNumber, partition);
                 else
-                    break;  //enumeration is sorted by partition number so we don't need to enumerate over all partitions
+                    break;  // enumeration is sorted by partition number so we don't need to enumerate over all partitions
             }
+
             Debug.Assert(compactionScope.Count > 0);
             LogEntry entry;
-            //2. Initialize builder with snapshot record
+
+            // 2. Initialize builder with snapshot record
             if (snapshot.Length > 0L)
             {
                 entry = await snapshot.ReadAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
                 entry.Reset();
                 await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
             }
-            //3. Do compaction
+
+            // 3. Do compaction
             var snapshotIndex = 0L;
             foreach (var partition in compactionScope.Values)
             {
                 await partition.FlushAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
                 for (var i = 0; i < partition.Capacity; i++)
-                    if (partition.FirstIndex > 0L || i > 0L) //ignore the ephemeral entry
+                {
+                    // ignore the ephemeral entry
+                    if (partition.FirstIndex > 0L || i > 0L)
                     {
                         entry = (await partition.ReadAsync(sessionManager.WriteSession, i, false, false, token).ConfigureAwait(false)).Value;
                         entry.Reset();
                         await builder.ApplyCoreAsync(entry).ConfigureAwait(false);
                     }
+                }
+
                 snapshotIndex = partition.LastIndex;
             }
-            //4. Persist snapshot
+
+            // 4. Persist snapshot
             await snapshot.WriteAsync(sessionManager.WriteSession, builder, snapshotIndex, token).ConfigureAwait(false);
             await snapshot.FlushAsync().ConfigureAwait(false);
-            //5. Remove snapshotted partitions
+
+            // 5. Remove snapshotted partitions
             RemovePartitions(compactionScope);
             compactionScope.Clear();
         }
@@ -599,6 +657,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             SnapshotBuilder? builder;
             if (state.CommitIndex - snapshot.Index > recordsPerPartition && (builder = CreateSnapshotBuilder()) != null)
+            {
                 try
                 {
                     return ForceCompaction(builder, token);
@@ -607,8 +666,9 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     builder.Dispose();
                 }
-            else
-                return default;
+            }
+
+            return default;
         }
 
         private async ValueTask<long> CommitAsync(long? endIndex, CancellationToken token)
@@ -631,6 +691,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 syncRoot.Release();
             }
+
             return Math.Max(count, 0L);
         }
 
@@ -678,6 +739,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         private async ValueTask ApplyAsync(long startIndex, CancellationToken token)
         {
             for (Partition? partition = null; startIndex <= state.CommitIndex; state.LastApplied = startIndex++)
+            {
                 if (TryGetPartition(startIndex, ref partition, out var switched))
                 {
                     var entry = (await partition.ReadAsync(sessionManager.WriteSession, startIndex, true, switched, token).ConfigureAwait(false)).Value;
@@ -686,7 +748,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     lastTerm.VolatileWrite(entry.Term);
                 }
                 else
+                {
                     Debug.Fail($"Log entry with index {startIndex} doesn't have partition");
+                }
+            }
+
             state.Flush();
             await FlushAsync().ConfigureAwait(false);
         }
@@ -707,7 +773,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 LogEntry entry;
                 long startIndex;
-                //1. Apply snapshot if it not empty
+
+                // 1. Apply snapshot if it not empty
                 if (snapshot.Length > 0L)
                 {
                     entry = await snapshot.ReadAsync(sessionManager.WriteSession, token).ConfigureAwait(false);
@@ -716,8 +783,11 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     startIndex = snapshot.Index;
                 }
                 else
+                {
                     startIndex = 0L;
-                //2. Apply all committed entries
+                }
+
+                // 2. Apply all committed entries
                 await ApplyAsync(startIndex + 1L, token).ConfigureAwait(false);
             }
             finally
@@ -765,8 +835,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public Task EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token)
             => IsConsistent ? Task.CompletedTask : EnsureConsistencyImpl(timeout, token);
 
+        /// <inheritdoc/>
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref initialEntry;
 
+        /// <inheritdoc/>
         bool IPersistentState.IsVotedFor(IRaftClusterMember? member) => state.IsVotedFor(member?.Endpoint);
 
         /// <summary>
@@ -774,10 +846,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public long Term => state.Term;
 
+        /// <inheritdoc/>
         ValueTask<long> IPersistentState.IncrementTermAsync() => state.IncrementTermAsync();
 
+        /// <inheritdoc/>
         ValueTask IPersistentState.UpdateTermAsync(long term) => state.UpdateTermAsync(term);
 
+        /// <inheritdoc/>
         ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member) => state.UpdateVotedForAsync(member?.Endpoint);
 
         /// <summary>
@@ -798,6 +873,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 snapshot.Dispose();
                 nullSegment.Dispose();
             }
+
             base.Dispose(disposing);
         }
 

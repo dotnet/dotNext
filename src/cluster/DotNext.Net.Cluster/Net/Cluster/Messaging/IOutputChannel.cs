@@ -18,8 +18,8 @@ namespace DotNext.Net.Cluster.Messaging
         /// </remarks>
         /// <typeparam name="TResponse">The type of the parsed response message.</typeparam>
         /// <param name="message">The message to be sent.</param>
-        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <param name="responseReader">The response reader.</param>
+        /// <param name="token">The token that can be used to cancel asynchronous operation.</param>
         /// <returns>The message representing response; or <see langword="null"/> if request message in one-way.</returns>
         /// <exception cref="InvalidOperationException">Attempts to send message to local or unavailable endpoint.</exception>
         Task<TResponse> SendMessageAsync<TResponse>(IMessage message, MessageReader<TResponse> responseReader, CancellationToken token = default);

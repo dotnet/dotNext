@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,13 +34,12 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             /// <summary>
             /// Releases write lock.
             /// </summary>
-            /// <exception cref="InvalidOperationException">This token is invalid.</exception>
             public void Dispose()
             {
                 if (state.lockVersion.CompareAndSet(version, version + 1L))
                     state.syncRoot.Release();
                 else
-                    throw new InvalidOperationException(ExceptionMessages.InvalidLockToken);
+                    Debug.Fail(ExceptionMessages.InvalidLockToken);
             }
         }
 

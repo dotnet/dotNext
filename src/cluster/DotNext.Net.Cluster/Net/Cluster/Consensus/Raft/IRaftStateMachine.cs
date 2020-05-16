@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
 {
@@ -8,6 +8,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         ILogger Logger { get; }
 
         IEnumerable<IRaftClusterMember> Members { get; }
+
         void MoveToFollowerState(bool randomizeTimeout, long? newTerm = null);
 
         void MoveToCandidateState();

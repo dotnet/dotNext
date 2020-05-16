@@ -13,7 +13,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
 
     /// <summary>
     /// Represents Raft cluster member that is relies on exchange-based
-    /// transport mechanism
+    /// transport mechanism.
     /// </summary>
     internal sealed class ExchangePeer : RaftClusterMember
     {
@@ -31,7 +31,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         /// <summary>
         /// Gets request timeout used for communication with this member.
         /// </summary>
-        /// <value></value>
         public TimeSpan RequestTimeout { get; }
 
         public override void CancelPendingRequests() => client.CancelPendingRequests();
@@ -68,7 +67,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
         private protected override Task<Result<bool>> VoteAsync(long term, long lastLogIndex, long lastLogTerm, CancellationToken token)
             => SendAsync<Result<bool>, VoteExchange>(new VoteExchange(term, lastLogIndex, lastLogTerm), token);
 
-
         private protected override Task<Result<bool>> AppendEntriesAsync<TEntry, TList>(long term, TList entries, long prevLogIndex, long prevLogTerm, long commitIndex, CancellationToken token)
             => entries.Count > 0 ?
             SendAsync<Result<bool>, EntriesExchange>(new EntriesExchange<TEntry, TList>(term, entries, prevLogIndex, prevLogTerm, commitIndex, pipeConfig), token)
@@ -93,6 +91,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.TransportServices
             {
                 client.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }

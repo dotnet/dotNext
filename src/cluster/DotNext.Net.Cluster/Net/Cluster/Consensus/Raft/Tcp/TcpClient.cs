@@ -1,9 +1,9 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
 {
@@ -21,7 +21,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         {
             private readonly CancellationToken token;
 
-            internal ConnectEventArgs(CancellationToken token) : base(false) => this.token = token;
+            internal ConnectEventArgs(CancellationToken token)
+                : base(false) => this.token = token;
 
             private protected override bool IsCancellationRequested(out CancellationToken token)
             {
@@ -46,11 +47,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 do
                 {
                     (headers, count, waitForInput) = await exchange.CreateOutboundMessageAsync(AdjustToPayload(buffer), token).ConfigureAwait(false);
-                    //transmit packet to the remote endpoint
+
+                    // transmit packet to the remote endpoint
                     await WritePacket(headers, buffer, count, token).ConfigureAwait(false);
                     if (!waitForInput)
                         break;
-                    //read response
+
+                    // read response
                     (headers, response) = await ReadPacket(buffer, token).ConfigureAwait(false);
                 }
                 while (await exchange.ProcessInboundMessageAsync(headers, response, Socket.RemoteEndPoint, token).ConfigureAwait(false));
@@ -73,15 +76,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         {
             using var args = new ConnectEventArgs(token)
             {
-                RemoteEndPoint = endPoint
+                RemoteEndPoint = endPoint,
             };
+
             if (Socket.ConnectAsync(SocketType.Stream, ProtocolType.Tcp, args))
+            {
                 using (token.Register(CancelConnectAsync, args))
-                {
                     await args.Task.ConfigureAwait(false);
-                }
+            }
             else if (args.SocketError != SocketError.Success)
+            {
                 throw new SocketException((int)args.SocketError);
+            }
+
             ConfigureSocket(args.ConnectSocket, linger, ttl);
             return new ClientNetworkStream(args.ConnectSocket);
         }
@@ -89,19 +96,22 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         private async ValueTask<ClientNetworkStream?> ConnectAsync(IExchange exchange, CancellationToken token)
         {
             ClientNetworkStream? result;
-            using (await accessLock.AcquireLockAsync(token).ConfigureAwait(false))
-                if (stream is null)
-                    try
-                    {
-                        result = stream = await ConnectAsync(Address, LingerOption, Ttl, token).ConfigureAwait(false);
-                    }
-                    catch (Exception e)
-                    {
-                        exchange.OnException(e);
-                        result = null;
-                    }
-                else
-                    result = stream;
+            AsyncLock.Holder lockHolder = default;
+            try
+            {
+                lockHolder = await accessLock.AcquireLockAsync(token).ConfigureAwait(false);
+                result = stream ??= await ConnectAsync(Address, LingerOption, Ttl, token).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                exchange.OnException(e);
+                result = null;
+            }
+            finally
+            {
+                lockHolder.Dispose();
+            }
+
             return result;
         }
 
@@ -109,15 +119,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
         {
             ThrowIfDisposed();
             var stream = this.stream;
-            //establish connection if needed
+
+            // establish connection if needed
             if (stream is null)
             {
                 stream = await ConnectAsync(exchange, token).ConfigureAwait(false);
                 if (stream is null)
                     return;
             }
+
             AsyncLock.Holder lockHolder = default;
-            //allocate single buffer for this exchange session
+
+            // allocate single buffer for this exchange session
             MemoryOwner<byte> buffer = default;
             try
             {
@@ -131,7 +144,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
             }
             catch (Exception e) when (e is SocketException || e.InnerException is SocketException)
             {
-                //broken socket detected
+                // broken socket detected
                 Interlocked.Exchange(ref this.stream, null)?.Dispose();
                 exchange.OnException(e);
             }
@@ -159,6 +172,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft.Tcp
                 Interlocked.Exchange(ref stream, null)?.Dispose();
                 accessLock.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }

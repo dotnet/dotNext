@@ -49,6 +49,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     return index < 0L ? new EmptyEntry(snapshotTerm, true) : new EmptyEntry(terms[index], false);
                 }
             }
+
             EmptyEntry IReadOnlyList<EmptyEntry>.this[int index]
                 => this[index];
 
@@ -65,15 +66,17 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
 
-        private long term, commitIndex, lastTerm, index;
-        private volatile IRaftClusterMember? votedFor;
         private readonly AsyncReaderWriterLock syncRoot = new AsyncReaderWriterLock();
         private readonly AsyncManualResetEvent commitEvent = new AsyncManualResetEvent(false);
-        private readonly long[] singleEntryTerm = new long[1];  //cached array with 1 element
-        private volatile long[] log = Array.Empty<long>();    //log of uncommitted entries
+        private readonly long[] singleEntryTerm = new long[1];  // cached array with 1 element
+        private long term, commitIndex, lastTerm, index;
+        private volatile IRaftClusterMember? votedFor;
+        private volatile long[] log = Array.Empty<long>();    // log of uncommitted entries
 
+        /// <inheritdoc/>
         long IPersistentState.Term => term.VolatileRead();
 
+        /// <inheritdoc/>
         ref readonly IRaftLogEntry IAuditTrail<IRaftLogEntry>.First => ref First;
 
         private static bool IsCommitted(ConsensusOnlyState state, long index) => index <= state.commitIndex.VolatileRead();
@@ -98,28 +101,38 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 startIndex += skip;
             }
             else if (startIndex <= commitIndex.VolatileRead())
+            {
                 throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+            }
             else
+            {
                 skip = 0L;
+            }
+
             var count = entries.RemainingCount - skip;
             if (count > 0L)
             {
-                //skip entries
+                // skip entries
                 var newEntries = new long[count];
                 for (; skip-- > 0; token.ThrowIfCancellationRequested())
                     await entries.MoveNextAsync().ConfigureAwait(false);
-                //copy terms
+
+                // copy terms
                 for (var i = 0; await entries.MoveNextAsync().ConfigureAwait(false) && i < newEntries.LongLength; i++, token.ThrowIfCancellationRequested())
+                {
                     if (entries.Current.IsSnapshot)
                         throw new InvalidOperationException(ExceptionMessages.SnapshotDetected);
-                    else
-                        newEntries[i] = entries.Current.Term;
-                //now concat existing array of terms
+                    newEntries[i] = entries.Current.Term;
+                }
+
+                // now concat existing array of terms
                 Append(newEntries, startIndex.Value);
             }
+
             return startIndex.Value;
         }
 
+        /// <inheritdoc/>
         async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntryImpl>(ILogEntryProducer<TEntryImpl> entries, long startIndex, bool skipCommitted, CancellationToken token)
         {
             if (startIndex < 0L)
@@ -128,6 +141,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 await AppendAsync(entries, startIndex, skipCommitted, token).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(ILogEntryProducer<TEntry> entries, CancellationToken token)
         {
             if (entries.RemainingCount == 0L)
@@ -136,11 +150,15 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return await AppendAsync(entries, null, false, token).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         async ValueTask IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, long startIndex)
         {
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
+            {
                 if (startIndex <= commitIndex.VolatileRead())
+                {
                     throw new InvalidOperationException(ExceptionMessages.InvalidAppendIndex);
+                }
                 else if (entry.IsSnapshot)
                 {
                     lastTerm.VolatileWrite(entry.Term);
@@ -150,14 +168,18 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     commitEvent.Set(true);
                 }
                 else if (startIndex > index.VolatileRead() + 1L)
+                {
                     throw new ArgumentOutOfRangeException(nameof(startIndex));
+                }
                 else
                 {
                     singleEntryTerm[0] = entry.Term;
                     Append(singleEntryTerm, startIndex);
                 }
+            }
         }
 
+        /// <inheritdoc/>
         async ValueTask<long> IAuditTrail<IRaftLogEntry>.AppendAsync<TEntry>(TEntry entry, CancellationToken token)
         {
             using (await syncRoot.AcquireWriteLockAsync(CancellationToken.None).ConfigureAwait(false))
@@ -175,20 +197,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 {
                     commitIndex.VolatileWrite(startIndex + count - 1);
                     lastTerm.VolatileWrite(log[count - 1]);
-                    //count indicates how many elements should be removed from log
+
+                    // count indicates how many elements should be removed from log
                     log = log.RemoveFirst(count);
                     commitEvent.Set(true);
                 }
             }
+
             return Math.Max(count, 0L);
         }
 
+        /// <inheritdoc/>
         ValueTask<long> IAuditTrail.CommitAsync(long endIndex, CancellationToken token)
             => CommitAsync(endIndex, token);
 
+        /// <inheritdoc/>
         ValueTask<long> IAuditTrail.CommitAsync(CancellationToken token)
             => CommitAsync(null, token);
 
+        /// <inheritdoc/>
         async ValueTask<long> IAuditTrail<IRaftLogEntry>.DropAsync(long startIndex, CancellationToken token)
         {
             long count;
@@ -200,6 +227,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 index.VolatileWrite(startIndex - 1L);
                 log = log.RemoveLast(count);
             }
+
             return count;
         }
 
@@ -211,11 +239,14 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public long GetLastIndex(bool committed)
             => committed ? commitIndex.VolatileRead() : index.VolatileRead();
 
+        /// <inheritdoc/>
         ValueTask<long> IPersistentState.IncrementTermAsync() => new ValueTask<long>(term.IncrementAndGet());
 
+        /// <inheritdoc/>
         Task IAuditTrail.InitializeAsync(CancellationToken token)
             => token.IsCancellationRequested ? Task.FromCanceled(token) : Task.CompletedTask;
 
+        /// <inheritdoc/>
         bool IPersistentState.IsVotedFor(IRaftClusterMember? member)
         {
             var lastVote = votedFor;
@@ -230,6 +261,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             return reader.ReadAsync<EmptyEntry, EntryList>(new EntryList(log, endIndex - startIndex + 1, offset, lastTerm.VolatileRead()), offset >= 0 ? null : new long?(commitIndex), token);
         }
 
+        /// <inheritdoc/>
         async ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader reader, long startIndex, long endIndex, CancellationToken token)
         {
             if (startIndex < 0L)
@@ -242,6 +274,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return await ReadAsync<TReader, TResult>(reader, startIndex, endIndex, token).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         async ValueTask<TResult> IAuditTrail<IRaftLogEntry>.ReadAsync<TReader, TResult>(TReader reader, long startIndex, CancellationToken token)
         {
             if (startIndex < 0L)
@@ -250,21 +283,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 return await ReadAsync<TReader, TResult>(reader, startIndex, index.VolatileRead(), token).ConfigureAwait(false);
         }
 
+        /// <inheritdoc/>
         ValueTask IPersistentState.UpdateTermAsync(long value)
         {
             term.VolatileWrite(value);
             return new ValueTask();
         }
 
+        /// <inheritdoc/>
         ValueTask IPersistentState.UpdateVotedForAsync(IRaftClusterMember? member)
         {
             votedFor = member;
             return new ValueTask();
         }
 
+        /// <inheritdoc/>
         Task<bool> IAuditTrail.WaitForCommitAsync(TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitAsync(timeout, token);
 
+        /// <inheritdoc/>
         Task<bool> IAuditTrail.WaitForCommitAsync(long index, TimeSpan timeout, CancellationToken token)
             => commitEvent.WaitForCommitAsync(IsCommittedPredicate, this, index, timeout, token);
 
@@ -274,6 +311,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 timeoutTracker.ThrowIfExpired(out timeout);
         }
 
+        /// <inheritdoc/>
         Task IPersistentState.EnsureConsistencyAsync(TimeSpan timeout, CancellationToken token)
             => term.VolatileRead() <= lastTerm.VolatileRead() ? Task.CompletedTask : EnsureConsistency(timeout, token);
 
@@ -288,6 +326,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 syncRoot.Dispose();
                 commitEvent.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }

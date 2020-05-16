@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -8,6 +6,8 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using static System.Diagnostics.Debug;
 
 namespace DotNext.Net.Cluster.Consensus.Raft
@@ -19,6 +19,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
     /// <summary>
     /// Represents transport-independent implementation of Raft protocol.
     /// </summary>
+    /// <typeparam name="TMember">The type implementing communication details with remote nodes.</typeparam>
     public abstract partial class RaftCluster<TMember> : Disposable, IRaftCluster, IRaftStateMachine
         where TMember : class, IRaftClusterMember, IDisposable
     {
@@ -41,7 +42,6 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         {
             internal MemberCollection()
             {
-
             }
 
             internal MemberCollection(IEnumerable<TMember> members)
@@ -86,6 +86,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     node.Value = null!;
                     return member;
                 }
+
                 throw new InvalidOperationException(ExceptionMessages.CannotRemoveLocalNode);
             }
 
@@ -165,19 +166,19 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <param name="members">The collection of members maintained by instance of <see cref="RaftCluster{TMember}"/>.</param>
         protected delegate void MemberCollectionMutator(MemberCollectionBuilder members);
 
+        private readonly bool allowPartitioning;
+        private readonly ElectionTimeout electionTimeoutProvider;
+        private readonly CancellationTokenSource transitionCancellation;
+        private readonly double heartbeatThreshold;
         private volatile IMemberCollection members;
 
-        private AsyncLock transitionSync;  //used to synchronize state transitions
+        private AsyncLock transitionSync;  // used to synchronize state transitions
 
         [SuppressMessage("Usage", "CA2213", Justification = "It is disposed as a part of members collection")]
         private volatile RaftState? state;
         private volatile TMember? leader;
-        private readonly bool allowPartitioning;
-        private readonly ElectionTimeout electionTimeoutProvider;
         private volatile int electionTimeout;
-        private readonly CancellationTokenSource transitionCancellation;
         private IPersistentState auditTrail;
-        private readonly double heartbeatThreshold;
 
         /// <summary>
         /// Initializes a new cluster manager for the local node.
@@ -205,8 +206,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [CLSCompliant(false)]
         protected virtual ILogger Logger => NullLogger.Instance;
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         ILogger IRaftStateMachine.Logger => Logger;
 
+        /// <inheritdoc/>
         TimeSpan IRaftCluster.ElectionTimeout => TimeSpan.FromMilliseconds(electionTimeout);
 
         /// <summary>
@@ -220,8 +223,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"/>.</exception>
         public IPersistentState AuditTrail
         {
-            set => auditTrail = value ?? throw new ArgumentNullException(nameof(value));
             get => auditTrail;
+            set => auditTrail = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
@@ -272,8 +275,10 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <returns>A collection of cluster member.</returns>
         public IReadOnlyCollection<TMember> Members => state is null ? EmptyCollection : members;
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         IEnumerable<IRaftClusterMember> IRaftStateMachine.Members => Members;
 
+        /// <inheritdoc/>
         IReadOnlyCollection<IClusterMember> ICluster.Members => Members;
 
         /// <summary>
@@ -295,6 +300,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// </summary>
         public event ClusterLeaderChangedEventHandler? LeaderChanged;
 
+        /// <inheritdoc/>
         IClusterMember? ICluster.Leader => Leader;
 
         /// <summary>
@@ -319,7 +325,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         public virtual async Task StartAsync(CancellationToken token)
         {
             await auditTrail.InitializeAsync(token).ConfigureAwait(false);
-            //start node in Follower state
+
+            // start node in Follower state
             state = new FollowerState(this) { Metrics = Metrics }.StartServing(TimeSpan.FromMilliseconds(electionTimeout), Token);
         }
 
@@ -344,7 +351,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
-        private async Task StepDown(long newTerm) //true - need to update leader, false - leave leader value as is
+        private async Task StepDown(long newTerm) // true - need to update leader, false - leave leader value as is
         {
             if (newTerm > auditTrail.Term)
                 await WhenAll(auditTrail.UpdateTermAsync(newTerm), auditTrail.UpdateVotedForAsync(null)).ConfigureAwait(false);
@@ -374,6 +381,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Metrics?.MovedToFollowerState();
                     break;
             }
+
             Logger.DowngradedToFollowerState();
         }
 
@@ -388,20 +396,25 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         /// <summary>
         /// Finds cluster member using predicate.
         /// </summary>
+        /// <typeparam name="TArg">The type of the predicate parameter.</typeparam>
         /// <param name="criteria">The predicate used to find appropriate member.</param>
         /// <param name="arg">The argument to be passed to the matching function.</param>
-        /// <returns>The cluster member; </returns>
+        /// <returns>The cluster member; or <see langword="null"/> if member doesn't exist.</returns>
         protected TMember? FindMember<TArg>(Func<TMember, TArg, bool> criteria, TArg arg)
         {
             foreach (var member in members)
+            {
                 if (criteria(member, arg))
                     return member;
+            }
+
             return null;
         }
 
         /// <summary>
         /// Handles InstallSnapshot message received from remote cluster member.
         /// </summary>
+        /// <typeparam name="TSnapshot">The type of snapshot record.</typeparam>
         /// <param name="sender">The sender of the snapshot message.</param>
         /// <param name="senderTerm">Term value provided by InstallSnapshot message sender.</param>
         /// <param name="snapshot">The snapshot to be installed into local audit trail.</param>
@@ -423,8 +436,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     await auditTrail.AppendAsync(snapshot, snapshotIndex).ConfigureAwait(false);
                     return new Result<bool>(currentTerm, true);
                 }
-                else
-                    return new Result<bool>(currentTerm, false);
+
+                return new Result<bool>(currentTerm, false);
             }
             finally
             {
@@ -483,6 +496,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                         result = commitIndex <= auditTrail.GetLastIndex(true) || await auditTrail.CommitAsync(commitIndex, token).ConfigureAwait(false) > 0;
                     }
                 }
+
                 return new Result<bool>(currentTerm, result);
             }
             finally
@@ -524,22 +538,31 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             try
             {
                 var currentTerm = auditTrail.Term;
-                if (currentTerm > senderTerm) //currentTerm > term
+                if (currentTerm > senderTerm)
+                {
                     goto reject;
+                }
+
                 if (currentTerm < senderTerm)
                 {
                     Leader = null;
                     await StepDown(senderTerm).ConfigureAwait(false);
                 }
                 else if (state is FollowerState follower)
+                {
                     follower.Refresh();
+                }
                 else
+                {
                     goto reject;
+                }
+
                 if (auditTrail.IsVotedFor(sender) && await auditTrail.IsUpToDateAsync(lastLogIndex, lastLogTerm, token).ConfigureAwait(false))
                 {
                     await auditTrail.UpdateVotedForAsync(sender).ConfigureAwait(false);
                     return new Result<bool>(currentTerm, true);
                 }
+
                 reject:
                 return new Result<bool>(currentTerm, false);
             }
@@ -581,8 +604,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                     Leader = null;
                     return true;
                 }
-                else
-                    return false;
+
+                return false;
             }
             finally
             {
@@ -591,10 +614,13 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        /// <inheritdoc/>
         async Task<bool> ICluster.ResignAsync(CancellationToken token)
         {
             if (await ReceiveResignAsync(token).ConfigureAwait(false))
+            {
                 return true;
+            }
             else
             {
                 var leader = Leader;
@@ -609,6 +635,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         [Obsolete("Use ReceiveResignAsync method instead")]
         protected Task<bool> ReceiveResign() => ReceiveResignAsync(CancellationToken.None);
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         async void IRaftStateMachine.MoveToFollowerState(bool randomizeTimeout, long? newTerm)
         {
             using var lockHolder = await transitionSync.TryAcquireAsync(Token).ConfigureAwait(false);
@@ -620,6 +647,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             }
         }
 
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         async void IRaftStateMachine.MoveToCandidateState()
         {
             Logger.TransitionToCandidateStateStarted();
@@ -629,7 +657,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 followerState.Dispose();
                 Leader = null;
                 var localMember = FindMember(IsLocalMember);
-                await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     //vote for self
+                await auditTrail.UpdateVotedForAsync(localMember).ConfigureAwait(false);     // vote for self
                 state = new CandidateState(this, await auditTrail.IncrementTermAsync().ConfigureAwait(false)).StartVoting(electionTimeout, auditTrail);
                 Metrics?.MovedToCandidateState();
                 Logger.TransitionToCandidateStateCompleted();
@@ -637,6 +665,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
         }
 
         [SuppressMessage("Reliability", "CA2000", Justification = "The instance returned by StartLeading is the same as 'this'")]
+        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1600", Justification = "It's a member of internal interface")]
         async void IRaftStateMachine.MoveToLeaderState(IRaftClusterMember newLeader)
         {
             Logger.TransitionToLeaderStateStarted();
@@ -646,8 +675,8 @@ namespace DotNext.Net.Cluster.Consensus.Raft
             {
                 candidateState.Dispose();
                 Leader = newLeader as TMember;
-                state = new LeaderState(this, allowPartitioning, currentTerm) { Metrics = Metrics }.StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold),
-                    auditTrail, Token);
+                state = new LeaderState(this, allowPartitioning, currentTerm) { Metrics = Metrics }
+                    .StartLeading(TimeSpan.FromMilliseconds(electionTimeout * heartbeatThreshold), auditTrail, Token);
                 await auditTrail.AppendNoOpEntry(Token).ConfigureAwait(false);
                 Metrics?.MovedToLeaderState();
                 Logger.TransitionToLeaderStateCompleted();
@@ -682,6 +711,7 @@ namespace DotNext.Net.Cluster.Consensus.Raft
                 leader = null;
                 Interlocked.Exchange(ref state, null)?.Dispose();
             }
+
             base.Dispose(disposing);
         }
     }
