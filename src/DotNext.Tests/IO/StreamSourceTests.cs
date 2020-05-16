@@ -260,7 +260,7 @@ namespace DotNext.IO
             var span = writer.GetSpan(10);
             new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }.AsSpan().CopyTo(span);
             writer.Advance(10);
-            using var stream = writer.AsStream();
+            using var stream = StreamSource.GetWrittenBytesAsStream(writer);
             True(stream.CanRead);
             False(stream.CanWrite);
             Equal(0, stream.Position);

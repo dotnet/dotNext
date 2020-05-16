@@ -35,7 +35,7 @@ namespace DotNext.IO
         /// </summary>
         /// <param name="writer">The buffer writer.</param>
         /// <returns>The stream representing written bytes.</returns>
-        public static Stream AsStream(this PooledArrayBufferWriter<byte> writer)
+        public static Stream GetWrittenBytesAsStream(this PooledArrayBufferWriter<byte> writer)
             => writer.WrapBuffer(new ValueFunc<byte[], int, MemoryStream>(CreateStream));
     }
 }
