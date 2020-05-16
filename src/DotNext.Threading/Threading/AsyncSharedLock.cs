@@ -24,15 +24,22 @@ namespace DotNext.Threading
 
         private sealed class StrongLockNode : WaitNode
         {
-            internal StrongLockNode() : base() { }
-            internal StrongLockNode(WaitNode previous) : base(previous) { }
+            internal StrongLockNode()
+                : base()
+            {
+            }
+
+            internal StrongLockNode(WaitNode previous)
+                : base(previous)
+            {
+            }
         }
 
         [StructLayout(LayoutKind.Auto)]
         private struct State : ILockManager<StrongLockNode>, ILockManager<WaitNode>
         {
             internal readonly long ConcurrencyLevel;
-            internal long RemainingLocks;   //-1 means that the lock is acquired in exclusive mode
+            internal long RemainingLocks;   // -1 means that the lock is acquired in exclusive mode
 
             internal State(long concurrencyLevel) => ConcurrencyLevel = RemainingLocks = concurrencyLevel;
 
@@ -163,7 +170,7 @@ namespace DotNext.Threading
         {
             ThrowIfDisposed();
             ref var stateHolder = ref state.Value;
-            if (stateHolder.IsEmpty)    //nothing to release
+            if (stateHolder.IsEmpty) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
             stateHolder.RemainingLocks = ConcurrencyLevel - 1;
             ResumePendingCallers();
@@ -179,16 +186,19 @@ namespace DotNext.Threading
         {
             ThrowIfDisposed();
             ref var stateHolder = ref state.Value;
-            if (stateHolder.IsEmpty)    //nothing to release
+            if (stateHolder.IsEmpty) // nothing to release
                 throw new SynchronizationLockException(ExceptionMessages.NotInWriteLock);
-            else if (stateHolder.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
+
+            if (stateHolder.IncrementLocks() == ConcurrencyLevel && head is StrongLockNode exclusiveNode)
             {
                 RemoveNode(exclusiveNode);
                 exclusiveNode.Complete();
                 stateHolder.RemainingLocks = ExclusiveMode;
             }
             else
+            {
                 ResumePendingCallers();
+            }
         }
     }
 }

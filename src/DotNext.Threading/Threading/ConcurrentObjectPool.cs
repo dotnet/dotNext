@@ -57,7 +57,7 @@ namespace DotNext.Threading
         /// var pool = new ConcurrentObjectPool&lt;DatabaseConnection&gt;();
         /// using(var rent = pool.Rent())
         /// {
-        ///     rent.Resource.ExecuteQuery();    
+        ///     rent.Resource.ExecuteQuery();
         /// }
         /// </code>
         /// If you gets the resource from the rental object outside of <c>using</c> block
@@ -73,19 +73,19 @@ namespace DotNext.Threading
         }
 
         /*
-         * Actual rental object is a node in double linked ring buffer. 
-         * 
+         * Actual rental object is a node in double linked ring buffer.
          */
         private sealed class Rental : IRental
         {
-            private AtomicBoolean lockState;
-            private T? resource; //this is not volatile because it's consistency is protected by lockState memory barrier
             private readonly int position;
-            private long timeToLive;    //not used by Round-robin algorithm
+            private AtomicBoolean lockState;
+            private T? resource; // this is not volatile because it's consistency is protected by lockState memory barrier
+            private long timeToLive;    // not used by Round-robin algorithm
 
             internal Rental(int position) => this.position = position;
 
-            internal Rental(int position, T resource) : this(position) => this.resource = resource;
+            internal Rental(int position, T resource)
+                : this(position) => this.resource = resource;
 
             internal bool IsFirst => position == 0;
 
@@ -101,7 +101,7 @@ namespace DotNext.Threading
                 private set;
             }
 
-            //indicates that this object is a predecessor of the specified object in the ring buffer
+            // indicates that this object is a predecessor of the specified object in the ring buffer
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             internal bool IsPredecessorOf(Rental other) => position < other.position;
 
@@ -125,10 +125,10 @@ namespace DotNext.Threading
 
             internal bool TryAcquire() => lockState.FalseToTrue();
 
-            //this method indicates that the object is requested
-            //and no longer starving
-            //call to this method must be protected by the lock using TryAcquire
-            //used by SJF strategy only
+            // this method indicates that the object is requested
+            // and no longer starving
+            // call to this method must be protected by the lock using TryAcquire
+            // used by SJF strategy only
             internal void Renew(long timeToLive, in ValueFunc<T> factory)
             {
                 this.timeToLive.VolatileWrite(timeToLive);
@@ -136,28 +136,33 @@ namespace DotNext.Threading
                     resource = factory.Invoke();
             }
 
-            //used by SJF strategy only
+            // used by SJF strategy only
             internal bool Starve()
             {
                 bool success;
-                if (success = lockState.FalseToTrue())  //acquire lock
+
+                // acquire lock
+                if (success = lockState.FalseToTrue())
                 {
-                    if (success = timeToLive.DecrementAndGet() <= 0) //decrease weight because this object was accessed a long time ago
+                    // decrease weight because this object was accessed a long time ago
+                    if (success = timeToLive.DecrementAndGet() <= 0)
                     {
-                        //prevent this method from blocking so dispose resource asynchronously
+                        // prevent this method from blocking so dispose resource asynchronously
                         if (resource is IDisposable disposable)
                             QueueDispose(disposable);
                         resource = null;
                     }
+
                     lockState.Value = false;
                 }
+
                 return success;
             }
 
             void IDisposable.Dispose()
             {
-                lockState.Value = false;    //release the lock
-                Released?.Invoke(this);     //notify that this object is returned back to the pool
+                lockState.Value = false;    // release the lock
+                Released?.Invoke(this);     // notify that this object is returned back to the pool
             }
 
             internal void Destroy(bool disposeResource)
@@ -167,11 +172,13 @@ namespace DotNext.Threading
                     Next.Previous = null;
                     Next = null;
                 }
+
                 if (!(Previous is null))
                 {
                     Previous.Next = null;
                     Previous = null;
                 }
+
                 Released = null;
                 if (disposeResource && resource is IDisposable disposable)
                     disposable.Dispose();
@@ -180,11 +187,11 @@ namespace DotNext.Threading
         }
 
         private readonly ValueFunc<T> factory;
+        private readonly long lifetime;
         private AtomicReference<Rental?> last;
         private AtomicReference<Rental> current;
         [SuppressMessage("Design", "IDE0032", Justification = "Volatile operations are applied directly to this field")]
         private int waitCount;
-        private readonly long lifetime;
 
         /// <summary>
         /// Initializes object pool that will apply Shortest Job First scheduling
@@ -221,6 +228,7 @@ namespace DotNext.Threading
                     rental = next;
                 }
             }
+
             Debug.Assert(!(rental is null));
             rental.Attach(current.Value!);
             current = new AtomicReference<Rental>(rental);
@@ -270,6 +278,7 @@ namespace DotNext.Threading
                     rental = next;
                 }
             }
+
             if (rental is null)
                 throw new ArgumentException(ExceptionMessages.CollectionIsEmpty, nameof(objects));
             rental.Attach(current.Value!);
@@ -281,14 +290,15 @@ namespace DotNext.Threading
 
         private static Rental SelectLastRenal(Rental? current, Rental update) => current is null || current.IsPredecessorOf(update) ? update : current;
 
-        //release object according with Shortest Job First algorithm
+        // release object according with Shortest Job First algorithm
         [RuntimeFeatures(Augmentation = true)]
         private void AdjustAvailableObjectAndCheckStarvation(Rental rental)
         {
 #nullable disable
             current.Value = rental.Previous;
             rental = last.AccumulateAndGet(rental, new ValueFunc<Rental, Rental, Rental>(SelectLastRenal));
-            //starvation detected, dispose the resource stored in rental object
+
+            // starvation detected, dispose the resource stored in rental object
             if (rental.Starve())
                 last.Value = rental.IsFirst ? null : rental.Previous;
 #nullable restore
@@ -325,7 +335,8 @@ namespace DotNext.Threading
             for (var spinner = new SpinWait(); ; token.ThrowIfCancellationRequested(), spinner.SpinOnce())
             {
                 var rental = current.UpdateAndGet(in nextRental);
-                if (!rental.TryAcquire()) continue;
+                if (!rental.TryAcquire())
+                    continue;
                 waitCount.DecrementAndGet();
                 if (!factory.IsEmpty)
                     rental.Renew(lifetime, factory);
@@ -357,9 +368,11 @@ namespace DotNext.Threading
                     next = rental.Next;
                     rental.Destroy(!factory.IsEmpty);
                 }
+
                 current = default;
                 last = default;
             }
+
             base.Dispose(disposing);
         }
     }

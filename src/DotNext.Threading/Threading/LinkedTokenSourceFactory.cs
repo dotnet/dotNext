@@ -18,15 +18,18 @@ namespace DotNext.Threading
             var result = default(CancellationTokenSource);
             if (first == second)
             {
-                //nothing to do, just return from this method
+                // nothing to do, just return from this method
             }
             else if (!first.CanBeCanceled)
+            {
                 first = second;
+            }
             else if (second.CanBeCanceled)
             {
                 result = CancellationTokenSource.CreateLinkedTokenSource(first, second);
                 first = result.Token;
             }
+
             return result;
         }
     }
